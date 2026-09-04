@@ -1,178 +1,472 @@
 {
   "_meta": {
     "tool": "money-diplomat",
-    "captured": "2026-06-27",
-    "baseline": "moneydiplomat-v1",
-    "model": "claude-sonnet-4-6 (all 25 endpoints)",
-    "endpoints": "25 sub-endpoints under /api/money-diplomat-* (tip, split, venmo, gift, roommate, family, dining, group, lend, work, travel, profile, date, subs, nudge, salary, afford, inheritance, cultural, charity, simulate, recap)",
-    "note": "Regression reference for MoneyDiplomat. Re-run each case's input against the live backend (npm run check:golden money-diplomat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. These cases use a NON-USD locale (en-GB/GBP) to GUARD the currency fix: all $ exemplars were stripped from the prompts and amount fields were converted from `(number)`/$-templates to compact 'in the user's currency' guidance — amounts must come through in £ (the tip 'amount' was a bare symbol-less number before). DO NOT silently reverse: (1) all 25 endpoints sonnet-4-6 + withLanguage + withLocaleContext; (2) NO hardcoded $ exemplars in prompts (use ${} interpolation only — the strip regex was $ before a digit/X, never ${); (3) amount/currency fields ask for compact figures in the user's currency, not bare numbers. Frontend: AI-result amounts are rendered RAW (model must format currency); client-side Quick Math uses formatCurrency(). Mobile: scenario picker is grid-cols-2 sm:grid-cols-4 (was grid-cols-3 → 9px descriptions crushed in long locales). A contextual cross-currency comparison (e.g. '£75 (≈$95)') in prose is acceptable, not a leak. See audit/tool-notes/MONEYDIPLOMAT-NOTES.md.",
-    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially."
+    "captured": "2026-09-04",
+    "baseline": "moneydiplomat-v2",
+    "model": "MODELS.SMART",
+    "note": "Regression reference for Money Diplomat, re-recorded after the 2026-09-04 grounding rewrite. The v1 golden was discarded: its expected output carried confidence percentages, resentment_risk, culture_clash_risk, the_real_issue, emotional_stakes, if_guilt_trip, what_splitting_signals, likely_outcome and likely_counteroffer — every one of which the new schemas removed. The money-profile and monthly-recap endpoints are gone entirely and their cases with them. Re-run with `npm run check:golden money-diplomat`. The north star, and what to read for by eye: the tool is strongest answering 'what is fair or prudent here, given what I actually know, and what can I say?' and weakest answering 'what is this person secretly thinking?', 'what will happen?', 'what does my culture require?' or 'what number is objectively correct?'. Reason about the money, help with the conversation, do not invent the people. Each case carries its own `guards` line. See audit/tool-notes/MONEYDIPLOMAT-NOTES.md."
   },
   "cases": [
     {
-      "name": "tip-uk-gbp",
-      "endpoint": "/api/money-diplomat-tip",
+      "name": "lend-overdue-first-loan",
+      "endpoint": "/api/money-diplomat-lend",
+      "guards": "The case in the owner's PDF. The first loan is overdue and undiscussed; that is the strongest supplied fact and the whole answer should rest on it. NOTHING may predict repayment, forecast resentment, or say the friendship will suffer. The holiday booking may appear as a bare fact in what_is_known but must never be read as evidence about their finances — 'why the first loan has not been repaid' and 'what the holiday says about their finances' belong in what_is_not_known. recommendation is pinned to exact English because the frontend colours on it.",
       "input": {
-        "situation": "dinner at a London restaurant, good service",
-        "country": "UK",
-        "serviceType": "restaurant",
-        "billAmount": "80",
-        "partySize": "2",
-        "userLanguage": "en-GB",
-        "userLocale": "en-GB",
-        "userCurrency": "GBP",
-        "userRegion": "GB"
+        "situation": "A friend is asking to borrow $400. I lent them $600 about eight months ago which was supposed to be paid back within three months and never was. We have not talked about it since. They just posted about booking a holiday.",
+        "amount": "$400",
+        "relationship": "Close friend",
+        "history": "Lent $600 eight months ago, due within three months, still unpaid, never discussed since."
       },
+      "optionalSections": [
+        "before_you_decide",
+        "what_is_not_known",
+        "what_is_known",
+        "why"
+      ],
       "output": {
-        "recommendation": {
-          "percentage": 12,
-          "amount": "£10",
-          "range": {
-            "low": "£8 (10%) is acceptable for competent, unremarkable service in a London restaurant.",
-            "mid": "£10–£12 (12–15%) is the sweet spot for genuinely good service and reflects current London norms.",
-            "generous": "£16 (20%) signals exceptional service or a desire to reward staff well above the norm."
-          },
-          "verdict": "Standard — good service in a London restaurant warrants a tip, but UK norms sit well below the American 20% benchmark, and 12–15% is considered respectful and appropriate here."
+        "recommendation": "Do not lend yet",
+        "why": [
+          "The earlier $600 loan is eight months overdue with no repayment and no discussion — that situation is unresolved.",
+          "Adding a second loan before the first is addressed means you would have $1,000 outstanding with no agreed path to repayment on either.",
+          "The existing loan has never been raised since it went unpaid, so there is no shared understanding of what is owed or when."
+        ],
+        "what_is_known": [
+          "You lent $600 approximately eight months ago.",
+          "Repayment was due within three months — it is now five months overdue.",
+          "The unpaid loan has not been discussed since.",
+          "Your friend is now requesting an additional $400.",
+          "Your friend recently posted about booking a holiday."
+        ],
+        "what_is_not_known": [
+          "Why the $600 was not repaid and has not been mentioned.",
+          "Whether your friend is aware you consider the loan overdue.",
+          "Your friend's current financial situation.",
+          "Whether they intend to address the earlier loan at all."
+        ],
+        "before_you_decide": [
+          "Are you willing to raise the $600 before responding to this request?",
+          "If the $600 were never repaid, would lending another $400 cause you financial or relational harm you are not prepared for?",
+          "Do you want to keep this friendship on terms that include lending, or would you prefer to stop lending going forward?"
+        ],
+        "if_you_lend": {
+          "amount_guidance": "If you decide to lend after raising the earlier debt, do not lend more than you could afford to lose outright. Given the unresolved $600, lending the full $400 on top would be difficult to justify on the information available.",
+          "terms_to_clarify": [
+            "A specific repayment date agreed out loud before money moves.",
+            "Whether this is in addition to repaying the $600 or connected to it.",
+            "How repayment will happen — bank transfer on a set date, not an open-ended arrangement."
+          ],
+          "script": "Before I answer about the $400, I want to check in about the $600 I lent you back in January — it was due in April and we have not spoken about it since. I am not trying to make things awkward, I just want us to have a clear picture. Once we sort that out, I am happy to talk about what you need now."
         },
-        "reasoning": "In London, 'good service' at a sit-down restaurant typically earns 10–15%, not the 20% that has become culturally expected in the US. For a two-person dinner at £80, a tip of around £10–£12 is a meaningful, culturally calibrated gesture that clearly communicates satisfaction without overcorrecting toward American norms. Tipping culture in the UK has grown since the early 2020s, particularly in London, but 12% remains solidly within the generous-but-not-extravagant range.",
-        "cultural_context": "In the UK, tipping in restaurants is appreciated but not obligatory, and 10–15% is the widely accepted norm for good service in London; 20% is considered quite generous and is typically reserved for outstanding experiences. Many London restaurants now add a discretionary 12.5% service charge directly to the bill, so always check before tipping additionally.",
-        "adjustments": [
-          {
-            "factor": "Service was described as 'good' — a clear positive signal, but not exceptional or outstanding.",
-            "direction": "up",
-            "explanation": "Good service moves the tip above the 10% floor toward the 12–15% range, rewarding attentiveness without implying the meal was a once-in-a-lifetime experience."
-          },
-          {
-            "factor": "Party of two at a London restaurant — a standard, uncomplicated table.",
-            "direction": "neutral",
-            "explanation": "Small parties receive no automatic service charge and place no unusual burden on staff, so no adjustment is needed beyond the base recommendation."
-          }
-        ],
-        "etiquette_notes": [
-          "Check the bill carefully before tipping — many London restaurants automatically add a 12.5% discretionary service charge; if it's already there, you are under no obligation to add more.",
-          "If a service charge is listed, it is technically discretionary and you are legally entitled to ask for it to be removed, though most diners leave it in place for satisfactory service.",
-          "Tipping in cash directly to your server is often preferred over adding it to a card payment, as some restaurants do not pass card tips in full to front-of-house staff."
-        ],
-        "awkward_scenario": {
-          "question": "If I already paid a 12.5% service charge on the bill, should I still leave an extra tip on the table?",
-          "answer": "No — paying the 12.5% service charge is sufficient for good service; leaving a small amount of cash (£2–£5) is a warm gesture if you want to personally acknowledge your server, but it is entirely optional and not expected."
+        "if_you_do_not_lend": {
+          "script": "I am not in a position to lend right now. I also think we should talk about the $600 from earlier this year when you have a moment — it has been sitting there and I would rather sort it out between us than let it drift.",
+          "if_they_push": "I understand you need it, but lending more right now is not something I can do. The earlier loan is part of why."
+        },
+        "existing_debt": {
+          "relevant": true,
+          "next_step": "Raise the $600 directly before responding to the new request. You do not need to be accusatory — simply name it, say it is overdue, and ask where things stand.",
+          "script": "Hey, I wanted to bring up the $600 I lent you in January — it was meant to come back by April and I have not heard anything about it. I am not upset, I just want to get it sorted. Can we work out a plan?"
         }
       }
     },
     {
-      "name": "gift-wedding-gbp",
-      "endpoint": "/api/money-diplomat-gift",
+      "name": "venmo-three-weeks",
+      "endpoint": "/api/money-diplomat-venmo",
+      "guards": "No confidence score, no resentment_risk — both were removed from this schema. The verdict is pinned English. Nothing may predict whether asking damages the relationship.",
       "input": {
-        "situation": "wedding gift for a close friend",
-        "relationship": "close friend",
-        "occasion": "wedding",
-        "userLanguage": "en-GB",
-        "userLocale": "en-GB",
-        "userCurrency": "GBP",
-        "userRegion": "GB"
+        "situation": "Covered a $60 concert ticket for a friend three weeks ago, they said they would send it over that night.",
+        "amount": "$60",
+        "relationship": "Friend",
+        "timePassed": "3 weeks"
       },
+      "optionalSections": [
+        "unknowns",
+        "what_matters",
+        "why"
+      ],
       "output": {
-        "recommendation": {
-          "amount": "£75",
-          "range": {
-            "minimum": "£50",
-            "sweet_spot": "£75",
-            "generous": "£120"
-          },
-          "verdict": "£75 hits the sweet spot: generous enough to honour a close friendship without making anyone uncomfortable"
-        },
-        "calibration": {
-          "occasion_weight": "major",
-          "relationship_factor": "A close friend warrants a meaningful contribution — this is someone who likely invited you specifically because you matter to them, so underspending reads as a signal",
-          "reciprocity_note": "Without knowing their likely spend on you, default to the friendship's depth rather than reciprocity — close friends typically spend £60–£100 on weddings in the UK",
-          "regional_norm": "Note: your locale is UK but the couple is US-based — US wedding gift norms run slightly higher than UK norms, so £75 (roughly $95 USD) aligns well with the American expectation of $75–$100 for a close friend"
-        },
-        "group_gift_option": {
-          "makes_sense": true,
-          "your_share": "£30–£40 as your share, allowing the group to reach a more impressive combined gift",
-          "how_to_organize": "Say: 'I was thinking we could all go in together on something they'd actually remember — want to split a bigger gift?'"
-        },
-        "pitfalls": [
-          {
-            "mistake": "Buying something off-registry because it feels more personal, only to duplicate an item they already received or give something that doesn't suit their home",
-            "instead": "Stick to the registry unless you know their taste intimately — the registry exists precisely to prevent awkward duplicates and unwanted gifts"
-          },
-          {
-            "mistake": "Sending a gift card because it seems flexible, which often reads as an afterthought at a wedding",
-            "instead": "Choose a registry item at your budget level — it signals intentionality even if the mechanics are similar to cash"
-          }
+        "verdict": "Request it",
+        "why": [
+          "There was a clear, explicit agreement — the friend said they would send the money that night.",
+          "Three weeks have passed with no follow-through on that commitment.",
+          "$60 is a real amount that most people would want returned."
         ],
-        "the_real_answer": "The couple will almost certainly never know exactly what you spent — what they will remember is whether you showed up with warmth, so pick something from the registry at a comfortable amount and write a genuinely heartfelt card"
+        "what_matters": [
+          "The friend made a specific promise, so asking is not out of nowhere.",
+          "Whether any reminder has already been sent — if not, this is the first nudge.",
+          "Whether the silence since then was accompanied by any explanation or acknowledgment."
+        ],
+        "unknowns": [
+          "Whether the friend forgot, had a cash-flow issue, or assumed it was settled some other way.",
+          "Whether anything in the friendship since then has made this feel complicated."
+        ],
+        "script": "Hey, just a quick reminder — I covered your concert ticket ($60) a few weeks back and you mentioned sending it over that night. No stress, just wanted to flag it in case it slipped your mind. Venmo, Zelle, or cash all work for me.",
+        "if_they_push_back": "Totally get it if timing is tough — just let me know when works and I can follow up then. I do want to make sure we get it sorted."
       }
     },
     {
-      "name": "group-cabin-gbp",
-      "endpoint": "/api/money-diplomat-group",
+      "name": "afford-sparse-numbers",
+      "endpoint": "/api/money-diplomat-afford",
+      "guards": "Cost and income only. gut_check must NOT be 'Looks manageable' on this alone — what_is_missing should be substantial, because cost and income are insufficient for a real affordability answer. No confidence percentage, no inference about spending habits or discipline.",
       "input": {
-        "situation": "weekend cabin trip for 4 friends",
-        "expenses": "Alex paid 400 for the cabin, Sam paid 120 for groceries, Jordan paid 80 for gas, Casey paid nothing",
-        "people": "Alex, Sam, Jordan, Casey",
-        "userLanguage": "en-GB",
-        "userLocale": "en-GB",
-        "userCurrency": "GBP",
-        "userRegion": "GB"
+        "situation": "Thinking about a $1,800 holiday",
+        "cost": "$1800",
+        "income": "$3,400/month take-home",
+        "context": ""
       },
+      "optionalSections": [
+        "questions_to_check",
+        "what_the_numbers_show"
+      ],
       "output": {
-        "settlement": [
+        "gut_check": "Worth a closer look",
+        "what_the_numbers_show": [
+          "$1,800 is 53% of one month's take-home pay.",
+          "No other figures were supplied, so no further arithmetic is possible."
+        ],
+        "what_is_missing": [
+          "Monthly fixed expenses (rent, utilities, debt payments, etc.).",
+          "Current savings or whether this would be paid from savings or credit.",
+          "Any existing financial commitments around the same time period.",
+          "Whether the $1,800 is the full cost or a deposit toward a larger total."
+        ],
+        "questions_to_check": [
+          "After all fixed monthly costs, how much is typically left over — and how does $1,800 compare to that?",
+          "Would paying this leave an emergency buffer you are comfortable with?",
+          "Is this a lump sum due now, or can it be spread over several months before the trip?",
+          "Would this go on a credit card, and if so, do you have a plan to pay it off before interest accrues?"
+        ],
+        "low_regret_next_step": "Write down your actual monthly outgoings against your $3,400 take-home and see what remains after essentials. That single calculation will tell you whether $1,800 is a stretch, a strain, or genuinely fine — and nothing here can do that without it."
+      }
+    },
+    {
+      "name": "tip-unverified-norm",
+      "endpoint": "/api/money-diplomat-tip",
+      "guards": "Arithmetic from the supplied bill only. The local norm is NOT verified, so it belongs in check_first, not asserted in practical_answer. No invented service charge, auto-gratuity or party-size rule.",
+      "input": {
+        "situation": "Dinner out, service was slow but friendly",
+        "country": "Portugal",
+        "serviceType": "restaurant",
+        "billAmount": "€68",
+        "partySize": "4"
+      },
+      "optionalSections": [
+        "check_first",
+        "why"
+      ],
+      "output": {
+        "practical_answer": "Tipping expectations in Portugal vary and are not settled enough to name a standard percentage with confidence — see check_first before deciding. If you want a starting point while you verify: rounding up the bill or leaving a small amount (such as a few euros) is a common approach in many Portuguese restaurants, but this is not a confirmed norm.",
+        "math": {
+          "bill": "€68",
+          "percentage_used": "No percentage supplied by you, and no verified local standard available — figures below use 5% and 10% as reference points only, not as established norms",
+          "tip": "€3.40 at 5% / €6.80 at 10%",
+          "total": "€71.40 at 5% / €74.80 at 10%"
+        },
+        "why": [
+          "Service was friendly, which you noted positively",
+          "Service was slow, which you noted as a negative",
+          "Party of 4 — worth checking whether the restaurant added a service charge automatically"
+        ],
+        "check_first": [
+          "Local tipping expectations vary; check the current norm for sit-down restaurants in Portugal before settling on a figure",
+          "Look at your bill or receipt to confirm no service charge or couvert charge was already added — paying both would double-count",
+          "Some Portuguese restaurants include a small couvert (bread, olives, etc.) charge that is separate from a tip — confirm what is already on the bill"
+        ]
+      }
+    },
+    {
+      "name": "gift-budget-supplied",
+      "endpoint": "/api/money-diplomat-gift",
+      "guards": "A budget was supplied, so it is the strongest constraint and the range sits inside it. No single correct amount, and no claim about what the recipient expects or will spend.",
+      "input": {
+        "occasion": "Wedding",
+        "relationship": "Cousin",
+        "theirSpend": "",
+        "yourBudget": "$150",
+        "region": ""
+      },
+      "optionalSections": [
+        "why_this_range"
+      ],
+      "output": {
+        "range": "$100–$150",
+        "why_this_range": [
+          "Your stated budget of $150 is the ceiling, so the range runs up to but does not exceed it.",
+          "A cousin is a close enough family relationship that a token amount could feel out of step, which puts the floor somewhere meaningfully above the minimum.",
+          "Spreading the range gives you room to land where you feel comfortable without committing to the full budget."
+        ],
+        "budget_check": "The range fits fully inside your $150 budget. Spending at the top means using your full budget; spending at the lower end leaves a small cushion.",
+        "social_context": "Wedding gift norms vary considerably by region, family culture, and the couple's circumstances — there is no single correct amount for a cousin. What feels appropriate in one family or part of the world can feel low or high in another, so your own sense of the relationship and your circle is more reliable here than any general rule.",
+        "if_you_want_to_spend_less": "A thoughtful registry item at $75–$99 reads as intentional rather than minimal, especially if it is something specific the couple chose. Pairing a smaller cash gift with a handwritten note can also give it more weight.",
+        "if_you_want_to_spend_more": "Going above $150 typically means either a larger cash or check gift, or combining a registry item with a personal addition — though the decision to exceed your own stated budget is yours to make based on what feels right."
+      }
+    },
+    {
+      "name": "salary-no-target-supplied",
+      "endpoint": "/api/money-diplomat-salary",
+      "guards": "No target figure was supplied, so ask.amount MUST be empty and what_you_still_need_to_know must include verifying compensation data. No market salary, no likely outcome, no counteroffer prediction, no hiring-manager psychology.",
+      "input": {
+        "situation": "Asking for a raise at my annual review next month",
+        "currentSalary": "$78,000",
+        "targetRole": "Senior analyst",
+        "location": "Manchester",
+        "experience": "5 years"
+      },
+      "optionalSections": [
+        "other_terms_to_consider",
+        "if_they_push_back",
+        "what_you_still_need_to_know",
+        "what_you_can_make_the_case_from"
+      ],
+      "output": {
+        "what_you_can_make_the_case_from": [
+          "5 years of experience in this role, which represents demonstrated tenure and accumulated expertise",
+          "Annual review is the conventional and expected moment to raise compensation — timing is on your side",
+          "Senior analyst title implies responsibility that can be tied to specific deliverables you can name"
+        ],
+        "what_you_still_need_to_know": [
+          "What comparable senior analyst roles in Manchester are currently paying — check job boards (Reed, LinkedIn, Glassdoor, Robert Half) and note ranges with dates",
+          "Your specific achievements since the last review: revenue impact, cost savings, projects delivered, anything measurable",
+          "Whether your salary has kept pace with inflation over the 5 years — if not, that gap is part of your case",
+          "Your target figure — you need a number before you can ask for one"
+        ],
+        "ask": {
+          "amount": "",
+          "basis": "No target figure was supplied, so no number can responsibly be named here. The ask should be grounded in verified market data for senior analysts in Manchester plus your documented contributions.",
+          "script": "I wanted to use this review to talk about my compensation. Over the past year I have [specific achievement you name], and I have been in this role for five years, taking on [specific responsibility you name]. Based on what I have seen in the current market for senior analysts in Manchester, and the contribution I am making here, I would like to discuss moving my salary to [the figure you verify and decide on]. I am happy to walk through the work that underpins that."
+        },
+        "if_they_push_back": [
           {
-            "person": "Alex — paid for the cabin, the largest shared expense of the trip.",
-            "paid_so_far": "£400",
-            "fair_share": "£150",
-            "owes_or_owed": "-£250 (is owed £250 back from the group)"
+            "situation": "They say the budget is frozen or limited this cycle",
+            "response": "I understand budgets have constraints. Could we agree on a figure now and set a confirmed date — say within six months — to implement it? I would like that in writing if possible."
           },
           {
-            "person": "Sam — covered groceries for everyone over the weekend.",
-            "paid_so_far": "£120",
-            "fair_share": "£150",
-            "owes_or_owed": "-£30 (is owed £30 back from the group)"
+            "situation": "They say your current salary is already in line with the role",
+            "response": "I would be interested to see what benchmarks you are working from, because the market data I looked at suggested a different range. Can we compare notes on that?"
           },
           {
-            "person": "Jordan — filled up the tank and covered the group's travel fuel costs.",
-            "paid_so_far": "£80",
-            "fair_share": "£150",
-            "owes_or_owed": "+£70 (owes £70 to the group)"
+            "situation": "They ask why you feel you deserve more",
+            "response": "I can point to specific things: [name your achievement], [name your responsibility]. I have also been at this salary for [length of time], and I want to make sure my compensation reflects where I am now, not where I started."
           },
           {
-            "person": "Casey — attended and benefited from all shared costs but paid nothing towards the trip.",
-            "paid_so_far": "£0",
-            "fair_share": "£150",
-            "owes_or_owed": "+£150 (owes £150 to the group)"
+            "situation": "They offer a smaller increase than you asked for",
+            "response": "I appreciate that. That is below what I was hoping for given the market and my contributions — is there any room to close that gap, or is there a timeline when we could revisit it?"
           }
         ],
-        "simplification": {
-          "explanation": "Rather than a web of four-way transfers, Casey and Jordan each pay into the two people who overpaid, settling everything in just three transactions instead of a potential six.",
-          "transactions": [
-            {
-              "from": "Casey — paid nothing and owes their full £150 fair share.",
-              "to": "Alex — the biggest creditor who is owed the most.",
-              "amount": "£120",
-              "method": "Bank transfer or Monzo/Revolut is cleanest for a larger amount like this."
-            },
-            {
-              "from": "Casey — still has £30 remaining of their £150 debt after paying Alex.",
-              "to": "Sam — owed £30 back and this clears them out exactly.",
-              "amount": "£30",
-              "method": "Bank transfer, PayPal, or cash if it's easier."
-            },
-            {
-              "from": "Jordan — owes £70 to the group after their £80 gas contribution.",
-              "to": "Alex — who is still owed £130 even after Casey's payment, so Jordan pays the remainder.",
-              "amount": "£70",
-              "method": "Bank transfer or Monzo/Revolut works perfectly here."
-            }
+        "other_terms_to_consider": [
+          "A guaranteed review date if a raise cannot happen immediately",
+          "Additional annual leave days",
+          "Remote or flexible working arrangements",
+          "Training, certification, or conference budget",
+          "One-off bonus tied to a specific deliverable if a permanent raise is declined"
+        ]
+      }
+    },
+    {
+      "name": "family-no-dynamic-supplied",
+      "endpoint": "/api/money-diplomat-family",
+      "guards": "No family dynamic and no cultural context supplied. Nothing may infer guilt, obligation, favouritism, control or a 'real issue underneath the money' — the retired fields the_real_issue, emotional_stakes and if_guilt_trip must not reappear under any name.",
+      "input": {
+        "situation": "My brother wants me to cover half of a new boiler for our parents. I can manage about a third.",
+        "familyDynamic": "",
+        "culturalContext": ""
+      },
+      "optionalSections": [
+        "what_needs_clarifying",
+        "what_is_known"
+      ],
+      "output": {
+        "practical_issue": "Your brother is asking you to split the boiler cost equally, but you can only contribute about a third. The gap between what he is asking and what you can offer needs to be bridged, either by him covering more, by finding another source for the difference, or by choosing a less expensive solution.",
+        "what_is_known": [
+          "Your brother wants you to cover half the boiler cost",
+          "You can contribute approximately a third of the cost",
+          "The boiler is for your parents"
+        ],
+        "what_needs_clarifying": [
+          "What is the total cost, so the actual amounts in play are clear",
+          "Is there a third party — another sibling, parent savings, a grant — who could cover the gap",
+          "Has a cheaper boiler or repair been considered, or is this a specific model already chosen",
+          "Is there a deadline driving this decision"
+        ],
+        "recommendation": "Not enough to tell",
+        "conversation": {
+          "opener": "I want to help with the boiler. I have worked out what I can put in and it comes to about a third of the cost, not half. Can we talk through how to cover the rest?",
+          "key_points": [
+            "Name your actual contribution in pounds once you know the total, so there is no ambiguity",
+            "Ask whether any other source — savings, another family member, a government scheme — could fill the gap",
+            "Make clear your figure is what you can genuinely afford, not an opening bid"
+          ],
+          "boundary_if_needed": "A third is what I can commit to. I am not in a position to stretch to half, so if that is the only way this works, we need to find another way to cover the difference.",
+          "if_they_disagree": "I understand that leaves a gap and I am happy to help think through how to close it, but my number is not going to change. What options do we have on your end?"
+        }
+      }
+    },
+    {
+      "name": "date-second-date",
+      "endpoint": "/api/money-diplomat-date",
+      "guards": "what_splitting_signals is gone. Nothing may say what any option signals about interest, independence, generosity, commitment or gender expectations — how_each_option_may_feel_or_function is conditional and about the evening, not the people. No confidence percentage.",
+      "input": {
+        "situation": "Second date, they suggested the restaurant",
+        "dateNumber": "2",
+        "dynamic": "",
+        "culturalContext": ""
+      },
+      "optionalSections": [
+        "what_is_not_established",
+        "what_you_told_me",
+        "options"
+      ],
+      "output": {
+        "options": [
+          {
+            "option": "One person offers",
+            "how_it_works": "When the check arrives, one of you picks it up and says you have got it. The other may accept or offer to cover next time.",
+            "how_each_option_may_feel_or_function": "This may make the moment feel settled and easy, but if the other person wanted to contribute, they may feel they had no opening to do so.",
+            "script": "I have got this one — you can get the next one."
+          },
+          {
+            "option": "Split evenly",
+            "how_it_works": "When the check comes, you say you are happy to split it down the middle. Payment apps or asking the server to divide the bill both work.",
+            "how_each_option_may_feel_or_function": "This may feel straightforward and low-pressure. Depending on what was ordered, it may feel slightly uneven to one person if the totals differed much.",
+            "script": "Want to just split it? Happy to do it however is easiest."
+          },
+          {
+            "option": "Alternate",
+            "how_it_works": "One person covers this meal with the understanding that the other picks up the next one. Works best if you say it out loud so both people are on the same page.",
+            "how_each_option_may_feel_or_function": "This may feel easy in the moment, but it does assume there will be a next time — which may or may not feel comfortable to say on a second date.",
+            "script": "I will grab this one — you can get the next one if you are up for it."
+          },
+          {
+            "option": "Discuss before ordering",
+            "how_it_works": "Before you look at the menu, you name the question briefly — 'should we just split this?' — so the plan is set and the check moment is not awkward.",
+            "how_each_option_may_feel_or_function": "This removes the guesswork at the end of the meal. Bringing it up early may feel matter-of-fact to some people and slightly abrupt to others — you know your read on the other person better than any outside advice can.",
+            "script": "Quick question before we order — do you want to just split it tonight?"
+          }
+        ],
+        "what_you_told_me": [
+          "It is the second date.",
+          "The other person suggested the restaurant."
+        ],
+        "what_is_not_established": [
+          "What, if anything, the other person expects around who pays.",
+          "Whether either person has a preference they have not stated.",
+          "Any cultural or personal context that might affect how either option lands."
+        ],
+        "if_it_comes_up_awkwardly": "If the check arrives and nobody moves, you can say: 'Want to split it, or I can grab it and you get the next one — either works for me.' That puts two concrete options on the table without pressure."
+      }
+    },
+    {
+      "name": "cultural-two-backgrounds",
+      "endpoint": "/api/money-diplomat-cultural",
+      "guards": "The hardest case. Neither background establishes an expectation. Nothing may describe Korea, the US, or any culture as having one money rule, say what an action 'actually means in their culture', or output a culture-clash score. Only expectations the visitor actually described may appear in what_you_have_described.",
+      "input": {
+        "yourBackground": "Grew up in the US",
+        "theirBackground": "Partner grew up in Seoul",
+        "situation": "His parents are visiting and want to take us out to dinner. I usually offer to split."
+      },
+      "optionalSections": [
+        "what_not_to_assume",
+        "questions_to_make_explicit",
+        "what_you_have_described"
+      ],
+      "output": {
+        "what_you_have_described": [
+          "You typically offer to split the bill when dining out",
+          "His parents have invited the two of you to dinner"
+        ],
+        "possible_mismatch": "You have described your own default (offer to split), but neither your partner nor his parents have stated their expectation for this dinner. It is possible they intend to treat, or they may welcome a shared cost — you do not yet know which.",
+        "what_not_to_assume": [
+          "Growing up in Seoul does not establish what his parents expect guests to contribute at dinner",
+          "Being invited out does not settle whether the host expects to pay fully or expects an offer",
+          "Your partner's background does not tell you what he has communicated to his parents about your habits",
+          "His parents' willingness to treat does not indicate anything about their financial situation"
+        ],
+        "questions_to_make_explicit": [
+          "Ask your partner: when your parents take someone out, do they expect to pay entirely, or do they welcome an offer to split?",
+          "Ask your partner: is there anything you should or should not do at the table around the bill?",
+          "Ask your partner: would it feel right to you if I offered to cover the tip, even if they pay the bill?"
+        ],
+        "bridge": "Asking your partner privately before dinner costs nothing and removes the guesswork entirely. Whatever his answer, you can then act in a way that fits the actual situation rather than a guess.",
+        "script": "Hey, your parents are so kind to take us out. I want to handle the bill moment in a way that feels right to them and to you. When they invite people to dinner, do they usually expect to pay, or would an offer to split or cover the tip be welcome? Just want to follow your lead."
+      }
+    },
+    {
+      "name": "charity-tax-question",
+      "endpoint": "/api/money-diplomat-charity",
+      "guards": "tax_note must say only that treatment depends on jurisdiction and recipient status and should be verified. No deductibility claim of any kind.",
+      "input": {
+        "situation": "A colleague is fundraising for a charity run and asked the team to sponsor them",
+        "askType": "Peer fundraiser",
+        "relationship": "Colleague",
+        "amount": ""
+      },
+      "optionalSections": [
+        "why"
+      ],
+      "output": {
+        "recommendation": "Not enough to tell",
+        "why": [
+          "A colleague ask carries some social weight but no real obligation — contributing is a gesture of goodwill, not a duty.",
+          "The amount matters less than whether giving feels comfortable; a small contribution is as valid as a larger one.",
+          "Declining is also acceptable — peer fundraisers are voluntary by nature."
+        ],
+        "amount_guidance": "For a workplace peer fundraiser, a small symbolic amount is typical — think whatever you would spend on a round of coffee without noticing it. If you want to be more generous, go up from there, but there is no correct figure. Give what you would not resent if the cause turned out not to be one you cared about.",
+        "tax_note": "Tax treatment depends on jurisdiction and the recipient's status; verify before relying on a deduction.",
+        "script": "Happy to sponsor you — just sent it through. Good luck on the run! If you are declining: Thanks for sharing this — I am keeping a tight rein on extras right now, but I hope the run goes well.",
+        "if_they_push": "I appreciate you asking, but I am not in a position to contribute this time. Hope you smash your goal."
+      }
+    },
+    {
+      "name": "inheritance-split-question",
+      "endpoint": "/api/money-diplomat-inheritance",
+      "guards": "No grief dynamics, entitlement, favouritism or family hierarchy unless supplied — none was. No jurisdiction-specific legal or tax conclusion: those belong in needs_professional_confirmation. It must not decide that equal or equitable is objectively correct.",
+      "input": {
+        "situation": "Three of us are dividing our mother house. One sibling lived there and cared for her for the last two years.",
+        "familyDynamic": "",
+        "culturalContext": ""
+      },
+      "optionalSections": [
+        "facts_that_matter",
+        "needs_professional_confirmation",
+        "principles_in_tension"
+      ],
+      "output": {
+        "arrangement_considered": "Three siblings are dividing their mother's house. One sibling lived there and provided care for the final two years, and it is not yet settled whether or how that contribution affects the split.",
+        "principles_in_tension": [
+          {
+            "principle": "Equal inheritance",
+            "pulls_toward": "Each sibling receives one-third of the house value, regardless of circumstances"
+          },
+          {
+            "principle": "Contribution credit",
+            "pulls_toward": "The sibling who provided care and housing receives a larger share or separate compensation, reflecting what they gave"
+          },
+          {
+            "principle": "The deceased's stated wishes",
+            "pulls_toward": "Whatever the will or any documented instruction says, which may or may not reflect equal shares"
+          }
+        ],
+        "facts_that_matter": [
+          "What the will says, if one exists — it may already settle the split or address the caregiver sibling directly",
+          "Whether the caregiving sibling paid rent, lived rent-free, or had a formal arrangement that was documented",
+          "Whether any costs the caregiver sibling covered out of pocket were tracked and can be presented",
+          "The house's current market value, which affects how large any adjustment would actually be in dollar terms",
+          "Whether all three siblings have already agreed on a process for dividing the estate or are still at the starting point"
+        ],
+        "needs_professional_confirmation": [
+          "Whether the caregiving sibling has any legal claim to a larger share under your jurisdiction's laws",
+          "Whether informal caregiving expenses can be submitted as a debt of the estate before distribution",
+          "Tax implications of each sibling's share, particularly if one sibling takes the property instead of cash",
+          "Whether the executor has any obligation or authority to adjust the split for contribution"
+        ],
+        "conversation": {
+          "opener": "Before we talk about how to divide the house, I think we should put everything on the table — including what [sibling's name] took on by living there and providing care. I want to make sure we are all working from the same picture.",
+          "what_to_clarify": [
+            "Does anyone know if Mum left written instructions about the house or the caregiving arrangement?",
+            "Are there costs the caregiver sibling paid directly that should be accounted for as part of the estate?",
+            "Are we all open to getting an estate lawyer or executor involved to help structure this fairly?",
+            "What does each of us actually need from this — to sell, to keep the property, or something else?"
           ]
-        },
-        "the_dropout": {
-          "applicable": true,
-          "fair_solution": "Casey didn't drop out but simply paid nothing — having attended and used all shared expenses, they owe their full fair share of £150 with no reduction, as the cabin, groceries, and fuel costs were all incurred on their behalf.",
-          "how_to_tell_them": "Hey Casey, great weekend! We've worked out the costs — cabin, food, and fuel came to £600 total, so it's £150 each; could you send £120 to Alex and £30 to Sam whenever you get a chance? 🙏"
-        },
-        "next_event_tip": "Set up a shared Splitwise or Monzo Group Tab at the very start of the trip so every expense is logged in real time and everyone can see the running total before anyone gets home."
+        }
       }
     }
   ]

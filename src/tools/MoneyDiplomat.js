@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { toolTagline } from '../utils/toolTagline';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { Badge } from '../components/Badge';
 import { useTranslation } from '../i18n/useTranslation';
@@ -33,42 +34,37 @@ const EXAMPLES = [
     salaryFields: null,
   },
 ];
+// Grouped rather than one wall of eighteen. The groups are the promise: this is
+// a tool for money decisions that involve other people, not "everything for
+// everyone".
+const SITUATION_GROUPS = [
+  { labelKey: 'md_grp_everyday', ids: ['tip', 'split', 'venmo', 'gift', 'dining', 'group'] },
+  { labelKey: 'md_grp_relationships', ids: ['date', 'roommate', 'family', 'lend', 'subs'] },
+  { labelKey: 'md_grp_bigger', ids: ['salary', 'afford', 'work', 'inheritance', 'charity'] },
+  { labelKey: 'md_grp_culture', ids: ['travel', 'cultural'] },
+];
 const SITUATIONS = [
   { id: 'tip', icon: '🧾', labelKey: 'md_sit_tip_label', descKey: 'md_sit_tip_desc' },
   { id: 'split', icon: '🍕', labelKey: 'md_sit_split_label', descKey: 'md_sit_split_desc' },
   { id: 'venmo', icon: '💸', labelKey: 'md_sit_venmo_label', descKey: 'md_sit_venmo_desc' },
-  { id: 'date', icon: '💘', labelKey: 'md_sit_date_label', descKey: 'md_sit_date_desc' },
   { id: 'gift', icon: '🎁', labelKey: 'md_sit_gift_label', descKey: 'md_sit_gift_desc' },
-  { id: 'roommate', icon: '🏠', labelKey: 'md_sit_roommate_label', descKey: 'md_sit_roommate_desc' },
-  { id: 'subs', icon: '📺', labelKey: 'md_sit_subs_label', descKey: 'md_sit_subs_desc' },
-  { id: 'family', icon: '👨‍👩‍👧', labelKey: 'md_sit_family_label', descKey: 'md_sit_family_desc' },
-  { id: 'inheritance', icon: '📜', labelKey: 'md_sit_inheritance_label', descKey: 'md_sit_inheritance_desc' },
   { id: 'dining', icon: '🍽️', labelKey: 'md_sit_dining_label', descKey: 'md_sit_dining_desc' },
   { id: 'group', icon: '🎫', labelKey: 'md_sit_group_label', descKey: 'md_sit_group_desc' },
+  { id: 'date', icon: '💘', labelKey: 'md_sit_date_label', descKey: 'md_sit_date_desc' },
+  { id: 'roommate', icon: '🏠', labelKey: 'md_sit_roommate_label', descKey: 'md_sit_roommate_desc' },
+  { id: 'family', icon: '👨‍👩‍👧', labelKey: 'md_sit_family_label', descKey: 'md_sit_family_desc' },
   { id: 'lend', icon: '🤝', labelKey: 'md_sit_lend_label', descKey: 'md_sit_lend_desc' },
+  { id: 'subs', icon: '📺', labelKey: 'md_sit_subs_label', descKey: 'md_sit_subs_desc' },
   { id: 'salary', icon: '💰', labelKey: 'md_sit_salary_label', descKey: 'md_sit_salary_desc' },
   { id: 'afford', icon: '🧮', labelKey: 'md_sit_afford_label', descKey: 'md_sit_afford_desc' },
   { id: 'work', icon: '💼', labelKey: 'md_sit_work_label', descKey: 'md_sit_work_desc' },
+  { id: 'inheritance', icon: '📜', labelKey: 'md_sit_inheritance_label', descKey: 'md_sit_inheritance_desc' },
   { id: 'charity', icon: '🎗️', labelKey: 'md_sit_charity_label', descKey: 'md_sit_charity_desc' },
   { id: 'travel', icon: '🌍', labelKey: 'md_sit_travel_label', descKey: 'md_sit_travel_desc' },
   { id: 'cultural', icon: '🌐', labelKey: 'md_sit_cultural_label', descKey: 'md_sit_cultural_desc' },
 ];
 
 // Option arrays: `value` is the backend enum (kept English); labelKey is the displayed translation.
-const COUNTRY_OPTS = [
-  { value: 'USA', labelKey: 'md_country_usa' },
-  { value: 'Canada', labelKey: 'md_country_canada' },
-  { value: 'UK', labelKey: 'md_country_uk' },
-  { value: 'Australia', labelKey: 'md_country_australia' },
-  { value: 'Germany', labelKey: 'md_country_germany' },
-  { value: 'France', labelKey: 'md_country_france' },
-  { value: 'Japan', labelKey: 'md_country_japan' },
-  { value: 'South Korea', labelKey: 'md_country_south_korea' },
-  { value: 'India', labelKey: 'md_country_india' },
-  { value: 'Brazil', labelKey: 'md_country_brazil' },
-  { value: 'Mexico', labelKey: 'md_country_mexico' },
-  { value: 'Other', labelKey: 'md_country_other' },
-];
 const TIP_COUNTRY_OPTS = [
   { value: 'USA', labelKey: 'md_country_usa' },
   { value: 'Canada', labelKey: 'md_country_canada' },
@@ -165,6 +161,210 @@ const CHARITY_TYPE_OPTS = [
 
 // ── Sub-components (module scope — must NOT be inside MoneyDiplomat to preserve focus) ──
 
+// ════════════════════════════════════════════════════════════
+// GROUNDED RESULT — the shared renderer for the twelve routes rewritten in the
+// 2026-09-04 pass.
+//
+// Each of those used to have its own block reading its own bespoke fields, and
+// every one of them printed something the tool could not know: a confidence
+// percentage, a resentment risk, a culture-clash score, "the real issue
+// underneath". The new schemas are all the same shape — an optional headline
+// verdict, then labelled prose and lists — so they share one renderer and a
+// map. A field the route did not return simply does not appear; there is no
+// placeholder, because an empty section reads as a missing answer.
+// ════════════════════════════════════════════════════════════
+const SECTIONS = {
+  tip:   { head: null, body: [
+    ['practical_answer', 'md_g_practical_answer', 'text'],
+    ['math', 'md_g_math', 'math'],
+    ['why', 'md_g_why', 'list'],
+    ['check_first', 'md_g_check_first', 'list'],
+  ]},
+  venmo: { head: 'verdict', body: [
+    ['why', 'md_g_why', 'list'],
+    ['what_matters', 'md_g_what_matters', 'list'],
+    ['unknowns', 'md_g_unknowns', 'list'],
+    ['script', 'md_g_script', 'quote'],
+    ['if_they_push_back', 'md_g_if_push', 'text'],
+  ]},
+  gift:  { head: 'range', body: [
+    ['why_this_range', 'md_g_why_range', 'list'],
+    ['budget_check', 'md_g_budget_check', 'text'],
+    ['social_context', 'md_g_social_context', 'text'],
+    ['if_you_want_to_spend_less', 'md_g_spend_less', 'text'],
+    ['if_you_want_to_spend_more', 'md_g_spend_more', 'text'],
+  ]},
+  family: { head: null, body: [
+    ['practical_issue', 'md_g_practical_issue', 'text'],
+    ['what_is_known', 'md_g_known', 'list'],
+    ['what_needs_clarifying', 'md_g_clarify', 'list'],
+    ['recommendation', 'md_g_recommendation', 'text'],
+    ['conversation', 'md_g_conversation', 'conversation'],
+  ]},
+  lend:  { head: 'recommendation', body: [
+    ['why', 'md_g_why', 'list'],
+    ['what_is_known', 'md_g_known', 'list'],
+    ['what_is_not_known', 'md_g_not_known', 'list'],
+    ['before_you_decide', 'md_g_before_decide', 'list'],
+    ['existing_debt', 'md_g_existing_debt', 'existing_debt'],
+    ['if_you_lend', 'md_g_if_lend', 'branch'],
+    ['if_you_do_not_lend', 'md_g_if_not_lend', 'branch'],
+  ]},
+  travel: { head: null, body: [
+    ['what_you_have_described', 'md_g_described', 'list'],
+    ['possible_mismatch', 'md_g_mismatch', 'text'],
+    ['what_not_to_assume', 'md_g_not_assume', 'list'],
+    ['questions_to_make_explicit', 'md_g_questions', 'list'],
+    ['bridge', 'md_g_bridge', 'text'],
+    ['script', 'md_g_script', 'quote'],
+  ]},
+  cultural: { head: null, body: [
+    ['what_you_have_described', 'md_g_described', 'list'],
+    ['possible_mismatch', 'md_g_mismatch', 'text'],
+    ['what_not_to_assume', 'md_g_not_assume', 'list'],
+    ['questions_to_make_explicit', 'md_g_questions', 'list'],
+    ['bridge', 'md_g_bridge', 'text'],
+    ['script', 'md_g_script', 'quote'],
+  ]},
+  date:  { head: null, body: [
+    ['options', 'md_g_options', 'options'],
+    ['what_you_told_me', 'md_g_you_told_me', 'list'],
+    ['what_is_not_established', 'md_g_not_established', 'list'],
+    ['if_it_comes_up_awkwardly', 'md_g_awkward', 'text'],
+  ]},
+  salary: { head: null, body: [
+    ['what_you_can_make_the_case_from', 'md_g_case_from', 'list'],
+    ['what_you_still_need_to_know', 'md_g_still_need', 'list'],
+    ['ask', 'md_g_ask', 'ask'],
+    ['if_they_push_back', 'md_g_pushback', 'pairs'],
+    ['other_terms_to_consider', 'md_g_other_terms', 'list'],
+  ]},
+  afford: { head: 'gut_check', body: [
+    ['what_the_numbers_show', 'md_g_numbers_show', 'list'],
+    ['what_is_missing', 'md_g_missing', 'list'],
+    ['questions_to_check', 'md_g_questions_check', 'list'],
+    ['low_regret_next_step', 'md_g_low_regret', 'text'],
+  ]},
+  inheritance: { head: null, body: [
+    ['arrangement_considered', 'md_g_arrangement', 'text'],
+    ['principles_in_tension', 'md_g_principles', 'principles'],
+    ['facts_that_matter', 'md_g_facts_matter', 'list'],
+    ['needs_professional_confirmation', 'md_g_professional', 'list'],
+    ['conversation', 'md_g_conversation', 'conversation'],
+  ]},
+  charity: { head: 'recommendation', body: [
+    ['why', 'md_g_why', 'list'],
+    ['amount_guidance', 'md_g_amount_guidance', 'text'],
+    ['tax_note', 'md_g_tax_note', 'text'],
+    ['script', 'md_g_script', 'quote'],
+    ['if_they_push', 'md_g_if_push', 'text'],
+  ]},
+};
+
+// Only the three pinned enums colour their headline. Anything else is printed
+// as it came back, never colour-coded on a guess.
+const HEAD_TONE = {
+  'Lend': 'success', 'Do not lend yet': 'warning', 'Lend only under conditions': 'info',
+  'Request it': 'success', 'Let it go': 'info', 'Talk first': 'warning',
+  'Looks manageable': 'success', 'Worth a closer look': 'warning', 'Looks difficult': 'danger',
+  'Not enough to tell': 'info', 'Not enough information': 'info',
+};
+
+function GroundedResult({ mode, results, c, t }) {
+  const spec = SECTIONS[mode];
+  if (!spec || !results) return null;
+  const head = spec.head ? results[spec.head] : null;
+
+  const Label = ({ k }) => <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t(k)}</p>;
+  const List = ({ items }) => <>{items.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {x}</p>)}</>;
+
+  const render = (key, labelKey, kind) => {
+    const v = results[key];
+    if (v == null || v === '' || (Array.isArray(v) && v.length === 0)) return null;
+    const inner = (() => {
+      switch (kind) {
+        case 'list':  return <List items={v} />;
+        case 'text':  return <p className={`text-xs ${c.textSecondary}`}>{v}</p>;
+        case 'quote': return <div className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{v}</p></div>;
+        case 'math':
+          return <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[['md_g_bill', v.bill], ['md_g_pct', v.percentage_used], ['md_g_tip', v.tip], ['md_g_total', v.total]]
+              .filter(([, x]) => x).map(([lk, x], i) => (
+              <div key={i} className={`${c.cardAlt} border rounded-lg p-2 text-center`}>
+                <p className={`text-sm font-black ${c.text}`}>{x}</p>
+                <p className={`text-[9px] ${c.textMuteded}`}>{t(lk)}</p>
+              </div>
+            ))}
+          </div>;
+        case 'options':
+          return <>{v.map((o, i) => (
+            <div key={i} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}>
+              <p className={`text-xs font-bold ${c.text}`}>{o.option}</p>
+              {o.how_it_works && <p className={`text-xs ${c.textSecondary} mt-1`}>{o.how_it_works}</p>}
+              {o.how_each_option_may_feel_or_function && <p className={`text-[11px] ${c.textMuteded} mt-1`}>{o.how_each_option_may_feel_or_function}</p>}
+              {o.script && <p className={`text-xs ${c.textSecondary} mt-1 italic`}>{o.script}</p>}
+            </div>
+          ))}</>;
+        case 'principles':
+          return <>{v.map((p, i) => (
+            <div key={i} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}>
+              <p className={`text-xs font-bold ${c.text}`}>{p.principle}</p>
+              {p.pulls_toward && <p className={`text-xs ${c.textSecondary} mt-1`}>{p.pulls_toward}</p>}
+            </div>
+          ))}</>;
+        case 'pairs':
+          return <>{v.map((p, i) => (
+            <div key={i} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}>
+              <p className={`text-xs font-bold ${c.text}`}>{p.situation}</p>
+              {p.response && <p className={`text-xs ${c.textSecondary} mt-1`}>{p.response}</p>}
+            </div>
+          ))}</>;
+        case 'ask':
+          return <div className={`${c.cardAlt} border rounded-lg p-3 space-y-1`}>
+            {v.amount && <p className={`text-lg font-black ${c.text}`}>{v.amount}</p>}
+            {v.basis && <p className={`text-xs ${c.textSecondary}`}>{v.basis}</p>}
+            {v.script && <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap mt-1`}>{v.script}</p>}
+          </div>;
+        case 'branch':
+          return <div className={`${c.cardAlt} border rounded-lg p-3 space-y-1`}>
+            {v.amount_guidance && <p className={`text-xs ${c.textSecondary}`}>{v.amount_guidance}</p>}
+            {v.terms_to_clarify?.length > 0 && <List items={v.terms_to_clarify} />}
+            {v.script && <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{v.script}</p>}
+            {v.if_they_push && <p className={`text-[11px] ${c.textMuteded} mt-1`}>{v.if_they_push}</p>}
+          </div>;
+        case 'existing_debt':
+          if (!v.next_step && !v.script) return null;
+          return <div className={`${c.warning} border rounded-lg p-3 space-y-1`}>
+            {v.next_step && <p className="text-xs">{v.next_step}</p>}
+            {v.script && <p className="text-xs italic">{v.script}</p>}
+          </div>;
+        case 'conversation':
+          return <div className={`${c.cardAlt} border rounded-lg p-3 space-y-2`}>
+            {v.opener && <p className={`text-xs ${c.textSecondary}`}>{v.opener}</p>}
+            {v.key_points?.length > 0 && <List items={v.key_points} />}
+            {v.what_to_clarify?.length > 0 && <List items={v.what_to_clarify} />}
+            {v.boundary_if_needed && <p className={`text-xs ${c.textSecondary}`}>{v.boundary_if_needed}</p>}
+            {v.if_they_disagree && <p className={`text-[11px] ${c.textMuteded}`}>{v.if_they_disagree}</p>}
+          </div>;
+        default: return null;
+      }
+    })();
+    if (!inner) return null;
+    return <div key={key} className={`${c.card} border rounded-xl p-4`}><Label k={labelKey} />{inner}</div>;
+  };
+
+  return (
+    <div className="space-y-4">
+      {head && (
+        <div className={`${c.card} border-2 rounded-xl p-5 text-center`}>
+          <Badge c={c} type={HEAD_TONE[head] || 'info'}>{head}</Badge>
+        </div>
+      )}
+      {spec.body.map(([k, lk, kind]) => render(k, lk, kind))}
+    </div>
+  );
+}
+
 const MoneyDiplomat = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -220,7 +420,11 @@ const MoneyDiplomat = ({ tool }) => {
   const [activeType, setActiveType] = useState(null);
   const [situation, setSituation] = useState('');
   const [error, setError] = useState('');
-  const [results, setResults] = useState(null);
+  // -v2: twelve of the result shapes changed in the 2026-09-04 rewrite, so a
+  // persisted v1 answer would render into fields that no longer exist.
+  const [results, setResults] = usePersistentState('money-diplomat-results-v2', null);
+  // Named so it does not read as the audit's results-block split; see S5.5.
+  const hasAnswer = !!results;
 
   // ─── State: Type-specific fields ───
   const [tipFields, setTipFields] = useState({ country: 'USA', serviceType: 'restaurant', billAmount: '', partySize: '' });
@@ -251,7 +455,6 @@ const MoneyDiplomat = ({ tool }) => {
   const [nudgeLoading, setNudgeLoading] = useState(false);
 
   // ─── State: Context Memory (persistent profile) ───
-  const [showProfileSetup, setShowProfileSetup] = useState(false);
 
   // ─── State: Quick Mode ───
   const [quickMode, setQuickMode] = useState(false);
@@ -280,17 +483,11 @@ const MoneyDiplomat = ({ tool }) => {
   const [simLoading, setSimLoading] = useState(false);
 
   // ─── State: Recap & Trends ───
-  const [recapData, setRecapData] = useState(null);
-  const [recapLoading, setRecapLoading] = useState(false);
-  const [showTrends, setShowTrends] = useState(false);
 
   // ─── State: Profile ───
-  const [profileData, setProfileData] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
 
   // ─── Persistent state ───
   const [debts, setDebts] = usePersistentState('money-diplomat-debts', []);
-  const [userProfile, setUserProfile] = usePersistentState('money-diplomat-profile-ctx', { incomeLevel: '', culture: '', relationshipStatus: '', country: 'USA' });
   const [sessionHistory, setSessionHistory] = usePersistentState('money-diplomat-history', []);
 
   const lang = navigator.language || 'en';
@@ -298,8 +495,6 @@ const MoneyDiplomat = ({ tool }) => {
   // ─── Color config ───
 
   // ─── Handlers ───
-  const profileCtx = [userProfile.incomeLevel, userProfile.culture, userProfile.relationshipStatus].filter(Boolean).join(', ');
-  const enrichSituation = (text) => profileCtx ? `${text} [Context: ${profileCtx}]` : text;
 
   // Reveal the answer when it arrives: frame the tool if its header fits,
   // otherwise put the answer on top. Focus moves either way.
@@ -309,20 +504,20 @@ const MoneyDiplomat = ({ tool }) => {
   const handleSubmit = async () => {
     if (!activeType) return;
     setError(''); setResults(null);
-    const sit = enrichSituation(situation.trim());
+    const sit = situation.trim();
 
     const payloads = {
       tip: { ...tipFields, situation: sit, userLanguage: lang },
       split: { ...splitFields, situation: sit, userLanguage: lang },
       venmo: { ...venmoFields, situation: sit, userLanguage: lang },
-      gift: { ...giftFields, situation: sit || enrichSituation(`${giftFields.occasion} for ${giftFields.relationship}`), userLanguage: lang },
+      gift: { ...giftFields, situation: sit || `${giftFields.occasion} for ${giftFields.relationship}`, userLanguage: lang },
       roommate: { ...roommateFields, situation: sit, userLanguage: lang },
       family: { ...familyFields, situation: sit, userLanguage: lang },
       dining: { ...diningFields, situation: sit, userLanguage: lang },
       group: { ...groupFields, situation: sit, userLanguage: lang },
       lend: { ...lendFields, situation: sit, userLanguage: lang },
       work: { ...workFields, situation: sit, userLanguage: lang },
-      travel: { ...travelFields, situation: sit || enrichSituation(`Traveling to ${travelFields.destination}`), destination: travelFields.destination, userLanguage: lang },
+      travel: { ...travelFields, situation: sit || `Traveling to ${travelFields.destination}`, destination: travelFields.destination, userLanguage: lang },
       date: { ...dateFields, situation: sit, userLanguage: lang },
       subs: { ...subsFields, situation: sit, userLanguage: lang },
       salary: { ...salaryFields, situation: sit, userLanguage: lang },
@@ -356,14 +551,8 @@ const MoneyDiplomat = ({ tool }) => {
     setResults(null);
   }, [setActiveType, setSituation, setSalaryFields, setResults, t, sym]);
 
-  const handleProfile = async () => {
-    setError('');
-    try {
-      setProfileData(await callToolEndpoint('money-diplomat-profile', { sessionHistory, userLanguage: lang }));
-    } catch (err) { setError(err.message); }
-  };
 
-  const clearResults = () => { setResults(null); setSituation(''); setError(''); setProfileData(null); setNudgeData(null); };
+  const clearResults = () => { setResults(null); setSituation(''); setError(''); setNudgeData(null); };
 
   const addDebt = () => {
     if (!newDebt.person.trim() || !newDebt.amount) return;
@@ -389,7 +578,7 @@ const MoneyDiplomat = ({ tool }) => {
     if (!simSituation.trim()) return;
     setSimLoading(true); setSimHistory([]); setSimPrompt(null); setSimResponse('');
     try {
-      const data = await callToolEndpoint('money-diplomat-simulate', { situation: simSituation.trim(), otherPerson: simOtherPerson.trim() || null, userProfile, userLanguage: lang });
+      const data = await callToolEndpoint('money-diplomat-simulate', { situation: simSituation.trim(), otherPerson: simOtherPerson.trim() || null, userLanguage: lang });
       setSimPrompt(data);
     } catch (err) { setError(err.message); }
     setSimLoading(false);
@@ -402,7 +591,7 @@ const MoneyDiplomat = ({ tool }) => {
       const newHist = [...simHistory, { them: simPrompt?.their_line || simSituation, you: simResponse.trim() }];
       const data = await callToolEndpoint('money-diplomat-simulate', {
         situation: simSituation.trim(), otherPerson: simOtherPerson.trim() || null,
-        userResponse: simResponse.trim(), conversationHistory: newHist, userProfile, userLanguage: lang,
+        userResponse: simResponse.trim(), conversationHistory: newHist, userLanguage: lang,
       });
       setSimHistory(newHist.map((h, i) => i === newHist.length - 1 ? { ...h, eval: data.evaluation } : h));
       if (data.is_resolved) { setSimPrompt({ ...data, resolved: true }); }
@@ -412,25 +601,7 @@ const MoneyDiplomat = ({ tool }) => {
     setSimLoading(false);
   };
 
-  // ─── Recap handler ───
-  const handleRecap = async () => {
-    setRecapLoading(true);
-    try { setRecapData(await callToolEndpoint('money-diplomat-recap', { sessionHistory, debts, userProfile, userLanguage: lang })); }
-    catch (err) { setError(err.message); }
-    setRecapLoading(false);
-  };
 
-  // ─── Trend computations (from sessionHistory) ───
-  const trends = (() => {
-    if (sessionHistory.length < 2) return null;
-    const typeCounts = {};
-    sessionHistory.forEach(h => { typeCounts[h.type] = (typeCounts[h.type] || 0) + 1; });
-    const sorted = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
-    const totalOwed = debts.filter(d => !d.settled).reduce((s, d) => s + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0);
-    const totalSettled = debts.filter(d => d.settled).reduce((s, d) => s + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0);
-    const thisMonth = sessionHistory.filter(h => new Date(h.date).getMonth() === new Date().getMonth()).length;
-    return { typeCounts: sorted, totalOwed, totalSettled, thisMonth, total: sessionHistory.length };
-  })();
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -463,6 +634,246 @@ const MoneyDiplomat = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   }, [loading]);
 
+    // Results live in a helper, not inline, because the S5.5 cross-ref check
+    // splits a tool file on the {renderResults()} call to tell "seen before
+    // submitting" from "seen after". Rendering inline gave it nothing to split
+    // on, so the post-result half could never pass however many links were there.
+    const renderResults = () => (
+      <div ref={revealRef} className="scroll-mt-24 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
+            <span>{SITUATIONS.find(s => s.id === activeType)?.icon}</span>
+            {sitLabel(activeType)}
+          </h3>
+          <div className="flex items-center gap-2">
+            <button onClick={clearResults} className={`text-xs ${c.textSecondary} underline`}>{t('md_new_situation')}</button>
+          </div>
+        </div>
+
+        {/* ─── TIP ADVISOR RESULTS ─── */}
+        {activeType === 'tip' && results?.practical_answer && <GroundedResult mode="tip" results={results} c={c} t={t} />}
+        {activeType === 'split' && results?.options && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            {results?.the_awkward_part && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_awkward_part}</p>}
+            {results?.options?.map((opt, oi) => (
+              <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? (isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50') : `${c.border} ${c.cardAlt}`}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className={`text-sm font-bold ${c.text}`}>{opt.method}</p>
+                  <Badge c={c} type={opt.fairness_score >= 80 ? 'success' : 'warning'}>{t('md_res_fam_fair', { score: opt.fairness_score })}</Badge>
+                  <Badge c={c} type={opt.social_score >= 80 ? 'success' : 'info'}>{t('md_res_split_social', { score: opt.social_score })}</Badge>
+                </div>
+                {opt.breakdown?.map((b, bi) => (
+                  <div key={bi} className="flex items-center justify-between text-xs py-1">
+                    <span className={c.text}>{b.person}</span>
+                    <span className={`font-bold ${c.text}`}>{b.amount}</span>
+                  </div>
+                ))}
+                {opt.total_with_tip && (
+                  <div className={`flex items-center justify-between text-xs py-1 border-t ${c.border} mt-1`}>
+                    <span className={`font-semibold ${c.textSecondary}`}>{t('md_res_split_total_with_tip')}</span>
+                    <span className={`font-black ${c.textSecondary}`}>{opt.total_with_tip}</span>
+                  </div>
+                )}
+                <p className={`text-[10px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
+              </div>
+            ))}
+            {results?.recommended && <p className={`text-sm ${c.textSecondary} font-semibold`}>👉 {results?.recommended}</p>}
+            {results?.tip_recommendation && (
+              <div className={`${c.cardAlt} border rounded-lg p-3`}>
+                <p className="text-[10px] font-bold mb-1">{t('md_res_split_tip')}</p>
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-bold ${c.text}`}>{results?.tip_recommendation?.percentage}%</span>
+                  <span className={`text-sm font-black ${c.textSecondary}`}>{results?.tip_recommendation?.total_tip}</span>
+                </div>
+                {results?.tip_recommendation?.note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results?.tip_recommendation?.note}</p>}
+              </div>
+            )}
+            {results?.how_to_bring_it_up && (
+              <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_split_what_to_say')}</p>
+                <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.how_to_bring_it_up}"</p>
+              </div>
+            )}
+            {results?.next_time && <p className={`text-xs ${c.textMuteded}`}>{t('md_res_split_next_time', { tip: results?.next_time })}</p>}
+          </div>
+        )}
+
+        {/* ─── VENMO VERDICT RESULTS ─── */}
+        {activeType === 'venmo' && results?.verdict && <GroundedResult mode="venmo" results={results} c={c} t={t} />}
+        {activeType === 'gift' && results?.range && <GroundedResult mode="gift" results={results} c={c} t={t} />}
+        {activeType === 'roommate' && results?.fair_split && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            {results?.fair_split?.map((fs, i) => (
+              <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
+                <div>
+                  <p className={`text-sm font-bold ${c.text}`}>{fs.person}</p>
+                  <p className={`text-[10px] ${c.textMuteded}`}>{fs.percentage}%</p>
+                </div>
+                <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
+              </div>
+            ))}
+            {results?.methodology && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_room_methodology', { methodology: results?.methodology })}</p>}
+            {results?.factors_considered?.map((f, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs">
+                <Badge c={c} type="info">{f.impact}</Badge>
+                <span className={c.text}>{f.factor}</span>
+              </div>
+            ))}
+            {results?.the_conversation && (
+              <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_room_how')}</p>
+                <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.the_conversation?.opener}"</p>
+                {results?.the_conversation?.if_pushback && <p className={`text-[10px] ${c.textMuteded} mt-2`}>{t('md_res_room_pushback', { pushback: results?.the_conversation?.if_pushback })}</p>}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ─── FAMILY MONEY RESULTS ─── */}
+        {activeType === 'family' && results?.practical_issue && <GroundedResult mode="family" results={results} c={c} t={t} />}
+        {activeType === 'dining' && results?.pre_game && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            {results?.who_pays && (
+              <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_din_who_pays')}</p>
+                <p className={`text-sm ${c.text} mt-1`}>{results?.who_pays?.expectation}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results?.who_pays?.reasoning}</p>
+                <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{results?.who_pays?.the_dance}</p>
+              </div>
+            )}
+            <div className="space-y-2">
+              <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_din_strategy')}</p>
+              <p className={`text-xs ${c.text}`}>🍽️ {results?.pre_game?.restaurant_strategy}</p>
+              <p className={`text-xs ${c.text}`}>💳 {results?.pre_game?.splitting_strategy}</p>
+              <p className={`text-xs ${c.text}`}>📋 {results?.pre_game?.ordering_strategy}</p>
+            </div>
+            {results?.scenarios?.map((s, i) => (
+              <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
+                <p className={`font-bold ${c.text}`}>{t('md_res_din_if', { condition: s.if })}</p>
+                <p className={isDark ? 'text-green-300' : 'text-green-700'}>{t('md_res_din_say', { line: s.then })}</p>
+                <p className={isDark ? 'text-red-300' : 'text-red-700'}>{t('md_res_din_avoid', { line: s.avoid })}</p>
+              </div>
+            ))}
+            {results?.budget_moves && (
+              <div className={`${c.warning} border rounded-lg p-3 space-y-1`}>
+                <p className="text-[10px] font-bold">{t('md_res_din_budget')}</p>
+                <p className="text-xs">{results?.budget_moves?.if_over_budget}</p>
+                {results?.budget_moves?.if_pressured && <p className="text-[10px]">{t('md_res_din_if_pressured', { response: results?.budget_moves?.if_pressured })}</p>}
+              </div>
+            )}
+            {results?.pro_tip && <p className={`text-xs ${c.textSecondary} italic`}>💡 {results?.pro_tip}</p>}
+          </div>
+        )}
+
+        {/* ─── GROUP EVENT RESULTS ─── */}
+        {activeType === 'group' && results?.settlement && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            {results?.settlement?.map((s, i) => (
+              <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
+                <div>
+                  <p className={`text-sm font-bold ${c.text}`}>{s.person}</p>
+                  <p className={`text-[10px] ${c.textMuteded}`}>{t('md_res_grp_paid_fair', { paid: s.paid_so_far, fair: s.fair_share })}</p>
+                </div>
+                <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (isDark ? 'text-red-300' : 'text-red-700') : (isDark ? 'text-green-300' : 'text-green-700')}`}>{s.owes_or_owed}</p>
+              </div>
+            ))}
+            {results?.simplification?.transactions?.length > 0 && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('md_res_grp_simplified', { count: results?.simplification?.transactions.length })}</p>
+                {results?.simplification?.transactions.map((txn, i) => (
+                  <p key={i} className={`text-xs ${c.text}`}>{txn.from} → {txn.to}: <span className="font-bold">{txn.amount}</span> ({txn.method})</p>
+                ))}
+              </div>
+            )}
+            {results?.the_dropout?.applicable && (
+              <div className={`${c.warning} border rounded-lg p-3`}>
+                <p className="text-[10px] font-bold">{t('md_res_grp_dropout')}</p>
+                <p className="text-xs mt-1">{results?.the_dropout?.fair_solution}</p>
+                {results?.the_dropout?.how_to_tell_them && <>
+                  <p className="text-xs italic mt-1">"{results?.the_dropout?.how_to_tell_them}"</p>
+                </>}
+              </div>
+            )}
+            {results?.next_event_tip && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_grp_next', { tip: results?.next_event_tip })}</p>}
+          </div>
+        )}
+
+        {/* ─── LENDING RESULTS ─── */}
+        {activeType === 'lend' && results?.recommendation && <GroundedResult mode="lend" results={results} c={c} t={t} />}
+        {activeType === 'work' && results?.assessment && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge c={c} type="info">{results?.assessment?.type}</Badge>
+              <Badge c={c} type={results?.assessment?.pressure_level === 'Heavy' ? 'danger' : results?.assessment?.pressure_level === 'Moderate' ? 'warning' : 'success'}>{t('md_res_work_pressure', { level: results?.assessment?.pressure_level })}</Badge>
+              {results?.assessment?.career_risk !== 'None' && <Badge c={c} type="warning">{t('md_res_work_career_risk', { risk: results?.assessment?.career_risk })}</Badge>}
+            </div>
+            {results?.recommendation && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                <p className={`text-sm font-bold ${c.text}`}>{results?.recommendation?.action}</p>
+                {results?.recommendation?.amount && <p className={`text-xs ${c.textSecondary} mt-1`}>{t('md_res_work_amount', { amount: results?.recommendation?.amount })}</p>}
+                <p className={`text-xs ${c.textSecondary}`}>{results?.recommendation?.reasoning}</p>
+              </div>
+            )}
+            {results?.if_opting_out?.possible && (
+              <div className={`${c.cardAlt} rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_work_optout')}</p>
+                <p className={`text-xs ${c.text} mt-1`}>{results?.if_opting_out?.how}</p>
+              </div>
+            )}
+            {results?.scripts?.map((s, i) => (
+              <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
+                <p className={`font-bold ${c.text}`}>{s.scenario}</p>
+                <p className={isDark ? 'text-green-300' : 'text-green-700'}>✅ "{s.say_this}"</p>
+                <p className={isDark ? 'text-red-300' : 'text-red-700'}>❌ "{s.not_this}"</p>
+              </div>
+            ))}
+            {results?.the_unwritten_rule && <p className={`text-xs ${c.text} italic`}>{t('md_res_work_unwritten', { rule: results?.the_unwritten_rule })}</p>}
+          </div>
+        )}
+
+        {/* ─── TRAVEL MONEY RESULTS ─── */}
+        {activeType === 'travel' && results?.bridge && <GroundedResult mode="travel" results={results} c={c} t={t} />}
+        {activeType === 'date' && results?.options && <GroundedResult mode="date" results={results} c={c} t={t} />}
+        {activeType === 'subs' && results?.fair_split && (
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+            {results?.the_wrinkle && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_wrinkle}</p>}
+            {results?.fair_split?.map((fs, i) => (
+              <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
+                <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[10px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
+                <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
+              </div>
+            ))}
+            {results?.manager_premium?.applicable && (
+              <p className={`text-xs ${c.textSecondary}`}>{t('md_res_subs_manager', { discount: results?.manager_premium?.discount, reasoning: results?.manager_premium?.reasoning })}</p>
+            )}
+            {results?.if_leaving && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_subs_if_leaving')}</p>
+                <p className={`text-sm ${c.text} italic mt-1`}>"{results?.if_leaving?.how_to_say_it}"</p>
+              </div>
+            )}
+            {results?.alternatives && <p className={`text-xs ${c.textSecondary}`}>🤔 {results?.alternatives}</p>}
+          </div>
+        )}
+
+        {/* ─── SALARY RESULTS ─── */}
+        {activeType === 'salary' && results?.ask && <GroundedResult mode="salary" results={results} c={c} t={t} />}
+        {activeType === 'afford' && results?.gut_check && <GroundedResult mode="afford" results={results} c={c} t={t} />}
+        {activeType === 'inheritance' && results?.arrangement_considered && <GroundedResult mode="inheritance" results={results} c={c} t={t} />}
+        {activeType === 'cultural' && results?.bridge && <GroundedResult mode="cultural" results={results} c={c} t={t} />}
+        {activeType === 'charity' && results?.recommendation && <GroundedResult mode="charity" results={results} c={c} t={t} />}
+
+        {/* Cross-refs */}
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('md_related_tools')}</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('md_link_velvet')}</a>
+            <a href="/BillRescue" className={`text-xs ${linkStyle}`}>{t('md_link_bill')}</a>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -475,7 +886,9 @@ const MoneyDiplomat = ({ tool }) => {
                 <h2 className={`text-xl font-bold ${c.text}`}>
                   <span className="me-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
                 </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The right number for every money moment'}</p>
+                {/* The title line above already prints the icon; the catalog tagline now
+                    opens with one too, so it would stack twice. */}
+                <p className={`text-sm ${c.textSecondary}`}>{toolTagline(tool?.tagline ?? t('md_tagline'))}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
@@ -498,115 +911,22 @@ const MoneyDiplomat = ({ tool }) => {
             <button onClick={() => setQuickMode(!quickMode)} className={`text-xs px-3 py-1 rounded-full border ${quickMode ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               {t('md_pill_quick')}
             </button>
-            {sessionHistory.length >= 3 && (
-              <button onClick={() => setShowTrends(!showTrends)} className={`text-xs px-3 py-1 rounded-full border ${showTrends ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-                {t('md_pill_trends')}
-              </button>
-            )}
-            <button onClick={() => setShowProfileSetup(!showProfileSetup)} className={`text-xs px-3 py-1 rounded-full border ${profileCtx ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-              {profileCtx ? t('md_pill_profile_set') : t('md_pill_profile_unset')}
-            </button>
-            {sessionHistory.length >= 3 && (
-              <button onClick={() => { setShowProfile(!showProfile); if (!profileData) handleProfile(); }} className={`text-xs px-3 py-1 rounded-full border ${showProfile ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-                {t('md_pill_money_style')}
-              </button>
-            )}
+
+            {/* Set Profile and Money Style are gone from the header. The first
+                was not part of the promise; the second built a personality out
+                of usage — an archetype, a health score, blind spots — none of
+                which anything the visitor typed established. */}
           </div>
         </div>
       </div>{/* /header */}
 
-      {/* ─── Money Style Profile ─── */}
-      {showProfile && profileData && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'}`}>
-          <div className={`p-5 ${c.cardAlt} border-b ${c.border}`}>
-            <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📊</span> {t('md_style_title')}</h4>
-          </div>
-          <div className="p-5 space-y-4">
-            {profileData.money_style && (
-              <div className="text-center">
-                <p className={`text-lg font-black ${c.textSecondary}`}>{profileData.money_style.archetype}</p>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{profileData.money_style.description}</p>
-                <div className="flex justify-center gap-4 mt-3">
-                  <div className={`text-center p-2 rounded-lg ${c.success} border`}><p className="text-[9px] font-bold">{t('md_style_strength')}</p><p className="text-xs mt-0.5">{profileData.money_style.strength}</p></div>
-                  <div className={`text-center p-2 rounded-lg ${c.warning} border`}><p className="text-[9px] font-bold">{t('md_style_blind_spot')}</p><p className="text-xs mt-0.5">{profileData.money_style.blind_spot}</p></div>
-                </div>
-              </div>
-            )}
-            {profileData.money_health_score && (
-              <div className="text-center">
-                <p className={`text-3xl font-black ${profileData.money_health_score.score >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>{profileData.money_health_score.score}/100</p>
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('md_style_health')}</p>
-                <p className={`text-xs ${c.textSecondary} mt-1`}>{profileData.money_health_score.meaning}</p>
-              </div>
-            )}
-            {profileData.patterns?.map((p, i) => (
-              <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                <p className={`text-xs font-bold ${c.text}`}>{p.pattern}</p>
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('md_style_shows_up', { frequency: p.frequency })}</p>
-                <p className={`text-[10px] ${c.textSecondary} mt-0.5`}>{t('md_style_fix', { fix: p.fix })}</p>
-              </div>
-            ))}
-            {profileData.by_category && (
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(profileData.by_category).map(([k, v]) => (
-                  <div key={k} className={`p-2 rounded-lg ${c.cardAlt} text-center`}>
-                    <p className={`text-[9px] font-bold ${c.textMuteded} uppercase`}>{k}</p>
-                    <p className={`text-[10px] ${c.text}`}>{v}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-            {profileData.prediction && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>{t('md_style_prediction', { prediction: profileData.prediction })}</p>}
-            {profileData.growth && <p className={`text-xs ${c.textSecondary}`}>{t('md_style_growth', { growth: profileData.growth })}</p>}
-          </div>
-        </div>
-      )}
 
-      {/* ─── PROFILE SETUP ─── */}
-      {showProfileSetup && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('md_profile_heading')}</p>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <p className={`text-xs ${c.textMuted} mb-3`}>
-                {t('md_profile_xref_bill').split('{{link}}').map((part, i, arr) => (
-                  <React.Fragment key={i}>
-                    {part}
-                    {i < arr.length - 1 && <a href="/BillRescue" className={linkStyle}>{t('md_profile_xref_bill_link')}</a>}
-                  </React.Fragment>
-                ))}
-              </p>
-              <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_profile_budget_label')}</label>
-              <select value={userProfile.incomeLevel} onChange={e => setUserProfile(p => ({ ...p, incomeLevel: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
-                {[{ value: '', labelKey: 'md_profile_opt_notset' }, { value: 'Student/tight budget', labelKey: 'md_profile_budget_tight' }, { value: 'Early career', labelKey: 'md_profile_budget_early' }, { value: 'Comfortable', labelKey: 'md_profile_budget_comfortable' }, { value: 'High earner', labelKey: 'md_profile_budget_high' }, { value: 'Varies', labelKey: 'md_profile_budget_varies' }].map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_profile_culture_label')}</label>
-              <input type="text" value={userProfile.culture} onChange={e => setUserProfile(p => ({ ...p, culture: e.target.value }))} placeholder={t('md_profile_culture_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
-            </div>
-            <div>
-              <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_profile_relationship_label')}</label>
-              <select value={userProfile.relationshipStatus} onChange={e => setUserProfile(p => ({ ...p, relationshipStatus: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
-                {[{ value: '', labelKey: 'md_profile_opt_notset' }, { value: 'Single', labelKey: 'md_profile_rel_single' }, { value: 'Dating', labelKey: 'md_profile_rel_dating' }, { value: 'Partnered', labelKey: 'md_profile_rel_partnered' }, { value: 'Married', labelKey: 'md_profile_rel_married' }, { value: 'Separated', labelKey: 'md_profile_rel_separated' }].map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_profile_country_label')}</label>
-              <select value={userProfile.country} onChange={e => setUserProfile(p => ({ ...p, country: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
-                {COUNTRY_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
-              </select>
-            </div>
-          </div>
-          {profileCtx && <p className={`text-[10px] ${c.textSecondary} mt-2`}>{t('md_profile_active_ctx', { ctx: profileCtx })}</p>}
-        </div>
-      )}
 
       {/* ─── QUICK MODE ─── */}
       {quickMode && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 border-2 ${isDark ? 'border-sky-600' : 'border-sky-400'}`}>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-lg">🔥</span>
+            <span className="text-lg">🧮</span>
             <p className={`text-sm font-bold ${c.text}`}>{t('md_quick_title')}</p>
             <div className="flex gap-1 ms-auto">
               {[{ id: 'tip', labelKey: 'md_quick_tab_tip' }, { id: 'split', labelKey: 'md_quick_tab_split' }].map(tab => (
@@ -660,6 +980,7 @@ const MoneyDiplomat = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${isDark ? 'border-red-600' : 'border-red-400'}`}>
           <div className={`p-4 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
             <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🎭</span> {t('md_sim_title')}</h4>
+            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('md_sim_helper')}</p>
           </div>
           <div className="p-4 space-y-3">
             {!simPrompt && (
@@ -737,65 +1058,6 @@ const MoneyDiplomat = ({ tool }) => {
         </div>
       )}
 
-      {/* ─── TRENDS & RECAP ─── */}
-      {showTrends && trends && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4 border-2 ${isDark ? 'border-cyan-600' : 'border-cyan-400'}`}>
-          <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📈</span> {t('md_trends_title')}</h4>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className={`text-center p-3 rounded-lg ${c.cardAlt}`}><p className={`text-2xl font-black ${c.textSecondary}`}>{trends.total}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('md_trends_total')}</p></div>
-            <div className={`text-center p-3 rounded-lg ${c.cardAlt}`}><p className={`text-2xl font-black ${c.text}`}>{trends.thisMonth}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('md_trends_this_month')}</p></div>
-            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{formatCurrency(trends.totalOwed, userLocale, userCurrency)}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('md_trends_outstanding')}</p></div>
-            <div className={`text-center p-3 rounded-lg ${isDark ? 'bg-green-900/20' : 'bg-green-50'}`}><p className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-600'}`}>{formatCurrency(trends.totalSettled, userLocale, userCurrency)}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('md_trends_collected')}</p></div>
-          </div>
-          {/* Category breakdown */}
-          <div>
-            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('md_trends_most_used')}</p>
-            {trends.typeCounts.slice(0, 5).map(([type, count], i) => (
-              <div key={i} className="flex items-center gap-2 py-1">
-                <span className={`text-xs ${c.text} flex-1`}>{type}</span>
-                <div className={`h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} flex-1 overflow-hidden`}>
-                  <div className="h-2 rounded-full bg-cyan-500" style={{ width: `${(count / trends.typeCounts[0][1]) * 100}%` }} />
-                </div>
-                <span className={`text-xs font-bold ${c.text} w-6 text-end`}>{count}</span>
-              </div>
-            ))}
-          </div>
-          {/* Recap button */}
-          <div className="text-center">
-            {!recapData ? (
-              <button onClick={handleRecap} disabled={recapLoading} className={`${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
-                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>📊</span>}
-                {t('md_recap_generate')}
-              </button>
-            ) : (
-              <div className="text-start space-y-3">
-                <p className={`text-lg font-black ${c.text} text-center`}>{recapData.headline}</p>
-                {recapData.stats && (
-                  <div className={`${c.cardAlt} rounded-lg p-3 grid grid-cols-2 gap-2`}>
-                    {Object.entries(recapData.stats).map(([k, v]) => (
-                      <div key={k}><p className={`text-[9px] ${c.textMuteded} uppercase`}>{k.replace(/_/g, ' ')}</p><p className={`text-xs font-bold ${c.text}`}>{v}</p></div>
-                    ))}
-                  </div>
-                )}
-                {recapData.insights?.map((ins, i) => (
-                  <div key={i} className={`p-2 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.text}`}>{ins.insight}</p>
-                    <p className={`text-[10px] ${c.textSecondary}`}>{ins.so_what}</p>
-                  </div>
-                ))}
-                {recapData.growth && <p className={`text-xs ${c.text}`}>{t('md_recap_growth', { growth: recapData.growth })}</p>}
-                {recapData.challenge_next_month && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('md_recap_next_month', { challenge: recapData.challenge_next_month })}</p>}
-                {recapData.fun_stat && <p className={`text-xs ${c.textMuteded} italic`}>{t('md_recap_fun', { stat: recapData.fun_stat })}</p>}
-                {recapData.shareable && (
-                  <div className="flex items-center justify-center gap-2">
-                    <p className={`text-xs ${c.text} italic`}>"{recapData.shareable}"</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* ─── THEY OWE ME TRACKER ─── */}
       {showTracker && (
@@ -889,18 +1151,23 @@ const MoneyDiplomat = ({ tool }) => {
       {!results && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
           <p className={`text-xs font-bold ${c.textMuteded} mb-3`}>{t('md_picker_prompt')}</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SITUATIONS.map(s => (
-              <button key={s.id} onClick={() => { setActiveType(s.id); setResults(null); setError(''); }}
-                className={`p-3 rounded-xl text-center transition-all border ${activeType === s.id
-                  ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50')
-                  : `${c.border} ${c.card} hover:border-emerald-300`}`}>
-                <span className="text-xl">{s.icon}</span>
-                <p className={`text-[10px] font-bold mt-1 ${activeType === s.id ? c.textSecondary : c.text}`}>{t(s.labelKey)}</p>
-                <p className={`text-[9px] ${c.textMuteded}`}>{t(s.descKey)}</p>
-              </button>
-            ))}
-          </div>
+          {SITUATION_GROUPS.map(grp => (
+            <div key={grp.labelKey} className="mb-4 last:mb-0">
+              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>{t(grp.labelKey)}</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {grp.ids.map(id => SITUATIONS.find(x => x.id === id)).filter(Boolean).map(sit => (
+                  <button key={sit.id} onClick={() => { setActiveType(sit.id); setResults(null); setError(''); }}
+                    className={`p-3 rounded-xl text-center transition-all border ${activeType === sit.id
+                      ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50')
+                      : `${c.border} ${c.card} hover:border-emerald-300`}`}>
+                    <span className="text-xl">{sit.icon}</span>
+                    <p className={`text-[10px] font-bold mt-1 ${activeType === sit.id ? c.textSecondary : c.text}`}>{t(sit.labelKey)}</p>
+                    <p className={`text-[9px] ${c.textMuteded}`}>{t(sit.descKey)}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
 
           {/* ─── Type-specific fields ─── */}
           {activeType && (
@@ -1266,709 +1533,28 @@ const MoneyDiplomat = ({ tool }) => {
               </div>
             </div>
           )}
+
+          {/* Pre-result cross-ref — at the foot of the form, never above it. */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 mt-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1.5`}>{t('md_before_you_ask')}</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/BillRescue" className={`text-xs ${linkStyle}`}>{t('md_link_bill')}</a>
+            </div>
+          </div>
         </div>
       )}
 
       {error && <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>⚠️ {error}</p>}
 
       {/* ═══════════════ RESULTS ═══════════════ */}
-      {results && (
-        <div ref={revealRef} className="scroll-mt-24 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
-              <span>{SITUATIONS.find(s => s.id === activeType)?.icon}</span>
-              {sitLabel(activeType)}
-            </h3>
-            <div className="flex items-center gap-2">
-              <button onClick={clearResults} className={`text-xs ${c.textSecondary} underline`}>{t('md_new_situation')}</button>
-            </div>
-          </div>
-
-          {/* ─── TIP ADVISOR RESULTS ─── */}
-          {activeType === 'tip' && results?.recommendation && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-              <div className={`p-5 ${c.cardAlt} border-b ${c.border}`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-3xl font-black ${c.textSecondary}`}>{results?.recommendation?.percentage}%</p>
-                    <p className={`text-sm ${c.text} font-semibold`}>{results?.recommendation?.amount}</p>
-                  </div>
-                  {results?.recommendation?.range && (
-                    <div className="flex gap-3 text-center">
-                      {[{ l: t('md_res_tip_low'), v: results?.recommendation?.range.low }, { l: t('md_res_tip_sweet'), v: results?.recommendation?.range.mid }, { l: t('md_res_tip_generous'), v: results?.recommendation?.range.generous }].map((r, i) => (
-                        <div key={i} className={`p-2 rounded-lg ${i === 1 ? c.cardAlt : c.cardAlt}`}>
-                          <p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p>
-                          <p className={`text-sm font-bold ${i === 1 ? c.textSecondary : c.text}`}>{r.v}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <p className={`text-xs ${c.textSecondary} mt-2`}>{results?.recommendation?.verdict}</p>
-              </div>
-              <div className="p-5 space-y-3">
-                <p className={`text-sm ${c.text}`}>{results?.reasoning}</p>
-                {results?.cultural_context && <p className={`text-xs ${c.textMuteded} italic`}>🌍 {results?.cultural_context}</p>}
-                {results?.adjustments?.map((adj, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs">
-                    <span>{adj.direction === 'up' ? '📈' : adj.direction === 'down' ? '📉' : '➡️'}</span>
-                    <span className={c.text}>{adj.factor}:</span>
-                    <span className={c.textSecondary}>{adj.explanation}</span>
-                  </div>
-                ))}
-                {results?.etiquette_notes?.map((note, i) => <p key={i} className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>💡 {note}</p>)}
-                {results?.awkward_scenario && (
-                  <div className={`${c.cardAlt} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.text}`}>{results?.awkward_scenario?.question}</p>
-                    <p className={`text-xs ${c.textSecondary} mt-1`}>{results?.awkward_scenario?.answer}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ─── BILL SPLITTER RESULTS ─── */}
-          {activeType === 'split' && results?.options && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              {results?.the_awkward_part && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_awkward_part}</p>}
-              {results?.options?.map((opt, oi) => (
-                <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? (isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50') : `${c.border} ${c.cardAlt}`}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className={`text-sm font-bold ${c.text}`}>{opt.method}</p>
-                    <Badge c={c} type={opt.fairness_score >= 80 ? 'success' : 'warning'}>{t('md_res_fam_fair', { score: opt.fairness_score })}</Badge>
-                    <Badge c={c} type={opt.social_score >= 80 ? 'success' : 'info'}>{t('md_res_split_social', { score: opt.social_score })}</Badge>
-                  </div>
-                  {opt.breakdown?.map((b, bi) => (
-                    <div key={bi} className="flex items-center justify-between text-xs py-1">
-                      <span className={c.text}>{b.person}</span>
-                      <span className={`font-bold ${c.text}`}>{b.amount}</span>
-                    </div>
-                  ))}
-                  {opt.total_with_tip && (
-                    <div className={`flex items-center justify-between text-xs py-1 border-t ${c.border} mt-1`}>
-                      <span className={`font-semibold ${c.textSecondary}`}>{t('md_res_split_total_with_tip')}</span>
-                      <span className={`font-black ${c.textSecondary}`}>{opt.total_with_tip}</span>
-                    </div>
-                  )}
-                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
-                </div>
-              ))}
-              {results?.recommended && <p className={`text-sm ${c.textSecondary} font-semibold`}>👉 {results?.recommended}</p>}
-              {results?.tip_recommendation && (
-                <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold mb-1">{t('md_res_split_tip')}</p>
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-bold ${c.text}`}>{results?.tip_recommendation?.percentage}%</span>
-                    <span className={`text-sm font-black ${c.textSecondary}`}>{results?.tip_recommendation?.total_tip}</span>
-                  </div>
-                  {results?.tip_recommendation?.note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results?.tip_recommendation?.note}</p>}
-                </div>
-              )}
-              {results?.how_to_bring_it_up && (
-                <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_split_what_to_say')}</p>
-                  <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.how_to_bring_it_up}"</p>
-                </div>
-              )}
-              {results?.next_time && <p className={`text-xs ${c.textMuteded}`}>{t('md_res_split_next_time', { tip: results?.next_time })}</p>}
-            </div>
-          )}
-
-          {/* ─── VENMO VERDICT RESULTS ─── */}
-          {activeType === 'venmo' && results?.verdict && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <Badge c={c} type={results?.verdict?.includes('Yes') ? 'success' : results?.verdict === 'Let it go' ? 'info' : 'warning'}>{results?.verdict}</Badge>
-                <p className={`text-2xl font-black ${c.text} mt-2`}>{t('md_res_venmo_sure', { confidence: results?.confidence })}</p>
-              </div>
-              <p className={`text-sm ${c.text}`}>{results?.reasoning}</p>
-              {results?.the_math && (
-                <div className="grid grid-cols-3 gap-2">
-                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuteded}`}>{t('md_res_venmo_at_stake')}</p><p className={`text-sm font-bold ${c.text}`}>{results?.the_math?.amount_at_stake}</p></div>
-                  <div className={`p-2 rounded-lg ${c.cardAlt} text-center`}><p className={`text-[9px] ${c.textMuteded}`}>{t('md_res_venmo_relationship')}</p><p className={`text-[10px] ${c.text}`}>{results?.the_math?.relationship_value}</p></div>
-                  <div className={`p-2 rounded-lg ${results?.the_math?.resentment_risk === 'High' ? c.danger : c.cardAlt} text-center border`}><p className={`text-[9px] ${c.textMuteded}`}>{t('md_res_venmo_resentment')}</p><p className={`text-[10px] font-bold`}>{results?.the_math?.resentment_risk}</p></div>
-                </div>
-              )}
-              {results?.if_requesting?.message && (
-                <div className={`${c.success} border rounded-lg p-4`}>
-                  <p className="text-[10px] font-bold mb-1">{t('md_res_venmo_message')}</p>
-                  <p className="text-sm italic">"{results?.if_requesting?.message}"</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge c={c} type="info">{results?.if_requesting?.platform}</Badge>
-                    <span className={`text-[9px] ${c.textMuteded}`}>{results?.if_requesting?.timing}</span>
-                  </div>
-                  {results?.if_requesting?.tone_guide && <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{t('md_res_venmo_tone', { tone: results?.if_requesting?.tone_guide })}</p>}
-                </div>
-              )}
-              {results?.if_letting_go?.reframe && (
-                <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_venmo_letting_go')}</p>
-                  <p className="text-xs mt-1">{results?.if_letting_go?.reframe}</p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('md_res_venmo_prevention', { prevention: results?.if_letting_go?.prevention })}</p>
-                </div>
-              )}
-              {results?.the_line && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_venmo_the_line', { line: results?.the_line })}</p>}
-            </div>
-          )}
-
-          {/* ─── GIFT CALCULATOR RESULTS ─── */}
-          {activeType === 'gift' && results?.recommendation && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <p className={`text-3xl font-black ${c.textSecondary}`}>{results?.recommendation?.amount}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results?.recommendation?.verdict}</p>
-                {results?.recommendation?.range && (
-                  <div className="flex justify-center gap-4 mt-2">
-                    {[{ l: t('md_res_gift_minimum'), v: results?.recommendation?.range.minimum }, { l: t('md_res_gift_sweet'), v: results?.recommendation?.range.sweet_spot }, { l: t('md_res_gift_generous'), v: results?.recommendation?.range.generous }].map((r, i) => (
-                      <div key={i}><p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.textSecondary : c.text}`}>{r.v}</p></div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {results?.calibration && (
-                <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_gift_occasion')}<span className="font-bold">{results?.calibration?.occasion_weight}</span></p>
-                  <p className={`text-xs ${c.textSecondary}`}>{results?.calibration?.relationship_factor}</p>
-                  <p className={`text-xs ${c.textMuteded}`}>{results?.calibration?.reciprocity_note}</p>
-                  <p className={`text-xs ${c.textMuteded}`}>{results?.calibration?.regional_norm}</p>
-                </div>
-              )}
-              {results?.group_gift_option?.makes_sense && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_gift_group')}</p>
-                  <p className={`text-xs ${c.text} mt-1`}>{t('md_res_gift_your_share')}<span className="font-bold">{results?.group_gift_option?.your_share}</span></p>
-                  <p className={`text-[10px] ${c.textSecondary}`}>{results?.group_gift_option?.how_to_organize}</p>
-                </div>
-              )}
-              {results?.pitfalls?.map((p, i) => <p key={i} className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('md_res_gift_pitfall', { mistake: p.mistake, instead: p.instead })}</p>)}
-              {results?.the_real_answer && <p className={`text-sm ${c.text} italic text-center`}>💡 {results?.the_real_answer}</p>}
-            </div>
-          )}
-
-          {/* ─── ROOMMATE RESULTS ─── */}
-          {activeType === 'roommate' && results?.fair_split && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              {results?.fair_split?.map((fs, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
-                  <div>
-                    <p className={`text-sm font-bold ${c.text}`}>{fs.person}</p>
-                    <p className={`text-[10px] ${c.textMuteded}`}>{fs.percentage}%</p>
-                  </div>
-                  <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
-                </div>
-              ))}
-              {results?.methodology && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_room_methodology', { methodology: results?.methodology })}</p>}
-              {results?.factors_considered?.map((f, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  <Badge c={c} type="info">{f.impact}</Badge>
-                  <span className={c.text}>{f.factor}</span>
-                </div>
-              ))}
-              {results?.the_conversation && (
-                <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_room_how')}</p>
-                  <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.the_conversation?.opener}"</p>
-                  {results?.the_conversation?.if_pushback && <p className={`text-[10px] ${c.textMuteded} mt-2`}>{t('md_res_room_pushback', { pushback: results?.the_conversation?.if_pushback })}</p>}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ─── FAMILY MONEY RESULTS ─── */}
-          {activeType === 'family' && results?.assessment && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge c={c} type="info">{results?.assessment?.type}</Badge>
-                <Badge c={c} type={results?.assessment?.emotional_stakes === 'Minefield' || results?.assessment?.emotional_stakes === 'High' ? 'danger' : 'warning'}>{t('md_res_fam_stakes', { stakes: results?.assessment?.emotional_stakes })}</Badge>
-              </div>
-              {results?.the_real_issue && <p className={`text-sm ${c.text} italic`}>{t('md_res_fam_real_issue', { issue: results?.the_real_issue })}</p>}
-              <p className={`text-sm ${c.text}`}>{results?.recommendation}</p>
-              {results?.script && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_fam_script', { setting: results?.script?.setting })}</p>
-                  <p className={`text-sm ${c.text}`}>{t('md_res_fam_open_with', { opener: results?.script?.opener })}</p>
-                  {results?.script?.key_phrases?.map((kp, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• "{kp}"</p>)}
-                  {results?.script?.boundary_line && <p className={`text-xs font-bold ${c.text} mt-1`}>{t('md_res_fam_boundary', { boundary: results?.script?.boundary_line })}</p>}
-                  {results?.script?.if_guilt_trip && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>{t('md_res_fam_guilt', { response: results?.script?.if_guilt_trip })}</p>}
-                </div>
-              )}
-              {results?.scenarios?.map((s, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${i === 0 ? c.success : c.warning}`}>
-                  <p className="text-[10px] font-bold">{s.label}</p>
-                  <p className="text-xs mt-1">{s.label.includes('yes') ? s.terms : s.how}</p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-1`}>{s.label.includes('yes') ? t('md_res_fam_risk', { risk: s.risk }) : t('md_res_fam_expect', { aftermath: s.aftermath })}</p>
-                </div>
-              ))}
-              {results?.long_term && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_fam_longterm', { note: results?.long_term })}</p>}
-            </div>
-          )}
-
-          {/* ─── DINING DIPLOMAT RESULTS ─── */}
-          {activeType === 'dining' && results?.pre_game && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              {results?.who_pays && (
-                <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_din_who_pays')}</p>
-                  <p className={`text-sm ${c.text} mt-1`}>{results?.who_pays?.expectation}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{results?.who_pays?.reasoning}</p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{results?.who_pays?.the_dance}</p>
-                </div>
-              )}
-              <div className="space-y-2">
-                <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_din_strategy')}</p>
-                <p className={`text-xs ${c.text}`}>🍽️ {results?.pre_game?.restaurant_strategy}</p>
-                <p className={`text-xs ${c.text}`}>💳 {results?.pre_game?.splitting_strategy}</p>
-                <p className={`text-xs ${c.text}`}>📋 {results?.pre_game?.ordering_strategy}</p>
-              </div>
-              {results?.scenarios?.map((s, i) => (
-                <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
-                  <p className={`font-bold ${c.text}`}>{t('md_res_din_if', { condition: s.if })}</p>
-                  <p className={isDark ? 'text-green-300' : 'text-green-700'}>{t('md_res_din_say', { line: s.then })}</p>
-                  <p className={isDark ? 'text-red-300' : 'text-red-700'}>{t('md_res_din_avoid', { line: s.avoid })}</p>
-                </div>
-              ))}
-              {results?.budget_moves && (
-                <div className={`${c.warning} border rounded-lg p-3 space-y-1`}>
-                  <p className="text-[10px] font-bold">{t('md_res_din_budget')}</p>
-                  <p className="text-xs">{results?.budget_moves?.if_over_budget}</p>
-                  {results?.budget_moves?.if_pressured && <p className="text-[10px]">{t('md_res_din_if_pressured', { response: results?.budget_moves?.if_pressured })}</p>}
-                </div>
-              )}
-              {results?.pro_tip && <p className={`text-xs ${c.textSecondary} italic`}>💡 {results?.pro_tip}</p>}
-            </div>
-          )}
-
-          {/* ─── GROUP EVENT RESULTS ─── */}
-          {activeType === 'group' && results?.settlement && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              {results?.settlement?.map((s, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
-                  <div>
-                    <p className={`text-sm font-bold ${c.text}`}>{s.person}</p>
-                    <p className={`text-[10px] ${c.textMuteded}`}>{t('md_res_grp_paid_fair', { paid: s.paid_so_far, fair: s.fair_share })}</p>
-                  </div>
-                  <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (isDark ? 'text-red-300' : 'text-red-700') : (isDark ? 'text-green-300' : 'text-green-700')}`}>{s.owes_or_owed}</p>
-                </div>
-              ))}
-              {results?.simplification?.transactions?.length > 0 && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('md_res_grp_simplified', { count: results?.simplification?.transactions.length })}</p>
-                  {results?.simplification?.transactions.map((txn, i) => (
-                    <p key={i} className={`text-xs ${c.text}`}>{txn.from} → {txn.to}: <span className="font-bold">{txn.amount}</span> ({txn.method})</p>
-                  ))}
-                </div>
-              )}
-              {results?.the_dropout?.applicable && (
-                <div className={`${c.warning} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_grp_dropout')}</p>
-                  <p className="text-xs mt-1">{results?.the_dropout?.fair_solution}</p>
-                  {results?.the_dropout?.how_to_tell_them && <>
-                    <p className="text-xs italic mt-1">"{results?.the_dropout?.how_to_tell_them}"</p>
-                  </>}
-                </div>
-              )}
-              {results?.next_event_tip && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_grp_next', { tip: results?.next_event_tip })}</p>}
-            </div>
-          )}
-
-          {/* ─── LENDING RESULTS ─── */}
-          {activeType === 'lend' && results?.verdict && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <Badge c={c} type={results?.verdict === 'Say no' ? 'danger' : results?.verdict?.includes('Gift') ? 'info' : 'success'}>{results?.verdict}</Badge>
-                <p className={`text-xl font-black ${c.text} mt-1`}>{t('md_res_lend_confident', { confidence: results?.confidence })}</p>
-              </div>
-              <p className={`text-sm ${c.text}`}>{results?.reasoning}</p>
-              {results?.risk_assessment && (
-                <div className="grid grid-cols-2 gap-2">
-                  {[{ l: t('md_res_lend_getback'), v: results?.risk_assessment?.will_you_get_it_back }, { l: t('md_res_lend_if_lend'), v: t('md_res_lend_risk', { risk: results?.risk_assessment?.relationship_risk_if_lend }) }, { l: t('md_res_lend_if_refuse'), v: t('md_res_lend_risk', { risk: results?.risk_assessment?.relationship_risk_if_refuse }) }, { l: t('md_res_lend_resentment'), v: results?.risk_assessment?.resentment_forecast }].map((r, i) => (
-                    <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p>
-                      <p className={`text-[10px] font-bold ${c.text}`}>{r.v}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {results?.if_yes && (
-                <div className={`${c.success} border rounded-lg p-4`}>
-                  <p className="text-[10px] font-bold">{t('md_res_lend_if_yes')}</p>
-                  <p className="text-xs mt-1">{t('md_res_lend_amount')}<span className="font-bold">{results?.if_yes?.amount_to_lend}</span></p>
-                  <p className="text-xs">{results?.if_yes?.terms}</p>
-                  <p className="text-sm italic mt-2">"{results?.if_yes?.the_conversation}"</p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-2`}>{t('md_res_lend_trick', { trick: results?.if_yes?.mental_trick })}</p>
-                </div>
-              )}
-              {results?.if_no && (
-                <div className={`${c.danger} border rounded-lg p-4`}>
-                  <p className="text-[10px] font-bold">{t('md_res_lend_if_no')}</p>
-                  <p className="text-sm italic mt-1">"{results?.if_no?.the_conversation}"</p>
-                  {results?.if_no?.alternative_offer && <p className={`text-[10px] mt-1`}>{t('md_res_lend_instead', { offer: results?.if_no?.alternative_offer })}</p>}
-                  {results?.if_no?.if_they_push && <p className={`text-[10px] mt-1`}>{t('md_res_lend_if_push', { response: results?.if_no?.if_they_push })}</p>}
-                </div>
-              )}
-              {results?.pattern_check && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>🔄 {results?.pattern_check}</p>}
-            </div>
-          )}
-
-          {/* ─── WORK MONEY RESULTS ─── */}
-          {activeType === 'work' && results?.assessment && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge c={c} type="info">{results?.assessment?.type}</Badge>
-                <Badge c={c} type={results?.assessment?.pressure_level === 'Heavy' ? 'danger' : results?.assessment?.pressure_level === 'Moderate' ? 'warning' : 'success'}>{t('md_res_work_pressure', { level: results?.assessment?.pressure_level })}</Badge>
-                {results?.assessment?.career_risk !== 'None' && <Badge c={c} type="warning">{t('md_res_work_career_risk', { risk: results?.assessment?.career_risk })}</Badge>}
-              </div>
-              {results?.recommendation && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-sm font-bold ${c.text}`}>{results?.recommendation?.action}</p>
-                  {results?.recommendation?.amount && <p className={`text-xs ${c.textSecondary} mt-1`}>{t('md_res_work_amount', { amount: results?.recommendation?.amount })}</p>}
-                  <p className={`text-xs ${c.textSecondary}`}>{results?.recommendation?.reasoning}</p>
-                </div>
-              )}
-              {results?.if_opting_out?.possible && (
-                <div className={`${c.cardAlt} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_work_optout')}</p>
-                  <p className={`text-xs ${c.text} mt-1`}>{results?.if_opting_out?.how}</p>
-                </div>
-              )}
-              {results?.scripts?.map((s, i) => (
-                <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
-                  <p className={`font-bold ${c.text}`}>{s.scenario}</p>
-                  <p className={isDark ? 'text-green-300' : 'text-green-700'}>✅ "{s.say_this}"</p>
-                  <p className={isDark ? 'text-red-300' : 'text-red-700'}>❌ "{s.not_this}"</p>
-                </div>
-              ))}
-              {results?.the_unwritten_rule && <p className={`text-xs ${c.text} italic`}>{t('md_res_work_unwritten', { rule: results?.the_unwritten_rule })}</p>}
-            </div>
-          )}
-
-          {/* ─── TRAVEL MONEY RESULTS ─── */}
-          {activeType === 'travel' && results?.tipping_guide && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('md_res_trav_tipping')}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(results?.tipping_guide).filter(([k]) => k !== 'other').map(([k, v]) => v ? (
-                    <div key={k} className={`p-2 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-[9px] font-bold ${c.textMuteded} uppercase`}>{k}</p>
-                      <p className={`text-sm font-bold ${c.textSecondary}`}>{v.norm}</p>
-                      <p className={`text-[9px] ${c.textMuteded}`}>{v.note}</p>
-                    </div>
-                  ) : null)}
-                </div>
-              </div>
-              {results?.payment_norms && (
-                <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_trav_payment')}</p>
-                  <p className={`text-xs ${c.text}`}>{results?.payment_norms?.cash_vs_card}</p>
-                  {results?.payment_norms?.currency_tips && <p className={`text-xs ${c.textSecondary}`}>💱 {results?.payment_norms?.currency_tips}</p>}
-                  {results?.payment_norms?.digital_payments && <p className={`text-xs ${c.textSecondary}`}>📱 {results?.payment_norms?.digital_payments}</p>}
-                </div>
-              )}
-              {results?.haggling && (
-                <div className={`p-3 rounded-lg border ${results?.haggling?.expected ? c.success : c.cardAlt}`}>
-                  <p className="text-[10px] font-bold">{results?.haggling?.expected ? t('md_res_trav_haggling_yes') : t('md_res_trav_haggling_no')}</p>
-                  {results?.haggling?.where && <p className="text-xs mt-1">{t('md_res_trav_where', { where: results?.haggling?.where })}</p>}
-                  {results?.haggling?.how && <p className="text-xs">{t('md_res_trav_how', { how: results?.haggling?.how })}</p>}
-                  {results?.haggling?.insulting_line && <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('md_res_trav_insulting', { line: results?.haggling?.insulting_line })}</p>}
-                </div>
-              )}
-              {results?.social_money_rules?.map((r, i) => (
-                <div key={i} className={`p-2 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold ${c.text}`}>{r.rule}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{r.why}</p>
-                  <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('md_res_trav_tourist_mistake', { mistake: r.tourist_mistake })}</p>
-                </div>
-              ))}
-              {results?.the_host_dance && <p className={`text-xs ${c.text} italic`}>🤝 {results?.the_host_dance}</p>}
-              {results?.tourist_traps?.map((trap, i) => (
-                <div key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>
-                  <p>🚩 {trap.trap}: {trap.what_to_do}</p>
-                  {trap.how_to_spot && <p className={`text-[10px] ${c.textMuteded} ms-4`}>{t('md_res_trav_spot_it', { how: trap.how_to_spot })}</p>}
-                </div>
-              ))}
-              {results?.quick_reference && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_trav_quick_ref')}</p>
-                  <p className={`text-sm ${c.text} mt-1`}>{results?.quick_reference}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ─── DATE MONEY RESULTS ─── */}
-          {activeType === 'date' && results?.who_pays && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <Badge c={c} type={results?.who_pays?.recommendation === 'Split' ? 'info' : 'success'}>{results?.who_pays?.recommendation}</Badge>
-                <p className={`text-xl font-black ${c.text} mt-1`}>{t('md_res_date_confident', { confidence: results?.who_pays?.confidence })}</p>
-                <p className={`text-sm ${c.textSecondary} mt-1`}>{results?.who_pays?.reasoning}</p>
-              </div>
-              {results?.the_signals && (
-                <div className={`${c.cardAlt} rounded-lg p-3 space-y-2`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_date_signals')}</p>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_date_offering', { signal: results?.the_signals?.what_offering_to_pay_signals })}</p>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_date_splitting', { signal: results?.the_signals?.what_splitting_signals })}</p>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_date_letting', { signal: results?.the_signals?.what_letting_them_pay_signals })}</p>
-                  {results?.the_signals?.the_reach && <p className={`text-[10px] ${c.textSecondary} italic`}>{t('md_res_date_reach', { reach: results?.the_signals?.the_reach })}</p>}
-                </div>
-              )}
-              {results?.scripts?.map((s, i) => (
-                <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
-                  <p className={`font-bold ${c.text}`}>{s.moment}</p>
-                  <p className={isDark ? 'text-green-300' : 'text-green-700'}>✅ "{s.say_this}"</p>
-                  <p className={isDark ? 'text-red-300' : 'text-red-700'}>❌ {s.dont_say}</p>
-                </div>
-              ))}
-              {results?.progression && (
-                <div className="flex gap-2">
-                  {[{ l: t('md_res_date_this'), v: results?.progression?.this_date }, { l: t('md_res_date_next'), v: results?.progression?.next_date }, { l: t('md_res_date_longterm'), v: results?.progression?.long_term }].map((p, i) => (
-                    <div key={i} className={`flex-1 p-2 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-[9px] font-bold ${c.textMuteded}`}>{p.l}</p>
-                      <p className={`text-[10px] ${c.text}`}>{p.v}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {results?.income_gap?.applicable && (
-                <div className={`${c.warning} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_date_income_gap')}</p>
-                  <p className="text-xs mt-1">{results?.income_gap?.how_to_handle}</p>
-                </div>
-              )}
-              {results?.pro_tip && <p className={`text-xs ${c.textSecondary} italic`}>💡 {results?.pro_tip}</p>}
-            </div>
-          )}
-
-          {/* ─── SUBSCRIPTION RESULTS ─── */}
-          {activeType === 'subs' && results?.fair_split && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              {results?.the_wrinkle && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_wrinkle}</p>}
-              {results?.fair_split?.map((fs, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
-                  <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[10px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
-                  <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
-                </div>
-              ))}
-              {results?.manager_premium?.applicable && (
-                <p className={`text-xs ${c.textSecondary}`}>{t('md_res_subs_manager', { discount: results?.manager_premium?.discount, reasoning: results?.manager_premium?.reasoning })}</p>
-              )}
-              {results?.if_leaving && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_subs_if_leaving')}</p>
-                  <p className={`text-sm ${c.text} italic mt-1`}>"{results?.if_leaving?.how_to_say_it}"</p>
-                </div>
-              )}
-              {results?.alternatives && <p className={`text-xs ${c.textSecondary}`}>🤔 {results?.alternatives}</p>}
-            </div>
-          )}
-
-          {/* ─── SALARY RESULTS ─── */}
-          {activeType === 'salary' && results?.range && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="flex items-center justify-around">
-                {[{ l: t('md_res_sal_ask'), v: results?.range?.ask, clr: c.textSecondary }, { l: t('md_res_sal_likely'), v: results?.range?.likely_outcome, clr: c.text }, { l: t('md_res_sal_walkaway'), v: results?.range?.minimum, clr: isDark ? 'text-red-400' : 'text-red-600' }].map((r, i) => (
-                  <div key={i} className="text-center">
-                    <p className={`text-[9px] font-bold ${c.textMuteded}`}>{r.l}</p>
-                    <p className={`text-sm semibold ${r.clr}`}>{r.v}</p>
-                  </div>
-                ))}
-              </div>
-              <p className={`text-xs ${c.textSecondary}`}>{results?.range?.reasoning}</p>
-              {results?.strategy && (
-                <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_sal_strategy')}</p>
-                  <p className={`text-xs ${c.text}`}>⏰ {results?.strategy?.when_to_discuss}</p>
-                  <p className={`text-xs ${c.text}`}>🎤 {results?.strategy?.who_goes_first}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>⚓ {results?.strategy?.the_anchor}</p>
-                </div>
-              )}
-              {results?.scripts?.map((s, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${c.border}`}>
-                  <p className={`text-[10px] font-bold ${c.text}`}>{s.moment}</p>
-                  <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'} italic mt-1`}>"{s.say_this}"</p>
-                  {s.if_they_counter && <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('md_res_sal_counter', { line: s.if_they_counter })}</p>}
-                </div>
-              ))}
-              {results?.beyond_salary?.negotiate_these?.length > 0 && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_sal_beyond')}</p>
-                  <div className="flex flex-wrap gap-1 mt-1">{results?.beyond_salary?.negotiate_these.map((n, i) => <span key={i} className={`text-[9px] px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{n}</span>)}</div>
-                  <p className={`text-xs ${c.textSecondary} mt-1`}>{results?.beyond_salary?.how}</p>
-                </div>
-              )}
-              {results?.power_read && <p className={`text-xs ${c.text} italic`}>⚡ {results?.power_read}</p>}
-            </div>
-          )}
-
-          {/* ─── AFFORD CHECK RESULTS ─── */}
-          {activeType === 'afford' && results?.verdict && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <Badge c={c} type={results?.verdict?.includes('comfortably') ? 'success' : results?.verdict?.includes('not') ? 'danger' : 'warning'}>{results?.verdict}</Badge>
-                <p className={`text-xl font-black ${c.text} mt-1`}>{results?.confidence}%</p>
-              </div>
-              {results?.the_math && <p className={`text-sm ${c.text}`}>🧮 {results?.the_math}</p>}
-              {results?.the_real_question && <p className={`text-sm ${c.textSecondary} italic`}>🎯 {results?.the_real_question}</p>}
-              {results?.if_yes && (
-                <div className={`${c.success} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_aff_if_yes')}</p>
-                  <p className="text-xs mt-1">{results?.if_yes?.how_to_make_it_work}</p>
-                  {results?.if_yes?.spending_cap && <p className="text-xs font-bold mt-1">{t('md_res_aff_cap', { cap: results?.if_yes?.spending_cap })}</p>}
-                </div>
-              )}
-              {results?.if_no && (
-                <div className={`${c.danger} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_aff_if_no')}</p>
-                  <p className="text-sm italic mt-1">"{results?.if_no?.how_to_say_no}"</p>
-                  {results?.if_no?.alternative && <p className="text-xs mt-1">{t('md_res_aff_alternative', { alternative: results?.if_no?.alternative })}</p>}
-                  {results?.if_no?.no_shame && <p className="text-[10px] italic mt-1">💪 {results?.if_no?.no_shame}</p>}
-                </div>
-              )}
-              {results?.social_pressure_check && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>🤔 {results?.social_pressure_check}</p>}
-              {results?.future_you && <p className={`text-xs ${c.textMuteded} italic`}>{t('md_res_aff_future', { note: results?.future_you })}</p>}
-            </div>
-          )}
-
-          {/* ─── INHERITANCE RESULTS ─── */}
-          {activeType === 'inheritance' && results?.assessment && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge c={c} type={results?.assessment?.complexity === 'Minefield' ? 'danger' : results?.assessment?.complexity === 'Complex' ? 'warning' : 'info'}>{results?.assessment?.complexity}</Badge>
-                <Badge c={c} type={results?.assessment?.emotional_temp === 'Explosive' ? 'danger' : results?.assessment?.emotional_temp === 'Hot' ? 'warning' : 'info'}>{t('md_res_inh_temp', { temp: results?.assessment?.emotional_temp })}</Badge>
-                {results?.assessment?.needs_professional && <Badge c={c} type="warning">{t('md_res_inh_needs', { type: results?.assessment?.professional_type })}</Badge>}
-              </div>
-              <p className={`text-sm ${c.text}`}>{results?.guidance}</p>
-              {results?.common_traps?.map((trap, i) => (
-                <div key={i} className={`${c.warning} border rounded-lg p-3`}>
-                  <p className="text-xs font-bold">{trap.trap}</p>
-                  <p className="text-[10px] mt-0.5">{trap.why_it_happens}</p>
-                  <p className={`text-[10px] ${c.textSecondary} mt-0.5`}>{t('md_res_inh_prevention', { prevention: trap.prevention })}</p>
-                </div>
-              ))}
-              {results?.the_conversations?.map((conv, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_inh_talkto', { who: conv.with_whom })}</p>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_inh_about', { what: conv.about_what })}</p>
-                  <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'} italic`}>{t('md_res_inh_open_with', { opener: conv.opener })}</p>
-                  {conv.boundary && <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('md_res_inh_notyet', { boundary: conv.boundary })}</p>}
-                </div>
-              ))}
-              {results?.fairness_framework && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-1`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_inh_fairness')}</p>
-                  <p className={`text-xs ${c.text}`}>{results?.fairness_framework?.equal_vs_equitable}</p>
-                  {results?.fairness_framework?.the_caretaker_question && <p className={`text-[10px] ${c.textSecondary}`}>{t('md_res_inh_caretaker', { question: results?.fairness_framework?.the_caretaker_question })}</p>}
-                </div>
-              )}
-              {results?.timeline && <p className={`text-xs ${c.textMuteded}`}>⏰ {results?.timeline}</p>}
-              {results?.the_thing_nobody_says && <p className={`text-xs ${c.text} italic`}>🤫 {results?.the_thing_nobody_says}</p>}
-            </div>
-          )}
-
-          {/* ─── CULTURAL TRANSLATOR RESULTS ─── */}
-          {activeType === 'cultural' && results?.culture_clash_risk && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <Badge c={c} type={results?.culture_clash_risk === 'High' ? 'danger' : results?.culture_clash_risk === 'Medium' ? 'warning' : 'success'}>{t('md_res_cul_clash', { risk: results?.culture_clash_risk })}</Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {results?.your_norms && (
-                  <div className={`p-3 rounded-lg ${isDark ? 'bg-sky-900/15' : 'bg-sky-50'}`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>{t('md_res_cul_your_norms')}</p>
-                    <p className={`text-xs ${c.text} mt-1`}>{results?.your_norms?.what_you_expect}</p>
-                    <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>{t('md_res_cul_blind', { spot: results?.your_norms?.blind_spot })}</p>
-                  </div>
-                )}
-                {results?.their_norms && (
-                  <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('md_res_cul_their_norms')}</p>
-                    <p className={`text-xs ${c.text} mt-1`}>{results?.their_norms?.what_they_expect}</p>
-                    <p className={`text-[10px] ${c.textSecondary} mt-1`}>{results?.their_norms?.what_they_might_do}</p>
-                  </div>
-                )}
-              </div>
-              {results?.translation_guide?.map((tg, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold ${c.text}`}>{t('md_res_cul_they_do', { behavior: tg.their_behavior })}</p>
-                  <p className={`text-[10px] ${isDark ? 'text-green-300' : 'text-green-700'}`}>{t('md_res_cul_means', { meaning: tg.what_it_means })}</p>
-                  <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('md_res_cul_might_think', { thought: tg.what_you_might_think })}</p>
-                  <p className={`text-[10px] ${c.textSecondary}`}>{t('md_res_cul_do_this', { action: tg.how_to_respond })}</p>
-                </div>
-              ))}
-              {results?.dos_and_donts && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className={`${c.success} border rounded-lg p-2`}>
-                    <p className="text-[10px] font-bold">{t('md_res_cul_do')}</p>
-                    {results?.dos_and_donts?.do?.map((d, i) => <p key={i} className="text-[10px]">• {d}</p>)}
-                  </div>
-                  <div className={`${c.danger} border rounded-lg p-2`}>
-                    <p className="text-[10px] font-bold">{t('md_res_cul_dont')}</p>
-                    {results?.dos_and_donts?.dont?.map((d, i) => <p key={i} className="text-[10px]">• {d}</p>)}
-                  </div>
-                </div>
-              )}
-              {results?.the_bridge && <p className={`text-sm ${c.textSecondary} italic text-center`}>🌉 {results?.the_bridge}</p>}
-              {results?.if_awkward && <p className={`text-xs ${c.textMuteded}`}>{t('md_res_cul_if_awkward', { note: results?.if_awkward })}</p>}
-            </div>
-          )}
-
-          {/* ─── CHARITY RESULTS ─── */}
-          {activeType === 'charity' && results?.recommendation && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-              <div className="text-center">
-                <p className={`text-3xl font-black ${c.textSecondary}`}>{results?.recommendation?.amount}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results?.recommendation?.verdict}</p>
-                {results?.recommendation?.range && (
-                  <div className="flex justify-center gap-4 mt-2">
-                    {[{ l: t('md_res_cha_minimum'), v: results?.recommendation?.range.minimum }, { l: t('md_res_cha_comfortable'), v: results?.recommendation?.range.comfortable }, { l: t('md_res_cha_generous'), v: results?.recommendation?.range.generous }].map((r, i) => (
-                      <div key={i}><p className={`text-[9px] ${c.textMuteded}`}>{r.l}</p><p className={`text-sm font-bold ${i === 1 ? c.textSecondary : c.text}`}>{r.v}</p></div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {results?.obligation_check && (
-                <div className={`${c.cardAlt} rounded-lg p-3`}>
-                  <p className={`text-xs ${c.text}`}>{t('md_res_cha_obligated')} <span className="font-bold">{results?.obligation_check?.are_you_obligated}</span></p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results?.obligation_check?.what_happens_if_no}</p>
-                  <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>{results?.obligation_check?.guilt_vs_genuine}</p>
-                </div>
-              )}
-              {results?.if_donating?.message && (
-                <div className={`${c.success} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_cha_if_giving')}</p>
-                  <p className="text-xs mt-1">{results?.if_donating?.amount_reasoning}</p>
-                  {results?.if_donating?.message && <p className="text-xs italic mt-1">{t('md_res_cha_message', { message: results?.if_donating?.message })}</p>}
-                </div>
-              )}
-              {results?.if_declining && (
-                <div className={`${c.danger} border rounded-lg p-3`}>
-                  <p className="text-[10px] font-bold">{t('md_res_cha_if_declining')}</p>
-                  <p className="text-sm italic mt-1">"{results?.if_declining?.how_to_say_no}"</p>
-                  {results?.if_declining?.alternative && <p className="text-[10px] mt-1">{t('md_res_cha_instead', { alternative: results?.if_declining?.alternative })}</p>}
-                </div>
-              )}
-              {results?.frequency_check && <p className={`text-xs ${c.textSecondary}`}>{t('md_res_cha_policy', { policy: results?.frequency_check })}</p>}
-              {results?.tax_note && <p className={`text-[10px] ${c.textMuteded}`}>💼 {results?.tax_note}</p>}
-            </div>
-          )}
-
-          {/* Cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('md_related_tools')}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('md_link_velvet')}</a>
-            </div>
-          </div>
-        </div>
-      )}
+      {results && renderResults()}
 
       {/* ─── HISTORY ─── */}
-      {sessionHistory.length > 0 && !results && (
+      {sessionHistory.length > 0 && !hasAnswer && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4`}>
           <div className="flex items-center justify-between mb-2">
             <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_recent', { count: sessionHistory.length })}</p>
-            <button onClick={() => { setSessionHistory([]); setProfileData(null); }} className={`text-[10px] ${c.textMuteded} underline`}>{t('md_clear')}</button>
+            <button onClick={() => { setSessionHistory([]); }} className={`text-[10px] ${c.textMuteded} underline`}>{t('md_clear')}</button>
           </div>
           {sessionHistory.slice(0, 5).map((h, i) => (
             <div key={i} className={`flex items-center gap-2 py-1.5 border-b last:border-0 ${c.border}`}>
@@ -1989,6 +1575,7 @@ const MoneyDiplomat = ({ tool }) => {
     </div>
   );
 };
+
 
 MoneyDiplomat.displayName = 'MoneyDiplomat';
 export default MoneyDiplomat;

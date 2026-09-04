@@ -7,6 +7,217 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts, exact words to say, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
+// THE GLOBAL RULE — prepended to every route's system prompt.
+//
+// North star: Money Diplomat is strongest when it answers "what is fair or
+// prudent here, given what I actually know, and what can I say?" It is weakest
+// when it answers "what is this person secretly thinking?", "what will
+// happen?", "what does my culture require?" or "what number is objectively
+// correct?". Reason about the money, help with the conversation, do not invent
+// the people.
+// ═══════════════════════════════════════════════════
+const MONEY_DIPLOMAT_V2 = `
+Apply DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Money Diplomat helps with social money decisions. It may reason about fairness,
+tradeoffs, boundaries, arithmetic, and conversation strategy.
+
+It must distinguish:
+ESTABLISHED
+- directly supplied by the user
+- arithmetic derived from supplied figures
+
+REASONABLE IMPLICATION
+- a cautious interpretation that follows from supplied facts
+- must be phrased as possibility, not fact
+
+UNKNOWN
+- motives
+- intentions
+- financial capacity
+- willingness to pay
+- whether someone is avoiding repayment
+- relationship damage
+- resentment
+- future behavior
+- how another person will react
+- hidden family dynamics
+- workplace politics
+- cultural beliefs of an individual
+- legal or tax consequences
+unless established or verified.
+
+Do not output confidence percentages.
+
+Do not predict:
+- whether someone will repay
+- whether someone will resent the user
+- whether a relationship will worsen
+- likely counteroffers
+- likely salary outcomes
+- whether another person will feel guilty, defensive, insulted, pressured, or grateful
+
+Do not diagnose motives from spending.
+A vacation, purchase, gift, restaurant visit, clothing, car, or other visible spending
+does not establish ability to repay, financial hardship, priorities, irresponsibility,
+or unwillingness to pay.
+
+Do not infer a psychological "real issue" underneath a money disagreement.
+Discuss only the practical issue and any explicitly supplied relationship concern.
+
+Do not claim universal social, workplace, dating, family, or cultural norms as facts.
+When norms vary, say so and ask or explain what to verify.
+
+Do not invent market rates, tipping norms, gift norms, salary bands, legal rights,
+tax deductibility, cultural expectations, or current prices.
+
+If outside-world facts are necessary and not verified, frame them as facts to check.
+
+Scripts may be direct and useful.
+Their factual premises may not exceed what the user supplied.
+
+Write directly to the user as "you".
+`;
+
+// Applied to the four allocation routes: split, roommate, subs, group.
+const FAIRNESS_RULE = `
+FAIRNESS
+
+Do arithmetic only from supplied figures.
+
+Do not invent usage, room size, amenities, consumption, income, or who benefits more.
+
+"Fair" is not a hidden mathematical truth.
+When several allocations are defensible, show the alternatives and the assumption
+behind each.
+
+Prefer:
+- Equal split if everyone agrees usage is comparable
+- Usage-based split if usage is supplied
+- Itemized split if purchases are known
+
+Do not manufacture adjustments merely to make the answer sophisticated.
+`;
+
+// ── Deterministic backstops ───────────────────────────────────────────────
+// Each is a sentence the tool produced on the lending probe or a sibling route.
+// The through-line: a supplied fact used as licence to describe a person.
+
+// "Likely to repay", "resentment risk: moderate", "87% confident".
+const PREDICTED_OUTCOME = new RegExp([
+  '\\b(?:likely|unlikely|probably|almost certainly) to (?:repay|pay (?:you )?back|resent|agree|accept|say yes|counter)\\b',
+  '\\b(?:repayment|resentment|relationship|damage|conflict) (?:risk|likelihood|probability|forecast)\\b',
+  '\\b\\d{1,3}\\s?%\\s?(?:confiden\\w*|likely|chance|probability|risk)\\b',
+  '\\b(?:high|medium|moderate|low)\\s+(?:risk|likelihood|chance) of (?:resent|non[- ]?payment|damage|conflict)\\b',
+  '\\bthey (?:will|are going to|are likely to) (?:resent|feel|be) \\w+',
+  '\\bthis (?:will|would) (?:damage|strain|harm|cost you) (?:the|your) (?:relationship|friendship)\\b',
+].join('|'), 'i');
+
+// Reading a holiday, a car or a handbag as evidence about someone's finances.
+const SPENDING_AS_MOTIVE = new RegExp([
+  // Narrowed 2026-09-04. The first version matched any spending noun within
+  // fifty characters of an inference verb, and blanked "a quick conversation
+  // before the dinner tells you what they actually expect" — a sentence with no
+  // claim about anyone's finances in it. The inference has to land on money,
+  // ability or priorities to be the thing this rule is for.
+  '\\b(?:the |their |that )(?:holiday|vacation|trip|new (?:car|phone|laptop)|handbag|purchase|spending)\\b[^.]{0,50}\\b(?:suggests?|indicates?|shows?|means?|tells you|says a lot|is a sign|signals?|proves?)\\b[^.]{0,45}\\b(?:afford|money|cash|priorit\\w*|finances|financial|able to pay|could (?:have )?(?:paid|repaid)|chose)\\b',
+  '\\b(?:if|since) they can afford\\b[^.]{0,40}\\b(?:they can|they could|they should)\\b',
+  '\\b(?:priorit|choos)\\w+\\b[^.]{0,35}\\bover (?:repaying|paying you back|the loan|their debt)\\b',
+  '\\b(?:avoiding|dodging|ducking) (?:you|repayment|the (?:subject|topic|conversation))\\b',
+].join('|'), 'i');
+
+// "The real issue isn't the money" — the psychologising this rewrite removes.
+const REAL_ISSUE = new RegExp([
+  '\\bthe real (?:issue|problem|question) (?:here )?(?:is ?n.t|isn\\x27t|is not)\\b',
+  '\\b(?:this|it) (?:is ?n.t|isn\\x27t|is not) (?:really |actually )?about (?:the )?money\\b',
+  '\\bwhat(?:\\x27s| is) (?:really )?(?:going on|underneath|beneath|driving this)\\b',
+  '\\bunderlying (?:dynamic|tension|resentment|power|issue)\\b',
+  '\\bmoney (?:is|becomes) (?:a )?(?:proxy|stand[- ]in|symbol) for\\b',
+].join('|'), 'i');
+
+// A culture, country or background given one uniform money rule.
+const CULTURE_AS_RULE = new RegExp([
+  '\\bin (?:\\p{Lu}\\p{L}+(?:an|ese|ish|ian|i)?) culture,?\\b',
+  '\\b(?:\\p{Lu}\\p{L}+s?) (?:people|families|households) (?:typically|usually|always|generally|tend to|expect)\\b',
+  '\\bwhat (?:this|that|it) (?:actually |really )?means in (?:their|his|her) culture\\b',
+  '\\bculture (?:clash|gap) (?:risk|score|level)\\b',
+  '\\bit(?:\\x27s| is) (?:customary|expected|standard|the norm) (?:in|to)\\b',
+].join('|'), 'iu');
+
+// Tax and legal conclusions the tool cannot reach.
+const TAX_OR_LEGAL_CONCLUSION = new RegExp([
+  '\\b(?:is|will be|should be|are) (?:fully |likely |probably )?tax[- ]deductible\\b',
+  '\\byou can (?:claim|deduct|write off)\\b',
+  '\\b(?:you (?:are|have)|they (?:are|have)) (?:a )?legal(?:ly)? (?:right|entitled|obligation|obliged|required)\\b',
+  '\\bsmall claims court will\\b|\\bthe law (?:requires|says|is) (?:that )?\\b',
+].join('|'), 'i');
+
+// A hedge means the sentence proposes rather than asserts — spare it.
+const HEDGED = /\b(?:if|whether|may|might|could|unknown|not established|you did not|unless|check|verify|varies|depends)\b/i;
+
+const RULES = [
+  ['predicted an outcome or a reaction', PREDICTED_OUTCOME],
+  ['read visible spending as evidence about someone', SPENDING_AS_MOTIVE],
+  ['invented a real issue underneath the money', REAL_ISSUE],
+  ['gave a culture one uniform money rule', CULTURE_AS_RULE, (v) => HEDGED.test(v)],
+  ['reached a tax or legal conclusion', TAX_OR_LEGAL_CONCLUSION, (v) => HEDGED.test(v)],
+];
+
+// Arrays are objects: Object.entries enumerates their indices, so the walk
+// reaches strings inside arrays without a special case.
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (k === 'recommendation' && typeof v === 'string' && v.length < 40) continue; // pinned enum
+      if (typeof v === 'string') {
+        const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
+        if (hit) {
+          if (v.length <= 260 && (v.match(/[.!?]/g) || []).length <= 2) {
+            console.log(`[money-diplomat] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            node[k] = '';
+          } else {
+            console.log(`[money-diplomat] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+          }
+        }
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(data);
+  const prune = (node) => {
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) {
+        const it = node[i];
+        if (it === '') node.splice(i, 1);
+        else if (it && typeof it === 'object' && Object.values(it).every(x => x === '' || x == null)) node.splice(i, 1);
+        else prune(it);
+      }
+      return;
+    }
+    if (node && typeof node === 'object') Object.values(node).forEach(prune);
+  };
+  prune(data);
+  return data;
+}
+
+// The frontend switches on these, so withLanguage must not translate them.
+const ENUMS = {
+  recommendation: ['Lend', 'Do not lend yet', 'Lend only under conditions', 'Not enough to tell'],
+  verdict: ['Request it', 'Let it go', 'Talk first', 'Not enough to tell'],
+  gut_check: ['Looks manageable', 'Worth a closer look', 'Looks difficult', 'Not enough information'],
+};
+function pinEnums(data) {
+  if (!data || typeof data !== 'object') return data;
+  for (const [key, allowed] of Object.entries(ENUMS)) {
+    if (typeof data[key] !== 'string') continue;
+    const v = data[key].trim().toLowerCase();
+    data[key] = allowed.find(a => a.toLowerCase() === v) || allowed[allowed.length - 1];
+  }
+  return data;
+}
+
+// ═══════════════════════════════════════════════════
 // ROUTE 1: TIP ADVISOR — Culturally calibrated tip recommendation
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-tip', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -17,51 +228,61 @@ router.post('/money-diplomat-tip', rateLimit(DEFAULT_LIMITS), async (req, res) =
       return res.status(400).json({ error: 'Describe the service situation.' });
     }
 
-    const prompt = withLanguage(`Give a culturally calibrated tip recommendation for this specific situation. Not a percentage lookup — a nuanced judgment call that accounts for everything described.
+    const prompt = withLanguage(`TIP ADVISOR
 
-SITUATION: "${situation.trim()}"
-COUNTRY: ${country?.trim() || 'USA'}
-SERVICE TYPE: ${serviceType || 'restaurant'}
-BILL AMOUNT: ${billAmount || 'Not specified'}
-PARTY SIZE: ${partySize || 'Not specified'}
+Do not claim current country/service tipping norms unless verified.
+
+Separate:
+- bill arithmetic
+- user-supplied service context
+- outside-world norm that may need checking
+
+If the norm is not verified, say:
+"Local tipping expectations vary; check the current norm for [place/service]."
+
+Never invent:
+- automatic gratuity policies
+- party-size rules
+- service charges
+- tax treatment
+- current standard percentages
+
+If the user provides a percentage or known policy, calculate exactly from it.
+
+THE SITUATION: ${situation.trim()}
+PLACE: ${country?.trim() || 'Not supplied.'}
+SERVICE TYPE: ${serviceType || 'Not supplied.'}
+BILL AMOUNT: ${billAmount || 'Not supplied — leave the arithmetic out rather than inventing a bill.'}
+PARTY SIZE: ${partySize || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "recommendation": {
-    "percentage": 20,
-    "amount": "Recommended tip as a compact figure in the user's currency (e.g. £24, 24 €, ¥3000) — no sentence",
-    "range": { "low": "lower amount in the user's currency — one sentence", "mid": "mid amount in the user's currency — one sentence", "generous": "generous amount in the user's currency — one sentence" },
-    "verdict": "Standard|Above average|Below average — and why this situation warrants it"
+  "practical_answer": "What to actually do, in one or two sentences. If the local norm is not established, say so here rather than picking a percentage as though it were settled",
+  "math": {
+    "bill": "The bill they supplied, in their currency, or an empty string",
+    "percentage_used": "The percentage this arithmetic uses, and where it came from — their own figure, or a stated assumption. Empty string if no arithmetic was possible",
+    "tip": "The tip figure, or an empty string",
+    "total": "The total, or an empty string"
   },
-  "reasoning": "2-3 sentences explaining why this specific percentage for THIS situation — reference the details they gave",
-  "cultural_context": "What's normal in this country/region for this type of service — be specific — 1-2 sentences",
-  "adjustments": [
-    {
-      "factor": "Something from their description that moved the tip up or down — one sentence",
-      "direction": "up|down|neutral",
-      "explanation": "Why this factor matters — 1-2 sentences"
-    }
-  ],
-  "etiquette_notes": [
-    "1-3 specific things to know — e.g., 'Auto-gratuity was likely already included for parties of 8+, check the bill'"
-  ],
-  "awkward_scenario": {
-    "question": "The specific awkward question they're probably wondering — e.g., 'Should I tip on top of the auto-gratuity?' — one sentence",
-    "answer": "Direct answer with reasoning — one sentence"
-  }
-}`, userLanguage);
+  "why": ["What in the supplied situation bears on the amount — one short line each"],
+  "check_first": ["An outside-world fact that would change the answer and has not been verified — one short line each. Local expectations, service charges and automatic gratuity all belong here rather than in practical_answer"]
+}
+
+ARRAY BOUNDS: why 2-4, check_first at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a tipping etiquette expert who gives specific, culturally aware recommendations. You know the difference between what\'s expected, what\'s generous, and what\'s insulting in every context. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide what to tip. You do the bill arithmetic exactly from what they supply, and you are honest that local tipping expectations vary and may need checking. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatTip' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.practical_answer) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatTip] Error:', error);
@@ -114,14 +335,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a social dynamics expert who splits bills fairly while preserving friendships. You understand that "fair" and "equal" aren\'t always the same thing. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou split a bill from the figures supplied. Where several allocations are defensible you show them and name the assumption behind each. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSplit' });
 
     if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatSplit] Error:', error);
@@ -140,47 +361,43 @@ router.post('/money-diplomat-venmo', rateLimit(DEFAULT_LIMITS), async (req, res)
       return res.status(400).json({ error: 'Describe the money situation.' });
     }
 
-    const prompt = withLanguage(`Someone is wondering whether they should request money back. Give them a clear verdict and, if yes, the exact words to use.
+    const prompt = withLanguage(`ASKING FOR MONEY BACK
 
-SITUATION: "${situation.trim()}"
-AMOUNT: ${amount || 'Not specified'}
-RELATIONSHIP: ${relationship || 'Friend'}
-TIME SINCE: ${timePassed || 'Not specified'}
+Do not infer how much the user will resent the other person.
+Do not predict whether the request will damage the relationship.
+Judge whether requesting the money is reasonable from the supplied agreement,
+amount, timing, relationship context, and communication history.
+
+THE SITUATION: ${situation.trim()}
+AMOUNT: ${amount || 'Not supplied.'}
+RELATIONSHIP: ${relationship || 'Not supplied.'}
+TIME SINCE: ${timePassed || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "verdict": "Yes, request it|Yes, but gently|Let it go|It's complicated",
-  "confidence": 85,
-  "reasoning": "Why this verdict — reference the specific dynamics of their situation — one sentence",
-  "the_math": {
-    "amount_at_stake": "XX",
-    "relationship_value": "How much is this friendship/relationship worth to you — one sentence",
-    "resentment_risk": "How likely you are to resent them if you don't ask — Low|Medium|High"
-  },
-  "if_requesting": {
-    "message": "The exact text/message to send — casual, natural, not passive-aggressive — 2-4 sentences",
-    "platform": "Text|Venmo note|In person|Don't use Venmo for this",
-    "timing": "When to send it — now, next time you see them, next time money comes up naturally — one sentence",
-    "tone_guide": "The vibe to strike — e.g., 'Casual, like you just remembered, no big deal' — one sentence"
-  },
-  "if_letting_go": {
-    "reframe": "How to think about it so you don't resent them — one sentence",
-    "prevention": "How to prevent this next time with this specific person — one sentence"
-  },
-  "the_line": "The exact dollar amount threshold where this shifts from 'let it go' to 'definitely ask' for this type of relationship — one sentence"
-}`, userLanguage);
+  "verdict": "Exactly one of these English strings: Request it, Let it go, Talk first, Not enough to tell",
+  "why": ["Reasoning grounded in what they supplied — one short line each"],
+  "what_matters": ["The factor that actually bears on this — one short line each"],
+  "unknowns": ["Something that would change the answer and was not supplied — one short line each"],
+  "script": "Words they could send or say — 2-4 sentences",
+  "if_they_push_back": "What to say if the answer is a excuse or a delay — 1-2 sentences"
+}
+
+ARRAY BOUNDS: why 2-4, what_matters at most 4, unknowns at most 3.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a social money advisor who helps people navigate the awkward territory of requesting money from friends and family. You\'re practical, not preachy. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide whether asking for money back is reasonable given what they described, and how to ask. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatVenmo' });
 
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatVenmo] Error:', error);
@@ -199,52 +416,48 @@ router.post('/money-diplomat-gift', rateLimit(DEFAULT_LIMITS), async (req, res) 
       return res.status(400).json({ error: 'Describe the occasion and relationship.' });
     }
 
-    const prompt = withLanguage(`How much should this person spend on this gift? Not a gift idea — just the amount, calibrated to the relationship, occasion, and social norms.
+    const prompt = withLanguage(`GIFT AMOUNT
 
-OCCASION: "${occasion.trim()}"
-RELATIONSHIP: "${relationship.trim()}"
-THEIR LIKELY SPEND ON YOU: ${theirSpend || 'Unknown'}
-YOUR BUDGET: ${yourBudget || 'Flexible'}
-REGION/CULTURE: ${region || 'USA'}
+Do not claim one correct gift amount.
+
+If the user supplies a budget, treat it as the strongest constraint.
+
+Do not invent what the recipient will spend, expects, or considers appropriate.
+
+If regional/cultural gift norms are not verified, say they vary rather than
+inventing a typical amount.
+
+OCCASION: ${occasion || 'Not supplied.'}
+RELATIONSHIP: ${relationship || 'Not supplied.'}
+WHAT THEY SPENT ON YOU, IF SUPPLIED: ${theirSpend || 'Not supplied — do not guess at it.'}
+THE USER BUDGET: ${yourBudget || 'Not supplied.'}
+REGION: ${region || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "recommendation": {
-    "amount": "75",
-    "range": { "minimum": "50", "sweet_spot": "75", "generous": "120" },
-    "verdict": "One sentence — e.g., '75 hits the sweet spot: thoughtful without being awkward'"
-  },
-  "calibration": {
-    "occasion_weight": "How much this occasion typically demands — casual|moderate|significant|major",
-    "relationship_factor": "How the closeness affects the amount — one sentence",
-    "reciprocity_note": "How their likely spend on you affects what you should spend — one sentence",
-    "regional_norm": "What's typical for this occasion in this region/culture — one sentence"
-  },
-  "group_gift_option": {
-    "makes_sense": true,
-    "your_share": "25-35 — one sentence",
-    "how_to_organize": "How to suggest going in together — exact words — one sentence"
-  },
-  "pitfalls": [
-    {
-      "mistake": "A common spending mistake for this occasion — one sentence",
-      "instead": "What to do instead — one sentence"
-    }
-  ],
-  "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A 30 gift with a handwritten note beats a 100 Amazon card.' — one sentence"
-}`, userLanguage);
+  "range": "A range in the user's currency, not a single number. If they gave a budget, the range sits inside it",
+  "why_this_range": ["What in the supplied facts puts the range here — one short line each"],
+  "budget_check": "How the range sits against the budget they gave, or a note that no budget was supplied — one or two sentences",
+  "social_context": "What is genuinely known here versus what varies by region, family or circle. Say plainly that norms vary where they do — one or two sentences",
+  "if_you_want_to_spend_less": "A way to spend less without it reading as an afterthought — 1-2 sentences",
+  "if_you_want_to_spend_more": "What more money would actually buy here — 1-2 sentences"
+}
+
+ARRAY BOUNDS: why_this_range 2-4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a gift-giving advisor who knows the unspoken rules about how much to spend. You calibrate to relationship dynamics, cultural norms, and social expectations. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone settle on a gift amount they are comfortable with. There is no one correct amount, and you never claim to know what the recipient expects. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatGift' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.range) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatGift] Error:', error);
@@ -298,14 +511,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a shared-living fairness expert. You know that equal isn\'t always fair and can explain adjustments in a way both sides accept. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou allocate shared household costs from the figures supplied. Where several allocations are defensible you show them and name the assumption behind each. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatRoommate' });
 
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatRoommate] Error:', error);
@@ -324,53 +537,58 @@ router.post('/money-diplomat-family', rateLimit(DEFAULT_LIMITS), async (req, res
       return res.status(400).json({ error: 'Describe the family money situation.' });
     }
 
-    const prompt = withLanguage(`Navigate this family money situation with cultural sensitivity and emotional intelligence. Family money is the hardest money — there are always unspoken rules, power dynamics, and history.
+    const prompt = withLanguage(`FAMILY MONEY
 
-SITUATION: "${situation.trim()}"
-FAMILY DYNAMIC: ${familyDynamic?.trim() || 'Not specified'}
-CULTURAL CONTEXT: ${culturalContext?.trim() || 'Not specified'}
+Do not infer love, control, guilt, obligation, power dynamics, favoritism,
+family roles, or hidden history unless the user supplies them.
+
+Money disagreements may involve relationship concerns, but do not manufacture them.
+
+Focus on:
+- what was asked
+- what has been promised
+- what the user can and cannot do
+- what needs clarification
+- a boundary or request the user can communicate
+
+Do not generate "the real issue underneath the money."
+
+If cultural or family expectations are supplied, treat them as context,
+not proof that every family member shares them.
+
+THE SITUATION: ${situation.trim()}
+WHAT THEY SAID ABOUT THE FAMILY: ${familyDynamic || 'Nothing supplied — do not invent a dynamic.'}
+CULTURAL CONTEXT THEY SUPPLIED: ${culturalContext || 'Nothing supplied. Do not assume one, and do not assume every family member shares any expectation they did mention.'}
 
 Return ONLY valid JSON:
 {
-  "assessment": {
-    "type": "Lending|Borrowing|Splitting costs|Gift with strings|Inheritance|Support|Boundary setting",
-    "emotional_stakes": "Low|Medium|High|Minefield"
-  },
-  "recommendation": "Clear, direct advice — what to do and why — one sentence",
-  "the_real_issue": "What this is actually about underneath the money — be insightful but kind — one sentence",
-  "script": {
-    "setting": "Where and when to have this conversation — one sentence",
-    "opener": "Exact opening words — warm but clear — one sentence",
-    "key_phrases": ["2-3 phrases that navigate the emotional terrain"],
-    "boundary_line": "The sentence that sets the boundary without burning the relationship — one sentence",
-    "if_guilt_trip": "What to say when they try to guilt you — because they will — one sentence"
-  },
-  "scenarios": [
-    {
-      "label": "If you say yes — one sentence",
-      "terms": "How to structure it to protect the relationship — one sentence",
-      "risk": "What could go wrong — one sentence"
-    },
-    {
-      "label": "If you say no — one sentence",
-      "how": "How to decline with love — one sentence",
-      "aftermath": "What to expect and how to handle it — one sentence"
-    }
-  ],
-  "long_term": "How to prevent this pattern from repeating — systemic, not just this instance — 3-6 words"
-}`, userLanguage);
+  "practical_issue": "What is actually being decided, stated plainly — one or two sentences. Not what it is 'really about'",
+  "what_is_known": ["A fact THEY supplied — one short line each"],
+  "what_needs_clarifying": ["Something unresolved that a conversation could settle — one short line each"],
+  "recommendation": "What to do — one or two sentences",
+  "conversation": {
+    "opener": "How to start it — 1-2 sentences they could say",
+    "key_points": ["Something to make sure gets said — one short line each"],
+    "boundary_if_needed": "A boundary they could state, or an empty string if none is called for",
+    "if_they_disagree": "What to say if the answer is pushback — 1-2 sentences"
+  }
+}
+
+ARRAY BOUNDS: what_is_known at most 5, what_needs_clarifying at most 4, key_points at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a family money question practically. You work from what they told you and nothing else. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatFamily' });
 
-    if (!parsed.assessment) {
+    if (!parsed.practical_issue) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatFamily] Error:', error);
@@ -424,14 +642,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a social dining strategist who helps people navigate group meals without money stress. You give specific words to say, not vague advice. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle the money side of a group meal. Specific words to say, not vague advice. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatDining' });
 
     if (!parsed.pre_game) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatDining] Error:', error);
@@ -484,14 +702,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a group expense settler who makes complex shared costs simple and fair. You minimize transactions, handle dropouts gracefully, and keep friendships intact. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou settle group expenses from the figures supplied, minimising transactions and handling dropouts. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatGroup' });
 
     if (!parsed.settlement) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatGroup] Error:', error);
@@ -510,49 +728,73 @@ router.post('/money-diplomat-lend', rateLimit(DEFAULT_LIMITS), async (req, res) 
       return res.status(400).json({ error: 'Describe the lending situation.' });
     }
 
-    const prompt = withLanguage(`Someone is asking to borrow money. Help the lender decide what to do and give them the exact words for whatever they decide.
+    const prompt = withLanguage(`LENDING
 
-SITUATION: "${situation.trim()}"
-AMOUNT: ${amount || 'Not specified'}
-RELATIONSHIP: ${relationship || 'Not specified'}
-HISTORY: ${history?.trim() || 'First time'}
+Do not predict repayment.
+
+Do not infer willingness or ability to repay from visible discretionary spending.
+
+A missed repayment date establishes that repayment is overdue.
+Silence establishes that it has not been discussed, if the user says so.
+Neither establishes why.
+
+If an existing loan is overdue, it is reasonable to recommend resolving or
+discussing it before adding another loan.
+
+Do not output:
+- Likely / Maybe / Unlikely repayment
+- relationship risk scores
+- resentment forecasts
+- confidence percentages
+
+The question is:
+"What would be prudent given what is known?"
+
+A strong recommendation is allowed when supported by supplied facts.
+
+THE SITUATION: ${situation.trim()}
+AMOUNT ASKED FOR: ${amount || 'Not supplied.'}
+RELATIONSHIP: ${relationship || 'Not supplied.'}
+HISTORY BETWEEN THEM: ${history || 'Not supplied — do not invent one.'}
 
 Return ONLY valid JSON:
 {
-  "verdict": "Lend it|Lend less|Gift it instead|Say no|Offer help instead of money",
-  "confidence": 80,
-  "reasoning": "Honest assessment of why — reference the specific relationship and amount dynamics — one sentence",
-  "risk_assessment": {
-    "will_you_get_it_back": "Likely|Maybe|Unlikely|Almost certainly not — be honest",
-    "relationship_risk_if_lend": "Low|Medium|High — money changes dynamics",
-    "relationship_risk_if_refuse": "Low|Medium|High — they'll remember",
-    "resentment_forecast": "What happens to your feelings if they don't pay back — one sentence"
+  "recommendation": "Exactly one of these English strings: Lend, Do not lend yet, Lend only under conditions, Not enough to tell",
+  "why": ["2-4 grounded reasons based only on supplied facts — one short line each"],
+  "what_is_known": ["A fact THEY supplied, restated plainly — one short line each"],
+  "what_is_not_known": ["Something that matters and was not supplied — one short line each. Why an earlier loan is unpaid belongs here, never in why"],
+  "before_you_decide": ["Questions worth answering before lending — one short line each"],
+  "if_you_lend": {
+    "amount_guidance": "What size of loan would be prudent given what they said — one or two sentences",
+    "terms_to_clarify": ["A term to agree out loud before money moves — one short line each"],
+    "script": "Words they could actually say — 2-4 sentences"
   },
-  "if_yes": {
-    "amount_to_lend": "The amount you'd actually recommend — might be less than asked — one sentence",
-    "terms": "How to structure this — timeline, installments, written agreement — one sentence",
-    "the_conversation": "Exact words to say when agreeing — warm but with clear terms — one sentence",
-    "mental_trick": "Only lend what you can afford to never see again. If you can't gift this amount, don't lend it. — one sentence"
+  "if_you_do_not_lend": {
+    "script": "Words they could actually say — 2-4 sentences",
+    "if_they_push": "What to say if pressed — 1-2 sentences"
   },
-  "if_no": {
-    "the_conversation": "Exact words to decline — kind, firm, no guilt — one sentence",
-    "alternative_offer": "Something you CAN do instead — help them budget, connect them with resources, smaller amount — one sentence",
-    "if_they_push": "What to say when they push back or guilt-trip — one sentence"
-  },
-  "pattern_check": "Is this a pattern? What the history tells you about what will happen — one sentence"
-}`, userLanguage);
+  "existing_debt": {
+    "relevant": true,
+    "next_step": "What to do about the earlier loan first, or an empty string if there is no earlier loan",
+    "script": "Words for raising it, or an empty string"
+  }
+}
+
+ARRAY BOUNDS: why 2-4, what_is_known at most 5, what_is_not_known at most 4, before_you_decide at most 4, terms_to_clarify at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a personal lending advisor who protects both the money and the relationship. You\'re honest about whether people will get their money back. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide whether lending is prudent given what they know. You never predict repayment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatLend' });
 
-    if (!parsed.verdict) {
+    if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatLend] Error:', error);
@@ -606,14 +848,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a workplace culture expert who understands the unwritten rules of office money dynamics. You help people navigate collections, splits, and expenses without hurting their reputation. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a money question at work, using only what they described about their workplace. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatWork' });
 
     if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatWork] Error:', error);
@@ -632,123 +874,61 @@ router.post('/money-diplomat-travel', rateLimit(DEFAULT_LIMITS), async (req, res
       return res.status(400).json({ error: 'Where are you going?' });
     }
 
-    const prompt = withLanguage(`Give a complete money etiquette guide for this destination. Not just tipping — the full picture of how money works socially in this culture.
+    const prompt = withLanguage(`CULTURAL MONEY GUIDANCE
 
-DESTINATION: "${destination.trim()}"
-SPECIFIC SITUATION: ${situation?.trim() || 'General travel'}
+Do not describe a country, ethnicity, religion, region, or culture as having one
+uniform money rule.
+
+Do not infer an individual's expectations from their background.
+
+Do not invent tipping, gift, bargaining, payment, hosting, wedding, family, or
+business norms.
+
+If a cultural norm is not verified, present it as something to check rather than
+as a fact.
+
+For two people from different backgrounds:
+- use only the expectations they actually describe
+- identify where those stated expectations differ
+- propose language that makes expectations explicit
+
+Never output a "culture clash risk" score.
+Never say what an action "actually means in their culture".
+
+DESTINATION: ${destination || 'Not supplied.'}
+THE SITUATION: ${situation.trim()}
+
+You do not have verified current knowledge of tipping, bargaining, payment or
+hosting norms at this destination. Name what to check; do not assert it.
 
 Return ONLY valid JSON:
 {
-  "tipping_guide": {
-    "other": [{ "service": "e.g., spa — one sentence", "norm": "15-20% — one sentence", "note": "Context — one sentence" }]
-  },
-  "payment_norms": {
-    "cash_vs_card": "Which is preferred and why — one sentence",
-    "currency_tips": "Local currency quirks — denominations to carry, coins that matter — one sentence",
-    "digital_payments": "Local apps to know — e.g., WeChat Pay in China — one sentence"
-  },
-  "haggling": {
-    "expected": true,
-    "where": "Markets, taxis, NOT restaurants — one sentence",
-    "how": "The local haggling style — starting offer, walking away, etc. — one sentence",
-    "insulting_line": "Below this offer, you're being disrespectful — one sentence"
-  },
-  "social_money_rules": [
-    {
-      "rule": "A specific cultural money norm — e.g., 'In Japan, never count change at the counter' — one sentence",
-      "why": "The cultural reason behind it — one sentence",
-      "tourist_mistake": "What visitors typically do wrong — one sentence"
-    }
-  ],
-  "the_host_dance": "How to handle when locals insist on paying — the expected back-and-forth and when to accept — one sentence",
-  "tourist_traps": [
-    {
-      "trap": "A specific money trap at this destination — one sentence",
-      "how_to_spot": "The signs — one sentence",
-      "what_to_do": "How to handle it — one sentence"
-    }
-  ],
-  "quick_reference": "The 3 most important things to remember about money in this destination — wallet card version — one sentence"
-}`, userLanguage);
+  "what_you_have_described": ["What THEY told you about the trip or situation — one short line each"],
+  "possible_mismatch": "Where their own habits may not match local practice, written as a possibility rather than a fact about the destination — one or two sentences",
+  "what_not_to_assume": ["Something about the destination that must not be assumed — one short line each"],
+  "questions_to_make_explicit": ["Something to check before they go, or ask when they arrive — one short line each. Tipping, card acceptance, bargaining and service charges all belong here"],
+  "bridge": "A way to handle the moment gracefully whatever the local norm turns out to be — one or two sentences",
+  "script": "Words they could say to ask rather than guess — 2-3 sentences"
+}
+
+ARRAY BOUNDS: what_you_have_described at most 4, what_not_to_assume at most 4, questions_to_make_explicit at most 5.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a cultural money etiquette expert for global travel. You know the specific norms, traps, and social rules for money in every destination. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help a traveller prepare for money situations abroad. You do not know current local norms, so you name what to check rather than asserting it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatTravel' });
 
-    if (!parsed.tipping_guide) {
+    if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatTravel] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════
-// ROUTE 12: MONEY STYLE PROFILE — Pattern analysis
-// ═══════════════════════════════════════════════════
-router.post('/money-diplomat-profile', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { history, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-
-    if (!history?.length || history.length < 3) {
-      return res.status(400).json({ error: 'Need at least 3 past situations to build a profile.' });
-    }
-
-    const historyCtx = history.map((h, i) => `${i + 1}. [${h.type}] ${h.summary} → ${h.outcome || 'No outcome recorded'}`).join('\n');
-
-    const prompt = withLanguage(`Analyze this person's social money patterns from their past situations. Build a money personality profile that reveals blind spots and tendencies.
-
-HISTORY:
-${historyCtx}
-
-Return ONLY valid JSON:
-{
-  "money_style": {
-    "archetype": "The Generous Over-Giver|The Quiet Calculator|The Anxious Avoider|The Fair Splitter|The Reluctant Debtor|The Strategic Spender",
-    "description": "2-3 sentences describing their money personality in social situations",
-    "strength": "Their best money-social skill — one sentence",
-    "blind_spot": "The pattern they can't see — where they're losing money or creating resentment — one sentence"
-  },
-  "patterns": [
-    {
-      "pattern": "A specific recurring behavior — e.g., 'You consistently underpay in group situations' — one sentence",
-      "frequency": "How often this shows up in their history (number)",
-      "impact": "What this costs them — financially or relationally (number)",
-      "fix": "One specific thing to change — one sentence"
-    }
-  ],
-  "by_category": {
-    "tipping": "Their tipping tendency — generous, standard, below average, or not enough data — one sentence",
-    "splitting": "How they handle splits — too generous, too anxious, fair, avoidant — one sentence"
-  },
-  "money_health_score": {
-    "score": 72,
-    "meaning": "What this score means — not financial health, social money health — one sentence"
-  },
-  "prediction": "Based on patterns, the next awkward money situation they're likely to face — and what to do differently this time — one sentence",
-  "growth": "How their money confidence has changed across their history — improving, stagnant, or getting more anxious — one sentence"
-}`, userLanguage);
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage('You are a behavioral money analyst who reveals social spending patterns people can\'t see themselves. Be insightful and kind — this is about self-awareness, not judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatProfile' });
-
-    if (!parsed.money_style) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[MoneyDiplomatProfile] Error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -764,57 +944,59 @@ router.post('/money-diplomat-date', rateLimit(DEFAULT_LIMITS), async (req, res) 
       return res.status(400).json({ error: 'Describe the dating situation.' });
     }
 
-    const prompt = withLanguage(`Navigate the money dynamics of this dating situation. This is the most emotionally charged money question for most people — handle it with nuance, not rules.
+    const prompt = withLanguage(`DATE MONEY
 
-SITUATION: "${situation.trim()}"
-DATE NUMBER: ${dateNumber || 'Not specified'}
-DYNAMIC: ${dynamic?.trim() || 'Not specified'}
-CULTURAL CONTEXT: ${culturalContext?.trim() || 'Not specified'}
+Do not assign meaning to who pays or suggest that splitting automatically
+communicates interest, independence, generosity, commitment, gender expectations,
+or relationship intent.
+
+Do not infer what the other person expects.
+
+Give options:
+- one person offers
+- split evenly
+- alternate
+- discuss before ordering
+
+Explain the practical tradeoff of each without decoding hidden signals.
+
+Do not output confidence percentages.
+
+THE SITUATION: ${situation.trim()}
+WHICH DATE: ${dateNumber || 'Not supplied.'}
+WHAT THEY SAID ABOUT THE DYNAMIC: ${dynamic || 'Nothing supplied — do not invent one.'}
+CULTURAL CONTEXT THEY SUPPLIED: ${culturalContext || 'Nothing supplied. Do not assume either person holds any particular expectation.'}
 
 Return ONLY valid JSON:
 {
-  "who_pays": {
-    "recommendation": "You pay|They pay|Split|Take turns|Discuss it",
-    "confidence": 80,
-    "reasoning": "Why this makes sense for THIS specific situation — not a generic rule — one sentence"
-  },
-  "the_signals": {
-    "what_offering_to_pay_signals": "What it communicates if you offer to pay in this context — one sentence",
-    "what_splitting_signals": "What suggesting a split communicates — one sentence",
-    "what_letting_them_pay_signals": "What accepting their offer communicates — one sentence",
-    "the_reach": "How to handle the 'reach for wallet' moment — specific choreography — one sentence"
-  },
-  "scripts": [
+  "options": [
     {
-      "moment": "A specific moment during the date — e.g., 'When the check arrives' — one sentence",
-      "say_this": "Natural, charming words — not a script that sounds rehearsed — one sentence",
-      "dont_say": "What to avoid saying and why — one sentence"
+      "option": "One of: one person offers, split evenly, alternate, discuss before ordering",
+      "how_it_works": "What doing this actually looks like — one or two sentences",
+      "how_each_option_may_feel_or_function": "The practical tradeoff, written conditionally — what it MAY mean in practice for the evening, never what it signals about either person",
+      "script": "Words they could say — one or two sentences"
     }
   ],
-  "progression": {
-    "this_date": "What to do this time — one sentence",
-    "next_date": "How to evolve the pattern naturally — one sentence",
-    "long_term": "How to transition to a sustainable, equitable pattern as the relationship develops — 3-6 words"
-  },
-  "income_gap": {
-    "applicable": true,
-    "how_to_handle": "If there's a significant income difference, how to handle it without making it weird — one sentence",
-    "the_conversation": "When and how to bring up the income difference if needed — one sentence"
-  },
-  "pro_tip": "One piece of dating money wisdom that most people get wrong — one sentence"
-}`, userLanguage);
+  "what_you_told_me": ["A fact THEY supplied that bears on this — one short line each"],
+  "what_is_not_established": ["Something about the other person that was not supplied and must not be assumed — one short line each"],
+  "if_it_comes_up_awkwardly": "What to say if the moment arrives and nobody has moved — 1-2 sentences"
+}
+
+ARRAY BOUNDS: options 3-4, what_you_told_me at most 4, what_is_not_established at most 3.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a dating etiquette advisor who handles money dynamics with emotional intelligence. You know that who pays communicates something — help people send the right signal. Be modern, inclusive, and culturally aware. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou lay out the practical options for who pays and what each one means in practice. You never decode what an option signals about anyone. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatDate' });
 
-    if (!parsed.who_pays) {
+    if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatDate] Error:', error);
@@ -865,14 +1047,14 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a shared subscription expert who balances fairness with the reality that someone always manages the account and someone always barely uses it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou split a shared subscription from the figures supplied, including the work of managing it if they mentioned it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSubs' });
 
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatSubs] Error:', error);
@@ -891,35 +1073,49 @@ router.post('/money-diplomat-nudge', rateLimit(DEFAULT_LIMITS), async (req, res)
       return res.status(400).json({ error: 'Who owes you and how much?' });
     }
 
-    const prompt = withLanguage(`Generate a natural reminder message to get this money back. Make it appropriate for how long it's been and how many times they've already been reminded.
+    const prompt = withLanguage(`A REMINDER ABOUT MONEY OWED
 
-WHO OWES: "${personName.trim()}"
-AMOUNT: ${amount}
-CONTEXT: ${context?.trim() || 'Not specified'}
-DAYS SINCE: ${daysSince || 'Unknown'}
-RELATIONSHIP: ${relationship || 'Friend'}
-PREVIOUS ATTEMPTS: ${attempts || 0}
+Write a reminder using only:
+- amount
+- original agreement if supplied
+- date/timing
+- previous reminders
+- context supplied by the user
+
+Do not infer why they have not paid.
+Do not accuse them of avoidance.
+Do not predict that a particular tone will "work".
+
+WHO: ${personName || 'Not supplied.'}
+AMOUNT: ${amount || 'Not supplied.'}
+WHAT IT WAS FOR: ${context || 'Not supplied.'}
+DAYS SINCE: ${daysSince || 'Not supplied.'}
+RELATIONSHIP: ${relationship || 'Not supplied.'}
+REMINDERS ALREADY SENT: ${attempts || 'None supplied.'}
 
 Return ONLY valid JSON:
 {
-  "message": "The exact text to send — natural, not passive-aggressive, calibrated to attempt number — 2-4 sentences",
-  "tone": "Casual|Friendly reminder|Direct|Firm|Last resort",
-  "platform": "Text|Venmo request|In person|Email",
-  "timing": "When to send — day of week, time of day that works best — one sentence",
-  "escalation_note": "If this doesn't work, what to do next — one sentence"
-}`, userLanguage);
+  "message": "The reminder, ready to send — 2-4 sentences. Built only from the facts above",
+  "why_this_wording": "What the wording does — what it leads with, what it leaves out. Never a claim about how they will react",
+  "what_you_supplied": ["A fact from the list above that the message uses — one short line each"],
+  "if_no_reply": "What a next step could be, described as an option rather than a prediction — 1-2 sentences"
+}
+
+ARRAY BOUNDS: what_you_supplied at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You write money reminder messages that actually work — casual enough to preserve the friendship, clear enough to get paid. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou write a reminder from what the user supplied. You never guess why the money has not arrived. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatNudge' });
 
     if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatNudge] Error:', error);
@@ -938,52 +1134,67 @@ router.post('/money-diplomat-salary', rateLimit(DEFAULT_LIMITS), async (req, res
       return res.status(400).json({ error: 'Describe the negotiation situation.' });
     }
 
-    const prompt = withLanguage(`Help this person navigate a salary or raise negotiation. This is the highest-stakes money conversation most people have all year — give them specific numbers, words, and tactics.
+    const prompt = withLanguage(`SALARY TALK
 
-SITUATION: "${situation.trim()}"
-CURRENT SALARY: ${currentSalary || 'Not specified'}
-TARGET ROLE: ${targetRole?.trim() || 'Not specified'}
-LOCATION: ${location?.trim() || 'Not specified'}
-EXPERIENCE: ${experience?.trim() || 'Not specified'}
+Money Diplomat is helping the user prepare for the conversation.
+It is not a salary-market-data tool.
+
+Do not invent:
+- market salary
+- target salary
+- likely outcome
+- likely counteroffer
+- employer budget
+- hiring-manager psychology
+- company constraints
+- leverage not supplied by the user
+
+If the user supplies a desired figure, help frame and defend it.
+
+If no defensible target is supplied, recommend verifying compensation data rather
+than manufacturing a number.
+
+Use the epistemic standard above: ESTABLISHED / REASONABLE IMPLICATION / UNKNOWN.
+
+Scripts can be confident.
+Factual premises cannot exceed the supplied evidence.
+
+THE SITUATION: ${situation.trim()}
+CURRENT SALARY: ${currentSalary || 'Not supplied.'}
+ROLE: ${targetRole || 'Not supplied.'}
+LOCATION: ${location || 'Not supplied.'}
+EXPERIENCE: ${experience || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "range": {
-    "ask": "XXX,XXX — what to say when they ask 'what are you looking for' — one sentence",
-    "minimum": "XXX,XXX — your walk-away number, do not share this — one sentence",
-    "likely_outcome": "XXX,XXX — where you'll probably land — one sentence",
-    "reasoning": "How this range was calibrated — market data, experience, location — one sentence"
+  "what_you_can_make_the_case_from": ["Something THEY supplied that supports an ask — one short line each"],
+  "what_you_still_need_to_know": ["Something they would need before naming a number, including compensation data if they gave no target — one short line each"],
+  "ask": {
+    "amount": "The figure they supplied, or an empty string if they gave none. Never invent one",
+    "basis": "What the ask rests on, drawn only from what they supplied — one or two sentences",
+    "script": "Words they could say in the room — 3-5 sentences"
   },
-  "strategy": {
-    "when_to_discuss": "The right moment to bring up money — and when NOT to — one sentence",
-    "who_goes_first": "Should you name a number first? Why or why not in this specific case — one sentence",
-    "the_anchor": "How to set the anchor in your favor — one sentence"
-  },
-  "scripts": [
-    {
-      "moment": "Specific moment in the negotiation — one sentence",
-      "say_this": "Exact words — confident, not aggressive — one sentence",
-      "if_they_counter": "What to say to their likely counteroffer — one sentence"
-    }
+  "if_they_push_back": [
+    { "situation": "A response they might get — described as a situation, not a prediction", "response": "What to say — 1-2 sentences" }
   ],
-  "beyond_salary": {
-    "negotiate_these": ["2-4 non-salary items worth negotiating — signing bonus, PTO, remote days, equity, title"],
-    "how": "How to use non-salary items as leverage or consolation if salary is capped — one sentence"
-  },
-  "power_read": "An honest assessment of how much leverage they have in this specific negotiation — and how to use what they've got — one sentence"
-}`, userLanguage);
+  "other_terms_to_consider": ["Something other than base pay worth raising — one short line each"]
+}
+
+ARRAY BOUNDS: what_you_can_make_the_case_from at most 5, what_you_still_need_to_know at most 4, if_they_push_back 2-4, other_terms_to_consider at most 5.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a salary negotiation coach who gives specific numbers, not vague advice. You understand leverage, anchoring, and the psychology of hiring managers. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone prepare for a compensation conversation. You are not a salary-data source and you never invent a number. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSalary' });
 
-    if (!parsed.range) {
+    if (!parsed.ask) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatSalary] Error:', error);
@@ -1002,43 +1213,46 @@ router.post('/money-diplomat-afford', rateLimit(DEFAULT_LIMITS), async (req, res
       return res.status(400).json({ error: 'Describe what you\'re considering.' });
     }
 
-    const prompt = withLanguage(`Give this person an honest gut-check on whether they can afford this. Not a full budget analysis — a quick, practical reality check with clear advice.
+    const prompt = withLanguage(`AFFORD CHECK
 
-WHAT THEY'RE CONSIDERING: "${situation.trim()}"
-COST: ${cost || 'Not specified'}
-INCOME/SITUATION: ${income?.trim() || 'Not specified'}
-CONTEXT: ${context?.trim() || 'Social pressure situation'}
+Do not say "you can afford it" unless the user has supplied enough information.
+
+Cost and income alone are insufficient for a genuine affordability determination.
+
+State what was included and what was not.
+
+Do not output confidence percentages.
+Do not infer spending habits, financial discipline, priorities, or emotional motives.
+
+WHAT THEY WANT TO BUY: ${situation.trim()}
+COST: ${cost || 'Not supplied.'}
+INCOME: ${income || 'Not supplied.'}
+ANYTHING ELSE THEY SAID: ${context || 'Nothing supplied.'}
 
 Return ONLY valid JSON:
 {
-  "verdict": "Yes, comfortably|Yes, but tight|Stretch — proceed with caution|Probably not|Definitely not",
-  "confidence": 75,
-  "the_math": "Quick back-of-napkin math — e.g., 'That's 15% of your monthly take-home for one weekend. Most financial advisors would call that a stretch.' — one sentence",
-  "the_real_question": "What they're actually asking — e.g., 'You can afford it financially. The question is whether it's worth it to you.' — one sentence",
-  "if_yes": {
-    "how_to_make_it_work": "Specific tactics to afford it without stress — e.g., 'Skip dining out 3 times this month' — one sentence",
-    "spending_cap": "Your hard limit for this event — don't go over this — one sentence"
-  },
-  "if_no": {
-    "how_to_say_no": "Exact words to gracefully bow out of the social situation — one sentence",
-    "alternative": "A cheaper way to participate — e.g., 'Join for the day trip but skip the overnight' — one sentence",
-    "no_shame": "Reframe — why saying no is actually a power move — one sentence"
-  },
-  "social_pressure_check": "Is this a want or is this social pressure? Be honest with them. — one sentence",
-  "future_you": "What Future You will think about this decision in 3 months — one sentence"
-}`, userLanguage);
+  "gut_check": "Exactly one of these English strings: Looks manageable, Worth a closer look, Looks difficult, Not enough information",
+  "what_the_numbers_show": ["Arithmetic from the figures they supplied, and nothing beyond it — one short line each"],
+  "what_is_missing": ["Something a real affordability answer needs that they did not supply — one short line each. Cost and income alone are not enough, so this is rarely empty"],
+  "questions_to_check": ["A question they can answer for themselves before deciding — one short line each"],
+  "low_regret_next_step": "The move that is hardest to regret either way — one or two sentences"
+}
+
+ARRAY BOUNDS: what_the_numbers_show at most 4, what_is_missing at most 4, questions_to_check at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a financial reality-checker who gives honest, judgment-free gut checks. Not a budget planner — a friend who tells the truth about whether you can swing it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou give an honest read on affordability from the numbers supplied, and say plainly what was not supplied. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatAfford' });
 
-    if (!parsed.verdict) {
+    if (!parsed.gut_check) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatAfford] Error:', error);
@@ -1057,55 +1271,49 @@ router.post('/money-diplomat-inheritance', rateLimit(DEFAULT_LIMITS), async (req
       return res.status(400).json({ error: 'Describe the inheritance situation.' });
     }
 
-    const prompt = withLanguage(`Navigate this inheritance or estate money situation. This combines grief, family history, legal complexity, and money — handle ALL of those dimensions.
+    const prompt = withLanguage(`INHERITANCE
 
-SITUATION: "${situation.trim()}"
-FAMILY DYNAMIC: ${familyDynamic?.trim() || 'Not specified'}
-CULTURAL CONTEXT: ${culturalContext?.trim() || 'Not specified'}
+Do not treat inheritance disputes as evidence of grief dynamics, entitlement,
+favoritism, resentment, family hierarchy, or hidden history unless supplied.
+
+Do not provide jurisdiction-specific legal or tax conclusions without verified facts.
+
+Do not decide whether an estate "should" be split equally or equitably as though
+there is one objectively correct answer.
+
+THE SITUATION: ${situation.trim()}
+WHAT THEY SAID ABOUT THE FAMILY: ${familyDynamic || 'Nothing supplied — do not invent a dynamic.'}
+CULTURAL CONTEXT THEY SUPPLIED: ${culturalContext || 'Nothing supplied.'}
 
 Return ONLY valid JSON:
 {
-  "assessment": {
-    "complexity": "Simple|Moderate|Complex|Minefield",
-    "emotional_temp": "Low|Warm|Hot|Explosive",
-    "needs_professional": true,
-    "professional_type": "Estate attorney|Mediator|Financial advisor|Therapist|All of the above"
-  },
-  "guidance": "Clear, compassionate advice for this specific situation — acknowledge the grief alongside the money — one sentence",
-  "common_traps": [
-    {
-      "trap": "Something that goes wrong in this type of inheritance situation — one sentence",
-      "why_it_happens": "The emotional/family dynamic that causes it — one sentence",
-      "prevention": "How to avoid it — one sentence"
-    }
+  "arrangement_considered": "What arrangement is on the table, from what they described — one or two sentences",
+  "principles_in_tension": [
+    { "principle": "A fairness principle in play here — equal shares, need, contribution, the deceased's stated wishes, and so on", "pulls_toward": "What this principle would favour — one short line" }
   ],
-  "the_conversations": [
-    {
-      "with_whom": "Who you need to talk to — one sentence",
-      "about_what": "What to discuss — one sentence",
-      "opener": "How to start the conversation — sensitive to grief — one sentence",
-      "boundary": "What NOT to discuss yet — timing matters — one sentence"
-    }
-  ],
-  "fairness_framework": {
-    "equal_vs_equitable": "Should the split be equal or equitable — and what's the difference in this case — one sentence",
-    "the_caretaker_question": "If one person provided more care, how does that factor in — one sentence"
-  },
-  "timeline": "What to do now vs. what can wait — don't make big decisions while grieving — one sentence",
-  "the_thing_nobody_says": "The uncomfortable truth about this inheritance situation that needs to be acknowledged — one sentence"
-}`, userLanguage);
+  "facts_that_matter": ["Something that would change the answer — one short line each"],
+  "needs_professional_confirmation": ["Something only an executor, solicitor or tax professional can settle — one short line each. Never resolve these here"],
+  "conversation": {
+    "opener": "How to raise it — 1-2 sentences",
+    "what_to_clarify": ["Something to get said out loud — one short line each"]
+  }
+}
+
+ARRAY BOUNDS: principles_in_tension 2-4, facts_that_matter at most 5, needs_professional_confirmation at most 4, what_to_clarify at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a compassionate inheritance advisor who understands that estate money is grief money. You navigate family dynamics, legal complexity, and emotional minefields with wisdom and kindness. Always recommend professional help for legal/tax matters. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone think through an inheritance question practically, and name what needs professional confirmation. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatInheritance' });
 
-    if (!parsed.assessment) {
+    if (!parsed.arrangement_considered) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatInheritance] Error:', error);
@@ -1124,50 +1332,56 @@ router.post('/money-diplomat-cultural', rateLimit(DEFAULT_LIMITS), async (req, r
       return res.status(400).json({ error: 'Describe both cultural backgrounds.' });
     }
 
-    const prompt = withLanguage(`Two people from different cultural backgrounds are navigating a money moment together. Translate the unspoken rules so nobody accidentally offends or misreads the other.
+    const prompt = withLanguage(`CULTURAL MONEY GUIDANCE
 
-YOUR BACKGROUND: "${yourBackground.trim()}"
-THEIR BACKGROUND: "${theirBackground.trim()}"
-SITUATION: "${situation?.trim() || 'General social interaction involving money'}"
+Do not describe a country, ethnicity, religion, region, or culture as having one
+uniform money rule.
+
+Do not infer an individual's expectations from their background.
+
+Do not invent tipping, gift, bargaining, payment, hosting, wedding, family, or
+business norms.
+
+If a cultural norm is not verified, present it as something to check rather than
+as a fact.
+
+For two people from different backgrounds:
+- use only the expectations they actually describe
+- identify where those stated expectations differ
+- propose language that makes expectations explicit
+
+Never output a "culture clash risk" score.
+Never say what an action "actually means in their culture".
+
+WHAT THEY SAID ABOUT THEIR OWN BACKGROUND: ${yourBackground || 'Nothing supplied.'}
+WHAT THEY SAID ABOUT THE OTHER PERSON: ${theirBackground || 'Nothing supplied. A background is not an expectation — do not derive one.'}
+THE SITUATION: ${situation.trim()}
 
 Return ONLY valid JSON:
 {
-  "culture_clash_risk": "Low|Medium|High — how different the money norms are between these two cultures",
-  "your_norms": {
-    "what_you_expect": "What feels normal to you in this situation based on your background — one sentence",
-    "blind_spot": "What you might not realize comes across differently to them — one sentence"
-  },
-  "their_norms": {
-    "what_they_expect": "What feels normal to them based on their background — one sentence",
-    "what_they_might_do": "Behavior you might misread — e.g., 'They will insist on paying 3 times. This is ritual, not genuine.' — one sentence"
-  },
-  "translation_guide": [
-    {
-      "their_behavior": "Something they might do with money — one sentence",
-      "what_it_means": "What it actually signals in their culture — one sentence",
-      "what_you_might_think": "What you might incorrectly assume — one sentence",
-      "how_to_respond": "The response that honors both cultures — one sentence"
-    }
-  ],
-  "dos_and_donts": {
-    "do": ["2-3 things that will go over well"],
-    "dont": ["2-3 things that could offend or confuse"]
-  },
-  "the_bridge": "One approach that works across both cultures for this situation — the universal move — one sentence",
-  "if_awkward": "What to say if a money moment gets weird — a graceful recovery that acknowledges cultural differences without making it A Thing — one sentence"
-}`, userLanguage);
+  "what_you_have_described": ["An expectation one of them ACTUALLY stated — one short line each. Never an expectation inferred from a background"],
+  "possible_mismatch": "Where the stated expectations may differ, written as a possibility — one or two sentences. Empty string if only one side's expectations were described",
+  "what_not_to_assume": ["Something a background does NOT establish about this person — one short line each"],
+  "questions_to_make_explicit": ["A question that would surface the real expectation instead of guessing at it — one short line each"],
+  "bridge": "A way to handle the moment that works whatever the expectations turn out to be — one or two sentences",
+  "script": "Words they could actually say to make expectations explicit — 2-4 sentences"
+}
+
+ARRAY BOUNDS: what_you_have_described at most 5, what_not_to_assume at most 4, questions_to_make_explicit at most 4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are a cross-cultural money etiquette translator. You know the unspoken rules of money in every culture and help people from different backgrounds navigate shared money moments without offense. Be specific, not generic. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help two people make their money expectations explicit to each other, using only the expectations they each describe. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatCultural' });
 
-    if (!parsed.culture_clash_risk) {
+    if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatCultural] Error:', error);
@@ -1186,49 +1400,44 @@ router.post('/money-diplomat-charity', rateLimit(DEFAULT_LIMITS), async (req, re
       return res.status(400).json({ error: 'Describe the donation/contribution ask.' });
     }
 
-    const prompt = withLanguage(`Someone is being asked to donate or contribute. Help them figure out how much (if anything), how to say yes gracefully, and how to say no without guilt.
+    const prompt = withLanguage(`DONATIONS
 
-SITUATION: "${situation.trim()}"
-TYPE: ${askType || 'Not specified'}
-RELATIONSHIP TO ASKER: ${relationship || 'Not specified'}
-AMOUNT ASKED: ${amount || 'Not specified'}
+Do not say a donation is tax-deductible or likely deductible unless verified
+for the user's jurisdiction and recipient organization.
+
+Where tax comes up at all, say: tax treatment depends on jurisdiction and the
+recipient's status; verify before relying on a deduction.
+
+THE SITUATION: ${situation.trim()}
+KIND OF ASK: ${askType || 'Not supplied.'}
+RELATIONSHIP TO WHOEVER IS ASKING: ${relationship || 'Not supplied.'}
+AMOUNT: ${amount || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "recommendation": {
-    "amount": "XX",
-    "range": { "minimum": "XX", "comfortable": "XX", "generous": "XX" },
-    "verdict": "One sentence — donate this much and feel good about it"
-  },
-  "obligation_check": {
-    "are_you_obligated": "No|Socially expected|Strongly expected|Yes",
-    "what_happens_if_no": "Realistically, what are the social consequences of not contributing — one sentence",
-    "guilt_vs_genuine": "Is this genuine generosity or guilt-driven? Be honest. — one sentence"
-  },
-  "if_donating": {
-    "amount_reasoning": "Why this specific amount — not too much, not too little — 1-2 sentences",
-    "message": "What to say when you give — optional but adds warmth — 2-4 sentences"
-  },
-  "if_declining": {
-    "how_to_say_no": "Exact words — kind, firm, no over-explaining — one sentence",
-    "alternative": "Something you CAN offer instead — time, signal boost, smaller amount — one sentence",
-    "if_pressured": "What to say if they push — because some people will — one sentence"
-  },
-  "frequency_check": "If you're being asked constantly (fundraisers, GoFundMes, kid's teams), here's a sustainable policy you can set for all future asks — one sentence",
-  "tax_note": "Quick note on whether this is likely tax-deductible — one sentence"
-}`, userLanguage);
+  "recommendation": "What to do — one or two sentences",
+  "why": ["Reasoning grounded in what they supplied — one short line each"],
+  "amount_guidance": "A range or approach they would be comfortable with, in their currency. Never a figure presented as the correct one",
+  "tax_note": "Tax treatment depends on jurisdiction and the recipient's status; verify before relying on a deduction. Say nothing more specific than that",
+  "script": "Words they could say, whether giving or declining — 2-4 sentences",
+  "if_they_push": "What to say if the ask is repeated — 1-2 sentences"
+}
+
+ARRAY BOUNDS: why 2-4.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('You are a charitable giving advisor who helps people be generous without being exploited. You understand the difference between genuine giving and guilt compliance. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide what to give. Tax treatment depends on jurisdiction and the recipient status, and you never assert it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatCharity' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(pinEnums(parsed)));
 
   } catch (error) {
     console.error('[MoneyDiplomatCharity] Error:', error);
@@ -1241,34 +1450,54 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/money-diplomat-simulate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { situation, otherPerson, userResponse, conversationHistory, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+    const { situation, otherPerson, userResponse, conversationHistory, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!situation?.trim()) {
       return res.status(400).json({ error: 'Describe the money situation to practice.' });
     }
 
-    const profileCtx = userProfile ? `\nUSER PROFILE: Budget comfort: ${userProfile.incomeLevel || 'unknown'}, cultural background: ${userProfile.culture || 'unknown'}` : '';
 
     // If no user response yet, start the simulation
     if (!userResponse) {
-      const prompt = withLanguage(`You're playing the other person in a money conversation. Set the scene and deliver the opening line that puts the user in the hot seat. Make it realistic — this is practice for a real conversation.
+      const prompt = withLanguage(`PRACTICE MODE
 
-SITUATION: "${situation.trim()}"
-THE OTHER PERSON: ${otherPerson?.trim() || 'The other party'}${profileCtx}
+The other person is simulated, not predicted.
+
+Never imply the simulated response reflects what the real person is likely to say,
+feel, intend, or do.
+
+Generate one plausible response that tests the user's ability to communicate their
+request or boundary.
+
+Do not invent new factual history between the parties.
+
+When coaching the user's response:
+- evaluate clarity
+- identify unsupported claims
+- identify whether the request/boundary is clear
+- suggest a stronger phrasing
+
+Do not psychoanalyze either person.
+
+THE SITUATION: ${situation.trim()}
+WHO THEY ARE REHEARSING WITH: ${otherPerson || 'Not supplied — keep the other person generic rather than inventing a character.'}
+
+Open the rehearsal. One plausible opening line, nothing about what the real
+person would say.
 
 Return ONLY valid JSON:
 {
-  "scene": "2-sentence scene-setting — where you are, the mood, what just happened — one sentence",
-  "their_line": "What the other person says — realistic, in character, the thing that puts you on the spot — one sentence",
-  "their_emotion": "How they're feeling — nervous|entitled|casual|desperate|passive-aggressive|loving|awkward",
-  "what_theyre_really_thinking": "The subtext — what they want but won't say directly — one sentence",
-  "coaching_hint": "A small hint for the user on what to focus on in their response — not the answer, just the angle — one sentence"
-}`, userLanguage);
+  "scene": "One sentence setting where this is happening, using only what they supplied",
+  "opening_line": "What the simulated other person says first — 1-2 sentences",
+  "what_this_tests": "What the user has to do well to handle this opening — one sentence"
+}
+
+Return ONLY valid JSON.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1000,
-      system: withLanguage('You are a realistic role-player who embodies the other person in a money conversation. Be authentic — people are messy, emotional, and don\'t always say what they mean. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou play ONE plausible version of the other person so the user can rehearse. A simulation, never a prediction of what the real person would say, feel or do. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSimStart' });
       return res.json({ type: 'prompt', ...parsed });
@@ -1277,34 +1506,49 @@ Return ONLY valid JSON:
     // Evaluate response and continue
     const historyCtx = conversationHistory?.map(h => `Them: "${h.them}" You: "${h.you}"`).join('\n') || '';
 
-    const prompt = withLanguage(`You're coaching someone through a money conversation. Evaluate their response and continue the simulation as the other person.
+    const prompt = withLanguage(`PRACTICE MODE
 
-SITUATION: "${situation.trim()}"
-OTHER PERSON: ${otherPerson?.trim() || 'The other party'}${profileCtx}
+The other person is simulated, not predicted.
 
-CONVERSATION SO FAR:
-${historyCtx}
-Them (latest): "${conversationHistory?.slice(-1)[0]?.them || situation}"
-User responded: "${userResponse.trim()}"
+Never imply the simulated response reflects what the real person is likely to say,
+feel, intend, or do.
+
+Generate one plausible response that tests the user's ability to communicate their
+request or boundary.
+
+Do not invent new factual history between the parties.
+
+When coaching the user's response:
+- evaluate clarity
+- identify unsupported claims
+- identify whether the request/boundary is clear
+- suggest a stronger phrasing
+
+Do not psychoanalyze either person.
+
+THE SITUATION: ${situation.trim()}
+WHAT THE USER JUST SAID: ${userResponse || ''}
+THE REHEARSAL SO FAR: ${historyCtx || 'Just started.'}
 
 Return ONLY valid JSON:
 {
-  "evaluation": {
-    "score": 75,
-    "what_worked": "The strongest part of their response — be specific — one sentence",
-    "power_move": "A subtle thing they could add that would shift the dynamic in their favor — one sentence"
+  "coaching": {
+    "clarity": "Was the request or boundary actually clear? — one or two sentences about the WORDS, not the person",
+    "unsupported_claims": ["Something they asserted that their own situation does not support — one short line each. Empty array if none"],
+    "stronger_phrasing": "A sharper version of what they were trying to say — 1-2 sentences"
   },
-  "their_next_line": "How the other person responds — realistic, in character. They might push back, cave, deflect, guilt-trip, or accept. — one sentence",
-  "their_emotion_now": "How the other person feels after the user's response — one sentence",
-  "escalation_level": "De-escalating|Stable|Escalating|Resolved",
-  "coaching_hint": "What to focus on next — one sentence",
-  "is_resolved": false
-}`, userLanguage);
+  "reply": "One plausible next line from the simulated other person — 1-2 sentences. Not a prediction",
+  "keep_going": true
+}
+
+ARRAY BOUNDS: unsupported_claims at most 3.
+
+Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1500,
-      system: withLanguage('You are both a realistic role-player AND a money conversation coach. Evaluate honestly, then stay in character for the next line. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou play one plausible version of the other person and coach the user reply. The simulation is not a prediction of anyone. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSimEval' });
 
@@ -1316,61 +1560,11 @@ Return ONLY valid JSON:
   }
 });
 
-// ═══════════════════════════════════════════════════
-// ROUTE 22: MONTHLY RECAP — Summarize usage patterns
-// ═══════════════════════════════════════════════════
-router.post('/money-diplomat-recap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { history, debts, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-
-    if (!history?.length || history.length < 3) {
-      return res.status(400).json({ error: 'Need at least 3 situations for a recap.' });
-    }
-
-    const historyCtx = history.map((h, i) => `${i + 1}. [${h.type}] ${h.summary} (${new Date(h.date).toLocaleDateString()})`).join('\n');
-    const debtCtx = debts?.length ? `\nOUTSTANDING DEBTS: ${debts.filter(d => !d.settled).map(d => `${d.person}: ${d.amount}`).join(', ')}\nSETTLED: ${debts.filter(d => d.settled).length}` : '';
-    const profileCtx = userProfile ? `\nPROFILE: ${userProfile.incomeLevel || ''}, ${userProfile.culture || ''}` : '';
-
-    const prompt = withLanguage(`Generate a monthly money recap for this person. Make it feel like Spotify Wrapped for their social money life — insightful, personal, and a little surprising.
-
-SITUATIONS THIS PERIOD:
-${historyCtx}
-${debtCtx}
-${profileCtx}
-
-Return ONLY valid JSON:
-{
-  "headline": "A punchy, personalized headline — e.g., 'The Generous Overthinker: Your February Money Report' — one sentence",
-  "stats": {
-  },
-  "insights": [
-    {
-      "insight": "A pattern or trend — specific, not generic — one sentence",
-      "so_what": "What this means for them practically — one sentence"
-    }
-  ],
-  "growth": "How their money confidence has changed — reference specific situations — one sentence",
-  "challenge_next_month": "One specific money challenge to tackle next month based on their patterns — one sentence",
-  "fun_stat": "One surprising or amusing stat — e.g., 'You asked MoneyDiplomat about tipping 6 times. You're officially the most thoughtful tipper in your friend group.' — one sentence",
-  "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected 340 I was owed. 💸' — one sentence"
-}`, userLanguage);
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage('You are a witty, insightful personal money analyst who makes people feel good about taking control of their social money life. Think Spotify Wrapped energy. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatRecap' });
-
-    if (!parsed.headline) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[MoneyDiplomatRecap] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
+// Reviewed against backend/lib/outputStandard.js during the 2026-09-04 rewrite.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  checks: ['validateResult'],
+  note: 'predicted outcomes and reactions, visible spending read as evidence about a person, an invented real-issue-underneath, a culture given one uniform money rule, and tax or legal conclusions are all blanked in code. The three verdict enums are pinned to English because the frontend switches on them. The money-profile and monthly-recap routes were deleted rather than repaired: both built a personality out of usage.',
+};
 
 module.exports = router;
