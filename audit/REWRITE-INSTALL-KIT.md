@@ -217,6 +217,168 @@ Two traps in the preview pane specifically:
 
 ---
 
+## 9 — Rewriting a route's SCHEMA, not just its prompt
+
+Added 2026-09-04 after five rewrites in a row (Justify My Meeting, Meeting Hijack
+Stopper, Micro-Adventure Mapper, Money Diplomat, and the Meeting BS Detector
+rename). Every trap below fired during those, most of them more than once. They
+are not about installing supplied code — they are about what breaks when the
+SHAPE of a response changes.
+
+**Sweep every guard against the schema it now returns.** This is the single most
+reliable bug in the codebase. A route keeps `if (!parsed.verdict)` while its new
+schema emits `recommendation`, and it 500s on every call. It fired ten times in
+one Money Diplomat pass and once in Justify My Meeting, each time on the first
+live probe.
+
+```bash
+python3 - <<'EOF'
+import io, re, sys
+# Two things this has to get right, both learned by getting them wrong:
+#
+#   1. Guards use three different variable names here — `parsed` (336 uses),
+#      `data` (19) and `result` (8). A sweep that knows only `parsed` prints a
+#      clean bill of health for a route it never looked at.
+#   2. Schema keys are collected FILE-wide, not from the route body. Many routes
+#      declare their schema as a module-level const above the handler, so a
+#      route-scoped search finds none of its keys and flags every correct guard.
+#
+# File-scoping trades precision for silence: in an action-dispatch route with
+# several schemas, a guard naming a field that belongs to a DIFFERENT branch
+# still looks fine. What this catches reliably is the common case — a guard
+# naming a field that no longer exists anywhere.
+GUARD = re.compile(r'if \(!(?:parsed|data|result)\.([A-Za-z_]+)')
+for fp in sys.argv[1:]:
+    s = io.open(fp, encoding='utf-8').read()
+    keys = set(re.findall(r'^\s*"([a-z_]+)"\s*:', s, re.M))
+    hits = bad = 0
+    for g in GUARD.finditer(s):
+        hits += 1
+        if g.group(1) not in keys:
+            bad += 1
+            line = s[:g.start()].count('\n') + 1
+            print(f'MISMATCH {fp}:{line} guard=!{g.group(1)} — no such key in this file')
+    print(f'{fp.split("/")[-1]:38} guards inspected: {hits}  mismatches: {bad}')
+EOF
+```
+
+Run it as `python3 sweep.py backend/routes/<route>.js`. **If it reports zero
+guards inspected, the sweep did not pass — it failed to run.** The first version
+of this script knew only `parsed.` and scoped keys to the route body; it called
+Micro-Adventure Mapper clean because it found no guards at all, then called it
+broken because it found no schema. Both readings were the script's fault.
+
+Guard a field the schema ALWAYS emits, never a nullable or nested one.
+
+**Bump the persisted key in the same commit.** A v1 result restored into a v2
+renderer crashes the tool for every existing user — Magic Mouth did exactly
+that. `usePersistentState('tool-results', …)` → `'tool-results-v2'`.
+
+**A normaliser keyed on field NAME alone will eventually corrupt a route.**
+Money Diplomat's `pinEnums` pinned `recommendation` — a four-value enum in
+Lending, free prose in Family and Donations — on every response, so two routes
+had their answer replaced by a Lending verdict. It was recorded that way and
+`check:golden` passed on it for a full cycle: a structural check sees that a
+field holds a value, not that the value is the wrong KIND. Scope such helpers per
+route.
+
+**Re-record the goldens, and declare `optionalSections`.** The thin-result metric
+reads its expected shape from the golden files, so a stale golden makes every
+live call look half-empty on the dashboard. And a case that asserts a
+sometimes-empty array is non-empty fails at random — declare those arrays rather
+than re-running until it passes.
+
+---
+
+## 10 — Deterministic checkers (`validateResult` and friends)
+
+**Test in BOTH directions, every time.** A bad form the rule must catch, and a
+good form it must not blank. Every regex written across these five rewrites
+passed its first bad-form test and still had holes.
+
+**A rule that never fires is indistinguishable from a rule that passes.** One
+`INFERRED_PREFERENCE` pattern used `\p{L}` while carrying only the `i` flag —
+without `u`, `\p{…}` is not a unicode property escape at all, it matches a
+literal `p`. The pattern looked correct, matched nothing, and passed its own test
+only because a different alternative in the same regex caught the string. Sweep
+for it:
+
+```bash
+grep -n "p{" backend/routes/*.js | grep -v "'u'" | grep -v "'iu'"
+```
+
+**A hedge-spare is not automatic.** Most detectors should spare a hedged sentence,
+because a hedge usually means the model is proposing rather than asserting. Not
+always: "**If** a door is propped open, you're welcome to look" and "you
+**might** catch artists mid-project" both open with a hedge and are both claims
+about a place nobody can see. Decide per rule whether the hedge is doing
+epistemic work or rhetorical work.
+
+**Words are not always adjacent.** A pattern requiring noun and verb to touch let
+"many artists **in Pilsen** are generous with their time" straight through.
+
+**Blank a named field; PRUNE an array item.** An empty bullet reads worse than no
+bullet. And arrays are objects — `Object.entries` enumerates their indices, so a
+walk with an early return for arrays silently skips every array-of-strings field.
+
+---
+
+## 11 — Two audit anchors that move under you
+
+`audit_v2-3-2.py` finds the results region by looking for the LAST `return (` in
+the file and a `{renderResults()}` call in the JSX after it. Two consequences,
+both of which cost a debugging cycle:
+
+- **Declare a new helper component ABOVE the main component** if it contains a
+  `return (`. Putting `GroundedResult` below moved the anchor past the
+  `renderResults()` call and collapsed the post-result region to nothing, so
+  S5.5 could not pass however many cross-refs were present.
+- **Render results through a `renderResults()` helper, not inline.** Inline gives
+  the check nothing to split on and the post-result half fails permanently.
+
+Also: PF-16 and S5.5 split on `results\s*&&`, and `{!results && (` matches that
+too. Name a guard `hasOutput` / `canReset` / `hasAnswer` when it must sit on the
+pre-result side.
+
+---
+
+## 12 — i18n keys are not only in `t()` calls
+
+Collecting keys with `grep "t('md_"` alone dropped 112 live keys from Money
+Diplomat and the scenario picker rendered raw key names, because option labels
+are referenced as string literals:
+
+```js
+const SITUATIONS = [{ id: 'tip', labelKey: 'md_sit_tip_label' }];  // then t(s.labelKey)
+```
+
+Collect every `'<prefix>_…'` literal in the tool file, not just the calls:
+
+```bash
+grep -oE "'(<prefix>_[a-z0-9_]+)'" src/tools/<Tool>.js | tr -d "'" | sort -u
+```
+
+**A catalog tagline that opens with an emoji doubles** against the header's
+`tool?.icon`. Use `toolTagline()` from `src/utils/toolTagline.js` rather than
+editing the owner's wording.
+
+---
+
+## 13 — When the copy outlives the tool
+
+A rewrite changes what the tool does; the words describing it elsewhere do not
+follow on their own. After any rewrite, grep for the tool and re-read:
+
+- `src/data/tools.js` — `description`, `tagline`, `seoDescription`, `primer`,
+  `guide.*`. Justify My Meeting's catalog still promised a confidence score.
+- `guides/**/*.js` — CTA `body` text. Twelve guides were still selling
+  "permission to decline" and "managing dominators" after both were removed.
+- `src/data/toolFinderMetadata.js` — `problems`, `capabilities`, `notFor`.
+
+The rule: if the rewrite removed a promise, find every place that still makes it.
+
+---
+
 ## Order of work
 
 1. Diff supplied vs current; read for bugs (§0, §6)
@@ -227,3 +389,8 @@ Two traps in the preview pane specifically:
 6. Live runs — including one in German for headroom
 7. Browser check (§8)
 8. Commit with what was fixed **and what was found broken**
+
+When the rewrite changes a response SHAPE rather than only its prompt, §9–§13
+apply on top: sweep the guards, bump the storage key, re-record the goldens,
+test the detectors both ways, and chase the copy that still describes the old
+tool.
