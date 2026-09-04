@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -16,6 +16,123 @@ const LANGUAGE_FLAGS = {
   'Norwegian': '🇳🇴', 'Czech': '🇨🇿', 'Arabic': '🇸🇦', 'Hindi': '🇮🇳',
   'Greek': '🇬🇷', 'Russian': '🇷🇺', 'Turkish': '🇹🇷', 'Tagalog': '🇵🇭',
 };
+const getFlag = (lang) => LANGUAGE_FLAGS[lang] || '🌍';
+
+// A stable identity for a saved word, independent of array position — same
+// word/language pair should never produce two saved records. Section 13.
+const wordKey = (word, language) => `${(word || '').trim().toLowerCase()}|${(language || '').trim().toLowerCase()}`;
+
+// "saudade / Portuguese · established", "joy-flinch / Invented here",
+// "Already missing something before it's over / Plain English" — the three
+// provenance shapes from the spec's own mockups (section 4).
+const provenanceLine = (entry, t) => {
+  if (entry.type === 'invented') return t('ntf_invented_here');
+  if (entry.type === 'plain_english') return t('ntf_plain_english_type');
+  return entry.language ? `${getFlag(entry.language)} ${entry.language} · ${t('ntf_established')}` : t('ntf_established');
+};
+
+// ── Local relevance heuristic for "From your dictionary" (spec section 9) ──
+// Deliberately NOT an LLM call. The spec's CORE PRINCIPLE bans inferring
+// psychological similarity ("does this person seem to be experiencing the
+// same emotional pattern again?") — a token-overlap score can only ever
+// answer "do these two pieces of text share words," which makes that ban
+// true by construction instead of by prompting a model not to cross it.
+const STOPWORDS = new Set(['this','that','with','from','have','been','were','their','about','which','there','would','could','should','feel','feels','feeling','felt','when','what','then','than','they','them','your','something']);
+const tokenize = (s) => new Set(
+  (s || '').toLowerCase().normalize('NFKD')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .split(/\s+/).filter(w => w.length > 3 && !STOPWORDS.has(w))
+);
+const jaccard = (a, b) => {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const x of a) if (b.has(x)) inter++;
+  return inter / new Set([...a, ...b]).size;
+};
+const RELEVANCE_THRESHOLD = 0.12;
+
+// ════════════════════════════════════════════════════════════
+// Full Dictionary — expanded view. Above the main component per convention;
+// takes everything through props so it carries no tool state of its own.
+// ════════════════════════════════════════════════════════════
+const FeelingDictionaryModal = ({
+  savedWords, recentHistory, onClose, onOpenSaved, onUnsave,
+  onOpenRecent, onAnalyzeAgain, onRemoveRecent, onClearRecent,
+  t, c, linkStyle,
+}) => (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+    <div
+      className={`${c.card} border-2 ${c.border} rounded-xl p-5 max-w-lg w-full max-h-[80vh] overflow-y-auto`}
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h3 className={`text-lg font-bold ${c.text}`}>📖 {t('ntf_dictionary_title')}</h3>
+        <button onClick={onClose} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-xs font-bold`}>{t('ntf_dictionary_close')}</button>
+      </div>
+
+      <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>♡ {t('ntf_dictionary_saved_words')}</p>
+      {savedWords.length > 0 ? (
+        <div className="space-y-2 mb-5">
+          {savedWords.map(w => (
+            <div key={w.id} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold ${c.text}`}>{w.word}</p>
+                  <p className={`text-[10px] ${c.textMuted}`}>{provenanceLine(w, t)}</p>
+                  {w.shortMeaning && <p className={`text-xs ${c.textSecondary} mt-1`}>{w.shortMeaning}</p>}
+                  {w.seenCount > 1 && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('ntf_seen_in_searches', { count: w.seenCount })}</p>}
+                </div>
+                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <button onClick={() => onOpenSaved(w)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_open')}</button>
+                <button onClick={() => onUnsave(w.id)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_unsave')}</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className={`text-xs ${c.textMuted} mb-5`}>{t('ntf_dictionary_empty_teaser')}</p>
+      )}
+
+      <div className="flex items-center justify-between mb-2">
+        <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>🕘 {t('ntf_recent')}</p>
+        {recentHistory.length > 0 && (
+          <button onClick={onClearRecent} className={`text-[11px] font-semibold ${linkStyle}`}>{t('ntf_clear_recent')}</button>
+        )}
+      </div>
+      {recentHistory.length > 0 ? (
+        <div className="space-y-2">
+          {recentHistory.map(entryItem => (
+            <div key={entryItem.id} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+              <div className="flex items-start justify-between gap-2">
+                <p className={`text-xs ${c.textSecondary} truncate`}>
+                  {entryItem.preview || t('ntf_session')}
+                  {entryItem.bestMatchWord ? ` — ${entryItem.bestMatchWord}` : ''}
+                </p>
+                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(entryItem.date).toLocaleDateString()}</span>
+              </div>
+              <div className="flex gap-2 mt-2">
+                {/* Older entries were saved before full-result storage existed
+                    — nothing to reopen for those, so "Open" only appears
+                    once a result actually rides along. Section 19: never
+                    fabricate or silently regenerate for an old record. */}
+                {entryItem.results ? (
+                  <button onClick={() => onOpenRecent(entryItem)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_open')}</button>
+                ) : (
+                  <button onClick={() => onAnalyzeAgain(entryItem)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>🔄 {t('ntf_analyze_again')}</button>
+                )}
+                <button onClick={() => onRemoveRecent(entryItem.id)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_remove')}</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className={`text-xs ${c.textMuted}`}>{t('ntf_dictionary_empty_no_saved')}</p>
+      )}
+    </div>
+  </div>
+);
 
 // ════════════════════════════════════════════════════════════
 // COMPONENT
@@ -88,6 +205,11 @@ const NameThatFeeling = ({ tool }) => {
   const [whyHardToName, setWhyHardToName] = useState('');
   const [results, setResults] = usePersistentState('namethatfeeling-result-v2', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('namethatfeeling-history-v2', []);
+  // My Feeling Dictionary — words the visitor explicitly chose to keep,
+  // distinct from Recent's automatic log. New key: this is a new concept,
+  // not a reshaped version of anything that existed before.
+  const [savedWords, setSavedWords] = usePersistentState('namethatfeeling-dictionary-v1', []);
+  const [showDictionary, setShowDictionary] = useState(false);
   const [error, setError] = useState('');
   // PF-16: this tool shipped with no reset at all — setResults(null) existed
   // only inside the submit handler. Added, on the title row like every other.
@@ -100,6 +222,84 @@ const NameThatFeeling = ({ tool }) => {
     if (m === 'PARTIAL MATCH') return c.warning;
     return c.warm;
   };
+
+  // ── My Feeling Dictionary — save / unsave / reopen ──
+  // Remember the language, not a profile of the person: every field below
+  // is either something the visitor supplied or something the tool already
+  // generated for the word actually saved. Nothing here infers a mood, a
+  // pattern, or a trait.
+  const isWordSaved = useCallback((word, language) =>
+    savedWords.some(w => wordKey(w.word, w.language) === wordKey(word, language)),
+  [savedWords]);
+
+  const saveWord = useCallback((entry) => {
+    const key = wordKey(entry.word, entry.language);
+    setSavedWords(prev => {
+      const idx = prev.findIndex(w => wordKey(w.word, w.language) === key);
+      if (idx >= 0) {
+        // Same word saved again — bump a count, don't duplicate. Section 13:
+        // "do not interpret that count psychologically," it's just a tally.
+        const next = [...prev];
+        next[idx] = { ...next[idx], updatedAt: new Date().toISOString(), seenCount: (next[idx].seenCount || 1) + 1 };
+        return next;
+      }
+      const now = new Date().toISOString();
+      const entryRecord = {
+        id: `dict_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        createdAt: now,
+        updatedAt: now,
+        originalDescription: description.trim(),
+        word: entry.word,
+        language: entry.language || '',
+        pronunciation: entry.pronunciation || '',
+        type: entry.type,
+        match: entry.match || '',
+        shortMeaning: entry.shortMeaning || '',
+        fullDefinition: entry.fullDefinition || '',
+        whyItFit: entry.whyItFit || '',
+        whereItDidnt: entry.whereItDidnt || '',
+        savedByUser: true,
+        sourceResult: results,
+        seenCount: 1,
+      };
+      // PF-25 exception: Saved Words persists until the visitor removes an
+      // entry — deliberately uncapped, not a session history list.
+      return [entryRecord, ...prev];
+    });
+  }, [description, results, setSavedWords]);
+
+  const unsaveWordByKey = useCallback((word, language) => {
+    const key = wordKey(word, language);
+    setSavedWords(prev => prev.filter(w => wordKey(w.word, w.language) !== key));
+  }, [setSavedWords]);
+
+  const unsaveWordById = useCallback((id) => setSavedWords(prev => prev.filter(w => w.id !== id)), [setSavedWords]);
+
+  const openSavedEntry = useCallback((entry) => {
+    // Reopens the stored result as it originally appeared — never re-runs
+    // the model. Section 7.
+    if (entry.sourceResult) setResults(entry.sourceResult);
+    setDescription(entry.originalDescription || '');
+    setShowDictionary(false);
+  }, [setResults]);
+
+  const openRecentEntry = useCallback((entry) => {
+    if (entry.results) setResults(entry.results);
+    setDescription(entry.preview || '');
+    setShowDictionary(false);
+  }, [setResults]);
+
+  const removeRecentEntry = useCallback((id) => setSessionHistory(prev => prev.filter(s => s.id !== id)), [setSessionHistory]);
+  const clearRecent = useCallback(() => setSessionHistory([]), [setSessionHistory]);
+
+  const analyzeAgainFromEntry = useCallback((entry) => {
+    // Explicitly labeled and visitor-initiated — the visitor still has to
+    // press submit again. Never silently regenerate in place of a stored
+    // result. Sections 7 and 19.
+    setDescription(entry.originalDescription || entry.preview || '');
+    setResults(null);
+    setShowDictionary(false);
+  }, [setResults]);
 
   // ── API ──
   const runSearch = useCallback(async () => {
@@ -118,17 +318,22 @@ const NameThatFeeling = ({ tool }) => {
         context: contextParts.join('\n') || undefined,
       });
       setResults(data);
-      // Store only what the visitor actually gave us and what came back — no
-      // inferred pattern or history across sessions, per the tool's own rule
-      // against inventing emotional history.
+      // Store what the visitor gave us and what came back, including the
+      // full result — needed so a Recent entry can be reopened later
+      // without another API call (section 7). No inferred pattern or
+      // emotional history, per the tool's own rule against inventing one.
       setSessionHistory(prev => [{
         id: Date.now(),
         date: new Date().toISOString(),
-        // PF-25 exception: this 40 is string-preview truncation, not a
-        // history cap — the array itself is capped at 6, right below.
+        // PF-25 exception: this 40 is string-preview truncation, not the
+        // history cap — the array itself is capped at 15, right below.
         preview: description.trim().slice(0, 40),
         bestMatchWord: data?.best_match?.word || '',
-      }, ...prev].slice(0, 6));
+        results: data,
+        // PF-25 exception: Recent keeps the last 15 searches (not the old
+        // 6) so a visitor can reopen or save from something they didn't
+        // save the first time — a browse/discovery list, not a preview.
+      }, ...prev].slice(0, 15));
     } catch (err) {
       setError(err.message || t('ntf_error'));
     }
@@ -165,7 +370,7 @@ const NameThatFeeling = ({ tool }) => {
     if (results?.other_words?.length) {
       lines.push(`🎯 ${t('ntf_other_words')}`);
       results.other_words.forEach(m => {
-        lines.push(`  ${LANGUAGE_FLAGS[m.language] || '🌍'} ${m.word} (${m.language})`);
+        lines.push(`  ${getFlag(m.language)} ${m.word} (${m.language})`);
         lines.push(`  ${m.definition}`);
         if (m.captures) lines.push(`  ${t('ntf_captures')} ${m.captures}`);
         if (m.misses) lines.push(`  ${t('ntf_misses')} ${m.misses}`);
@@ -209,7 +414,87 @@ const NameThatFeeling = ({ tool }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  const getFlag = (lang) => LANGUAGE_FLAGS[lang] || '🌍';
+  // A previously-saved word whose meaning genuinely overlaps the new
+  // description — section 8. Skips the word the visitor just matched again
+  // (nothing to compare it to) and stays silent below the threshold rather
+  // than surfacing a weak, distracting match. Section 9: "one relevant prior
+  // word is better than several weak matches."
+  const relevantSavedWord = useMemo(() => {
+    if (!results?.best_match || !savedWords.length) return null;
+    const descTokens = tokenize([description, results?.what_you_described?.ingredients?.join(' ')].join(' '));
+    if (!descTokens.size) return null;
+    const currentKey = wordKey(results.best_match.word, results.best_match.language);
+    let best = null, bestScore = 0;
+    for (const w of savedWords) {
+      if (wordKey(w.word, w.language) === currentKey) continue;
+      const wTokens = tokenize([w.word, w.shortMeaning, w.fullDefinition, w.originalDescription].join(' '));
+      const score = jaccard(descTokens, wTokens);
+      if (score > bestScore) { bestScore = score; best = w; }
+    }
+    return bestScore >= RELEVANCE_THRESHOLD ? best : null;
+  }, [results, savedWords, description]);
+
+  // Compact preview — pre-result (section 10, three empty states) and
+  // post-result (section 11) reuse the same block; only which branch renders
+  // differs, driven by what's actually in state.
+  const renderDictionaryPreview = () => {
+    const topSaved = savedWords.slice(0, 3);
+    const topRecent = sessionHistory.slice(0, 2);
+    return (
+      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <div className="flex items-center justify-between mb-2">
+          <p className={`text-xs font-bold ${c.textMuted}`}>📖 {t('ntf_dictionary_title')}</p>
+          {(savedWords.length > 0 || sessionHistory.length > 0) && (
+            <button onClick={() => setShowDictionary(true)} className={`text-xs font-semibold ${c.accentTxt}`}>
+              {t('ntf_dictionary_view_all')} →
+            </button>
+          )}
+        </div>
+        {topSaved.length > 0 ? (
+          <div className="space-y-1.5">
+            {topSaved.map(w => (
+              <button key={w.id} onClick={() => openSavedEntry(w)} className="w-full flex items-center justify-between gap-2 text-start">
+                <span className="min-w-0 truncate">
+                  <span className={`text-sm font-bold ${c.text}`}>{w.word}</span>
+                  <span className={`text-[10px] ${c.textMuted} ms-1.5`}>{provenanceLine(w, t)}</span>
+                </span>
+                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
+              </button>
+            ))}
+          </div>
+        ) : topRecent.length > 0 ? (
+          <>
+            <p className={`text-xs ${c.textMuted} mb-2`}>{t('ntf_dictionary_empty_no_saved')}</p>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('ntf_recent')}</p>
+            <div className="space-y-1">
+              {topRecent.map(entryItem => (
+                <button key={entryItem.id} onClick={() => openRecentEntry(entryItem)} className={`w-full text-start text-xs ${c.textSecondary} truncate block`}>
+                  {entryItem.preview}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className={`text-xs ${c.textMuted}`}>{t('ntf_dictionary_empty_teaser')}</p>
+        )}
+      </div>
+    );
+  };
+
+  // Per-card save toggle — a plain render helper (not a component tag), so
+  // it never remounts and resets on re-render the way an inline-defined
+  // <Component/> would.
+  const renderSaveButton = (entry) => {
+    const saved = isWordSaved(entry.word, entry.language);
+    return (
+      <button
+        onClick={() => saved ? unsaveWordByKey(entry.word, entry.language) : saveWord(entry)}
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition ${saved ? c.success : c.btnSecondary + ' border-transparent'}`}
+      >
+        {saved ? '♥' : '♡'} {saved ? t('ntf_saved') : t('ntf_save_word')}
+      </button>
+    );
+  };
 
   // ════════════════════════════════════════════════════════════
   // RENDER
@@ -319,6 +604,11 @@ const NameThatFeeling = ({ tool }) => {
         </div>
       </div>
 
+      {/* My Feeling Dictionary — initial screen (section 10). Post-result,
+          the same block reappears further down in results order; pre-result
+          it stands in for what used to be a raw, unclickable Recent log. */}
+      {!results && renderDictionaryPreview()}
+
       {/* ── Error ── */}
       {error && (
         <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
@@ -356,11 +646,31 @@ const NameThatFeeling = ({ tool }) => {
               {/* Only rendered when the model actually supplied a caveat — a
                   genuinely strong match has nothing to manufacture here. */}
               {results?.best_match?.where_it_doesnt && (
-                <div className="max-w-sm mx-auto">
+                <div className="max-w-sm mx-auto mb-3">
                   <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_where_it_doesnt')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{results.best_match.where_it_doesnt}</p>
                 </div>
               )}
+              {renderSaveButton({
+                word: results.best_match.word, language: results.best_match.language,
+                pronunciation: results.best_match.pronunciation, type: 'established',
+                match: results.best_match.match, shortMeaning: results.best_match.definition,
+                fullDefinition: results.best_match.definition, whyItFit: results.best_match.why_it_fits,
+                whereItDidnt: results.best_match.where_it_doesnt,
+              })}
+            </div>
+          )}
+
+          {/* From your dictionary — section 8, only when a saved word is
+              genuinely relevant. States only what was saved; never a claim
+              about the visitor's recurring feelings. */}
+          {relevantSavedWord && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>📖 {t('ntf_from_dictionary')}</p>
+              <p className={`text-xs ${c.textSecondary}`}>
+                {t('ntf_previously_saved', { word: relevantSavedWord.word })}
+                {relevantSavedWord.shortMeaning ? ` — ${relevantSavedWord.shortMeaning}` : ''}
+              </p>
             </div>
           )}
 
@@ -390,7 +700,12 @@ const NameThatFeeling = ({ tool }) => {
                     </div>
                     <p className={`text-xs ${c.textSecondary} mb-1`}>{m.definition}</p>
                     {m.captures && <p className={`text-[10px] ${c.textMuteded}`}>{t('ntf_captures')} {m.captures}</p>}
-                    {m.misses && <p className={`text-[10px] ${c.textMuteded} italic`}>{t('ntf_misses')} {m.misses}</p>}
+                    {m.misses && <p className={`text-[10px] ${c.textMuteded} italic mb-1.5`}>{t('ntf_misses')} {m.misses}</p>}
+                    {renderSaveButton({
+                      word: m.word, language: m.language, pronunciation: m.pronunciation, type: 'established',
+                      match: '', shortMeaning: m.definition, fullDefinition: m.definition,
+                      whyItFit: m.captures, whereItDidnt: m.misses,
+                    })}
                   </div>
                 ))}
               </div>
@@ -401,7 +716,11 @@ const NameThatFeeling = ({ tool }) => {
           {results?.plain_english && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4 text-center`}>
               <p className={`text-[10px] font-bold uppercase mb-1.5 ${c.textMuteded}`}>💬 {t('ntf_plain_english')}</p>
-              <p className={`text-sm font-medium italic`}>"{results.plain_english}"</p>
+              <p className={`text-sm font-medium italic mb-2`}>"{results.plain_english}"</p>
+              {renderSaveButton({
+                word: results.plain_english, language: '', pronunciation: '', type: 'plain_english',
+                match: '', shortMeaning: '', fullDefinition: results.plain_english, whyItFit: '', whereItDidnt: '',
+              })}
             </div>
           )}
 
@@ -412,8 +731,13 @@ const NameThatFeeling = ({ tool }) => {
               <p className={`text-[10px] font-bold uppercase mb-2`}>{t('ntf_made_up_label')}</p>
               <p className={`text-lg font-bold italic mb-1`}>{results.made_up_name.name}</p>
               {results.made_up_name.meaning && (
-                <p className={`text-xs ${c.textSecondary}`}>{results.made_up_name.meaning}</p>
+                <p className={`text-xs ${c.textSecondary} mb-2`}>{results.made_up_name.meaning}</p>
               )}
+              {renderSaveButton({
+                word: results.made_up_name.name, language: '', pronunciation: '', type: 'invented',
+                match: '', shortMeaning: results.made_up_name.meaning, fullDefinition: results.made_up_name.meaning,
+                whyItFit: '', whereItDidnt: '',
+              })}
             </div>
           )}
 
@@ -424,6 +748,10 @@ const NameThatFeeling = ({ tool }) => {
               <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
             </div>
           )}
+
+          {/* My Feeling Dictionary — result screen (section 11): secondary
+              to the result itself, ahead of "go again." Section 18 ordering. */}
+          {renderDictionaryPreview()}
 
           {/* Go again */}
           <button
@@ -445,21 +773,20 @@ const NameThatFeeling = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>{t('ntf_disclaimer')}</p>
-      {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('ntf_recent')}</p>
-          <div className="space-y-1">
-            {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between gap-2">
-                <span className={`text-xs ${c.textSecondary} truncate`}>
-                  {s.preview || t('ntf_session')}
-                  {s.bestMatchWord ? ` — ${s.bestMatchWord}` : ''}
-                </span>
-                <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+
+      {showDictionary && (
+        <FeelingDictionaryModal
+          savedWords={savedWords}
+          recentHistory={sessionHistory}
+          onClose={() => setShowDictionary(false)}
+          onOpenSaved={openSavedEntry}
+          onUnsave={unsaveWordById}
+          onOpenRecent={openRecentEntry}
+          onAnalyzeAgain={analyzeAgainFromEntry}
+          onRemoveRecent={removeRecentEntry}
+          onClearRecent={clearRecent}
+          t={t} c={c} linkStyle={linkStyle}
+        />
       )}
     </div>
   );

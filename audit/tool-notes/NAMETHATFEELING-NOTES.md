@@ -165,7 +165,97 @@ the declared check.
 the same commit as the schema change, per the Magic Mouth rule. History
 entries now also store the matched word (`bestMatchWord`), per the spec's
 explicit instruction to keep that field; still no inferred pattern or
-emotional history across sessions.
+emotional history across sessions. See "My Feeling Dictionary" below for the
+2026-09-04 addition — `namethatfeeling-history-v2` gained a `results` field
+in place rather than bumping to v3, and a new `namethatfeeling-dictionary-v1`
+key was added.
+
+## My Feeling Dictionary — 2026-09-04 addition
+
+A second spec, sent right after the focus-bug/evidence-boundary work on Name
+Audit: replace the plain Recent log with a vocabulary feature the visitor
+explicitly curates, without turning the tool into mood tracking. The spec's
+own one-line test for the whole feature: *"If removing the visitor's identity
+and replacing it with a list of words would break the feature, the feature is
+probably interpreting too much."* Everything below was built to pass that
+test by construction, not by prompting something not to fail it — the
+Dictionary feature calls no LLM at all.
+
+**Data model.** `namethatfeeling-dictionary-v1` (new key) holds Saved Words —
+entries the visitor explicitly chose to keep, deduplicated by a
+`word|language` key so the same word saved twice bumps a `seenCount` instead
+of creating a second record (spec section 13: "do not interpret that count
+psychologically" — it's a tally, not a metric). Each entry carries
+`sourceResult`, the FULL API response at save time, which is what lets
+"Open" reopen a saved word without ever calling the model again (spec
+section 7). `namethatfeeling-history-v2` — the existing Recent key — was
+extended in place with a `results` field on new entries rather than bumped
+to a `-v3` key, specifically because spec section 19 requires old entries to
+keep working and forbids fabricating a stored result for them: a version
+bump would have silently orphaned every returning visitor's history, and old
+entries lacking `results` fall back to an explicit, labeled "Analyze again"
+action instead of a fabricated "Open."
+
+**Per-card save, not a forced picker.** The spec sketches a "Which one feels
+closest?" radio chooser as one illustrative way to let the visitor pick what
+to save; built instead as an independent ♡/♥ toggle on every card that can
+be saved — best_match, each `other_words` entry, plain_english,
+made_up_name — since that's simpler, matches this codebase's existing
+per-item save precedent (NameStorm, DateNight, ReadTheRoom all use an inline
+star/heart toggle rather than a modal), and satisfies "do not force the
+visitor to choose" (section 3) trivially: nothing is forced, they click
+whichever card resonates, including more than one.
+
+**"From your dictionary" is a Jaccard token-overlap heuristic, not an LLM
+call.** Section 9 requires comparing a saved word's meaning against the new
+description without inferring psychological similarity ("is this saved WORD
+semantically relevant" — not "does this person seem to be experiencing the
+same emotional pattern again?"). Prompting a model not to cross that line is
+exactly the kind of instruction this whole rewrite exists to distrust.
+Comparing sets of 4+ letter words for overlap, with a stopword list and a
+conservative 0.12 threshold, can only ever answer "these two texts share
+words" — it cannot produce "you often feel this," which makes the ban true
+by construction. The tradeoff is real: it will miss a conceptually-related
+match that shares no vocabulary, and the spec's own mockup implies a
+generated comparison sentence ("the difference is: 'bittersweet' describes…")
+that this doesn't attempt — the card instead shows only the previously-saved
+word plus its own already-generated `shortMeaning`, no new sentence written
+about the relationship between the two. Safer than the alternative, plainer
+than the mockup; worth an LLM-backed version later only if the current
+version's silence (or occasional miss) turns out to bother visitors more
+than a wrong inference would have.
+
+**Full Dictionary view is a backdrop modal, not a route.** No shared
+modal/drawer component exists in this codebase (checked); built inline
+following the `fixed inset-0 bg-black/50 … z-50` + `stopPropagation()`
+pattern already used by ConflictCoach's confirm dialog, as a helper component
+(`FeelingDictionaryModal`) above the main component per the install kit's own
+convention, taking every piece of state through props so it carries none of
+its own.
+
+**Section 18's ordering** (result → save → dictionary preview → "name
+another feeling" → related tools) is satisfied by rendering the same
+`renderDictionaryPreview()` block in two mutually-exclusive JSX slots —
+pre-result, where it replaces the old always-visible raw Recent log, and
+post-result, positioned just above the "🔄 Name another feeling" button —
+rather than one block whose position moves, which React doesn't really
+support cleanly across a conditional this large.
+
+**Verified live**, real API calls, no mocking: submit → save best_match →
+preview updates to show the saved word live → "View all" opens the modal
+showing both Saved Words and Recent sections correctly → close → "Name
+another feeling" clears results and the pre-result view now shows the saved
+word instead of the empty teaser → clicking the saved word reopens the full
+original result with zero new network calls to `/api/name-that-feeling`
+(confirmed via network log — one POST total across the whole sequence).
+Spanish spot-check confirmed all 19 new keys render translated and
+interpolate correctly (`ntf_previously_saved`'s `{{word}}`, provenance line's
+"· establecida").
+
+**No backend changes.** Nothing here needed a new field, a new endpoint, or
+`withLanguage`/`withLocaleContext` — the entire feature reads and writes
+`results`, which the existing route already returns in full. Gate-wise this
+means no golden re-record, no guard-key surface, no three-way-sync entry.
 
 ## Goldens
 
