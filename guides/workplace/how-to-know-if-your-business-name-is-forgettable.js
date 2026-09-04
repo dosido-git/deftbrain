@@ -21,12 +21,12 @@ module.exports = {
   ],
   cta: {
     glyph:    '🔍',
-    headline: "Stress-test your name across 12 dimensions before you commit.",
-    body:     "Enter the name. Get the deep analysis: phonetics, memorability, the drunk test, global language scan, radio test, SEO, competitive landscape, plus live domain and social handle checks.",
+    headline: "Stress-test your name before you commit.",
+    body:     "Enter the name. Get an honest read: how it sounds, how it looks, what could trip up word of mouth, and what still needs checking before you commit — plus a domain DNS check for business names.",
     features: [
-      "5 memorability tests including drunk test and shout test",
-      "Global language scan in 15+ languages",
-      "Live domain and social handle availability",
+      "Word-of-mouth test — including the drunk test",
+      "Flags real language and pronunciation concerns, not a blanket \"clean\" scan",
+      "Domain DNS check and a suggested social handle",
       "Compare mode for choosing between finalists"
     ],
     toolId:   'NameAudit',

@@ -3538,10 +3538,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You have a shortlist and need to know which name survives contact.",
     give: "The name or names, and what it's for.",
-    get: "A twelve-dimension read — first impression, sound, spelling, crowding, trademark risk — and a verdict.",
+    get: "A read on how it sounds, looks, and travels by word of mouth — plus a verdict and what's still worth verifying before you commit.",
     edge: "It's the other half of naming: NameStorm gives you options, this tells you which ones break.",
   },
-  seoDescription: "Stress-test any name — business, pet, band, baby, or brand — across 12 dimensions before you commit. Free, with live domain and social checks.",
+  seoDescription: "Stress-test any name — business, pet, band, baby, or brand — for how it sounds, spells, and travels by word of mouth before you commit. Free, with a domain DNS check.",
   seoTitle: "Name Checker & Rater: Business, Pet, Baby & More",
   title: "Name Audit",
   tagline: "Stress-test any name before you commit",
@@ -3549,30 +3549,30 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🔍",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#ccdfc4",
-  description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
+  description: "Thinking about a name for a business, product, project, band, pet, character, or something else? Name Audit stress-tests how it sounds, looks, travels by word of mouth, fits its purpose, and where it could cause trouble before you commit.",
   guide: {
-      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Use Compare mode to pit 2-4 finalists against each other for a clear winner.",
+      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you whether one holds up. Enter a name and get a verdict plus a clear-eyed read: how it's likely to sound and be pronounced, whether word of mouth will carry it or lose it, how it looks as a URL and a wordmark, the tone and associations it may create, and where it could get in the way. Genuine language or pronunciation concerns are flagged when they surface — never a blanket 'clean' claim, because no scan across every language actually happened. For business and product names, a domain DNS check and a suggested social handle run automatically, alongside a plain checklist of what to verify before you commit — existing businesses, trademarks, registration, handles, and languages that matter to you. Use Compare mode to pit 2-4 finalists against each other for a clear recommendation, or go deeper with a context-specific Deep Dive, Fix This Name for alternatives, or Challenge This Audit for a second, adversarial pass.",
       howToUse: [
         "Choose Analyze (single name) or Compare (2-4 names head to head)",
         "Enter the name and select what it's for — Business, Product, Pet, Baby, etc.",
-        "Optionally add industry context and target audience for sharper analysis",
-        "Review the overall grade and verdict — STRONG, GOOD, FAIR, WEAK, or RECONSIDER",
-        "Check Strengths vs. Weaknesses at a glance, and watch for any Deal Breakers",
-        "Expand each analysis section for deep detail — phonetics, memorability tests, language scan, etc.",
-        "For business names, scroll to Live Availability to see domain and social handle status",
-        "Use the suggestions section for guidance on strengthening the name or pivoting direction"
+        "Optionally add industry, target audience, and what matters most about the name",
+        "Review the verdict — STRONG FIT, GOOD FIT, MIXED, HAS PROBLEMS, or RECONSIDER",
+        "Check What Works against What Could Get In The Way, and the Check Before You Commit list",
+        "Expand each section for detail — how it sounds, word-of-mouth test, how it looks, tone, competition, longevity",
+        "For business names, scroll to Live Availability for the domain check and a suggested handle",
+        "Use Next Steps to test it with real people, compare finalists, generate alternatives, or explore a new direction"
       ],
       example: {
-        scenario: "You're about to register a domain and file a trademark for your new sustainable fashion brand called 'Verdana.' Before spending money, you want to know if it's a good name.",
-        action: "Enter 'Verdana' in Analyze mode, select Business, industry: 'Sustainable fashion,' target audience: 'Environmentally conscious millennials.'",
-        result: "NameAudit grades it RECONSIDER with a deal breaker: Verdana is an existing Microsoft typeface — you'd face trademark issues and impossible SEO competition. The language scan notes it derives from verdant (positive). The phonetic profile is strong — warm open vowels, 3-syllable rhythm. Memorability tests pass. But the competitive landscape and trademark flags are disqualifying. Suggestions direct you toward similar-sounding alternatives that don't conflict."
+        scenario: "You're weighing three names for a new software product — Loomly, Verdana, and Kindling — before registering a domain.",
+        action: "Enter all three in Compare mode, select Business, industry: 'Software,' and note that distinctiveness matters most.",
+        result: "Name Audit rates Verdana HAS PROBLEMS: it's one of the most recognized typefaces in the world, created by Microsoft, and flags the specific thing left to check — whether Microsoft's trademark coverage extends beyond typefaces into software. Loomly gets the same treatment for its own existing-brand risk. Kindling comes back the clear recommendation, with the reasoning stated plainly: the other two carry real pre-existing name conflicts, and this one doesn't."
       },
       tips: [
         "NameAudit and NameStorm are designed to work together — generate candidates with NameStorm, then bring your top 3 here to analyze and compare",
-        "The global language scan checks 15+ languages — if you're going international, this section alone could save you from an expensive mistake",
-        "Pay special attention to the Radio Test for any name that will spread by word of mouth — if people can't spell it from hearing it, they can't find you",
-        "Compare mode gives a definitive winner — use it when you're stuck between finalists instead of going back and forth in your head",
-        "Domain and social checks use DNS lookups and profile page checks — 'likely available' is a strong signal but always confirm through official registrars before purchasing"
+        "A language flag only appears when something genuinely surfaced — no flags doesn't mean cleared, so verify with native speakers if international use matters",
+        "Pay attention to the word-of-mouth test for any name that will spread by ear — if people can't spell it from hearing it once, they can't find you",
+        "Compare mode gives a clear recommendation, not a manufactured winner — when finalists are genuinely close, it says so",
+        "The domain check is a DNS signal, not a registration check, and the social handle is a suggestion — always confirm both with a registrar and the platforms directly before you commit"
       ]
     }
 },

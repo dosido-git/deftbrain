@@ -19,12 +19,14 @@ const EXAMPLES = [
   name: 'Loomly',
   industry: 'B2B SaaS — social media management',
   targetAudience: 'small marketing teams (3-15 people) at agencies and mid-size brands',
+  priority: 'professional, easy to spell',
 },
   {
   mode: 'analyze',
   name: 'Kindling',
   industry: 'independent bakery and coffee shop, one location',
   targetAudience: 'people within about a mile who walk past on their way to work, plus weekend regulars with kids',
+  priority: 'warm, easy to remember',
 },
 ];;
 const NameAudit = ({ tool }) => {
@@ -66,7 +68,6 @@ const NameAudit = ({ tool }) => {
     chip: (active) => active
       ? (isDark ? 'bg-cyan-900/40 border-cyan-500 text-cyan-200' : 'bg-cyan-100 border-cyan-500 text-cyan-800')
       : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
-    cyan: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -80,6 +81,7 @@ const NameAudit = ({ tool }) => {
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
+  const [priority, setPriority] = useState('');
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
@@ -97,8 +99,6 @@ const NameAudit = ({ tool }) => {
   const [showExplainer, setShowExplainer] = useState({});
   const [analyzeToCompare, setAnalyzeToCompare] = useState(false);
   const [compareSecondName, setCompareSecondName] = useState('');
-  const [reactionsLoading, setReactionsLoading] = useState(false);
-  const [reactionsResults, setReactionsResults] = useState(null);
   const [deepDiveLoading, setDeepDiveLoading] = useState(false);
   const [deepDiveResults, setDeepDiveResults] = useState(null);
   const [showMockups, setShowMockups] = useState(false);
@@ -108,8 +108,8 @@ const NameAudit = ({ tool }) => {
 
   // ─── Persistent state ───
   const [context, setContext] = usePersistentState('nameaudit-context', '');
-  const [auditHistory, setAuditHistory] = usePersistentState('nameaudit-history', []);
-  const [evolutionTimeline, setEvolutionTimeline] = usePersistentState('nameaudit-evolution', []);
+  const [auditHistory, setAuditHistory] = usePersistentState('nameaudit-history-v2', []);
+  const [evolutionTimeline, setEvolutionTimeline] = usePersistentState('nameaudit-evolution-v2', []);
   const [journalEntries, setJournalEntries] = usePersistentState('nameaudit-journal', {});
 
   // ─── Refs ───
@@ -118,8 +118,6 @@ const NameAudit = ({ tool }) => {
   const canSubmitRef = useRef(false);
   const modeRef = useRef(mode);
   const resultsAnchorRef = useRef(null);
-
-  // ─── Name Psychology Profile (#6): computed from results frontend-side ───
 
   // ─── Options ───
   // value stays English (backend-bound); labelKey resolved via t() at render.
@@ -138,27 +136,17 @@ const NameAudit = ({ tool }) => {
     { value: 'Other', icon: '✨', labelKey: 'nau_ctx_other' },
   ];
 
-  // ─── Field-label resolver: maps server field keys to localized labels;
-  //     falls back to the original key.replace().toUpperCase() transform. ───
-  const FIELD_LABEL_KEYS = {
-    syllables: 'nau_field_syllables', mouth_feel: 'nau_field_mouth_feel', accent_notes: 'nau_field_accent_notes',
-    sound_psychology: 'nau_field_sound_psychology', rhythm: 'nau_field_rhythm',
-    url_form: 'nau_field_url_form', url_appearance: 'nau_field_url_appearance', logo_potential: 'nau_field_logo_potential', visual_issues: 'nau_field_visual_issues',
-    natural_shortening: 'nau_field_natural_shortening', initials: 'nau_field_initials', hashtag: 'nau_field_hashtag', issues: 'nau_field_issues',
-    uniqueness: 'nau_field_uniqueness', google_competition: 'nau_field_google_competition', seo_assessment: 'nau_field_seo_assessment', seo_verdict: 'nau_field_seo_verdict',
-    trend_dependency: 'nau_field_trend_dependency', aging_risk: 'nau_field_aging_risk', aging_verdict: 'nau_field_aging_verdict', verdict: 'nau_field_verdict',
-    tld_choice: 'nau_field_tld_choice', trust_signal: 'nau_field_trust_signal', confusion_risk: 'nau_field_confusion_risk',
-    competing_com: 'nau_field_competing_com', url_readability: 'nau_field_url_readability', alternative_tlds: 'nau_field_alternative_tlds',
-    browser_bar: 'nau_field_browser_bar', typosquatting_risk: 'nau_field_typosquatting_risk', verbal_sharing: 'nau_field_verbal_sharing', email_test: 'nau_field_email_test',
-  };
-  const fieldLabel = (key) => FIELD_LABEL_KEYS[key] ? t(FIELD_LABEL_KEYS[key]) : key.replace(/_/g, ' ').toUpperCase();
+  // Ordinal weight for the verdict enum — used only to size the Evolution
+  // Timeline bars proportionally. A category rank, not a measurement; see the
+  // note on EvolutionTimeline below.
+  const VERDICT_ORDER = { 'RECONSIDER': 1, 'HAS PROBLEMS': 2, 'MIXED': 3, 'GOOD FIT': 4, 'STRONG FIT': 5 };
 
   // ─── Handlers ───
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const toggleExplainer = (key) => setShowExplainer(prev => ({ ...prev, [key]: !prev[key] }));
 
   // ─── Expand / Collapse All ───
-  const allSectionIds = ['impression', 'phonetic', 'memorability', 'radio', 'visual', 'language', 'abbreviation', 'competitive', 'seo', 'longevity', 'tld', 'domain-tests', 'emotion', 'availability'];
+  const allSectionIds = ['sound', 'word-of-mouth', 'looks', 'tone', 'abbreviation', 'competition', 'longevity', 'language', 'availability'];
   const allExpanded = allSectionIds.every(id => expandedSections[id]);
   const expandAll = () => setExpandedSections(Object.fromEntries(allSectionIds.map(id => [id, true])));
   const collapseAll = () => setExpandedSections({});
@@ -178,13 +166,11 @@ const NameAudit = ({ tool }) => {
     const entry = {
       id: Date.now(),
       name: data.name_analyzed,
-      grade: data.overall_grade,
-      score: data.overall_score,
+      verdict: data.verdict,
       context,
       timestamp: new Date().toISOString(),
-      strengths: data.strengths?.length || 0,
-      weaknesses: data.weaknesses?.length || 0,
-      dealBreakers: data.deal_breakers?.length || 0,
+      worksCount: data.what_works?.length || 0,
+      concernsCount: data.what_could_get_in_the_way?.length || 0,
       preview: (data.name_analyzed || '').slice(0, 40), // Exception: string truncation to 40 chars for preview, not a history cap (history is capped at 6 below)
     };
     setAuditHistory(prev => [entry, ...prev.filter(e => e.name !== data.name_analyzed)].slice(0, 6));
@@ -203,24 +189,26 @@ const NameAudit = ({ tool }) => {
     setName(ex.name);
     setIndustry(ex.industry);
     setTargetAudience(ex.targetAudience);
+    setPriority(ex.priority || '');
     setResults(null);
-  }, [setMode, setName, setIndustry, setTargetAudience, setResults]);
+  }, [setMode, setName, setIndustry, setTargetAudience, setPriority, setResults]);
 
   const handleQuickAnalyze = async () => {
     if (!quickName.trim()) return;
     if (!context) { setError(t('nau_err_select_context')); return; }
     setName(quickName.trim());
     setError(''); setResults(null); setFixResults(null);
-    setReactionsResults(null); setDeepDiveResults(null); setSecondOpinionResults(null);
+    setDeepDiveResults(null); setSecondOpinionResults(null);
     setShowMockups(false);
     try {
       const data = await callToolEndpoint('nameaudit', {
         name: quickName.trim(), context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
+        priority: priority.trim() || null,
       });
       setResults(data);
-      setExpandedSections({ phonetic: true, memorability: true, language: true });
+      setExpandedSections({ sound: true, 'word-of-mouth': true });
       setQuickName('');
       saveToHistory(data);
       saveToEvolution(data);
@@ -241,6 +229,7 @@ const NameAudit = ({ tool }) => {
       const data = await callToolEndpoint('nameaudit/compare', {
         names, context,
         industry: industry.trim() || null,
+        priority: priority.trim() || null,
       });
       setCompareResults(data);
     } catch (err) {
@@ -259,11 +248,10 @@ const NameAudit = ({ tool }) => {
         context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
-        grade: results.overall_grade,
-        strengths: results.strengths,
-        weaknesses: results.weaknesses,
-        dealBreakers: results.deal_breakers,
-        overallSummary: results.overall_summary,
+        verdict: results.verdict,
+        whatWorks: results.what_works,
+        whatCouldGetInTheWay: results.what_could_get_in_the_way,
+        bottomLine: results.bottom_line,
       });
       setFixResults(data);
     } catch (err) {
@@ -275,105 +263,23 @@ const NameAudit = ({ tool }) => {
 
   // ─── PDF export removed — global ActionBar provides print via useRegisterActions ───
 
-
   // ─── Section Explainer Data (keyed; resolved via t() at render) ───
   const sectionExplainers = {
-    impression: 'nau_explainer_impression',
-    phonetic: 'nau_explainer_phonetic',
-    memorability: 'nau_explainer_memorability',
-    radio: 'nau_explainer_radio',
-    visual: 'nau_explainer_visual',
-    language: 'nau_explainer_language',
+    sound: 'nau_explainer_sound',
+    'word-of-mouth': 'nau_explainer_memorability',
+    looks: 'nau_explainer_visual',
+    tone: 'nau_explainer_emotion',
     abbreviation: 'nau_explainer_abbreviation',
-    competitive: 'nau_explainer_competitive',
-    seo: 'nau_explainer_seo',
+    competition: 'nau_explainer_competitive',
     longevity: 'nau_explainer_longevity',
-    emotion: 'nau_explainer_emotion',
-  };
-
-  // ─── Radar Chart Component ───
-  const RadarChart = ({ scores }) => {
-    if (!scores || Object.keys(scores).length < 3) return null;
-    const labels = {
-      first_impression: t('nau_radar_first_impression'), phonetics: t('nau_radar_phonetics'), memorability: t('nau_radar_memorability'),
-      radio_test: t('nau_radar_radio'), visual: t('nau_radar_visual'), global_safety: t('nau_radar_global'),
-      abbreviations: t('nau_radar_abbrev'), competitive: t('nau_radar_competitive'), seo: t('nau_radar_seo'),
-      longevity: t('nau_radar_longevity'), emotional_resonance: t('nau_radar_emotion'),
-    };
-    const entries = Object.entries(scores).filter(([k]) => labels[k]);
-    if (entries.length < 3) return null;
-    const n = entries.length;
-    const cx = 120, cy = 120, maxR = 90;
-    const angleStep = (2 * Math.PI) / n;
-    const getPoint = (i, val) => {
-      const angle = angleStep * i - Math.PI / 2;
-      const r = (val / 10) * maxR;
-      return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
-    };
-    const gridLevels = [2, 4, 6, 8, 10];
-    const dataPoints = entries.map(([, v], i) => getPoint(i, v));
-    return (
-      <div className="flex justify-center">
-        <svg width="240" height="240" viewBox="0 0 240 240">
-          {/* Grid */}
-          {gridLevels.map(level => {
-            const pts = entries.map((_, i) => getPoint(i, level));
-            return <polygon key={level} points={pts.map(p => `${p.x},${p.y}`).join(' ')}
-              fill="none" stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth="0.5" />;
-          })}
-          {/* Axes */}
-          {entries.map((_, i) => {
-            const p = getPoint(i, 10);
-            return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y}
-              stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth="0.5" />;
-          })}
-          {/* Data polygon */}
-          <polygon points={dataPoints.map(p => `${p.x},${p.y}`).join(' ')}
-            fill={isDark ? 'rgba(34,211,238,0.15)' : 'rgba(8,145,178,0.12)'}
-            stroke={isDark ? '#22d3ee' : '#0891b2'} strokeWidth="2" />
-          {/* Data dots */}
-          {dataPoints.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="3"
-              fill={isDark ? '#22d3ee' : '#0891b2'} />
-          ))}
-          {/* Labels */}
-          {entries.map(([k], i) => {
-            const p = getPoint(i, 12.2);
-            return <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
-              className={`text-[8px] font-medium ${isDark ? 'fill-zinc-400' : 'fill-gray-500'}`}>
-              {labels[k]}
-            </text>;
-          })}
-        </svg>
-      </div>
-    );
+    language: 'nau_explainer_language',
   };
 
   // ═══════════════════════════════════════════════════
   // NEW FEATURE HANDLERS
   // ═══════════════════════════════════════════════════
 
-  // ─── #1: Audience Reaction Simulator ───
-  const handleReactions = async () => {
-    if (!results || reactionsLoading) return;
-    setReactionsLoading(true);
-    try {
-      const data = await callToolEndpoint('nameaudit/reactions', {
-        name: results.name_analyzed,
-        context,
-        industry: industry.trim() || null,
-        targetAudience: targetAudience.trim() || null,
-        overallSummary: results.overall_summary,
-        personality: results.first_impression?.personality_projected,
-      });
-      setReactionsResults(data);
-    } catch (err) {
-      console.error('Reactions failed:', err);
-    }
-    setReactionsLoading(false);
-  };
-
-  // ─── #3: Context-Specific Deep Dive ───
+  // ─── Context-Specific Deep Dive ───
   const handleDeepDive = async () => {
     if (!results || deepDiveLoading) return;
     setDeepDiveLoading(true);
@@ -383,8 +289,7 @@ const NameAudit = ({ tool }) => {
         context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
-        grade: results.overall_grade,
-        score: results.overall_score,
+        verdict: results.verdict,
       });
       setDeepDiveResults(data);
     } catch (err) {
@@ -393,87 +298,24 @@ const NameAudit = ({ tool }) => {
     setDeepDiveLoading(false);
   };
 
-  // ─── #4: Evolution Timeline — save on each audit ───
+  // ─── Evolution Timeline — save on each audit ───
+  // Bar height tracks the verdict's ORDINAL rank (RECONSIDER..STRONG FIT), not
+  // a score — there is no numeric score any more. A 5-step category rank
+  // rendered as relative height is a fair visual encoding; a fabricated
+  // percentage would not be.
   const saveToEvolution = useCallback((data) => {
     setEvolutionTimeline(prev => {
       const entry = {
         name: data.name_analyzed,
-        score: data.overall_score,
-        grade: data.overall_grade,
+        verdict: data.verdict,
         timestamp: new Date().toISOString(),
-        weaknessCount: data.weaknesses?.length || 0,
-        dealBreakerCount: data.deal_breakers?.length || 0,
+        concernsCount: data.what_could_get_in_the_way?.length || 0,
       };
       return [...prev, entry].slice(-50); // keep last 50
     });
   }, [setEvolutionTimeline]);
 
-  // ─── #6: Name Psychology (computed from existing phonetic data) ───
-  const computePsychology = (nameStr) => {
-    if (!nameStr) return null;
-    const lower = nameStr.toLowerCase();
-    const vowels = (lower.match(/[aeiou]/g) || []);
-    const consonants = (lower.match(/[bcdfghjklmnpqrstvwxyz]/g) || []);
-    const frontVowels = (lower.match(/[eiy]/g) || []).length;
-    const backVowels = (lower.match(/[aou]/g) || []).length;
-    const plosives = (lower.match(/[bpdtgk]/g) || []).length;
-    const sibilants = (lower.match(/[szʃʒ]|sh|ch/g) || []).length;
-    const nasals = (lower.match(/[mn]/g) || []).length;
-    const liquids = (lower.match(/[lr]/g) || []).length;
-
-    // Bouba/Kiki: round sounds (m,n,l,o,u,b) vs sharp sounds (k,t,i,e,z,x)
-    const roundSounds = (lower.match(/[mnloub]/g) || []).length;
-    const sharpSounds = (lower.match(/[ktiezxp]/g) || []).length;
-    const boubaKiki = roundSounds > sharpSounds ? t('nau_psych_bouba') : sharpSounds > roundSounds ? t('nau_psych_kiki') : t('nau_psych_balanced');
-
-    // Size symbolism
-    const sizeSymbol = frontVowels > backVowels ? t('nau_psych_size_small') : backVowels > frontVowels ? t('nau_psych_size_large') : t('nau_psych_size_neutral');
-
-    // Consonant personality
-    const traits = [];
-    if (plosives >= 2) traits.push(t('nau_psych_trait_energetic'));
-    if (sibilants >= 2) traits.push(t('nau_psych_trait_sleek'));
-    if (nasals >= 2) traits.push(t('nau_psych_trait_warm'));
-    if (liquids >= 2) traits.push(t('nau_psych_trait_flowing'));
-    if (vowels.length > consonants.length) traits.push(t('nau_psych_trait_open'));
-    if (consonants.length > vowels.length + 1) traits.push(t('nau_psych_trait_dense'));
-
-    // Lexical neighborhood (very rough heuristic)
-    const neighborDensity = lower.length <= 4 ? t('nau_psych_neighbor_high') : lower.length <= 7 ? t('nau_psych_neighbor_medium') : t('nau_psych_neighbor_low');
-
-    return { boubaKiki, sizeSymbol, traits, neighborDensity, vowelRatio: t('nau_psych_vc_value', { vowels: vowels.length, consonants: consonants.length }) };
-  };
-
-  // ─── #7: Pronunciation Confidence Map regions ───
-  const pronunciationRegions = (nameStr) => {
-    if (!nameStr) return [];
-    const lower = nameStr.toLowerCase();
-    const hasR = /r/.test(lower);
-    const hasTh = /th/.test(lower);
-    const hasW = /w/.test(lower);
-    const hasH = /h/.test(lower);
-    const hasVowelClusters = /[aeiou]{2,}/.test(lower);
-    const len = lower.length;
-    const isSimple = len <= 6 && !hasTh && !hasVowelClusters;
-
-    const regions = [
-      { id: 'english', name: t('nau_pron_english'), confidence: 'high', emoji: '🇬🇧' },
-      { id: 'spanish', name: t('nau_pron_spanish'), confidence: hasTh ? 'medium' : hasW ? 'medium' : 'high', emoji: '🇪🇸' },
-      { id: 'french', name: t('nau_pron_french'), confidence: hasH ? 'medium' : hasTh ? 'low' : 'high', emoji: '🇫🇷' },
-      { id: 'german', name: t('nau_pron_german'), confidence: hasW ? 'medium' : 'high', emoji: '🇩🇪' },
-      { id: 'mandarin', name: t('nau_pron_mandarin'), confidence: hasR && hasTh ? 'low' : hasR ? 'medium' : isSimple ? 'high' : 'medium', emoji: '🇨🇳' },
-      { id: 'japanese', name: t('nau_pron_japanese'), confidence: /[lv]/.test(lower) ? 'medium' : hasTh ? 'low' : 'high', emoji: '🇯🇵' },
-      { id: 'korean', name: t('nau_pron_korean'), confidence: /[fvz]/.test(lower) ? 'medium' : 'high', emoji: '🇰🇷' },
-      { id: 'arabic', name: t('nau_pron_arabic'), confidence: /[pv]/.test(lower) ? 'medium' : 'high', emoji: '🇸🇦' },
-      { id: 'hindi', name: t('nau_pron_hindi'), confidence: 'high', emoji: '🇮🇳' },
-      { id: 'portuguese', name: t('nau_pron_portuguese'), confidence: hasTh ? 'medium' : 'high', emoji: '🇧🇷' },
-      { id: 'russian', name: t('nau_pron_russian'), confidence: hasTh ? 'low' : hasH ? 'medium' : 'high', emoji: '🇷🇺' },
-      { id: 'turkish', name: t('nau_pron_turkish'), confidence: hasW || hasTh ? 'medium' : 'high', emoji: '🇹🇷' },
-    ];
-    return regions;
-  };
-
-  // ─── #10: Second Opinion ───
+  // ─── Challenge This Audit ───
   const handleSecondOpinion = async () => {
     if (!results || secondOpinionLoading) return;
     setSecondOpinionLoading(true);
@@ -483,12 +325,11 @@ const NameAudit = ({ tool }) => {
         context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
-        firstOpinion: {
-          grade: results.overall_grade,
-          score: results.overall_score,
-          strengths: results.strengths,
-          weaknesses: results.weaknesses,
-          dealBreakers: results.deal_breakers,
+        firstAudit: {
+          verdict: results.verdict,
+          bottomLine: results.bottom_line,
+          whatWorks: results.what_works,
+          whatCouldGetInTheWay: results.what_could_get_in_the_way,
         },
       });
       setSecondOpinionResults(data);
@@ -498,7 +339,7 @@ const NameAudit = ({ tool }) => {
     setSecondOpinionLoading(false);
   };
 
-  // ─── #11: Journal — add note to a name ───
+  // ─── Journal — add note to a name ───
   const addJournalNote = (nameKey) => {
     if (!journalDraft.trim()) return;
     const note = {
@@ -520,7 +361,7 @@ const NameAudit = ({ tool }) => {
     }));
   };
 
-  // ─── #9: Context Mockup Data ───
+  // ─── Context Mockup Data ───
   const mockupContexts = {
     'Business': ['app_store', 'business_card', 'email_sig', 'hero'],
     'Product': ['app_store', 'hero', 'email_sig', 'packaging'],
@@ -661,28 +502,7 @@ const NameAudit = ({ tool }) => {
     return mockups[type] || null;
   };
 
-  // ─── #7: Pronunciation Confidence Map Component ───
-  const PronunciationMap = ({ nameStr }) => {
-    const regions = pronunciationRegions(nameStr);
-    if (!regions.length) return null;
-    const confColor = (conf) => {
-      if (conf === 'high') return isDark ? 'bg-green-900/40 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700';
-      if (conf === 'medium') return isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-700';
-      return isDark ? 'bg-red-900/40 border-red-700 text-red-300' : 'bg-red-50 border-red-300 text-red-700';
-    };
-    return (
-      <div className="flex flex-wrap gap-2">
-        {regions.map(r => (
-          <div key={r.id} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium ${confColor(r.confidence)}`}>
-            <span>{r.emoji}</span> {r.name}
-            <span className="font-bold">{r.confidence === 'high' ? '✓' : r.confidence === 'medium' ? '~' : '✗'}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // ─── #4: Evolution Timeline Component ───
+  // ─── Evolution Timeline Component ───
   const EvolutionTimeline = () => {
     if (evolutionTimeline.length < 2) return null;
     return (
@@ -693,17 +513,16 @@ const NameAudit = ({ tool }) => {
         <p className={`text-xs ${c.textMuteded} mb-3`}>{t('nau_evolution_desc')}</p>
         <div className="flex items-end gap-1 h-24 mb-2">
           {evolutionTimeline.slice(-15).map((entry, i) => {
-            const pct = entry.score ? (entry.score / 100) * 100 : 10;
-            const barColor = entry.score >= 70 ? (isDark ? 'bg-green-500' : 'bg-green-500')
-              : entry.score >= 50 ? (isDark ? 'bg-amber-500' : 'bg-amber-500')
-              : (isDark ? 'bg-red-500' : 'bg-red-500');
+            const rank = VERDICT_ORDER[entry.verdict] || 3;
+            const pct = (rank / 5) * 100;
+            const barColor = rank >= 4 ? 'bg-green-500' : rank === 3 ? 'bg-amber-500' : 'bg-red-500';
             return (
               <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
                 <div className={`w-full rounded-t ${barColor} transition-all`} style={{ height: `${pct}%`, minHeight: '4px' }}></div>
                 <p className={`text-[8px] ${c.textMuteded} truncate max-w-full`}>{entry.name?.slice(0, 6)}</p>
                 {/* Tooltip */}
                 <div className={`absolute bottom-full mb-1 start-1/2 -translate-x-1/2 hidden group-hover:block z-10 px-2 py-1 rounded text-xs whitespace-nowrap ${isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'}`}>
-                  {t('nau_evolution_tooltip', { name: entry.name, score: entry.score, grade: entry.grade })}
+                  {t('nau_evolution_tooltip', { name: entry.name, verdict: entry.verdict })}
                 </div>
               </div>
             );
@@ -723,22 +542,23 @@ const NameAudit = ({ tool }) => {
     if (!name.trim()) { setError(t('nau_err_enter_name')); return; }
     if (!context) { setError(t('nau_err_select_context')); return; }
     setError(''); setResults(null); setFixResults(null);
-    setReactionsResults(null); setDeepDiveResults(null); setSecondOpinionResults(null);
+    setDeepDiveResults(null); setSecondOpinionResults(null);
     setShowMockups(false);
     try {
       const data = await callToolEndpoint('nameaudit', {
         name: name.trim(), context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
+        priority: priority.trim() || null,
       });
       setResults(data);
-      setExpandedSections({ phonetic: true, memorability: true, language: true });
+      setExpandedSections({ sound: true, 'word-of-mouth': true });
       saveToHistory(data);
       saveToEvolution(data);
     } catch (err) {
       setError(err.message || t('nau_err_analyze_failed'));
     }
-  }, [name, context, industry, targetAudience, callToolEndpoint, saveToHistory, saveToEvolution, t]);
+  }, [name, context, industry, targetAudience, priority, callToolEndpoint, saveToHistory, saveToEvolution, t]);
 
   const handleCompare = useCallback(async () => {
     const filled = compareNames.filter(n => n.trim());
@@ -748,196 +568,136 @@ const NameAudit = ({ tool }) => {
       const data = await callToolEndpoint('nameaudit/compare', {
         names: filled.map(n => n.trim()), context,
         industry: industry.trim() || null,
+        priority: priority.trim() || null,
       });
       setCompareResults(data);
     } catch (err) {
       setError(err.message || t('nau_err_compare_failed'));
     }
     setCompareLoading(false);
-  }, [compareNames, context, industry, callToolEndpoint, t]);
+  }, [compareNames, context, industry, priority, callToolEndpoint, t]);
 
   const reset = () => {
-    setName(''); setIndustry(''); setTargetAudience('');
+    setName(''); setIndustry(''); setTargetAudience(''); setPriority('');
     setResults(null); setError(''); setCompareResults(null);
     setCompareNames(['', '']); setFixResults(null); setFixLoading(false);
     setQuickName(''); setAnalyzeToCompare(false); setCompareSecondName('');
-    setShowExplainer({}); setReactionsResults(null); setDeepDiveResults(null);
+    setShowExplainer({}); setDeepDiveResults(null);
     setSecondOpinionResults(null); setShowMockups(false); setJournalDraft('');
     // Note: context is intentionally preserved across resets — users testing
     // multiple names within the same context (e.g., Business) shouldn't have
     // to re-pick every time. Persisted via usePersistentState.
   };
 
-  const gradeColors = {
-    STRONG: isDark ? 'bg-green-900/30 border-green-600 text-green-300' : 'bg-green-100 border-green-400 text-green-800',
-    GOOD: isDark ? 'bg-emerald-900/30 border-emerald-600 text-emerald-300' : 'bg-emerald-100 border-emerald-400 text-emerald-800',
-    FAIR: isDark ? 'bg-amber-900/30 border-amber-600 text-amber-300' : 'bg-amber-100 border-amber-400 text-amber-800',
-    WEAK: isDark ? 'bg-orange-900/30 border-orange-600 text-orange-300' : 'bg-orange-100 border-orange-400 text-orange-800',
-    RECONSIDER: isDark ? 'bg-red-900/30 border-red-600 text-red-300' : 'bg-red-100 border-red-400 text-red-800',
+  const verdictColors = {
+    'STRONG FIT': isDark ? 'bg-green-900/30 border-green-600 text-green-300' : 'bg-green-100 border-green-400 text-green-800',
+    'GOOD FIT': isDark ? 'bg-emerald-900/30 border-emerald-600 text-emerald-300' : 'bg-emerald-100 border-emerald-400 text-emerald-800',
+    'MIXED': isDark ? 'bg-amber-900/30 border-amber-600 text-amber-300' : 'bg-amber-100 border-amber-400 text-amber-800',
+    'HAS PROBLEMS': isDark ? 'bg-orange-900/30 border-orange-600 text-orange-300' : 'bg-orange-100 border-orange-400 text-orange-800',
+    'RECONSIDER': isDark ? 'bg-red-900/30 border-red-600 text-red-300' : 'bg-red-100 border-red-400 text-red-800',
   };
-
-  const PassFail = ({ pass, notes }) => (
-    <div className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-0.5">{pass ? '✅' : '❌'}</span>
-      <span className={`text-sm ${c.textSecondary}`}>{notes}</span>
-    </div>
+  const verdictBorder = (v) => (
+    v === 'STRONG FIT' || v === 'GOOD FIT' ? (isDark ? 'border-green-500' : 'border-green-400')
+    : v === 'MIXED' ? (isDark ? 'border-amber-500' : 'border-amber-400')
+    : (isDark ? 'border-red-500' : 'border-red-400')
   );
+  const verdictLabelKeys = {
+    'STRONG FIT': 'nau_verdict_strong_fit', 'GOOD FIT': 'nau_verdict_good_fit', 'MIXED': 'nau_verdict_mixed',
+    'HAS PROBLEMS': 'nau_verdict_has_problems', 'RECONSIDER': 'nau_verdict_reconsider',
+  };
+  const verdictLabel = (v) => verdictLabelKeys[v] ? t(verdictLabelKeys[v]) : v;
+
+  const ratingStyle = (r) => {
+    if (r === 'LIKELY EASY') return c.success;
+    if (r === 'LIKELY CONFUSING') return c.danger;
+    return c.warning;
+  };
+  const ratingLabelKeys = { 'LIKELY EASY': 'nau_rating_easy', 'MAY NEED REPEATING': 'nau_rating_repeat', 'LIKELY CONFUSING': 'nau_rating_confusing' };
+  const ratingLabel = (r) => ratingLabelKeys[r] ? t(ratingLabelKeys[r]) : r;
+
+  const wordOfMouthStyle = (v) => {
+    if (v === 'easy') return c.success;
+    if (v === 'difficult') return c.danger;
+    return c.warning;
+  };
+  const wordOfMouthLabelKeys = { easy: 'nau_wom_easy', workable: 'nau_wom_workable', difficult: 'nau_wom_difficult' };
 
   const langSeverityStyle = (sev) => {
+    if (sev === 'problem') return c.danger;
+    return c.warning;
+  };
+  const langSeverityIcon = (sev) => sev === 'problem' ? <span>❌</span> : <span>⚠️</span>;
+
+  const severityStyle = (sev) => {
     if (sev === 'positive') return c.success;
     if (sev === 'problem') return c.danger;
     if (sev === 'caution') return c.warning;
     return c.cardAlt;
   };
 
-  const langSeverityIcon = (sev) => {
-    if (sev === 'positive') return <span>✅</span>;
-    if (sev === 'problem') return <span>❌</span>;
-    if (sev === 'caution') return <span>⚠️</span>;
-    return <span>➖</span>;
-  };
-
-  // ─── Score Components ───
-  const scoreColor = (score, max = 100) => {
-    const pct = (score / max) * 100;
-    if (pct >= 80) return isDark ? 'text-green-400' : 'text-green-600';
-    if (pct >= 60) return isDark ? 'text-amber-400' : 'text-amber-600';
-    if (pct >= 40) return isDark ? 'text-orange-400' : 'text-orange-600';
-    return isDark ? 'text-red-400' : 'text-red-600';
-  };
-
-  const scoreBg = (score, max = 100) => {
-    const pct = (score / max) * 100;
-    if (pct >= 80) return isDark ? 'bg-green-500' : 'bg-green-500';
-    if (pct >= 60) return isDark ? 'bg-amber-500' : 'bg-amber-500';
-    if (pct >= 40) return isDark ? 'bg-orange-500' : 'bg-orange-500';
-    return isDark ? 'bg-red-500' : 'bg-red-500';
-  };
-
-  const AnimatedScore = ({ score, size = 'lg' }) => {
-    const [display, setDisplay] = useState(0);
-    const frameRef = useRef(null);
-
-    useEffect(() => {
-      if (score == null) return;
-      let start = null;
-      const duration = 1200;
-      const animate = (ts) => {
-        if (!start) start = ts;
-        const progress = Math.min((ts - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-        setDisplay(Math.round(eased * score));
-        if (progress < 1) frameRef.current = requestAnimationFrame(animate);
-      };
-      frameRef.current = requestAnimationFrame(animate);
-      return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
-    }, [score]);
-
-    if (score == null) return null;
-
-    const isLarge = size === 'lg';
-    const radius = isLarge ? 54 : 20;
-    const stroke = isLarge ? 8 : 4;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (display / 100) * circumference;
-    const dim = isLarge ? 128 : 48;
-
-    return (
-      <div className={`relative inline-flex items-center justify-center ${isLarge ? 'w-32 h-32' : 'w-12 h-12'}`}>
-        <svg width={dim} height={dim} className="-rotate-90">
-          <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none"
-            stroke={isDark ? '#3f3f46' : '#e5e7eb'} strokeWidth={stroke} />
-          <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none"
-            className={scoreBg(score)} strokeWidth={stroke}
-            strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
-            style={{ transition: 'stroke-dashoffset 0.1s ease-out' }} />
-        </svg>
-        <span className={`absolute font-bold ${scoreColor(score)} ${isLarge ? 'text-3xl' : 'text-xs'}`}>
-          {display}
-        </span>
-      </div>
-    );
-  };
-
-  const ScoreBar = ({ score, max = 10 }) => {
-    if (score == null) return null;
-    const pct = (score / max) * 100;
-    return (
-      <div className="flex items-center gap-2 ms-auto">
-        <div className={`w-16 h-1.5 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
-          <div className={`h-full rounded-full transition-all duration-700 ${scoreBg(score, max)}`}
-            style={{ width: `${pct}%` }} />
-        </div>
-        <span className={`text-xs font-bold ${scoreColor(score, max)} w-6 text-end`}>{score}/{max}</span>
-      </div>
-    );
-  };
+  // ─── Test It With People — static protocol, no API call ───
+  const testWithPeopleText = (n) => [
+    t('nau_twp_intro', { name: n }),
+    '',
+    `1. ${t('nau_twp_q1')}`,
+    `2. ${t('nau_twp_q2')}`,
+    `3. ${t('nau_twp_q3')}`,
+    `4. ${t('nau_twp_q4')}`,
+    `5. ${t('nau_twp_q5')}`,
+    '',
+    t('nau_twp_dont_explain'),
+  ].join('\n');
 
   // ─── Mode-aware full text for global ActionBar (copy / share / print) ───
   const buildFullText = useCallback(() => {
     // Compare mode
     if (mode === 'compare' && compareResults) {
       const lines = [t('nau_copy_comparison_title'), ''];
-      if (compareResults.winner) {
-        lines.push(t('nau_copy_winner', { name: compareResults.winner.name, margin: compareResults.winner.margin.replace(/_/g, ' ') }));
-        lines.push(compareResults.winner.why, '');
+      if (compareResults.recommendation) {
+        lines.push(t('nau_copy_recommendation', { name: compareResults.recommendation.name, howClose: compareResults.recommendation.how_close }));
+        lines.push(compareResults.recommendation.why, '');
       }
       compareResults.candidates?.forEach(cand => {
         lines.push(`── ${cand.name} ──`);
-        if (cand.score != null) lines.push(t('nau_copy_score', { score: cand.score }));
-        lines.push(t('nau_copy_grade', { grade: cand.grade }));
-        lines.push(cand.one_liner);
-        lines.push(t('nau_copy_best', { value: cand.best_quality }));
-        lines.push(t('nau_copy_risk', { value: cand.biggest_risk }));
-        lines.push(t('nau_copy_compare_meta', { memorability: cand.memorability, radio: cand.radio_test, global: cand.global_safety }));
+        lines.push(t('nau_copy_verdict', { verdict: verdictLabel(cand.verdict) }));
+        lines.push(cand.best_quality ? t('nau_copy_best', { value: cand.best_quality }) : '');
+        lines.push(cand.biggest_risk ? t('nau_copy_risk', { value: cand.biggest_risk }) : '');
+        lines.push(cand.fit_for_context || '');
         lines.push('');
       });
-      if (compareResults.comparison_insight) {
-        lines.push(t('nau_copy_key_insight'), compareResults.comparison_insight, '');
+      if (compareResults.decision_driver) {
+        lines.push(t('nau_copy_key_insight'), compareResults.decision_driver, '');
       }
       lines.push(BRAND);
-      return lines.join('\n');
+      return lines.filter(l => l !== undefined).join('\n');
     }
     // Analyze mode
     if (!results) return '';
-    const lines = [t('nau_copy_analysis_title', { name: results.name_analyzed }), results.overall_score != null ? t('nau_copy_grade_score', { grade: results.overall_grade, score: results.overall_score }) : t('nau_copy_grade_only', { grade: results.overall_grade }), '', results.overall_summary, ''];
-    if (results.strengths?.length > 0) { lines.push(t('nau_copy_strengths')); results.strengths.forEach(s => lines.push(`  \u2713 ${s}`)); lines.push(''); }
-    if (results.weaknesses?.length > 0) { lines.push(t('nau_copy_weaknesses')); results.weaknesses.forEach(w => lines.push(`  \u2717 ${w}`)); lines.push(''); }
-    if (results.deal_breakers?.length > 0) { lines.push(t('nau_copy_deal_breakers')); results.deal_breakers.forEach(d => lines.push(`  ${d}`)); lines.push(''); }
-    if (results.section_scores) {
-      lines.push(t('nau_copy_section_scores'));
-      const labels = { first_impression: t('nau_copy_label_first_impression'), phonetics: t('nau_copy_label_phonetics'), memorability: t('nau_copy_label_memorability'), radio_test: t('nau_copy_label_radio_test'), visual: t('nau_copy_label_visual'), global_safety: t('nau_copy_label_global_safety'), abbreviations: t('nau_copy_label_abbreviations'), competitive: t('nau_copy_label_competitive'), seo: t('nau_copy_label_seo'), longevity: t('nau_copy_label_longevity'), emotional_resonance: t('nau_copy_label_emotional_resonance') };
-      Object.entries(results.section_scores).forEach(([k, v]) => { lines.push(t('nau_copy_score_line', { label: labels[k] || k, score: v })); });
+    const lines = [t('nau_copy_analysis_title', { name: results.name_analyzed }), t('nau_copy_verdict', { verdict: verdictLabel(results.verdict) }), '', results.bottom_line, ''];
+    if (results.what_works?.length > 0) { lines.push(t('nau_copy_strengths')); results.what_works.forEach(s => lines.push(`  ✓ ${s}`)); lines.push(''); }
+    if (results.what_could_get_in_the_way?.length > 0) { lines.push(t('nau_copy_weaknesses')); results.what_could_get_in_the_way.forEach(w => lines.push(`  ✗ ${w}`)); lines.push(''); }
+    if (results.check_before_you_commit?.length > 0) {
+      lines.push(t('nau_copy_checklist_title'));
+      results.check_before_you_commit.forEach(item => lines.push(`  □ ${item}`));
       lines.push('');
     }
-    if (results.tld_analysis) {
-      lines.push(t('nau_copy_tld_title'));
-      const tldLabels = { tld_choice: t('nau_copy_field_tld_choice'), trust_signal: t('nau_copy_field_trust_signal'), confusion_risk: t('nau_copy_field_confusion_risk'), competing_com: t('nau_copy_field_competing_com'), alternative_tlds: t('nau_copy_field_alternative_tlds') };
-      ['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].forEach(k => {
-        if (results.tld_analysis[k]) lines.push(`${tldLabels[k]}: ${results.tld_analysis[k]}`);
-      });
-      lines.push('');
-    }
-    if (results.domain_specific_tests) {
-      lines.push(t('nau_copy_domain_title'));
-      const domLabels = { browser_bar: t('nau_copy_field_browser_bar'), typosquatting_risk: t('nau_copy_field_typosquatting_risk'), verbal_sharing: t('nau_copy_field_verbal_sharing'), email_test: t('nau_copy_field_email_test') };
-      ['browser_bar', 'typosquatting_risk', 'verbal_sharing', 'email_test'].forEach(k => {
-        if (results.domain_specific_tests[k]) lines.push(`${domLabels[k]}: ${results.domain_specific_tests[k]}`);
-      });
+    if (results.language_flags?.length > 0) {
+      lines.push(t('nau_copy_language_flags_title'));
+      results.language_flags.forEach(f => lines.push(`  ${f.language}: ${f.issue}`));
       lines.push('');
     }
     if (results.live_availability?.domains) {
       lines.push(t('nau_copy_availability_title'), t('nau_copy_domains'));
       Object.entries(results.live_availability.domains).forEach(([d, s]) => {
-        lines.push(`  ${s === 'likely_available' ? '\u2713' : '\u2717'} ${d}`);
+        lines.push(`  ${d} — ${s === 'dns_detected' ? t('nau_dns_detected') : s === 'no_dns_detected' ? t('nau_dns_not_detected') : t('nau_dns_unknown')}`);
       });
-      if (results.live_availability?.social) {
-        lines.push(t('nau_copy_social_handle', { handle: results.live_availability.social.handle }));
-        Object.entries(results.live_availability.social.platforms).forEach(([p, s]) => {
-          lines.push(`  ${s === 'likely_available' ? '\u2713' : '\u2717'} ${p}`);
-        });
+      if (results.live_availability.suggested_handle) {
+        lines.push(t('nau_copy_suggested_handle', { handle: results.live_availability.suggested_handle }));
       }
       lines.push('');
+    }
+    if (results.name_analyzed) {
+      lines.push(testWithPeopleText(results.name_analyzed), '');
     }
     // Include user's journal notes in analyze-mode copy for the full shareable report
     if (results.name_analyzed && journalEntries[results.name_analyzed]?.length > 0) {
@@ -945,14 +705,16 @@ const NameAudit = ({ tool }) => {
       journalEntries[results.name_analyzed].forEach(n => lines.push(`  • ${n.text}`));
       lines.push('');
     }
+    lines.push(t('nau_footer'), '');
     lines.push(BRAND);
     return lines.join('\n');
-  }, [mode, results, compareResults, journalEntries]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, results, compareResults, journalEntries, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'NameAudit');
 
   // Collapsible section helper
-  const Section = ({ id, title, icon, children, defaultOpen = false, score }) => {
+  const Section = ({ id, title, icon, children, defaultOpen = false }) => {
     const isOpen = expandedSections[id] !== undefined ? expandedSections[id] : defaultOpen;
     const explainerKey = sectionExplainers[id];
     const explainerVisible = showExplainer[id];
@@ -967,10 +729,7 @@ const NameAudit = ({ tool }) => {
                 title={t('nau_why_matter')}>ℹ️</span>
             )}
           </h3>
-          <div className="flex items-center gap-3">
-            {score != null && <ScoreBar score={score} />}
-            {<Caret open={isOpen} />}
-          </div>
+          {<Caret open={isOpen} />}
         </button>
         {explainerVisible && explainerKey && (
           <div className={`mt-2 p-3 rounded-lg ${c.cardAlt} border text-sm`}>
@@ -1148,6 +907,14 @@ const NameAudit = ({ tool }) => {
                   className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               </div>
             )}
+            <div>
+              <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_priority')}</label>
+              <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('nau_priority_examples')}</p>
+              <input type="text" value={priority} onChange={(e) => setPriority(e.target.value)}
+                placeholder={t('nau_ph_priority')}
+                onKeyDown={(e) => { if (e.key === 'Enter') { mode === 'analyze' ? handleAnalyze() : handleCompare(); } }}
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+            </div>
           </div>
 
           {/* Submit */}
@@ -1183,9 +950,8 @@ const NameAudit = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`font-bold text-sm ${c.text}`}>{entry.name}</span>
-                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full border ${gradeColors[entry.grade] || c.warning}`}>{entry.grade}</span>
-                          {entry.score != null && <span className={`text-xs font-bold ${scoreColor(entry.score)}`}>{entry.score}/100</span>}
-                          {entry.dealBreakers > 0 && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.danger}`}>{entry.dealBreakers > 1 ? t('nau_deal_breaker_other', { count: entry.dealBreakers }) : t('nau_deal_breaker_one', { count: entry.dealBreakers })}</span>}
+                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full border ${verdictColors[entry.verdict] || c.warning}`}>{verdictLabel(entry.verdict)}</span>
+                          {entry.concernsCount > 0 && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.warning}`}>{entry.concernsCount > 1 ? t('nau_concerns_other', { count: entry.concernsCount }) : t('nau_concerns_one', { count: entry.concernsCount })}</span>}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           {entry.context && <span className={`text-xs ${c.textMuteded}`}>{entry.context}</span>}
@@ -1249,59 +1015,58 @@ const NameAudit = ({ tool }) => {
             </div>
           </div>
 
-          {/* Winner */}
-          {compareResults.winner && (
+          {/* Recommendation */}
+          {compareResults.recommendation && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">🏆</span>
-                <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
-                <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.winner.margin.replace(/_/g, ' ')}</span>
+                <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.recommendation.name}</h3>
+                <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${c.warning} border`}>{compareResults.recommendation.how_close}</span>
               </div>
-              <p className={`text-sm ${c.textSecondary}`}>{compareResults.winner.why}</p>
-              <p className={`text-xs ${c.textMuteded} mt-3 italic`}>{t('nau_winner_tip')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{compareResults.recommendation.why}</p>
             </div>
           )}
 
           {/* Side by side */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {compareResults.candidates?.map((cand, idx) => {
-              const isWinner = cand.name === compareResults.winner?.name;
+              const isWinner = cand.name === compareResults.recommendation?.name;
               return (
                 <div key={idx} className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 border-2 ${isWinner ? (isDark ? 'border-amber-600' : 'border-amber-400') : c.border}`}>
-                  <div className="flex items-start gap-3 mb-3">
-                    {cand.score != null && (
-                      <div className="flex-shrink-0">
-                        <AnimatedScore score={cand.score} size="sm" />
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className={`text-lg font-bold ${c.text}`}>{cand.name}</h4>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${verdictColors[cand.verdict] || c.warning}`}>{verdictLabel(cand.verdict)}</span>
+                  </div>
+                  {cand.fit_for_context && <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.fit_for_context}</p>}
+                  <div className="space-y-2">
+                    {cand.best_quality && (
+                      <div className={`p-2 rounded-lg ${c.success} border`}>
+                        <p className="text-xs font-bold mb-0.5">{t('nau_best_quality')}</p><p className="text-sm">{cand.best_quality}</p>
                       </div>
                     )}
-                    <div className="flex-1 flex items-center justify-between">
-                      <h4 className={`text-lg font-bold ${c.text}`}>{cand.name}</h4>
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${gradeColors[cand.grade] || c.warning}`}>{cand.grade}</span>
-                    </div>
-                  </div>
-                  <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.one_liner}</p>
-                  <div className="space-y-2">
-                    <div className={`p-2 rounded-lg ${c.success} border`}>
-                      <p className="text-xs font-bold mb-0.5">{t('nau_best_quality')}</p><p className="text-sm">{cand.best_quality}</p>
-                    </div>
-                    <div className={`p-2 rounded-lg ${c.danger} border`}>
-                      <p className="text-xs font-bold mb-0.5">{t('nau_biggest_risk')}</p><p className="text-sm">{cand.biggest_risk}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <span className={`px-2 py-0.5 rounded text-xs border ${c.chip(false)}`}>{t('nau_lbl_memorability', { value: cand.memorability })}</span>
-                      <span className={`px-2 py-0.5 rounded text-xs border ${cand.radio_test === 'pass' ? c.success : cand.radio_test === 'fail' ? c.danger : c.warning}`}>{t('nau_lbl_radio', { value: cand.radio_test })}</span>
-                      <span className={`px-2 py-0.5 rounded text-xs border ${cand.global_safety === 'clean' ? c.success : cand.global_safety === 'problem' ? c.danger : c.warning}`}>{t('nau_lbl_global', { value: cand.global_safety })}</span>
-                    </div>
-                    <p className={`text-xs ${c.textMuteded} italic`}>{t('nau_lbl_personality', { value: cand.personality })}</p>
+                    {cand.biggest_risk && (
+                      <div className={`p-2 rounded-lg ${c.danger} border`}>
+                        <p className="text-xs font-bold mb-0.5">{t('nau_biggest_risk')}</p><p className="text-sm">{cand.biggest_risk}</p>
+                      </div>
+                    )}
+                    {cand.word_of_mouth && (
+                      <span className={`inline-block px-2 py-0.5 rounded text-xs border ${wordOfMouthStyle(cand.word_of_mouth)}`}>{t('nau_lbl_word_of_mouth', { value: t(wordOfMouthLabelKeys[cand.word_of_mouth] || cand.word_of_mouth) })}</span>
+                    )}
+                    {cand.needs_verification?.length > 0 && (
+                      <div className={`p-2 rounded-lg ${c.cardAlt} border`}>
+                        <p className="text-xs font-bold mb-0.5">{t('nau_needs_verification')}</p>
+                        {cand.needs_verification.map((v, i) => <p key={i} className="text-xs">□ {v}</p>)}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {compareResults.comparison_insight && (
+          {compareResults.decision_driver && (
             <div className={`p-4 rounded-xl ${c.cardAlt} border text-center`}>
-              <p className="text-sm font-medium">{compareResults.comparison_insight}</p>
+              <p className="text-sm font-medium">{compareResults.decision_driver}</p>
             </div>
           )}
         </div>
@@ -1312,7 +1077,7 @@ const NameAudit = ({ tool }) => {
         <div className="space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 space-y-3`}>
+          <div id="nau-anchor-controls" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 space-y-3`}>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-semibold ${c.text}`}>"{results.name_analyzed}"</span>
@@ -1372,114 +1137,44 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Overall Verdict */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${
-            results.overall_grade === 'STRONG' || results.overall_grade === 'GOOD' ? (isDark ? 'border-green-500' : 'border-green-400')
-            : results.overall_grade === 'FAIR' ? (isDark ? 'border-amber-500' : 'border-amber-400')
-            : (isDark ? 'border-red-500' : 'border-red-400')
-          }`}>
-            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
-              {results.overall_score != null && (
-                <div className="flex-shrink-0">
-                  <AnimatedScore score={results.overall_score} size="lg" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${gradeColors[results.overall_grade] || c.warning}`}>
-                    {results.overall_grade}
-                  </span>
-                  <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
-                </div>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.overall_summary}</p>
-              </div>
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${verdictBorder(results.verdict)}`}>
+            <div className="flex items-center gap-3 mb-3">
+              <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${verdictColors[results.verdict] || c.warning}`}>
+                {verdictLabel(results.verdict)}
+              </span>
+              <h3 className={`text-lg font-bold ${c.text}`}>"{results.name_analyzed}"</h3>
             </div>
+            <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.bottom_line}</p>
           </div>
 
-          {/* Strengths + Weaknesses + Deal Breakers */}
+          {/* What Works + What Could Get In The Way */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {results.strengths?.length > 0 && (
+            {results.what_works?.length > 0 && (
               <div className={`p-5 rounded-xl ${c.success} border`}>
                 <p className="text-xs font-bold mb-2">{t('nau_strengths')}</p>
-                {results.strengths.map((s, i) => <p key={i} className="text-sm mb-1">✓ {s}</p>)}
+                {results.what_works.map((s, i) => <p key={i} className="text-sm mb-1">✓ {s}</p>)}
               </div>
             )}
-            {results.weaknesses?.length > 0 && (
+            {results.what_could_get_in_the_way?.length > 0 && (
               <div className={`p-5 rounded-xl ${c.warning} border`}>
                 <p className="text-xs font-bold mb-2">{t('nau_weaknesses')}</p>
-                {results.weaknesses.map((w, i) => <p key={i} className="text-sm mb-1">⚠ {w}</p>)}
+                {results.what_could_get_in_the_way.map((w, i) => <p key={i} className="text-sm mb-1">⚠ {w}</p>)}
               </div>
             )}
           </div>
 
-          {results.deal_breakers?.length > 0 && (
-            <div className={`p-5 rounded-xl ${c.danger} border`}>
-              <p className="text-xs font-bold mb-2">{t('nau_deal_breakers')}</p>
-              {results.deal_breakers.map((d, i) => <p key={i} className="text-sm mb-1 font-medium">{d}</p>)}
-            </div>
-          )}
-
-          {/* Score Radar Chart */}
-          {results.section_scores && Object.keys(results.section_scores).length >= 3 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          {/* Check Before You Commit */}
+          {results.check_before_you_commit?.length > 0 && (
+            <div id="nau-anchor-checklist" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <span>📊</span> {t('nau_score_profile')}
+                <span>✅</span> {t('nau_checklist_title')}
               </h3>
-              <RadarChart scores={results.section_scores} />
-              <p className={`text-xs ${c.textMuteded} text-center mt-2`}>{t('nau_radar_caption')}</p>
-            </div>
-          )}
-
-          {/* ─── #6: Name Psychology Profile ─── */}
-          {results && (() => {
-            const psych = computePsychology(results.name_analyzed);
-            if (!psych) return null;
-            return (
-              <Section id="psychology" title={t('nau_psych_title')} icon="🧠">
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_psych_bouba_kiki')}</p>
-                      <p className={`text-sm font-semibold ${c.text}`}>{psych.boubaKiki}</p>
-                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('nau_psych_bouba_kiki_note')}</p>
-                    </div>
-                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_psych_size')}</p>
-                      <p className={`text-sm font-semibold ${c.text}`}>{psych.sizeSymbol}</p>
-                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('nau_psych_size_note')}</p>
-                    </div>
-                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_psych_vc_ratio')}</p>
-                      <p className={`text-sm font-semibold ${c.text}`}>{psych.vowelRatio}</p>
-                    </div>
-                    <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_psych_lexical')}</p>
-                      <p className={`text-sm font-semibold ${c.text}`}>{psych.neighborDensity}</p>
-                      <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('nau_psych_lexical_note')}</p>
-                    </div>
-                  </div>
-                  {psych.traits.length > 0 && (
-                    <div className={`p-3 rounded-lg ${c.cyan} border`}>
-                      <p className="text-xs font-bold mb-1">{t('nau_psych_traits')}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {psych.traits.map((trait, i) => (
-                          <span key={i} className={`px-2 py-0.5 rounded-full text-xs border ${c.chip(false)}`}>{trait}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Section>
-            );
-          })()}
-
-          {/* ─── #7: Pronunciation Confidence Map ─── */}
-          {results && (
-            <Section id="pronunciation-map" title={t('nau_pron_title')} icon="🗺️">
-              <div className="space-y-3">
-                <p className={`text-xs ${c.textMuteded}`}>{t('nau_pron_caption')}</p>
-                <PronunciationMap nameStr={results.name_analyzed} />
+              <div className="space-y-1.5">
+                {results.check_before_you_commit.map((item, i) => (
+                  <p key={i} className={`text-sm ${c.textSecondary}`}>□ {item}</p>
+                ))}
               </div>
-            </Section>
+            </div>
           )}
 
           {/* ─── #9: Context Mockups Toggle (in controls area) ─── */}
@@ -1496,67 +1191,49 @@ const NameAudit = ({ tool }) => {
             </div>
           )}
 
-          {/* First Impression */}
-          {results.first_impression && (
-            <Section id="impression" title={t('nau_sec_impression')} icon="👁️" defaultOpen score={results.section_scores?.first_impression}>
+          {/* How It Sounds */}
+          {results.how_it_sounds && (
+            <Section id="sound" title={t('nau_sec_sound')} icon="👂" defaultOpen>
               <div className="space-y-3">
-                <p className={`text-sm ${c.textSecondary}`}>{results.first_impression.gut_reaction}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {results.first_impression.associations?.map((a, i) => (
-                    <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${c.chip(false)}`}>{a}</span>
-                  ))}
-                </div>
-                <p className={`text-sm ${c.textMuteded} italic`}>{t('nau_personality_prefix', { value: results.first_impression.personality_projected })}</p>
-              </div>
-            </Section>
-          )}
-
-          {/* Phonetic Profile */}
-          {results.phonetic_profile && (
-            <Section id="phonetic" title={t('nau_sec_phonetic')} icon="👂" score={results.section_scores?.phonetics}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {['syllables', 'mouth_feel', 'accent_notes', 'sound_psychology', 'rhythm'].map(key => (
-                  results.phonetic_profile[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.phonetic_profile[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Memorability */}
-          {results.memorability && (
-            <Section id="memorability" title={t('nau_sec_memorability')} icon="⚡" score={results.section_scores?.memorability}>
-              <div className="space-y-3">
-                {[
-                  { key: 'day_after_test', labelKey: 'nau_mem_day_after' },
-                  { key: 'tell_a_friend_test', labelKey: 'nau_mem_tell_friend' },
-                  { key: 'phone_test', labelKey: 'nau_mem_phone' },
-                  { key: 'drunk_test', labelKey: 'nau_mem_drunk' },
-                  { key: 'shout_test', labelKey: 'nau_mem_shout' },
-                ].map(({ key, labelKey }) => results.memorability[key] && (
-                  <div key={key} className="flex items-start gap-3">
-                    <span className={`text-xs font-bold w-32 flex-shrink-0 pt-0.5 ${c.textMuteded}`}>{t(labelKey)}</span>
-                    <PassFail pass={results.memorability[key].pass} notes={results.memorability[key].notes} />
+                {results.how_it_sounds.pronunciation && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_pronunciation')}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.how_it_sounds.pronunciation}</p>
                   </div>
-                ))}
+                )}
+                {results.how_it_sounds.alternate_pronunciations?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.warning} border`}>
+                    <p className="text-xs font-bold mb-1">{t('nau_field_alt_pronunciations')}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {results.how_it_sounds.alternate_pronunciations.map((m, i) => (
+                        <span key={i} className={`px-2 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {results.how_it_sounds.impression && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_impression')}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.how_it_sounds.impression}</p>
+                  </div>
+                )}
               </div>
             </Section>
           )}
 
-          {/* Radio Test */}
-          {results.radio_test && (
-            <Section id="radio" title={t('nau_sec_radio')} icon="💬" score={results.section_scores?.radio_test}>
+          {/* Word-of-Mouth Test */}
+          {results.word_of_mouth && (
+            <Section id="word-of-mouth" title={t('nau_sec_word_of_mouth')} icon="⚡" defaultOpen>
               <div className="space-y-3">
-                <PassFail pass={results.radio_test.pass} notes={results.radio_test.notes} />
-                {results.radio_test.likely_misspellings?.length > 0 && (
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold border ${ratingStyle(results.word_of_mouth.rating)}`}>
+                  {ratingLabel(results.word_of_mouth.rating)}
+                </span>
+                {results.word_of_mouth.why && <p className={`text-sm ${c.textSecondary}`}>{results.word_of_mouth.why}</p>}
+                {results.word_of_mouth.likely_misspellings?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.warning} border`}>
                     <p className="text-xs font-bold mb-1">{t('nau_likely_misspellings')}</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {results.radio_test.likely_misspellings.map((m, i) => (
+                      {results.word_of_mouth.likely_misspellings.map((m, i) => (
                         <span key={i} className={`px-2 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>{m}</span>
                       ))}
                     </div>
@@ -1566,27 +1243,70 @@ const NameAudit = ({ tool }) => {
             </Section>
           )}
 
-          {/* Visual Analysis */}
-          {results.visual_analysis && (
-            <Section id="visual" title={t('nau_sec_visual')} icon="👁️" score={results.section_scores?.visual}>
+          {/* How It Looks */}
+          {results.how_it_looks && (
+            <Section id="looks" title={t('nau_sec_looks')} icon="👁️">
               <div className="space-y-3">
-                <div className="flex flex-wrap gap-3 mb-3">
-                  {[
-                    { id: 'lowercase', labelKey: 'nau_visual_lowercase', val: results.visual_analysis.lowercase },
-                    { id: 'uppercase', labelKey: 'nau_visual_uppercase', val: results.visual_analysis.uppercase },
-                    { id: 'title_case', labelKey: 'nau_visual_title_case', val: results.visual_analysis.title_case },
-                  ].map(({ id, labelKey, val }) => val && (
-                    <div key={id} className={`p-3 rounded-lg ${c.cardAlt} text-center`}>
-                      <p className={`text-xs ${c.textMuteded} mb-1`}>{t(labelKey)}</p>
-                      <p className={`text-lg font-bold ${c.text}`}>{val}</p>
-                    </div>
-                  ))}
-                </div>
-                {['url_form', 'url_appearance', 'logo_potential', 'visual_issues'].map(key => (
-                  results.visual_analysis[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.visual_analysis[key]}</p>
+                {results.how_it_looks.url_form && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_url_form')}</p>
+                    <p className={`text-sm font-mono ${c.textSecondary}`}>{results.how_it_looks.url_form}</p>
+                  </div>
+                )}
+                {results.how_it_looks.logo_potential && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_logo_potential')}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.how_it_looks.logo_potential}</p>
+                  </div>
+                )}
+                {results.how_it_looks.issues && (
+                  <div className={`p-3 rounded-lg ${c.warning} border`}>
+                    <p className="text-xs font-bold mb-1">{t('nau_field_visual_issues')}</p>
+                    <p className="text-sm">{results.how_it_looks.issues}</p>
+                  </div>
+                )}
+              </div>
+            </Section>
+          )}
+
+          {/* Tone & Associations */}
+          {results.tone_and_associations && (
+            <Section id="tone" title={t('nau_sec_tone')} icon="💭">
+              <div className="space-y-3">
+                {results.tone_and_associations.summary && (
+                  <p className={`text-sm ${c.textSecondary}`}>{results.tone_and_associations.summary}</p>
+                )}
+                {results.tone_and_associations.associations?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {results.tone_and_associations.associations.map((a, i) => (
+                      <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${c.chip(false)}`}>{a}</span>
+                    ))}
+                  </div>
+                )}
+                {results.fit_for_context && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_fit_for_context')}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.fit_for_context}</p>
+                  </div>
+                )}
+              </div>
+            </Section>
+          )}
+
+          {/* Abbreviation Audit */}
+          {results.abbreviation_audit && (
+            <Section id="abbreviation" title={t('nau_sec_abbreviation')} icon="#️⃣">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { key: 'natural_shortening', labelKey: 'nau_field_natural_shortening' },
+                  { key: 'initials', labelKey: 'nau_field_initials' },
+                  { key: 'hashtag', labelKey: 'nau_field_hashtag' },
+                  { key: 'issues', labelKey: 'nau_field_issues' },
+                ].map(({ key, labelKey }) => (
+                  results.abbreviation_audit[key] && (
+                    <div key={key} className={`p-3 rounded-lg ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? c.warning : c.cardAlt} ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? 'border' : ''}`}>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t(labelKey)}</p>
+                      <p className={`text-sm ${c.textSecondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
                     </div>
                   )
                 ))}
@@ -1594,28 +1314,39 @@ const NameAudit = ({ tool }) => {
             </Section>
           )}
 
-          {/* Global Language Scan */}
-          {results.global_language_scan?.length > 0 && (
-            <Section id="language" title={t('nau_sec_language_scan', { count: results.global_language_scan.length })} icon="🌐" score={results.section_scores?.global_safety}>
-              <div className="flex flex-wrap gap-2">
-                {results.global_language_scan.map((lang, idx) => (
-                  <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-center gap-1.5 ${langSeverityStyle(lang.severity)}`}>
-                    {langSeverityIcon(lang.severity)}
-                    <span className="font-semibold">{lang.language}:</span>
-                    <span>{lang.finding}</span>
+          {/* Competition & Findability */}
+          {results.competition_and_findability && (
+            <Section id="competition" title={t('nau_sec_competition')} icon="🔎">
+              <div className="space-y-3">
+                {results.competition_and_findability.structural_findability && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.competition_and_findability.structural_findability}</p>
                   </div>
-                ))}
+                )}
+                {results.competition_and_findability.checks_needed?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.warning} border`}>
+                    <p className="text-xs font-bold mb-1">{t('nau_checks_needed')}</p>
+                    {results.competition_and_findability.checks_needed.map((chk, i) => <p key={i} className="text-sm mb-0.5">□ {chk}</p>)}
+                  </div>
+                )}
               </div>
             </Section>
           )}
 
-          {/* Global Language Flags (problems only) */}
-          {results.global_language_flags?.length > 0 && (
-            <Section id="language-flags" title={t('nau_sec_language_flags', { count: results.global_language_flags.length })} icon="🚩" score={null}>
+          {/* Longevity */}
+          {results.longevity && (
+            <Section id="longevity" title={t('nau_sec_longevity')} icon="⏰">
+              <p className={`text-sm ${c.textSecondary}`}>{results.longevity}</p>
+            </Section>
+          )}
+
+          {/* Language Flags — only rendered when something meaningful surfaced */}
+          {results.language_flags?.length > 0 && (
+            <Section id="language" title={t('nau_sec_language_flags', { count: results.language_flags.length })} icon="🚩">
               <div className="space-y-2">
-                {results.global_language_flags.map((flag, idx) => (
-                  <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-start gap-2 ${flag.severity === 'problem' ? c.danger : c.warning}`}>
-                    <span className="flex-shrink-0">{flag.severity === 'problem' ? '❌' : '⚠️'}</span>
+                {results.language_flags.map((flag, idx) => (
+                  <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-start gap-2 ${langSeverityStyle(flag.severity)}`}>
+                    <span className="flex-shrink-0">{langSeverityIcon(flag.severity)}</span>
                     <div>
                       <span className="font-semibold">{flag.language}:</span>
                       <span className="ms-1">{flag.issue}</span>
@@ -1626,228 +1357,55 @@ const NameAudit = ({ tool }) => {
             </Section>
           )}
 
-          {/* Abbreviation Audit */}
-          {results.abbreviation_audit && (
-            <Section id="abbreviation" title={t('nau_sec_abbreviation')} icon="#️⃣" score={results.section_scores?.abbreviations}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {['natural_shortening', 'initials', 'hashtag', 'issues'].map(key => (
-                  results.abbreviation_audit[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? c.warning : c.cardAlt} ${key === 'issues' && results.abbreviation_audit[key] !== 'Clean' ? 'border' : ''}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary} ${key === 'hashtag' ? 'font-mono' : ''}`}>{results.abbreviation_audit[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Competitive Landscape */}
-          {results.competitive_landscape && (
-            <Section id="competitive" title={t('nau_sec_competitive')} icon="🛡️" score={results.section_scores?.competitive}>
-              <div className="space-y-3">
-                {results.competitive_landscape.similar_names?.length > 0 && (
-                  <div className={`p-3 rounded-lg ${c.warning} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_similar_existing')}</p>
-                    {results.competitive_landscape.similar_names.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
-                  </div>
-                )}
-                <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_field_differentiation')}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.competitive_landscape.differentiation}</p>
-                </div>
-              </div>
-            </Section>
-          )}
-
-          {/* SEO / Searchability */}
-          {results.searchability && (
-            <Section id="seo" title={t('nau_sec_seo')} icon="🔍" score={results.section_scores?.seo}>
-              <div className="space-y-3">
-                {['uniqueness', 'google_competition', 'seo_assessment', 'seo_verdict'].map(key => (
-                  results.searchability[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.searchability[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Longevity */}
-          {results.longevity && (
-            <Section id="longevity" title={t('nau_sec_longevity')} icon="⏰" score={results.section_scores?.longevity}>
-              <div className="space-y-3">
-                {['trend_dependency', 'aging_risk', 'aging_verdict', 'verdict'].map(key => (
-                  results.longevity[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.longevity[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-
-          {/* TLD Analysis (domain names) */}
-          {results.tld_analysis && (
-            <Section id="tld" title={t('nau_sec_tld')} icon="🌐">
-              <div className="space-y-3">
-                {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'url_readability', 'alternative_tlds'].map(key => (
-                  results.tld_analysis[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.tld_analysis[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Domain-Specific Tests */}
-          {results.domain_specific_tests && (
-            <Section id="domain-tests" title={t('nau_sec_domain_tests')} icon="🔍">
-              <div className="space-y-3">
-                {['browser_bar', 'typosquatting_risk', 'verbal_sharing', 'email_test'].map(key => (
-                  results.domain_specific_tests[key] && (
-                    <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{fieldLabel(key)}</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.domain_specific_tests[key]}</p>
-                    </div>
-                  )
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Emotional Resonance */}
-          {results.emotional_resonance && (
-            <Section id="emotion" title={t('nau_sec_emotion')} icon="❤️" score={results.section_scores?.emotional_resonance}>
-              <div className="space-y-3">
-                {results.emotional_resonance.personality_match && (
-                  <p className={`text-sm ${c.textSecondary}`}>{results.emotional_resonance.personality_match}</p>
-                )}
-                {results.emotional_resonance.sensory_associations && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_sensory_associations')}</p>
-                    <p className="text-sm">{results.emotional_resonance.sensory_associations}</p>
-                  </div>
-                )}
-                {results.emotional_resonance.if_it_were_a_person && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_if_were_person')}</p>
-                    <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
-                  </div>
-                )}
-                {results.emotional_resonance.as_a_person && results.emotional_resonance.as_a_person !== results.emotional_resonance.if_it_were_a_person && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_as_a_person')}</p>
-                    <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.as_a_person}</p>
-                  </div>
-                )}
-              </div>
-            </Section>
-          )}
-
           {/* Live Availability */}
           {results.live_availability && (
             <Section id="availability" title={t('nau_sec_availability')} icon="🌐">
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {results.live_availability.domains && (
                   <div>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('nau_avail_domains')}</p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('nau_avail_domain_check')}</p>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
                       {Object.entries(results.live_availability.domains).map(([domain, status]) => (
                         <span key={domain} className={`px-2.5 py-1 rounded text-xs font-mono border ${
-                          status === 'likely_available' ? (isDark ? 'bg-green-900/30 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700')
-                          : status === 'taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
+                          status === 'no_dns_detected' ? (isDark ? 'bg-green-900/30 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700')
+                          : status === 'dns_detected' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
                           : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
                         }`}>
-                          {domain} {status === 'likely_available' ? '✓' : status === 'taken' ? '✗' : '?'}
+                          {domain} — {status === 'no_dns_detected' ? t('nau_dns_not_detected') : status === 'dns_detected' ? t('nau_dns_detected') : t('nau_dns_unknown')}
                         </span>
                       ))}
                     </div>
+                    <p className={`text-xs ${c.textMuteded}`}>{t('nau_dns_disclaimer')}</p>
                   </div>
                 )}
-                {results.live_availability.social && (
+                {results.live_availability.suggested_handle && (
                   <div>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('nau_avail_social', { handle: results.live_availability.social.handle })}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {Object.entries(results.live_availability.social.platforms).map(([platform, status]) => (
-                        <span key={platform} className={`px-2.5 py-1 rounded text-xs border ${
-                          status === 'likely_available' ? (isDark ? 'bg-green-900/30 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700')
-                          : status === 'likely_taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
-                          : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
-                        }`}>
-                          {platform} {status === 'likely_available' ? '✓' : status === 'likely_taken' ? '✗' : '?'}
-                        </span>
-                      ))}
-                    </div>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('nau_avail_social_title')}</p>
+                    <p className={`text-sm font-mono ${c.text} mb-1`}>{t('nau_suggested_handle', { handle: results.live_availability.suggested_handle })}</p>
+                    <p className={`text-xs ${c.textMuteded}`}>{t('nau_social_disclaimer')}</p>
                   </div>
                 )}
               </div>
             </Section>
           )}
 
-          {/* ═══ NEW AI FEATURES ═══ */}
-
-          {/* ─── #1: Audience Reaction Simulator ─── */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          {/* ─── Test It With People ─── */}
+          <div id="nau-anchor-twp" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
-              <span>👥</span> {t('nau_reactions_title')}
+              <span>👥</span> {t('nau_twp_title')}
             </h3>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>
-              {t('nau_reactions_desc')}
-            </p>
-            {!reactionsResults ? (
-              <button onClick={handleReactions} disabled={reactionsLoading}
-                className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                  reactionsLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
-                } disabled:opacity-40`}>
-                {reactionsLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_reactions_loading')}</>)
-                  : (<><span>👥</span> {t('nau_reactions_btn')}
-                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('nau_pro_badge')}</span></>)}
-              </button>
-            ) : (
-              <div className="space-y-3">
-                {reactionsResults.personas?.map((persona, i) => (
-                  <div key={i} className={`p-4 rounded-lg border ${c.border} ${c.cardAlt}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">{persona.emoji || '👤'}</span>
-                      <div>
-                        <p className={`text-sm font-bold ${c.text}`}>{persona.name}</p>
-                        <p className={`text-xs ${c.textMuteded}`}>{persona.description}</p>
-                      </div>
-                    </div>
-                    <p className={`text-sm ${c.textSecondary} italic`}>"{persona.reaction}"</p>
-                    {persona.would_they_remember && (
-                      <p className={`text-xs ${c.textMuteded} mt-1.5`}>
-                        {t('nau_would_remember')} <span className="font-semibold">{persona.would_they_remember}</span>
-                      </p>
-                    )}
-                    {persona.trust_level && (
-                      <p className={`text-xs ${c.textMuteded}`}>
-                        {t('nau_trust_level')} <span className="font-semibold">{persona.trust_level}</span>
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {reactionsResults.consensus && (
-                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_audience_consensus')}</p>
-                    <p className="text-sm">{reactionsResults.consensus}</p>
-                  </div>
-                )}
-              </div>
-            )}
+            <p className={`text-sm ${c.textSecondary} mb-3`}>{t('nau_twp_intro', { name: results.name_analyzed })}</p>
+            <ol className={`text-sm ${c.textSecondary} space-y-1.5 ms-4 list-decimal`}>
+              <li>{t('nau_twp_q1')}</li>
+              <li>{t('nau_twp_q2')}</li>
+              <li>{t('nau_twp_q3')}</li>
+              <li>{t('nau_twp_q4')}</li>
+              <li>{t('nau_twp_q5')}</li>
+            </ol>
+            <p className={`text-xs ${c.textMuteded} italic mt-3`}>{t('nau_twp_dont_explain')}</p>
           </div>
 
-          {/* ─── #3: Context-Specific Deep Dive ─── */}
+          {/* ─── Context-Specific Deep Dive ─── */}
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔬</span> {context === 'Baby' ? t('nau_deepdive_title_baby') : context === 'Band / Music Project' ? t('nau_deepdive_title_music') : context === 'Pet' ? t('nau_deepdive_title_pet') : t('nau_deepdive_title_default')}
@@ -1870,7 +1428,7 @@ const NameAudit = ({ tool }) => {
             ) : (
               <div className="space-y-3">
                 {deepDiveResults.sections?.map((section, i) => (
-                  <div key={i} className={`p-3 rounded-lg ${section.severity === 'positive' ? c.success : section.severity === 'problem' ? c.danger : section.severity === 'caution' ? c.warning : c.cardAlt} ${section.severity ? 'border' : ''}`}>
+                  <div key={i} className={`p-3 rounded-lg ${severityStyle(section.severity)} ${section.severity ? 'border' : ''}`}>
                     <p className="text-xs font-bold mb-1">{section.title}</p>
                     <p className="text-sm">{section.finding}</p>
                     {section.detail && <p className={`text-xs ${c.textMuteded} mt-1`}>{section.detail}</p>}
@@ -1886,7 +1444,7 @@ const NameAudit = ({ tool }) => {
             )}
           </div>
 
-          {/* ─── #10: Second Opinion ─── */}
+          {/* ─── Challenge This Audit ─── */}
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔄</span> {t('nau_second_title')}
@@ -1905,82 +1463,86 @@ const NameAudit = ({ tool }) => {
               </button>
             ) : (
               <div className="space-y-3">
-                {/* Score comparison */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_second_first_analysis')}</p>
-                    <p className={`text-2xl font-bold ${scoreColor(results?.overall_score || 0)}`}>{results?.overall_score}</p>
-                    <p className={`text-xs font-bold ${c.textMuteded}`}>{results?.overall_grade}</p>
-                  </div>
-                  <div className={`p-3 rounded-lg text-center ${c.cardAlt}`}>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('nau_second_second_opinion')}</p>
-                    <p className={`text-2xl font-bold ${scoreColor(secondOpinionResults.score || 0)}`}>{secondOpinionResults.score}</p>
-                    <p className={`text-xs font-bold ${c.textMuteded}`}>{secondOpinionResults.grade}</p>
-                  </div>
-                </div>
-                {/* Agreements */}
-                {secondOpinionResults.agreements?.length > 0 && (
+                {secondOpinionResults.holds_up?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.success} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_second_agree')}</p>
-                    {secondOpinionResults.agreements.map((a, i) => <p key={i} className="text-sm mb-0.5">• {a}</p>)}
+                    <p className="text-xs font-bold mb-1">{t('nau_second_holds_up')}</p>
+                    {secondOpinionResults.holds_up.map((a, i) => <p key={i} className="text-sm mb-0.5">• {a}</p>)}
                   </div>
                 )}
-                {/* Disagreements */}
-                {secondOpinionResults.disagreements?.length > 0 && (
+                {secondOpinionResults.worth_reconsidering?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.warning} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_second_disagree')}</p>
-                    {secondOpinionResults.disagreements.map((d, i) => <p key={i} className="text-sm mb-0.5">• {d}</p>)}
+                    <p className="text-xs font-bold mb-1">{t('nau_second_worth_reconsidering')}</p>
+                    {secondOpinionResults.worth_reconsidering.map((d, i) => <p key={i} className="text-sm mb-0.5">• {d}</p>)}
                   </div>
                 )}
-                {/* New insights */}
-                {secondOpinionResults.new_insights?.length > 0 && (
+                {secondOpinionResults.missed_the_first_time?.length > 0 && (
                   <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_second_new_insights')}</p>
-                    {secondOpinionResults.new_insights.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
+                    <p className="text-xs font-bold mb-1">{t('nau_second_missed')}</p>
+                    {secondOpinionResults.missed_the_first_time.map((n, i) => <p key={i} className="text-sm mb-0.5">• {n}</p>)}
                   </div>
                 )}
-                {secondOpinionResults.confidence_verdict && (
-                  <p className={`text-sm ${c.textSecondary} italic text-center`}>🎯 {secondOpinionResults.confidence_verdict}</p>
+                {secondOpinionResults.facts_to_verify?.length > 0 && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
+                    <p className="text-xs font-bold mb-1">{t('nau_second_facts_to_verify')}</p>
+                    {secondOpinionResults.facts_to_verify.map((n, i) => <p key={i} className="text-sm mb-0.5">□ {n}</p>)}
+                  </div>
+                )}
+                {secondOpinionResults.bottom_line && (
+                  <p className={`text-sm ${c.textSecondary} italic text-center`}>🎯 {secondOpinionResults.bottom_line}</p>
                 )}
               </div>
             )}
           </div>
 
-          {/* Suggestions */}
-          {results.suggestions && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <span>→</span> {t('nau_next_steps')}
-              </h3>
-              {results.suggestions.to_strengthen && (
-                <div className={`p-3 rounded-lg ${c.success} border mb-3`}>
-                  <p className="text-xs font-bold mb-1">{t('nau_to_strengthen')}</p>
-                  <p className="text-sm">{results.suggestions.to_strengthen}</p>
+          {/* ─── Next Steps ─── */}
+          {(() => {
+            const isWeak = results?.verdict === 'HAS PROBLEMS' || results?.verdict === 'RECONSIDER';
+            const concerns = results?.what_could_get_in_the_way?.slice(0, 2).join(', ') || '';
+            const stormParams = new URLSearchParams();
+            if (context && context !== 'Other') stormParams.set('category', context);
+            if (concerns) stormParams.set('constraints', `Avoid issues: ${concerns}`);
+            if (industry) stormParams.set('industry', industry);
+            const stormUrl = `/NameStorm${stormParams.toString() ? '?' + stormParams.toString() : ''}`;
+            const scrollToId = (id) => { const el = document.getElementById(`nau-anchor-${id}`); if (el) revealSection(el); };
+
+            return (
+              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+                <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
+                  <span>→</span> {t('nau_next_steps')}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => scrollToId('checklist')} className={`px-3 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                    ✅ {t('nau_next_keep_it')}
+                  </button>
+                  <button onClick={() => scrollToId('twp')} className={`px-3 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                    👥 {t('nau_next_test_it')}
+                  </button>
+                  <button onClick={() => { setAnalyzeToCompare(true); scrollToId('controls'); }} className={`px-3 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
+                    📊 {t('nau_next_compare')}
+                  </button>
+                  <a href={stormUrl} className={`px-3 py-2 rounded-lg text-sm font-medium ${isWeak ? (isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white') : c.btnSecondary}`}>
+                    ⚡ {t('nau_next_explore')}
+                  </a>
                 </div>
-              )}
-              {results.suggestions.alternatives_direction && (
-                <div className={`p-3 rounded-lg ${c.cardAlt} border mb-3`}>
-                  <p className="text-xs font-bold mb-1">{t('nau_if_reconsidering')}</p>
-                  <p className="text-sm">{results.suggestions.alternatives_direction}</p>
-                </div>
-              )}
-              {/* Fix This Name — premium */}
-              <PremiumGate feature="nameAudit.fixThisName" label={t('nau_premium_fix_label')}>
-                <button onClick={handleFixThisName} disabled={fixLoading || !!fixResults}
-                  className={`w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-                    fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
-                    : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
-                    : isDark ? 'bg-cyan-900/30 border border-cyan-700 text-cyan-200 hover:bg-cyan-900/50'
-                      : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
-                  } disabled:opacity-40`}
-                >
-                  {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_fix_loading')}</>)
-                    : fixResults ? (<><span>✅</span> {t('nau_fix_done')}</>)
-                    : (<><span>✨</span> {t('nau_fix_cta')} <PremiumBadge feature="nameAudit.fixThisName" /></>)}
-                </button>
-              </PremiumGate>
-            </div>
-          )}
+                {isWeak && concerns && <p className={`text-xs ${c.textMuteded} mt-2`}>{t('nau_weak_note', { weaknesses: concerns })}</p>}
+                {/* Fix This Name — premium */}
+                <PremiumGate feature="nameAudit.fixThisName" label={t('nau_premium_fix_label')}>
+                  <button onClick={handleFixThisName} disabled={fixLoading || !!fixResults}
+                    className={`w-full mt-3 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                      fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
+                      : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
+                      : isDark ? 'bg-cyan-900/30 border border-cyan-700 text-cyan-200 hover:bg-cyan-900/50'
+                        : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
+                    } disabled:opacity-40`}
+                  >
+                    {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_fix_loading')}</>)
+                      : fixResults ? (<><span>✅</span> {t('nau_fix_done')}</>)
+                      : (<><span>✨</span> {t('nau_fix_cta')} <PremiumBadge feature="nameAudit.fixThisName" /></>)}
+                  </button>
+                </PremiumGate>
+              </div>
+            );
+          })()}
 
           {/* ─── Fix This Name Results ─── */}
           {fixResults && (
@@ -2002,18 +1564,11 @@ const NameAudit = ({ tool }) => {
                           <button onClick={() => speakName(v.name)} className="p-0.5 rounded" title={t('nau_fix_hear_it')}>
                             <span className="text-sm">🔊</span>
                           </button>
-                          {v.estimated_score != null && (
-                            <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${
-                              v.estimated_score >= 80 ? (isDark ? 'text-green-400 bg-green-900/30 border-green-700' : 'text-green-700 bg-green-50 border-green-300')
-                              : v.estimated_score >= 60 ? (isDark ? 'text-amber-400 bg-amber-900/30 border-amber-700' : 'text-amber-700 bg-amber-50 border-amber-300')
-                              : (isDark ? 'text-red-400 bg-red-900/30 border-red-700' : 'text-red-600 bg-red-50 border-red-300')
-                            }`}>{v.estimated_score}</span>
-                          )}
                         </div>
-                        <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_its_better}</p>
-                        {v.what_it_fixes && (
+                        <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_it_may_be_stronger}</p>
+                        {v.what_it_addresses && (
                           <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1 font-medium`}>
-                            → {t('nau_fix_fixes_prefix', { value: v.what_it_fixes })}
+                            → {t('nau_fix_fixes_prefix', { value: v.what_it_addresses })}
                           </p>
                         )}
                         {v.tradeoff && (
@@ -2030,46 +1585,16 @@ const NameAudit = ({ tool }) => {
                   </div>
                 ))}
               </div>
-              {fixResults.naming_direction && (
-                <p className={`text-sm ${c.textSecondary} mt-4 italic`}>💡 {fixResults.naming_direction}</p>
+              {fixResults.direction_to_explore && (
+                <p className={`text-sm ${c.textSecondary} mt-4 italic`}>💡 {fixResults.direction_to_explore}</p>
               )}
             </div>
           )}
 
-          {/* Cross-tool: smart NameStorm handoff with context */}
-          {(() => {
-            const isWeak = results?.overall_grade === 'WEAK' || results?.overall_grade === 'RECONSIDER';
-            const weaknesses = results?.weaknesses?.slice(0, 2).join(', ') || '';
-            const stormParams = new URLSearchParams();
-            if (context && context !== 'Other') stormParams.set('category', context);
-            if (weaknesses) stormParams.set('constraints', `Avoid issues: ${weaknesses}`);
-            if (industry) stormParams.set('industry', industry);
-            const stormUrl = `/NameStorm${stormParams.toString() ? '?' + stormParams.toString() : ''}`;
-
-            return isWeak ? (
-              <div className={`p-4 rounded-xl ${c.warning} border text-center`}>
-                <p className={`text-sm font-medium mb-2`}>{t('nau_weak_cta')}</p>
-                <a href={stormUrl} className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isDark ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}>
-                  <span>⚡</span> {t('nau_weak_btn')}
-                </a>
-                {weaknesses && <p className={`text-xs ${c.textMuteded} mt-2`}>{t('nau_weak_note', { weaknesses })}</p>}
-              </div>
-            ) : (
-              <p className={`text-xs text-center ${c.textMuteded}`}>
-                {t('nau_alt_xref').split('{{link}}').map((seg, i) => (
-                  <React.Fragment key={i}>
-                    {i > 0 && <a href={stormUrl} className={linkStyle}>{t('nau_alt_xref_link')}</a>}
-                    {seg}
-                  </React.Fragment>
-                ))}
-              </p>
-            );
-          })()}
-
-          {/* ─── #4: Evolution Timeline ─── */}
+          {/* ─── Evolution Timeline ─── */}
           <EvolutionTimeline />
 
-          {/* ─── #11: Naming Journal ─── */}
+          {/* ─── Naming Journal ─── */}
           {results && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
@@ -2110,7 +1635,7 @@ const NameAudit = ({ tool }) => {
             </div>
           )}
 
-          {/* ─── #2: Stakeholder Decision Kit (export CTA) ─── */}
+          {/* ─── Stakeholder Decision Kit (export CTA) ─── */}
           {results && (
             <div className={`p-4 rounded-xl border-2 border-dashed ${isDark ? 'border-cyan-800' : 'border-cyan-300'} text-center`}>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('nau_share_team_title')}</p>
@@ -2127,7 +1652,7 @@ const NameAudit = ({ tool }) => {
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
             <p className={`text-xs ${c.textMuteded}`}>
-              {t('nau_disclaimer')}
+              {t('nau_footer')}
             </p>
           </div>
         </div>

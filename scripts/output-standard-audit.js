@@ -131,6 +131,18 @@ const SCHEMA_CONGRUENCE_EXEMPT = new Map([
     'the actual false precision this tool used to carry: the 1-10 viability ' +
     'score, and the guard prohibits any numeric score, percentage or grade ' +
     'returning.'],
+  ['name-audit',
+    '"likely_misspellings" is a phonetic judgement about how a WORD might '  +
+    'plausibly be transcribed from sound, not a prediction of what any '     +
+    'person will do — it is the same "spell it from hearing it" heuristic ' +
+    'the tool has always offered, now framed as a reasonable interpretation '+
+    'rather than a pass/fail radio test. The smell targets a model guessing '+
+    'someone\'s future behaviour; this one guesses how a specific string of ' +
+    'letters sounds, which the CORE PROMPT explicitly permits under '        +
+    'REASONABLE INTERPRETATION ("whether spelling may be ambiguous"). The '  +
+    'field the rewrite actually removed was the true false-precision one: ' +
+    'a numeric overall_score and eleven 0-10 section_scores, neither of ' +
+    'which exists anywhere in the new schema.'],
   ['dream-pattern-spotter',
     'The "emotion" field holds emotions the DREAMER selected about their own ' +
     'dream and sent to us — recurring_emotions counts how often each of their ' +

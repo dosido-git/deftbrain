@@ -1,0 +1,498 @@
+{
+  "_meta": {
+    "tool": "name-audit",
+    "captured": "2026-09-04",
+    "baseline": "nameaudit-v2",
+    "model": "MODELS.SMART (claude-sonnet-4-6)",
+    "note": "Regression reference for Name Audit, re-recorded after the 2026-09-04 grounding rewrite. The v1 golden (nameaudit-v1, 2 cases) was discarded: its expected output carried overall_score, section_scores, a Score Profile radar chart, a fabricated 'Name Psychology' bouba/kiki analysis, a fabricated 'Pronunciation Confidence Map', an Audience Reaction Simulator with invented personas, and current-world assertions about trademark/ownership/funding — every one of which the rewrite removed. Re-run with `npm run check:golden name-audit` against a local backend. The north star, and what to read for by eye: OBSERVABLE facts (spelling, length, syllables) stated as fact; REASONABLE INTERPRETATION (impressions, fit, tone) hedged with 'may'/'can read as'; REQUIRES VERIFICATION (trademark, competitors, search results, social/domain availability, cultural meaning) never silently promoted to fact. Each case carries its own `guards` line. See audit/tool-notes/NAMEAUDIT-NOTES.md."
+  },
+  "cases": [
+    {
+      "name": "analyze-business-domain-checks",
+      "endpoint": "/api/nameaudit",
+      "input": {
+        "name": "Loomly",
+        "context": "Business",
+        "industry": "B2B SaaS — social media management",
+        "targetAudience": "small marketing teams (3-15 people) at agencies and mid-size brands",
+        "priority": "professional, easy to spell"
+      },
+      "guards": "The reference case this rewrite exists for. NO overall_score, section_scores or radar chart — verdict is one of the five pinned strings. how_it_looks.issues must be real null, not the string \"null\" (the fix for exactly that is in validateResult). competition_and_findability must not assert Loomly is a real company, is funded, or is trademarked by anyone — those require a live lookup that did not happen; only structural findability plus named checks_needed. language_flags must not claim a 'clean global language profile' — omit entirely if nothing surfaced. live_availability.domains uses no_dns_detected/dns_detected/unknown, never taken/likely_available. check_before_you_commit is code-computed, not model output.",
+      "optionalSections": [
+        "language_flags"
+      ],
+      "output": {
+        "name_analyzed": "Loomly",
+        "verdict": "GOOD FIT",
+        "bottom_line": "Loomly is easy to say, easy to spell, and carries a soft creative association that suits a social media tool aimed at small teams. The main open question is competitive — the name is already in use by an existing social media management platform, which requires verification before any commitment.",
+        "what_works": [
+          "Two clear syllables and a straightforward spelling mean most people can reproduce it correctly after hearing it once.",
+          "The loose association with 'loom' (weaving, composing) can read as fitting for a tool that helps build or schedule content.",
+          "The -ly suffix gives it a familiar tech-product shape without being aggressively corporate, which may suit a product positioned as approachable for small teams.",
+          "As a URL, loomly.com is short, clean, and unambiguous to type."
+        ],
+        "what_could_get_in_the_way": [
+          "Loomly appears to already be the name of an active social media management SaaS product — this is a serious conflict that must be verified before proceeding.",
+          "The -ly suffix is common across many SaaS and productivity tools, which may make the name feel less distinctive within the category.",
+          "A secondary association with 'loomy' (as in gloomy or dim) is possible, though it requires a stretch and is unlikely to dominate."
+        ],
+        "how_it_sounds": {
+          "pronunciation": "LOOM-lee, 2 syllables, stress on the first.",
+          "alternate_pronunciations": [],
+          "impression": "The long 'oo' gives the name a rounded, unhurried sound. It may read as friendly and low-friction rather than sharp or urgent, which could fit a product meant to feel accessible rather than high-pressure."
+        },
+        "word_of_mouth": {
+          "rating": "LIKELY EASY",
+          "why": "The spelling maps closely to its pronunciation and has no silent letters or unusual clusters. Someone who hears it once could plausibly search for it or type it without having seen it written.",
+          "likely_misspellings": [
+            "Loomley",
+            "Lumly"
+          ]
+        },
+        "tone_and_associations": {
+          "summary": "The name reads as soft and creative-adjacent rather than technical or enterprise-facing. In a social media context it may suggest content craft or visual production, though the association is loose rather than direct.",
+          "associations": [
+            "approachable",
+            "content creation",
+            "low-key creative"
+          ]
+        },
+        "fit_for_context": "The name's sound and shape fit a B2B SaaS tool aimed at small marketing teams reasonably well — it feels professional without being stiff. Whether it stands out within a crowded social media management category is a question that depends on competitive landscape verification, not the name alone.",
+        "how_it_looks": {
+          "url_form": "loomly.com",
+          "logo_potential": "The double-o offers a natural visual element that a logo designer could work with, and the descending y provides a clean terminal shape.",
+          "issues": null
+        },
+        "abbreviation_audit": {
+          "natural_shortening": "No obvious shortening — the name is already short enough that users are unlikely to abbreviate it further.",
+          "initials": "N/A — single-word name with no meaningful initials.",
+          "hashtag": "#Loomly — clean, unambiguous, and reads clearly.",
+          "issues": "Clean"
+        },
+        "competition_and_findability": {
+          "structural_findability": "Loomly is a coined word rather than a dictionary term, which generally helps with search distinctiveness. However, if an existing product already holds the name, search results and brand recognition will be dominated by that entity rather than a new entrant.",
+          "checks_needed": [
+            "Verify whether an existing social media management product currently operates under the name Loomly — this appears likely and would be a blocking conflict.",
+            "Check trademark registrations in relevant classes (software, SaaS, marketing tools) in your target jurisdictions.",
+            "Confirm domain availability and social handle availability across the platforms your audience uses."
+          ]
+        },
+        "longevity": "The name is not tied to a specific technology, platform, or slang term, so it does not risk becoming dated on those grounds. The -ly suffix is associated with a particular wave of tech-company naming and may feel somewhat of its era, though this is a mild stylistic observation rather than a functional problem.",
+        "language_flags": [],
+        "live_availability": {
+          "domains": {
+            "loomly.io": "dns_detected",
+            "loomly.dev": "dns_detected",
+            "loomly.org": "dns_detected",
+            "loomly.co": "no_dns_detected",
+            "loomly.net": "dns_detected",
+            "loomly.app": "no_dns_detected",
+            "loomly.com": "dns_detected",
+            "loomly.xyz": "unknown"
+          },
+          "suggested_handle": "@loomly"
+        },
+        "check_before_you_commit": [
+          "Search for existing businesses, products or projects using this name.",
+          "Check trademark databases in the jurisdictions and categories that matter to you.",
+          "Confirm domain registration with a registrar.",
+          "Check the social handles that matter to you directly.",
+          "If international use matters, verify meaning and pronunciation with people who speak the relevant languages."
+        ]
+      }
+    },
+    {
+      "name": "analyze-baby-sparse",
+      "endpoint": "/api/nameaudit",
+      "input": {
+        "name": "Zephyr",
+        "context": "Baby",
+        "industry": null,
+        "targetAudience": null,
+        "priority": null
+      },
+      "guards": "Baby is not in the domain-check context list, so live_availability MUST be null and check_before_you_commit MUST NOT include the domain/social items. No industry, audience or priority supplied — nothing may invent a target audience or a stated priority. tone_and_associations must not personify the name ('if it were a person'). how_it_sounds must not claim pronunciation consistency across accents without evidence.",
+      "optionalSections": [
+        "language_flags",
+        "how_it_looks"
+      ],
+      "output": {
+        "name_analyzed": "Zephyr",
+        "verdict": "GOOD FIT",
+        "bottom_line": "Zephyr is a real English word with a clear, pleasant meaning — gentle breeze — which lends it an immediate warmth that works well for a baby name. It carries some distinctiveness without feeling invented, though its spelling may require repeating in conversation.",
+        "what_works": [
+          "The word origin — Greek for west wind — gives the name a natural, airy quality that many parents find appealing for a child.",
+          "It is uncommon enough to feel distinctive without being so obscure that people have never encountered it.",
+          "The two-syllable structure is easy to say and sits comfortably alongside most surnames.",
+          "The Z opening makes it visually and aurally distinctive on a page or in a room full of names."
+        ],
+        "what_could_get_in_the_way": [
+          "The spelling is not intuitive from sound alone — the ZE opening and the PH for the F sound are both potential stumbling points.",
+          "Zephyr is also used as a brand name in several product categories (vehicles, fabrics, others); real-world search results may surface those before the child in later life.",
+          "Some listeners may be unfamiliar with the word and ask for clarification or spelling on first encounter."
+        ],
+        "how_it_sounds": {
+          "pronunciation": "ZEF-er, 2 syllables, stress on the first.",
+          "alternate_pronunciations": [],
+          "impression": "The soft F sound in the middle and the open ending give the name a light, unhurried quality. It may read as gentle and a little literary rather than sharp or assertive."
+        },
+        "word_of_mouth": {
+          "rating": "MAY NEED REPEATING",
+          "why": "The name is easy to say and remember once heard, but the spelling — particularly the ZE start and PH construction — is likely to cause errors when someone tries to write it down after only hearing it. In a noisy room it passes the sound test; it is the transcription step that introduces friction.",
+          "likely_misspellings": [
+            "Zefyr",
+            "Zephir",
+            "Zephyer",
+            "Zepher"
+          ]
+        },
+        "tone_and_associations": {
+          "summary": "The name carries associations with nature, airiness, and classical mythology without feeling heavy or overtly old-fashioned. In a baby-name context it may read as thoughtful and slightly literary.",
+          "associations": [
+            "natural and elemental",
+            "gentle movement",
+            "classical roots"
+          ]
+        },
+        "fit_for_context": "For a baby name, Zephyr offers a real-word foundation with a clear positive meaning, which tends to age better than purely invented constructions. It is distinctive without being opaque, though parents should expect to spell it out regularly.",
+        "how_it_looks": {
+          "url_form": "zephyr.com",
+          "logo_potential": "The Z opening offers a strong anchor letter for a monogram or wordmark, and the full name has a balanced visual rhythm across six letters.",
+          "issues": null
+        },
+        "abbreviation_audit": {
+          "natural_shortening": "Zeph is the natural short form and is usable without obvious issues.",
+          "initials": "Depends entirely on the surname — Z alone as an initial is visually distinctive.",
+          "hashtag": "#Zephyr is short and clean, though it will compete with existing non-baby uses of the word.",
+          "issues": "Clean for the name itself; hashtag overlap with product and brand uses is worth checking."
+        },
+        "competition_and_findability": {
+          "structural_findability": "Zephyr is a common English dictionary word used across multiple product categories, so searches on the name alone will surface a wide range of unrelated results. It is not a coined term, which means it carries no inherent search uniqueness.",
+          "checks_needed": [
+            "Search the name to see which brands or products currently dominate results, as those will share the name's online space.",
+            "Check current baby-name popularity rankings to gauge how common it has become in recent years — this is a detail that changes and requires a current source.",
+            "If the child will have a public-facing presence in future, check major social handle availability now, as the word is in broad use."
+          ]
+        },
+        "longevity": "As a word with Greek mythological roots and a stable English meaning, Zephyr is not tied to a naming trend, a technology, or a slang moment. It does not carry obvious markers that would date it to a particular era.",
+        "language_flags": [
+          {
+            "language": "French",
+            "issue": "Zephyr exists as a French word (zephyr) meaning a light breeze or a fine fabric, so it reads as a recognizable common noun rather than a proper name in French-speaking contexts — worth noting but unlikely to cause a real problem.",
+            "severity": "caution"
+          }
+        ],
+        "live_availability": null,
+        "check_before_you_commit": [
+          "Search for existing businesses, products or projects using this name.",
+          "Check trademark databases in the jurisdictions and categories that matter to you.",
+          "If international use matters, verify meaning and pronunciation with people who speak the relevant languages."
+        ]
+      }
+    },
+    {
+      "name": "compare-three-names",
+      "endpoint": "/api/nameaudit/compare",
+      "input": {
+        "names": [
+          "Loomly",
+          "Verdana",
+          "Kindling"
+        ],
+        "context": "Business",
+        "industry": "Software / creative tools",
+        "priority": "distinctive"
+      },
+      "guards": "Verdana is a well-known existing typeface — the comparison may flag that as a needs_verification item or reflect it in biggest_risk, but must NOT assert as settled fact that it is trademarked or owned by Microsoft (no live lookup occurred). No numeric score anywhere. recommendation.how_close must be one of the three pinned strings. Every candidate's verdict is pinned.",
+      "optionalSections": [],
+      "output": {
+        "candidates": [
+          {
+            "name": "Loomly",
+            "verdict": "HAS PROBLEMS",
+            "best_quality": "Friendly, made-up construction that is hard to confuse with a generic word, giving it some distinctiveness.",
+            "biggest_risk": "Loomly is an established social media scheduling company, making this name a direct collision with an existing competitor in the software space.",
+            "word_of_mouth": "easy",
+            "fit_for_context": "Sounds like a modern SaaS tool and fits creative software, but the existing company with this exact name makes it essentially unusable without serious legal and brand-confusion risk.",
+            "needs_verification": [
+              "Confirm trademark registrations held by the existing Loomly company and the scope of those registrations.",
+              "Check whether the collision extends into your specific software category."
+            ]
+          },
+          {
+            "name": "Verdana",
+            "verdict": "HAS PROBLEMS",
+            "best_quality": "Has a confident, slightly botanical feel that could suggest creativity or growth.",
+            "biggest_risk": "Verdana is the name of one of the most widely recognized typefaces in the world, created by Microsoft, which creates immediate brand confusion and almost certain trademark issues for any software product.",
+            "word_of_mouth": "workable",
+            "fit_for_context": "The typographic association may appeal in a creative tools context, but that same association is the core problem — it is not distinctive, it is borrowed from an already-famous name.",
+            "needs_verification": [
+              "Check Microsoft trademark coverage for Verdana and whether it extends beyond typefaces into software broadly."
+            ]
+          },
+          {
+            "name": "Kindling",
+            "verdict": "GOOD FIT",
+            "best_quality": "The metaphor of starting something — sparking ideas, igniting creative work — maps naturally onto creative tools without being heavy-handed.",
+            "biggest_risk": "It is a common English word, which limits how legally protectable it may be and means competitors could use visually or phonetically similar terms in the same space.",
+            "word_of_mouth": "easy",
+            "fit_for_context": "Clear, pronounceable, and carries an intuitive association with creative ignition; fits a software or creative tools brand well and stands apart from generic tech naming patterns.",
+            "needs_verification": [
+              "Search trademark databases for Kindling in software and creative tools classes — common words can still be registered in specific categories.",
+              "Check domain and handle availability, since the word is in wide use across unrelated industries."
+            ]
+          }
+        ],
+        "recommendation": {
+          "name": "Kindling",
+          "why": "The other two candidates carry existing high-profile name conflicts that present concrete legal and brand-confusion risks, while Kindling is clear, distinctive in feel, and has no obvious pre-existing software collision.",
+          "how_close": "clear choice"
+        },
+        "decision_driver": "Loomly and Verdana are names already owned or strongly associated with established entities in adjacent spaces, which removes them from practical consideration and leaves Kindling as the only candidate that can actually be built on."
+      }
+    },
+    {
+      "name": "fix-this-name",
+      "endpoint": "/api/nameaudit/fix",
+      "input": {
+        "name": "Loomly",
+        "context": "Business",
+        "industry": "B2B SaaS — social media management",
+        "targetAudience": "small marketing teams (3-15 people) at agencies and mid-size brands",
+        "verdict": "GOOD FIT",
+        "whatWorks": [
+          "Two clear syllables and a straightforward spelling mean most people can reproduce it correctly after hearing it once.",
+          "The loose association with 'loom' (weaving, composing) can read as fitting for a tool that helps build or schedule content.",
+          "The -ly suffix gives it a familiar tech-product shape without being aggressively corporate, which may suit a product positioned as approachable for small teams.",
+          "As a URL, loomly.com is short, clean, and unambiguous to type."
+        ],
+        "whatCouldGetInTheWay": [
+          "Loomly appears to already be the name of an active social media management SaaS product — this is a serious conflict that must be verified before proceeding.",
+          "The -ly suffix is common across many SaaS and productivity tools, which may make the name feel less distinctive within the category.",
+          "A secondary association with 'loomy' (as in gloomy or dim) is possible, though it requires a stretch and is unlikely to dominate."
+        ],
+        "bottomLine": "Loomly is easy to say, easy to spell, and carries a soft creative association that suits a social media tool aimed at small teams. The main open question is competitive — the name is already in use by an existing social media management platform, which requires verification before any commitment."
+      },
+      "guards": "No estimated_score field anywhere — that field was removed from the schema. why_it_may_be_stronger must read as a hedged judgment, not a measured fact. direction_to_explore, not naming_direction.",
+      "optionalSections": [],
+      "output": {
+        "approach": "Preserve the two-syllable rhythm, approachable soft consonants, and content-craft association while sidestepping the direct name conflict and reducing reliance on the saturated -ly suffix.",
+        "variations": [
+          {
+            "name": "Looмix — close cousin",
+            "pronunciation": "LOO-mix",
+            "why_it_may_be_stronger": "Swapping -ly for -mix could feel more active and tool-like, while keeping the loom root and short two-syllable shape.",
+            "what_it_addresses": "Sidesteps the existing Loomly product conflict and reduces -ly suffix fatigue in one move.",
+            "tradeoff": "Mix is common in SaaS branding, so the distinctiveness gain over -ly may be modest — verify for conflicts before committing."
+          },
+          {
+            "name": "Loomcraft — close cousin",
+            "pronunciation": "LOOM-kraft",
+            "why_it_may_be_stronger": "Craft makes the content-building association explicit rather than implied, which may read as more purposeful to small marketing teams evaluating tools.",
+            "what_it_addresses": "Clears the Loomly name conflict and replaces the generic suffix with something more descriptive.",
+            "tradeoff": "Two syllables become two full syllables with a heavier landing — it loses some of the lightness that made Loomly approachable."
+          },
+          {
+            "name": "Weavr — fresh take",
+            "pronunciation": "WEE-ver",
+            "why_it_may_be_stronger": "Weaving is the metaphor already implicit in loom, and dropping a vowel gives it a clean tech shape without the -ly pattern entirely.",
+            "what_it_addresses": "Fully avoids the existing name conflict and steps away from the crowded -ly suffix convention.",
+            "tradeoff": "The dropped vowel risks feeling like a dated startup affectation depending on when this launches — and Weaver or Weavr may already have registrations worth checking."
+          },
+          {
+            "name": "Threadly — fresh take",
+            "pronunciation": "THRED-lee",
+            "why_it_may_be_stronger": "Thread carries both the weaving metaphor and a social media connotation that could feel particularly apt for a content scheduling tool.",
+            "what_it_addresses": "Clears the Loomly conflict by moving to an adjacent metaphor while keeping the same syllable count and -ly shape visitors already found approachable.",
+            "tradeoff": "It keeps the -ly suffix, so it does not address the distinctiveness concern there — and Thread has significant existing presence in social media contexts that could cause search noise."
+          },
+          {
+            "name": "Postwell — fresh take",
+            "pronunciation": "POST-well",
+            "why_it_may_be_stronger": "Post is immediately legible in a social media context, and -well suggests reliability and consistency, which may resonate with small teams who want dependable scheduling over clever branding.",
+            "what_it_addresses": "Avoids both the existing name conflict and the -ly suffix saturation, and removes the loomy-gloomy secondary association entirely.",
+            "tradeoff": "It trades soft creative warmth for functional clarity — the name may feel more utilitarian than some competitors and less memorable in a crowded category."
+          },
+          {
+            "name": "Queuelo — close cousin",
+            "pronunciation": "KYOO-loh",
+            "why_it_may_be_stronger": "Queue anchors the name directly in the scheduling function, and the -o ending gives it a warmer, less corporate finish than -ly while remaining short.",
+            "what_it_addresses": "Sidesteps the name conflict and the -ly suffix in one move, while keeping the two-syllable, easy-to-spell character.",
+            "tradeoff": "Queue is counterintuitive to spell for some users, which partially undercuts the spelling-clarity advantage Loomly had — worth testing whether the target audience finds it natural."
+          },
+          {
+            "name": "Publoom — close cousin",
+            "pronunciation": "pyoo-BLOOM",
+            "why_it_may_be_stronger": "Blending publish with loom keeps the content-craft root while creating a compound that is unlikely to be in use, and bloom adds a positive growth connotation.",
+            "what_it_addresses": "Directly resolves the name conflict by making the word original rather than borrowed, while preserving the loom association.",
+            "tradeoff": "The blend may read as awkward or unclear on first encounter — some people may parse it as pub-loom, which shifts the feel unexpectedly."
+          }
+        ],
+        "direction_to_explore": "If none of these land, the weaving and threading metaphor territory — Warp, Shuttle, Spool, Trellis — offers short, concrete, suffix-free names that carry the same craft association without the -ly convention or the Loomly conflict."
+      }
+    },
+    {
+      "name": "deepdive-business-default",
+      "endpoint": "/api/nameaudit/deepdive",
+      "input": {
+        "name": "Loomly",
+        "context": "Business",
+        "industry": "B2B SaaS — social media management",
+        "targetAudience": "small marketing teams (3-15 people) at agencies and mid-size brands",
+        "verdict": "GOOD FIT"
+      },
+      "guards": "The default framework is Distinctiveness / Category Fit / Room to Expand / Word-of-Mouth / Visual Use / Search Ambiguity / Current-World Checks — NOT the old Funding Appeal / Talent Attraction / Acquisition Proof / Partnership Fit tests, all of which the rewrite removed. The current-world-checks section must name checks, not invented outcomes.",
+      "optionalSections": [],
+      "output": {
+        "sections": [
+          {
+            "title": "DISTINCTIVENESS — Coined term, low generic risk",
+            "finding": "Loomly is not a dictionary word, which reduces the risk of it blending into generic category language and gives it a defensible identity as a proper name.",
+            "detail": "The -ly suffix is common in SaaS naming (Calendly, Grammarly, Hootsuite-adjacent patterns), so it sits within a recognizable convention without being identical to any obvious competitor name.",
+            "severity": "positive"
+          },
+          {
+            "title": "CATEGORY FIT — Plausible but indirect",
+            "finding": "Loom carries associations with weaving, construction, and emergence, which can map loosely onto content planning and scheduling without being on-the-nose in a way that limits it.",
+            "detail": "It does not signal social media management immediately, but most successful SaaS names do not — the brand context carries that meaning over time.",
+            "severity": "positive"
+          },
+          {
+            "title": "ROOM TO EXPAND — Name does not box the product in",
+            "finding": "Because Loomly has no literal descriptive meaning tied to social media, it would not feel mismatched if the product expanded into broader marketing workflows, content calendars, or team collaboration.",
+            "detail": null,
+            "severity": "positive"
+          },
+          {
+            "title": "WORD-OF-MOUTH — Clean, speakable, memorable",
+            "finding": "Two syllables, a single obvious pronunciation, and a straightforward spelling make this easy to say, repeat, and search for after hearing it once.",
+            "detail": "The double-o and -ly ending give it a slightly playful rhythm that tends to stick without feeling juvenile for a B2B context.",
+            "severity": "positive"
+          },
+          {
+            "title": "VISUAL USE — Works well at small and large scale",
+            "finding": "Six letters with no awkward stacking or ambiguous characters means the name performs cleanly as a wordmark, in a URL, and in app-store or directory listings.",
+            "detail": "The double-o creates a natural visual anchor that logo designers can work with, though that is an interpretive judgment rather than a guaranteed outcome.",
+            "severity": "positive"
+          },
+          {
+            "title": "SEARCH AMBIGUITY — Low interference risk structurally",
+            "finding": "As a coined term, Loomly is unlikely to compete with common dictionary searches, which is structurally favorable for SEO and branded search clarity.",
+            "detail": "Whether a product or company already using this name dominates search results requires a live check — that outcome cannot be determined here.",
+            "severity": "neutral"
+          },
+          {
+            "title": "CURRENT-WORLD CHECKS STILL NEEDED",
+            "finding": "The following must be verified before committing: trademark availability in relevant classes (software, marketing services) in your target jurisdictions; whether any existing company trades under Loomly; domain ownership and availability of loomly.com and close variants; social handle availability on platforms the business will use; and whether Loom (an established screen-recording SaaS) creates meaningful consumer confusion risk or trademark proximity concerns.",
+            "detail": "The Loom proximity is the single check most worth prioritizing, as it is an active, well-funded brand in an adjacent category.",
+            "severity": "neutral"
+          }
+        ],
+        "verdict": "The context-specific view reinforces the overall good-fit verdict — Loomly is structurally well-suited for a B2B SaaS product aimed at small teams, with no obvious name-level liabilities. The one thing this audit surfaces that most deserves attention before committing is the proximity to Loom, which warrants a deliberate trademark and confusion-risk review rather than assumption of safe distance."
+      }
+    },
+    {
+      "name": "deepdive-pet",
+      "endpoint": "/api/nameaudit/deepdive",
+      "input": {
+        "name": "Biscuit",
+        "context": "Pet",
+        "industry": null,
+        "targetAudience": null,
+        "verdict": "GOOD FIT"
+      },
+      "guards": "Pet framework is Callability / Command Confusion / Length / Nickname Possibilities / Multi-Pet Confusion (5 tests) — the old framework's Vet Office and Human Confusion tests are gone, and Multi-Pet Confusion must not be answered unless the visitor actually supplied other pet names (none were here, so it should read as not applicable rather than invented).",
+      "optionalSections": [],
+      "output": {
+        "sections": [
+          {
+            "title": "CALLABILITY — Works Well Across Distance",
+            "finding": "Biscuit is two clear syllables with a strong first consonant, making it easy to project across a yard or noisy dog park without distortion.",
+            "detail": "The hard B opening and distinct vowel sounds hold up even when called at volume.",
+            "severity": "positive"
+          },
+          {
+            "title": "COMMAND CONFUSION — No Overlap With Common Commands",
+            "finding": "Biscuit does not closely resemble sit, stay, come, no, down, off, or heel in sound or rhythm.",
+            "detail": "A pet hearing its name before a command is unlikely to confuse the name itself for an instruction.",
+            "severity": "positive"
+          },
+          {
+            "title": "LENGTH — Practical and Immediate",
+            "finding": "At two syllables, Biscuit is short enough for everyday use without needing to be shortened.",
+            "detail": "Many owners do abbreviate it anyway, but the full name works fine in the moment.",
+            "severity": "positive"
+          },
+          {
+            "title": "NICKNAME POSSIBILITIES — Natural Shortenings Available",
+            "finding": "The name shortens naturally to Bis or Biscky if a nickname develops, both of which remain distinct and callable.",
+            "detail": null,
+            "severity": "positive"
+          },
+          {
+            "title": "MULTI-PET CONFUSION — Not Assessed",
+            "finding": "No other pet names were provided, so similarity conflicts cannot be evaluated here.",
+            "detail": "If other pets are in the household, check whether their names share the same B-opening or two-syllable rhythm.",
+            "severity": "neutral"
+          }
+        ],
+        "verdict": "Biscuit passes every practical pet-name test with no meaningful concerns. The name is callable, clear, the right length, and carries warm, familiar associations without sounding generic — context only strengthens the fit."
+      }
+    },
+    {
+      "name": "challenge-this-audit",
+      "endpoint": "/api/nameaudit/second-opinion",
+      "input": {
+        "name": "Loomly",
+        "context": "Business",
+        "industry": "B2B SaaS — social media management",
+        "targetAudience": "small marketing teams (3-15 people) at agencies and mid-size brands",
+        "firstAudit": {
+          "verdict": "GOOD FIT",
+          "bottomLine": "Loomly is easy to say, easy to spell, and carries a soft creative association that suits a social media tool aimed at small teams. The main open question is competitive — the name is already in use by an existing social media management platform, which requires verification before any commitment.",
+          "whatWorks": [
+            "Two clear syllables and a straightforward spelling mean most people can reproduce it correctly after hearing it once.",
+            "The loose association with 'loom' (weaving, composing) can read as fitting for a tool that helps build or schedule content.",
+            "The -ly suffix gives it a familiar tech-product shape without being aggressively corporate, which may suit a product positioned as approachable for small teams.",
+            "As a URL, loomly.com is short, clean, and unambiguous to type."
+          ],
+          "whatCouldGetInTheWay": [
+            "Loomly appears to already be the name of an active social media management SaaS product — this is a serious conflict that must be verified before proceeding.",
+            "The -ly suffix is common across many SaaS and productivity tools, which may make the name feel less distinctive within the category.",
+            "A secondary association with 'loomy' (as in gloomy or dim) is possible, though it requires a stretch and is unlikely to dominate."
+          ]
+        }
+      },
+      "guards": "No score or grade comparison grid — the old schema's score/grade/agreements/disagreements/new_insights/confidence_verdict are gone. Must not treat agreement between the two passes as increased reliability (bottom_line especially). facts_to_verify names specific claims, not generic caveats.",
+      "optionalSections": [
+        "worth_reconsidering",
+        "missed_the_first_time"
+      ],
+      "output": {
+        "holds_up": [
+          "The two-syllable, phonetically transparent spelling finding holds up — LOOM-lee follows standard English phonics with no plausible competing pronunciation, making it genuinely easy to reproduce after hearing it once.",
+          "The conflict warning about an existing social media management SaaS product using this name is the single most important flag in the audit and is correctly treated as a serious issue rather than a minor concern.",
+          "The loom association with weaving or composing content is a reasonable interpretation — it may read as fitting for a scheduling or content-building tool, though how strongly that association registers will vary by reader."
+        ],
+        "worth_reconsidering": [
+          "The -ly suffix observation is framed as a weakness, but it could equally be read as a minor neutral — the suffix is familiar enough that it reads as a tech product instantly, and distinctiveness within a category depends more on competitive context than suffix alone, so calling it a weakness overstates it slightly.",
+          "The claim that loomly.com is short, clean, and unambiguous to type is presented as a strength, but if the domain is owned by the existing platform, it is not available at all — the audit should have flagged domain availability as unresolved before listing it as a working asset.",
+          "The 'loomy or gloomy' association is dismissed too quickly — while it likely would not dominate, a content-planning tool that evokes dimness or heaviness is worth a beat of honest consideration rather than a quick wave-off, especially because the double-o in LOOM carries a slow, heavy vowel sound that could contribute to that feel for some readers."
+        ],
+        "missed_the_first_time": [
+          "Loom is also the name of a well-known async video messaging SaaS product with significant market presence as of the mid-2020s, which means the name Loomly sits in proximity to two separate established products in adjacent or overlapping spaces — compounding the competitive-confusion risk beyond just the one named conflict.",
+          "The -ly ending on a root that is already a verb (to loom) produces a word that does not parse as an adverb in the typical SaaS-ly pattern — names like Grammarly or Calendly derive from nouns, so Loomly may land slightly awkwardly to analytically-minded readers who notice the construction, though casual users are unlikely to register this.",
+          "For non-native English speakers in the target audience — which small agency teams increasingly include — loom carries a second meaning of something threatening or ominous looming into view, and that connotation is more salient in everyday speech than the weaving sense; this deserves acknowledgment as a possible impression."
+        ],
+        "facts_to_verify": [
+          "Whether an active social media management SaaS product currently operates under the name Loomly, and what its market presence, funding status, and trademark registrations look like as of the current date.",
+          "Whether loomly.com and common regional TLD variants are registered, and if so by whom — the audit lists this domain as a strength without confirming availability.",
+          "Trademark status for Loomly in relevant classes (particularly NICE class 42, software as a service) in the US, EU, and any other jurisdictions the visitor intends to operate in.",
+          "Social handle availability across major platforms, since a name collision with an existing product makes handle conflicts highly probable but not certain.",
+          "Whether Loom (the video tool) holds any trademark registrations broad enough to create a conflict with Loomly, given the phonetic and visual proximity."
+        ],
+        "bottom_line": "The original audit is directionally honest and catches the most important issue, but it presents the domain as a usable asset before confirming availability, and it underweights the compounding effect of sitting near two established products rather than one. Trust the structure of the audit, but treat the strengths section with more caution than the verdict implies."
+      }
+    }
+  ]
+}
