@@ -86,6 +86,12 @@ const NerveCheck = ({ tool }) => {
 
   // ── Refs (always-fresh pattern for the keyboard shortcut) ──
   const resultsRef = useRef(null);
+  // Always-mounted, regardless of which view is showing — unlike resultsRef,
+  // which only exists inside a results branch. Needed for the reframe-on-
+  // view-change effect below, which has to fire for views that never attach
+  // resultsRef at all (Focus Mode) and during the loading gap before a
+  // results branch mounts (the Help Me Now form, before liveResults exists).
+  const containerRef = useRef(null);
   const viewRef = useRef('form');
   const runMainRef = useRef(null);
   const canMainRef = useRef(false);
@@ -292,20 +298,21 @@ const NerveCheck = ({ tool }) => {
     setView('form');
   };
 
-  // ── Focus mode cards — 3-5 contextual cards built from liveResults, not
-  // a fixed 7. Only what's actually present becomes a card; ≤35 words each,
-  // enforced by trusting the backend's own brevity (words/scripts are
-  // already short) rather than truncating client-side, which could cut a
-  // sentence mid-thought. ──
+  // ── Focus mode cards — a compression layer over the CURRENT liveResults,
+  // never a second generation pass: every card below reuses text the main
+  // call already produced, nothing new is invented for Focus specifically.
+  // Fixed 5-slot structure (DO THIS FIRST / REMEMBER / SAY THIS / IF YOU
+  // NEED A MOMENT / THEN GO), each card included only when the underlying
+  // field is actually present — settle/tell-yourself deliberately dropped
+  // from this compressed view (still shown in the full Help Me Now results
+  // above Focus) to keep this to 3-5 cards, not the full result restated. ──
   const focusCards = useMemo(() => {
     if (!liveResults) return [];
     const cards = [];
     if (liveResults?.first) cards.push({ label: t('nck_focus_do_first'), text: liveResults?.first });
-    if (liveResults?.settle?.instruction) cards.push({ label: t('nck_focus_settle'), text: liveResults?.settle.instruction });
-    if (liveResults?.words?.to_yourself) cards.push({ label: t('nck_focus_tell_yourself'), text: liveResults?.words.to_yourself });
+    if (liveResults?.remember) cards.push({ label: t('nck_focus_remember'), text: liveResults?.remember });
     if (liveResults?.words?.opening) cards.push({ label: t('nck_focus_say_this'), text: liveResults?.words.opening });
     if (liveResults?.words?.if_you_need_a_moment) cards.push({ label: t('nck_focus_if_blank'), text: liveResults?.words.if_you_need_a_moment });
-    if (liveResults?.remember) cards.push({ label: t('nck_focus_remember'), text: liveResults?.remember });
     cards.push({ label: t('nck_focus_go'), text: liveResults?.go || t('nck_focus_go_default') });
     return cards;
   }, [liveResults, t]);
@@ -349,6 +356,25 @@ const NerveCheck = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || t('nck_title'));
 
+  // ── Reframe on every view change ──
+  // Every view in this tool is a whole-screen replacement, not content
+  // appended below a form that stays visible (unlike NameAudit/NameThatFeeling,
+  // where the input stays on screen and this reframe would be wrong). Switching
+  // to a much shorter screen — Focus Mode's few centered lines, or the brief
+  // Help Me Now form during the loading gap before liveResults exists — leaves
+  // the browser's scroll position wherever it numerically was on the taller
+  // previous screen, which can now land on unrelated content further down the
+  // page (guides, newsletter, footer) that reads as "jumped to the bottom."
+  // Framing to the tool's own section on every view change fixes this
+  // regardless of content height, independent of whichever specific results
+  // effect below (which only runs once real content exists).
+  useEffect(() => {
+    const target = containerRef.current;
+    if (!target) return;
+    const timer = setTimeout(() => revealSection(target, { frame: true }), 50);
+    return () => clearTimeout(timer);
+  }, [view]);
+
   // ── Scroll to results ──
   useEffect(() => {
     if (!(results || liveResults || debriefResults || coachResults)) return;
@@ -388,6 +414,31 @@ const NerveCheck = ({ tool }) => {
     setResults(null);
   }, [t, setResults]);
 
+  const loadDebriefExample = useCallback(() => {
+    const ex = pickExample('NerveCheckDebrief', [
+      { situation: 'nck_debex_situation', how: 'nck_debex_how', surprised: 'nck_debex_surprised', before: 4, after: 7 },
+      { situation: 'nck_debex2_situation', how: 'nck_debex2_how', surprised: '', before: 6, after: 3 },
+    ]);
+    setSituation(t(ex.situation));
+    setHowItWent(t(ex.how));
+    setWhatSurprised(ex.surprised ? t(ex.surprised) : '');
+    setReadinessLevel(ex.before);
+    setReadinessAfter(ex.after);
+    setDebriefResults(null);
+  }, [t, setDebriefResults]);
+
+  const loadCoachExample = useCallback(() => {
+    const ex = pickExample('NerveCheckCoach', [
+      { who: 'nck_coex_who', situation: 'nck_coex_situation', relation: 'child', age: 'child' },
+      { who: 'nck_coex2_who', situation: 'nck_coex2_situation', relation: 'partner', age: 'adult' },
+    ]);
+    setCoachWho(t(ex.who));
+    setCoachSituation(t(ex.situation));
+    setCoachRelation(ex.relation);
+    setCoachAge(ex.age);
+    setCoachResults(null);
+  }, [t, setCoachResults]);
+
   // ════════════════════════════════════════════════════════════
   // Shared: the input recap shown at the top of a result screen
   // ════════════════════════════════════════════════════════════
@@ -409,7 +460,7 @@ const NerveCheck = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-4 ${c.text}`}>
+    <div ref={containerRef} className={`space-y-4 ${c.text}`}>
 
       {/* ═══ Header row ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
@@ -688,6 +739,7 @@ const NerveCheck = ({ tool }) => {
         {view === 'debrief' && (
           <div className="space-y-4">
             <h2 className={`text-lg font-black ${c.text}`}>📊 {t('nck_debrief_title')}</h2>
+            <button onClick={loadDebriefExample} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-full text-xs font-semibold`}>✨ {t('try_example')}</button>
             <div>
               <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label>
               <textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3}
@@ -773,6 +825,7 @@ const NerveCheck = ({ tool }) => {
             <h2 className={`text-lg font-black ${c.text}`}>🤝 {t('nck_coach_mode')}</h2>
             {!coachResults ? (
               <>
+                <button onClick={loadCoachExample} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-full text-xs font-semibold`}>✨ {t('try_example')}</button>
                 <div>
                   <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_who_label')}</label>
                   <input type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder={t('nck_coach_who_ph')}

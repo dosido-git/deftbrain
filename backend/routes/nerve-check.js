@@ -252,6 +252,18 @@ const RULES = [
   ['estimated a probability or outcome without evidence',
     /\bworst-case probability\b|\bchances? of success\b|\blikely outcome\b|\bnobody will notice\b|\beveryone (?:else )?will be focused elsewhere\b/i,
     (v) => HEDGED.test(v)],
+
+  // A live probe on Help Me Now produced this exact motivational
+  // interpretation for "remember" — an invented reason things will go
+  // well, not a supplied fact ("You got to this interview by being
+  // someone they wanted to see. That is already true...").
+  ['invented a motivational interpretation of the situation',
+    /\b(?:someone|they|the interviewer|the panel) (?:already )?(?:decided|chose|picked) you (?:were|are) worth (?:their|his|her) time\b/i],
+
+  // The exact banned closing line for Help Me Now's "go" field — no
+  // legitimate hedge makes this one acceptable, unlike most other rules
+  // here.
+  ["used the banned closing line \"you're ready\"", /\byou'?re ready\.?\s*go\.?/i],
 ];
 
 function validateResult(data) {
@@ -313,6 +325,27 @@ HOW READY THEY FEEL RIGHT NOW (1-10, self-reported — not a psychological measu
 WHAT THEY'RE MOST WORRIED MIGHT HAPPEN: ${specificFears || 'not specified'}
 WHEN IT IS: ${timeUntil || 'not specified'}${pastBlock}
 
+NERVE CHECK — FINAL LLM CORRECTIONS
+
+Under "established," include only facts the visitor actually stated. Do not
+put a feared or possible outcome there — that belongs in "possible" or
+"unknown."
+
+When explaining why a preparation step helps, describe only what it gives
+the visitor to concretely do or say. Do not add a psychological explanation
+for why it works.
+
+BAD:
+"Freezing is worse when silence feels like failure."
+"This reduces the chance of freezing."
+
+GOOD:
+"Having this sentence ready means you have something to say instead of
+searching for words in the moment."
+
+Prepare the next moment. Do not explain the fear. Do not manufacture
+confidence. Keep the advice grounded, practical, and immediately usable.
+
 Return ONLY valid JSON:
 
 {
@@ -325,7 +358,7 @@ Return ONLY valid JSON:
   "what_you_can_prepare": [
     {
       "action": "A specific, useful preparation step connected to something established in the situation",
-      "why_it_helps_here": "How this specific action helps THIS situation — not generic advice"
+      "why_it_helps_here": "How this specific action gives the visitor something concrete to do or say — not generic advice, and not a psychological explanation of why it works"
     }
   ],
   "words_if_you_need_them": [
@@ -396,19 +429,19 @@ MINUTES UNTIL: ${minutesUntil || 'not specified'}
 Return ONLY valid JSON:
 
 {
-  "first": "One practical action based on the situation",
+  "first": "One practical action based on what the visitor actually described — not an unrelated logistical suggestion (asking for the restroom, water, etc.) unless their own situation makes it directly useful",
   "settle": {
     "instruction": "One simple low-risk grounding or breathing action",
     "duration_seconds": null
   },
-  "remember": "Grounded entirely in supplied facts — no invented values, obligations, priorities, or future memory",
+  "remember": "Grounded entirely in supplied facts — no invented values, obligations, priorities, future memory, or motivational interpretation of the situation (e.g. never claim someone already decided the visitor was worth their time)",
   "words": {
     "to_yourself": "",
     "opening": "",
     "if_you_need_a_moment": ""
   },
   "if_you_need_to_step_away": "A socially ordinary pause or exit, offered only when relevant — do not tell the visitor they are 'allowed' to leave unless that is actually established",
-  "go": "Very short — e.g. 'That's enough preparation. Go do the next part.' or 'You don't need to feel ready first.'"
+  "go": "Very short — e.g. 'That's enough preparation. Go do the next part.' or 'You don't need to feel ready first.' Never 'You're ready. Go.'"
 }
 
 FIRST
@@ -432,6 +465,23 @@ Example:
 WORDS
 
 Scripts must work without invented history.
+
+NERVE CHECK — FINAL LLM CORRECTIONS
+
+Keep it short and immediate.
+
+Do not add a motivational interpretation of the situation — do not claim
+someone already decided the visitor was worth their time, or invent any
+other reason things will go well.
+
+Do not suggest an action unrelated to what the visitor described — no
+suggesting the restroom, water, or other unrelated logistics unless the
+visitor's own situation makes it directly useful.
+
+Never write "You're ready. Go." Good final line: "You don't need to feel
+ready first. Go do the next part."
+
+Prepare the next moment. Do not manufacture confidence.
 
 ${NO_QUOTE_RULE}`;
 
@@ -595,7 +645,7 @@ Return ONLY valid JSON:
 {
   "what_to_say": "",
   "what_not_to_push": "",
-  "practical_help_you_could_offer": [""],
+  "practical_help_you_could_offer": ["A category of help to offer, or an offer to ask what they'd want — not a specific invented task list"],
   "if_they_dont_want_help": ""
 }
 
@@ -612,6 +662,25 @@ GOOD:
 
 Do not make the visitor responsible for regulating or fixing the other
 person's emotions.
+
+NERVE CHECK — FINAL LLM CORRECTIONS
+
+OFFER, DON'T INVENT.
+
+Do not invent what the other person needs, wants, fears, finds pressuring,
+or would prefer afterward — only the visitor's own supplied facts establish
+that.
+
+Suggest categories of help unless the visitor supplied a specific need.
+
+GOOD:
+"Ask whether there's anything practical they'd like help with."
+
+TOO FAR:
+"Handle rides, food timing, and costume checks."
+
+Do not invent what other people need. Keep the advice grounded, practical,
+and immediately usable.
 
 ${NO_QUOTE_RULE}`;
 
@@ -634,7 +703,7 @@ ${NO_QUOTE_RULE}`;
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'Grounding rewrite, 2026-09-04 — this tool never had outputStandard/outputGuard or any deterministic backstop before this pass (only a single top-level-key presence guard per endpoint, which is preserved). Four regex checks cover the safest, unconditionally-banned patterns from the prompts: the tool\'s own signature failure ("BUT REALLY IT\'S..." inventing a deeper fear), unverifiable physiological claims for a body/breathing action (calms the nervous system, activates the vagus nerve, reduces cortisol, restores regulation, stops panic), a population claim about "most people," and an unevidenced probability/outcome estimate. Hedge-dependent bans that are CONDITIONALLY allowed per the prompt text (Debrief\'s character-transformation claims like "proved you can perform under pressure," which are fine WHEN the supplied outcome directly supports them; "you\'re stronger than you think" family, fine WHEN grounded) are deliberately left prompt-only — a keyword ban would block a legitimate grounded use as readily as an invented one. specific-prep, sos, and fear-ladder endpoints were removed in this rewrite, not merged elsewhere; situationType now flows into the main endpoint\'s single grounded plan instead of a separate deep-prep call.',
+  note: 'Grounding rewrite, 2026-09-04 — this tool never had outputStandard/outputGuard or any deterministic backstop before this pass (only a single top-level-key presence guard per endpoint, which is preserved). Six regex checks now: the four unconditionally-banned patterns from the original rewrite (the tool\'s own signature failure "BUT REALLY IT\'S..." inventing a deeper fear; unverifiable physiological claims for a body/breathing action; a population claim about "most people"; an unevidenced probability/outcome estimate) plus two added after a follow-up live probe caught real recurrences: an invented motivational interpretation of the situation on Help Me Now\'s "remember" field ("someone already decided you were worth their time" — the exact live-probe sentence), and the specific banned closing line "You\'re ready. Go." Hedge-dependent bans that are CONDITIONALLY allowed per the prompt text (Debrief\'s character-transformation claims like "proved you can perform under pressure," which are fine WHEN the supplied outcome directly supports them; "you\'re stronger than you think" family, fine WHEN grounded; Main\'s psychological-explanation ban in why_it_helps_here, too varied to safely reduce to a regex on first pass) are deliberately left prompt-only — a keyword ban would block a legitimate grounded use as readily as an invented one. specific-prep, sos, and fear-ladder endpoints were removed in this rewrite, not merged elsewhere; situationType now flows into the main endpoint\'s single grounded plan instead of a separate deep-prep call.',
 };
 
 module.exports = router;

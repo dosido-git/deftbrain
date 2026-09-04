@@ -253,3 +253,93 @@ a structural diff can't see.
 | `debrief-good-outcome` | No character-transformation claims despite a good outcome; headline should read like the GOOD example, not a verdict |
 | `debrief-bad-outcome` | "Gentle and constructive" without inventing false positivity or improving the outcome; what_you_might_change only when genuinely suggested |
 | `coach-child-recital` | No diagnosing why the child is nervous, no stating what she "needs" as fact; preserves her agency |
+
+## Follow-up correction pass — same day, second round
+
+Two live bug reports plus a written correction spec, applied the same day
+as the rewrite above.
+
+**Scroll bug (Go Live, Focus) — a different mechanism than NameAudit's.**
+Every view in this tool (form / live / focus / debrief / coach) is a
+whole-screen replacement, not content appended below a form that stays on
+screen. Switching to a much shorter screen — Focus Mode's few centered
+lines, or the brief "Minutes" form during the loading gap before
+`liveResults` exists — left the browser's scroll position wherever it
+numerically was on the taller previous screen, landing on unrelated
+content further down the page (guides, newsletter, footer) that reads as
+"jumped to the bottom." This is NOT the same bug as NameAudit's (an
+explicit scroll effect firing prematurely on `loading`) — NameAudit's form
+stays visible beside its results, so a reframe-on-view-change fix would be
+wrong there. Fixed with a new always-mounted `containerRef` plus a
+`useEffect` keyed on `[view]` alone, calling
+`revealSection(containerRef.current, { frame: true })` on every
+transition. The original results-content scroll effect (keyed on the
+result objects, no `frame`) is unchanged and still does its own job once
+content exists. Verified live in a fresh tab: deep-scrolled to ~2600px on
+a long main-plan result, clicked Go Live → reframed to ~290px; same from
+a long Help Me Now result into Focus.
+
+**FINAL LLM CORRECTIONS — four sections, three touched a prompt:**
+- **Main**: "What You Know" renamed to the three-way split WHAT YOU TOLD
+  US / WHAT COULD HAPPEN / WHAT YOU CAN'T KNOW YET (a possible outcome no
+  longer belongs under "established"). `why_it_helps_here` restricted to
+  what the step gives the visitor to concretely do or say — no
+  psychological explanation of why it works. New backstop:
+  `"someone already decided you were worth their time"` motivational
+  claim, blanked by regex.
+- **Live (Help Me Now)**: banned inventing a reason things will go well,
+  banned suggesting unrelated logistics (restroom/water) unless the
+  visitor's own situation makes it relevant, and replaced the closing
+  line with "You don't need to feel ready first. Go do the next part."
+  New backstop: `"you're ready. go."` (and the same motivational-claim
+  regex as Main) blanked.
+- **Focus Mode**: no backend prompt exists here — Focus has always been a
+  pure client-side compression layer with no separate LLM call, so
+  "don't generate new content" was already structurally true. What
+  changed is the card set itself: rebuilt from up to 7 possible cards
+  down to a fixed 5-slot order — DO THIS FIRST → REMEMBER → SAY THIS → IF
+  YOU NEED A MOMENT → THEN GO — dropping the separate `settle` /
+  `to_yourself` cards (still shown in full in the Help Me Now view above
+  Focus, just not duplicated into the compressed view).
+- **Coach (Help Someone Else)**: `practical_help_you_could_offer` schema
+  hint tightened to a category of help or an offer to ask, not an
+  invented task list ("handle rides, food timing, and costume checks" is
+  the explicit TOO FAR example now in the prompt).
+- Debrief untouched this pass — its character-verdict bans were already
+  in place from the rewrite; the correction spec's four numbered sections
+  map 1:1 to main/live/focus/coach, not debrief.
+
+All four live-verified fresh (cleared `nervecheck-*` localStorage first,
+since a persisted `liveResults`/`results` short-circuits the auto-fetch
+and will silently show a stale pre-fix answer instead of calling the
+API — worth remembering the next time this tool needs a live check).
+Main's WHAT YOU TOLD US / WHAT COULD HAPPEN / WHAT YOU CAN'T KNOW YET
+split and Live's exact closing line both came back correctly on a fresh
+generation; Focus Mode came back as 5 cards in the specified order.
+
+**Two new examples each for Debrief and Coach**, via
+`loadDebriefExample`/`loadCoachExample` (same `pickExample` rotation
+pattern as the header's main-form example), each with a "✨ Try an
+example" button placed at the top of its input view. Live-verified the
+Coach button populates both fields correctly; Debrief verified by source
+inspection against the same, already-proven code path.
+
+**Copy**: tagline → "Practical prep for nerve-racking moments." (the 💪 in
+the user's supplied text is the icon that already renders in the header,
+not baked into the string); description reworded to open the situation
+list to "any other encounters that might make you nervous" and to
+"Separates what you know from what you're worried might happen."
+
+**i18n**: `nck_tagline` (11 languages — fr/zh already matched),
+`nck_what_you_know` value renamed to a "what you told us" equivalent (13
+languages, pronoun-drop for ja/ko to keep the convention gate clean),
+`nck_focus_tell_yourself` removed as a dead key (13 languages) after the
+5-card restructuring dropped it, `nck_focus_go` value updated to a "then
+go" equivalent (13 languages), and 9 new keys for the 4 new examples (13
+languages each). Gender-hedge risk in the new example sentences
+("my partner", "felt calm", "felt deflated") was handled by recasting to
+noun/passive constructions per language rather than hedging — e.g. French
+and Portuguese "the person I'm with" instead of a gendered possessive
+noun, Russian and Hindi passive ("a feeling of disappointment remained")
+instead of a gendered first-person past-tense verb. `i18n-convention-audit`
+and `localization-audit` both came back clean (0 new findings).
