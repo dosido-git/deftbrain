@@ -233,11 +233,11 @@ const SECTIONS = {
     ['if_it_comes_up_awkwardly', 'md_g_awkward', 'text'],
   ]},
   salary: { head: null, body: [
-    ['what_you_can_make_the_case_from', 'md_g_case_from', 'list'],
+    ['what_you_have_to_work_with', 'md_g_work_with', 'list'],
     ['what_you_still_need_to_know', 'md_g_still_need', 'list'],
     ['ask', 'md_g_ask', 'ask'],
     ['if_they_push_back', 'md_g_pushback', 'pairs'],
-    ['other_terms_to_consider', 'md_g_other_terms', 'list'],
+    ['other_terms_you_may_want_to_raise', 'md_g_other_terms', 'list'],
   ]},
   afford: { head: 'gut_check', body: [
     ['what_the_numbers_show', 'md_g_numbers_show', 'list'],

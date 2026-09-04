@@ -152,6 +152,53 @@ const TAX_OR_LEGAL_CONCLUSION = new RegExp([
   '\\bsmall claims court will\\b|\\bthe law (?:requires|says|is) (?:that )?\\b',
 ].join('|'), 'i');
 
+// ── Salary pass, 2026-09-04 ───────────────────────────────────────────────
+// Six more, all one move: a supplied fact upgraded into a bargaining position.
+
+// "You are being recruited, not applying — which shifts the starting posture."
+// "Six years... signals institutional knowledge and reduced ramp time."
+// "Fully remote, eliminating a commute cost your hybrid arrangement carries."
+const MANUFACTURED_LEVERAGE = new RegExp([
+  '\\b(?:being )?recruited,? not applying\\b|\\bshifts? the (?:starting )?posture\\b',
+  '\\b(?:signals?|means?|gives you|creates?|represents?) (?:institutional knowledge|reduced ramp|ramp[- ]up savings|leverage|bargaining power|negotiating power|the upper hand)\\b',
+  '\\beliminat\\w+\\b[^.]{0,30}\\b(?:commute|travel) (?:cost|time|burden)\\b',
+  '\\b(?:saves?|saving) you\\b[^.]{0,25}\\b(?:commute|travel)\\b',
+  '\\bputs? you in a strong(?:er)? position\\b|\\bthey came to you\\b[^.]{0,35}\\bwhich means\\b',
+].join('|'), 'i');
+
+// "making your $115K base a floor, not a midpoint"
+const SALARY_AS_FLOOR = new RegExp([
+  '\\b(?:a|your|the) (?:floor|starting floor|baseline)\\b[^.]{0,25}\\bnot (?:a|the) (?:midpoint|ceiling|target)\\b',
+  '\\bmak(?:es|ing) (?:your|the) (?:current )?(?:base|salary|\\p{Sc}?\\d+[Kk]?)\\b[^.]{0,20}\\ba floor\\b',
+  '\\bshould be (?:treated as|your) (?:floor|minimum|starting point)\\b',
+].join('|'), 'iu');
+
+// "I take the equity upside seriously" / "means nothing without these specifics"
+const EQUITY_OVERCLAIM = new RegExp([
+  '\\bequity upside\\b|\\bupside (?:of|on) the equity\\b',
+  '\\bthe equity (?:could|will|should) (?:be worth|pay off|appreciate)\\b',
+  '\\bmeans nothing without\\b|\\bis meaningless without\\b|\\bworthless without\\b',
+].join('|'), 'i');
+
+// "a base that reflects market rate for this level"
+const MARKET_RATE_AS_TRUTH = new RegExp([
+  '\\b(?:reflects?|matches?|meets?) (?:the )?market rate\\b',
+  '\\bmarket rate for (?:this|the) (?:level|role|position)\\b',
+  '\\bwhat (?:the role|this role|you) (?:is|are) (?:actually )?worth\\b',
+  '\\bthe (?:right|correct|fair) (?:salary|number|figure) (?:is|would be)\\b',
+].join('|'), 'i');
+
+// Named comp-data providers whose current relevance is unverified.
+const NAMED_COMP_SOURCE = /\b(?:Levels\.fyi|Levels fyi|Comp\.data|Radford|Glassdoor|Payscale|Salary\.com|Blind)\b/i;
+
+// "Based on my research on current market rates" — evidence the visitor never
+// said they had. Spared when the sentence makes it conditional.
+const ASSUMED_RESEARCH = new RegExp([
+  '\\b(?:based on|from|given) my (?:research|analysis) (?:on|of|into)\\b',
+  '\\bthe (?:market )?data I(?:\\x27ve| have) (?:seen|reviewed|gathered|pulled)\\b',
+  '\\bI(?:\\x27ve| have) (?:researched|benchmarked|looked at) (?:the )?(?:market|comparable|comp)\\b',
+].join('|'), 'i');
+
 // A hedge means the sentence proposes rather than asserts — spare it.
 const HEDGED = /\b(?:if|whether|may|might|could|unknown|not established|you did not|unless|check|verify|varies|depends)\b/i;
 
@@ -161,6 +208,14 @@ const RULES = [
   ['invented a real issue underneath the money', REAL_ISSUE],
   ['gave a culture one uniform money rule', CULTURE_AS_RULE, (v) => HEDGED.test(v)],
   ['reached a tax or legal conclusion', TAX_OR_LEGAL_CONCLUSION, (v) => HEDGED.test(v)],
+  ['upgraded a supplied fact into leverage', MANUFACTURED_LEVERAGE],
+  ['turned current pay into a negotiating floor', SALARY_AS_FLOOR],
+  ['claimed equity upside, or that unquantified equity means nothing', EQUITY_OVERCLAIM],
+  ['treated market rate as the correct salary', MARKET_RATE_AS_TRUTH],
+  ['named a compensation-data provider it cannot vouch for', NAMED_COMP_SOURCE],
+  // Spared when conditional: "once you have verified a figure, you could say
+  // based on the data you have reviewed..." is the wanted form.
+  ['put research in the visitor\'s mouth', ASSUMED_RESEARCH, (v) => /\bonce you (?:have )?(?:verified|checked|confirmed)|if you have|after you\b/i.test(v)],
 ];
 
 // Arrays are objects: Object.entries enumerates their indices, so the walk
@@ -1159,6 +1214,70 @@ Use the epistemic standard above: ESTABLISHED / REASONABLE IMPLICATION / UNKNOWN
 Scripts can be confident.
 Factual premises cannot exceed the supplied evidence.
 
+TWELVE THINGS NOT TO TURN INTO LEVERAGE
+
+Restate what they told you. Do not upgrade it into a bargaining position.
+
+1. Being recruited is context, not leverage. Write 'the company initiated the
+   recruiting conversation', never 'you are being recruited, not applying, which
+   shifts the starting posture'. It establishes nothing about bargaining power,
+   urgency, scarcity or willingness to pay more.
+
+2. Remote work is not a financial benefit unless the visitor made that
+   comparison. Write 'the new role is fully remote; your current role is hybrid
+   three days a week', never 'eliminating a commute cost and time burden'.
+
+3. Experience is not institutional knowledge or reduced ramp time at a DIFFERENT
+   company. Write 'six years of B2B SaaS marketing experience, including four
+   years at your current company', never 'signals institutional knowledge and
+   reduced ramp time'. Transform accomplishments; do not manufacture employer
+   benefits out of tenure.
+
+4. A belief that current pay is below market does not make current salary a
+   floor. Write 'you believe your current base is below market — worth checking
+   against current compensation data before using it to set your ask', never
+   'making your base a floor, not a midpoint'.
+
+5. Do not manufacture requirements for a career path. Ask what a track means at
+   THIS company — what would need to happen, who decides, whether any path or
+   review point is defined. Never invent headcount triggers or revenue
+   milestones as expected promotion criteria.
+
+6. Do not overstate the uselessness of unquantified equity. Write 'difficult to
+   evaluate without the actual terms', not 'means nothing without these
+   specifics'. Be clear without being performatively absolute.
+
+7. Hypothetical pushback stays explicitly hypothetical. Label each one as a
+   possibility — IF THEY ASK FOR YOUR NUMBER FIRST, IF THEIR BUDGET IS LOWER, IF
+   THEY EMPHASISE STARTUP SIZE OR RISK, IF THEY ASK WHAT WOULD CLOSE THE DEAL.
+   Never imply these are what this employer will do.
+
+8. Never put invented evidence in the visitor's mouth. If they have not said they
+   researched market rates, a script may not claim they did. Make it conditional
+   instead: 'once you have verified a defensible figure, you could say...'. A
+   future script may use evidence they are instructed to obtain; it may not
+   pretend the evidence already exists.
+
+9. Equity does not have established upside. Write 'I want to understand the
+   equity terms clearly so I can evaluate them alongside base and bonus', never
+   'I take the equity upside seriously'. Equity may gain value, lose value, or
+   have little realizable value.
+
+10. Market rate is evidence, not the correct salary. Write 'a base I can support
+    with current compensation data and the scope of this role', never 'a base
+    that reflects market rate for this level'.
+
+11. Separate grounded priorities from generally useful questions. Bonus
+    structure, equity terms, a named career track and remote terms are grounded
+    when the visitor raised them. Performance-review timing and home-office
+    stipends are not, unless they did — either leave them out or present them as
+    things they MAY want to ask about, never as things that matter here.
+
+12. Do not name specific compensation-data providers. You do not know which are
+    current, accessible or relevant. Write 'check current compensation data for
+    comparable roles, level, location or remote status, company stage and
+    industry, using more than one credible source where possible'.
+
 THE SITUATION: ${situation.trim()}
 CURRENT SALARY: ${currentSalary || 'Not supplied.'}
 ROLE: ${targetRole || 'Not supplied.'}
@@ -1167,20 +1286,20 @@ EXPERIENCE: ${experience || 'Not supplied.'}
 
 Return ONLY valid JSON:
 {
-  "what_you_can_make_the_case_from": ["Something THEY supplied that supports an ask — one short line each"],
-  "what_you_still_need_to_know": ["Something they would need before naming a number, including compensation data if they gave no target — one short line each"],
+  "what_you_have_to_work_with": ["Something THEY supplied, restated plainly — one short line each. Restate it; do not upgrade it into a bargaining position"],
+  "what_you_still_need_to_know": ["Something they would need before naming a number, including verifying compensation data if they gave no target — one short line each"],
   "ask": {
     "amount": "The figure they supplied, or an empty string if they gave none. Never invent one",
-    "basis": "What the ask rests on, drawn only from what they supplied — one or two sentences",
-    "script": "Words they could say in the room — 3-5 sentences"
+    "basis": "What the ask rests on, drawn only from what they supplied — one or two sentences. Compensation data is evidence to check, never the correct answer",
+    "script": "Words they could say in the room — 3-5 sentences. If it relies on research they have not said they did, make it conditional: 'once you have verified a defensible figure, you could say...'"
   },
   "if_they_push_back": [
-    { "situation": "A response they might get — described as a situation, not a prediction", "response": "What to say — 1-2 sentences" }
+    { "situation": "A possibility, phrased as one — 'If they ask for your number first', 'If their budget is lower'. Never a prediction about this employer", "response": "What to say — 1-2 sentences" }
   ],
-  "other_terms_to_consider": ["Something other than base pay worth raising — one short line each"]
+  "other_terms_you_may_want_to_raise": ["Something other than base pay worth raising — one short line each. Lead with what the visitor actually raised; anything they did not mention is offered as an option, not as something that matters here"]
 }
 
-ARRAY BOUNDS: what_you_can_make_the_case_from at most 5, what_you_still_need_to_know at most 4, if_they_push_back 2-4, other_terms_to_consider at most 5.
+ARRAY BOUNDS: what_you_have_to_work_with at most 5, what_you_still_need_to_know at most 4, if_they_push_back 2-4, other_terms_you_may_want_to_raise at most 5.
 
 Return ONLY valid JSON.`, userLanguage);
 

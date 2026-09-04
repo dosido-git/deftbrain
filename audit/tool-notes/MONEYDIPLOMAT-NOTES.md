@@ -51,6 +51,40 @@ the assumption behind each.
 | Practice | role-play as prediction | one plausible response, coaching on the WORDS |
 | **Profile / Recap** | archetype, health score, blind spots, next-problem prediction | **deleted** |
 
+## The salary pass, same day
+
+Salary Talk had stopped inventing numbers but was still upgrading facts into
+bargaining positions — one move, twelve times.
+
+| It wrote | It now writes |
+| --- | --- |
+| "recruited, not applying — which shifts the starting posture" | "the company initiated the recruiting conversation" |
+| "signals institutional knowledge and reduced ramp time" | "six years of B2B SaaS marketing, including four at your current company" |
+| "fully remote, eliminating a commute cost your hybrid arrangement carries" | "the new role is fully remote; your current role is hybrid three days a week" |
+| "making your $115K base a floor, not a midpoint" | "you believe it is below market — worth verifying before using it to anchor your ask" |
+| "a headcount trigger, a revenue milestone" | "what would need to happen, who decides, whether any review point is defined" |
+| "means nothing without these specifics" | "difficult to evaluate without the actual terms" |
+| "I take the equity upside seriously" | "I want to understand the terms so I can evaluate them alongside base and bonus" |
+| "a base that reflects market rate for this level" | "a base I can support with current compensation data and the scope of this role" |
+| "Based on my research on current market rates…" | "once you have verified a defensible figure, you could say…" |
+| Levels.fyi, Radford | "current compensation data… more than one credible source" |
+
+Section names changed with it: `what_you_can_make_the_case_from` →
+`what_you_have_to_work_with`, because the old name invited every supplied fact
+to become leverage; `other_terms_to_consider` →
+`other_terms_you_may_want_to_raise`, so a term the visitor never mentioned reads
+as an option rather than as something that matters in this negotiation.
+
+Six backstops: `MANUFACTURED_LEVERAGE`, `SALARY_AS_FLOOR`, `EQUITY_OVERCLAIM`,
+`MARKET_RATE_AS_TRUTH`, `NAMED_COMP_SOURCE`, `ASSUMED_RESEARCH`. The last is
+spared when the sentence is conditional — "once you have verified a figure, you
+could say based on the data you have reviewed…" is the wanted form, and the
+unconditional version of the same sentence is the failure.
+
+**"Family dynamics" became "Money with family"** in the picker. The old subtitle
+promised psychological interpretation, which is exactly what the rewrite took
+out of that route.
+
 ## The things that will bite the next person
 
 **Ten guards keyed fields the new schemas do not emit.** Every route I rewrote
