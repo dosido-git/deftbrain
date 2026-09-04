@@ -359,6 +359,78 @@ detectable pattern. Recorded here rather than silently accepted — this is a
 real, measured improvement (dramatically better than the "compunction" +
 invented-specifics baseline), not a claim of eliminating the failure mode.
 
+## Final grounding pass — same day, second round
+
+A follow-up bug report on top of the pass above: even with the primary word
+fixed, the explanatory prose still embellished — "the place felt like it
+could have been home," "already grieving its loss," "happiness and
+gratitude that are equally present," "you are wishing time would slow
+down." None traces to anything supplied.
+
+**FINAL GROUNDING PASS** — added to PERSONALITY, right before OUTPUT (a
+last-mile check before the model returns anything): distinguishes what the
+visitor described / what the word means / the model's own interpretation,
+bans introducing motives, wishes, regrets, gratitude, grief, intensity,
+imagined alternatives, significance, or reasons unless the visitor supplied
+them, with the four bug-report sentences as BAD examples and their corrected
+forms as GOOD ones. Prompt-only — this list is far too varied to reduce to a
+safe word-list check (unlike the two families below, which had enough
+confirmed live recurrence to justify one).
+
+**`checkInventedEmotionWords`** — the only check in this route that
+cross-references the visitor's own supplied text rather than judging a field
+in isolation. Two live-confirmed word families only: "grief"/"grieving"/
+"mourning" and "gratitude"/"grateful." Took three iterations to get right:
+
+1. First version flagged the word anywhere in an explanatory field. A live
+   probe produced "Saudade carries primarily grief and melancholy" inside
+   `other_words[].misses` — an accurate lexical fact about the WORD's own
+   connotation, exactly the prompt's own "describe the WORD rather than the
+   VISITOR" escape valve. Field-wide blanking would have destroyed genuinely
+   good content to catch a bad pattern.
+2. Narrowed to require the emotion word within 40 characters of a
+   "you"/"your" reference, in either direction — close enough to catch "the
+   happiness and **gratitude** that **you** also described" without catching
+   the saudade sentence (67 characters away). Verified: the nearest true
+   positive found sits at 59 characters — 8 characters below the false
+   positive's 67. There is no window size that reliably separates the two;
+   this is the check's real precision ceiling, not an oversight.
+3. The proximity fix alone still didn't work: real captures kept surviving
+   despite firing the regex correctly, and server logs showed why —
+   `why_it_fits` and `where_it_doesnt` kept hitting the SAME length/sentence
+   safety cap the generic `RULES` walk uses ("too long to cut safely"),
+   because those are exactly the longer, multi-sentence fields the leak
+   shows up in. Removed the cap for this check specifically: the proximity
+   requirement already means a match usually IS the sentence's central
+   claim, not an incidental word worth preserving the rest of the field
+   over — a reasoning that does NOT apply to the generic RULES walk, where a
+   stray banned word really can sit inside an otherwise-fine paragraph.
+   Also extended coverage to `share_line` and `plain_english`, which weren't
+   in the original field set despite carrying the exact same risk — a live
+   probe put the violation directly in `share_line`.
+
+Six fresh live attempts after all three fixes: 4 clean, 2 known misses (both
+the "same field, different sentence, no nearby you" shape from point 2 —
+"...before you have even left... It names... already **mourning**..." with
+57+ characters between the pronoun and the word). Accepted, not chased
+further — documented here rather than quietly left as an unexplained gap.
+
+## UI polish: Recent rows
+
+Feedback: Recent entries in the Dictionary modal read as "bare bordered text
+rows... resembling disabled form inputs" — a bordered card with plain-weight
+text, date, and two full buttons stacked below, next to Saved Words' bolder
+word + provenance + short-meaning treatment right above it. Converted each
+entry to a single compact clickable row — bold primary text (the matched
+word when one exists, else the description preview) with the description as
+a lighter secondary line, date at right, and a trailing glyph that also
+carries real information: `›` when the stored result reopens instantly,
+`🔄` when the entry predates full-result storage and needs a fresh submit
+(same distinction the old "Open"/"Analyze again" button pair carried,
+folded into one row instead of two). Remove stayed, demoted to a small `✕`
+icon button beside the row rather than a third labeled button inside it —
+polish, not a scope change to what the row can do.
+
 ## Goldens
 
 Six cases, re-recorded 2026-09-04 for the word-quality/ambiguity pass above

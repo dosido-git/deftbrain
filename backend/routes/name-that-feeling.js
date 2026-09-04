@@ -232,6 +232,84 @@ Do not convert descriptions into disorders, symptoms, syndromes, or clinical
 labels unless the visitor explicitly asks about a known term, and even then do
 not diagnose.
 
+NAME THAT FEELING — FINAL GROUNDING PASS
+
+When explaining why a word fits, distinguish carefully between:
+
+1. WHAT THE VISITOR ACTUALLY DESCRIBED
+2. WHAT THE WORD MEANS
+3. YOUR INTERPRETATION
+
+You may paraphrase and synthesize the visitor's description, but do not add
+new emotional facts merely because they would make the explanation more
+poetic, psychologically satisfying, or complete.
+
+In particular, do not introduce:
+- motives
+- wishes
+- regrets
+- gratitude
+- grief
+- intensity
+- imagined alternatives
+- significance of a place or relationship
+- what the visitor wants to happen
+- why the visitor feels something
+
+unless established by the visitor.
+
+A beautiful sentence is not better if it requires inventing part of the
+experience.
+
+BAD:
+"The feeling intensifies when the place felt like it could have been home."
+
+Nothing supplied establishes that.
+
+BAD:
+"You are simultaneously present in something and already grieving its loss."
+
+The visitor said sad and nostalgic. "Grieving its loss" strengthens that
+into a different emotional claim.
+
+BAD:
+"You are wishing time would slow down."
+
+The visitor did not say this.
+
+BAD:
+"the happiness and gratitude that are equally present"
+
+The visitor said happy they went. Do not silently convert that into
+gratitude or claim equal emotional weight.
+
+GOOD:
+"You are happy you had the experience, sad that it is ending, and already
+nostalgic for it before it is over."
+
+GOOD:
+"That combination is why 'bittersweet' fits so well."
+
+GOOD:
+"'Wistful' captures some of the longing and sadness, but it does not by
+itself capture the happiness you also described."
+
+RULE:
+Transform supplied emotional facts intelligently.
+Do not intensify, explain, complete, or beautify them by adding new ones.
+
+Before returning each visitor-specific sentence, ask:
+
+"Could I point to something the visitor actually said that supports every
+claim in this sentence?"
+
+If not:
+- remove the unsupported claim,
+- make it explicitly conditional,
+- or describe the WORD rather than the VISITOR.
+
+NAME THE SHAPE. DON'T INVENT THE STORY.
+
 OUTPUT
 
 Keep the result delightful and concise.
@@ -324,6 +402,74 @@ function cleanNoMatchWord(data) {
     bm.pronunciation = '';
     bm.definition = '';
   }
+  return data;
+}
+
+// A very specific, twice-confirmed leak: the model reaches for "grief" or
+// "gratitude" to make an explanation feel more complete or poetic, even when
+// the visitor never used either word — the exact FINAL GROUNDING PASS bug
+// report examples ("already grieving its loss," "happiness and gratitude
+// that are equally present"), and a live re-test after that rule shipped
+// reproduced both again verbatim. Unlike the RULES array above, this needs
+// the visitor's own supplied text to judge correctness — "grief" is a
+// legitimate reflection if the VISITOR wrote it, invented if they didn't.
+//
+// A field-wide check (any occurrence of the word anywhere in the field) was
+// tried first and had to be narrowed: a live probe produced "Saudade
+// carries primarily grief and melancholy" inside other_words[].misses — an
+// accurate lexical fact about the WORD's own connotation (exactly the
+// prompt's own "describe the WORD rather than the VISITOR" escape valve),
+// which the field-wide version would have blanked, destroying good content
+// to prevent a bad pattern. Narrowed to require the emotion word within 40
+// characters of a "you"/"your" reference in either direction — close enough
+// to catch "the happiness and gratitude that YOU also described" but not
+// "Saudade carries grief... [different sentence] ...YOU described" where
+// the two are unrelated. Trade-off accepted: a same-field-but-distant case
+// like "...before YOU have even left... It names... already grieving
+// something..." (two sentences apart) is missed by this narrower version —
+// left to the prompt rule alone, same as the rest of FINAL GROUNDING PASS.
+const EMOTION_WORD_NEAR_YOU = [
+  ['gratitude', /\byou(?:r)?\b.{0,40}\b(?:gratitude|grateful)\b|\b(?:gratitude|grateful)\b.{0,40}\byou(?:r)?\b/i],
+  ['grief', /\byou(?:r)?\b.{0,40}\b(?:griev(?:e|es|ed|ing)|grief|mourn(?:s|ed|ing)?)\b|\b(?:griev(?:e|es|ed|ing)|grief|mourn(?:s|ed|ing)?)\b.{0,40}\byou(?:r)?\b/i],
+];
+const EMOTION_WORD_PRESENT = [
+  ['gratitude', /\b(?:gratitude|grateful)\b/i],
+  ['grief', /\b(?:griev(?:e|es|ed|ing)|grief|mourn(?:s|ed|ing)?)\b/i],
+];
+// share_line and plain_english added after a live probe put the exact
+// violation in share_line ("you are already grieving something while you
+// are still in it") — a field this check didn't originally cover.
+const EXPLANATORY_FIELD_KEYS = new Set(['why_it_fits', 'where_it_doesnt', 'tension', 'captures', 'misses', 'share_line', 'plain_english']);
+function checkInventedEmotionWords(data, suppliedText) {
+  const supplied = (suppliedText || '').toLowerCase();
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string' && EXPLANATORY_FIELD_KEYS.has(k)) {
+        for (let i = 0; i < EMOTION_WORD_NEAR_YOU.length; i++) {
+          const [label, nearRe] = EMOTION_WORD_NEAR_YOU[i];
+          const [, presentRe] = EMOTION_WORD_PRESENT[i];
+          if (nearRe.test(v) && !presentRe.test(supplied)) {
+            // No length/sentence-count cap here, unlike the RULES walk below.
+            // That cap exists because a stray banned word can sit inside an
+            // otherwise-fine long paragraph, and blanking the whole thing
+            // over one clause would destroy more than it fixes. This check
+            // is different: the "near you" proximity requirement already
+            // means the match usually IS the sentence's central claim, not
+            // an incidental word — and a live run proved the cap actively
+            // defeats the check where it matters most: why_it_fits and
+            // where_it_doesnt are exactly the longer, multi-sentence fields
+            // this leak shows up in, and both got logged-but-left-intact
+            // ("too long to cut safely") on a real capture instead of fixed.
+            console.log(`[name-that-feeling] ${k} blanked — invented "${label}" claim about the visitor, not present in their own description: ${v.slice(0, 200)}`);
+            node[k] = '';
+            break;
+          }
+        }
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(data);
   return data;
 }
 
@@ -471,7 +617,8 @@ Never place a double-quote character inside any JSON string value.`;
     if (!parsed.best_match) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
-    res.json(validateResult(cleanNoMatchWord(pinMatch(parsed))));
+    const suppliedText = `${description} ${context || ''}`;
+    res.json(validateResult(checkInventedEmotionWords(cleanNoMatchWord(pinMatch(parsed)), suppliedText)));
 
   } catch (error) {
     console.error('NameThatFeeling error:', error);
@@ -482,8 +629,8 @@ Never place a double-quote character inside any JSON string value.`;
 // Reviewed against backend/lib/outputStandard.js during the 2026-09-05 rewrite.
 router.outputStandard = 'v2';
 router.outputGuard = {
-  checks: ['pinMatch', 'cleanNoMatchWord', 'validateResult'],
-  note: 'No "untranslatable" claim, no language-as-psychological-profile claim ("only the Welsh understand this," "uniquely Russian"), no personality reading built from a matched word ("the mark of someone who..."), no coined phrase presented as an established term, no named emotional ambiguity flattened into a flat fact ("It wasn\'t envy"), and no invented certainty attributed to the visitor ("you knew they deserved it") — all six are regex-detected and blanked in code. The four-value match enum (STRONG/CLOSE/PARTIAL/NO ADEQUATE MATCH) is pinned to an exact English literal (pinMatch) since the frontend switches on it for both the badge and the dynamic hero heading. cleanNoMatchWord checks best_match.word at EVERY match tier, not just NO ADEQUATE MATCH — a restatement of the gap rather than a real word ("the discomfort of a no-win moment," "homesickness for a place that exists only in memory") showed up dressed as CLOSE MATCH just as often as NO ADEQUATE MATCH across live probes, so any tier gets downgraded to NO ADEQUATE MATCH and cleared when this fires. where_it_doesnt and plain_english carry the epistemic nuance in that case.',
+  checks: ['pinMatch', 'cleanNoMatchWord', 'checkInventedEmotionWords', 'validateResult'],
+  note: 'No "untranslatable" claim, no language-as-psychological-profile claim ("only the Welsh understand this," "uniquely Russian"), no personality reading built from a matched word ("the mark of someone who..."), no coined phrase presented as an established term, no named emotional ambiguity flattened into a flat fact ("It wasn\'t envy"), and no invented certainty attributed to the visitor ("you knew they deserved it") — all six are regex-detected and blanked in code. The four-value match enum (STRONG/CLOSE/PARTIAL/NO ADEQUATE MATCH) is pinned to an exact English literal (pinMatch) since the frontend switches on it for both the badge and the dynamic hero heading. cleanNoMatchWord checks best_match.word at EVERY match tier, not just NO ADEQUATE MATCH — a restatement of the gap rather than a real word ("the discomfort of a no-win moment," "homesickness for a place that exists only in memory") showed up dressed as CLOSE MATCH just as often as NO ADEQUATE MATCH across live probes, so any tier gets downgraded to NO ADEQUATE MATCH and cleared when this fires. checkInventedEmotionWords is the one check in this route that cross-references the visitor\'s own supplied text rather than judging a field in isolation — "grief"/"gratitude" is fine if the visitor used that word themselves, invented otherwise. Requires the word within 40 characters of a "you"/"your" reference, not just present anywhere in the field: a field-wide version blanked "Saudade carries primarily grief and melancholy" — an accurate lexical fact about the WORD, not a claim about the visitor — destroying good content to catch a bad pattern. It also has no length/sentence-count cap unlike the RULES walk below — a live run showed the generic cap actively defeating this check on exactly the fields the leak shows up in (why_it_fits, where_it_doesnt: detected but "too long to cut safely," left unfixed), because the "near you" proximity requirement already means a match usually IS the sentence\'s central claim, not an incidental word worth preserving the rest of the field over. Covers why_it_fits/where_it_doesnt/tension/captures/misses/share_line/plain_english — share_line and plain_english were added after a live probe put the exact violation there. The proximity version still misses a same-field-but-distant case (the emotion word two sentences away from the nearest "you"), left to the prompt rule alone. Scoped to exactly these two word-families (twice-confirmed live leaks), not the full FINAL GROUNDING PASS list (motives, wishes, imagined alternatives, ...), which is prompt-only — those vary too much for a safe word-list check without more confirmed examples.',
 };
 
 module.exports = router;

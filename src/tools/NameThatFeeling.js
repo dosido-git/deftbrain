@@ -102,28 +102,43 @@ const FeelingDictionaryModal = ({
         )}
       </div>
       {recentHistory.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {recentHistory.map(entryItem => (
-            <div key={entryItem.id} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-              <div className="flex items-start justify-between gap-2">
-                <p className={`text-xs ${c.textSecondary} truncate`}>
-                  {entryItem.preview || t('ntf_session')}
-                  {entryItem.bestMatchWord ? ` — ${entryItem.bestMatchWord}` : ''}
-                </p>
+            <div key={entryItem.id} className="flex items-center gap-1.5">
+              {/* A compact, clickable row — not a bordered box with buttons
+                  stacked below, which read as a disabled form field rather
+                  than a history entry. Older entries were saved before
+                  full-result storage existed — nothing to reopen for those,
+                  so the trailing glyph doubles as the affordance: "›" means
+                  the click reopens instantly, "🔄" means it re-populates the
+                  description and still needs a fresh submit (section 19:
+                  never fabricate or silently regenerate for an old record). */}
+              <button
+                onClick={() => entryItem.results ? onOpenRecent(entryItem) : onAnalyzeAgain(entryItem)}
+                title={entryItem.results ? t('ntf_open') : t('ntf_analyze_again')}
+                className={`flex-1 min-w-0 flex items-center gap-2 px-3 py-2 rounded-lg ${c.cardAlt} hover:brightness-95 dark:hover:brightness-125 transition text-start`}
+              >
+                <span className="min-w-0 flex-1">
+                  {entryItem.bestMatchWord ? (
+                    <>
+                      <span className={`text-sm font-semibold ${c.text} truncate block`}>{entryItem.bestMatchWord}</span>
+                      <span className={`text-[11px] ${c.textMuted} truncate block`}>{entryItem.preview}</span>
+                    </>
+                  ) : (
+                    <span className={`text-xs ${c.textSecondary} truncate block`}>{entryItem.preview || t('ntf_session')}</span>
+                  )}
+                </span>
                 <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(entryItem.date).toLocaleDateString()}</span>
-              </div>
-              <div className="flex gap-2 mt-2">
-                {/* Older entries were saved before full-result storage existed
-                    — nothing to reopen for those, so "Open" only appears
-                    once a result actually rides along. Section 19: never
-                    fabricate or silently regenerate for an old record. */}
-                {entryItem.results ? (
-                  <button onClick={() => onOpenRecent(entryItem)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_open')}</button>
-                ) : (
-                  <button onClick={() => onAnalyzeAgain(entryItem)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>🔄 {t('ntf_analyze_again')}</button>
-                )}
-                <button onClick={() => onRemoveRecent(entryItem.id)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_remove')}</button>
-              </div>
+                <span aria-hidden="true" className={`text-sm ${c.textMuted} flex-shrink-0`}>{entryItem.results ? '›' : '🔄'}</span>
+              </button>
+              <button
+                onClick={() => onRemoveRecent(entryItem.id)}
+                aria-label={t('ntf_remove')}
+                title={t('ntf_remove')}
+                className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-sm ${c.textMuted} opacity-60 hover:opacity-100 transition`}
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>
