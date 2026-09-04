@@ -199,6 +199,46 @@ const ASSUMED_RESEARCH = new RegExp([
   '\\bI(?:\\x27ve| have) (?:researched|benchmarked|looked at) (?:the )?(?:market|comparable|comp)\\b',
 ].join('|'), 'i');
 
+// ── Lending micro-pass, 2026-09-04 ────────────────────────────────────────
+// Four of the seven are shaped like something a regex can see. The other three
+// (unknowns about private belief, alternative histories, missed-date clauses)
+// turn on what a sentence is FOR rather than which words it uses, and live in
+// the field descriptions only.
+
+// "no shared understanding of whether it is still owed" — silence read as
+// doubt about a debt the visitor already established.
+const DEBT_IN_DOUBT = new RegExp([
+  '\\bno (?:shared |mutual |common )?understanding\\b[^.]{0,40}\\b(?:still owed|owes|outstanding|owed)\\b',
+  '\\b(?:whether|if) (?:the (?:money|loan|debt)|it) is still (?:owed|outstanding|considered)\\b',
+  '\\b(?:unclear|not clear|ambiguous) whether\\b[^.]{0,35}\\b(?:still owes|owed|a loan|a gift)\\b',
+  '\\bmay (?:now )?(?:consider|regard|treat) (?:it|the \\p{Sc}?\\d+) (?:as )?(?:a gift|settled|forgiven|written off)\\b',
+].join('|'), 'iu');
+
+// "A low-key conversation is easier to start than it feels."
+const PREDICTED_FEELING = new RegExp([
+  '\\bis easier (?:to (?:start|have|say))?\\b[^.]{0,25}\\bthan (?:it|you) (?:feels?|think|expect|imagine)\\b',
+  '\\b(?:will|is going to) (?:feel|be) (?:less )?(?:awkward|uncomfortable|painful|hard|easier|fine)\\b',
+  '\\bonce you (?:start|say it),? (?:it|you)(?:\\x27ll| will)\\b',
+  '\\bmost people find\\b[^.]{0,30}\\b(?:easier|less awkward)\\b',
+].join('|'), 'i');
+
+// "Never lend more than you can afford to write off" — a loan quietly
+// reclassified as money to expect to lose.
+const WRITE_IT_OFF = new RegExp([
+  '\\bafford to (?:write (?:it |them |that )?off|lose|never see|not get back|kiss goodbye)\\b',
+  '\\btreat (?:it|the \\p{Sc}?\\d+|any loan) as a gift\\b',
+  '\\bonly lend what you (?:can|could) (?:afford to )?(?:lose|write off)\\b',
+  '\\bassume you (?:will|might) never (?:see|get) (?:it|the money) (?:back|again)\\b',
+].join('|'), 'iu');
+
+// "I understand you are in a tight spot" — the borrower's circumstances,
+// asserted. Spared when the sentence is explicitly about what was ASKED.
+const ASSUMED_HARDSHIP = new RegExp([
+  '\\b(?:I (?:know|understand|realise|realize)|I can tell) (?:that )?you(?:\\x27re| are)\\b[^.]{0,30}\\b(?:in a tight spot|struggling|stretched|short|going through|having a hard time|under pressure|strapped)\\b',
+  '\\byou(?:\\x27re| are) (?:clearly |obviously )?(?:struggling|strapped|desperate|in trouble)\\b',
+  '\\bthings (?:are|must be) (?:tight|tough|hard) (?:for you|right now)\\b',
+].join('|'), 'i');
+
 // A hedge means the sentence proposes rather than asserts — spare it.
 const HEDGED = /\b(?:if|whether|may|might|could|unknown|not established|you did not|unless|check|verify|varies|depends)\b/i;
 
@@ -216,6 +256,10 @@ const RULES = [
   // Spared when conditional: "once you have verified a figure, you could say
   // based on the data you have reviewed..." is the wanted form.
   ['put research in the visitor\'s mouth', ASSUMED_RESEARCH, (v) => /\bonce you (?:have )?(?:verified|checked|confirmed)|if you have|after you\b/i.test(v)],
+  ['read silence as doubt about whether a debt is owed', DEBT_IN_DOUBT],
+  ['predicted how a conversation would feel', PREDICTED_FEELING],
+  ['reclassified a loan as money to expect to lose', WRITE_IT_OFF],
+  ['asserted the borrower\'s circumstances', ASSUMED_HARDSHIP],
 ];
 
 // Arrays are objects: Object.entries enumerates their indices, so the walk
@@ -807,6 +851,46 @@ The question is:
 
 A strong recommendation is allowed when supported by supplied facts.
 
+SEVEN THINGS NOT TO ADD
+
+1. An overdue, undiscussed loan does not mean the debt itself is in question.
+   Write 'the original repayment date passed without repayment, and the loan has
+   not been discussed since', never 'there is no shared understanding of whether
+   it is still owed'. Silence is not ambiguity about whether the money is owed —
+   the agreement was already established.
+
+2. Do not list the other person's inner life as an unknown. Not what they
+   believe, not what they consider settled, not what they intend, not what they
+   expect, not whether they plan to raise it. All of it is their interpretation,
+   none of it is needed to decide, and naming it in what_is_not_known invites
+   exactly the speculation the rest of this brief removes. The unknowns worth
+   naming are three: why it has not been repaid or discussed, what is being
+   asked for now, and the lender's own financial position.
+
+3. Do not suggest alternative histories the visitor contradicted. If they said
+   it was never repaid, do not ask whether it might have been settled some other
+   way. Ask 'what happened with the original repayment agreement, and what can
+   your friend realistically do about it now?'
+
+4. Do not predict that a conversation will feel a certain way. Write 'start with
+   a low-key, factual question rather than an accusation', never 'it is easier to
+   start than it feels'.
+
+5. Do not turn a loan into money the lender should expect to lose. 'Do not lend
+   more than you could afford to write off' quietly does that. Write instead:
+   'decide what amount you could afford to have unavailable if repayment is
+   delayed' — the same financial constraint, without pretending repayment does
+   not matter.
+
+6. Do not automatically demand a missed-date clause. A loan between friends is
+   not a contract. Where timing genuinely matters, write 'if repayment timing
+   matters, agree on what you will do if circumstances change'.
+
+7. Scripts may not invent the borrower's circumstances. 'I understand you are in
+   a tight spot' asserts something the visitor never said. Write from what the
+   visitor actually knows: 'I understand you are asking for help, but my answer
+   on lending more has to be no for now.'
+
 THE SITUATION: ${situation.trim()}
 AMOUNT ASKED FOR: ${amount || 'Not supplied.'}
 RELATIONSHIP: ${relationship || 'Not supplied.'}
@@ -817,15 +901,15 @@ Return ONLY valid JSON:
   "recommendation": "Exactly one of these English strings: Lend, Do not lend yet, Lend only under conditions, Not enough to tell",
   "why": ["2-4 grounded reasons based only on supplied facts — one short line each"],
   "what_is_known": ["A fact THEY supplied, restated plainly — one short line each"],
-  "what_is_not_known": ["Something that matters and was not supplied — one short line each. Why an earlier loan is unpaid belongs here, never in why"],
-  "before_you_decide": ["Questions worth answering before lending — one short line each"],
+  "what_is_not_known": ["Something that matters to the DECISION and was not supplied — one short line each. Why an earlier loan is unpaid belongs here, never in why. Do not list the other person's beliefs, intentions or expectations: all of it is their interpretation, none is needed to decide, and naming it invites speculation. Include the LENDER's own financial position, which is a real unknown and theirs to answer. Never imply the debt itself is in doubt because it has not been discussed"],
+  "before_you_decide": ["Questions worth answering before lending — one short line each. Never propose a history the visitor contradicted: if they said it was not repaid, do not ask whether it might have been settled another way. And frame the money constraint as what they could afford to have UNAVAILABLE if repayment is delayed, never as what they could afford to write off"],
   "if_you_lend": {
     "amount_guidance": "What size of loan would be prudent given what they said — one or two sentences",
-    "terms_to_clarify": ["A term to agree out loud before money moves — one short line each"],
+    "terms_to_clarify": ["A term to agree out loud before money moves — one short line each. A loan between friends is not a contract: do not automatically demand a clause for a missed date. Where timing matters, agree what you will do if circumstances change"],
     "script": "Words they could actually say — 2-4 sentences"
   },
   "if_you_do_not_lend": {
-    "script": "Words they could actually say — 2-4 sentences",
+    "script": "Words they could actually say — 2-4 sentences. Never assert the borrower's circumstances: 'I understand you are asking for help' is grounded, 'I understand you are in a tight spot' is not, unless the visitor said so",
     "if_they_push": "What to say if pressed — 1-2 sentences"
   },
   "existing_debt": {

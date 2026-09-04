@@ -85,6 +85,45 @@ unconditional version of the same sentence is the failure.
 promised psychological interpretation, which is exactly what the rewrite took
 out of that route.
 
+## The lending micro-pass, same day
+
+Seven more, and every one is the same species as the rest: an absence treated
+as information.
+
+| It wrote | It now writes |
+| --- | --- |
+| "no shared understanding of whether it is still owed" | "the original repayment date passed without repayment, and the loan has not been discussed since" |
+| unknown: "whether your friend considers the $600 still outstanding" | dropped — their inner life is not needed to decide |
+| "has it been forgotten, or does your friend believe it was settled?" | "what happened with the original repayment agreement, and what can your friend realistically do about it now?" |
+| "a low-key conversation is easier to start than it feels" | "start with a low-key, factual question rather than an accusation" |
+| "do not lend more than you could afford to write off" | "decide what amount you could afford to have unavailable if repayment is delayed" |
+| terms: "what happens if the date is missed" | "if repayment timing matters, agree what you will do if circumstances change" |
+| "I understand you are in a tight spot" | "I understand you are asking for help" |
+
+Two are worth understanding rather than just obeying.
+
+**Silence is not doubt.** The visitor had already established the agreement —
+$600, repayable within three months. That the parties have not discussed it
+since says nothing about whether the debt exists. Manufacturing ambiguity there
+looks like epistemic caution and is the opposite: it discards a fact the visitor
+supplied.
+
+**"Afford to write it off" quietly reclassifies the loan.** It sounds like
+prudent advice and it concedes the whole question — it tells the lender to
+expect not to be repaid. The constraint worth stating is what they could afford
+to have *unavailable* if repayment is delayed, which is the same financial
+discipline without giving up on the money.
+
+`what_is_not_known` now holds exactly three kinds of thing: why it has not been
+repaid or discussed, what is being asked for now, and the LENDER's own financial
+position. The first draft of that rule barred the other person's *beliefs* and
+the model immediately substituted their *intentions* — "whether your friend
+intends to address the earlier loan". Bar the inner life, not one verb.
+
+Four backstops: `DEBT_IN_DOUBT`, `PREDICTED_FEELING`, `WRITE_IT_OFF`,
+`ASSUMED_HARDSHIP`. The other three turn on what a sentence is FOR rather than
+which words it uses, and live in the field descriptions only.
+
 ## The things that will bite the next person
 
 **Ten guards keyed fields the new schemas do not emit.** Every route I rewrote
