@@ -110,6 +110,102 @@ phoneme-folklore rule (hedge-spared), the pronunciation-universality rule, and
 through it. Widened to allow `about`/`around`/`roughly` between the verb and
 the digit, then retested.
 
+## The 2026-09-05 micro-pass
+
+A live Kindling probe (Business, "warm, easy to remember") found six more of
+the same species — a heuristic dressed as a finding — plus one real gap: the
+tool had never actually verified it caught the codebase's most common
+current-world overreach, domain status.
+
+| It wrote | It now writes |
+| --- | --- |
+| "it passes the core tests of memorability and ease" | "it is easy to pronounce and structurally simple enough to test well by word of mouth" |
+| "...spelled exactly as it sounds, making it easy to remember and search..." | "...spelled exactly as it sounds, which gives it a good word-of-mouth starting point" |
+| "approachable for weekday commuters, soft enough for weekend family visits" | "does not read as overtly corporate or child-focused, and its warmth may fit a neighborhood bakery-coffee setting" |
+| "...and potentially other businesses that have used the same word" | "search results may be shared with general uses of the word; business-name conflicts still need to be checked" |
+| "kindling.com is likely taken or expensive — variants will probably be necessary" | "worth checking early... do not assume availability or price until a registrar confirms it" |
+| "some people may briefly conflate them, particularly in typing or voice search" | "worth testing... the audit cannot establish how often that would happen" |
+| "the soft opening consonant and the -ling ending give it a gentle, cozy sound" | "the initial K gives the name a clear start, while the '-ling' ending softens the sound; it may read as informal and warm" |
+| "someone who hears it once can almost certainly spell it..."; "no plausible rival word" | dropped — absolutist confidence about an untested name |
+| `kindeling`, `kindlng` | `kindeling` only — the second wasn't a plausible mishearing, just generated |
+
+**The domain-price line was the one that mattered most.** "kindling.com is
+likely taken or expensive" is a live-world prediction the tool has no way to
+make — and nothing in the original `RULES` caught it, because every existing
+pattern was scoped to ownership/existence verbs ("is owned by"), not
+availability/price verbs ("is likely taken", "will probably be necessary").
+New backstop, plus an explicit CORE PROMPT rule, plus the section prose says
+so directly: name the check (a registrar lookup), never guess its outcome.
+
+**Two "gives it a [feeling] sound" phrasings look identical to a detector and
+aren't.** "The long 'oo' gives the name a rounded, softer sound" is the
+tool's own approved example; "the -ling ending gives it a gentle, cozy sound"
+is the violation. The difference is EMOTIONAL vocabulary (gentle, cozy, warm)
+versus ACOUSTIC vocabulary (rounded, softer) — a regex distinguishing those
+reliably enough not to blank the approved example was not worth the risk of
+getting subtly wrong, so this one stays prompt-only, same call as the
+no-prep/pre-read-timing rules in Justify My Meeting's notes.
+
+**`word_of_mouth.rating` was never pinned.** `verdict` had `pinVerdict`;
+`rating` did not — a silent gap from the original rewrite, closed in the same
+pass that renamed its middle value (`MAY NEED REPEATING` → `WORKABLE`, to
+read as a plain heuristic label rather than a hedge stacked on a hedge).
+`pinRating` follows the same pattern, defaulting to `WORKABLE` on anything
+unrecognized.
+
+Five new backstops, all unit-tested in both directions alongside the original
+seven (24 bad forms fire, 17 legitimate phrasings survive) — full set now 12.
+
+**Three UI-only renames**, no backend involvement: "Live Availability" →
+"Availability To Verify" (DNS is real-time; the social handle beside it is
+not, so "Live" oversold the whole section); Challenge This Audit's helper
+text dropped "run the analysis again independently" (two passes of the same
+model are not independent, which is the exact claim the feature exists to
+prevent — the description was still making it after the earlier rewrite
+fixed the backend prompt); Next Steps' "Keep It" → "Keep Exploring This
+Name", because `check_before_you_commit` is a fixed, always-present
+checklist by design — there is no code state where "no material unresolved
+issue remains" is true, so "Keep It" could never have honestly appeared. No
+new conditional logic was added for this; the button already scrolled to the
+checklist, and the false-closure problem was entirely in what the label said.
+
+## The judgment rule — bold on the name, cautious on people, verified on the world
+
+Added the same day, immediately after the micro-pass above, because twelve
+corrections in a row that all pushed toward more hedging is exactly the
+condition that teaches a model to hedge everything, including judgments it
+can actually support. Every one of the twelve was individually correct — the
+risk was in the aggregate, read without a counterweight.
+
+The CORE PROMPT now says explicitly that epistemic caution and timid analysis
+are different failures, and lists what may be stated PLAINLY, without
+hedging, when it comes from the name and the supplied context: semantic fit,
+category clarity, spelling/pronunciation difficulty, genericness,
+flexibility, visual possibilities, obvious associations, naming tradeoffs,
+and — in Compare — which candidate is stronger and why. Hedging is reserved
+for claims about PEOPLE (what an audience will remember, feel, or infer) and
+verification for claims about THE WORLD (trademarks, domains, competitors,
+search, handles, popularity, trends) — the same three-way split the CORE
+PROMPT already made, just named explicitly enough that it survives being read
+after eleven restraint-only rules in a row.
+
+Live probe, a deliberately generic name ("Quality Solutions Group," IT
+consulting, wanting distinctive/memorable): verdict RECONSIDER, and the
+weaknesses are direct — "almost a parody of generic corporate naming,"
+"reads as a placeholder rather than a considered choice," "unremarkable and
+likely shared with many other entities" — while `structural_findability` and
+`word_of_mouth` stayed correctly scoped to what's actually knowable rather
+than turning bold into reckless. This is the calibration to protect: confident
+on the name, careful about people, verified about the world — not uniformly
+soft.
+
+**The specific hedged phrasings dictated in the micro-pass above were not
+reopened.** "It may read as informal and warm rather than refined" was the
+user's own literal corrected text for the sound-impression example; the
+judgment rule is the general counterweight for everything the prompt doesn't
+script line-by-line, not a retraction of a phrasing given minutes earlier in
+writing.
+
 ## Things allowed, deliberately
 
 - **A stable, well-known name collision, stated as what it is.** The Compare
@@ -129,6 +225,18 @@ the digit, then retested.
   name is typography, not a claim.
 
 ## Things that will bite the next person
+
+**"Widen the submit button" means change `flex-1` to `w-full` — nothing
+else.** Fixed once as a one-line swap (`flex-1` is a no-op without a flex
+parent), which correctly widened the button but left `py-4 px-6 text-lg
+shadow-lg` in place — sizing that read as merely large on the old
+shrink-to-fit button became a visibly oversized, overlapping-with-the-⌘↵-hint
+button once stretched full width. The established pattern for a wide submit
+button with the kbd hint, already proven in Money Diplomat and BatchFlow, is
+`relative w-full px-4 py-3 rounded-xl text-sm font-bold ... min-h-[48px]` —
+smaller padding and font than feels intuitive, because the width is what's
+supposed to carry the visual weight, not the padding. Match that pattern
+exactly rather than reasoning about it fresh next time.
 
 **`check_before_you_commit` is code-computed, not model-authored.** Five
 fixed sentences, conditional only on whether the context shows domain/social

@@ -129,6 +129,36 @@ REQUIRES VERIFICATION
 
 Never silently turn REQUIRES VERIFICATION into fact.
 
+Do not describe a heuristic judgment as though it were a test the name has
+already passed. Nothing here was tried on a real listener — describe what
+makes the name structurally suited to a test, not that it "passes" one.
+
+Do not predict a domain's current registration status or price ("likely
+taken", "probably expensive", "variants will probably be necessary") — that
+is exactly the kind of claim the REQUIRES VERIFICATION list above already
+rules out. Name the check; do not guess its outcome.
+
+Do not infer how a specific audience segment will actually respond
+("approachable for weekday commuters, soft enough for weekend family
+visits") — that claims knowledge of real people's reactions nobody measured.
+Stay on what the name itself does or doesn't read as, and say when a broad
+audience description is too broad to support a more specific read.
+
+Do not confuse epistemic caution with timid analysis. Analyze the name
+boldly wherever the judgment comes from the name itself and the context
+supplied — do not hedge a reading you can actually support. You may state
+plainly, without hedging: a strong or weak semantic fit; weak category
+clarity; spelling or pronunciation difficulty; genericness; flexibility or
+narrowness for future use; visual and wordmark possibilities; an obvious
+association; a real naming tradeoff; and, when comparing candidates, whether
+one is clearly stronger than another and why. These are the reason this tool
+exists — do not soften them into vagueness in the name of caution. Reserve
+hedging for claims about PEOPLE — what an audience will remember, feel, or
+infer, what a customer or investor will think — and require verification for
+claims about THE WORLD, as listed above. The goal is not "say as little as
+possible unless proven." The goal is "analyze the name boldly; don't invent
+evidence."
+
 A strong audit is useful even when no outside-world lookup has occurred.
 Say what can be judged from the name and identify what should be checked before
 the visitor commits.`;
@@ -137,11 +167,24 @@ the visitor commits.`;
 // Pinned enum + deterministic backstops
 // ═══════════════════════════════════════════════════
 const VERDICTS = ['STRONG FIT', 'GOOD FIT', 'MIXED', 'HAS PROBLEMS', 'RECONSIDER'];
+const WORD_OF_MOUTH_RATINGS = ['LIKELY EASY', 'WORKABLE', 'LIKELY CONFUSING'];
 
 function pinVerdict(data, field, fallback) {
   if (!data) return data;
   const v = String(data[field] || '').toUpperCase().trim();
   data[field] = VERDICTS.includes(v) ? v : fallback;
+  return data;
+}
+
+// The frontend colours word_of_mouth.rating by value, so it has to survive
+// withLanguage exactly — pinning to English here does not mean the visitor
+// reads English; the frontend maps the pinned value to a t() key. This enum
+// was not pinned in the original rewrite; closing that gap in the same pass
+// that renamed its middle value, per the guard-vs-schema sweep habit.
+function pinRating(data) {
+  if (!data || !data.word_of_mouth) return data;
+  const v = String(data.word_of_mouth.rating || '').toUpperCase().trim();
+  data.word_of_mouth.rating = WORD_OF_MOUTH_RATINGS.includes(v) ? v : 'WORKABLE';
   return data;
 }
 
@@ -179,6 +222,30 @@ const RULES = [
   // Challenge This Audit exists to forbid.
   ['treated agreement between two AI passes as increased reliability', /\bagreement (?:between|across) (?:the )?(?:two )?(?:analyses|opinions|audits)\b.{0,40}\b(?:reliab|confiden|increas)/i,
     (v) => HEDGED.test(v)],
+
+  // A heuristic judgment dressed as a test result — nothing here ran on a
+  // real listener. Added in the 2026-09-05 micro-pass, from a live Kindling
+  // probe: "it passes the core tests of memorability and ease."
+  ['claimed the name passed a test that was never run', /\bpasses? the (?:core |key )?tests?\b/i],
+
+  // "Making it easy to remember" states memorability as an achieved outcome.
+  // A short, common, phonetically transparent spelling is a starting point
+  // for word of mouth, not a guarantee of it.
+  ['asserted memorability as an achieved fact', /\bmak(?:es?|ing) it easy to remember\b/i,
+    (v) => HEDGED.test(v)],
+
+  // A specific unverified business-name conflict, in softer clothing than
+  // "is owned by" — the LIVE_WORLD_ASSERTION rule above doesn't catch this
+  // phrasing because it names no verb of ownership, just "has used".
+  ['claimed a specific unverified business-name conflict', /\band potentially other businesses (?:that|who) have used\b|\bother businesses that have used the same word\b/i],
+
+  // Domain status/price is REQUIRES VERIFICATION, not something to guess at —
+  // the largest current-world overreach found in the 2026-09-05 pass.
+  ['predicted a domain\'s current registration status or price', /\.(?:com|io|co|net|org|app|dev|xyz)\b[^.!?]{0,25}\b(?:is|will be)\s+(?:likely|probably)\s+(?:taken|expensive|unavailable)\b|\bdomains?\s+(?:is|are|will be)\s+(?:likely|probably)\s+(?:taken|unavailable|expensive)\b|\bvariants? will (?:probably|likely) be necessary\b/i],
+
+  // Absolutist confidence about how a real person would perceive or spell an
+  // untested name — "almost certainly", "no plausible rival word".
+  ['made an absolutist behavioral claim about an untested name', /\balmost certainly\b|\bno plausible rival\b/i],
 ];
 
 function validateResult(data) {
@@ -263,12 +330,20 @@ WHAT MATTERS MOST ABOUT THIS NAME: ${priority || 'Not specified — weigh the di
 Evaluate the name across these areas.
 
 SOUND & IMPRESSION
-Describe how the name sounds and what impressions its sound may create.
-Do not claim universal psychological effects from individual phonemes.
-Avoid: "Open vowels signal approachability." "Hard consonants create authority."
-Prefer: "The long 'oo' gives the name a rounded, softer sound." "The name may
-read as friendly rather than forceful." Describe the sound. Interpret
-cautiously. Do not present branding folklore as behavioral science.
+Describe how the name sounds, and what impression its sound may create. Do
+not claim universal psychological effects from individual phonemes, and do
+not assign an emotional quality — cozy, gentle, warm, authoritative — to a
+sound or suffix as a direct, unhedged effect. That includes soft phrasing that
+avoids words like "signals": "the -ling ending gives it a gentle, cozy sound"
+makes the same unhedged claim as "signals approachability" does. Separate the
+two moves instead: state the acoustic fact plainly, then hedge the impression.
+Avoid: "Open vowels signal approachability." "Hard consonants create
+authority." "The soft opening consonant and the -ling ending give it a
+gentle, slightly cozy sound."
+Prefer: "The long 'oo' gives the name a rounded, softer sound." "The initial K
+gives the name a clear start, while the '-ling' ending softens the overall
+sound; in this context it may read as informal and warm rather than refined."
+Do not present branding folklore as behavioral science.
 
 PHONETICS
 Likely pronunciation, syllables, stress when reasonably clear, awkward
@@ -278,14 +353,35 @@ non-native speakers will pronounce the name. If pronunciation varies plausibly,
 show the alternatives — otherwise leave alternate_pronunciations empty.
 
 MEMORABILITY & WORD-OF-MOUTH
-These are heuristic stress tests, not measured predictions. Ask: is it
-distinctive enough to stick? Could someone repeat it after hearing it once?
-Could they plausibly spell it from hearing it? Could they search for it later
-without seeing it written? Does it survive a noisy-room / "drunk test"? Is
-there an obvious confusion with another word or name? Do not output true/false
-predictions of whether a person WILL remember it — rate LIKELY EASY, MAY NEED
-REPEATING, or LIKELY CONFUSING, and explain why in terms of these tests. If
-hearing it aloud invites likely misspellings, list them.
+These are heuristic stress tests, not measured predictions — nothing here was
+tried on a real listener. Ask: is it distinctive enough to stick? Could
+someone repeat it after hearing it once? Could they plausibly spell it from
+hearing it? Could they search for it later without seeing it written? Does it
+survive a noisy-room / "drunk test"? Is there a genuinely similar-sounding
+word or name it could be confused with?
+
+Do not assert memorability as an achieved fact. "It is short, common, and
+spelled exactly as it sounds, making it easy to remember and search after
+hearing it once" states an outcome nobody tested. A short, familiar,
+phonetically transparent spelling is a good STARTING POINT for word of mouth
+— say that, not that it succeeds at it.
+
+Do not use absolutist language for an untested name — "someone who hears it
+once can almost certainly spell it and search for it," "there is no plausible
+rival word it could be confused with." If a specific word is close enough to
+be worth naming (a well-known near-homophone), name it as something worth
+testing — never invent HOW OFTEN or in WHAT CONTEXT (typing, voice search)
+that confusion would occur; there is no basis for that specificity.
+
+Do not output true/false predictions of whether a person WILL remember it —
+rate LIKELY EASY, WORKABLE, or LIKELY CONFUSING, and explain why in terms of
+these tests.
+
+likely_misspellings: only a misspelling that plausibly follows from how the
+name sounds or a common spelling confusion belongs here. A dropped or altered
+vowel that does not reflect how anyone would actually mishear the name reads
+as generated, not observed — leave the array empty rather than manufacture
+one to fill it.
 
 TONE & ASSOCIATIONS
 Describe plausible impressions created by the name in the supplied context. Do
@@ -298,7 +394,14 @@ not a substitute for the summary.
 
 FIT FOR WHAT YOU'RE NAMING
 Whether the name fits the stated context, industry and audience — one or two
-sentences of reasonable interpretation, not a verdict restated.
+sentences of reasonable interpretation, not a verdict restated. Do not infer
+how a specific audience segment will actually respond ("approachable for
+weekday commuters, soft enough for weekend family visits, without leaning too
+child-focused or too corporate") — that predicts real people's reactions from
+a description too broad to support it. Stay on the name: whether it reads as
+overtly corporate or child-focused, or neither, given what was supplied — and
+say so plainly rather than manufacturing a more specific fit than the input
+warrants.
 
 HOW IT LOOKS
 url_form (the name as a bare URL, nothing else), logo_potential (one
@@ -313,9 +416,15 @@ COMPETITION & FINDABILITY
 Do not state that a company currently exists, a competitor is active, a brand
 is funded, a name dominates search, a category is crowded, SEO is unwinnable,
 or a trademark is owned — unless that information came from verified
-current-world data, which it has not. Evaluate only structural findability:
-dictionary word vs. coined term, spelling ambiguity, generic/descriptive
-quality, likely query ambiguity inherent in the word itself.
+current-world data, which it has not. That includes softer phrasing like "and
+potentially other businesses that have used the same word" — it still
+asserts a specific unverified conflict rather than a structural fact. For a
+common dictionary word, the structural fact is that search results MAY be
+SHARED WITH general uses of the word; whether an actual business-name
+conflict exists still needs to be checked. Evaluate only structural
+findability: dictionary word vs. coined term, spelling ambiguity,
+generic/descriptive quality, likely query ambiguity inherent in the word
+itself.
 
 LONGEVITY
 Whether the name itself depends on slang, a dated naming construction, a
@@ -343,7 +452,7 @@ Return ONLY this JSON (no markdown, no preamble):
   "what_works": ["Specific strength — one sentence each, 2-4 items"],
   "what_could_get_in_the_way": ["Specific problem or risk — one sentence each, 0-4 items"],
   "how_it_sounds": { "pronunciation": "e.g. LOO-mly, 2 syllables — one sentence", "alternate_pronunciations": ["plausible alternate — only if genuinely ambiguous"], "impression": "One or two cautious sentences on the impression the sound may create" },
-  "word_of_mouth": { "rating": "Exactly one of: LIKELY EASY, MAY NEED REPEATING, LIKELY CONFUSING", "why": "One or two sentences referencing the specific test(s) this depends on", "likely_misspellings": ["wrong1"] },
+  "word_of_mouth": { "rating": "Exactly one of: LIKELY EASY, WORKABLE, LIKELY CONFUSING", "why": "One or two sentences referencing the specific test(s) this depends on — no absolutist language ('almost certainly', 'no plausible rival')", "likely_misspellings": ["Only if genuinely plausible — omit the field entirely if none stand out"] },
   "tone_and_associations": { "summary": "1-2 cautious sentences, no personification", "associations": ["short phrase", "short phrase"] },
   "fit_for_context": "One or two sentences",
   "how_it_looks": { "url_form": "name.com. Nothing else.", "logo_potential": "One sentence", "issues": "Specific trap or null" },
@@ -368,7 +477,7 @@ ${NO_QUOTE_RULE}`;
       showDomainChecks ? checkDomains(name) : null,
     ]);
 
-    const result = validateResult(pinVerdict(aiAnalysis, 'verdict', 'MIXED'));
+    const result = validateResult(pinRating(pinVerdict(aiAnalysis, 'verdict', 'MIXED')));
     result.live_availability = showDomainChecks ? {
       domains: domainResults,
       suggested_handle: suggestedHandle(name),

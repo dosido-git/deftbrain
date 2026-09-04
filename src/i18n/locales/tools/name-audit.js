@@ -158,7 +158,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Word-of-Mouth Test",
     nau_rating_easy: "LIKELY EASY",
-    nau_rating_repeat: "MAY NEED REPEATING",
+    nau_rating_workable: "WORKABLE",
     nau_rating_confusing: "LIKELY CONFUSING",
     nau_likely_misspellings: "LIKELY MISSPELLINGS",
     // ── How It Looks ──
@@ -183,7 +183,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Language Flags ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Live Availability",
+    nau_sec_availability: "Availability To Verify",
     nau_avail_domain_check: "Domain Check",
     nau_dns_detected: "DNS detected",
     nau_dns_not_detected: "No DNS detected",
@@ -216,7 +216,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Challenge This Audit",
-    nau_second_desc: "Run the analysis again independently and see what holds up, what's worth reconsidering, and what the first pass missed.",
+    nau_second_desc: "Ask the audit to challenge its own first pass and surface what may have been overstated, missed, or interpreted too narrowly.",
     nau_second_btn: "Get Second Opinion",
     nau_second_loading: "Getting second opinion...",
     nau_second_holds_up: "✅ HOLDS UP",
@@ -225,7 +225,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "FACTS TO VERIFY",
     // ── Next Steps ──
     nau_next_steps: "Next Steps",
-    nau_next_keep_it: "Keep It",
+    nau_next_keep_it: "Keep Exploring This Name",
     nau_next_test_it: "Test It With People",
     nau_next_compare: "Compare Finalists",
     nau_next_explore: "Explore Another Direction",
@@ -426,7 +426,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Prueba de boca a boca",
     nau_rating_easy: "PROBABLEMENTE FÁCIL",
-    nau_rating_repeat: "PUEDE QUE HAYA QUE REPETIRLO",
+    nau_rating_workable: "MANEJABLE",
     nau_rating_confusing: "PROBABLEMENTE CONFUSO",
     nau_likely_misspellings: "ERRORES DE ORTOGRAFÍA PROBABLES",
     // ── How It Looks ──
@@ -451,7 +451,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Alertas de idioma ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Disponibilidad en vivo",
+    nau_sec_availability: "Disponibilidad por verificar",
     nau_avail_domain_check: "Comprobación de dominio",
     nau_dns_detected: "DNS detectado",
     nau_dns_not_detected: "No se detectó DNS",
@@ -484,7 +484,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Cuestionar esta auditoría",
-    nau_second_desc: "Ejecuta el análisis de nuevo, de forma independiente, y comprueba qué se sostiene, qué vale la pena reconsiderar y qué se pasó por alto la primera vez.",
+    nau_second_desc: "Pide que la auditoría cuestione su propio primer análisis y muestre qué pudo haberse exagerado, pasado por alto o interpretado de forma demasiado estrecha.",
     nau_second_btn: "Obtener segunda opinión",
     nau_second_loading: "Obteniendo segunda opinión...",
     nau_second_holds_up: "✅ SE SOSTIENE",
@@ -493,7 +493,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "DATOS QUE VERIFICAR",
     // ── Next Steps ──
     nau_next_steps: "Próximos pasos",
-    nau_next_keep_it: "Conservarlo",
+    nau_next_keep_it: "Seguir explorando este nombre",
     nau_next_test_it: "Ponlo a prueba con personas",
     nau_next_compare: "Comparar finalistas",
     nau_next_explore: "Explorar otra dirección",
@@ -694,7 +694,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "口碑传播测试",
     nau_rating_easy: "很可能容易",
-    nau_rating_repeat: "可能需要重复几次",
+    nau_rating_workable: "尚可",
     nau_rating_confusing: "很可能造成困惑",
     nau_likely_misspellings: "可能的拼写错误",
     // ── How It Looks ──
@@ -719,7 +719,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "语言警示（{{count}}）",
     // ── Live Availability ──
-    nau_sec_availability: "实时可用性",
+    nau_sec_availability: "待核实的可用性",
     nau_avail_domain_check: "域名检查",
     nau_dns_detected: "检测到 DNS",
     nau_dns_not_detected: "未检测到 DNS",
@@ -752,7 +752,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "质疑此次审核",
-    nau_second_desc: "独立重新运行一次分析，看看哪些结论依然成立、哪些值得重新考虑，以及第一次分析遗漏了什么。",
+    nau_second_desc: "让审核对自己的第一轮结果提出质疑，找出哪些地方可能被夸大、遗漏，或解读得过于狭隘。",
     nau_second_btn: "获取第二意见",
     nau_second_loading: "正在获取第二意见...",
     nau_second_holds_up: "✅ 依然成立",
@@ -761,7 +761,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "待核实的事实",
     // ── Next Steps ──
     nau_next_steps: "后续步骤",
-    nau_next_keep_it: "保留此名",
+    nau_next_keep_it: "继续深入了解这个名字",
     nau_next_test_it: "找人测试一下",
     nau_next_compare: "对比候选名称",
     nau_next_explore: "探索其他方向",
@@ -962,7 +962,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "मुँह-ज़ुबानी परीक्षण",
     nau_rating_easy: "संभवतः आसान",
-    nau_rating_repeat: "दोहराना पड़ सकता है",
+    nau_rating_workable: "ठीक-ठाक",
     nau_rating_confusing: "संभवतः भ्रमित करने वाला",
     nau_likely_misspellings: "संभावित वर्तनी की ग़लतियाँ",
     // ── How It Looks ──
@@ -987,7 +987,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "भाषा चेतावनियाँ ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "लाइव उपलब्धता",
+    nau_sec_availability: "पुष्टि योग्य उपलब्धता",
     nau_avail_domain_check: "डोमेन जांच",
     nau_dns_detected: "DNS मिला",
     nau_dns_not_detected: "DNS नहीं मिला",
@@ -1020,7 +1020,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "इस ऑडिट को चुनौती दें",
-    nau_second_desc: "विश्लेषण को फिर से स्वतंत्र रूप से चलाएँ और देखें कि क्या टिकता है, किस पर पुनर्विचार लायक है, और पहली बार में क्या छूट गया।",
+    nau_second_desc: "ऑडिट को अपने ही पहले विश्लेषण को चुनौती देने दें और यह सामने लाएँ कि कहीं कुछ ज़्यादा बताया गया, छूट गया, या बहुत संकुचित रूप से समझा गया।",
     nau_second_btn: "दूसरी राय लें",
     nau_second_loading: "दूसरी राय ली जा रही है...",
     nau_second_holds_up: "✅ यह टिकता है",
@@ -1029,7 +1029,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "पुष्टि योग्य तथ्य",
     // ── Next Steps ──
     nau_next_steps: "अगले कदम",
-    nau_next_keep_it: "इसे रखें",
+    nau_next_keep_it: "इस नाम को और जाँचते रहें",
     nau_next_test_it: "इसे लोगों पर आज़माएँ",
     nau_next_compare: "फ़ाइनलिस्ट की तुलना करें",
     nau_next_explore: "कोई और दिशा तलाशें",
@@ -1230,7 +1230,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "اختبار التداول الشفهي",
     nau_rating_easy: "على الأرجح سهل",
-    nau_rating_repeat: "قد يحتاج إلى التكرار",
+    nau_rating_workable: "مقبول",
     nau_rating_confusing: "على الأرجح مربك",
     nau_likely_misspellings: "الأخطاء الإملائية المحتملة",
     // ── How It Looks ──
@@ -1255,7 +1255,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "تنبيهات اللغة ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "التوفّر الحي",
+    nau_sec_availability: "التوفر الذي يجب التحقّق منه",
     nau_avail_domain_check: "فحص النطاق",
     nau_dns_detected: "تم اكتشاف DNS",
     nau_dns_not_detected: "لم يُكتشف DNS",
@@ -1288,7 +1288,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "تحدَّ هذا التدقيق",
-    nau_second_desc: "أعِد إجراء التحليل بشكل مستقل وانظر ما الذي ما زال صحيحًا، وما يستحق إعادة النظر، وما فات في المرة الأولى.",
+    nau_second_desc: "اطلب من التدقيق أن يتحدّى تحليله الأول ويكشف عمّا قد يكون بولغ فيه أو فات أو فُسِّر بضيق أفق.",
     nau_second_btn: "احصل على رأي ثانٍ",
     nau_second_loading: "جارٍ الحصول على رأي ثانٍ...",
     nau_second_holds_up: "✅ ما زال صحيحًا",
@@ -1297,7 +1297,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "حقائق يجب التحقّق منها",
     // ── Next Steps ──
     nau_next_steps: "الخطوات التالية",
-    nau_next_keep_it: "احتفظ به",
+    nau_next_keep_it: "واصل استكشاف هذا الاسم",
     nau_next_test_it: "اختبره مع أشخاص",
     nau_next_compare: "قارن بين المرشحين النهائيين",
     nau_next_explore: "استكشف اتجاهًا آخر",
@@ -1498,7 +1498,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Teste de boca a boca",
     nau_rating_easy: "PROVAVELMENTE FÁCIL",
-    nau_rating_repeat: "PODE PRECISAR SER REPETIDO",
+    nau_rating_workable: "RAZOÁVEL",
     nau_rating_confusing: "PROVAVELMENTE CONFUSO",
     nau_likely_misspellings: "ERROS DE GRAFIA PROVÁVEIS",
     // ── How It Looks ──
@@ -1523,7 +1523,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Alertas de idioma ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Disponibilidade em tempo real",
+    nau_sec_availability: "Disponibilidade a verificar",
     nau_avail_domain_check: "Verificação de domínio",
     nau_dns_detected: "DNS detectado",
     nau_dns_not_detected: "Nenhum DNS detectado",
@@ -1556,7 +1556,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Questionar esta auditoria",
-    nau_second_desc: "Execute a análise novamente de forma independente e veja o que se sustenta, o que vale a pena reconsiderar e o que passou despercebido na primeira vez.",
+    nau_second_desc: "Peça à auditoria para questionar sua própria primeira análise e revelar o que pode ter sido exagerado, ignorado ou interpretado de forma estreita demais.",
     nau_second_btn: "Obter segunda opinião",
     nau_second_loading: "Obtendo segunda opinião...",
     nau_second_holds_up: "✅ SE SUSTENTA",
@@ -1565,7 +1565,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "FATOS A VERIFICAR",
     // ── Next Steps ──
     nau_next_steps: "Próximos passos",
-    nau_next_keep_it: "Manter",
+    nau_next_keep_it: "Continuar explorando este nome",
     nau_next_test_it: "Testar com pessoas",
     nau_next_compare: "Comparar finalistas",
     nau_next_explore: "Explorar outra direção",
@@ -1766,7 +1766,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Test du bouche-à-oreille",
     nau_rating_easy: "PROBABLEMENT FACILE",
-    nau_rating_repeat: "PEUT NÉCESSITER DE LE RÉPÉTER",
+    nau_rating_workable: "ACCEPTABLE",
     nau_rating_confusing: "PROBABLEMENT DÉROUTANT",
     nau_likely_misspellings: "FAUTES D'ORTHOGRAPHE PROBABLES",
     // ── How It Looks ──
@@ -1791,7 +1791,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Alertes linguistiques ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Disponibilité en direct",
+    nau_sec_availability: "Disponibilité à vérifier",
     nau_avail_domain_check: "Vérification du domaine",
     nau_dns_detected: "DNS détecté",
     nau_dns_not_detected: "Aucun DNS détecté",
@@ -1824,7 +1824,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Remettre cet audit en question",
-    nau_second_desc: "Relancez l'analyse de façon indépendante pour voir ce qui tient la route, ce qui mérite d'être reconsidéré et ce qui a été oublié la première fois.",
+    nau_second_desc: "Demandez à l'audit de remettre en question sa propre première analyse et de révéler ce qui a pu être exagéré, oublié ou interprété de façon trop étroite.",
     nau_second_btn: "Obtenir un deuxième avis",
     nau_second_loading: "Obtention d'un deuxième avis...",
     nau_second_holds_up: "✅ TIENT LA ROUTE",
@@ -1833,7 +1833,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "FAITS À VÉRIFIER",
     // ── Next Steps ──
     nau_next_steps: "Prochaines étapes",
-    nau_next_keep_it: "Le garder",
+    nau_next_keep_it: "Continuer d'explorer ce nom",
     nau_next_test_it: "Le tester auprès de personnes",
     nau_next_compare: "Comparer les finalistes",
     nau_next_explore: "Explorer une autre direction",
@@ -2034,7 +2034,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Mundpropaganda-Test",
     nau_rating_easy: "VERMUTLICH EINFACH",
-    nau_rating_repeat: "MUSS EVENTUELL WIEDERHOLT WERDEN",
+    nau_rating_workable: "MACHBAR",
     nau_rating_confusing: "VERMUTLICH VERWIRREND",
     nau_likely_misspellings: "WAHRSCHEINLICHE SCHREIBFEHLER",
     // ── How It Looks ──
@@ -2059,7 +2059,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Sprach-Warnungen ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Live-Verfügbarkeit",
+    nau_sec_availability: "Zu prüfende Verfügbarkeit",
     nau_avail_domain_check: "Domain-Check",
     nau_dns_detected: "DNS erkannt",
     nau_dns_not_detected: "Kein DNS erkannt",
@@ -2092,7 +2092,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Dieses Audit hinterfragen",
-    nau_second_desc: "Führe die Analyse unabhängig erneut durch und sieh, was standhält, was überdenkenswert ist und was beim ersten Mal übersehen wurde.",
+    nau_second_desc: "Bitte das Audit, seinen eigenen ersten Durchgang zu hinterfragen und aufzuzeigen, was möglicherweise übertrieben dargestellt, übersehen oder zu eng ausgelegt wurde.",
     nau_second_btn: "Zweite Meinung einholen",
     nau_second_loading: "Zweite Meinung wird eingeholt...",
     nau_second_holds_up: "✅ HÄLT STAND",
@@ -2101,7 +2101,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "ZU ÜBERPRÜFENDE FAKTEN",
     // ── Next Steps ──
     nau_next_steps: "Nächste Schritte",
-    nau_next_keep_it: "Beibehalten",
+    nau_next_keep_it: "Diesen Namen weiter prüfen",
     nau_next_test_it: "Mit anderen testen",
     nau_next_compare: "Finalisten vergleichen",
     nau_next_explore: "Eine andere Richtung erkunden",
@@ -2302,7 +2302,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "口コミテスト",
     nau_rating_easy: "おそらく覚えやすい",
-    nau_rating_repeat: "聞き返される可能性あり",
+    nau_rating_workable: "そこそこ",
     nau_rating_confusing: "混乱を招きやすい",
     nau_likely_misspellings: "起こりやすい綴り間違い",
     // ── How It Looks ──
@@ -2327,7 +2327,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "言語の警告（{{count}}）",
     // ── Live Availability ──
-    nau_sec_availability: "リアルタイム空き状況",
+    nau_sec_availability: "確認が必要な空き状況",
     nau_avail_domain_check: "ドメインチェック",
     nau_dns_detected: "DNS検出あり",
     nau_dns_not_detected: "DNS検出なし",
@@ -2360,7 +2360,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "この監査に異議を唱える",
-    nau_second_desc: "独立してもう一度分析を実行し、何が妥当で、何を再考すべきで、最初に何を見落としたかを確認します。",
+    nau_second_desc: "監査に自らの最初の分析を問い直させ、誇張されていた点、見落とされていた点、あるいは狭く解釈されすぎていた点を明らかにします。",
     nau_second_btn: "セカンドオピニオンを取得",
     nau_second_loading: "セカンドオピニオンを取得中...",
     nau_second_holds_up: "✅ 妥当",
@@ -2369,7 +2369,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "確認が必要な事実",
     // ── Next Steps ──
     nau_next_steps: "次のステップ",
-    nau_next_keep_it: "この名前を採用",
+    nau_next_keep_it: "この名前をさらに検討する",
     nau_next_test_it: "人に試してもらう",
     nau_next_compare: "最終候補を比較する",
     nau_next_explore: "別の方向性を探す",
@@ -2570,7 +2570,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "입소문 테스트",
     nau_rating_easy: "쉬울 가능성 높음",
-    nau_rating_repeat: "다시 말해줘야 할 수도 있음",
+    nau_rating_workable: "무난함",
     nau_rating_confusing: "혼란을 줄 가능성 높음",
     nau_likely_misspellings: "예상 철자 오류",
     // ── How It Looks ──
@@ -2595,7 +2595,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "언어 경고 ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "실시간 사용 가능 여부",
+    nau_sec_availability: "확인이 필요한 가용성",
     nau_avail_domain_check: "도메인 확인",
     nau_dns_detected: "DNS 감지됨",
     nau_dns_not_detected: "DNS 감지되지 않음",
@@ -2628,7 +2628,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "이 감사에 이의 제기하기",
-    nau_second_desc: "독립적으로 분석을 다시 실행하여 무엇이 여전히 타당한지, 무엇을 재고해야 하는지, 처음에 무엇을 놓쳤는지 확인하세요.",
+    nau_second_desc: "감사가 스스로의 첫 분석에 이의를 제기하도록 하여, 과장되었거나 놓쳤거나 너무 좁게 해석된 부분을 드러냅니다.",
     nau_second_btn: "재검토 의견 받기",
     nau_second_loading: "재검토 의견 받는 중...",
     nau_second_holds_up: "✅ 여전히 타당함",
@@ -2637,7 +2637,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "확인이 필요한 사실",
     // ── Next Steps ──
     nau_next_steps: "다음 단계",
-    nau_next_keep_it: "이대로 유지",
+    nau_next_keep_it: "이 이름 계속 살펴보기",
     nau_next_test_it: "사람들에게 테스트하기",
     nau_next_compare: "최종 후보 비교",
     nau_next_explore: "다른 방향 탐색하기",
@@ -2838,7 +2838,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Тест «из уст в уста»",
     nau_rating_easy: "СКОРЕЕ ВСЕГО ЛЕГКО",
-    nau_rating_repeat: "МОЖЕТ ПОТРЕБОВАТЬСЯ ПОВТОР",
+    nau_rating_workable: "ПРИЕМЛЕМО",
     nau_rating_confusing: "СКОРЕЕ ВСЕГО ЗАПУТАЕТ",
     nau_likely_misspellings: "ВЕРОЯТНЫЕ ОШИБКИ НАПИСАНИЯ",
     // ── How It Looks ──
@@ -2863,7 +2863,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Языковые предупреждения ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Доступность в реальном времени",
+    nau_sec_availability: "Доступность, которую нужно проверить",
     nau_avail_domain_check: "Проверка домена",
     nau_dns_detected: "DNS обнаружен",
     nau_dns_not_detected: "DNS не обнаружен",
@@ -2896,7 +2896,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Оспорить этот аудит",
-    nau_second_desc: "Проведите анализ заново, независимо, и посмотрите, что подтверждается, что стоит пересмотреть и что было упущено в первый раз.",
+    nau_second_desc: "Попросите аудит оспорить собственный первый проход и показать, что могло быть преувеличено, упущено или истолковано слишком узко.",
     nau_second_btn: "Получить второе мнение",
     nau_second_loading: "Получаю второе мнение...",
     nau_second_holds_up: "✅ ПОДТВЕРЖДАЕТСЯ",
@@ -2905,7 +2905,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "ФАКТЫ, ТРЕБУЮЩИЕ ПРОВЕРКИ",
     // ── Next Steps ──
     nau_next_steps: "Следующие шаги",
-    nau_next_keep_it: "Оставить как есть",
+    nau_next_keep_it: "Продолжить изучение этого имени",
     nau_next_test_it: "Проверить на людях",
     nau_next_compare: "Сравнить финалистов",
     nau_next_explore: "Изучить другое направление",
@@ -3106,7 +3106,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "การทดสอบการบอกต่อ",
     nau_rating_easy: "น่าจะง่าย",
-    nau_rating_repeat: "อาจต้องพูดซ้ำ",
+    nau_rating_workable: "พอใช้ได้",
     nau_rating_confusing: "น่าจะทำให้สับสน",
     nau_likely_misspellings: "การสะกดผิดที่อาจเกิดขึ้น",
     // ── How It Looks ──
@@ -3131,7 +3131,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "คำเตือนด้านภาษา ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "ความพร้อมใช้งานแบบเรียลไทม์",
+    nau_sec_availability: "ความพร้อมใช้งานที่ต้องตรวจสอบ",
     nau_avail_domain_check: "ตรวจสอบโดเมน",
     nau_dns_detected: "ตรวจพบ DNS",
     nau_dns_not_detected: "ไม่พบ DNS",
@@ -3164,7 +3164,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "ท้าทายผลการตรวจสอบนี้",
-    nau_second_desc: "รันการวิเคราะห์ใหม่อย่างเป็นอิสระ แล้วดูว่าอะไรยังคงเป็นจริง อะไรควรพิจารณาใหม่ และอะไรที่พลาดไปในครั้งแรก",
+    nau_second_desc: "ให้การตรวจสอบท้าทายผลการวิเคราะห์รอบแรกของตัวเอง และเปิดเผยสิ่งที่อาจถูกกล่าวเกินจริง ถูกมองข้าม หรือถูกตีความอย่างแคบเกินไป",
     nau_second_btn: "ขอความเห็นที่สอง",
     nau_second_loading: "กำลังขอความเห็นที่สอง...",
     nau_second_holds_up: "✅ ยังคงเป็นจริง",
@@ -3173,7 +3173,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "ข้อเท็จจริงที่ต้องยืนยัน",
     // ── Next Steps ──
     nau_next_steps: "ขั้นตอนถัดไป",
-    nau_next_keep_it: "ใช้ชื่อนี้",
+    nau_next_keep_it: "สำรวจชื่อนี้ต่อไป",
     nau_next_test_it: "ลองทดสอบกับคนจริง",
     nau_next_compare: "เปรียบเทียบตัวเลือกสุดท้าย",
     nau_next_explore: "สำรวจแนวทางอื่น",
@@ -3374,7 +3374,7 @@ export const nameAudit = {
     // ── Word-of-Mouth Test ──
     nau_sec_word_of_mouth: "Kiểm tra khả năng truyền miệng",
     nau_rating_easy: "CÓ THỂ DỄ DÀNG",
-    nau_rating_repeat: "CÓ THỂ CẦN NHẮC LẠI",
+    nau_rating_workable: "CHẤP NHẬN ĐƯỢC",
     nau_rating_confusing: "CÓ THỂ GÂY NHẦM LẪN",
     nau_likely_misspellings: "CÁC LỖI CHÍNH TẢ CÓ THỂ XẢY RA",
     // ── How It Looks ──
@@ -3399,7 +3399,7 @@ export const nameAudit = {
     // ── Language Flags ──
     nau_sec_language_flags: "Cảnh Báo Ngôn Ngữ ({{count}})",
     // ── Live Availability ──
-    nau_sec_availability: "Tình Trạng Khả Dụng Trực Tiếp",
+    nau_sec_availability: "Tình trạng khả dụng cần xác minh",
     nau_avail_domain_check: "Kiểm tra tên miền",
     nau_dns_detected: "Đã phát hiện DNS",
     nau_dns_not_detected: "Không phát hiện DNS",
@@ -3432,7 +3432,7 @@ export const nameAudit = {
     nau_pro_badge: "PRO",
     // ── Challenge This Audit ──
     nau_second_title: "Thách thức đánh giá này",
-    nau_second_desc: "Chạy lại phân tích một cách độc lập để xem điều gì vẫn đúng, điều gì đáng xem xét lại, và điều gì đã bị bỏ sót ở lần đầu.",
+    nau_second_desc: "Yêu cầu bản đánh giá tự chất vấn lượt phân tích đầu tiên của chính nó, và chỉ ra những gì có thể đã bị phóng đại, bỏ sót, hoặc diễn giải quá hẹp.",
     nau_second_btn: "Lấy ý kiến thứ hai",
     nau_second_loading: "Đang lấy ý kiến thứ hai...",
     nau_second_holds_up: "✅ VẪN ĐÚNG",
@@ -3441,7 +3441,7 @@ export const nameAudit = {
     nau_second_facts_to_verify: "SỰ THẬT CẦN XÁC MINH",
     // ── Next Steps ──
     nau_next_steps: "Các Bước Tiếp Theo",
-    nau_next_keep_it: "Giữ nguyên",
+    nau_next_keep_it: "Tiếp tục tìm hiểu tên này",
     nau_next_test_it: "Thử nghiệm với mọi người",
     nau_next_compare: "So sánh các ứng viên cuối cùng",
     nau_next_explore: "Khám phá hướng khác",

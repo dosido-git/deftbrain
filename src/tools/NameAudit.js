@@ -612,7 +612,7 @@ const NameAudit = ({ tool }) => {
     if (r === 'LIKELY CONFUSING') return c.danger;
     return c.warning;
   };
-  const ratingLabelKeys = { 'LIKELY EASY': 'nau_rating_easy', 'MAY NEED REPEATING': 'nau_rating_repeat', 'LIKELY CONFUSING': 'nau_rating_confusing' };
+  const ratingLabelKeys = { 'LIKELY EASY': 'nau_rating_easy', 'WORKABLE': 'nau_rating_workable', 'LIKELY CONFUSING': 'nau_rating_confusing' };
   const ratingLabel = (r) => ratingLabelKeys[r] ? t(ratingLabelKeys[r]) : r;
 
   const wordOfMouthStyle = (v) => {
@@ -920,7 +920,7 @@ const NameAudit = ({ tool }) => {
           {/* Submit */}
           <button title={t('cmd_enter')} onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
           disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
-          className={`relative flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
+          className={`relative w-full px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 min-h-[48px] ${
             (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context)) ? c.btnIdle : c.btnPrimary
           }`}>
           {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? t('nau_analyzing') : t('nau_comparing')}</>)
