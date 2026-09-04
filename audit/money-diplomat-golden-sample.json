@@ -26,44 +26,43 @@
       "output": {
         "recommendation": "Do not lend yet",
         "why": [
-          "An existing $600 loan is five months overdue and has not been discussed, so the first loan is unresolved before a second is requested.",
-          "Adding $400 would bring total unpaid lending to $1,000 with no agreed repayment conversation on record.",
-          "Raising the earlier loan first is a reasonable step before deciding on the new request."
+          "The original $600 loan is five months overdue and has never been discussed — that situation is unresolved before a new request arrives.",
+          "Adding $400 would bring the total outstanding to $1,000 with no repayment history and no conversation about either loan.",
+          "The prudent step is to address the existing debt first, not to compound it."
         ],
         "what_is_known": [
           "You lent $600 approximately eight months ago, due within three months.",
-          "The $600 has not been repaid.",
-          "The original repayment date passed without repayment and the loan has not been discussed since.",
-          "Your friend is now asking to borrow $400.",
+          "The original repayment date passed without repayment.",
+          "The loan has not been discussed since.",
+          "Your friend is now asking to borrow a further $400.",
           "Your friend recently posted about booking a holiday."
         ],
         "what_is_not_known": [
           "Why the $600 has not been repaid or raised.",
-          "What specifically the $400 is needed for and on what repayment terms.",
-          "Your own financial position and what amount you could afford to have unavailable if repayment is delayed."
+          "What specifically the new $400 request is for.",
+          "Your own financial position — what you could afford to have unavailable if repayment is delayed."
         ],
         "before_you_decide": [
-          "What happened with the original $600 repayment agreement, and what can your friend realistically do about it now?",
-          "What amount could you afford to have unavailable if repayment of either loan is delayed?",
-          "Are you comfortable raising the earlier loan before giving an answer on the new request?"
+          "What happened with the original repayment agreement, and what can your friend realistically do about it now?",
+          "What amount, if any, could you afford to have unavailable for an indefinite period?",
+          "Are you comfortable having a direct conversation about the $600 before responding to this new request?"
         ],
         "if_you_lend": {
-          "amount_guidance": "If you decide to lend after the earlier loan has been addressed, consider an amount you could afford to have unavailable for an extended period. Lending an additional $400 while $600 is outstanding would leave $1,000 unresolved.",
+          "amount_guidance": "If you decide to lend after resolving the earlier conversation, keep any new amount well within what you could afford to have unavailable if repayment is delayed. Adding to an unresolved balance of $600 warrants extra caution about size.",
           "terms_to_clarify": [
-            "Acknowledge the existing $600 openly and agree what happens with it before any new money moves.",
-            "Agree on a specific repayment date for the new amount.",
-            "If repayment timing matters to you, agree out loud what you will both do if circumstances change."
+            "Agree out loud on a repayment date for both amounts combined.",
+            "If repayment timing matters to you, agree what you will both do if circumstances change."
           ],
-          "script": "Hey, I want to help where I can, but before I answer on the $400 I need to talk about the $600 from earlier in the year. Can we sort out what the plan is for that first? Once we have that conversation I am happy to think about the new request with you."
+          "script": "Hey, before I answer about the $400 — I want to check in about the $600 from eight months ago, since we have not talked about it. Can we sort out a plan for that first? Once we have done that, I am happy to talk about what else I can help with."
         },
         "if_you_do_not_lend": {
-          "script": "I understand you are asking for help, but I have to say no to lending more right now. I also think we need to catch up about the $600 from earlier — it has been sitting unaddressed for a while and I would like to talk through it.",
-          "if_they_push": "My answer on lending more is no for now. I do still want to sort out where we stand on the earlier amount."
+          "script": "I understand you are asking for help, but I have to say no for now. The $600 from eight months ago is still outstanding and we have not talked about it — I need to work through that before I can lend more. Can we find a time to talk about it?",
+          "if_they_push": "I am not in a position to add to what is already out there. Sorting out the earlier loan first is what I need before I can consider anything new."
         },
         "existing_debt": {
           "relevant": true,
-          "next_step": "Raise the $600 directly before responding to the new request. A low-key, factual opening works better than an accusation.",
-          "script": "I wanted to bring something up — the $600 I lent you back in January was due a few months ago and we have not talked about it since. I am not angry, I just want to know where things stand. What is the plan for paying that back?"
+          "next_step": "Raise the $600 directly before responding to the new request. The repayment date passed five months ago and the loan has not been discussed since — this is the right moment to address it, since a new request has naturally opened the conversation.",
+          "script": "Hey, I want to talk about the $600 I lent you back in January — the three months we agreed on have long passed and we have not really spoken about it. I am not trying to make things awkward, I just need to know where things stand. What is the situation with paying that back?"
         }
       }
     },
@@ -85,21 +84,21 @@
       "output": {
         "verdict": "Request it",
         "why": [
-          "There was a clear, specific agreement: payment that same night — so this is not an ambiguous loan.",
-          "Three weeks have passed with no mention of the missed commitment, which means a follow-up is overdue by the terms they both set.",
-          "$60 is a real amount that most people would expect to follow through on."
+          "Your friend made a specific, same-night commitment to repay — three weeks have passed without payment.",
+          "Sixty dollars is a real amount that most people would not consider trivial enough to absorb silently.",
+          "No payment and no follow-up from them after a clear promise is enough to justify a reminder."
         ],
         "what_matters": [
-          "The explicit same-night promise makes this a broken commitment, not a forgotten favor.",
-          "Whether any contact has happened since — if there has been none, a casual message is the natural next step.",
-          "Whether the friend acknowledged it at all after the concert."
+          "A specific promise was made, which makes this a reminder rather than a new ask.",
+          "Three weeks is long enough that a prompt is reasonable; short enough that the friendship framing stays easy.",
+          "The amount is concrete and agreed on, so there is nothing to negotiate or clarify."
         ],
         "unknowns": [
-          "Whether the friend sent a message since that the user did not mention — that would change the tone needed.",
-          "Whether the friend is going through something that made them lose track — not assumed, but worth keeping in mind when reading the reply."
+          "Whether they forgot, had a financial hiccup, or assumed you would mention it — this would affect tone but not whether to ask.",
+          "Whether anything was said between then and now that adjusted the arrangement."
         ],
-        "script": "Hey — just a heads up, that $60 for the concert ticket never came through. No big deal, just want to sort it out. Can you send it over when you get a chance?",
-        "if_they_push_back": "Totally fine if timing is tight — just let me know when works. You did say that night, so I wanted to make sure it did not slip through the cracks."
+        "script": "Hey, just a reminder — I covered your concert ticket, $60, and you were going to send it that night. Totally fine if it slipped your mind, but wanted to flag it. Venmo / Zelle / whatever works for you is fine.",
+        "if_they_push_back": "No pressure on timing, but can you give me a date that works? Helps me keep track of it."
       }
     },
     {
@@ -119,22 +118,22 @@
       "output": {
         "gut_check": "Worth a closer look",
         "what_the_numbers_show": [
-          "$1,800 is roughly 53% of one month's take-home pay.",
+          "$1,800 is 53% of one month's take-home pay of $3,400.",
           "No other figures were supplied, so no further arithmetic is possible."
         ],
         "what_is_missing": [
-          "Monthly fixed expenses (rent, utilities, debt payments, etc.).",
-          "Current savings or any dedicated holiday fund.",
-          "Whether the $1,800 would be paid at once or spread over time.",
-          "Any upcoming costs that compete for the same money."
+          "Monthly expenses — rent, bills, groceries, debt payments — needed to know what is actually left over.",
+          "Whether the $1,800 would come from savings or require borrowing.",
+          "Any existing savings buffer or emergency fund.",
+          "Timing — how many months until the holiday, which affects how much can be set aside."
         ],
         "questions_to_check": [
-          "After all your regular monthly bills, how much is typically left over?",
-          "Could you cover this without touching an emergency fund or going into debt?",
-          "Is there a payment deadline, or time to save toward it gradually?",
-          "Would paying this leave you short for any known expense in the next few months?"
+          "After all fixed and recurring monthly costs, how much is left over each month?",
+          "Do you have savings you could use without leaving yourself exposed to an unexpected expense?",
+          "If paid from monthly cash flow, how many months do you have to save for it?",
+          "Would covering this require using credit or dipping below a safety cushion you want to keep?"
         ],
-        "low_regret_next_step": "Write out your fixed monthly outgoings and subtract them from $3,400 before deciding. If the remainder covers $1,800 without drawing down savings you need as a buffer, the numbers may work — but that step has to come first."
+        "low_regret_next_step": "Write down your actual monthly outgoings and subtract them from $3,400 — that remainder is the only number that tells you whether $1,800 is comfortable, tight, or a stretch. If the remainder over a few months covers it without touching an emergency buffer, the case for going is much stronger."
       }
     },
     {
@@ -153,23 +152,22 @@
         "why"
       ],
       "output": {
-        "practical_answer": "Tipping norms in Portugal vary and are not settled enough to name a standard percentage here — see check_first before deciding. If you want a starting point while you verify: rounding up or leaving a small amount (roughly 5-10%) is one approach some visitors use, but this should not be treated as an established local norm.",
+        "practical_answer": "Tipping norms in Portugal vary and are not settled enough to recommend a specific percentage with confidence — see check_first. If you do tip, rounding up the bill or leaving a small amount (€2–5) is a common approach visitors describe, but verify what is currently expected locally before deciding.",
         "math": {
           "bill": "€68",
-          "percentage_used": "5% and 10% shown as a range only — these are illustrative, not verified local norms",
-          "tip": "€3.40 (5%) to €6.80 (10%)",
-          "total": "€71.40 to €74.80"
+          "percentage_used": "No verified local norm supplied — no arithmetic performed",
+          "tip": "",
+          "total": ""
         },
         "why": [
-          "Service was slow, which some people weigh as a reason to tip toward the lower end of whatever range applies",
-          "Service was friendly, which some people weigh as a reason not to go to zero even when pace was off",
-          "Party of 4 — worth checking whether an automatic gratuity was already included on the bill"
+          "Service was slow, which you may want to weigh against the full amount you leave.",
+          "Service was friendly, which may factor in the other direction.",
+          "Party of 4 at €68 works out to €17 per person, so even a small per-person contribution adds up quickly."
         ],
         "check_first": [
-          "Local tipping expectations vary; check the current norm for restaurant tipping in Portugal before settling on an amount",
-          "Review the printed bill for any service charge or gratuity line — if one is already included, adding more is your choice, not an obligation",
-          "Some Portuguese restaurants add a cover charge (couvert) for bread and appetizers placed on the table — confirm whether that is already on your bill",
-          "Slow service may reflect kitchen pace rather than your server's effort — context you have that math cannot account for"
+          "Local tipping expectations vary; check the current norm for restaurant tipping in Portugal — it is not universal there the way it is in some other countries.",
+          "Check your bill for a service charge or 'servico incluido' line — if one is already added, an additional tip may not be expected.",
+          "Ask locals or recent visitors whether tipping norms have shifted, as expectations in tourist-heavy areas can differ from elsewhere."
         ]
       }
     },
@@ -190,14 +188,14 @@
       "output": {
         "range": "$100–$150",
         "why_this_range": [
-          "Your stated budget is $150, so the range sits at or below that ceiling.",
-          "A cousin is a closer family relationship than a friend or colleague, which often — though not always — nudges gift amounts toward the higher end of whatever someone is comfortable spending.",
-          "The lower end of the range ($100) gives you a comfortable margin below your budget if you want to keep some flex."
+          "Your stated budget is $150, so the range is anchored there as the ceiling.",
+          "A cousin is a fairly close family relationship, which typically places the gift closer to the top of whatever budget you have set.",
+          "The lower end of $100 gives you room to stay comfortable if other wedding costs (travel, attire) are adding up."
         ],
-        "budget_check": "The full range fits within your $150 budget. Spending at the top of the range means you are at your stated limit, which is fine — that is what a budget ceiling is for.",
-        "social_context": "What counts as an appropriate wedding gift for a cousin varies considerably by region, family culture, and the specific relationship. There is no universal standard. The most reliable signal is what feels right given your own means and how close you are — not an external benchmark.",
-        "if_you_want_to_spend_less": "A gift in the $75–$99 range is still a real and considered gift, especially if you pair it with something personal — a handwritten card, a specific item from their registry that you know they care about, or something that reflects your relationship with them.",
-        "if_you_want_to_spend_more": "Going above $150 primarily means a larger cash or registry contribution; for a cousin you are close to, that extra amount can meaningfully cover something on their registry they might not otherwise receive."
+        "budget_check": "The range sits entirely within your $150 budget. Spending the full $150 is reasonable; landing at $100–$125 is also a defensible choice and leaves some flexibility.",
+        "social_context": "What counts as a generous wedding gift for a cousin varies meaningfully by region, family culture, and local cost of living — there is no verified universal figure. The most reliable signal is what feels proportionate within your own family circle, which you know better than any outside benchmark.",
+        "if_you_want_to_spend_less": "A thoughtful gift from the registry at $75–$100 reads as intentional, not minimal — choosing something from their list shows attention regardless of price. Pairing it with a personal card note can add warmth that a larger cash gift does not.",
+        "if_you_want_to_spend_more": "Going above $150 toward $200 or beyond typically means giving cash or a check, which gives the couple maximum flexibility, or combining two registry items into a single larger gift. It does not change the gesture's meaning so much as its practical weight for the couple."
       }
     },
     {
@@ -219,53 +217,54 @@
       ],
       "output": {
         "what_you_have_to_work_with": [
-          "The company initiated the recruiting conversation — you did not apply",
-          "Your current base is $115,000",
+          "The company initiated the recruiting conversation about a Senior Marketing Manager role",
+          "The role is fully remote; your current role is hybrid three days a week",
           "Six years of B2B SaaS marketing experience, including four years at your current company",
-          "The new role is fully remote; your current role is hybrid three days a week",
-          "A director track and broader ownership were mentioned by the recruiter"
+          "A director track and broader ownership were mentioned by the recruiter",
+          "You believe your current base of $115,000 is below market"
         ],
         "what_you_still_need_to_know": [
-          "What base, bonus structure, and equity the company is offering or budgeting",
-          "What the director track actually means at this company — who decides, what needs to happen, and whether any timeline or review point is defined",
-          "Equity terms: type, amount, vesting schedule, strike price if options — difficult to evaluate without the actual details",
-          "Current compensation data for Senior Marketing Manager roles at comparable company stage, remote or your location, and industry — worth checking against more than one credible source before naming a number"
+          "What the base, bonus structure, and equity terms actually are — the recruiter has not shared a number yet",
+          "What the director track means at this company specifically: what would need to happen, who decides, and whether any timeline or review point is defined",
+          "Current compensation data for comparable Senior Marketing Manager roles at similar company stage, industry, and remote or US location — check more than one credible source before naming a figure",
+          "What the equity offer looks like: type, vesting schedule, strike price if options, and the company's current stage and capitalization"
         ],
         "ask": {
           "amount": "",
-          "basis": "You have not supplied a target figure, so no number is produced here. Once you have checked current compensation data for comparable roles — remote, B2B SaaS, similar company stage — you will have a defensible basis for an ask. Your current base of $115,000 is a data point, but if you believe it is below market, the market figure is what anchors your ask, not the current salary.",
-          "script": "Once you have verified a defensible figure, you could say: 'Based on what I have found for Senior Marketing Manager roles at this stage and scope — fully remote, B2B SaaS — and the broader ownership this role carries, I am looking for a base in the range of [figure you have researched and can support]. I also want to make sure I understand the full package, including bonus structure and equity terms, before we finalize anything. I am genuinely interested in the role and want to find something that works for both sides.'"
+          "basis": "You have not yet supplied a target figure, and no number should be named before verifying current compensation data. Your current base of $115,000 and your belief that it is below market are useful context, but belief alone is not a defensible floor. Check current compensation data for comparable roles at this level, remote or US location, company stage, and industry using more than one credible source, then set a figure you can support.",
+          "script": "Once you have verified a defensible figure, you could say: 'Based on the scope of this role and current compensation data for comparable positions, I am looking for a base in the range of [your verified figure]. I also want to make sure I understand the full picture — bonus structure, equity terms, and what the director track looks like in practice — before we finalize anything. I am genuinely interested in this role and want to land on something that works for both of us.'"
         },
         "if_they_push_back": [
           {
-            "situation": "If they ask for your number before you have shared one",
-            "response": "'I want to make sure I have a complete picture of the role and the full package before I name a number — can you share what range you are working with, or what you had in mind for this level?'"
+            "situation": "If they ask for your number first, before you have shared one",
+            "response": "You could say: 'I want to make sure I understand the full scope and comp structure first — once I have that picture, I can share what I am looking for and we can see if there is a fit.'"
           },
           {
-            "situation": "If the base they offer is lower than your researched figure",
-            "response": "'I appreciate the offer. Based on the scope of this role and what I have seen for comparable positions, I was expecting to be closer to [your figure] on base. Is there room to move on that, or flexibility elsewhere in the package?'"
+            "situation": "If they come in with a number lower than your verified target",
+            "response": "You could say: 'I appreciate you sharing that. Based on what I have seen for this level and scope, I was expecting something closer to [your figure] — is there flexibility there, or room to work through the other elements of the package?'"
           },
           {
-            "situation": "If they point to equity as a reason to accept a lower base",
-            "response": "'I want to evaluate the equity seriously, and to do that I need to understand the terms — type, amount, vesting, and current valuation. Once I have those details I can look at the full picture together.'"
+            "situation": "If they emphasize startup size or early-stage risk as a reason the base is lower",
+            "response": "You could say: 'I hear that, and I want to evaluate the equity carefully alongside base — can you walk me through the terms so I can look at the full picture?'"
           },
           {
-            "situation": "If they emphasize startup size or early-stage risk as context for the offer",
-            "response": "'I understand the stage, and that is part of why the equity terms matter to me. On base, I want to land somewhere I can support with the scope of the role and current data for comparable positions.'"
+            "situation": "If they ask what would close the deal",
+            "response": "You could say: 'A base I can support with current data for this scope, clarity on the bonus structure, and a concrete sense of what the director path looks like here — those are the three things that matter most to me.'"
           }
         ],
         "other_terms_you_may_want_to_raise": [
-          "The director track: what it requires, who decides, and whether any formal review point is defined — the recruiter raised it, so it is fair to ask for specifics",
-          "Bonus structure: target percentage, how it is measured, and how it has paid out recently",
-          "Equity: full terms before you can evaluate it alongside base and bonus",
-          "Remote setup: whether there is any equipment or home-office support — optional to raise, not something you mentioned as a priority"
+          "The director track: what it requires, who decides, and whether any review point is defined — you raised this and it is worth pinning down specifically",
+          "Equity terms: type, vesting schedule, and enough detail to evaluate them alongside base and bonus",
+          "Bonus structure: how it is calculated and what hitting target historically looks like",
+          "You may also want to ask about home-office or equipment stipends given the role is fully remote, if that matters to you",
+          "Performance review timing, if knowing when a base adjustment could be revisited is useful context for your decision"
         ]
       }
     },
     {
       "name": "family-no-dynamic-supplied",
       "endpoint": "/api/money-diplomat-family",
-      "guards": "No family dynamic and no cultural context supplied. Nothing may infer guilt, obligation, favouritism, control or a 'real issue underneath the money' — the retired fields the_real_issue, emotional_stakes and if_guilt_trip must not reappear under any name. recommendation on THIS route is free prose, not an enum — it was coming back as 'Not enough to tell' because pinEnums ran globally on a field name Lending also uses, and the corrupted value was recorded into this golden. If it ever reads like one of Lending's four verdicts again, the pinner has lost its scope.",
+      "guards": "No family dynamic and no cultural context supplied. Nothing may infer guilt, obligation, favouritism, control or a 'real issue underneath the money' — the retired fields the_real_issue, emotional_stakes and if_guilt_trip must not reappear under any name.",
       "input": {
         "situation": "My brother wants me to cover half of a new boiler for our parents. I can manage about a third.",
         "familyDynamic": "",
@@ -276,28 +275,28 @@
         "what_is_known"
       ],
       "output": {
-        "practical_issue": "Your brother is asking you to split the boiler cost equally, but you can only contribute a third. The gap between what he expects and what you can offer needs to be negotiated.",
+        "practical_issue": "Your brother has asked you to split the boiler cost 50/50, but you can only contribute a third. You need to communicate that difference and reach a workable arrangement.",
         "what_is_known": [
-          "Your brother wants you to cover half the boiler cost",
-          "You can manage roughly a third of the cost",
-          "The boiler is for your parents"
+          "Your brother expects a half-and-half split for the boiler cost.",
+          "You can contribute approximately a third of the total cost.",
+          "The boiler is for your parents."
         ],
         "what_needs_clarifying": [
-          "What is the total cost of the boiler, so the actual amounts are clear",
-          "Is there a third party — another sibling, parent savings, a grant — who could cover the remaining gap",
-          "What is the timeline for payment",
-          "Has any contribution amount been promised to your parents yet"
+          "What is the total cost of the boiler, so all shares are in concrete figures?",
+          "Is your brother the only other contributor, or are others involved?",
+          "Is there a timeline for when the money is needed?",
+          "Is your brother in a position to cover the gap, or does the shortfall need another solution?"
         ],
-        "recommendation": "Tell your brother directly that a third is what you can commit to, and propose that you work out together how the remainder gets covered — whether by him, your parents, or another source.",
+        "recommendation": "Tell your brother the amount you can contribute and propose that the remaining gap be addressed separately — whether that means he covers more, the parents contribute, or a different arrangement is found.",
         "conversation": {
-          "opener": "I want to help with the boiler — I can put in a third of the cost. I know that is not the half you were thinking, so let us figure out how to handle the difference.",
+          "opener": "I want to help with the boiler and I have been working out what I can put in. I can manage a third of the cost, not half — I wanted to be upfront about that so we can figure out how to cover the rest.",
           "key_points": [
-            "Name your actual number once the total is confirmed: 'My share would be [a third of the total]'",
-            "Be clear this is your firm ceiling, not an opening position",
-            "Ask whether there is any other way to cover the shortfall before assuming he absorbs it alone"
+            "Name your actual contribution as a concrete figure once you know the total, so the gap is clear.",
+            "Ask how he would like to handle the difference before agreeing to anything.",
+            "Confirm the timeline so you both know when the money needs to be ready."
           ],
-          "boundary_if_needed": "A third is genuinely what I can do. I am not in a position to commit to more, and I do not want to promise something I cannot follow through on.",
-          "if_they_disagree": "I understand that leaves a gap. I am open to problem-solving on how to close it, but the amount I can put in stays the same — a third is my limit."
+          "boundary_if_needed": "A third is the amount I can genuinely manage without putting myself in difficulty. I cannot stretch to half.",
+          "if_they_disagree": "I understand that leaves a gap — I am not in a position to change my number, so I would rather we work out together how to cover it than have me agree to something I cannot follow through on."
         }
       }
     },
@@ -320,27 +319,27 @@
         "options": [
           {
             "option": "One person offers",
-            "how_it_works": "At the end of the meal, one of you picks up the check without discussion. Either you offer, or you wait to see if they do.",
-            "how_each_option_may_feel_or_function": "This may feel simple and low-friction for the evening. If the other person was planning to contribute, it could prompt a brief back-and-forth about accepting or declining — which may or may not feel comfortable depending on how the date is going.",
-            "script": "I have got this one — you can get the next one if you like."
+            "how_it_works": "When the check arrives, one of you reaches for it and says you have got it. The other person can accept or push back.",
+            "how_each_option_may_feel_or_function": "This may feel straightforward if the other person is comfortable accepting. It may also prompt a polite objection, which you can accept or decline once without further negotiation.",
+            "script": "I have got this one — no argument."
           },
           {
             "option": "Split evenly",
-            "how_it_works": "When the check arrives, you suggest splitting it down the middle regardless of what each of you ordered.",
-            "how_each_option_may_feel_or_function": "This keeps the arithmetic simple and avoids any ambiguity about who owes what. If one of you ordered significantly more or less, it may feel slightly uneven in practice — though this is only worth noting if the difference is large.",
-            "script": "Want to just split it down the middle?"
+            "how_it_works": "When the check arrives, you suggest splitting it down the middle or by what each ordered, and you both pay your share.",
+            "how_each_option_may_feel_or_function": "This keeps the math simple and avoids either person feeling indebted. It may require a brief coordination moment with the server, which some find easy and others find slightly awkward.",
+            "script": "Want to just split it? Easiest for everyone."
           },
           {
             "option": "Alternate",
-            "how_it_works": "One of you covers this dinner with the understanding that the other will cover a future one. This works best if you say it out loud so both of you are on the same page.",
-            "how_each_option_may_feel_or_function": "This spreads the cost across time rather than across a single bill. It does require both people to remember and follow through — so it may work better if stated clearly than if assumed.",
-            "script": "I will grab this one — you can take the next one."
+            "how_it_works": "One person pays tonight with the explicit understanding that the other covers the next one.",
+            "how_each_option_may_feel_or_function": "This only works cleanly if both people are on the same page about there being a next date. If that is not yet established, the arrangement may feel presumptuous to one or both of you.",
+            "script": "I will get this — you can get the next one."
           },
           {
             "option": "Discuss before ordering",
-            "how_it_works": "Before you look at the menu, briefly settle how you plan to handle the bill so neither of you is guessing at the end.",
-            "how_each_option_may_feel_or_function": "Resolving this early removes any end-of-meal uncertainty, though some people find raising it at the start of a date slightly abrupt. Whether that fits the tone depends on how the conversation is flowing.",
-            "script": "Just so we are not figuring it out at the end — want to split, or do something else?"
+            "how_it_works": "Before looking at the menu, you briefly name how you want to handle the bill so there is no ambiguity at the end of the meal.",
+            "how_each_option_may_feel_or_function": "Settling it early removes any uncertainty during the meal. Some people find this direct and easy; others may find it an unusual way to open a dinner.",
+            "script": "Before we order — should we just split, or are you thinking one of us picks it up tonight?"
           }
         ],
         "what_you_told_me": [
@@ -348,17 +347,17 @@
           "The other person suggested the restaurant."
         ],
         "what_is_not_established": [
-          "What the other person expects or prefers around who pays.",
-          "Whether either of you has a cultural or personal norm about this.",
-          "Whether the other person suggesting the restaurant implies any expectation about payment."
+          "What the other person expects around payment.",
+          "Whether either person has a preference about who pays.",
+          "What cultural or personal norms either person holds."
         ],
-        "if_it_comes_up_awkwardly": "If the check lands and neither of you has moved, a plain offer works fine: 'Want to split it, or do you want to handle it one way or the other?' That opens it without pressure."
+        "if_it_comes_up_awkwardly": "If the check arrives and nobody moves, you can simply say: 'How do you want to handle this?' That opens it without committing you to any particular outcome."
       }
     },
     {
       "name": "cultural-two-backgrounds",
       "endpoint": "/api/money-diplomat-cultural",
-      "guards": "The hardest case. Neither background establishes an expectation. Nothing may describe Korea, the US, or any culture as having one money rule, say what an action 'actually means in their culture', or output a culture-clash score. Only expectations the visitor actually described may appear in what_you_have_described.",
+      "guards": "The hardest case. Neither background establishes an expectation. Nothing may describe Korea, the US, or any culture as having one money rule, say what an action 'actually means in their culture', or output a culture-clash score. Only expectations the visitor actually described may appear in what_you_have_described. Plus the final micro-pass: possible_mismatch states the two positions and says the reason is NOT established — it must not invent a motive ('undercuts their role as hosts') in order to disclaim it. what_not_to_assume refers to observed behaviour, never to 'their preference'. Nothing predicts that an alternative gesture will land better, and nobody is made an authoritative interpreter of anyone else — a partner 'may have useful context', she is not 'the clearest source of what her family actually prefers'.",
       "input": {
         "yourBackground": "Grew up in the US",
         "theirBackground": "Partner grew up in Seoul",
@@ -372,28 +371,25 @@
       "output": {
         "what_you_have_described": [
           "You typically offer to split the bill when dining out",
-          "Your partner's parents have invited you both to dinner"
+          "His parents have invited the two of you to dinner"
         ],
-        "possible_mismatch": "You have described your own default (offer to split), but you have not described what your partner or his parents expect when they extend an invitation. Those expectations may or may not align with yours.",
+        "possible_mismatch": "You expect to contribute to the bill; how his parents expect the payment to go is not yet established from anything they have said or done.",
         "what_not_to_assume": [
-          "Growing up in Seoul does not tell you what this family expects around hosting and bills",
-          "Extending an invitation does not by itself establish whether they expect to pay entirely or welcome a split",
-          "Your partner's expectations are not known from his background alone",
-          "Your usual offer to split may or may not feel appropriate to them — you have not yet found out"
+          "That his parents inviting you to dinner tells you how they feel about guests contributing",
+          "That your partner's background tells you what his parents individually expect around paying"
         ],
         "questions_to_make_explicit": [
-          "Ask your partner: when your parents invite us out, do they expect to treat us, or is splitting welcome?",
-          "Ask your partner: would offering to split feel polite to them, or could it come across differently?",
-          "Ask yourself: if they decline your offer, are you comfortable letting them pay without pressing further?"
+          "Ask your partner ahead of the dinner: 'When your parents say they want to take us out, do they mean they plan to pay, or is splitting normal for your family?'",
+          "Ask your partner: 'Is there anything I should do or avoid when the bill comes?'"
         ],
-        "bridge": "Check with your partner before the dinner so you are acting together rather than improvising at the table. Whatever their expectation turns out to be, a warm thank-you is always appropriate.",
-        "script": "Hey, your parents are so kind to invite us. I want to handle the bill moment well — when they take us out, do they prefer to treat us, or would it feel natural if I offered to contribute? I just want to be respectful of what feels right to them."
+        "bridge": "Ask your partner before you get to the restaurant so you are not improvising at the table. Whatever the answer, you will know what to do in the moment.",
+        "script": "Before dinner, you could say to your partner: 'I usually offer to split, but I want to handle the bill in whatever way feels right to your parents. What do you think they are expecting? I would rather ask you now than get it wrong at the table.'"
       }
     },
     {
       "name": "charity-tax-question",
       "endpoint": "/api/money-diplomat-charity",
-      "guards": "tax_note must say only that treatment depends on jurisdiction and recipient status and should be verified. No deductibility claim of any kind. recommendation here is free prose too, for the same reason — see the family case.",
+      "guards": "tax_note must say only that treatment depends on jurisdiction and recipient status and should be verified. No deductibility claim of any kind.",
       "input": {
         "situation": "A colleague is fundraising for a charity run and asked the team to sponsor them",
         "askType": "Peer fundraiser",
@@ -404,16 +400,16 @@
         "why"
       ],
       "output": {
-        "recommendation": "Give something small if you are comfortable doing so, or decline politely — either is reasonable for a colleague fundraiser. You are not obligated to contribute.",
+        "recommendation": "Give a small amount if you are comfortable doing so, or politely decline if you prefer not to. Neither choice requires explanation.",
         "why": [
-          "A peer fundraiser from a colleague carries mild social weight but no professional obligation.",
-          "The amount matters less than whether you feel comfortable giving at all.",
-          "Giving a token amount lets you participate without strain; a polite decline is also entirely normal in this context."
+          "This is a peer fundraiser from a colleague, which carries mild social weight but no professional obligation.",
+          "The amount matters less than whether you give at all — small contributions are normal and accepted in this context.",
+          "Declining is also reasonable; colleagues fundraise frequently and most understand that not everyone will sponsor every run."
         ],
-        "amount_guidance": "For a colleague relationship, a small gesture — whatever feels negligible to you personally, often somewhere in the range of a coffee to a modest lunch — is typical. Pick a figure you would not think about again after giving it. Nothing about this situation requires generosity beyond your comfort level.",
+        "amount_guidance": "A token contribution in the range of a few dollars to around twenty is typical for a workplace peer fundraiser, but there is no correct figure. Give what feels comfortable without strain, or nothing at all.",
         "tax_note": "Tax treatment depends on jurisdiction and the recipient's status; verify before relying on a deduction.",
-        "script": "I am happy to sponsor you — great that you are doing this. I will keep it modest but wanted to show support. Good luck on the day!",
-        "if_they_push": "I have already given what works for me right now, but I hope the run goes well. Thanks for understanding."
+        "script": "If giving: 'Happy to support you — good luck on the run!' and make the contribution through whatever link they shared. If declining: 'I am not in a position to sponsor right now, but I hope it goes well for you.' No further detail is needed.",
+        "if_they_push": "You can simply repeat: 'I am not able to this time, but I appreciate you asking.' You do not owe a reason."
       }
     },
     {
@@ -431,41 +427,41 @@
         "principles_in_tension"
       ],
       "output": {
-        "arrangement_considered": "Three siblings are dividing their mother's house. One sibling lived there and provided care for the last two years, which may affect how the three consider splitting the proceeds or ownership.",
+        "arrangement_considered": "Three siblings are dividing their mother's house. One sibling lived there and provided her care for the final two years, which may or may not be accounted for in how the estate is split.",
         "principles_in_tension": [
           {
             "principle": "Equal shares",
-            "pulls_toward": "Each sibling receives one third of the estate regardless of circumstances"
+            "pulls_toward": "Each sibling receives one third of the house value, regardless of other factors"
           },
           {
             "principle": "Contribution credit",
-            "pulls_toward": "The sibling who provided care and housing receives a larger share or separate compensation before the remainder is divided"
+            "pulls_toward": "The caregiving sibling receives a larger share or separate compensation to reflect two years of care and residence"
           },
           {
-            "principle": "Deceased's stated wishes",
-            "pulls_toward": "Whatever the will specifies, if anything, takes precedence over informal arrangements"
+            "principle": "Stated wishes of the deceased",
+            "pulls_toward": "Whatever split, if any, the mother specified in her will — which overrides informal expectations"
           }
         ],
         "facts_that_matter": [
-          "Whether the will addresses the caregiving sibling's share or living arrangement explicitly",
-          "Whether any written or witnessed agreement was made about compensation for care or rent-free occupancy",
-          "Whether the caregiving sibling paid expenses such as property tax, maintenance, or mortgage during the two years",
-          "Whether the caregiving sibling is still living in the house and needs time or a buyout arrangement to relocate",
-          "The current market value of the house, since the dollar difference between equal and adjusted splits depends on it"
+          "Whether the mother left a will, and what it says about the house",
+          "Whether any written or witnessed agreement was made with the caregiving sibling during the mother's lifetime",
+          "Whether the caregiving sibling paid rent, utilities, or other household costs — or received payment for care",
+          "The current market value of the house and whether any sibling wants to buy the others out versus sell",
+          "Whether the caregiving sibling has a legal right to remain in the property under local tenancy or family provision rules"
         ],
         "needs_professional_confirmation": [
-          "What the will actually directs — only the executor and a solicitor can confirm the legal distribution",
-          "Whether a caregiver contribution claim or informal agreement has any legal standing in your jurisdiction",
-          "Tax implications of each sibling's share, particularly if one sibling buys the others out",
-          "Whether the estate must go through probate before the house can be sold or transferred"
+          "Whether the caregiving sibling has any legal claim to a larger share under your jurisdiction's family provision or equity laws",
+          "How the house transfer or sale will be treated for tax purposes in your jurisdiction",
+          "The executor's obligations regarding how estate assets must be distributed",
+          "Whether an informal caregiving arrangement has any legal weight without documentation"
         ],
         "conversation": {
-          "opener": "Raise it as a question rather than a position: 'Before we decide how to divide things, I think we should talk about what the two years of care and living arrangement means for how we split it — does anyone have thoughts on that?'",
+          "opener": "Suggest a meeting where all three siblings talk through the house before anyone commits to a position. Frame it as working out what is fair together, not presenting a decision.",
           "what_to_clarify": [
-            "Did Mum leave any written instructions or express wishes about the caregiving sibling's share?",
-            "Was there any agreement, even informal, about compensation or a larger share in exchange for the care provided?",
-            "Does the sibling who lived there need to stay in the house, or are they open to a sale or buyout?",
-            "Are all three siblings willing to get a professional valuation before deciding on numbers?"
+            "Does the will specify anything about the house or the caregiving sibling's share?",
+            "Was any agreement made with your mother about compensating the sibling who stayed?",
+            "Does the sibling who lived there want to keep the house, or is a sale preferred?",
+            "Are the other two siblings open to crediting the caregiving in some form, and if so, how?"
           ]
         }
       }

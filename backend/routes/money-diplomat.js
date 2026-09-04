@@ -76,6 +76,23 @@ If outside-world facts are necessary and not verified, frame them as facts to ch
 Scripts may be direct and useful.
 Their factual premises may not exceed what the user supplied.
 
+PRACTICAL ACTION RULE
+
+"Unknown" does not mean "no recommendation."
+
+When motives, reactions, or outside facts are unknown, Money Diplomat should
+still make the strongest practical recommendation supported by what IS known.
+
+Good:
+"You don't know why the loan remains unpaid, but you do know the agreed repayment
+date passed fifteen months ago. Bring it up."
+
+Bad:
+"Not enough to tell."
+
+Use NOT ENOUGH TO TELL only when the missing fact would materially change what
+the visitor should do next.
+
 Write directly to the user as "you".
 `;
 
@@ -236,7 +253,54 @@ const WRITE_IT_OFF = new RegExp([
 const ASSUMED_HARDSHIP = new RegExp([
   '\\b(?:I (?:know|understand|realise|realize)|I can tell) (?:that )?you(?:\\x27re| are)\\b[^.]{0,30}\\b(?:in a tight spot|struggling|stretched|short|going through|having a hard time|under pressure|strapped)\\b',
   '\\byou(?:\\x27re| are) (?:clearly |obviously )?(?:struggling|strapped|desperate|in trouble)\\b',
-  '\\bthings (?:are|must be) (?:tight|tough|hard) (?:for you|right now)\\b',
+  '\\bthings (?:are|must be) (?:tight|tough|hard)\\b',
+].join('|'), 'i');
+
+// ── Family + Culture micro-pass, 2026-09-04 ───────────────────────────────
+
+// "Naming the number confidently makes it land as an offer rather than a
+// rejection." / "a gesture would land better." Predicting the effect of wording
+// on someone who has not heard it yet.
+const PREDICTED_PHRASING_EFFECT = new RegExp([
+  '\\b(?:makes?|helps?|will make) it (?:land|read|come across|register) as\\b',
+  '\\b(?:would|will|might) land better\\b|\\blands? (?:better|well|softly)\\b',
+  '\\b(?:lands?|reads?|comes across) as\\b[^.]{0,30}\\brather than\\b',
+  '\\b(?:softens?|takes? the sting out of|makes? it easier to hear)\\b',
+].join('|'), 'i');
+
+// "Her family may experience an offer to pay as a signal that…" — an
+// interpretation invented so it can then be disclaimed.
+const MANUFACTURED_MEANING = new RegExp([
+  '\\b(?:may|might|could) (?:experience|read|take|interpret|see|hear|receive)\\b[^.]{0,45}\\bas (?:a signal|a sign|meaning|an indication|suggesting)\\b',
+  '\\b(?:may|might|could) (?:feel|think) (?:that )?(?:they|you|he|she)\\b[^.]{0,40}\\b(?:have not been|were not|are not) (?:generous|welcoming|good)\\b',
+  '\\bcould be (?:read|taken|seen|interpreted) as\\b',
+].join('|'), 'i');
+
+// "Her family's preference to pay" — an inference stated as an established
+// preference rather than as the behaviour that was actually observed.
+const INFERRED_PREFERENCE = new RegExp([
+  // \\w, not \\p{L}: this regex carries the 'i' flag and not 'u', and without 'u'
+  // a \\p{...} escape is not a unicode property at all — it matches a literal p.
+  // The first version looked right and matched nothing.
+  '\\b(?:their|her|his|your|the)(?:\\s+\\w+){0,2}(?:\\x27s)? (?:preference|desire|wish|expectation) (?:to|for|that)\\b',
+  '\\b(?:they|she|he) (?:clearly |obviously )?prefers?\\b',
+  '\\bwhat (?:they|her family|his family) (?:actually |really )?(?:prefer|want|expect)s?\\b',
+].join('|'), 'i');
+
+// "She is the clearest source of what her family actually prefers." One person
+// promoted to authoritative interpreter of everyone else.
+const AUTHORITATIVE_INTERPRETER = new RegExp([
+  '\\b(?:is|will be) (?:the )?(?:clearest|best|most reliable|authoritative) (?:source|guide|read|judge)\\b',
+  '\\b(?:she|he|they) (?:knows?|will know|can tell you) (?:exactly )?what (?:her|his|their) (?:family|parents|people)\\b',
+  '\\bcan speak for (?:her|his|their) (?:family|parents|culture)\\b',
+].join('|'), 'i');
+
+// "No rush on paying it back" — repayment urgency waived on the visitor's behalf.
+const WAIVED_REPAYMENT = new RegExp([
+  '\\bno rush (?:on|to|about) (?:paying|repaying|getting)\\b',
+  '\\bpay (?:me |it )?back whenever\\b|\\bwhenever you can\\b|\\bwhenever suits you\\b',
+  '\\bdo ?n.t worry about (?:paying|repaying|the money|when)\\b',
+  '\\btake (?:all )?the time you need to (?:pay|repay)\\b',
 ].join('|'), 'i');
 
 // A hedge means the sentence proposes rather than asserts — spare it.
@@ -260,6 +324,11 @@ const RULES = [
   ['predicted how a conversation would feel', PREDICTED_FEELING],
   ['reclassified a loan as money to expect to lose', WRITE_IT_OFF],
   ['asserted the borrower\'s circumstances', ASSUMED_HARDSHIP],
+  ['predicted how wording would register', PREDICTED_PHRASING_EFFECT],
+  ['invented a meaning in order to disclaim it', MANUFACTURED_MEANING],
+  ['stated an inferred preference as established', INFERRED_PREFERENCE],
+  ['made one person an authoritative interpreter of others', AUTHORITATIVE_INTERPRETER],
+  ['waived repayment urgency on the visitor\'s behalf', WAIVED_REPAYMENT],
 ];
 
 // Arrays are objects: Object.entries enumerates their indices, so the walk
@@ -665,6 +734,46 @@ Do not generate "the real issue underneath the money."
 If cultural or family expectations are supplied, treat them as context,
 not proof that every family member shares them.
 
+EIGHT THINGS NOT TO ADD
+
+1. Do not manufacture uncertainty about an established loan. If the visitor says
+   both parties agreed it was a loan with a repayment term, that agreement is
+   established. Do not list whether the other person still considers it owed;
+   treat it as settled unless the visitor supplies a later change.
+
+2. Do not retreat to "not enough to tell" when a practical step is already
+   supported. Where the agreed repayment date has passed, raising it IS the
+   recommendation. Say so, and name the unknowns as reasons to start by
+   clarifying rather than as reasons to withhold advice: "bring up the original
+   loan directly — you do not know why it has gone unmentioned or what repayment
+   is currently possible, so start by clarifying where things stand."
+
+3. Do not offer "would an acknowledgement be enough?" unless the visitor
+   indicated repayment may no longer matter. The established arrangement is
+   repayment. Ask instead whether they need the full amount at once or would
+   consider a payment plan.
+
+4. Do not invent a dispute. Write a script for someone denying the loan only if
+   the visitor reported a dispute or asked to prepare for pushback. Otherwise
+   keep to the likely next step, not hypothetical conflict.
+
+5. Do not invent financial difficulty inside a hypothetical. "I understand if
+   things are tight" asserts a situation nobody described. Write: "if they say
+   they cannot pay the full amount now — okay, what amount could you manage, and
+   when?"
+
+6. Do not predict how phrasing will register. Write "lead with what you can
+   offer rather than with what you cannot", never "naming the number confidently
+   makes it land as an offer rather than a rejection".
+
+7. Do not add timing the visitor did not supply. "I can put in $800" is what
+   they said; "I can put in $800 right now" is not. Write "that is the amount I
+   can genuinely manage without causing myself financial strain".
+
+8. Do not decide a loan has no repayment urgency. "No rush on paying it back"
+   assumes the visitor is comfortable with indefinite repayment. Write "if it is
+   a loan, agree on what repayment would look like before the money moves".
+
 THE SITUATION: ${situation.trim()}
 WHAT THEY SAID ABOUT THE FAMILY: ${familyDynamic || 'Nothing supplied — do not invent a dynamic.'}
 CULTURAL CONTEXT THEY SUPPLIED: ${culturalContext || 'Nothing supplied. Do not assume one, and do not assume every family member shares any expectation they did mention.'}
@@ -1043,6 +1152,35 @@ For two people from different backgrounds:
 
 Never output a "culture clash risk" score.
 Never say what an action "actually means in their culture".
+
+FIVE THINGS NOT TO ADD
+
+1. Do not manufacture a possible meaning in order to demonstrate uncertainty.
+   Inventing "her family may experience an offer to pay as a signal they have not
+   been generous enough" and then admitting it is unestablished is worse than not
+   inventing it. Write the difference plainly: "you expect to contribute, while
+   her family appears to prefer paying. The reason for that difference is not
+   established."
+
+2. Observed behaviour is established; the preference behind it is not. Write
+   "the fact that her family has paid and appeared uncomfortable when you offered
+   to contribute", never "her family's preference to pay". What they did is a
+   fact. Why they did it is still to clarify.
+
+3. Do not predict that an alternative gesture will land better. Write "ask
+   whether they would prefer another way for you to contribute — bringing
+   something, helping with part of the occasion, or simply thanking them", never
+   "a gift or a gesture would land better".
+
+4. Do not make one person an authoritative interpreter of the others. A partner
+   may have useful context about how their family handles these occasions; they
+   are not "the clearest source of what her family actually prefers". Write
+   "check with her first; she may have useful context".
+
+5. Stay on the people described. Do not introduce nationality, ethnicity,
+   religion, regional custom, "their culture" or "your culture" unless the
+   visitor supplied it — and even when supplied, background is context that may
+   help explain an expectation, never proof that this individual holds it.
 
 DESTINATION: ${destination || 'Not supplied.'}
 THE SITUATION: ${situation.trim()}
@@ -1573,8 +1711,8 @@ THE SITUATION: ${situation.trim()}
 Return ONLY valid JSON:
 {
   "what_you_have_described": ["An expectation one of them ACTUALLY stated — one short line each. Never an expectation inferred from a background"],
-  "possible_mismatch": "Where the stated expectations may differ, written as a possibility — one or two sentences. Empty string if only one side's expectations were described",
-  "what_not_to_assume": ["Something a background does NOT establish about this person — one short line each"],
+  "possible_mismatch": "Where the stated expectations differ, in one or two sentences — and NOTHING about why. State the two positions and say the reason is not established: 'you expect to contribute, while her family appears to prefer paying; the reason for that difference is not established'. Do not supply a motive to then disclaim it — no undercutting their role as hosts, no signalling, no what it might mean to them. Inventing an interpretation and admitting it is unestablished is worse than not inventing it. Empty string if only one side described anything",
+  "what_not_to_assume": ["Something a background or an observed behaviour does NOT establish about this person — one short line each. Refer to what was OBSERVED, never to the preference behind it: 'her family has paid and appeared uncomfortable when you offered' is a fact, 'her family's preference to pay' is an inference wearing a fact's clothes"],
   "questions_to_make_explicit": ["A question that would surface the real expectation instead of guessing at it — one short line each"],
   "bridge": "A way to handle the moment that works whatever the expectations turn out to be — one or two sentences",
   "script": "Words they could actually say to make expectations explicit — 2-4 sentences"

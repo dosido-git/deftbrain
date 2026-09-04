@@ -141,6 +141,53 @@ own; the other sixteen call sites do not pin at all. The general lesson is
 worth more than the fix: a normaliser that does not know which route it is in
 will eventually meet a field name two routes share, and it will lose.
 
+## Unknown is not a reason to say nothing
+
+The systemic finding, now in the global brief. Every route had learned to name
+what it did not know, and one of them had learned it too well: given a loan
+fifteen months past its agreed repayment date, Family Money identified the
+practical issue correctly and then answered "not enough to tell".
+
+The rule: when motives, reactions or outside facts are unknown, still make the
+strongest practical recommendation the KNOWN facts support. Reserve "not enough
+to tell" for when the missing fact would materially change what to do next. The
+same probe now answers: "bring it up directly — the agreed repayment date passed
+a year ago, and silence on both sides does not cancel the agreement. You do not
+know why it has gone unmentioned, so start by raising it."
+
+Epistemic care that produces no advice is not care, it is abdication, and it is
+the failure mode a tool like this drifts toward once every other correction has
+been about restraint.
+
+## Family and Culture micro-pass
+
+Family lost: uncertainty about a loan the visitor said was agreed; "would an
+acknowledgement be enough?" when the arrangement was repayment; a dispute script
+for a dispute nobody reported; "I understand if things are tight"; a prediction
+that naming a number confidently "makes it land as an offer rather than a
+rejection"; a "right now" the visitor never said; and "no rush on paying it
+back", which waives repayment urgency on their behalf.
+
+Culture Bridge lost four, of which one matters most: **do not invent a meaning
+in order to disclaim it.** Writing "her family may experience an offer to pay as
+a signal they have not been generous enough" and then admitting that is
+unestablished is worse than not writing it — the interpretation is now in the
+visitor's head. It states the difference plainly instead: "you expect to
+contribute, while her family has consistently paid and appeared uncomfortable
+when you offered; the reason for that difference is not established."
+
+Also: observed behaviour is established, the preference behind it is not ("her
+family has paid", never "her family's preference to pay"); no gesture is
+predicted to "land better"; and a partner "may have useful context", rather than
+being "the clearest source of what her family actually prefers".
+
+**A regex bug worth remembering.** `INFERRED_PREFERENCE` used `\p{L}` while
+carrying only the `i` flag. Without `u`, `\p{...}` is not a unicode property
+escape at all — it matches a literal `p` — so the pattern looked correct and
+matched nothing. It passed its own bad-form test only because a second
+alternative in the same regex happened to catch that string. A sweep of every
+`new RegExp([...])` in backend/routes found no others.
+
 ## The things that will bite the next person
 
 **Ten guards keyed fields the new schemas do not emit.** Every route I rewrote
