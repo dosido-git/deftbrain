@@ -33,6 +33,38 @@ const EXAMPLES = [
     situationKey: 'md_example2_situation',
     salaryFields: null,
   },
+  {
+    // Family, with nothing supplied about the family. The route has to work
+    // from the request and the visitor's own limit, and invent no dynamic.
+    activeType: 'family',
+    situationKey: 'md_example3_situation',
+    salaryFields: null,
+  },
+  {
+    // Family, with a plain fact about who is involved — context, not a
+    // character sketch, which is the distinction the route is built on.
+    activeType: 'family',
+    situationKey: 'md_example4_situation',
+    salaryFields: null,
+    familyFields: { familyDynamicKey: 'md_example4_dynamic', culturalContext: '' },
+  },
+  {
+    // Culture Bridge working as intended: two expectations the people actually
+    // described, so the route can name where they differ without deriving
+    // either one from a background.
+    activeType: 'cultural',
+    situationKey: 'md_example5_situation',
+    salaryFields: null,
+    culturalFields: { yourBackgroundKey: 'md_example5_yours', theirBackgroundKey: 'md_example5_theirs' },
+  },
+  {
+    // The other half of the same job: the form of the gift is as unresolved as
+    // the amount, and only one side has said anything about what is expected.
+    activeType: 'cultural',
+    situationKey: 'md_example6_situation',
+    salaryFields: null,
+    culturalFields: { yourBackgroundKey: 'md_example6_yours', theirBackgroundKey: 'md_example6_theirs' },
+  },
 ];
 // Grouped rather than one wall of eighteen. The groups are the promise: this is
 // a tool for money decisions that involve other people, not "everything for
@@ -548,8 +580,23 @@ const MoneyDiplomat = ({ tool }) => {
         experience: t(ex.salaryFields.experienceKey),
       });
     }
+    // Examples for the other scenarios fill their own fields. Left empty where
+    // the example deliberately supplies nothing — a family example with no
+    // dynamic is testing that the route does not invent one.
+    if (ex.familyFields) {
+      setFamilyFields({
+        familyDynamic: ex.familyFields.familyDynamicKey ? t(ex.familyFields.familyDynamicKey) : '',
+        culturalContext: ex.familyFields.culturalContextKey ? t(ex.familyFields.culturalContextKey) : '',
+      });
+    }
+    if (ex.culturalFields) {
+      setCulturalFields({
+        yourBackground: t(ex.culturalFields.yourBackgroundKey),
+        theirBackground: t(ex.culturalFields.theirBackgroundKey),
+      });
+    }
     setResults(null);
-  }, [setActiveType, setSituation, setSalaryFields, setResults, t, sym]);
+  }, [setActiveType, setSituation, setSalaryFields, setFamilyFields, setCulturalFields, setResults, t, sym]);
 
 
   const clearResults = () => { setResults(null); setSituation(''); setError(''); setNudgeData(null); };

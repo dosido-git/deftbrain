@@ -301,15 +301,25 @@ function validateResult(data) {
 }
 
 // The frontend switches on these, so withLanguage must not translate them.
+//
+// SCOPED PER ROUTE, and that is the whole point. The first version keyed on
+// field NAME alone and ran on every response, so `recommendation` — a pinned
+// four-value enum in Lending and free prose in Family and Donations — was
+// coerced in all three. Family's "offer the smaller amount as genuine help"
+// came back as "Not enough to tell", and because it was recorded that way the
+// golden passed on the corrupted output. A pinner that does not know which
+// route it is in will eventually hit a field name two routes share.
 const ENUMS = {
   recommendation: ['Lend', 'Do not lend yet', 'Lend only under conditions', 'Not enough to tell'],
   verdict: ['Request it', 'Let it go', 'Talk first', 'Not enough to tell'],
   gut_check: ['Looks manageable', 'Worth a closer look', 'Looks difficult', 'Not enough information'],
 };
-function pinEnums(data) {
-  if (!data || typeof data !== 'object') return data;
-  for (const [key, allowed] of Object.entries(ENUMS)) {
-    if (typeof data[key] !== 'string') continue;
+
+function pinEnums(data, fields) {
+  if (!data || typeof data !== 'object' || !Array.isArray(fields)) return data;
+  for (const key of fields) {
+    const allowed = ENUMS[key];
+    if (!allowed || typeof data[key] !== 'string') continue;
     const v = data[key].trim().toLowerCase();
     data[key] = allowed.find(a => a.toLowerCase() === v) || allowed[allowed.length - 1];
   }
@@ -381,7 +391,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.practical_answer) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatTip] Error:', error);
@@ -441,7 +451,7 @@ Return ONLY valid JSON:
     if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatSplit] Error:', error);
@@ -496,7 +506,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(pinEnums(parsed, ['verdict'])));
 
   } catch (error) {
     console.error('[MoneyDiplomatVenmo] Error:', error);
@@ -556,7 +566,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.range) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatGift] Error:', error);
@@ -617,7 +627,7 @@ Return ONLY valid JSON:
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatRoommate] Error:', error);
@@ -687,7 +697,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.practical_issue) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatFamily] Error:', error);
@@ -748,7 +758,7 @@ Return ONLY valid JSON:
     if (!parsed.pre_game) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatDining] Error:', error);
@@ -808,7 +818,7 @@ Return ONLY valid JSON:
     if (!parsed.settlement) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatGroup] Error:', error);
@@ -933,7 +943,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(pinEnums(parsed, ['recommendation'])));
 
   } catch (error) {
     console.error('[MoneyDiplomatLend] Error:', error);
@@ -994,7 +1004,7 @@ Return ONLY valid JSON:
     if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatWork] Error:', error);
@@ -1064,7 +1074,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatTravel] Error:', error);
@@ -1135,7 +1145,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatDate] Error:', error);
@@ -1193,7 +1203,7 @@ Return ONLY valid JSON:
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatSubs] Error:', error);
@@ -1254,7 +1264,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatNudge] Error:', error);
@@ -1397,7 +1407,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.ask) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatSalary] Error:', error);
@@ -1455,7 +1465,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.gut_check) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(pinEnums(parsed, ['gut_check'])));
 
   } catch (error) {
     console.error('[MoneyDiplomatAfford] Error:', error);
@@ -1516,7 +1526,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.arrangement_considered) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatInheritance] Error:', error);
@@ -1584,7 +1594,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatCultural] Error:', error);
@@ -1640,7 +1650,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(validateResult(pinEnums(parsed)));
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[MoneyDiplomatCharity] Error:', error);

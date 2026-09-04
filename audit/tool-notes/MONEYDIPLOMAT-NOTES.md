@@ -124,6 +124,23 @@ Four backstops: `DEBT_IN_DOUBT`, `PREDICTED_FEELING`, `WRITE_IT_OFF`,
 `ASSUMED_HARDSHIP`. The other three turn on what a sentence is FOR rather than
 which words it uses, and live in the field descriptions only.
 
+## A pinner that did not know where it was
+
+Found while adding examples for Family Money, 2026-09-04. `pinEnums` keyed on
+field NAME and ran on every response. `recommendation` is a pinned four-value
+enum in Lending and free prose in Family and Donations, so both of those had
+their answer replaced with "Not enough to tell" on every call — Family's "offer
+the smaller amount as genuine help" became a Lending verdict.
+
+It was recorded that way, so `check:golden` passed on the corrupted output for a
+full cycle. A structural check cannot see that a field holds the wrong KIND of
+value, only that it holds one.
+
+`pinEnums(data, fields)` now takes the fields to pin and three routes pass their
+own; the other sixteen call sites do not pin at all. The general lesson is
+worth more than the fix: a normaliser that does not know which route it is in
+will eventually meet a field name two routes share, and it will lose.
+
 ## The things that will bite the next person
 
 **Ten guards keyed fields the new schemas do not emit.** Every route I rewrote
