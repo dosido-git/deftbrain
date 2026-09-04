@@ -219,9 +219,17 @@ const NameThatFeeling = ({ tool }) => {
   const matchLabel = (m) => matchLabelKeys[m] ? t(matchLabelKeys[m]) : m;
   const matchStyle = (m) => {
     if (m === 'STRONG MATCH') return c.success;
-    if (m === 'PARTIAL MATCH') return c.warning;
+    if (m === 'PARTIAL MATCH' || m === 'NO ADEQUATE MATCH') return c.warning;
     return c.warm;
   };
+  // The hero heading now carries the epistemic weight the old static "THE
+  // WORD YOU'RE LOOKING FOR" didn't — even a STRONG MATCH reads as "may be,"
+  // never as settled fact. NO ADEQUATE MATCH gets no pill badge below (the
+  // heading already says it plainly; a second, harsher-sounding badge on
+  // top of it would be redundant). Falls back to the STRONG heading for any
+  // unrecognized value, matching pinMatch's own default on the backend.
+  const heroHeadingKeys = { 'STRONG MATCH': 'ntf_hero_strong', 'CLOSE MATCH': 'ntf_hero_close', 'PARTIAL MATCH': 'ntf_hero_partial', 'NO ADEQUATE MATCH': 'ntf_hero_none' };
+  const heroHeading = (m) => t(heroHeadingKeys[m] || 'ntf_hero_strong');
 
   // ── My Feeling Dictionary — save / unsave / reopen ──
   // Remember the language, not a profile of the person: every field below
@@ -361,8 +369,13 @@ const NameThatFeeling = ({ tool }) => {
     }
     if (results?.best_match) {
       const bm = results.best_match;
-      lines.push(`✨ ${t('ntf_copy_best')} ${bm.word} (${bm.language}) — ${matchLabel(bm.match)}`);
-      lines.push(bm.definition);
+      // bm.word can be empty for a genuine NO ADEQUATE MATCH — the copy text
+      // then skips straight to definition/where_it_doesnt (usually just the
+      // latter), matching what the results card itself shows in that case.
+      lines.push(bm.word
+        ? `✨ ${t('ntf_copy_best')} ${bm.word} (${bm.language}) — ${matchLabel(bm.match)}`
+        : `✨ ${heroHeading(bm.match)}`);
+      if (bm.definition) lines.push(bm.definition);
       if (bm.why_it_fits) lines.push(t('ntf_why_it_fits'), bm.why_it_fits);
       if (bm.where_it_doesnt) lines.push(t('ntf_where_it_doesnt'), bm.where_it_doesnt);
       lines.push('');
@@ -621,17 +634,33 @@ const NameThatFeeling = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
 
-          {/* Best match */}
+          {/* Best match — heading carries the epistemic weight now, not a
+              badge alone: "THE WORD YOU MAY BE LOOKING FOR" even at STRONG
+              MATCH, down to "THERE MAY NOT BE ONE WORD FOR THIS" when
+              nothing fits well. word/language may be empty for NO ADEQUATE
+              MATCH when truly nothing came close — the card still renders
+              for the heading and, usually, where_it_doesnt. */}
           {results?.best_match && (
             <div className={`${c.warm} border-2 rounded-xl p-6 text-center`}>
               <span className="text-3xl block mb-2">✨</span>
-              <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuteded}`}>{t('ntf_the_word')}</p>
-              <p className={`text-3xl font-black ${c.text} mb-1`}>{results?.best_match?.word}</p>
-              <p className={`text-xs ${c.textMuteded} mb-2`}>
-                {getFlag(results?.best_match?.language)} {results?.best_match?.language}
-                {results?.best_match?.pronunciation && ` · ${results?.best_match?.pronunciation}`}
-              </p>
-              {results?.best_match?.match && (
+              <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuteded}`}>{heroHeading(results.best_match.match)}</p>
+              {results?.best_match?.word && (
+                <>
+                  <p className={`text-3xl font-black ${c.text} mb-1`}>{results.best_match.word}</p>
+                  {/* NO ADEQUATE MATCH sometimes still offers a short phrase
+                      here with language left empty — a dangling flag emoji
+                      with nothing after it otherwise renders on its own. */}
+                  {results?.best_match?.language && (
+                    <p className={`text-xs ${c.textMuteded} mb-2`}>
+                      {getFlag(results.best_match.language)} {results.best_match.language}
+                      {results?.best_match?.pronunciation && ` · ${results.best_match.pronunciation}`}
+                    </p>
+                  )}
+                </>
+              )}
+              {/* No badge for NO ADEQUATE MATCH — the heading already says
+                  so plainly; a second, harsher-sounding pill would pile on. */}
+              {results?.best_match?.match && results.best_match.match !== 'NO ADEQUATE MATCH' && (
                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border mb-3 ${matchStyle(results.best_match.match)}`}>
                   {matchLabel(results.best_match.match)}
                 </span>
@@ -644,16 +673,22 @@ const NameThatFeeling = ({ tool }) => {
                 </div>
               )}
               {/* Only rendered when the model actually supplied a caveat — a
-                  genuinely strong match has nothing to manufacture here. */}
+                  genuinely strong match has nothing to manufacture here.
+                  Essential (per the prompt) once match is NO ADEQUATE MATCH. */}
               {results?.best_match?.where_it_doesnt && (
                 <div className="max-w-sm mx-auto mb-3">
                   <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_where_it_doesnt')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{results.best_match.where_it_doesnt}</p>
                 </div>
               )}
-              {renderSaveButton({
+              {results?.best_match?.word && renderSaveButton({
                 word: results.best_match.word, language: results.best_match.language,
-                pronunciation: results.best_match.pronunciation, type: 'established',
+                // NO ADEQUATE MATCH sometimes still offers a short phrase
+                // here rather than a real dictionary word (language comes
+                // back empty in that case) — "established" would mislabel
+                // it in the Dictionary, so it's treated as invented instead.
+                pronunciation: results.best_match.pronunciation,
+                type: results.best_match.language ? 'established' : 'invented',
                 match: results.best_match.match, shortMeaning: results.best_match.definition,
                 fullDefinition: results.best_match.definition, whyItFit: results.best_match.why_it_fits,
                 whereItDidnt: results.best_match.where_it_doesnt,

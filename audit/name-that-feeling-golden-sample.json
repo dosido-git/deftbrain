@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "name-that-feeling",
-    "captured": "2026-09-05",
-    "baseline": "namethatfeeling-v2",
+    "captured": "2026-09-04",
+    "baseline": "namethatfeeling-v3",
     "model": "MODELS.FAST",
-    "note": "Regression reference for Name That Feeling, re-recorded after the 2026-09-05 grounding rewrite. The v1 golden (1 case) was discarded: its expected output carried close_matches/from_other_languages/you_are_not_alone/the_poetic_name — fields the rewrite removed or restructured entirely (close_matches + from_other_languages merged into other_words; the_poetic_name restructured into made_up_name with a useful flag; you_are_not_alone deleted outright). Re-run with `npm run check:golden name-that-feeling` against a local backend. What to read for by eye, since no gate can see it: (1) best_match.match is never STRONG when the description's specific timing/context genuinely diverges from the word's established meaning — where_it_doesnt must name the gap; (2) no culture-stereotyping ('only X understand this', 'this language bothered to name it') and no personality-reading ('the mark of someone who...'); (3) share_line's framing (There's a word for / One word that comes close is / This reminds me of) must match the match enum, never upgraded; (4) made_up_name.useful is false as often as it's true — a coined term should appear only when nothing established covers the feeling, not as a guaranteed closer. Each case carries its own `guards` line. See audit/tool-notes/NAMETHATFEELING-NOTES.md."
+    "note": "Regression reference for Name That Feeling, re-recorded after the 2026-09-04 word-quality + ambiguity-preservation correction pass. v2 baseline (4 cases) is superseded — schema gained a 4th match value (NO ADEQUATE MATCH) and best_match.word/language/pronunciation/definition may now be empty. Re-run with `npm run check:golden name-that-feeling` against a local backend. What to read for by eye, since no gate can see it: (1) best_match.word must fit the CENTRAL, ordinary meaning of the feeling described, never an obscure/archaic sense smuggling in an unstated element (guilt, resentment, wrongdoing); (2) no named emotional ambiguity (envy, comparison, guilt, etc.) the visitor flagged as unclear may be resolved into a flat fact — the visitor's own uncertainty must survive; (3) no claim about what the visitor or someone in their story 'knew' unless it traces to the visitor's own supplied context; (4) best_match.match is never STRONG/CLOSE/PARTIAL for a phrase that isn't a real, findable word — a coined phrase belongs in made_up_name or as an empty-fielded NO ADEQUATE MATCH; (5) share_line's framing (There's a word for / One word that comes close is / This reminds me of / There may not be one word for this) must match the match enum exactly. Each case carries its own `guards` line. See audit/tool-notes/NAMETHATFEELING-NOTES.md."
   },
   "cases": [
     {
@@ -19,47 +19,47 @@
       "output": {
         "what_you_described": {
           "ingredients": [
-            "happiness about the experience itself",
+            "happiness that the experience happened",
             "sadness that it is ending",
-            "nostalgia arriving before the experience is actually over",
-            "the place feeling like somewhere you could have lived"
+            "nostalgia arriving before the trip is even over",
+            "the sense of a place as livable, as elsewhere"
           ],
-          "tension": "You are still physically present in the good thing while already grieving its loss — the end arrives before you leave."
+          "tension": "You are still in the place, still in the moment, but already mourning it as if it is past — grief arriving ahead of loss."
         },
         "best_match": {
           "word": "saudade",
           "language": "Portuguese",
-          "pronunciation": "sow-DAH-duh",
+          "pronunciation": "saw-DAH-duh",
           "match": "CLOSE MATCH",
-          "definition": "A deep emotional state of nostalgic longing for something absent, lost, or unattainable; a melancholic yearning for what is no longer present or may never be.",
-          "why_it_fits": "Saudade captures the simultaneous pleasure and ache of missing something while it is still happening. It names the bittersweet knowledge that a good thing is already slipping away. Your description of nostalgia arriving before you leave is precisely the structure of saudade — the feeling contains both the presence of the thing and the absence that is about to begin.",
-          "where_it_doesnt": "Saudade traditionally emphasizes yearning and absence more than active present-moment happiness. Your feeling includes genuine contentment about being there right now, not only regret about leaving. The nostalgia overlaps with immediate joy, not replaces it."
+          "definition": "A deep emotional state combining longing, melancholy, nostalgia, and an ache for something absent or irretrievable — often felt for a place, person, or time that may no longer exist or may never have existed in the way remembered.",
+          "why_it_fits": "Saudade captures the simultaneous pleasure-in-memory and pain-of-distance that defines your last-day feeling. It names the bittersweet quality: you are glad the trip happened and present for it, but already feeling its absence. The nostalgia-before-leaving is central to saudade — the longing starts before the loss is complete.",
+          "where_it_doesnt": "Saudade carries a heavier, more melancholic weight than what you described. It often implies a deeper yearning or sense of incompleteness, whereas your feeling seems to coexist with genuine happiness about having been there. Saudade can also suggest something lost to time or circumstance; your feeling is simpler — just the collision of presence and impending departure."
         },
         "other_words": [
           {
             "word": "wistfulness",
             "language": "English",
             "pronunciation": "",
-            "definition": "A feeling of vague or regretful longing, often tinged with sadness or pensiveness.",
-            "captures": "The bittersweet quality and the sense of longing for something you are aware you will lose.",
-            "misses": "Does not quite capture the temporal oddness of missing something before it ends, or the active happiness component. It skews more toward gentle sadness than toward the coexistence of joy and grief."
+            "definition": "A feeling of vague or regretful longing, often tinged with sadness or yearning for something distant, unattainable, or past.",
+            "captures": "The yearning quality and the backward-looking sadness. Wistfulness is lighter and more accessible than saudade; it names that gentle ache without the depth.",
+            "misses": "Wistfulness alone does not quite hold the present-tense happiness alongside the future-tense grief. It leans more toward regret than toward joy-and-loss-at-once."
           },
           {
-            "word": "end-of-chapter feeling",
+            "word": "bittersweet",
             "language": "English",
             "pronunciation": "",
-            "definition": "The specific poignancy of standing at the threshold of an ending while still inside the thing that is ending — aware that a closed chapter is about to become memory.",
-            "captures": "The timing of your experience: sadness arriving early, while you are still there. The sense that a place or time was meaningful enough to have shaped you, and the knowledge of that shaping happening in real time.",
-            "misses": "Less lyrical than saudade; more descriptive than evocative. Does not name a single unified feeling so much as describe the temporal moment."
+            "definition": "A mixture of happiness and sadness; a pleasing experience or memory shadowed by regret, loss, or awareness of transience.",
+            "captures": "The simultaneous pleasure and pain. Bittersweet is direct and honest about the coexistence of two opposite feelings without resolving them.",
+            "misses": "Bittersweet is a flavor, a texture — it names the blend but not the temporal peculiarity of your experience: the fact that the nostalgia arrives while you are still there."
           }
         ],
-        "plain_english": "That bittersweet last-day feeling where you are happy you went, sad it is ending, and already missing it while you are still there — especially when a place felt like somewhere you could have lived.",
+        "plain_english": "That last-day feeling where you are still present and happy, but already homesick for the place before you leave it — caught between being there and missing it.",
         "made_up_name": {
           "useful": false,
           "name": "",
           "meaning": ""
         },
-        "share_line": "One word that comes close is saudade — Portuguese for that ache of longing for something still present but already leaving."
+        "share_line": "One word that comes close is saudade — a Portuguese word for that ache of longing that arrives while you are still in the moment, before the thing you love is even gone."
       }
     },
     {
@@ -76,48 +76,55 @@
       "output": {
         "what_you_described": {
           "ingredients": [
-            "longing for a place from your past",
-            "awareness that the place has changed",
-            "uncertainty about whether you belong there now",
-            "displacement across multiple countries",
-            "homesickness without a clear home to be sick for"
+            "Longing for a specific place from your past",
+            "Awareness that the place has changed and no longer exists as it was",
+            "Uncertainty about whether you would fit there now",
+            "Displacement across multiple countries"
           ],
-          "tension": "You miss a place partly because it no longer exists as you knew it, and you're not certain you would fit even if it did. The homesickness is real, but its object is unstable."
+          "tension": "You miss something you cannot return to — not because it is gone, but because you have changed, and it has changed, and the fit between you and it no longer holds"
         },
         "best_match": {
-          "word": "homesickness for a home that no longer exists",
-          "language": "English",
+          "word": "",
+          "language": "",
           "pronunciation": "",
-          "match": "STRONG MATCH",
-          "definition": "Longing for a place you once belonged to, complicated by the knowledge that both the place and your relationship to it have fundamentally changed.",
-          "why_it_fits": "You named the core of it yourself: homesick, but for something that doesn't exist anymore. This isn't nostalgia for how things were (though that may be part of it), and it isn't grief for a loss you've processed. It's the specific ache of missing a version of home that can't be visited because it exists only in time, not in geography.",
-          "where_it_doesnt": ""
+          "match": "NO ADEQUATE MATCH",
+          "definition": "",
+          "why_it_fits": "",
+          "where_it_doesnt": "No single established English word fully captures the specific combination you described: homesickness paired with the knowledge that the place itself has changed and that you have changed. Standard homesickness implies a real place you could theoretically return to. Nostalgia centers on remembering the past fondly, not on the gap between who you were and who you have become. Neither word carries the particular ache of displacement across multiple countries, or the awareness that even if you returned, the fit would be wrong."
         },
         "other_words": [
           {
-            "word": "rootlessness",
-            "language": "English",
+            "word": "nostalgia",
+            "language": "",
             "pronunciation": "",
-            "definition": "The condition of not being firmly anchored to any single place; feeling unmoored between locations.",
-            "captures": "The broader state you describe—having moved countries twice and feeling between places. This names the chronic condition rather than the acute feeling.",
-            "misses": "It doesn't capture the specific ache of missing something that existed. Rootlessness is more about lack of ground; your feeling includes active longing."
+            "definition": "Sentimental longing for the past, typically for a time or place perceived as better than the present",
+            "captures": "The pull toward your hometown and the version of yourself that belonged there",
+            "misses": "Nostalgia is typically wistful and sweetly tinged; it does not usually carry the specific edge you described — the awareness that return is impossible not just in time but because both you and the place have become strangers to each other"
           },
           {
-            "word": "saudade",
-            "language": "Portuguese",
-            "pronunciation": "sow-DAH-duh",
-            "definition": "A deep emotional state of nostalgic longing, often tinged with melancholy, for something absent or lost.",
-            "captures": "The melancholic quality and the sense of absence. It holds both the longing and the slight hopelessness without requiring a clear object.",
-            "misses": "Saudade doesn't emphasize the specific complication you're naming—the doubt about whether you'd fit if you returned. It's a cleaner, more poetic longing; yours is tangled with uncertainty."
+            "word": "yearning",
+            "language": "",
+            "pronunciation": "",
+            "definition": "A deep, often aching desire for something",
+            "captures": "The active, persistent pull you feel; the fact that this is not passive memory but an unfulfilled want",
+            "misses": "Yearning does not capture the paradox at the heart of what you described — that you are not certain you want what you are missing. It leaves out the dissonance entirely"
+          },
+          {
+            "word": "displacement",
+            "language": "",
+            "pronunciation": "",
+            "definition": "The state of being removed from one's native place; also, a psychological state of feeling out of place or belonging nowhere",
+            "captures": "The unmoored feeling you named; the sense of being between countries and between versions of yourself",
+            "misses": "Displacement is more about your current state than about the specific ache of homesickness. It does not name the feeling itself, but the condition that may produce it"
           }
         ],
-        "plain_english": "Missing a place that doesn't exist anymore—and not being sure you'd belong there even if it did.",
+        "plain_english": "You miss a place as it was and as you were in it, while knowing that both have changed — and that you yourself might no longer fit there even if you could return. You are homesick not for somewhere that still exists, but for a version of home that no longer does, and for a version of yourself that belonged there. The displacement across countries compounds this: you are not simply far from home, but unmoored between the person you were and the person you have become.",
         "made_up_name": {
-          "useful": false,
-          "name": "",
-          "meaning": ""
+          "useful": true,
+          "name": "homesickness for a person you used to be",
+          "meaning": "Longing for a place that represents not just a location, but a version of yourself that no longer exists — and the knowledge that you could not live there again even if the place itself had remained unchanged"
         },
-        "share_line": "There's a word for the homesickness you're describing: it's homesickness for a home that no longer exists. The place has moved on, you've moved on, and the fit is no longer what it was."
+        "share_line": "There may not be one word for this, but here's how it feels: you are homesick not for a place, but for a version of both the place and yourself that no longer exist — and you know they cannot be returned to even if you tried."
       }
     },
     {
@@ -134,47 +141,47 @@
       "output": {
         "what_you_described": {
           "ingredients": [
-            "a small, bright feeling of satisfaction",
-            "witnessing mild misfortune befall someone who wronged you",
-            "the timing — it happens right after their rudeness",
-            "a sense of cosmic balance or fitting consequence"
+            "A small, sharp moment of pleasure",
+            "Directed at someone who was unkind to you",
+            "Triggered by their misfortune",
+            "Immediate and involuntary"
           ],
-          "tension": "You're not angry or vengeful — the feeling is too small and fleeting for that. It's more like noticing a neat symmetry: rudeness followed immediately by inconvenience, as though the world briefly corrected itself."
+          "tension": "You feel satisfied by something bad happening to someone else — but the satisfaction is brief and small, not vengeful or elaborate."
         },
         "best_match": {
           "word": "schadenfreude",
           "language": "German",
           "pronunciation": "SHAH-den-froy-duh",
           "match": "CLOSE MATCH",
-          "definition": "A feeling of pleasure or satisfaction at another person's misfortune or failure.",
-          "why_it_fits": "It captures the core of what you described — that little spark of satisfaction when something goes wrong for someone who deserved it. The timing you mentioned (right after their rudeness) makes it feel earned rather than cruel.",
-          "where_it_doesnt": "Schadenfreude can carry connotations of malice or prolonged gloating. Your feeling sounds lighter, more momentary — a flicker rather than a sustained pleasure. You're not wishing harm on them; you're just noticing when minor harm coincidentally follows."
+          "definition": "Pleasure or satisfaction felt at another person's misfortune.",
+          "why_it_fits": "It captures the core of what you described: that flicker of satisfaction when something goes wrong for someone who treated you poorly. The feeling is immediate and specific, not elaborate or dwelt-upon.",
+          "where_it_doesnt": "Schadenfreude is often morally weighted — it can suggest a darker satisfaction or malice. Your description is lighter: a small, almost automatic flicker rather than a savored pleasure. Schadenfreude also doesn't require that the person wronged you, whereas your feeling has that element."
         },
         "other_words": [
           {
-            "word": "cosmic justice",
-            "language": "English phrase",
-            "pronunciation": "",
-            "definition": "The satisfaction of witnessing a fitting or deserved consequence arrive seemingly by chance or fate.",
-            "captures": "The sense that the universe briefly balanced itself — rudeness followed by traffic feels like cause and effect, even though you know it's coincidence. This captures that 'the world corrected itself' element.",
-            "misses": "It's more conceptual than emotional. Doesn't quite name the *feeling* itself, more the story you tell about what happened."
-          },
-          {
-            "word": "vindication",
+            "word": "comeuppance",
             "language": "English",
             "pronunciation": "",
-            "definition": "A feeling of satisfaction when your view of a situation is confirmed by events.",
-            "captures": "If you had thought 'someone this rude will have bad luck,' then seeing it happen is vindication. It confirms your instinct or worldview.",
-            "misses": "Vindication is usually about proving yourself right in a dispute. Your situation doesn't involve defending a claim — just noticing a pleasing coincidence."
+            "definition": "A punishment or fate that someone deserves, especially when it finally arrives.",
+            "captures": "The sense that this person's bad luck is fitting — that traffic after being rude feels like natural consequence.",
+            "misses": "Comeuppance is about deserving and justice; your description is about a momentary satisfaction, not a judgment about what they deserve."
+          },
+          {
+            "word": "petty satisfaction",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "A small pleasure taken in a trivial circumstance, often at another's expense.",
+            "captures": "The smallness and specificity of the moment — it's not profound, just a little ping of 'oh, good'.",
+            "misses": "Petty can carry judgment about pettiness itself; your description doesn't invite moral evaluation of the feeling, just naming it."
           }
         ],
-        "plain_english": "That little hit of satisfaction when someone's rudeness gets immediately rewarded with inconvenience — like the universe briefly setting things straight.",
+        "plain_english": "A quick flash of satisfaction when something bad happens to someone who was unkind to you — the opposite of wishing them well, but brief and small rather than savored.",
         "made_up_name": {
           "useful": false,
           "name": "",
           "meaning": ""
         },
-        "share_line": "One word that comes close is schadenfreude — though yours sounds lighter and more fleeting, less like revenge and more like noticing a neat bit of cosmic timing."
+        "share_line": "One word that comes close is schadenfreude — that small, sharp satisfaction at someone's misfortune — though your version is lighter and more specific to the rudeness that came first."
       }
     },
     {
@@ -192,47 +199,161 @@
       "output": {
         "what_you_described": {
           "ingredients": [
-            "Exhaustion from sustained performance",
-            "Forced engagement with someone you have no genuine interest in",
-            "The specific depletion of faking attention and interest",
-            "Clarity that this is fatigue, not anxiety"
+            "Tiredness specific to the effort of appearing interested",
+            "Performance of engagement you do not feel",
+            "Duration and repetition (small talk, networking)",
+            "Deliberate masking of actual disinterest"
           ],
-          "tension": "The effort required to appear engaged while feeling the opposite — a gap between internal reality and external performance that drains rather than energizes"
+          "tension": "You are doing something socially required while being aware the whole time that you are doing it — the exhaustion comes from maintaining the performance, not from anxiety about whether it will work."
         },
         "best_match": {
-          "word": "conversational fatigue",
+          "word": "conversational labor",
           "language": "English",
           "pronunciation": "",
-          "match": "STRONG MATCH",
-          "definition": "The depletion that comes from sustaining attention and performed interest in an interaction that holds no real engagement for you",
-          "why_it_fits": "You named the exact mechanism: tiredness from the work of performing interest. It is not social anxiety (fear) or discomfort (aversion) — it is the specific exhaustion of maintaining a false front. Conversational fatigue captures that this is about the labor of the performance itself.",
-          "where_it_doesnt": ""
+          "match": "CLOSE MATCH",
+          "definition": "The deliberate effort of generating and sustaining interest, enthusiasm, or engagement in conversation when that interest is not genuine — work that reads as natural interaction but requires conscious performance.",
+          "why_it_fits": "You named both the work (faking engagement) and the specific form it takes (small talk where you have to perform interest). 'Conversational labor' captures the deliberate effort and the exhaustion that comes from sustaining it. It does not require you to feel anxious or out of place — just tired from the work itself.",
+          "where_it_doesnt": "It is a phrase rather than a single word, and it foregrounds the work more than the specific weariness. The tiredness you described is the aftermath of that labor."
         },
         "other_words": [
           {
-            "word": "social performance drain",
+            "word": "social fatigue",
             "language": "English",
             "pronunciation": "",
-            "definition": "The energy cost of maintaining a persona or level of engagement that does not match your actual interest",
-            "captures": "Emphasizes that the drain comes from the gap between real and performed interest, not from interaction itself",
-            "misses": "Slightly more formal; conversational fatigue is more immediate and embodied"
+            "definition": "Exhaustion from the effort of social interaction, particularly when that interaction requires sustained performance or emotional regulation.",
+            "captures": "The specific tiredness that comes from managing how you appear in a social setting. Simpler and more direct than 'conversational labor.'",
+            "misses": "Less precise about the performance element — someone with social anxiety experiences social fatigue too, and you were clear that is not what this is."
           },
           {
-            "word": "hollow engagement",
+            "word": "relational drag",
             "language": "English",
             "pronunciation": "",
-            "definition": "The experience of going through the motions of connection while feeling nothing genuine beneath",
-            "captures": "The specific hollowness of faking it — the sense that something is being performed but nothing is being felt",
-            "misses": "Emphasizes the feeling of emptiness over the feeling of tiredness; you described exhaustion more than vacancy"
+            "definition": "The resistance or heaviness felt when maintaining a social connection that requires effort beyond what genuine interest would supply.",
+            "captures": "The weight of continuing to engage when you do not actually want to. Emphasizes that the effort pulls on you.",
+            "misses": "More poetic than precise; less commonly used than the others here."
           }
         ],
-        "plain_english": "The tiredness of pretending to be interested when you aren't — the specific exhaustion of faking engagement.",
+        "plain_english": "The specific tiredness that comes from performing interest in conversation you do not want to have — the exhaustion of keeping up the appearance of engagement when your actual interest is absent.",
         "made_up_name": {
           "useful": false,
           "name": "",
           "meaning": ""
         },
-        "share_line": "There's a word for that specific exhaustion: conversational fatigue — the depletion that comes from sustaining false interest in an interaction that means nothing to you."
+        "share_line": "One word that comes close is 'conversational labor' — the deliberate effort of faking engagement. If you want something simpler, 'social fatigue' captures the tiredness without the anxiety."
+      }
+    },
+    {
+      "name": "friend-good-news-dont-resolve-ambiguity",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "description": "A friend told me their good news and I felt something drop before I felt happy for them. The happy part was real. So was the other part, and I don't have a word for it that isn't just 'jealous', which isn't quite right either.",
+        "context": "They deserved it completely and I'd have been upset for them if it hadn't happened. It passed in about a minute. I still think about it."
+      },
+      "guards": "The exact live bug report that produced 'compunction' as a strained primary match plus a string of invented specifics (the friend 'deserved' it stated as the tool's own conclusion rather than the visitor's, 'a flash of your own lack', 'authentic joy... took over'). PRIMARY MATCH RULE: best_match.word must fit the CENTRAL, ordinary meaning of the description — not an obscure/archaic sense that smuggles in an unstated element (guilt, wrongdoing, resentment). DON'T RESOLVE THE AMBIGUITY: nothing may declare the first feeling WAS or WASN'T envy/comparison/personal lack as a flat fact the model decided — the visitor's own uncertainty must survive into the answer (e.g. 'the description doesn't establish which'). Any claim that the visitor 'knew' something (like the friend deserving it) must trace to the visitor's OWN supplied context, not be invented — check it's grounded in the context field before treating it as a violation.",
+      "optionalSections": [
+        "other_words"
+      ],
+      "output": {
+        "what_you_described": {
+          "ingredients": [
+            "An immediate physical drop or pang",
+            "Authentic happiness for your friend that followed",
+            "Uncertainty about what caused the first feeling",
+            "The feeling passing quickly",
+            "Knowing they deserved the good news"
+          ],
+          "tension": "Real joy for someone you care about, alongside a real but unnamed sensation that arrived first — both genuine, neither canceling the other out"
+        },
+        "best_match": {
+          "word": "a pang",
+          "language": "English",
+          "pronunciation": "",
+          "match": "CLOSE MATCH",
+          "definition": "A sharp, sudden feeling of pain, sadness, or regret — often physical in its sensation, often brief",
+          "why_it_fits": "You described something that dropped and passed in about a minute, with a physical quality to it. A pang names that sharp, sudden arrival without claiming to know what it means. It fits the sensation without diagnosing the cause.",
+          "where_it_doesnt": "Pang usually implies a single clear source (regret, loss, hunger). Your description leaves the source uncertain — it could involve comparison, longing, disappointment, or something else entirely. Pang names the sensation itself, but doesn't resolve what prompted it."
+        },
+        "other_words": [
+          {
+            "word": "a catch in your chest",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "A sudden tightening or stopping sensation in the chest — often emotional rather than physical, often momentary",
+            "captures": "The physical, almost involuntary quality of what arrived before your conscious happiness did. The sense that something happened to you rather than something you decided to feel.",
+            "misses": "Less specific about whether the feeling involves comparison or lack; more purely about the bodily sensation itself"
+          },
+          {
+            "word": "a flash of something",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "A brief, bright moment of feeling or thought that arrives and passes before you can fully name it",
+            "captures": "The speed and the incompleteness — you still don't have a word for it, and it was gone before you could examine it. Also the sense that you glimpsed something without fully understanding it.",
+            "misses": "Even more indefinite than pang; trades precision about the sensation for precision about the timing. Useful if you want to honor that you genuinely didn't register what it was."
+          }
+        ],
+        "plain_english": "An immediate sharp feeling in your body that dropped and passed within a minute, arriving before your genuine happiness for your friend registered. You're uncertain whether it involved comparing yourself to them, noticing something you wanted, disappointment in yourself, or something else entirely. It was real and physical, and it doesn't fit into 'jealous' because you wanted this for them and would have been upset if it hadn't happened.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "One word that comes close is a pang — that sharp drop you felt, arriving fast and leaving fast. It names the sensation without claiming to know what caused it, which seems to match what you're describing: you felt something real, but its meaning is still unclear to you."
+      }
+    },
+    {
+      "name": "meeting-mispronunciation-no-adequate-match",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "description": "The specific discomfort of watching someone confidently mispronounce a word in a meeting and deciding in that half-second whether correcting them is worth the awkwardness it will cause everyone else in the room."
+      },
+      "guards": "Tests the new NO ADEQUATE MATCH pathway end to end (PRIMARY MATCH RULE's 'prefer NO EXACT WORD over an impressive but semantically strained answer'). If match comes back NO ADEQUATE MATCH: best_match.word/language/pronunciation/definition should be empty rather than a coined phrase / meta-statement about the absence dressed up as a candidate ('No established single word', 'the discomfort of a no-win moment') — cleanNoMatchWord strips exactly that pattern server-side (check-golden can't see this by structure alone; eyeball it). where_it_doesnt becomes essential in this case and must say plainly what's missing. plain_english must stand on its own as the real answer. share_line must use the NO ADEQUATE MATCH framing ('There may not be one word for this...'). This case may instead legitimately come back CLOSE or PARTIAL MATCH with a real short phrase (e.g. 'caught between') — either outcome is fine as long as word/match/where_it_doesnt stay internally consistent.",
+      "optionalSections": [
+        "other_words"
+      ],
+      "output": {
+        "what_you_described": {
+          "ingredients": [
+            "A moment of recognition (someone said something wrong)",
+            "Split-second mental calculation of consequences",
+            "Awareness of multiple conflicting interests (correctness vs. social comfort)",
+            "Discomfort suspended in indecision"
+          ],
+          "tension": "Knowing the right thing to do (correct them) and the costly thing to do (let it go) are in direct conflict, and you have almost no time to choose between them."
+        },
+        "best_match": {
+          "word": "social friction",
+          "language": "English",
+          "pronunciation": "",
+          "match": "CLOSE MATCH",
+          "definition": "The discomfort or hesitation that arises from an action that would create awkwardness or tension in a social setting, even when the action itself is justified.",
+          "why_it_fits": "It names the specific discomfort you feel — not embarrassment for them, not guilt about staying silent, but the friction itself: the sense that speaking up will cost everyone present, and you're calculating whether it's worth paying. It captures the half-second pause, the awareness of consequences radiating outward.",
+          "where_it_doesnt": "Social friction is slightly more general than your moment — it could describe the friction before any number of socially costly truths. Your description is more specific: the friction of a correction in particular, where you're weighing one person's error against everyone else's comfort."
+        },
+        "other_words": [
+          {
+            "word": "conversational tact",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "The judicious management of what one says and when, balancing honesty against harmony.",
+            "captures": "The deliberation itself — the split-second weighing of whether this moment requires you to prioritize accuracy or group ease.",
+            "misses": "Tact is about a choice you make. Your description is about the discomfort of being caught between two choices that both have a cost."
+          },
+          {
+            "word": "mortification",
+            "language": "English",
+            "pronunciation": "mor-tuh-fih-KAY-shun",
+            "definition": "Acute embarrassment or chagrin; historically, self-inflicted discomfort as a spiritual discipline.",
+            "captures": "The visceral, immediate sting of being in an awkward position — the feeling-in-the-body of the moment.",
+            "misses": "Mortification is usually about your own shame. Here you're not ashamed; you're uncomfortable about the awkwardness the correction would inflict on others."
+          }
+        ],
+        "plain_english": "The uncomfortable pause before deciding whether to correct someone, when you're aware that speaking up will make the room uncomfortable even though silence costs something too.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "One phrase that comes close is social friction — that specific discomfort of knowing an action is right but that it will cost everyone at the table."
       }
     }
   ]

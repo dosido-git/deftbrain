@@ -48,6 +48,48 @@ Do not infer:
 - why the person feels this way
 unless the visitor supplied it.
 
+NAME THAT FEELING — DON'T RESOLVE THE AMBIGUITY FOR THEM
+
+When the visitor says they do not know what part of a feeling means, preserve
+that uncertainty.
+
+Do not decide that the feeling was:
+- envy
+- not envy
+- comparison
+- personal lack
+- resentment
+- guilt
+- insecurity
+- disappointment
+- fear
+- grief
+
+unless the visitor established it.
+
+GOOD:
+"You described an immediate drop or pang, followed by happiness for your friend."
+
+GOOD:
+"The first feeling could involve comparison, disappointment, longing, or
+something else; the description doesn't establish which."
+
+BAD:
+"It wasn't envy."
+"It was a flash of your own lack."
+"You knew they deserved it."
+"Your authentic joy took over."
+
+The tool's job is to give the visitor language that helps them examine the
+feeling, not secretly finish the emotional story for them.
+
+If the visitor names a specific word themselves and says it isn't quite
+right, do not make that same word — or a close synonym that carries the same
+baggage — the primary match anyway. Their own doubt about it is information,
+not an obstacle to route around. Prefer a word that doesn't carry the
+specific element they already flagged as wrong, or say plainly that nothing
+established avoids it.
+
 LEXICAL ACCURACY
 
 Words from other languages are real linguistic claims.
@@ -75,10 +117,50 @@ A candidate may be:
 STRONG MATCH
 CLOSE MATCH
 PARTIAL MATCH
+NO ADEQUATE MATCH
 
-If no established word captures the whole feeling, say so.
+STRONG MATCH, CLOSE MATCH, and PARTIAL MATCH all require a real, existing
+word or phrase — one you could point to a language and a definition for. If
+you are describing the gap rather than naming something that exists (a
+phrase like "the pause before speaking up" that nobody actually uses this
+way), that is not a candidate at any match strength — it is NO ADEQUATE
+MATCH, and belongs in best_match only with language and definition left
+empty, or better, in made_up_name where invention is expected and labeled.
+
+If no established word captures the whole feeling, say so — use NO ADEQUATE
+MATCH rather than stretching a candidate to fit, and rather than dressing an
+invented phrase up as though it were a findable one.
 
 Do not stretch a real word until it means what the visitor wants.
+
+NAME THAT FEELING — PRIMARY MATCH RULE
+
+Do not promote a candidate to the primary answer merely because one secondary
+or archaic sense overlaps with part of the visitor's description.
+
+The primary word must fit the CENTRAL MEANING of the described feeling, not
+merely one sensation, component, metaphor, or obscure dictionary sense.
+
+Before selecting the primary word, ask:
+
+1. What does this word ordinarily mean in contemporary use?
+2. Does that ordinary meaning fit the visitor's experience?
+3. Does the word introduce an important element the visitor did not supply?
+4. Am I choosing it because it genuinely fits, or because it is interesting?
+
+If the word introduces a major semantic element that is absent from the
+description — guilt, wrongdoing, resentment, grief, envy, fear, shame, etc. —
+it cannot be a STRONG or CLOSE primary match merely because another sense
+overlaps.
+
+Prefer:
+
+NO EXACT WORD
+
+over an impressive but semantically strained answer.
+
+A familiar phrase that accurately describes the experience is better than an
+unusual word that requires explaining why its normal meaning does not apply.
 
 CULTURE
 
@@ -164,7 +246,7 @@ Never place a double-quote character inside JSON string values.
 Return only valid JSON matching the requested schema.`;
 
 // A hedge usually means the model is proposing rather than asserting — spare it.
-const HEDGED = /\b(?:may|might|could|can (?:read|come across|feel)|often|tend(?:s)? to|one possible|possibly|appears? to|seems? to|some(?:times)?)\b/i;
+const HEDGED = /\b(?:may|might|could|can (?:read|come across|feel)|often|tend(?:s)? to|one possible|possibly|appears? to|seems? to|some(?:times)?|whether|does(?:n'?t)? (?:establish|say)|doesn'?t settle|not (?:sure|clear) (?:if|whether))\b/i;
 
 const RULES = [
   // "Untranslatable" is banned outright — it's a claim about every other
@@ -186,7 +268,64 @@ const RULES = [
   // surrounding prose calls it established, documented, or recognized.
   ['presented a coined phrase as an existing term', /\b(?:this is |it'?s )?(?:an? )?(?:established|documented|recognized|known) (?:term|word|concept) for\b/i,
     (v) => HEDGED.test(v)],
+
+  // A named ambiguity the visitor flagged as unclear ("I don't know if this
+  // was envy or something else"), flattened into a settled fact — the exact
+  // failure the DON'T RESOLVE THE AMBIGUITY FOR THEM section exists to stop.
+  // Live probe: "It wasn't envy." Hedge-spared because "it may not have been
+  // envy" is a legitimate, cautious reading of the same material.
+  ['resolved a named emotional ambiguity into a flat fact',
+    /\bit (?:was|wasn'?t|is|isn'?t)\s+(?:envy|jealousy|comparison|resentment|guilt|insecurity|disappointment|fear|grief|shame)\b/i,
+    (v) => HEDGED.test(v)],
+
+  // An epistemic state attributed to the visitor (or someone in their story)
+  // that nobody reported having — "you knew they deserved it" invents
+  // certainty, not just a feeling. Live probe: same sentence, verbatim.
+  ['invented a certainty nobody reported having',
+    /\byou knew\b.{0,30}\bdeserved?\b|\bthey knew\b.{0,30}\bdeserved?\b|\bhe knew\b.{0,30}\bdeserved?\b|\bshe knew\b.{0,30}\bdeserved?\b/i],
 ];
+
+const MATCH_VALUES = ['STRONG MATCH', 'CLOSE MATCH', 'PARTIAL MATCH', 'NO ADEQUATE MATCH'];
+// withLanguage translates JSON string VALUES for a non-English generation —
+// the frontend switches on this exact enum (badge color, the new dynamic
+// hero heading), so an untranslated pin is required the same way NameAudit
+// pins verdict/rating. Live-tested across es/de/ja before this existed and
+// the model happened to leave it in English every time — "happened to" is
+// not a guarantee, and this now adds a fourth value worth guaranteeing too.
+function pinMatch(data) {
+  const m = data?.best_match?.match;
+  if (!MATCH_VALUES.includes(m)) {
+    if (data?.best_match) data.best_match.match = 'PARTIAL MATCH';
+  }
+  return data;
+}
+
+// Even with the prompt now explicit that a non-candidate word must be left
+// empty, live probes kept filling it with a restatement of the gap instead
+// of a real word — sometimes under NO ADEQUATE MATCH ("No established
+// single word," "the discomfort of a no-win moment"), sometimes under CLOSE
+// MATCH with the same shape ("homesickness for a place that exists only in
+// memory," 9 words, empty language). Prompt tightening reduced but didn't
+// reliably stop either. A real word or established phrase is short — long
+// enough to catch "end-of-vacation blues" (3 words, legitimate) but not a
+// 9-word descriptive clause — so this checks EVERY match tier, not just
+// NO ADEQUATE MATCH: whatever tier the model chose, a restatement isn't a
+// candidate at any tier, and gets downgraded along with it.
+const NO_MATCH_META_RE = /^(?:no |not (?:one|a|really)\b|there(?:'s| is)?\s*(?:really\s*)?no\b|nothing\s)/i;
+function cleanNoMatchWord(data) {
+  const bm = data?.best_match;
+  if (!bm || !bm.word) return data;
+  const wordCount = bm.word.trim().split(/\s+/).length;
+  if (NO_MATCH_META_RE.test(bm.word) || wordCount > 5) {
+    console.log(`[name-that-feeling] best_match.word cleared (match was ${bm.match}) — not a candidate: ${bm.word}`);
+    bm.match = 'NO ADEQUATE MATCH';
+    bm.word = '';
+    bm.language = '';
+    bm.pronunciation = '';
+    bm.definition = '';
+  }
+  return data;
+}
 
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
@@ -271,13 +410,13 @@ Return ONLY valid JSON:
   },
 
   "best_match": {
-    "word": "",
+    "word": "A real candidate word or short established phrase — never a restatement of the gap itself (not 'the discomfort of a no-win moment'). Leave this and language/pronunciation/definition completely empty when match is NO ADEQUATE MATCH and truly nothing comes close; where_it_doesnt and plain_english carry the answer instead. Otherwise always fill it",
     "language": "",
     "pronunciation": "Only if reasonably confident — empty string otherwise",
-    "match": "STRONG MATCH|CLOSE MATCH|PARTIAL MATCH",
+    "match": "STRONG MATCH|CLOSE MATCH|PARTIAL MATCH|NO ADEQUATE MATCH",
     "definition": "",
     "why_it_fits": "",
-    "where_it_doesnt": "Empty string when the match is genuinely strong with no meaningful caveat — do not manufacture one just to fill the field"
+    "where_it_doesnt": "Empty string only when the match is genuinely strong with no meaningful caveat. When match is NO ADEQUATE MATCH, this field is essential — say plainly what element this word introduces that the visitor didn't describe"
   },
 
   "other_words": [
@@ -291,7 +430,7 @@ Return ONLY valid JSON:
     }
   ],
 
-  "plain_english": "A natural English phrase the visitor could actually use to describe the feeling",
+  "plain_english": "A natural English phrase describing only what the visitor actually described — no invented cause, comparison, or emotional resolution they did not supply. When match is NO ADEQUATE MATCH, this becomes the visitor's main answer, so it must stand on its own",
 
   "made_up_name": {
     "useful": true,
@@ -318,6 +457,7 @@ a CLOSE MATCH or PARTIAL MATCH as though it were an exact, established word.
 - STRONG MATCH: "There's a word for..."
 - CLOSE MATCH: "One word that comes close is..."
 - PARTIAL MATCH: "This reminds me of..."
+- NO ADEQUATE MATCH: "There may not be one word for this, but here's how it feels:"
 
 Never place a double-quote character inside any JSON string value.`;
 
@@ -331,7 +471,7 @@ Never place a double-quote character inside any JSON string value.`;
     if (!parsed.best_match) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
-    res.json(validateResult(parsed));
+    res.json(validateResult(cleanNoMatchWord(pinMatch(parsed))));
 
   } catch (error) {
     console.error('NameThatFeeling error:', error);
@@ -342,8 +482,8 @@ Never place a double-quote character inside any JSON string value.`;
 // Reviewed against backend/lib/outputStandard.js during the 2026-09-05 rewrite.
 router.outputStandard = 'v2';
 router.outputGuard = {
-  checks: ['validateResult'],
-  note: 'No "untranslatable" claim, no language-as-psychological-profile claim ("only the Welsh understand this," "uniquely Russian"), no personality reading built from a matched word ("the mark of someone who..."), and no coined phrase presented as an established term — all four are regex-detected and blanked in code. The three-value match enum (STRONG/CLOSE/PARTIAL) and where_it_doesnt carry the epistemic nuance the prompt asks for; the backstops catch what leaks into prose despite it.',
+  checks: ['pinMatch', 'cleanNoMatchWord', 'validateResult'],
+  note: 'No "untranslatable" claim, no language-as-psychological-profile claim ("only the Welsh understand this," "uniquely Russian"), no personality reading built from a matched word ("the mark of someone who..."), no coined phrase presented as an established term, no named emotional ambiguity flattened into a flat fact ("It wasn\'t envy"), and no invented certainty attributed to the visitor ("you knew they deserved it") — all six are regex-detected and blanked in code. The four-value match enum (STRONG/CLOSE/PARTIAL/NO ADEQUATE MATCH) is pinned to an exact English literal (pinMatch) since the frontend switches on it for both the badge and the dynamic hero heading. cleanNoMatchWord checks best_match.word at EVERY match tier, not just NO ADEQUATE MATCH — a restatement of the gap rather than a real word ("the discomfort of a no-win moment," "homesickness for a place that exists only in memory") showed up dressed as CLOSE MATCH just as often as NO ADEQUATE MATCH across live probes, so any tier gets downgraded to NO ADEQUATE MATCH and cleared when this fires. where_it_doesnt and plain_english carry the epistemic nuance in that case.',
 };
 
 module.exports = router;

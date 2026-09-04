@@ -257,12 +257,116 @@ interpolate correctly (`ntf_previously_saved`'s `{{word}}`, provenance line's
 `results`, which the existing route already returns in full. Gate-wise this
 means no golden re-record, no guard-key surface, no three-way-sync entry.
 
+## Word-quality + ambiguity-preservation correction pass — 2026-09-04
+
+A live bug report against the friend's-good-news example (the same
+description that seeded `ntf_ex2_*`): the tool's primary match was
+"compunction" — an archaic sense of guilt/remorse that isn't what the word
+ordinarily means today — plus a string of invented specifics layered on top:
+the friend "deserved" the news stated as the tool's own conclusion rather
+than the visitor's, "not about wanting what they have" and "a flash of your
+own lack" (both resolving an ambiguity the visitor explicitly said they
+couldn't name), and "your authentic joy took over" (declaring which feeling
+"won" when the visitor never said one did). Two new prompt sections, plus
+follow-on fixes the live probes surfaced that the prompt alone didn't reach.
+
+**PRIMARY MATCH RULE.** Added to LEXICAL ACCURACY: a word can't become the
+primary match merely because ONE secondary or archaic sense overlaps part of
+the description — it has to fit the CENTRAL, ordinary meaning, with four
+self-check questions (ordinary meaning / does it fit / does it smuggle in an
+unstated element / genuine fit vs. merely interesting) before selection. Also
+added a fourth match value, NO ADEQUATE MATCH, so the tool can say "no exact
+word" instead of stretching one — the rule's own stated preference.
+
+**DON'T RESOLVE THE AMBIGUITY FOR THEM.** Added right after CORE RULE: when
+the visitor says they don't know what part of a feeling means, that
+uncertainty must survive into the answer. A short banned-conclusions list
+(envy, comparison, personal lack, resentment, guilt, insecurity,
+disappointment, fear, grief) with GOOD/BAD examples taken directly from the
+bug report. A follow-up paragraph, added after a live probe still chose
+"envy" as the primary word despite the visitor's own line ("isn't just
+'jealous', which isn't quite right either"): if the visitor names a specific
+word themselves and says it's wrong, that same word (or a close synonym
+carrying the same baggage) can't become the primary match without
+acknowledging why it still applies — their own doubt is information, not an
+obstacle to route around.
+
+**Two new deterministic backstops**, both matched to the bug report's exact
+sentences and unit-tested in both directions: a named ambiguity flattened
+into a flat fact ("It wasn't envy" / "It was jealousy, not admiration" —
+hedge-spared so "it may not have been envy" survives); an unstated certainty
+attributed to the visitor or someone in their story ("you knew they
+deserved it"). Testing the ambiguity rule against real captured output found
+a genuine HEDGED gap: "You don't know **whether** it was disappointment..."
+— a textbook GOOD hedge — matched the ban regex because `whether` wasn't in
+the spare list. It happened to cause no harm only because a separate safety
+guard in `validateResult` declines to blank long, multi-sentence fields; a
+shorter sentence using the same construction would have been wrongly
+blanked. Fixed by adding `whether`, `doesn't establish`, `doesn't say`,
+`doesn't settle`, and `not sure/clear if/whether` to `HEDGED`.
+
+**`pinMatch`** — the four-value match enum was never pinned to an exact
+English literal, the same i18n-enum-vs-English-literals gap this session has
+hit before elsewhere (`withLanguage` translates JSON string VALUES; the
+frontend switches on the raw string for both the badge and the new dynamic
+hero heading). Live-tested es/de/ja and the model happened to leave it in
+English every time before this existed — "happened to" isn't a guarantee,
+and a fourth value was exactly the moment to stop relying on luck.
+
+**`cleanNoMatchWord` — the backstop that needed two widenings on its own.**
+Even with the prompt explicit that a non-candidate word should be left
+empty, three separate probes filled it with a meta-statement about the
+absence itself instead — "No established single word," "the discomfort of a
+no-win moment" — which would render in the giant hero-word slot as if IT
+were the answer. First fix: clear word/language/pronunciation/definition
+when the text is a negation opener or longer than a short phrase (5+ words),
+scoped to `match === 'NO ADEQUATE MATCH'`. Then a golden capture surfaced the
+identical shape at CLOSE MATCH tier — "homesickness for a place that exists
+only in memory" (9 words, empty language) rated CLOSE MATCH — proving the
+restatement pattern isn't confined to the NO ADEQUATE MATCH path. Widened to
+check every match tier: whatever tier the model chose, a restatement isn't a
+candidate at any tier, so it's downgraded to NO ADEQUATE MATCH and cleared
+along with it. Verified against every real word seen across probes
+("end-of-vacation blues," "a pang," "schadenfreude," "caught between," "the
+cringe reflex," "social friction" all survive; every meta-statement and
+9-word restatement gets cleared).
+
+**Frontend: the hero heading now carries epistemic weight the badge alone
+didn't.** "THE WORD YOU'RE LOOKING FOR" was definitive even for a hedged
+STRONG MATCH; replaced with a heading that scales with the match value —
+"THE WORD YOU MAY BE LOOKING FOR" down to "THERE MAY NOT BE ONE WORD FOR
+THIS" — dropping the now-unused `ntf_the_word` key for four new ones. The
+match-level pill badge is suppressed for NO ADEQUATE MATCH specifically (the
+heading already says so; a second, harsher badge on top would pile on). Two
+defensive fixes followed directly from live-testing the empty-word case: the
+language/pronunciation row only renders when `language` is actually present
+(word can be non-empty with language blank — a dangling flag emoji with
+nothing after it otherwise renders on its own); saving a best_match word
+with no `language` is labeled `type: 'invented'` in the Dictionary rather
+than `'established'`, since a word with no citable language isn't a real
+dictionary term regardless of what match tier it carried.
+
+**What this reveals about model variance, honestly.** The friend's-good-news
+case was re-run 5+ times across this pass. Most runs cleanly avoided "envy"
+entirely once the visitor-rejected-word rule was added; one run still
+produced `"a pang of envy"` as the word while the rest of that same response
+(share_line, why_it_fits) described it as plain "a pang" — an internal
+inconsistency, not a full regression. No backstop was added for this
+specific shape: it would need the original description text to know which
+word the visitor rejected, which `validateResult` doesn't currently receive,
+and the failure is infrequent and partial rather than a clean, mechanically
+detectable pattern. Recorded here rather than silently accepted — this is a
+real, measured improvement (dramatically better than the "compunction" +
+invented-specifics baseline), not a claim of eliminating the failure mode.
+
 ## Goldens
 
-Four cases, re-recorded 2026-09-05; the v1 golden (1 case) was discarded
-rather than ported — its expected output was built entirely from fields the
-rewrite removed or restructured. `npm run check:golden name-that-feeling`
-checks structure only.
+Six cases, re-recorded 2026-09-04 for the word-quality/ambiguity pass above
+(two new cases; the original four re-verified against the same backend).
+`npm run check:golden name-that-feeling` checks structure only — content
+quality for the two new cases specifically needs eyeballing per their
+`guards` text, since this pass is entirely about prose judgment a structural
+diff can't see.
 
 | Case | What it catches |
 | --- | --- |
@@ -270,3 +374,5 @@ checks structure only.
 | `rootless-displacement-made-up-name` | The exact feeling-shape (displacement, moved countries) that invited the worst violations in the old tool |
 | `schadenfreude-strong-match-sparse` | No context supplied — nothing invented; share_line framing must agree with the match enum |
 | `social-fatigue-prefer-english` | Whether an ordinary English phrase wins when it's the honest answer, rather than a foreign word reached for on novelty alone |
+| `friend-good-news-dont-resolve-ambiguity` | The exact live bug report — PRIMARY MATCH RULE and DON'T RESOLVE THE AMBIGUITY together; check `best_match.word` isn't a strained archaic sense and no named emotion is flattened into a flat fact |
+| `meeting-mispronunciation-no-adequate-match` | The NO ADEQUATE MATCH pathway end to end, including `cleanNoMatchWord` — a passing structural check here doesn't prove the guard fired; eyeball that `best_match.word` isn't a restatement of the gap |
