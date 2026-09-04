@@ -1768,7 +1768,11 @@ export const toolFinderMetadata = {
     whenNotToRecommend: "Do not recommend for factual prediction, a request for one definitive answer, historical counterfactuals, or ordinary product comparison.",
   },
 
-  CrashPredictor: {
+  // Renamed to BeforeTheCrash on 2026-08-26. The key is the catalog id that
+  // toolCatalog.js merges on, so the old name meant this whole block had been
+  // reaching nothing since the rename — Tool Finder had no metadata for the
+  // tool at all.
+  BeforeTheCrash: {
     problems: [
       "I keep hitting periods where my energy drops hard and I want to see what tends to happen beforehand",
       "I want a lightweight daily record of energy, sleep, stress, mood, workload, and other signals",
@@ -2297,6 +2301,199 @@ export const toolFinderMetadata = {
     primaryIntent: "understand the leverage on both sides of a negotiation, separate facts from assumptions, and turn that understanding into grounded strategy and language",
     whenToRecommend: "Recommend when the user is preparing for or actively navigating a negotiation and wants to know where they actually stand, what remains unknown, what to say, or how to respond to a counter without bluffing.",
     whenNotToRecommend: "Do not recommend for general decision-making, definitive legal judgments, live market research, or tactics that depend on deception, invented leverage, or predicting the other side's hidden intentions.",
+  },
+
+  GetNoticed: {
+    problems: [
+      "I want more people to know what I do but I do not know how to become more visible",
+      "my work and routines keep me in the same circles and I want more chances to meet new people or ideas",
+      "I want to widen my professional or creative network without fake networking",
+      "I want practical ways to create more opportunities for useful unexpected connections",
+    ],
+    capabilities: [
+      "describes the pathways through which new people, ideas, and opportunities can currently reach the user based only on what they supplied",
+      "identifies what currently narrows exposure without turning limited information into a personality or social diagnosis",
+      "surfaces concrete exposure mechanisms that are already working",
+      "suggests three to five practical moves to widen visibility through signaling, entering new circles, creating, connecting, or compounding existing activity",
+      "marks a small starting move without predicting that it will produce a particular opportunity",
+    ],
+    accepts: [
+      "where work, hobbies, communities, routines, places, and existing relationships currently create contact with new people or ideas",
+      "what the user would like more chances to encounter",
+      "what the user is already doing to create opportunities",
+    ],
+    notFor: [
+      "calculating a luck, networking, influence, or visibility score",
+      "predicting who will respond or what opportunity a particular action will produce",
+      "inventing current events, venues, communities, audiences, or networking opportunities that have not been supplied or verified",
+      "writing the actual outreach message when the main need is how to make the ask",
+    ],
+    handoffs: [
+      { when: "the user has identified someone to approach and wants to become relevant or useful before making contact", toolId: "BeforeHello" },
+      { when: "the user is ready to make a specific ask and wants the angle and exact words", toolId: "MagicMouth" },
+    ],
+    primaryIntent: "find grounded, practical ways to become more visible and widen the routes through which new people, ideas, and opportunities can reach the user",
+    whenToRecommend: "Recommend when the user wants more exposure, connections, collaborators, professional visibility, or chances to encounter useful new people and ideas, especially when their current routines feel narrow or repetitive.",
+    whenNotToRecommend: "Do not recommend when the user wants a guaranteed networking outcome, live local opportunity search, a specific outreach script, or a plan centered on one already-identified person.",
+  },
+
+  MagicMouth: {
+    problems: [
+      "I need to ask for a refund, upgrade, exception, favor, waived fee, better table, or other reasonable concession and do not know how to ask",
+      "I know what I want but I need the right angle and exact words",
+      "I already asked and got resistance, and I want a better backup approach",
+      "I need to make a bold ask without lying, bluffing, threatening, or pretending I have rights I do not have",
+    ],
+    capabilities: [
+      "finds a strong truthful angle for a specific ask without inventing leverage, entitlement, policy, authority, urgency, or evidence",
+      "writes a natural opener, core ask, response to hesitation, and graceful exit",
+      "offers a materially different backup angle using the same established facts",
+      "provides practical delivery guidance and a strategic pro tip grounded in the situation",
+      "can help route a customer-service conversation or build a maximum legitimate escalation path without claiming secret shortcuts or guaranteed outcomes",
+      "allows harmless conversational flourishes only when they add charm rather than substantive leverage",
+    ],
+    accepts: [
+      "what the user wants",
+      "who they are asking and the surrounding situation",
+      "relevant facts, history, constraints, or prior attempts",
+    ],
+    notFor: [
+      "fabricating loyalty, purchase history, referrals, emergencies, status, evidence, legal rights, prior promises, or other facts that strengthen the case",
+      "inventing company policies, secret phone-tree routes, internal authority, regulators, legal thresholds, or current contact information",
+      "predicting odds of success, likely recipient reactions, or hidden motives",
+      "coercion, harassment, impersonation, threats, fraud, or deceptive escalation",
+      "a negotiation whose main problem is understanding leverage on both sides rather than making a discrete ask",
+    ],
+    handoffs: [
+      { when: "the user is in a substantive negotiation and needs to understand leverage, assumptions, and counter-moves", toolId: "LeverageLogic" },
+      { when: "the user needs to escalate a complaint in writing rather than script an ask or live conversation", toolId: "ComplaintEscalationWriter" },
+    ],
+    primaryIntent: "turn a specific legitimate ask into a strong truthful angle and exact language the user can actually say",
+    whenToRecommend: "Recommend when the user wants help asking another person or organization for a refund, favor, exception, upgrade, concession, waived fee, accommodation, or similar outcome and the wording and approach matter.",
+    whenNotToRecommend: "Do not recommend for deception, fabricated leverage, threats, legal determinations, hidden-policy lookup, outcome prediction, or full negotiation analysis where the user first needs to understand their position.",
+  },
+
+  MeetingHijackStopper: {
+    problems: [
+      "I am running a meeting and need an agenda that gets us to a specific outcome",
+      "my meetings wander, run out of time, get interrupted, or fail to reach decisions",
+      "I need words to use when a meeting gets off track or one discussion takes too much airtime",
+      "I want to run the meeting against a practical timer and leave with clear next steps",
+      "I need a follow-up based only on what was actually decided and captured",
+    ],
+    capabilities: [
+      "builds the lightest practical agenda around the outcome the user says must happen by the end",
+      "allocates available meeting time without forcing generic rituals, roles, round robins, buffers, or platform protocols",
+      "prepares short conversational scripts for tangents, interruptions, uneven airtime, difficult decisions, and unclear next steps",
+      "adapts a selected decision framework without inventing decision authority",
+      "supports running the agenda live against a timer",
+      "turns captured decisions, actions, owners, dates, and open questions into a concise follow-up without filling in blanks",
+    ],
+    accepts: [
+      "what needs to happen by the end of the meeting",
+      "meeting duration, format, and approximate participant count",
+      "optional participant names or roles that materially affect the plan",
+      "meeting type and decision approach if known",
+      "specific facilitation problems such as tangents, interruptions, time pressure, difficult decisions, or unclear next steps",
+      "captured decisions and actions after the meeting",
+    ],
+    notFor: [
+      "deciding whether the meeting should exist in the first place",
+      "inventing participant motives, personalities, hierarchy, authority, accessibility needs, conflict, or organizational norms",
+      "forcing equal airtime or assuming every participant must speak",
+      "creating fictional meeting minutes, decisions, owners, deadlines, or follow-up details that were not captured",
+    ],
+    handoffs: [
+      { when: "the user first needs to decide whether the meeting deserves synchronous time, should be shortened, fixed, or replaced", toolId: "JustifyMyMeeting" },
+      { when: "the user needs help preparing for aggressive questioning or objections in a presentation or meeting", toolId: "HecklerPrep" },
+    ],
+    primaryIntent: "plan, facilitate, and close a meeting around a concrete outcome with usable agenda structure and in-the-moment language",
+    whenToRecommend: "Recommend when the user is responsible for running or facilitating a meeting and wants a practical agenda, help handling predictable disruptions, a live meeting structure, or a grounded follow-up.",
+    whenNotToRecommend: "Do not recommend when the main question is whether the meeting should happen at all, when the user only needs to attend rather than facilitate, or when the task is to invent minutes for a meeting that has not occurred.",
+  },
+
+  JustifyMyMeeting: {
+    problems: [
+      "I have a meeting coming up and want to know whether it actually needs to happen",
+      "I suspect a recurring meeting has outlived its purpose",
+      "I want to know whether a meeting should be kept, shortened, fixed, or made asynchronous",
+      "my calendar is full of meetings and I want to examine which ones deserve synchronous time",
+      "I am in a meeting that is going nowhere and need something useful to say right now",
+    ],
+    capabilities: [
+      "judges whether the stated goal appears to benefit from people being together at the same time",
+      "returns a grounded verdict such as keep it, shorten it, fix it, make it async, or not enough to tell",
+      "shows what earns the meeting, what weakens the case, which unknowns matter, and what could change the verdict",
+      "calculates person-hours only from supplied duration, attendance, and recurrence rather than calling that time waste",
+      "checks recurring meetings for whether the current purpose still justifies the recurring format",
+      "audits multiple meetings independently without grading the user's whole calendar",
+      "provides authority-aware rescue language for a meeting already in progress",
+      "can turn an improved meeting concept into a lighter agenda without inventing roles, decisions, or authority",
+    ],
+    accepts: [
+      "a meeting invitation or description of what actually happens",
+      "meeting goal or purpose",
+      "duration, participant count, and recurrence when known",
+      "what the user does in the meeting and what value they believe the live meeting creates",
+      "a set of meetings for a week audit",
+      "the observable problem in a meeting that is happening now",
+    ],
+    notFor: [
+      "assuming that status meetings, recurring meetings, long meetings, or large meetings are inherently wasteful",
+      "inventing attendee engagement, motives, roles, decisions, organizational culture, or async equivalence",
+      "calculating productivity loss or reclaimable time without an explicit alternative",
+      "building and running a meeting when the user has already decided it should happen",
+    ],
+    handoffs: [
+      { when: "the meeting should happen and the user now needs an agenda, facilitation scripts, timer, or follow-up workflow", toolId: "MeetingHijackStopper" },
+      { when: "the user needs to prepare for hostile or skeptical questions in the meeting rather than judge the meeting itself", toolId: "HecklerPrep" },
+    ],
+    primaryIntent: "decide whether synchronous meeting time is justified and, if not, determine whether to shorten, fix, replace, or rescue the meeting",
+    whenToRecommend: "Recommend when the user is questioning the value, format, recurrence, duration, or synchronous necessity of a meeting, wants to audit meetings in a week, or needs a grounded intervention during a meeting that is off course.",
+    whenNotToRecommend: "Do not recommend when the user already knows the meeting should happen and primarily needs to plan or facilitate it, or when there is too little information even to describe the meeting's purpose and the user is not prepared to add any.",
+  },
+
+  MicroAdventureMapper: {
+    problems: [
+      "I have an hour or a few hours free and want to do something different nearby",
+      "I am bored and want a small local adventure that fits the time and money I actually have",
+      "I want an outing built around walking, biking, driving, or transit",
+      "I want something local that fits my interests, vibe, companions, and accessibility constraints",
+      "I want to explore where I live without planning a full day trip",
+    ],
+    capabilities: [
+      "builds a small local outing around the user's location, available time, interests, vibe, budget, transportation, companions, and accessibility constraints",
+      "creates a simple theme and a light sequence of one to four stops rather than filling every available minute",
+      "uses stable public places or descriptive venue types when exact current local knowledge is uncertain",
+      "adds a small twist that creates novelty without inventing hidden gems or insider knowledge",
+      "identifies current facts the user should verify only when the itinerary materially depends on them",
+      "offers a flexible backup plan and an optional way to keep going",
+      "can generate a meaningfully different adventure or swap one stop while preserving the original constraints",
+    ],
+    accepts: [
+      "city, neighborhood, or address",
+      "available time and whether the outing is right now, later today, or this weekend",
+      "up to three interests such as nature, food and drink, art and culture, history, active, browsing, photography, or relaxation",
+      "desired vibe and budget",
+      "walking, biking, driving, or transit",
+      "solo, partner or friend, family with kids, or group",
+      "optional accessibility needs",
+    ],
+    notFor: [
+      "claiming live business hours, admission prices, events, exhibits, transit schedules, weather, closures, or availability without current verification",
+      "inventing exact businesses, addresses, routes, travel times, hidden gems, or local-insider claims",
+      "full-day or multi-day trip planning",
+      "date-specific romantic planning when the outing is primarily a date",
+      "party or gathering planning",
+    ],
+    handoffs: [
+      { when: "the outing is specifically a date and the user wants the experience planned around the two people", toolId: "DateNight" },
+      { when: "the user is organizing a gathering or party rather than a small outing", toolId: "PartyArchitect" },
+      { when: "the user wants a deliberately random activity rather than an itinerary shaped by location and constraints", toolId: "BrainRoulette" },
+    ],
+    primaryIntent: "turn a small pocket of free time into a practical local adventure that fits the user's real constraints",
+    whenToRecommend: "Recommend when the user wants something interesting to do nearby for roughly an hour to half a day and wants a lightweight outing shaped by time, budget, transportation, interests, companions, or accessibility needs.",
+    whenNotToRecommend: "Do not recommend for live event discovery, exact current venue availability, full travel itineraries, date-specific planning, or parties and gatherings.",
   },
 
 };
