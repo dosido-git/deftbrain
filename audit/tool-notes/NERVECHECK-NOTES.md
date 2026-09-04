@@ -1,31 +1,255 @@
-# NerveCheck — architecture & lock notes (`nervecheck-v1`)
+# Nerve Check — tool notes
 
-Confidence coach: full analysis + prep plan (main), live pre-event, post-event debrief,
-situation-specific prep, mid-event SOS, coach-someone-else, and a graduated fear ladder.
-**Frontend:** `src/tools/NerveCheck.js`. **Backend:** `backend/routes/nerve-check.js` (7 endpoints,
-`MODELS.SMART`, all `max_tokens 4000` except specific-prep **5000**; local `safeParseJSON` 5-pass
-repair, raw `anthropic.messages.create` + 3-try loop). **Golden:** `audit/nerve-check-golden-sample.json`
-(3 DE cases). Verify: `npm run check:golden nerve-check`.
+Full grounding rewrite, 2026-09-04. The v1 lock note (`nervecheck-v1`,
+2026-07-13) fixed real bugs — a degraded `verdict` enum, a degraded
+`probability` enum, unescaped-quote 500s — but every one of them was a
+structural defect in a tool whose actual content problem was much larger:
+it routinely told visitors what they were "really" afraid of, estimated
+odds it had no basis for, and turned one outcome into a verdict on their
+character. None of that was ever caught by a gate, because none of it is
+a JSON-shape problem.
 
-## Audit fixes locked here (2026-07-13)
-1. **🐛 `debrief.verdict` enum degradation.** Was `"brave / you_showed_up / learning_experience —
-   one sentence"`; the frontend switches on the exact value for emoji AND the journal `braveRate`
-   analytics → the annotation pushed prose → always mis-bucketed. **Fix:** clean enum
-   `"brave | you_showed_up | learning_experience"`. Verified DE: `brave`.
-2. **🐛 `specific-prep.likely_challenges[].probability` enum degradation.** Was `"likely / possible /
-   unlikely (number)"`; frontend switches for badge color → the `(number)` broke it → all grey.
-   **Fix:** `"likely | possible | unlikely"`. Verified DE: clean.
-3. **🐛 German 500 (unescaped quotes).** The "what to say"/script fields produced unescaped `"` in
-   German → `safeParseJSON` failed all 5 repair passes → 500 (caught live on main). **Fix:** a
-   "never place a double-quote inside a string value" rule in **all 7** prompts.
-4. **⚠️ specific-prep truncation.** 4 uncapped arrays + two 2-4-sentence script fields. **Fix:** cap
-   targeted_prep ≤4 / likely_challenges ≤4 / power_moves ≤3 / cheat_sheet ≤5 + `max_tokens 5000`.
-5. **⚠️ phantom guard OR-clause.** Main guarded `!fear_breakdown && !reframe`; `reframe` is never
-   emitted. **Fix:** `!fear_breakdown` only.
-6. **⚠️→cleaned:** 73 annotation leaks (`— one sentence`/`— N words`/`(number)`) + brevity/caps lines
-   added to main + coach + specific-prep.
+## North star
 
-## DO NOT silently reverse
-- Clean pipe enums for verdict / probability (and the already-clean difficulty / priority); the
-  no-inner-double-quote rule in all 7 prompts; specific-prep caps + `5000`; main guard
-  `!fear_breakdown` only; no annotation suffixes.
+You do not need to make the visitor confident. You need to make the next
+moment more manageable. Prepare what can be prepared, give them words when
+words help, and leave uncertainty where it belongs. Do not explain their
+fear to them, promise the outcome, or manufacture courage. The visitor can
+still be nervous when they walk in — that is not a failure of the tool.
+
+## What it was doing
+
+The old main prompt was, verbatim, "break down the fear, show them they're
+more ready than they think." Both halves invented things. The
+`fear_breakdown.real_fear` field existed specifically to produce a "BUT
+REALLY IT'S..." sentence — a fabricated deeper cause for a fear the visitor
+never described that way ("You think you're scared of the interview, but
+really it's about being judged by your parents"). `fear_breakdown.probability`
+asked the model to estimate the odds of a feared outcome with zero
+evidence. `worst_case_autopsy.how_long_it_stings` asked it to predict how
+long a bad feeling would last. The body-hacks section let it claim a
+breathing pattern "activates the vagus nerve" or "reduces cortisol" — a
+biofeedback claim the tool has no way to verify. And Debrief's `verdict`
+enum (`brave | you_showed_up | learning_experience`) turned a single
+account of one event into a character classification, with
+`what_you_proved`, `growth_note`, and `next_stretch` compounding it into a
+transformation narrative the visitor never asked for.
+
+## What changed
+
+| Then | Now |
+| --- | --- |
+| `fear_breakdown` (surface/real/reality-check/probability) — invents a deeper fear and an odds estimate | `what_youre_worried_about` (established/possible/unknown) — an honest epistemic split, nothing asserted the visitor didn't supply |
+| `why_youre_readier_than_you_think`, `permission_slip`, `mantra` — reassurance manufactured to fit the moment | Removed. `remember` carries one grounded, plainly-stated perspective sentence instead |
+| `worst_case_autopsy` (predicts how bad it'll be and how long it stings) | Removed entirely — FEAR VS FACT bans estimating a feared outcome's probability or duration |
+| Body hacks claiming physiological effects (vagus nerve, cortisol, "calms the nervous system") | `settle_yourself` — plain, optional, low-risk actions with no claimed mechanism |
+| Confidence (1-10), framed and used as if it measured something psychological | Readiness (1-10, `readinessLevel`/`readinessBefore`/`readinessAfter` throughout) — explicitly a self-reported marker that adjusts how much/how immediate the prep is, never a diagnosis |
+| Debrief `verdict` enum + `what_you_proved` + `growth_note` + `next_stretch` — one event becomes a character verdict | `before_and_after` + `what_you_expected`/`what_happened`/`what_was_different` + `useful_evidence_for_next_time` — comparison and evidence, never a verdict, `what_you_might_change` empty when nothing supplied suggests one |
+| SOS (separate mid-event emergency endpoint) | Removed — folded into Help Me Now + Focus Mode's contextual cards |
+| specific-prep (separate situation-type deep-prep endpoint) | Removed — `situationType` now flows into the single main plan instead of a second call |
+| Fear Ladder (6-rung graduated-exposure endpoint + its own view) | Removed entirely — see below |
+| Patterns view (avg confidence gap, brave rate, "growing" trend, top fear types) | Removed entirely — see below |
+| Journal + templates + auto-scheduled check-in banners | Replaced by one simple History list — see below |
+
+## Why Fear Ladder, Patterns, and auto check-ins are gone
+
+Not a scope trim for its own sake — each one either turned the tool into
+something it wasn't, or asserted something it couldn't know:
+
+- **Fear Ladder** turns a situational prep tool into a progressive
+  exposure-therapy program. "I'm nervous about something I have to do —
+  help me get ready for it" is a different request from "design a program
+  to change my relationship with fear," and the second one is a much
+  bigger claim to make from a single form.
+- **Patterns** (`avgGap`, `braveRate`, a `growing` trend line, an
+  `nck_insight_up`-style sentence like *"Your confidence consistently goes
+  UP after facing fears. Your fear overestimates danger"*) derived a
+  psychological progress profile from a handful of localStorage numbers —
+  exactly the kind of claim the rewrite exists to stop, just computed in
+  the frontend instead of generated by the model. The new History view
+  shows the same underlying data (readiness before/after, per situation)
+  without synthesizing a trend or a character arc from it.
+- **Auto-scheduled check-ins** inferred that an event had *happened* from
+  a `timeUntil` value (`today` → due in 8 hours, `later` → due in 7 days)
+  and surfaced an unprompted "How did it go?" banner once that clock
+  expired. `timeUntil` is when the visitor said the event *starts*, not
+  how long it lasts or when they'll be free to debrief — the inference was
+  never solid, and it manufactured a pseudo-accountability nudge nobody
+  asked for. No replacement shipped: this codebase has no real
+  reminder/notification mechanism to hook an honest opt-in into, and a
+  checkbox that goes nowhere would be worse than not offering one. The
+  visitor can debrief anything, anytime, from History.
+
+## Deterministic backstops
+
+This tool had **none** before this rewrite — no `outputStandard`, no
+`outputGuard`, no `RULES`/`validateResult`, only a single top-level-key
+presence guard per endpoint (kept). Four regexes now cover the safest,
+*unconditionally* banned patterns — each has no legitimate exception in
+the prompt text, unlike the hedge-dependent ones below:
+
+1. **The tool's own signature failure** — "BUT REALLY IT'S..." (also "...
+   IT IS", found only by testing the exact phrasing a live probe produced).
+2. **Physiological claims** for a body/breathing action — calms the
+   nervous system, activates the vagus nerve, reduces cortisol, restores
+   regulation, stops panic.
+3. **A population claim** — "most people are/do/feel/don't..." (the exact
+   banned example, "most people are clenching without realizing it").
+4. **An unevidenced probability/outcome estimate** — worst-case
+   probability, chances of success, "nobody will notice," "everyone else
+   will be focused elsewhere."
+
+**Both-directions testing caught two real gaps before these shipped.**
+`but really it's` only matched the contraction — a live-style sentence
+using "but really it is" (no contraction) sailed through, so the pattern
+was widened. Separately, `HEDGED` didn't include the bare word "possible"
+(only "possibly"), so a legitimately cautious sentence — "It is possible
+nobody will notice, though there is no way to know that for certain" —
+tripped the probability rule as a false positive; fixed by adding
+`possible` to `HEDGED`.
+
+**Deliberately prompt-only, not backstopped:** Debrief's character-
+transformation bans (proved/became more confident/grew/conquered/ready for
+harder/underestimated) and the VOICE section's reassurance bans ("you're
+stronger than you think," "you've got this," "you're ready") are each
+explicitly allowed *when the supplied evidence supports the narrower
+claim*. A keyword ban would block a legitimate grounded use exactly as
+readily as an invented one, so these stay prompt-only — live-tested
+clean across a good-outcome and a bad-outcome debrief (see Goldens).
+
+## Things allowed, deliberately
+
+- **A grounded reassurance the evidence actually supports.** The
+  bad-outcome debrief probe correctly said "The outcome was driven by his
+  response, not by how you performed" — a real, defensible distinction
+  drawn from what was supplied, not an invented silver lining.
+- **A plain physical suggestion with no claimed mechanism.**
+  "Settle_yourself" items like "put both feet on the floor" or "let your
+  jaw unclench if it's tense" are fine — the ban is on claiming what they
+  *do*, not on suggesting them.
+- **A real script, specific and confident.** SCRIPTS explicitly allows
+  this — "Sorry, let me think about that for a second" is a fine, usable
+  line; the ban is on inventing the factual premise underneath it (a
+  relationship, an obligation, a history that wasn't supplied).
+
+## Frontend
+
+**Views:** form → results, or results → live → focus, or results →
+debrief-results, or a standalone coach flow, plus a history list. No
+ladder/patterns/journal/sos/voice views — voice mode's card-carousel UX
+survives as Focus Mode, rebuilt from the new Help Me Now schema.
+
+**Focus Mode is now 3-5 contextual cards, not a fixed 7.** Built from
+whichever `liveResults` fields are actually present (first / settle / tell
+yourself / say this / if you need a moment / remember), plus an always-
+present closing "Go" card — matching the spec's "generate only useful
+cards" instruction instead of the old fixed structure.
+
+**History replaces journal + patterns + templates + fear ladders + pending
+check-ins**, one list (`nervecheck-history-v2`). A plan submission creates
+an entry; a debrief for the *same* situation string enriches that entry in
+place (adds `readinessAfter`, a short quote, `debriefResults`) rather than
+appending a second row — matching the spec's mockup, which shows one row
+per situation, "Before" alone until debriefed. Clicking a row reopens the
+stored plan or debrief with **zero new API calls**.
+
+**The results screen recaps the input** (`renderRecap()`) — situation
+type, readiness, timing, and the situation text itself, right below the
+header, so the plan doesn't read as disconnected from what was typed.
+Shown on both the main results view and the Help Me Now results.
+
+**Two bottom buttons on the results screen both carry explicit text
+labels** ("🔴 Go Live" / "📊 Debrief"), not icon-only — a specific
+follow-up request alongside the recap above.
+
+**A past experience, when one exists, is passed to the model as
+visitor-supplied evidence only** — the most recent debriefed entry for the
+same `situationType`, quoted verbatim ("Before a past interview situation,
+readiness was rated 4/10. Afterward: ..."), never an aggregated pattern
+across sessions. This is the one place `pastExperience` reaches the main
+endpoint; the backend prompt's GROUNDING section explicitly allows
+"previous experiences supplied in this session or stored as visitor-
+provided history" as established fact.
+
+## Backend
+
+Four endpoints now, not seven: `/nerve-check` (main), `/nerve-check/live`
+(Help Me Now), `/nerve-check/debrief`, `/nerve-check/coach` (Help Someone
+Else). `/nerve-check/specific-prep`, `/nerve-check/sos`, and
+`/nerve-check/fear-ladder` were deleted, not merged into another route —
+`backend/routes/index.js` auto-mounts by file, so nothing else needed to
+change for the removal to take effect.
+
+Each of the four prompts is a **complete, independent replacement** for
+its endpoint, not layered on a shared core — CORE PROMPT is the main
+endpoint's whole system prompt, not a foundation the other three build on.
+They were each supplied as standalone text and each covers a genuinely
+different moment (preparing in advance, walking in now, looking back,
+helping someone else) with its own scope of what's safe to claim.
+
+`withLocaleContext` was never imported in this file (unlike the pre-
+rewrite version) — this tool has no economic/price content to localize.
+
+`router.outputStandard = 'v2'` + `router.outputGuard` are new — this file
+had neither before.
+
+## Things that will bite the next person
+
+**`useClaudeAPI()`'s `loading` is a single shared boolean across every
+`callToolEndpoint` call from one hook instance**, not per-endpoint. A
+first draft of this rewrite declared separate `liveLoading` /
+`debriefLoading` / `coachLoading` state that was never actually set
+anywhere — dead state the diff-audit didn't catch because nothing was
+structurally wrong with it, just unused. Caught by ESLint's no-unused-vars
+after the fact, not by a dedicated check; worth grepping for the same
+pattern (a tool with multiple endpoints declaring its own per-flow loading
+state instead of the one `useClaudeAPI()` already provides) in any other
+multi-endpoint tool.
+
+**S1.5's `preview` field is name-keyed, same as everywhere else in this
+codebase.** History entries needed a literal `preview` field (40-char
+slice of `situation`) even though `situation` itself already serves the
+same purpose semantically — the gate doesn't care about semantic
+equivalence, only the literal field name.
+
+**PF-17 (Try Example) is required and easy to forget on a full rewrite.**
+This tool went a full draft without one — a 7-input form with no
+demonstration path — caught only by `diff-audit`, not by anything earlier
+in the process. Reused the old tool's two examples verbatim (interview /
+wedding-with-an-ex) since nothing in the spec asked to change them, saving
+the translation cost of two new example scenarios.
+
+## Endpoints
+
+`/nerve-check`, `/nerve-check/live`, `/nerve-check/debrief`,
+`/nerve-check/coach` — all `MODELS.SMART`, through `callClaudeWithRetry`,
+v2 output standard, `validateResult` as the declared check.
+
+## Storage
+
+`nervecheck-result-v2`, `nervecheck-live-result-v2`,
+`nervecheck-debrief-result-v2`, `nervecheck-coach-result-v2`,
+`nervecheck-history-v2` — new keys throughout (the old tool's schema is
+gone; nothing to migrate in place, matching this session's established
+practice of not porting old-shape localStorage data across a schema this
+different). `nc-journal`, `nc-templates`, `nc-ladders`, `nc-pending` are
+simply abandoned — the views that read them no longer exist.
+
+## Goldens
+
+Seven cases, recorded 2026-09-04 for this rewrite; the old baseline
+(`nervecheck-v2`, 7 German-only cases against the removed schema) is
+fully superseded, not ported. `npm run check:golden nerve-check` checks
+structure only — content quality needs eyeballing per each case's
+`guards` text, since this rewrite is almost entirely about prose judgment
+a structural diff can't see.
+
+| Case | What it catches |
+| --- | --- |
+| `main-panel-interview-past-freeze` | The reference case — established/possible/unknown split must be honest; no invented deeper fear; no physiological claims in settle_yourself |
+| `main-medical-appointment-sparse` | No diagnosis, no telling the visitor their symptoms are anxiety, no advice to delay care; sparse input, nothing invented to fill it |
+| `main-vague-loaded-fear` | The adversarial case for CORE PRINCIPLE — visitor explicitly can't name their fear, which is exactly the setup that invited "BUT REALLY IT'S" fabrication in the old tool |
+| `live-help-me-now-5-minutes` | No physiology explained, no invented reason the visitor "got" the opportunity; if_you_need_to_step_away only when actually established |
+| `debrief-good-outcome` | No character-transformation claims despite a good outcome; headline should read like the GOOD example, not a verdict |
+| `debrief-bad-outcome` | "Gentle and constructive" without inventing false positivity or improving the outcome; what_you_might_change only when genuinely suggested |
+| `coach-child-recital` | No diagnosing why the child is nervous, no stating what she "needs" as fact; preserves her agency |

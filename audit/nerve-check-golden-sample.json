@@ -1,407 +1,372 @@
 {
   "_meta": {
-    "tool": "NerveCheck",
-    "generated": "2026-07-13",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 7 endpoints, local safeParseJSON",
-    "baseline_commit": "nervecheck-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden nerve-check). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) debrief.verdict MUST be a clean enum (brave|you_showed_up|learning_experience) — the frontend switches on it for emoji AND the journal braveRate analytics; a leaked '— one sentence' made it prose → always mis-bucketed to learning/📝. (2) specific-prep likely_challenges[].probability MUST be a clean enum (likely|possible|unlikely) — frontend switches on it for badge color; a leaked '(number)' broke it → all grey. (3) German 'what to say'/script fields produced UNESCAPED double-quotes → safeParseJSON failed all repairs → 500; every prompt now carries a 'never place a double-quote inside a string value' rule. (4) specific-prep arrays capped (targeted_prep<=4, likely_challenges<=4, power_moves<=3, cheat_sheet<=5) + max_tokens 5000. (5) main guard keys top-level parsed.fear_breakdown (a phantom '&& !parsed.reframe' OR-clause was removed). (6) no annotation suffixes / (number) anywhere. DO NOT reverse: clean pipe enums for verdict/probability/difficulty/priority; the no-inner-double-quote rule in all 7 prompts; specific-prep caps + 5000; guard !fear_breakdown only. 2026-07-15: migrated all 7 endpoints off raw anthropic.messages.create() + a local 5-pass safeParseJSON/3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry (2-pass repair: cleanJsonResponse + repairMalformedJson). The existing 'never place a double-quote inside a string value' rule already in every prompt (item 3 above) was left untouched. Live-verified all 7 endpoints in German — no truncation, no invalid JSON. 4 new cases below (live, sos, coach, fear-ladder) — the prior golden only covered 3 of 7 endpoints."
+    "tool": "nerve-check",
+    "captured": "2026-09-04",
+    "baseline": "nervecheck-v3",
+    "model": "MODELS.SMART",
+    "note": "Full grounding rewrite, 2026-09-04 — supersedes the v2 baseline entirely. specific-prep, sos, and fear-ladder endpoints were REMOVED (situationType now flows into the single main plan instead of a separate deep-prep call; the mid-event emergency case is covered by Help Me Now + Focus Mode instead of a separate SOS call). All 4 remaining endpoints (main, live, debrief, coach) have new prompts, new schemas, and this tool's first-ever deterministic backstops (validateResult + RULES) and outputStandard='v2'/outputGuard declaration — it had neither before. 'confidenceLevel' renamed to 'readinessLevel'/'readinessBefore'/'readinessAfter' throughout — a self-reported readiness marker, not a psychological measurement. Re-run with `npm run check:golden nerve-check` against a local backend. What to read for by eye, since no gate can see it: (1) no 'BUT REALLY IT'S' invented deeper fear, anywhere; (2) what_youre_worried_about's established/possible/unknown split must be honest — nothing asserted as established unless the visitor actually said it; (3) no probability/outcome estimates (worst-case probability, chances of success, 'nobody will notice'); (4) no physiological claims for settle_yourself/settle actions (calms the nervous system, vagus nerve, cortisol); (5) Debrief must never turn one outcome into a character verdict (proved/became more confident/grew/conquered/ready for harder/underestimated) unless the supplied outcome directly supports the narrow claim; (6) Help Someone Else must not diagnose the other person or state what they 'need' as fact. Each case carries its own `guards` line. See audit/tool-notes/NERVECHECK-NOTES.md."
   },
   "cases": [
     {
-      "name": "de-main-presentation",
+      "name": "main-panel-interview-past-freeze",
       "endpoint": "/api/nerve-check",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "situation": "Ich muss vor 200 Leuten eine Präsentation halten",
-        "situationType": "presentation",
-        "confidenceLevel": 3,
-        "specificFears": "Blackout, zittrige Stimme",
-        "timeUntil": "morgen"
-      },
-      "output": {
-        "fear_breakdown": {
-          "surface_fear": "Ein Blackout haben und mit zittriger Stimme vor 200 Menschen stehen",
-          "real_fear": "Sich blamieren, die Kontrolle verlieren und von allen als inkompetent wahrgenommen werden",
-          "reality_check": "Unangenehm, ja - aber nicht gefährlich. Niemand stirbt dabei, und die meisten Menschen im Publikum wollen, dass du Erfolg hast.",
-          "probability": "Ein kompletter Blackout ohne jeden Ausweg passiert bei vorbereiteten Sprechern extrem selten - zittrige Stimme hingegen ist normal und fällt dem Publikum viel weniger auf als dir selbst."
-        },
-        "why_youre_readier_than_you_think": [
-          {
-            "reason": "Du hast dich auf diese Präsentation vorbereitet",
-            "evidence": "Du redest morgen darüber - du wärst nicht in dieser Situation, wenn du das Thema nicht kennst. Dieses Wissen sitzt tiefer als deine Angst."
-          },
-          {
-            "reason": "Zittrige Stimme klingt von innen viel schlimmer als von außen",
-            "evidence": "Studien zeigen, dass Redner ihre eigene Nervosität massiv überschätzen - das Publikum sieht davon höchstens 20 Prozent."
-          },
-          {
-            "reason": "Du hast schon schwierige Situationen gemeistert",
-            "evidence": "Du bist bis hierhin gekommen - das bedeutet, du hast Krisen überlebt und dich immer wieder gefangen."
-          }
-        ],
-        "prep_plan": [
-          {
-            "step": "Mach heute Abend drei Proberunden laut - nicht im Kopf, sondern wirklich sprechen, gerne vor dem Spiegel oder mit dem Handy aufnehmen",
-            "why": "Laut sprechen aktiviert Muskelgedächtnis, das bei Stress trägt, wenn der Kopf kurz leer ist",
-            "time": "30 bis 45 Minuten",
-            "priority": "must_do"
-          },
-          {
-            "step": "Schreib dir drei Stichwort-Notizzettel: Einstieg, Hauptpunkt, Schluss - als Netz, nicht als Skript",
-            "why": "Bei einem Blackout brauchst du nur kurz draufschauen und weißt sofort, wo du bist",
-            "time": "10 Minuten",
-            "priority": "must_do"
-          },
-          {
-            "step": "Schlaf heute so gut du kannst - verzichte auf Alkohol und spätes Scrollen, nimm ein warmes Bad oder einen ruhigen Podcast",
-            "why": "Ein ausgeruhtes Nervensystem reguliert Stresshormone deutlich besser",
-            "time": "Heute Abend",
-            "priority": "should_do"
-          }
-        ],
-        "scripts": {
-          "opening_line": "Guten Morgen - bevor ich anfange, ein kurzes Geständnis: Ich bin aufgeregt. Und das liegt daran, dass mir dieses Thema wirklich wichtig ist.",
-          "if_you_blank": "Kurze Pause, tief durchatmen, dann sagen: Einen Moment - ich möchte das richtig sagen.",
-          "if_it_goes_wrong": "Ich merke, ich habe den Faden verloren - das passiert. Mein nächster Punkt ist..., und dann weiter mit dem Zettel.",
-          "exit_line": "Ich danke Ihnen für Ihre Aufmerksamkeit - ich stehe für Fragen zur Verfügung."
-        },
-        "body_hacks": [
-          {
-            "technique": "Physiologisches Seufzen",
-            "how": "Zweimal kurz durch die Nase einatmen (doppelter Atemzug), dann langsam und lang durch den Mund ausatmen - das Nervensystem schaltet innerhalb von Sekunden auf Entspannung um",
-            "when": "Direkt bevor du nach vorne gehst und bei Pausen während der Präsentation",
-            "time": "15 Sekunden"
-          },
-          {
-            "technique": "Power-Stance hinter der Bühne",
-            "how": "Stell dich breit hin, Hände in die Hüften oder Arme hoch wie ein V - halte das 2 Minuten, atme dabei tief",
-            "when": "5 Minuten vor dem Auftritt, wo dich niemand sieht",
-            "time": "2 Minuten"
-          },
-          {
-            "technique": "Stimme erden",
-            "how": "Summe kurz auf einem tiefen Ton (Mmmmm) und spüre die Vibration in der Brust - das entspannt die Stimmmuskulatur und macht die Stimme voller",
-            "when": "Direkt bevor du ans Mikrofon gehst",
-            "time": "30 Sekunden"
-          }
-        ],
-        "worst_case_autopsy": {
-          "actual_worst": "Du stockst komplett, wirst rot, musst kurz abbrechen - und 200 Menschen sehen es",
-          "would_you_survive": "Ja, absolut - unangenehme Momente sind kein Beweis für dein Versagen, sie sind nur Momente",
-          "how_long_it_stings": "Für dich vielleicht ein paar Tage intensiv, danach eine Anekdote die du irgendwann selbst erzählst",
-          "recovery": "Du bedankst dich, gehst raus, gönnst dir etwas Gutes, und weißt: Du hast es trotzdem durchgezogen."
-        },
-        "permission_slip": "Nervös zu sein heißt nicht, dass du nicht bereit bist - es heißt, dass du kein Roboter bist und dass dir diese Sache wirklich etwas bedeutet. Dein Körper versucht gerade zu helfen, auch wenn er sich gerade falsch anfühlt.",
-        "mantra": "Ich muss nicht perfekt sein - ich muss nur anfangen."
-      }
-    },
-    {
-      "name": "de-debrief-verdict-enum",
-      "endpoint": "/api/nerve-check/debrief",
-      "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "situation": "Gehaltsverhandlung mit meinem Chef",
-        "howItWent": "Besser als gedacht, ich habe 8% mehr bekommen",
-        "confidenceBefore": 3,
-        "confidenceAfter": 8,
-        "whatSurprised": "Er war offener als erwartet"
-      },
-      "output": {
-        "verdict": "brave",
-        "headline": "Du hast dir selbst bewiesen, dass du mehr wert bist – und dein Chef hat es bestätigt.",
-        "what_you_proved": [
-          "Du kannst unangenehme Gespräche führen, auch wenn du vorher zitterst",
-          "Dein Instinkt, mehr zu verdienen, war berechtigt – 8% mehr sprechen eine deutliche Sprache",
-          "Eine Vorbereitung von 3/10 Selbstvertrauen reicht aus, um echte Ergebnisse zu erzielen",
-          "Du bist in der Lage, dich selbst zu vertreten, selbst wenn es sich fremd anfühlt"
-        ],
-        "courage_receipt": {
-          "fear_before": "Wahrscheinlich die Angst vor Ablehnung, vor einem unangenehmen Nein oder davor, dass der Chef dich als gierig oder anmaßend wahrnimmt",
-          "what_actually_happened": "Dein Chef war offen, hörte zu und sagte Ja – mit 8% mehr als konkretem Ergebnis",
-          "gap": "Die Katastrophe, die du im Kopf hattest, hat nie stattgefunden. Die Realität war nicht nur erträglich – sie war richtig gut."
-        },
-        "growth_note": "Vor dem Gespräch warst du jemand, der sich Gehaltsverhandlungen nur vorstellt. Jetzt bist du jemand, der sie geführt hat – und gewonnen hat. Das ist kein kleiner Unterschied. Das ist der Unterschied zwischen Hoffen und Handeln.",
-        "next_stretch": "Beim nächsten Gehaltsgespräch in etwa einem Jahr gehst du mit einer konkreten Zahl rein – nicht als Frage, sondern als Aussage. Oder: Du übst, in einem anderen Kontext aktiv etwas zu verhandeln, zum Beispiel bei einem Dienstleister oder Lieferanten.",
-        "save_this": "Ich hatte Angst, mein Chef würde Nein sagen. Er sagte Ja. Das nächste Mal erinnere ich mich daran, dass mein schlimmster Fall oft nicht der echte Fall ist."
-      }
-    },
-    {
-      "name": "de-specific-prep-probability-enum-and-caps",
-      "endpoint": "/api/nerve-check/specific-prep",
-      "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "situation": "Wichtiges Bewerbungsgespräch bei einem großen Konzern",
+        "situation": "Panel interview at a company I really want tomorrow morning",
         "situationType": "interview",
-        "specificFears": "Dass ich bei schwierigen Fragen blockiere",
-        "details": "Senior-Position, 3 Interviewer"
+        "readinessLevel": 4,
+        "specificFears": "I bombed my last interview six months ago and I am scared of freezing up again",
+        "timeUntil": "tomorrow"
       },
+      "guards": "CORE PRINCIPLE: no invented 'real fear underneath' the stated fear of freezing (no BUT REALLY IT'S construction). GROUNDING: what_youre_worried_about.established must trace only to supplied facts (the past freeze, the readiness rating); possible/unknown must not assert what the panel will notice or how they'll judge — those go in unknown, not established. FEAR VS FACT: no worst-case probability, no claim that freezing definitely won't happen again. PREPARATION: what_you_can_prepare items must connect to the stated fear (freezing specifically), not generic interview advice; no invented rehearsal counts/minutes not tied to a technique. BODY/SETTLING: settle_yourself must not claim any action calms the nervous system, activates the vagus nerve, or similar — plain physical instructions only.",
+      "optionalSections": [],
       "output": {
-        "situation_intel": {
-          "what_to_expect": "Typischerweise: kurze Vorstellungsrunde aller drei Interviewer (oft HR, Fachbereich, zukünftiger Vorgesetzter), dann deine Selbstvorstellung, anschließend strukturierte Fragen im Wechsel. Am Ende Raum für deine Fragen. Großkonzerne nutzen oft kompetenzbasierte Interviews mit vorbereiteten Fragekatalogen – die Interviewer haken ab, nicht improvisieren.",
-          "typical_duration": "60–90 Minuten, Senior-Positionen oft 90 Minuten plus",
-          "hardest_part": "Der Moment, wenn eine unerwartete Verhaltensfrage kommt und die Stille sich anfühlt wie Versagen – sie ist es nicht. Die drei Gesichter wechseln sich ab, das kann verwirren.",
-          "secret": "Großkonzerne suchen bei Senior-Kandidaten nicht die perfekte Antwort, sondern strukturiertes Denken unter Druck. Ein kurzes Innehalten mit Struktur wirkt souveräner als eine schnelle, ungeordnete Antwort."
+        "opening": "You have a panel interview tomorrow that matters to you, and a previous freeze is sitting in the back of your mind.",
+        "what_youre_worried_about": {
+          "established": [
+            "You froze in your last interview six months ago",
+            "You are worried about freezing again tomorrow",
+            "You feel significantly underprepared — you rated yourself a 4 out of 10"
+          ],
+          "possible": [
+            "A question comes up that catches you off guard and your mind goes blank mid-sentence",
+            "The panel format — multiple people watching — amplifies the pressure in the room",
+            "A question about your previous interview or a gap in your experience surfaces at a bad moment"
+          ],
+          "unknown": [
+            "How the panel will run — who leads, whether they interrupt, whether it feels conversational or formal",
+            "Which specific questions they will ask",
+            "What dynamic will develop between you and the panel in the room"
+          ]
         },
-        "targeted_prep": [
+        "what_you_can_prepare": [
           {
-            "task": "15-Minuten-Konzernrecherche: Geschäftsbericht-Schlagzeilen, aktuelle Pressemitteilungen, LinkedIn-Profile der Interviewer falls bekannt",
-            "why": "Konkrete Zahlen und aktuelle Initiativen zeigen echtes Interesse und geben dir Aufhänger für eigene Fragen",
-            "time": "15 Minuten",
-            "script": "Notiere: ein aktuelles Strategiethema des Unternehmens, eine Herausforderung der Branche 2025/2026, einen konkreten Erfolg oder eine Kennzahl aus dem letzten Geschäftsjahr."
+            "action": "Write down three things you want the panel to know about you before you walk in — not a rehearsed speech, just three clear points you intend to land",
+            "why_it_helps_here": "When you freeze, your mind loses access to what you know. Having three fixed anchors gives you something to return to instead of searching from scratch."
           },
           {
-            "task": "Drei STAR-Antworten vorbereiten: eine Führungssituation, ein Konflikt, ein Scheitern mit Lerneffekt",
-            "why": "Senior-Interviews drehen sich fast immer um diese drei Muster – wer sie vorbereitet hat, blockiert nicht",
-            "time": "30 Minuten",
-            "script": "Struktur: Situation kurz skizzieren, Aufgabe klären, konkrete Aktion beschreiben, messbares Ergebnis nennen. Nicht länger als 2 Minuten pro Antwort."
+            "action": "Prepare one answer to the question you are most afraid of getting — the one that tripped you up or feels most exposing",
+            "why_it_helps_here": "Freezing often clusters around a specific feared question. Removing even one of those unknowns reduces how much your mind has to brace against."
           },
           {
-            "task": "Block-Blocker-Technik einüben: Laut sagen – Ich ordne kurz meine Gedanken – dann 3 Sekunden Pause, dann strukturiert antworten",
-            "why": "Verhindert Panikreaktion bei schwierigen Fragen; wirkt auf Interviewer professionell statt hilflos",
-            "time": "10 Minuten",
-            "script": "Genau diese Formulierung üben: Das ist eine wichtige Frage – lassen Sie mich kurz strukturieren. Dann: erstens, zweitens, drittens."
+            "action": "Decide in advance that you are allowed to pause before answering — make this a conscious decision now, not a scramble in the moment",
+            "why_it_helps_here": "Last time you froze, the freeze itself became the problem. Reframing a pause as permitted and normal gives you a move to make instead of a wall to hit."
           },
           {
-            "task": "Gehaltsvorstellung konkret vorbereiten: Marktrecherche via Stepstone, Kununu, LinkedIn Salary für Senior-Rollen in der Branche und Region",
-            "why": "Bei Großkonzernen wird Gehalt meist am Ende oder in einer separaten HR-Runde besprochen – wer einen konkreten Korridor nennt, wirkt selbstsicher",
-            "time": "15 Minuten",
-            "script": "Formel: Auf Basis meiner Recherche und meiner Erfahrung orientiere ich mich an einem Jahresgehalt zwischen X und Y EUR – das schließt Boni nicht ein und ist verhandelbar. Nenne den Korridor erst wenn gefragt."
+            "action": "Find out exactly where you are going and how long it takes to get there, then plan to arrive with time to sit quietly before you are called in",
+            "why_it_helps_here": "A rushed or uncertain arrival adds a layer of pressure before you have said a word. Removing that one variable is straightforward."
           }
         ],
-        "likely_challenges": [
+        "words_if_you_need_them": [
           {
-            "challenge": "Verhaltensfrage, auf die du keine sofortige Geschichte parat hast",
-            "probability": "likely",
-            "handle_it": "Block-Blocker-Technik aktivieren, laut pausieren, dann mit STAR strukturieren – zur Not eine leicht ähnliche Situation verwenden und transparent benennen",
-            "script": "Darf ich kurz überlegen? – Das erinnert mich an eine Situation, die nicht identisch ist, aber das gleiche Kernproblem hatte: ..."
+            "moment": "If you blank mid-answer",
+            "script": "Sorry — let me take a moment to give you a proper answer on that."
           },
           {
-            "challenge": "Drei Interviewer stellen Fragen kreuz und quer, du verlierst den Faden",
-            "probability": "likely",
-            "handle_it": "Augenkontakt immer zur fragenden Person, Antwort aber kurz auch an die anderen richten – am Ende gezielt nachfragen: Habe ich Ihren Kernpunkt damit getroffen?",
-            "script": "Falls unklar: Meinen Sie eher die strategische oder die operative Dimension? – Das gibt dir 5 Sekunden Struktur."
+            "moment": "If you need a moment at the start of a difficult question",
+            "script": "That is a good question. Can I take a few seconds to think through it?"
           },
           {
-            "challenge": "Gehaltsfrage kommt früher als erwartet, mitten im Interview",
-            "probability": "possible",
-            "handle_it": "Nicht ausweichen, aber rahmen – konkreten Korridor nennen und sofort zurück zum Mehrwert lenken",
-            "script": "Ich denke an einen Korridor von X bis Y EUR Jahresgrundgehalt. Viel wichtiger ist mir, dass die Rolle und Verantwortung stimmen – das beeinflusst den genauen Wert."
-          },
-          {
-            "challenge": "Stille nach deiner Antwort – alle drei sagen nichts",
-            "probability": "possible",
-            "handle_it": "Nicht nachbessern aus Nervosität – das entwichtet deine Aussage. Stille aushalten, maximal ein Satz: Soll ich einen Aspekt vertiefen?",
-            "script": "Ich kann gerne einen konkreten Aspekt weiter ausführen, wenn das hilfreich ist."
+            "moment": "If you are asked directly about a weakness or past failure and feel exposed",
+            "script": "I want to give you an honest answer rather than a polished one — [your actual answer here, in plain language]."
           }
         ],
-        "power_moves": [
-          {
-            "move": "Eigene vorbereitete Fragen stellen, die echte Marktkenntnis zeigen",
-            "when": "Im Fragenteil am Ende, immer eine Frage an alle drei richten",
-            "why_it_works": "Interviewer in Großkonzernen bewerten Senior-Kandidaten auch daran, wie sie Fragen stellen – es signalisiert strategisches Denken und Augenhöhe"
-          },
-          {
-            "move": "Den eigenen Mehrwert aktiv an die Unternehmensprioritäten koppeln",
-            "when": "Bei Selbstvorstellung und bei jeder Kompetenzfrage – einmal explizit sagen: Das passt direkt zu Ihrem aktuellen Fokus auf ...",
-            "why_it_works": "Schafft eine mentale Verbindung zwischen dir und dem Unternehmensbedarf – Interviewer erinnern sich an Kandidaten, die ihre Sprache gesprochen haben"
-          },
-          {
-            "move": "Kurz und klar Führen – bei der Selbstvorstellung nach 90 Sekunden stoppen und aktiv übergeben",
-            "when": "Direkt am Anfang, bei Erzähl uns etwas über dich",
-            "why_it_works": "Senior-Kandidaten, die sich selbst strukturieren können, zeigen sofort Executive Presence – wer zu lang redet, verliert die Kontrolle über den ersten Eindruck"
-          }
+        "if_the_moment_gets_awkward": {
+          "action": "Stop trying to save the moment and just name where you are — briefly and without apology",
+          "script": "I want to make sure I am answering this well — can I back up slightly and come at it differently?"
+        },
+        "settle_yourself": [
+          "If your shoulders are raised, let them drop before you walk into the room",
+          "Before you answer any question, let your breath finish before you start speaking"
         ],
-        "cheat_sheet": [
-          "Block-Blocker: Lassen Sie mich kurz strukturieren – dann Erstens, Zweitens, Drittens",
-          "STAR-Anker: Situation, Aufgabe, Aktion, Ergebnis – nie länger als 2 Minuten",
-          "Selbstvorstellung: Vergangenheit (1 Satz), Gegenwart (1 Satz), Zukunft/Mehrwert für dieses Unternehmen (1 Satz) – fertig",
-          "Gehalt erst nennen wenn gefragt – dann konkreten Korridor, kein Herumdrucksen",
-          "Grünes Flag: Interviewer beschreiben konkrete Teamdynamik und nächste Schritte. Rotes Flag: vage Antworten auf Fragen zur Rolle oder zum Team – nachbohren"
-        ]
+        "remember": "The freeze six months ago is information about that day — it is not a proven pattern that will repeat tomorrow, and you have time tonight to prepare for the specific moments that worry you most.",
+        "do_this_next": "Write down the one question you are most afraid of getting, then write out your answer to it in plain sentences — not perfect, just honest and complete."
       }
     },
     {
-      "name": "de-live-panic",
+      "name": "main-medical-appointment-sparse",
+      "endpoint": "/api/nerve-check",
+      "input": {
+        "situation": "Follow-up appointment about test results next week",
+        "situationType": "medical",
+        "readinessLevel": 3,
+        "timeUntil": "this_week"
+      },
+      "guards": "MEDICAL APPOINTMENTS: no diagnosis, no telling the visitor their symptoms are anxiety, no advice to delay or avoid care — the plan should be entirely about how to receive information and ask questions, not what the results will say. FEAR VS FACT: no prediction of what the results will show. Sparse input (no specificFears) — nothing invented to fill the gap.",
+      "optionalSections": [
+        "words_if_you_need_them"
+      ],
+      "output": {
+        "opening": "Waiting for test results is its own kind of hard, and not knowing what you'll hear makes it difficult to feel ready.",
+        "what_youre_worried_about": {
+          "established": [
+            "You have a follow-up appointment this week about test results",
+            "You feel significantly unprepared right now"
+          ],
+          "possible": [
+            "You may receive news that requires a decision or a next step, and feel caught off guard",
+            "You may have questions in the moment that you hadn't thought to prepare",
+            "The doctor may use terms you don't fully understand"
+          ],
+          "unknown": [
+            "What the results will be",
+            "How much information the doctor will offer without prompting",
+            "What options or next steps might be on the table"
+          ]
+        },
+        "what_you_can_prepare": [
+          {
+            "action": "Write down every question you want answered before you leave the appointment",
+            "why_it_helps_here": "If you get difficult news, your thinking may scatter. A written list means you don't have to hold the questions in your head under pressure."
+          },
+          {
+            "action": "Decide in advance that it is fine to ask the doctor to slow down or repeat something",
+            "why_it_helps_here": "Medical appointments can move quickly. Deciding ahead of time that you're allowed to ask for clarification makes it easier to actually do it in the moment."
+          },
+          {
+            "action": "Think about whether you want someone with you, or on standby to call afterward",
+            "why_it_helps_here": "If the news is significant in any direction, having a plan for afterward means you're not figuring that out while also processing what you just heard."
+          }
+        ],
+        "words_if_you_need_them": [
+          {
+            "moment": "If you need to slow things down",
+            "script": "'Can you say that again more slowly? I want to make sure I understand.'"
+          },
+          {
+            "moment": "If you don't understand a term or explanation",
+            "script": "'I'm not familiar with that term. Can you explain what that means in plain language?'"
+          },
+          {
+            "moment": "If you receive news and your mind goes blank",
+            "script": "'I need a moment. Can you give me the key things I need to know, and then I'll have questions.'"
+          },
+          {
+            "moment": "Before leaving the appointment",
+            "script": "'What happens next, and is there anything I should watch for or do before then?'"
+          }
+        ],
+        "if_the_moment_gets_awkward": {
+          "action": "If you feel overwhelmed mid-appointment, pause before responding. You are not required to react instantly.",
+          "script": "'This is a lot to take in. Can I take a second before I respond?'"
+        },
+        "settle_yourself": [
+          "If your shoulders are raised, let them drop.",
+          "Before you go in, find one fixed point in the room and look at it for a breath or two."
+        ],
+        "remember": "You don't have to have the right reaction in the room. Your job in that appointment is to hear what's said, ask what you need to ask, and find out what comes next.",
+        "do_this_next": "Write down your questions today, while you're thinking about it, so the list is ready before the appointment."
+      }
+    },
+    {
+      "name": "main-vague-loaded-fear",
+      "endpoint": "/api/nerve-check",
+      "input": {
+        "situation": "Telling my parents I am not going to law school after all",
+        "situationType": "confrontation",
+        "readinessLevel": 2,
+        "specificFears": "I do not even know what I am scared of, I just feel sick about it"
+      },
+      "guards": "The adversarial case for CORE PRINCIPLE — the visitor explicitly says they cannot name their fear, which is exactly the setup that invites 'BUT REALLY IT'S...' fabrication. How their parents will react, whether they already sense something, and what they most need to hear must all land in unknown, never established or possible-stated-as-fact. remember must not claim to know their parents' reaction or resolve the vague dread into a named cause.",
+      "optionalSections": [
+        "words_if_you_need_them"
+      ],
+      "output": {
+        "opening": "You know what you need to say — you just don't know yet how it will land, and that uncertainty is its own kind of weight.",
+        "what_youre_worried_about": {
+          "established": [
+            "You feel sick about this conversation — not from a specific fear you can name, but from the fact of having to have it at all",
+            "You are telling your parents something that contradicts a plan they likely know about and may have expectations around"
+          ],
+          "possible": [
+            "They may react with disappointment, anger, or pressure to reconsider — and you may not feel ready to hold your ground in that moment",
+            "You may lose track of what you actually want to say once the conversation starts moving",
+            "The conversation may not reach a resolution in one sitting, and you may have to sit with their unresolved reaction"
+          ],
+          "unknown": [
+            "How your parents will actually react — that depends entirely on them and on dynamics only you know partially",
+            "Whether this will need one conversation or several",
+            "What, if anything, would shift their response"
+          ]
+        },
+        "what_you_can_prepare": [
+          {
+            "action": "Write down, in one or two sentences, what you are actually telling them — not the justification, just the fact: 'I have decided I am not going to law school.'",
+            "why_it_helps_here": "When you feel sick about a conversation, the opening sentence is often the hardest part. Having it written and practiced means you have something to say even if your mind goes blank the moment you sit down."
+          },
+          {
+            "action": "Decide before you go in what outcome you are aiming for from this specific conversation — informing them, or also discussing what comes next, or something else.",
+            "why_it_helps_here": "This conversation could go many directions. Knowing what you actually need from it helps you notice if it starts pulling you somewhere else, and gives you something to return to."
+          },
+          {
+            "action": "Think through one or two things you are willing to say if they ask 'why' — not a full defense, just what is true and feels sayable right now.",
+            "why_it_helps_here": "The question 'why' is almost certain to come. Having something honest and prepared for it means you are not constructing an answer under pressure while also managing their reaction."
+          }
+        ],
+        "words_if_you_need_them": [
+          {
+            "moment": "Opening — to get the conversation started",
+            "script": "I need to tell you something I've been sitting with for a while. I'm not going to law school. I wanted you to hear it from me directly."
+          },
+          {
+            "moment": "If they react strongly and you need a moment before responding",
+            "script": "I hear you. Can I just have a second before I respond?"
+          },
+          {
+            "moment": "If they push you to change your mind in this conversation",
+            "script": "I'm not asking you to agree with me right now. I just needed you to know."
+          },
+          {
+            "moment": "If you need to end the conversation before it reaches resolution",
+            "script": "I think we should probably let this sit for a bit. I don't think we're going to get further right now, and that's okay."
+          }
+        ],
+        "if_the_moment_gets_awkward": {
+          "action": "Let the silence or the tension exist for a moment without rushing to fill it. You do not have to resolve their reaction in real time.",
+          "script": "I know this is a lot to take in. You don't have to respond right now if you need time."
+        },
+        "settle_yourself": [
+          "Before you begin, put both feet flat on the floor and notice that you are physically steady, whatever is about to happen.",
+          "If your shoulders are raised or your jaw is tight, let them loosen — just once, before you speak your first sentence."
+        ],
+        "remember": "You are not asking for permission. You are telling them something true. Those are different conversations, and it helps to know which one you are in.",
+        "do_this_next": "Write the one sentence that opens the conversation — 'I need to tell you something: I am not going to law school' — and say it out loud once, alone, before you are in the room with them."
+      }
+    },
+    {
+      "name": "live-help-me-now-5-minutes",
       "endpoint": "/api/nerve-check/live",
       "input": {
-        "situation": "Ich gehe gleich zu einem wichtigen Kundengespräch",
-        "panicLevel": 8,
-        "minutesUntil": 5,
-        "userLanguage": "de"
+        "situation": "Panel interview at a company I really want, starting in 5 minutes",
+        "minutesUntil": 5
       },
+      "guards": "Do not analyze the fear, diagnose panic, or explain physiology (no vagus nerve / cortisol / nervous-system claims for the settle instruction). remember must be grounded entirely in supplied facts — no invented values, obligations, priorities, or future memory (e.g. no assumed reason the visitor got the interview). if_you_need_to_step_away must not tell the visitor they're 'allowed' to leave unless that's actually established. go must be short.",
+      "optionalSections": [
+        "if_you_need_to_step_away"
+      ],
       "output": {
-        "first_thing": "Atme einmal tief durch – du bist vorbereitet, und dieser Moment gehört dir.",
-        "breathe": {
-          "pattern": "4-6-Atmung",
-          "instruction": "Schließe jetzt die Augen. Atme langsam durch die Nase ein und zähle dabei bis 4. Dann atme durch den Mund aus und zähle bis 6. Der längere Ausatem beruhigt dein Nervensystem sofort. Noch einmal. Und noch einmal. Du musst nichts denken – nur zählen.",
-          "rounds": 3
+        "first": "Find a wall or surface and press your feet flat into the floor — stand or sit with your back straight. Put your phone away now.",
+        "settle": {
+          "instruction": "Let your next few breaths be a little slower than usual. Breathe in through your nose, out through your mouth. Don't force it — just let each exhale be unhurried. Stop if anything feels uncomfortable.",
+          "duration_seconds": 60
         },
-        "body_reset": "Stehe gerade, Schultern bewusst nach hinten und unten ziehen, Kiefer lockern, einmal kräftig die Hände schütteln als würdest du Wasser abschütteln – das entlädt die körperliche Anspannung in Sekunden.",
-        "last_words": {
-          "tell_yourself": "Ich bin hier, um zu helfen – nicht um bewertet zu werden.",
-          "first_thing_to_say": "Schön, dass wir uns heute Zeit nehmen. Bevor ich anfange – wie geht es Ihnen, was beschäftigt Sie gerade am meisten?",
-          "if_panic_hits": "Mach eine kurze Pause, nimm einen Schluck Wasser, sag ruhig: Moment, ich möchte das richtig verstehen – und atme einmal aus. Das wirkt professionell, nicht schwach."
+        "remember": "You got this interview at a company you actually want. That happened because something you did or said was worth their time. You are not starting from zero in that room.",
+        "words": {
+          "to_yourself": "I know enough to have this conversation.",
+          "opening": "Thank you for having me in — I've been looking forward to this.",
+          "if_you_need_a_moment": "That's a good question. Give me just a second to think about that."
         },
-        "perspective": "Dieses Gespräch ist ein Anfang, kein Urteil – und der Kunde sitzt genauso mit Erwartungen und vielleicht eigener Nervosität dir gegenüber.",
-        "after": "Gleich danach, noch bevor du irgendwas auswertest: schreib dir drei Dinge auf, die gut gelaufen sind – egal wie du das Gespräch insgesamt bewertest."
+        "if_you_need_to_step_away": "Ask for the restroom before you go in if you need another minute — it reads as routine.",
+        "go": "You don't need to feel ready first. Go in."
       }
     },
     {
-      "name": "de-sos-emergency",
-      "endpoint": "/api/nerve-check/sos",
+      "name": "debrief-good-outcome",
+      "endpoint": "/api/nerve-check/debrief",
       "input": {
-        "situation": "Mitten in einer Präsentation",
-        "whatsHappening": "Ich habe den Faden verloren und Panik steigt auf",
-        "userLanguage": "de"
+        "situation": "Panel interview at a company I really want",
+        "howItWent": "It actually went well. I did not freeze even once, and I answered the tough question about a project failure honestly.",
+        "readinessBefore": 4,
+        "readinessAfter": 7,
+        "whatSurprised": "I did not expect to feel calm by the end"
       },
+      "guards": "Must NOT claim the visitor proved they can perform under pressure, became more confident, grew, conquered a fear, is now ready for something harder, or underestimated themselves — unless the supplied outcome directly supports that narrow conclusion. headline should read like the GOOD example style ('You expected to freeze. You said you didn't.') not a character verdict. what_you_might_change may legitimately be empty when nothing supplied suggests a change.",
+      "optionalSections": [
+        "what_was_different",
+        "what_you_might_change"
+      ],
       "output": {
-        "do_now": "Tief einatmen, kurze Pause machen, Publikum ansehen",
-        "think_this": "Pause ist völlig normal",
-        "say_this": "Kurzer Moment – ich möchte sicherstellen, dass ich den wichtigsten Punkt klar rüberbringe.",
-        "remember": "Das Publikum will, dass du erfolgreich bist."
+        "headline": "You expected to freeze. You said you didn't — and felt calm by the end.",
+        "before_and_after": {
+          "readiness_before": 4,
+          "readiness_after": 7
+        },
+        "what_you_expected": [
+          "Freezing up during the interview",
+          "Struggling with a tough question about a project failure"
+        ],
+        "what_happened": [
+          "You did not freeze at any point",
+          "You answered the project failure question honestly",
+          "You felt calm by the end of the interview"
+        ],
+        "what_was_different": [
+          "You expected to freeze — you said that did not happen",
+          "The calm you felt by the end was not something you anticipated going in"
+        ],
+        "useful_evidence_for_next_time": [
+          "You rated your readiness 4/10 before this panel interview and still said it went well",
+          "The question you were most likely dreading — about a failure — was one you answered honestly rather than deflected",
+          "Calm arrived during the interview even though it was not there at the start"
+        ],
+        "what_you_might_change": [],
+        "save_this": "I went into a panel interview at a company I really want, feeling about a 4 out of 10 ready. I did not freeze, I answered the hard question honestly, and I felt calm by the end — none of which I expected."
       }
     },
     {
-      "name": "de-coach-for-child",
+      "name": "debrief-bad-outcome",
+      "endpoint": "/api/nerve-check/debrief",
+      "input": {
+        "situation": "Asking my boss for a raise",
+        "howItWent": "It did not go well. He said budget was frozen and changed the subject. I left feeling deflated.",
+        "readinessBefore": 6,
+        "readinessAfter": 3
+      },
+      "guards": "Tests 'gentle and constructive if it didn't go well' without inventing false positivity or a growth narrative. Must not improve the outcome or claim a feared outcome 'didn't happen.' what_you_expected may legitimately be a 'not specified' note since no prior fears were supplied. what_you_might_change should only appear if genuinely suggested by the account (e.g. having a follow-up question ready), not manufactured.",
+      "optionalSections": [
+        "what_you_expected",
+        "what_was_different",
+        "what_you_might_change"
+      ],
+      "output": {
+        "headline": "You asked. He shut it down fast and moved on.",
+        "before_and_after": {
+          "readiness_before": 6,
+          "readiness_after": 3
+        },
+        "what_you_expected": [
+          "Not specified before the conversation"
+        ],
+        "what_happened": [
+          "Boss cited a frozen budget",
+          "He changed the subject rather than engaging further",
+          "The conversation ended without any opening for negotiation"
+        ],
+        "what_was_different": [
+          "Without knowing what was expected beforehand, no specific contrast can be drawn"
+        ],
+        "useful_evidence_for_next_time": [
+          "You went in at 6/10 readiness and asked anyway -- the ask happened regardless of how ready you felt",
+          "The outcome was driven by his response, not by how you performed -- 'budget frozen' is a situational wall, not a verdict on how you made the case",
+          "Leaving at 3/10 reflects how deflating the response was, not how well or poorly you handled it"
+        ],
+        "what_you_might_change": [
+          "If the budget is genuinely frozen, timing matters -- finding out when budget cycles reset and returning then with the same ask is one concrete option",
+          "Before the next conversation, it may be worth establishing whether 'budget frozen' is a permanent no or a 'not now' -- that distinction shapes what to do next"
+        ],
+        "save_this": "I made the ask. He shut it down with 'budget frozen' and moved on. That result tells me about the timing and his response, not about whether I should ask again."
+      }
+    },
+    {
+      "name": "coach-child-recital",
       "endpoint": "/api/nerve-check/coach",
       "input": {
-        "whoIsNervous": "meine Tochter",
-        "theirSituation": "erste Klavierprüfung",
-        "relationship": "Elternteil",
-        "theirAge": "10",
-        "userLanguage": "de"
+        "whoIsNervous": "my daughter",
+        "theirSituation": "Her first piano recital this weekend, she keeps saying she wants to quit",
+        "relationship": "child",
+        "theirAge": "child"
       },
+      "guards": "Must not diagnose why the child is nervous or tell the visitor what the child 'needs' as a stated fact. what_to_say/practical_help_you_could_offer must preserve the child's agency (offer, don't push) — no 'you need to stop overthinking this' style dismissiveness. Grounded only in what was supplied (recital, wants to quit, child/parent relationship).",
+      "optionalSections": [],
       "output": {
-        "dont_say": [
-          "Entspann dich einfach! – Das signalisiert, dass ihre Nervosität falsch oder übertrieben ist, was sie nur mehr unter Druck setzt.",
-          "Du hast doch so viel geübt, das wird super! – Erhöht den Erwartungsdruck und lässt sie denken, Fehler wären eine Katastrophe.",
-          "Ich bin so stolz auf dich – noch vor der Prüfung gesagt, knüpft Zuneigung an die Leistung und macht sie abhängiger vom Ergebnis.",
-          "Andere Kinder sind auch nervös – minimiert ihr persönliches Gefühl und hilft ihr nicht, damit umzugehen."
+        "what_to_say": "Let her lead. You might try: 'It sounds like you're not sure you want to do this anymore. Do you want to talk about it, or would you rather just hang out?' If she opens up, listen without steering toward 'but you can do it!' You can also offer something concrete: 'I'll be right in the front row the whole time. You can look at me whenever you want.'",
+        "what_not_to_push": "Avoid pushing reassurances like 'You'll be great!' or 'You've practiced so hard!' right now — she's already told you how she feels, and those responses can make her feel unheard. Also hold off on problem-solving the nerves unless she asks for that. Let the conversation be hers to steer.",
+        "practical_help_you_could_offer": [
+          "Ask if she wants to do a low-stakes run-through at home — just for you, no pressure, on her terms: 'Do you want to play it for me once tonight, or would you rather not?'",
+          "Let her have some control over the day: what she wears, what she eats beforehand, whether you leave early or right on time.",
+          "Agree on a simple signal she can use during the recital if she wants to catch your eye — something small that connects the two of you in the room.",
+          "After the recital, let her decide how to mark it — ice cream, going home quietly, whatever she picks."
         ],
-        "do_say": [
-          {
-            "script": "Ich merke, dass du aufgeregt bist. Das ist total normal – das heißt, dass dir das wichtig ist. Du musst das Gefühl nicht wegmachen.",
-            "when": "Wenn sie zum ersten Mal sagt, dass sie Angst hat",
-            "why_it_helps": "Nimmt der Nervosität ihren Schrecken und zeigt ihr, dass sie sich nicht für ihr Gefühl schämen muss."
-          },
-          {
-            "script": "Weißt du was? Ich bin heute einfach hier, um zuzuschauen wie du spielst. Kein Ergebnis verändert, wie gern ich dich hab.",
-            "when": "Am Morgen der Prüfung beim Frühstück",
-            "why_it_helps": "Löst den emotionalen Druck, trennt elterliche Liebe von der Leistung und gibt ihr Sicherheit."
-          },
-          {
-            "script": "Wenn du auf der Bühne sitzt und der Atem eng wird, atme einmal tief durch die Nase rein und langsam durch den Mund aus. Dann legst du einfach los.",
-            "when": "Kurz bevor sie reingeht, ruhig und konkret",
-            "why_it_helps": "Gibt ihr ein handfestes Werkzeug statt einem leeren Rat und lässt sie sich vorbereitet fühlen."
-          },
-          {
-            "script": "Ich freue mich schon darauf, dich da spielen zu hören. Ich werde die ganze Zeit dabei sein.",
-            "when": "Auf dem Weg zur Prüfung",
-            "why_it_helps": "Stärkt das Gefühl von Sicherheit und Verbundenheit, ohne Erwartungen zu wecken."
-          }
-        ],
-        "do_this": [
-          {
-            "action": "Lass sie das Stück noch einmal laut vorspielen – nicht als Test, sondern als Ritual. Hör aufmerksam zu und nicke einfach.",
-            "when": "Am Abend vor der Prüfung",
-            "why": "Gibt ihr Vertrauen in ihr Gedächtnis und gibt ihr das Gefühl, gehört zu werden."
-          },
-          {
-            "action": "Halte kurz ihre Hand oder leg eine Hand auf ihre Schulter, wenn ihr zusammen wartet – ohne dabei zu reden.",
-            "when": "Beim Warten kurz vor dem Einlass",
-            "why": "Körperliche Nähe beruhigt das Nervensystem bei Kindern, ohne zusätzliche Worte, die Druck machen könnten."
-          },
-          {
-            "action": "Sorg dafür, dass ihr früh genug da seid – plane mindestens 20 Minuten Puffer ein.",
-            "when": "Bei der Anfahrt und Ankunft",
-            "why": "Zeitstress ist ein großer Nervositätsverstärker; Ruhe vor Ort hilft ihr, sich zu sammeln."
-          },
-          {
-            "action": "Plane danach etwas Kleines, das nur ihr beiden macht – z.B. ihr Lieblingsessen oder ein gemeinsamer Spaziergang.",
-            "when": "Schon vorher ankündigen, kurz bevor sie reingeht",
-            "why": "Gibt ihr etwas, worauf sie sich freuen kann, und zeigt, dass der Tag ihr gehört – egal wie es läuft."
-          }
-        ],
-        "after": {
-          "if_it_went_well": "Sag etwas Konkretes, das du beobachtet hast: Ich fand es schön, wie du nach dem ersten Ton ruhiger geworden bist. Dann feiert zusammen das Geplante.",
-          "if_it_went_badly": "Sag zuerst gar nichts über das Spielen. Umarme sie, geh das gemeinsame Ritual durch, und frag erst später ruhig: Wie hat sich das für dich angefühlt? Lass sie führen.",
-          "either_way": "Sag ihr: Ich bin froh, dass du da warst und es gemacht hast. Das war mutig."
-        },
-        "key_insight": "Nervöse Menschen brauchen meistens kein Coaching – sie brauchen das Gefühl, dass sie so, wie sie sind, sicher und geliebt sind."
-      }
-    },
-    {
-      "name": "de-fear-ladder-6-rungs",
-      "endpoint": "/api/nerve-check/fear-ladder",
-      "input": {
-        "bigFear": "Vor großen Gruppen sprechen",
-        "currentComfort": "kann kaum mit 2-3 Personen sprechen",
-        "situationType": "presentation",
-        "userLanguage": "de"
-      },
-      "output": {
-        "ladder_name": "Mutig ans Mikrofon",
-        "rungs": [
-          {
-            "level": 1,
-            "challenge": "Sprich jeden Morgen laut und deutlich einen kurzen Text (z.B. eine Schlagzeile oder einen Buchausschnitt) alleine vor dem Spiegel – mindestens 2 Minuten lang, mit Augenkontakt zum eigenen Spiegelbild.",
-            "difficulty": "easy",
-            "why_this_step": "Du bist noch vollständig allein, aber du gewöhnst deinen Körper daran, die Stimme zu erheben und dabei einem Gegenüber in die Augen zu schauen. Das ist die Grundlage für alles Weitere.",
-            "tip": "Stell dein Handy auf Video und nimm dich auf – das erzeugt ein leichtes Bewusstsein für Beobachtung, ohne echten Druck.",
-            "you_know_youre_ready_when": "Du kannst 2 Minuten flüssig sprechen, ohne abzubrechen, und fühlst dabei keine starke Anspannung mehr."
-          },
-          {
-            "level": 2,
-            "challenge": "Ruf eine Person an, die du gut kennst (Freund, Familienmitglied), und erzähle ihr bewusst eine kleine Geschichte oder berichte über deinen Tag – mindestens 3 Minuten am Stück, ohne dass die andere Person dich unterbricht.",
-            "difficulty": "easy",
-            "why_this_step": "Hier kommt zum ersten Mal ein echter Zuhörer dazu. Der Anruf schafft Distanz, die sicherer wirkt als ein Gespräch von Angesicht zu Angesicht, trotzdem spreche du aktiv vor jemandem.",
-            "tip": "Bereite dir vorher 3 Stichpunkte vor, über die du sprechen möchtest, damit du nicht ins Stocken gerätst.",
-            "you_know_youre_ready_when": "Du fühlst dich während des Anrufs entspannt und könntest problemlos weitersprechen."
-          },
-          {
-            "level": 3,
-            "challenge": "Bitte eine einzige dir vertraute Person (Freund oder Familienmitglied), sich dir gegenüberzusetzen. Trage ihr etwas Vorbereitetes vor – zum Beispiel eine kurze Zusammenfassung eines Films oder ein kleines Thema, das dich interessiert – für etwa 3 bis 5 Minuten.",
-            "difficulty": "moderate",
-            "why_this_step": "Jetzt bist du von Angesicht zu Angesicht mit einer echten Person. Das ist ein großer Schritt, aber die Vertrautheit der Person macht ihn machbar. Du lernst, Augenkontakt zu halten und trotzdem deinen Gedanken zu folgen.",
-            "tip": "Bitte deine Zuhörerin oder deinen Zuhörer danach um eine konkrete positive Rückmeldung – das stärkt dein Vertrauen.",
-            "you_know_youre_ready_when": "Du kannst die 5 Minuten ohne lange Pausen oder starkes Herzrasen durchhalten und möchtest vielleicht sogar weitersprechen."
-          },
-          {
-            "level": 4,
-            "challenge": "Lade 2 bis 3 vertraute Personen ein (Freunde, Familie) und halte vor dieser kleinen Gruppe denselben Vortrag oder erzähle eine Geschichte von 5 Minuten. Die Gruppe darf am Ende Fragen stellen.",
-            "difficulty": "moderate",
-            "why_this_step": "Du erweiterst dein Publikum langsam auf die Größe, mit der du laut eigenem Angaben bereits kämpfst – aber diesmal in einem sicheren Rahmen, mit Menschen, die dich unterstützen. Die Fragerunde trainiert Spontaneität.",
-            "tip": "Atme vor dem Start dreimal tief durch die Nase ein und durch den Mund aus. Das senkt den Puls spürbar.",
-            "you_know_youre_ready_when": "Die Fragen am Ende fühlen sich nicht mehr wie Angriffe an, sondern wie normaler Austausch."
-          },
-          {
-            "level": 5,
-            "challenge": "Melde dich in einer halbformellen Gruppe (z.B. einem Verein, einem Kurs, einer Arbeitsgruppe oder einem Online-Meeting) freiwillig zu Wort und sprich mindestens 2 Minuten zu einem Thema, ohne vorher gebeten zu werden. Die Gruppe sollte aus 5 bis 15 Personen bestehen, die du nicht alle gut kennst.",
-            "difficulty": "hard",
-            "why_this_step": "Hier triffst du auf echte Unbekannte und einen weniger kontrollierten Rahmen. Du wirst spüren, dass die Welt nicht untergeht, wenn du sprichst – auch wenn es nicht perfekt ist.",
-            "tip": "Schreib dir vorab einen Einstiegssatz auf, den du auswendig lernst – z.B.: Ich möchte kurz ergänzen, dass... So überwindest du den schwersten Moment: den Anfang.",
-            "you_know_youre_ready_when": "Du hast es mindestens zweimal in verschiedenen Gruppen gemacht und kannst danach relativ ruhig über das Erlebnis sprechen."
-          },
-          {
-            "level": 6,
-            "challenge": "Halte einen vorbereiteten Vortrag von 5 bis 10 Minuten vor einer größeren Gruppe von 15 oder mehr Personen – zum Beispiel bei einer Präsentation auf der Arbeit, in einem Kurs, bei einem Community-Event oder in einem öffentlichen Rahmen. Nutze gerne Folien oder Notizen als Hilfsmittel.",
-            "difficulty": "boss_level",
-            "why_this_step": "Das ist dein eigentliches Ziel. Alle vorherigen Stufen haben dich hierauf vorbereitet: du kennst deine Stimme, du hast vor Fremden gesprochen, du hast Fragen beantwortet. Jetzt fasst du alles zusammen.",
-            "tip": "Denk daran: Das Publikum wünscht dir Erfolg. Niemand sitzt dort und hofft, dass du scheiterst. Konzentriere dich auf deine Botschaft, nicht auf dich selbst.",
-            "you_know_youre_ready_when": "Du hast den Vortrag gehalten und weißt danach, dass du es wieder tun könntest – auch wenn es aufgeregt war."
-          }
-        ],
-        "timeframe": "Realistisch 3 bis 6 Monate, je nach Übungsfrequenz. Wer wöchentlich übt, kann schneller vorankommen. Kein Zeitdruck – Fortschritt ist wichtiger als Tempo.",
-        "rule": "Du darfst jede Stufe so oft wiederholen, wie du möchtest. Gehe erst dann weiter, wenn du dich auf der aktuellen Stufe wirklich bereit fühlst – nicht wenn du denkst, du solltest."
+        "if_they_dont_want_help": "If she shuts the conversation down, a short 'Okay. I'm here if that changes' is enough. You don't need to solve it before Saturday. Knowing you're not pushing her may itself be settling."
       }
     }
   ]

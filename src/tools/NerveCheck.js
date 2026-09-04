@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -35,25 +34,18 @@ const COACH_RELATIONS = [
   { value: 'student', tkey: 'nck_rel_student', icon: '📚' },
   { value: 'other', tkey: 'nck_rel_other', icon: '🌀' },
 ];
+const MINUTES_OPTIONS = [1, 2, 5, 10, 15];
 
+const sitTypeMeta = (value) => SIT_TYPES.find(s => s.value === value);
+
+// ════════════════════════════════════════════════════════════
+// COMPONENT
+// ════════════════════════════════════════════════════════════
 const NerveCheck = ({ tool }) => {
-  const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
-  // ── Ref declarations ──
-  const resultsRef = useRef(null);
-  const analyzeRef = useRef(null);
-  const canSubmitRef = useRef(false);
-  const viewRef = useRef('form');
-  const runDebriefRef = useRef(null);
-  const canDebriefRef = useRef(false);
-  const runCoachRef = useRef(null);
-  const canCoachRef = useRef(false);
-  const runLadderRef = useRef(null);
-  const canLadderRef = useRef(false);
-
-  // ── c block ──
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -83,9 +75,7 @@ const NerveCheck = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    // Tool-specific
     btnDanger:     isDark ? 'bg-red-700 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
-    btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-700 text-zinc-300' : 'bg-gray-50 hover:bg-gray-100 text-gray-500',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -94,972 +84,805 @@ const NerveCheck = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
-  // ── Views ──
-  const [view, setView] = useState('form');
+  // ── Refs (always-fresh pattern for the keyboard shortcut) ──
+  const resultsRef = useRef(null);
+  const viewRef = useRef('form');
+  const runMainRef = useRef(null);
+  const canMainRef = useRef(false);
+  const runLiveRef = useRef(null);
+  const canLiveRef = useRef(false);
+  const runDebriefRef = useRef(null);
+  const canDebriefRef = useRef(false);
+  const runCoachRef = useRef(null);
+  const canCoachRef = useRef(false);
 
-  // ── Form ──
+  // ── Views ──
+  // form -> results -> live -> focus, or results -> debrief, or a standalone
+  // coach flow. No ladder/patterns/journal views — see tool notes for why.
+  const [view, setView] = useState('form');
+  viewRef.current = view;
+
+  // ── Primary input ──
   const [situation, setSituation] = useState('');
   const [situationType, setSituationType] = useState('');
-  const [confidenceLevel, setConfidenceLevel] = useState(4);
+  // "Confidence" renamed to "readiness" throughout, including this variable
+  // name — a self-reported readiness marker that adjusts how much and how
+  // immediate the preparation is, never treated as a psychological reading.
+  const [readinessLevel, setReadinessLevel] = useState(4);
   const [specificFears, setSpecificFears] = useState('');
   const [timeUntil, setTimeUntil] = useState('today');
+  const [results, setResults] = usePersistentState('nervecheck-result-v2', null);
   const [error, setError] = useState('');
 
-  // ── Results ──
-  const [loading, setLoading] = useState(false);
-  const [expandedSections, setExpandedSections] = useState({});
-
-  // ── Walkthrough ──
-  const [walkStep, setWalkStep] = useState(0);
-
-  // ── Live / SOS ──
-  const [panicLevel, setPanicLevel] = useState(7);
+  // ── Help Me Now ──
   const [minutesUntil, setMinutesUntil] = useState(5);
-  const [liveResults, setLiveResults] = useState(null);
-  const [liveLoading, setLiveLoading] = useState(false);
-  const [breathingActive, setBreathingActive] = useState(false);
-  const [breathPhase, setBreathPhase] = useState('');
-  const [breathCount, setBreathCount] = useState(0);
-  const [sosResults, setSosResults] = useState(null);
-  const [sosLoading, setSosLoading] = useState(false);
-  const [sosWhat, setSosWhat] = useState('');
+  const [liveResults, setLiveResults] = usePersistentState('nervecheck-live-result-v2', null);
+  const [liveError, setLiveError] = useState('');
+
+  // ── Focus mode ──
+  const [focusStep, setFocusStep] = useState(0);
 
   // ── Debrief ──
   const [howItWent, setHowItWent] = useState('');
-  const [confAfter, setConfAfter] = useState(6);
+  const [readinessAfter, setReadinessAfter] = useState(6);
   const [whatSurprised, setWhatSurprised] = useState('');
-  const [debriefResults, setDebriefResults] = useState(null);
-  const [debriefLoading, setDebriefLoading] = useState(false);
+  const [debriefResults, setDebriefResults] = usePersistentState('nervecheck-debrief-result-v2', null);
+  const [debriefError, setDebriefError] = useState('');
 
-  // ── Specific Prep ──
-  const [specResults, setSpecResults] = useState(null);
-  const [specLoading, setSpecLoading] = useState(false);
-
-  // ── Coach ──
+  // ── Help Someone Else ──
   const [coachWho, setCoachWho] = useState('');
   const [coachSituation, setCoachSituation] = useState('');
   const [coachRelation, setCoachRelation] = useState('');
   const [coachAge, setCoachAge] = useState('adult');
-  const [coachResults, setCoachResults] = useState(null);
-  const [coachLoading, setCoachLoading] = useState(false);
+  const [coachResults, setCoachResults] = usePersistentState('nervecheck-coach-result-v2', null);
+  const [coachError, setCoachError] = useState('');
 
-  // ── Templates ──
-  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
-  const [templateName, setTemplateName] = useState('');
+  // ── History — one simple list, replacing the old journal + patterns +
+  // fear ladders + templates + auto check-ins. Each entry is a plan,
+  // enriched in place with readinessAfter/quote once debriefed, so the
+  // list shows one row per situation rather than a duplicate row per step. ──
+  const [sessionHistory, setSessionHistory] = usePersistentState('nervecheck-history-v2', []);
 
-  // ── Fear Ladder ──
-  const [ladderResults, setLadderResults] = useState(null);
-  const [ladderLoading, setLadderLoading] = useState(false);
-  const [ladderFear, setLadderFear] = useState('');
-  const [activeLadder, setActiveLadder] = useState(null);
+  const matchStyle = (n) => {
+    if (n >= 7) return c.success;
+    if (n >= 4) return c.warning;
+    return c.danger;
+  };
 
-  // ── Voice Mode ──
-  const [voiceStep, setVoiceStep] = useState(0);
-
-  // ── Persistent (after all useState) ──
-  const [journal, setJournal] = usePersistentState('nc-journal', []);
-  const [templates, setTemplates] = usePersistentState('nc-templates', []);
-  const [ladders, setLadders] = usePersistentState('nc-ladders', []);
-  const [pendingCheckins, setPendingCheckins] = usePersistentState('nc-pending', []);
-  const [results, setResults] = usePersistentState('nervecheck-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('nervecheck-history', []);
-
-  const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
-  const confColor = (n) => { if (n >= 8) return isDark ? 'text-emerald-400' : 'text-emerald-700'; if (n >= 5) return isDark ? 'text-amber-400' : 'text-amber-700'; return isDark ? 'text-red-400' : 'text-red-700'; };
-
-  // ── Template helpers ──
-  const saveTemplate = () => { if (!templateName.trim()) return; setTemplates(prev => [{ id: Date.now(), name: templateName.trim(), situation, situationType, specificFears, timeUntil, confidenceLevel }, ...prev].slice(0, 6)); setTemplateName(''); setShowSaveTemplate(false); };
-  const loadTemplate = (t) => { setSituation(t.situation); setSituationType(t.situationType); setSpecificFears(t.specificFears || ''); setTimeUntil(t.timeUntil || 'today'); setConfidenceLevel(t.confidenceLevel || 4); };
-  const loadExample = () => {
-    const ex = pickExample('NerveCheck', [
-      { sit: 'nck_ex_situation',  fear: 'nck_ex_fears',  type: 'interview', when: 'tomorrow' },
-      { sit: 'nck_ex2_situation', fear: 'nck_ex2_fears', type: 'confrontation', when: 'this_week' },
-    ]);
-    setSituation(t(ex.sit));
-    setSituationType(ex.type);
-    setSpecificFears(t(ex.fear));
-    setTimeUntil(ex.when);
-    setConfidenceLevel(4);
+  // ── Main plan ──
+  const runMain = useCallback(async () => {
+    if (!situation.trim()) return;
     setError('');
-  };
-
-  // ── Pattern analytics (computed from journal) ──
-  const patterns = useMemo(() => {
-    if (journal.length < 3) return null;
-    const byType = {}; const gaps = []; const confOverTime = [];
-    journal.forEach(j => {
-      if (j.type) byType[j.type] = (byType[j.type] || 0) + 1;
-      if (j.confBefore && j.confAfter) { gaps.push(j.confAfter - j.confBefore); confOverTime.push({ date: j.date, before: j.confBefore, after: j.confAfter }); }
-    });
-    const topTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    const avgGap = gaps.length ? (gaps.reduce((a, b) => a + b, 0) / gaps.length).toFixed(1) : 0;
-    const avgBefore = journal.filter(j => j.confBefore).length ? (journal.reduce((a, j) => a + (j.confBefore || 0), 0) / journal.filter(j => j.confBefore).length).toFixed(1) : 0;
-    const braveRate = journal.length ? Math.round(journal.filter(j => j.verdict === 'brave').length / journal.length * 100) : 0;
-    const growing = gaps.length >= 3 && gaps.slice(0, 3).reduce((a, b) => a + b, 0) / 3 > gaps.slice(-3).reduce((a, b) => a + b, 0) / 3;
-    // PF-25 exception: confOverTime.slice(0,10) is a sparkline display window, not a journal-history cap.
-    return { topTypes, avgGap: Number(avgGap), avgBefore: Number(avgBefore), braveRate, growing, confOverTime: confOverTime.slice(0, 10).reverse(), total: journal.length };
-  }, [journal]);
-
-  // ── Reframe library (mine journal for matching courage receipts) ──
-  const getReframes = (type) => {
-    return journal.filter(j => j.type === type && j.confAfter > j.confBefore && j.saveThis).slice(0, 3);
-  };
-  const matchingReframes = useMemo(() => situationType ? getReframes(situationType) : [], [situationType, journal]);
-
-  // ── Accountability: check for overdue check-ins ──
-  const overdueCheckins = useMemo(() => {
-    const now = Date.now();
-    return pendingCheckins.filter(p => p.dueAt <= now && !p.completed);
-  }, [pendingCheckins]);
-
-  const scheduleCheckin = () => {
-    const dueTimes = { right_now: 60 * 60 * 1000, today: 8 * 60 * 60 * 1000, tomorrow: 24 * 60 * 60 * 1000, this_week: 3 * 24 * 60 * 60 * 1000, later: 7 * 24 * 60 * 60 * 1000 };
-    const dueAt = Date.now() + (dueTimes[timeUntil] || dueTimes.today);
-    setPendingCheckins(prev => [{ id: Date.now(), situation: situation.trim(), type: situationType, dueAt, completed: false, createdAt: Date.now() }, ...prev].slice(0, 6));
-  };
-
-  const completeCheckin = (id) => {
-    setPendingCheckins(prev => prev.map(p => p.id === id ? { ...p, completed: true } : p));
-  };
-
-  // ════════════════════════════════════
-  // API CALLS
-  // ════════════════════════════════════
-  const analyze = useCallback(async () => {
-    if (!situation.trim()) { setError(t('nck_err_describe')); return; }
-    setError(''); setResults(null); setLoading(true);
+    setResults(null);
     try {
-      const pastWins = journal.filter(j => j.confAfter > j.confBefore).slice(0, 3).map(j => ({ situation: j.situation, outcome: j.outcome || 'survived it' }));
-      const data = await callToolEndpoint('nerve-check', { situation: situation.trim(), situationType, confidenceLevel, specificFears: specificFears.trim() || null, timeUntil, pastWins, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('nerve-check', {
+        situation: situation.trim(),
+        situationType: situationType || undefined,
+        readinessLevel,
+        specificFears: specificFears.trim() || undefined,
+        timeUntil,
+        // Section 17.2/section on past experiences: only ever the visitor's
+        // own most recent debrief for the SAME kind of situation, passed
+        // verbatim — never an aggregated pattern across sessions.
+        pastExperience: (() => {
+          const match = sessionHistory.find(h => h.situationType === situationType && h.quote);
+          return match ? `Before a past ${sitTypeMeta(match.situationType)?.value || 'similar'} situation, readiness was rated ${match.readinessBefore}/10. Afterward: ${match.quote}` : undefined;
+        })(),
+      });
       setResults(data);
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
-      setView('results'); scheduleCheckin();
-    } catch (err) { setError(err.message || t('nck_err_analyze')); }
-    finally { setLoading(false); }
-  }, [situation, situationType, confidenceLevel, specificFears, timeUntil, journal, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
-  const goLive = async () => {
-    setLiveLoading(true); setLiveResults(null);
-    try { const data = await callToolEndpoint('nerve-check/live', { situation: situation.trim() || t('nck_default_situation'), panicLevel, minutesUntil, userLocale, userCurrency, userRegion }); setLiveResults(data); }
-    catch (err) { setError(err.message || t('nck_err_live')); }
-    finally { setLiveLoading(false); }
-  };
-  const goSOS = async () => {
-    setSosLoading(true); setSosResults(null);
-    try { const data = await callToolEndpoint('nerve-check/sos', { situation: situation.trim() || t('nck_default_situation'), whatsHappening: sosWhat.trim() || 'panicking', userLocale, userCurrency, userRegion }); setSosResults(data); }
-    catch (err) { setError(err.message || t('nck_err_generic')); }
-    finally { setSosLoading(false); }
-  };
-  const runDebrief = async () => {
-    if (!howItWent.trim()) { setError(t('nck_err_howitwent')); return; }
-    setDebriefLoading(true); setDebriefResults(null); setError('');
+      setSessionHistory(prev => [{
+        id: Date.now(),
+        date: new Date().toISOString(),
+        situation: situation.trim(),
+        // PF-25 exception: this 40 is string-preview truncation, not a
+        // history cap — the array itself is capped at 15, right below.
+        preview: situation.trim().slice(0, 40),
+        situationType,
+        readinessBefore: readinessLevel,
+        readinessAfter: null,
+        quote: '',
+        planResults: data,
+        debriefResults: null,
+        // PF-25 exception: history is a browse/discovery list the visitor
+        // can debrief or reopen from later, not a preview cap — 15, not 6.
+      }, ...prev].slice(0, 15));
+      setView('results');
+    } catch (err) {
+      setError(err.message || t('nck_err_analyze'));
+    }
+  }, [situation, situationType, readinessLevel, specificFears, timeUntil, sessionHistory, callToolEndpoint, setResults, setSessionHistory, t]);
+
+  // ── Help Me Now ──
+  const runLive = useCallback(async () => {
+    const s = situation.trim();
+    if (!s) return;
+    setLiveError('');
+    setLiveResults(null);
+    setFocusStep(0);
     try {
-      const data = await callToolEndpoint('nerve-check/debrief', { situation: situation.trim() || t('nck_default_situation'), howItWent: howItWent.trim(), confidenceBefore: confidenceLevel, confidenceAfter: confAfter, whatSurprised: whatSurprised.trim() || null, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('nerve-check/live', { situation: s, minutesUntil });
+      setLiveResults(data);
+      setView('live');
+    } catch (err) {
+      setLiveError(err.message || t('nck_err_live'));
+    }
+  }, [situation, minutesUntil, callToolEndpoint, setLiveResults, t]);
+
+  const goLive = useCallback(() => {
+    setView('live');
+    if (!liveResults) runLiveRef.current?.();
+  }, [liveResults]);
+
+  // ── Debrief ──
+  const runDebrief = useCallback(async () => {
+    if (!howItWent.trim()) return;
+    setDebriefError('');
+    setDebriefResults(null);
+    try {
+      const data = await callToolEndpoint('nerve-check/debrief', {
+        situation: situation.trim() || undefined,
+        howItWent: howItWent.trim(),
+        readinessBefore: readinessLevel,
+        readinessAfter,
+        whatSurprised: whatSurprised.trim() || undefined,
+      });
       setDebriefResults(data);
-      setJournal(prev => [{ id: Date.now(), date: new Date().toLocaleDateString(), situation: situation.trim(), type: situationType, confBefore: confidenceLevel, confAfter, outcome: howItWent.trim(), verdict: data?.verdict || 'brave', saveThis: data?.save_this || '', headline: data?.headline || '' }, ...prev].slice(0, 6));
-      // Complete any pending check-in for this situation
-      const match = pendingCheckins.find(p => !p.completed && p.situation === situation.trim());
-      if (match) completeCheckin(match.id);
-    } catch (err) { setError(err.message || t('nck_err_debrief')); }
-    finally { setDebriefLoading(false); }
-  };
-  const runSpecificPrep = async () => {
-    setSpecLoading(true); setSpecResults(null);
-    try { const data = await callToolEndpoint('nerve-check/specific-prep', { situation: situation.trim(), situationType, specificFears: specificFears.trim() || null, userLocale, userCurrency, userRegion }); setSpecResults(data); }
-    catch (err) { setError(err.message || t('nck_err_specprep')); }
-    finally { setSpecLoading(false); }
-  };
-  const runCoach = async () => {
-    if (!coachSituation.trim()) { setError(t('nck_err_coach_what')); return; }
-    setCoachLoading(true); setCoachResults(null); setError('');
-    try { const data = await callToolEndpoint('nerve-check/coach', { whoIsNervous: coachWho.trim() || 'someone', theirSituation: coachSituation.trim(), relationship: coachRelation, theirAge: coachAge, userLocale, userCurrency, userRegion }); setCoachResults(data); }
-    catch (err) { setError(err.message || t('nck_err_coach')); }
-    finally { setCoachLoading(false); }
-  };
-  const runLadder = async () => {
-    if (!ladderFear.trim()) { setError(t('nck_err_ladder_what')); return; }
-    setLadderLoading(true); setLadderResults(null); setError('');
+      // Enrich the matching history entry rather than adding a second row —
+      // the most recent entry for this exact situation, per the mockup
+      // showing one row per situation, "before" alone until debriefed.
+      setSessionHistory(prev => {
+        const idx = prev.findIndex(h => h.situation === situation.trim());
+        if (idx === -1) return prev;
+        const next = [...prev];
+        next[idx] = {
+          ...next[idx],
+          readinessAfter,
+          quote: (data.save_this || data.what_happened?.[0] || '').slice(0, 100),
+          debriefResults: data,
+        };
+        return next;
+      });
+      setView('debrief-results');
+    } catch (err) {
+      setDebriefError(err.message || t('nck_err_debrief'));
+    }
+  }, [situation, howItWent, readinessLevel, readinessAfter, whatSurprised, callToolEndpoint, setDebriefResults, setSessionHistory, t]);
+
+  // ── Help Someone Else ──
+  const runCoach = useCallback(async () => {
+    if (!coachSituation.trim()) return;
+    setCoachError('');
+    setCoachResults(null);
     try {
-      const data = await callToolEndpoint('nerve-check/fear-ladder', { bigFear: ladderFear.trim(), currentComfort: `confidence ${confidenceLevel}/10`, situationType, userLocale, userCurrency, userRegion });
-      setLadderResults(data);
-      // Save ladder to persistent storage
-      setLadders(prev => [{ id: Date.now(), name: data?.ladder_name || ladderFear.trim(), fear: ladderFear.trim(), rungs: data?.rungs || [], completedRungs: [], rule: data?.rule || '', timeframe: data?.timeframe || '' }, ...prev].slice(0, 6));
-    } catch (err) { setError(err.message || t('nck_err_ladder')); }
-    finally { setLadderLoading(false); }
-  };
-  const toggleRung = (ladderId, level) => {
-    setLadders(prev => prev.map(l => l.id === ladderId ? { ...l, completedRungs: l.completedRungs.includes(level) ? l.completedRungs.filter(r => r !== level) : [...l.completedRungs, level] } : l));
-  };
+      const data = await callToolEndpoint('nerve-check/coach', {
+        whoIsNervous: coachWho.trim() || undefined,
+        theirSituation: coachSituation.trim(),
+        relationship: coachRelation || undefined,
+        theirAge: coachAge,
+      });
+      setCoachResults(data);
+    } catch (err) {
+      setCoachError(err.message || t('nck_err_coach'));
+    }
+  }, [coachWho, coachSituation, coachRelation, coachAge, callToolEndpoint, setCoachResults, t]);
+
+  const openHistoryEntry = useCallback((entry) => {
+    setSituation(entry.situation);
+    setSituationType(entry.situationType || '');
+    setReadinessLevel(entry.readinessBefore || 4);
+    if (entry.planResults) setResults(entry.planResults);
+    if (entry.debriefResults) {
+      setReadinessAfter(entry.readinessAfter || 6);
+      setDebriefResults(entry.debriefResults);
+      setView('debrief-results');
+    } else {
+      setView(entry.planResults ? 'results' : 'form');
+    }
+  }, [setResults, setDebriefResults]);
+
+  const removeHistoryEntry = useCallback((id) => {
+    setSessionHistory(prev => prev.filter(h => h.id !== id));
+  }, [setSessionHistory]);
 
   const resetAll = () => {
-    setSituation(''); setSituationType(''); setConfidenceLevel(4); setSpecificFears(''); setTimeUntil('today');
-    setResults(null); setLiveResults(null); setDebriefResults(null); setHowItWent(''); setConfAfter(6);
-    setWhatSurprised(''); setError(''); setExpandedSections({}); setView('form'); setBreathingActive(false);
-    setSosResults(null); setSpecResults(null); setCoachResults(null); setWalkStep(0); setLadderResults(null);
+    setSituation(''); setSituationType(''); setReadinessLevel(4); setSpecificFears(''); setTimeUntil('today');
+    setResults(null); setError('');
+    setLiveResults(null); setLiveError('');
+    setHowItWent(''); setReadinessAfter(6); setWhatSurprised(''); setDebriefResults(null); setDebriefError('');
+    setView('form');
   };
 
-  const buildFullText = useCallback(() => {
-    if (!results) return '';
-    const lines = [t('nck_copy_header'), '', `${t('nck_copy_situation')}: ${situation}`];
-    if (results?.fear_breakdown) { const fb = results?.fear_breakdown; lines.push('', `${t('nck_copy_surface_fear')}: ${fb.surface_fear}`, `${t('nck_copy_real_fear')}: ${fb.real_fear}`, `${t('nck_copy_reality')}: ${fb.reality_check}`); }
-    if (results?.scripts) { const s = results?.scripts; lines.push('', `${t('nck_copy_scripts')}:`, `  ${t('nck_copy_opening')}: "${s.opening_line}"`, `  ${t('nck_copy_if_blank')}: "${s.if_you_blank}"`, `  ${t('nck_copy_if_wrong')}: "${s.if_it_goes_wrong}"`); }
-    if (results?.mantra) lines.push('', `${t('nck_copy_mantra')}: ${results?.mantra}`);
-    if (results?.permission_slip) lines.push('', results?.permission_slip);
-    return lines.join('\n') + BRAND;
-  }, [results, situation, t]);
+  // ── Focus mode cards — 3-5 contextual cards built from liveResults, not
+  // a fixed 7. Only what's actually present becomes a card; ≤35 words each,
+  // enforced by trusting the backend's own brevity (words/scripts are
+  // already short) rather than truncating client-side, which could cut a
+  // sentence mid-thought. ──
+  const focusCards = useMemo(() => {
+    if (!liveResults) return [];
+    const cards = [];
+    if (liveResults?.first) cards.push({ label: t('nck_focus_do_first'), text: liveResults?.first });
+    if (liveResults?.settle?.instruction) cards.push({ label: t('nck_focus_settle'), text: liveResults?.settle.instruction });
+    if (liveResults?.words?.to_yourself) cards.push({ label: t('nck_focus_tell_yourself'), text: liveResults?.words.to_yourself });
+    if (liveResults?.words?.opening) cards.push({ label: t('nck_focus_say_this'), text: liveResults?.words.opening });
+    if (liveResults?.words?.if_you_need_a_moment) cards.push({ label: t('nck_focus_if_blank'), text: liveResults?.words.if_you_need_a_moment });
+    if (liveResults?.remember) cards.push({ label: t('nck_focus_remember'), text: liveResults?.remember });
+    cards.push({ label: t('nck_focus_go'), text: liveResults?.go || t('nck_focus_go_default') });
+    return cards;
+  }, [liveResults, t]);
 
-  // Ref assignments — always fresh
-  analyzeRef.current = analyze;
-  canSubmitRef.current = !!situation.trim();
-  viewRef.current = view;
+  // ── Build text for copy/share ──
+  const buildFullText = useCallback(() => {
+    if (view === 'debrief-results' && debriefResults) {
+      const lines = [`🫁 ${t('nck_title')}`, '', `🧾 ${t('nck_copy_debrief_header')}`, ''];
+      lines.push(debriefResults?.headline, '');
+      if (debriefResults?.what_happened?.length) lines.push(t('nck_copy_what_happened'), ...debriefResults?.what_happened, '');
+      if (debriefResults?.useful_evidence_for_next_time?.length) lines.push(t('nck_copy_evidence'), ...debriefResults?.useful_evidence_for_next_time, '');
+      if (debriefResults?.save_this) lines.push(t('nck_copy_save_this'), debriefResults?.save_this);
+      return lines.join('\n') + BRAND;
+    }
+    if (!results) return '';
+    const lines = [`🫁 ${t('nck_title')}`, '', `"${situation}"`, ''];
+    if (results?.opening) lines.push(results?.opening, '');
+    if (results?.what_you_can_prepare?.length) {
+      lines.push(`📋 ${t('nck_copy_prepare')}`);
+      results?.what_you_can_prepare.forEach(p => lines.push(`- ${p.action}`));
+      lines.push('');
+    }
+    if (results?.words_if_you_need_them?.length) {
+      lines.push(`🗣️ ${t('nck_copy_words')}`);
+      results?.words_if_you_need_them.forEach(w => lines.push(`${w.moment}: ${w.script}`));
+      lines.push('');
+    }
+    if (results?.remember) lines.push(`📌 ${t('nck_copy_remember')}`, results?.remember, '');
+    if (results?.do_this_next) lines.push(`➡️ ${t('nck_copy_next')}`, results?.do_this_next);
+    return lines.join('\n') + BRAND;
+  }, [results, debriefResults, view, situation, t]);
+
+  runMainRef.current = runMain;
+  canMainRef.current = !!situation.trim();
+  runLiveRef.current = runLive;
+  canLiveRef.current = !!situation.trim();
   runDebriefRef.current = runDebrief;
   canDebriefRef.current = !!howItWent.trim();
   runCoachRef.current = runCoach;
   canCoachRef.current = !!coachSituation.trim();
-  runLadderRef.current = runLadder;
-  canLadderRef.current = !!ladderFear.trim();
 
   useRegisterActions(buildFullText(), tool?.title || t('nck_title'));
 
   // ── Scroll to results ──
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
-    const t = setTimeout(() => revealSection(resultsRef.current), 200);
-    return () => clearTimeout(t);
+    if (!(results || liveResults || debriefResults || coachResults)) return;
+    const target = resultsRef.current;
+    if (!target) return;
+    const timer = setTimeout(() => revealSection(target), 150);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [results, liveResults, debriefResults, coachResults]);
 
   // ── Keyboard submit ──
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'SELECT') return;
-      if (!(e.key === 'Enter' && (e.metaKey || e.ctrlKey))) return;
+      if (e.key !== 'Enter' || !(e.metaKey || e.ctrlKey) || loading) return;
       const v = viewRef.current;
-      if (v === 'form'    && !loading       && canSubmitRef.current)  { analyzeRef.current?.();    return; }
-      if (v === 'debrief' && !debriefLoading && canDebriefRef.current) { runDebriefRef.current?.(); return; }
-      if (v === 'coach'   && !coachLoading   && canCoachRef.current)   { runCoachRef.current?.();   return; }
-      if (v === 'ladder'  && !ladderLoading  && canLadderRef.current)  { runLadderRef.current?.();  return; }
+      if (v === 'form' && canMainRef.current) runMainRef.current?.();
+      else if (v === 'live' && canLiveRef.current) runLiveRef.current?.();
+      else if (v === 'debrief' && canDebriefRef.current) runDebriefRef.current?.();
+      else if (v === 'coach' && canCoachRef.current) runCoachRef.current?.();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, debriefLoading, coachLoading, ladderLoading]);
+  }, [loading]);
 
-  // ── Breathing animation ──
-  useEffect(() => {
-    if (!breathingActive) return;
-    const phases = [{ label: t('nck_breathe_in'), duration: 4000 }, { label: t('nck_hold'), duration: 7000 }, { label: t('nck_breathe_out'), duration: 8000 }];
-    let phaseIdx = 0; let rounds = 0;
-    setBreathPhase(phases[0].label); setBreathCount(1);
-    const advance = () => { phaseIdx++; if (phaseIdx >= phases.length) { phaseIdx = 0; rounds++; setBreathCount(rounds + 1); } if (rounds >= 3) { setBreathingActive(false); setBreathPhase(t('nck_breathe_done')); return; } setBreathPhase(phases[phaseIdx].label); };
-    let timeout;
-    const run = () => { timeout = setTimeout(() => { advance(); if (breathingActive) run(); }, phases[phaseIdx].duration); };
-    run();
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [breathingActive]);
+  const readinessLabel = (n) => n <= 3 ? t('nck_terrified') : n >= 8 ? t('nck_feeling_good') : '';
 
-  const walkSteps = useMemo(() => {
-    if (!results) return [];
-    const steps = [];
-    if (results?.mantra) steps.push({ key: 'mantra', title: t('nck_walk_mantra'), icon: '🔮' });
-    if (results?.fear_breakdown) steps.push({ key: 'fear', title: t('nck_walk_fear'), icon: '🔍' });
-    if (results?.why_youre_readier_than_you_think?.length) steps.push({ key: 'ready', title: t('nck_walk_ready'), icon: '💪' });
-    if (results?.prep_plan?.length) steps.push({ key: 'prep', title: t('nck_walk_prep'), icon: '📋' });
-    if (results?.scripts) steps.push({ key: 'scripts', title: t('nck_walk_scripts'), icon: '🎬' });
-    if (results?.body_hacks?.length) steps.push({ key: 'body', title: t('nck_walk_body'), icon: '🧘' });
-    if (results?.worst_case_autopsy) steps.push({ key: 'worst', title: t('nck_walk_worst'), icon: '💀' });
-    if (results?.permission_slip) steps.push({ key: 'permission', title: t('nck_walk_permission'), icon: '💌' });
-    return steps;
-  }, [results, t]);
+  const loadExample = useCallback(() => {
+    const ex = pickExample('NerveCheck', [
+      { situation: 'nck_ex_situation', fears: 'nck_ex_fears', type: 'interview' },
+      { situation: 'nck_ex2_situation', fears: 'nck_ex2_fears', type: 'confrontation' },
+    ]);
+    setSituation(t(ex.situation));
+    setSpecificFears(t(ex.fears));
+    setSituationType(ex.type);
+    setResults(null);
+  }, [t, setResults]);
 
-  // Voice mode steps — large text, minimal, auto-advancing-friendly
-  const voiceCards = useMemo(() => {
-    if (!liveResults) return [];
-    const cards = [];
-    if (liveResults.first_thing) cards.push({ text: liveResults.first_thing, label: t('nck_voice_do_first') });
-    cards.push({ text: t('nck_voice_breathe_text'), label: t('nck_voice_breathe_label') });
-    if (liveResults.body_reset) cards.push({ text: liveResults.body_reset, label: t('nck_voice_body_reset') });
-    if (liveResults.last_words?.tell_yourself) cards.push({ text: liveResults.last_words.tell_yourself, label: t('nck_voice_tell_yourself') });
-    if (liveResults.last_words?.first_thing_to_say) cards.push({ text: liveResults.last_words.first_thing_to_say, label: t('nck_voice_say_first') });
-    if (liveResults.perspective) cards.push({ text: liveResults.perspective, label: t('nck_voice_remember') });
-    cards.push({ text: t('nck_voice_ready_text'), label: '🫁' });
-    return cards;
-  }, [liveResults, t]);
-
-  // ═══════════════════════════════════
-  // RENDER HELPERS
-  // ═══════════════════════════════════
-  const renderWalkContent = (step) => {
-    if (!results) return null;
-    switch(step.key) {
-      case 'mantra': return <div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{results?.mantra}"</p><p className={`text-xs ${c.textMuteded} mt-3`}>{t('nck_say_aloud')}</p><div className="mt-3"></div></div>;
-      case 'fear': return <div className="space-y-3"><div className={`p-4 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>{t('nck_you_think_scared')}</p><p className={`text-sm ${c.text}`}>{results?.fear_breakdown?.surface_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('nck_but_really')}</p><p className={`text-sm font-bold ${c.text}`}>{results?.fear_breakdown?.real_fear}</p></div><div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_reality_check')}</p><p className={`text-sm ${c.text}`}>{results?.fear_breakdown?.reality_check}</p>{results?.fear_breakdown?.probability && <p className={`text-xs ${c.textMuteded} mt-1`}>{t('nck_worst_prob')} {results?.fear_breakdown?.probability}</p>}</div></div>;
-      case 'ready': return <div className="space-y-2.5">{results?.why_youre_readier_than_you_think?.map((r, i) => (<div key={i} className={`p-4 rounded-xl ${c.cardAlt} border`}><p className={`text-sm font-bold ${c.text}`}>{r.reason}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{t('nck_evidence')} {r.evidence}</p></div>))}</div>;
-      case 'prep': return <div className="space-y-2">{results?.prep_plan?.map((s, i) => (<div key={i} className="flex items-start gap-2"><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 mt-0.5 ${s.priority === 'must_do' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : s.priority === 'should_do' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{s.priority === 'must_do' ? t('nck_must_do') : s.priority === 'should_do' ? t('nck_should_do') : t('nck_nice_to')}</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{s.step}</p><p className={`text-[10px] ${c.textSecondary}`}>{s.why}</p></div><span className={`text-[10px] ${c.textMuteded} shrink-0`}>{s.time}</span></div>))}</div>;
-      case 'scripts': return <div className="space-y-3">{[{ key: 'opening_line', label: t('nck_script_opening'), icon: '🎯' }, { key: 'if_you_blank', label: t('nck_script_blank'), icon: '😶' }, { key: 'if_it_goes_wrong', label: t('nck_script_wrong'), icon: '🔄' }, { key: 'exit_line', label: t('nck_script_exit'), icon: '🚪' }].map(s => results?.scripts?.[s.key] && (<div key={s.key} className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{s.icon} {s.label}</p><p className={`text-sm font-bold ${c.text} mb-2`}>"{results?.scripts?.[s.key]}"</p></div>))}</div>;
-      case 'body': return <div className="space-y-2.5">{results?.body_hacks?.map((h, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3`}><div className="flex items-center justify-between mb-1"><p className={`text-xs font-bold ${c.text}`}>{h.technique}</p><span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{h.when} · {h.time}</span></div><p className={`text-xs ${c.textSecondary}`}>{h.how}</p></div>))}</div>;
-      case 'worst': return <div className="space-y-2.5"><div className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>{t('nck_actual_worst')}</p><p className={`text-xs ${c.text}`}>{results?.worst_case_autopsy?.actual_worst}</p></div><div className={`p-3.5 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_would_survive')}</p><p className={`text-xs ${c.text}`}>{results?.worst_case_autopsy?.would_you_survive}</p></div><p className={`text-xs ${c.textSecondary}`}>⏱️ {results?.worst_case_autopsy?.how_long_it_stings}</p><p className={`text-xs ${c.textSecondary}`}>🔄 {results?.worst_case_autopsy?.recovery}</p></div>;
-      case 'permission': return <div className={`p-6 rounded-2xl text-center ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-base font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💌 {results?.permission_slip}</p></div>;
-      default: return null;
-    }
+  // ════════════════════════════════════════════════════════════
+  // Shared: the input recap shown at the top of a result screen
+  // ════════════════════════════════════════════════════════════
+  const renderRecap = () => {
+    const meta = sitTypeMeta(situationType);
+    return (
+      <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 text-xs ${c.textSecondary} space-y-1`}>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          {meta && <span>{meta.icon} {t(meta.tkey)}</span>}
+          <span>{t('nck_conf_now')} {readinessLevel}/10</span>
+          {timeUntil && <span>· {t(TIME_OPTIONS.find(o => o.value === timeUntil)?.tkey || 'nck_time_today')}</span>}
+        </p>
+        <p className="italic truncate">"{situation}"</p>
+      </div>
+    );
   };
 
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* ── Persistent header card ── */}
+
+      {/* ═══ Header row ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '💪'}</span>{tool?.tagline ?? t('nck_tagline')}
-                </p>
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            <div>
+              <p className={`text-base ${c.textSecondary}`}>
+                <span className="me-2 text-lg">{tool?.icon ?? '💪'}</span>{tool?.tagline ?? t('nck_tagline')}
+              </p>
+              {view === 'form' && (
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              )}
+            </div>
+            {(view !== 'form' || situation.trim()) && (
+              <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↺ {t('start_over')}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="px-5 pb-5 pt-4 space-y-4">
+
+        {/* ── FORM VIEW ── */}
+        {view === 'form' && (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={goLive} className={`${c.btnDanger} rounded-lg py-2.5 text-sm font-bold`}>{t('nck_help_now')}</button>
+              <button onClick={() => setView('coach')} className={`${c.btnSecondary} rounded-lg py-2.5 text-sm font-bold`}>{t('nck_help_someone')}</button>
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_q_label')} <span className={c.required}>*</span></label>
+              <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_q_ph')} rows={3}
+                className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+            </div>
+
+            <div>
+              <p className={`text-xs font-bold ${c.labelText} uppercase mb-1.5`}>{t('nck_kind_label')}</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {SIT_TYPES.map(s => (
+                  <button key={s.value} onClick={() => setSituationType(situationType === s.value ? '' : s.value)}
+                    className={`px-2 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center gap-0.5 ${situationType === s.value ? c.btnPrimary : c.btnSecondary}`}>
+                    <span className="text-base">{s.icon}</span>{t(s.tkey)}
+                  </button>
+                ))}
               </div>
-              {(results || situation.trim()) && (
-                <button onClick={resetAll} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
-                  ↺ {t('start_over')}
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now')}
+                <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessLevel}/10</span>
+                {readinessLabel(readinessLevel) && <span className={`ms-1.5 text-xs ${c.textMuted}`}>{readinessLabel(readinessLevel)}</span>}
+              </label>
+              <input type="range" min="1" max="10" value={readinessLevel} onChange={e => setReadinessLevel(Number(e.target.value))} className="w-full accent-cyan-600" />
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_fears_label')}</label>
+              <textarea value={specificFears} onChange={e => setSpecificFears(e.target.value)} placeholder={t('nck_fears_ph')} rows={2}
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+            </div>
+
+            <div>
+              <p className={`text-xs font-bold ${c.labelText} uppercase mb-1.5`}>{t('nck_when_label')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {TIME_OPTIONS.map(o => (
+                  <button key={o.value} onClick={() => setTimeUntil(o.value)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium ${timeUntil === o.value ? c.btnPrimary : c.btnSecondary}`}>
+                    {o.icon} {t(o.tkey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {error && (
+              <div className={`${c.danger} border rounded-lg p-3 flex items-start gap-2 text-sm`}><span>⚠️</span><p>{error}</p></div>
+            )}
+
+            <button title={t('cmd_enter')} onClick={runMain} disabled={!situation.trim() || loading}
+              className={`relative w-full ${!situation.trim() ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-40`}>
+              {loading
+                ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</>
+                : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
+              {!loading && (
+                <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+              )}
+            </button>
+
+            <p className={`text-xs ${c.textMuted}`}>
+              {t('nck_rehearse_hint')} <a href="/DifficultTalkCoach" className={linkStyle}>{t('nck_xref_dtc')}</a> {t('nck_rehearse_hint_end')}
+            </p>
+
+            {sessionHistory.length > 0 && (
+              <button onClick={() => setView('history')} className={`${c.btnSecondary} w-full rounded-lg py-2 text-xs font-semibold`}>
+                📋 {t('nck_history')} ({sessionHistory.length})
+              </button>
+            )}
+          </>
+        )}
+
+        {/* ── RESULTS VIEW (main plan) ── */}
+        {view === 'results' && results && (
+          <div ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <h2 className={`text-lg font-black ${c.text}`}>💪 {t('nck_heres_plan')}</h2>
+            {renderRecap()}
+            {results?.opening && <p className={`text-sm ${c.textSecondary}`}>{results?.opening}</p>}
+
+            {results?.what_youre_worried_about && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+                <h3 className={`text-sm font-bold ${c.text}`}>🎯 {t('nck_worried_about')}</h3>
+                {results?.what_youre_worried_about.established?.length > 0 && (
+                  <div>
+                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_you_know')}</p>
+                    <ul className="space-y-1">{results?.what_youre_worried_about.established.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                  </div>
+                )}
+                {results?.what_youre_worried_about.possible?.length > 0 && (
+                  <div>
+                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_could_happen')}</p>
+                    <ul className="space-y-1">{results?.what_youre_worried_about.possible.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                  </div>
+                )}
+                {results?.what_youre_worried_about.unknown?.length > 0 && (
+                  <div>
+                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_cant_know')}</p>
+                    <ul className="space-y-1">{results?.what_youre_worried_about.unknown.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {results?.what_you_can_prepare?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold ${c.text} mb-2`}>📋 {t('nck_have_ready')}</h3>
+                <div className="space-y-3">
+                  {results?.what_you_can_prepare.map((p, i) => (
+                    <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                      <p className={`text-sm font-semibold ${c.text}`}>{i + 1}. {p.action}</p>
+                      {p.why_it_helps_here && <p className={`text-xs ${c.textMuted} mt-1`}>{t('nck_why_helps')} {p.why_it_helps_here}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {results?.words_if_you_need_them?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold ${c.text} mb-2`}>🗣️ {t('nck_words_need')}</h3>
+                <div className="space-y-2">
+                  {results?.words_if_you_need_them.map((w, i) => (
+                    <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{w.moment}</p>
+                      <p className={`text-sm ${c.textSecondary} italic`}>"{w.script}"</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {results?.if_the_moment_gets_awkward?.action && (
+              <div className={`${c.warning} border rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold mb-1`}>😬 {t('nck_gets_awkward')}</h3>
+                <p className="text-sm">{results?.if_the_moment_gets_awkward.action}</p>
+                {results?.if_the_moment_gets_awkward.script && <p className="text-sm italic mt-1">"{results?.if_the_moment_gets_awkward.script}"</p>}
+              </div>
+            )}
+
+            {results?.settle_yourself?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold ${c.text} mb-2`}>🫁 {t('nck_settle')}</h3>
+                <ul className="space-y-1">{results?.settle_yourself.map((s, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {s}</li>)}</ul>
+              </div>
+            )}
+
+            {results?.remember && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>📌 {t('nck_remember')}</h3>
+                <p className={`text-sm ${c.text}`}>{results?.remember}</p>
+              </div>
+            )}
+
+            {results?.do_this_next && (
+              <div className={`${c.success} border rounded-xl p-4`}>
+                <h3 className={`text-[10px] font-bold uppercase mb-1`}>➡️ {t('nck_do_next')}</h3>
+                <p className="text-sm font-medium">{results?.do_this_next}</p>
+              </div>
+            )}
+
+            {/* Two labeled follow-up actions — not icon-only. */}
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={goLive} className={`${c.btnDanger} rounded-lg py-2.5 text-sm font-bold`}>🔴 {t('nck_go_live')}</button>
+              <button onClick={() => setView('debrief')} className={`${c.btnSecondary} rounded-lg py-2.5 text-sm font-bold`}>📊 {t('nck_debrief_btn')}</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── LIVE / HELP ME NOW VIEW ── */}
+        {view === 'live' && (
+          <div className="space-y-4">
+            <h2 className={`text-lg font-black ${c.text}`}>🔴 {t('nck_live_mode')}</h2>
+            {!liveResults ? (
+              <>
+                {!situation.trim() && (
+                  <div>
+                    <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_about_to_do_ph')} <span className={c.required}>*</span></label>
+                    <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('nck_q_ph')}
+                      className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+                  </div>
+                )}
+                <div>
+                  <p className={`text-xs font-bold ${c.labelText} uppercase mb-1.5`}>{t('nck_minutes')}</p>
+                  <div className="flex gap-1.5">
+                    {MINUTES_OPTIONS.map(m => (
+                      <button key={m} onClick={() => setMinutesUntil(m)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${minutesUntil === m ? c.btnDanger : c.btnSecondary}`}>{m}{t('nck_min_suffix')}</button>
+                    ))}
+                  </div>
+                </div>
+                {liveError && <div className={`${c.danger} border rounded-lg p-3 text-sm`}>{liveError}</div>}
+                <button onClick={runLive} disabled={!situation.trim() || loading}
+                  className={`w-full ${c.btnDanger} font-bold py-3 rounded-lg min-h-[48px] disabled:opacity-40`}>
+                  {loading ? t('nck_getting_ready') : t('nck_get_ready')}
                 </button>
+              </>
+            ) : (
+              <div ref={resultsRef} className="scroll-mt-24 space-y-3">
+                {renderRecap()}
+                {liveResults?.first && (
+                  <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-semibold">{liveResults?.first}</p></div>
+                )}
+                {liveResults?.settle?.instruction && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                    <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>🫁 {t('nck_focus_settle')}</h3>
+                    <p className={`text-sm ${c.textSecondary}`}>{liveResults?.settle.instruction}</p>
+                  </div>
+                )}
+                {(liveResults?.words?.to_yourself || liveResults?.words?.opening || liveResults?.words?.if_you_need_a_moment) && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                    <h3 className={`text-sm font-bold ${c.text}`}>🎬 {t('nck_your_lines')}</h3>
+                    {liveResults?.words.to_yourself && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_tell_yourself')}: </span>{liveResults?.words.to_yourself}</p>}
+                    {liveResults?.words.opening && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_first_thing_say')}: </span>"{liveResults?.words.opening}"</p>}
+                    {liveResults?.words.if_you_need_a_moment && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_if_panic')}: </span>"{liveResults?.words.if_you_need_a_moment}"</p>}
+                  </div>
+                )}
+                {liveResults?.remember && <p className={`text-sm ${c.textSecondary} italic`}>{liveResults?.remember}</p>}
+                {liveResults?.if_you_need_to_step_away && (
+                  <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                    <p className={`text-sm ${c.textSecondary}`}>{liveResults?.if_you_need_to_step_away}</p>
+                  </div>
+                )}
+                {liveResults?.go && <p className={`text-sm font-bold ${c.text} text-center`}>{liveResults?.go}</p>}
+                <button onClick={() => { setFocusStep(0); setView('focus'); }} className={`w-full ${c.btnPrimary} rounded-lg py-2.5 text-sm font-bold`}>👁️ {t('nck_focus')}</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── FOCUS MODE ── */}
+        {view === 'focus' && focusCards.length > 0 && (
+          <div className="flex flex-col items-center justify-center text-center py-8 space-y-6 min-h-[300px]">
+            <p className={`text-[10px] font-bold uppercase tracking-wide ${c.accentTxt}`}>{focusCards[focusStep].label}</p>
+            <p className={`text-2xl sm:text-3xl font-black ${c.text} max-w-md`}>{focusCards[focusStep].text}</p>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setFocusStep(s => Math.max(0, s - 1))} disabled={focusStep === 0} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-30`}>←</button>
+              <span className={`text-xs ${c.textMuted}`}>{focusStep + 1}/{focusCards.length}</span>
+              {focusStep < focusCards.length - 1 ? (
+                <button onClick={() => setFocusStep(s => Math.min(focusCards.length - 1, s + 1))} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-bold`}>→</button>
+              ) : (
+                <button onClick={() => setView('debrief')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-bold`}>📊 {t('nck_debrief_btn')}</button>
               )}
             </div>
           </div>
-        </div>
-        <div className="px-5 pb-4 pt-3">
-          {error && <div className={`p-3 rounded-xl border mb-3 ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
+        )}
+
+        {/* ── DEBRIEF INPUT ── */}
+        {view === 'debrief' && (
+          <div className="space-y-4">
+            <h2 className={`text-lg font-black ${c.text}`}>📊 {t('nck_debrief_title')}</h2>
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label>
+              <textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3}
+                className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+            </div>
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now_label')} <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessAfter}/10</span></label>
+              <input type="range" min="1" max="10" value={readinessAfter} onChange={e => setReadinessAfter(Number(e.target.value))} className="w-full accent-cyan-600" />
+            </div>
+            <div>
+              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_surprised_label')}</label>
+              <input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={t('nck_surprised_ph')}
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+            </div>
+            {debriefError && <div className={`${c.danger} border rounded-lg p-3 text-sm`}>{debriefError}</div>}
+            <button title={t('cmd_enter')} onClick={runDebrief} disabled={!howItWent.trim() || loading}
+              className={`w-full ${!howItWent.trim() ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg min-h-[48px] disabled:opacity-40`}>
+              {loading ? t('nck_processing') : t('nck_debrief_me')}
+            </button>
+          </div>
+        )}
+
+        {/* ── DEBRIEF RESULTS ── */}
+        {view === 'debrief-results' && debriefResults && (
+          <div ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <h2 className={`text-lg font-black ${c.text}`}>{debriefResults?.headline}</h2>
+            {(debriefResults?.before_and_after?.readiness_before != null || debriefResults?.before_and_after?.readiness_after != null) && (
+              <div className="flex items-center justify-center gap-3 text-sm">
+                <span className={`px-3 py-1 rounded-lg font-bold border ${matchStyle(debriefResults?.before_and_after.readiness_before || 0)}`}>{debriefResults?.before_and_after.readiness_before ?? '?'}/10</span>
+                <span className={c.textMuted}>→</span>
+                <span className={`px-3 py-1 rounded-lg font-bold border ${matchStyle(debriefResults?.before_and_after.readiness_after || 0)}`}>{debriefResults?.before_and_after.readiness_after ?? '?'}/10</span>
+              </div>
+            )}
+
+            <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+              <h3 className={`text-sm font-bold ${c.text}`}>🧾 {t('nck_what_happened_header')}</h3>
+              {debriefResults?.what_you_expected?.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_expected')}</p>
+                  <ul className="space-y-1">{debriefResults?.what_you_expected.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                </div>
+              )}
+              {debriefResults?.what_happened?.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_actually_happened')}</p>
+                  <ul className="space-y-1">{debriefResults?.what_happened.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                </div>
+              )}
+              {debriefResults?.what_was_different?.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_the_difference')}</p>
+                  <ul className="space-y-1">{debriefResults?.what_was_different.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                </div>
+              )}
+            </div>
+
+            {debriefResults?.useful_evidence_for_next_time?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold ${c.text} mb-2`}>✅ {t('nck_evidence_next_time')}</h3>
+                <ul className="space-y-1">{debriefResults?.useful_evidence_for_next_time.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+              </div>
+            )}
+
+            {debriefResults?.what_you_might_change?.length > 0 && (
+              <div className={`${c.warning} border rounded-xl p-4`}>
+                <h3 className={`text-sm font-bold mb-2`}>🔧 {t('nck_might_change')}</h3>
+                <ul className="space-y-1">{debriefResults?.what_you_might_change.map((x, i) => <li key={i} className="text-sm">• {x}</li>)}</ul>
+              </div>
+            )}
+
+            {debriefResults?.save_this && (
+              <div className={`${c.success} border rounded-xl p-4`}>
+                <h3 className={`text-[10px] font-bold uppercase mb-1`}>📌 {t('nck_save_next')}</h3>
+                <p className="text-sm font-medium italic">"{debriefResults?.save_this}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── HELP SOMEONE ELSE ── */}
+        {view === 'coach' && (
+          <div className="space-y-4">
+            <h2 className={`text-lg font-black ${c.text}`}>🤝 {t('nck_coach_mode')}</h2>
+            {!coachResults ? (
+              <>
+                <div>
+                  <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_who_label')}</label>
+                  <input type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder={t('nck_coach_who_ph')}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+                </div>
+                <div>
+                  <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_what_label')} <span className={c.required}>*</span></label>
+                  <textarea value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder={t('nck_coach_what_ph')} rows={2}
+                    className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+                </div>
+                <div>
+                  <p className={`text-xs font-bold ${c.labelText} uppercase mb-1.5`}>{t('nck_relationship')}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {COACH_RELATIONS.map(r => (
+                      <button key={r.value} onClick={() => setCoachRelation(r.value)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${coachRelation === r.value ? c.btnPrimary : c.btnSecondary}`}>{r.icon} {t(r.tkey)}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className={`text-xs font-bold ${c.labelText} uppercase mb-1.5`}>{t('nck_age')}</p>
+                  <div className="flex gap-1.5">
+                    {['child', 'teen', 'adult'].map(a => (
+                      <button key={a} onClick={() => setCoachAge(a)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${coachAge === a ? c.btnPrimary : c.btnSecondary}`}>{t(`nck_age_${a}`)}</button>
+                    ))}
+                  </div>
+                </div>
+                {coachError && <div className={`${c.danger} border rounded-lg p-3 text-sm`}>{coachError}</div>}
+                <button title={t('cmd_enter')} onClick={runCoach} disabled={!coachSituation.trim() || loading}
+                  className={`w-full ${!coachSituation.trim() ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg min-h-[48px] disabled:opacity-40`}>
+                  {loading ? t('nck_thinking') : t('nck_how_help')}
+                </button>
+              </>
+            ) : (
+              <div ref={resultsRef} className="scroll-mt-24 space-y-3">
+                {coachResults?.what_to_say && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                    <h3 className={`text-sm font-bold ${c.text} mb-1`}>💬 {t('nck_say_this_title')}</h3>
+                    <p className={`text-sm ${c.textSecondary}`}>{coachResults?.what_to_say}</p>
+                  </div>
+                )}
+                {coachResults?.what_not_to_push && (
+                  <div className={`${c.warning} border rounded-xl p-4`}>
+                    <h3 className={`text-sm font-bold mb-1`}>🚫 {t('nck_not_to_push')}</h3>
+                    <p className="text-sm">{coachResults?.what_not_to_push}</p>
+                  </div>
+                )}
+                {coachResults?.practical_help_you_could_offer?.length > 0 && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                    <h3 className={`text-sm font-bold ${c.text} mb-2`}>🤲 {t('nck_do_this')}</h3>
+                    <ul className="space-y-1">{coachResults?.practical_help_you_could_offer.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
+                  </div>
+                )}
+                {coachResults?.if_they_dont_want_help && (
+                  <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                    <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_if_no_help')}</h3>
+                    <p className={`text-sm ${c.textSecondary}`}>{coachResults?.if_they_dont_want_help}</p>
+                  </div>
+                )}
+                <button onClick={() => { setCoachResults(null); setCoachWho(''); setCoachSituation(''); setCoachRelation(''); }} className={`${c.btnSecondary} w-full rounded-lg py-2 text-xs font-bold`}>{t('nck_coach_again')}</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── HISTORY ── */}
+        {view === 'history' && (
+          <div className="space-y-3">
+            <h2 className={`text-lg font-black ${c.text}`}>📋 {t('nck_past_checks')}</h2>
+            {sessionHistory.length === 0 ? (
+              <p className={`text-sm ${c.textMuted}`}>{t('nck_no_entries')}</p>
+            ) : (
+              <div className="space-y-1.5">
+                {sessionHistory.map(entry => (
+                  <div key={entry.id} className="flex items-center gap-1.5">
+                    <button onClick={() => openHistoryEntry(entry)} className={`flex-1 min-w-0 flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg ${c.cardAlt} hover:brightness-95 dark:hover:brightness-125 transition text-start`}>
+                      <span className="min-w-0 flex-1">
+                        <span className={`text-sm font-semibold ${c.text} truncate block`}>{entry.preview || entry.situation}</span>
+                        <span className={`text-[11px] ${c.textMuted} truncate block`}>
+                          {t('nck_before')} {entry.readinessBefore}
+                          {entry.readinessAfter != null && ` · ${t('nck_after')} ${entry.readinessAfter}`}
+                          {entry.quote && ` — "${entry.quote}"`}
+                        </span>
+                      </span>
+                      <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(entry.date).toLocaleDateString()}</span>
+                    </button>
+                    <button onClick={() => removeHistoryEntry(entry.id)} aria-label={t('nck_remove')} title={t('nck_remove')}
+                      className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-sm ${c.textMuted} opacity-60 hover:opacity-100 transition`}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         </div>
       </div>
 
-        {/* ════════ FORM ════════ */}
-        {view === 'form' && (
-          <div className="space-y-5">
-            {/* Overdue check-ins */}
-            {overdueCheckins.length > 0 && (
-              <div className={`p-4 rounded-2xl border-2 ${isDark ? 'bg-amber-900/15 border-amber-700/50' : 'bg-amber-50 border-amber-300'}`}>
-                <p className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-2`}>{t('nck_overdue_title')}</p>
-                {overdueCheckins.slice(0, 2).map(p => (
-                  <div key={p.id} className="flex items-center justify-between mb-1.5">
-                    <p className={`text-xs ${c.text} truncate flex-1`}>{p.situation}</p>
-                    <div className="flex gap-1.5 shrink-0 ms-2">
-                      <button onClick={() => { setSituation(p.situation); setSituationType(p.type || ''); completeCheckin(p.id); setView('debrief'); }} className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${c.btnPrimary}`}>{t('nck_debrief')}</button>
-                      <button onClick={() => completeCheckin(p.id)} className={`px-2 py-1 rounded-lg text-[10px] ${c.btnSoft}`}>{t('nck_dismiss')}</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => { setView('live'); goLive(); }} className={`py-3 rounded-2xl font-black text-sm ${c.btnDanger}`}>{t('nck_help_now')}</button>
-              <button onClick={() => setView('coach')} className={`py-3 rounded-2xl font-bold text-sm ${c.btnSecondary}`}>{t('nck_help_someone')}</button>
-            </div>
-
-            {templates.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-4`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>{t('nck_quick_load')}</p>
-                <div className="flex gap-2 flex-wrap">
-                  {templates.map(tpl => (
-                    <button key={tpl.id} onClick={() => loadTemplate(tpl)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/10' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
-                      <span>{SIT_TYPES.find(s => s.value === tpl.situationType)?.icon || '🌀'}</span><span className={c.text}>{tpl.name}</span>
-                      <span onClick={(e) => { e.stopPropagation(); setTemplates(prev => prev.filter(p => p.id !== tpl.id)); }} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400 ms-1`}>✕</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className={`${c.card} border rounded-2xl p-5 space-y-5`}>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('nck_q_label')} <span className={c.required}>*</span></label>
-                <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_q_ph')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_kind_label')}</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {SIT_TYPES.map(st => (<button key={st.value} onClick={() => setSituationType(st.value)} className={`p-2 rounded-xl border text-center transition-all ${situationType === st.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}><span className="text-lg block">{st.icon}</span><span className={`text-[9px] font-bold leading-tight block ${c.text}`}>{t(st.tkey)}</span></button>))}
-                </div>
-              </div>
-              {/* Reframe library teaser */}
-              {matchingReframes.length > 0 && (
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/15 border border-emerald-800/30' : 'bg-emerald-50 border border-emerald-200'}`}>
-                  <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>{t('nck_done_before', { kind: SIT_TYPES.find(s => s.value === situationType) ? t(SIT_TYPES.find(s => s.value === situationType).tkey).toLowerCase() : t('nck_this') })}</p>
-                  {matchingReframes.map((r, i) => <p key={i} className={`text-xs italic ${c.textSecondary}`}>"{r.saveThis}"</p>)}
-                </div>
-              )}
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_conf_now')} <span className={`text-base font-black ${confColor(confidenceLevel)}`}>{confidenceLevel}/10</span></label>
-                <input type="range" min="1" max="10" value={confidenceLevel} onChange={e => setConfidenceLevel(Number(e.target.value))} className="w-full accent-emerald-500" />
-                <div className="flex justify-between"><span className={`text-[10px] ${c.textMuteded}`}>{t('nck_terrified')}</span><span className={`text-[10px] ${c.textMuteded}`}>{t('nck_feeling_good')}</span></div>
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_fears_label')}</label>
-                <textarea value={specificFears} onChange={e => setSpecificFears(e.target.value)} placeholder={t('nck_fears_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_when_label')}</label>
-                <div className="flex gap-2 flex-wrap">{TIME_OPTIONS.map(opt => (<button key={opt.value} onClick={() => setTimeUntil(opt.value)} className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${timeUntil === opt.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{opt.icon} {t(opt.tkey)}</button>))}</div>
-              </div>
-              <div className="flex gap-2">
-                <button title={t('cmd_enter')} onClick={analyze} disabled={loading || !situation.trim()} className={`relative flex-1 ${(!situation.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
-                {!loading && (
-                  <kbd aria-hidden="true"
-                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                    ⌘↵
-                  </kbd>
-                )}
-                </button>
-              </div>
-              <p className={`text-xs ${c.textMuted}`}>{t('nck_rehearse_hint')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('nck_xref_dtc')}</a> {t('nck_rehearse_hint_end')}</p>
-              {situation.trim() && situationType && (
-                <div>{!showSaveTemplate ? (<button onClick={() => setShowSaveTemplate(true)} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('nck_save_template')}</button>) : (
-                  <div className="flex gap-2"><label htmlFor="nc-template-name" className="sr-only">{t('nck_template_name_label')}</label><input id="nc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('nck_template_ph')} className={`flex-1 p-2 border-2 rounded-xl text-xs ${c.input}`} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('nck_save')}</button><button onClick={() => setShowSaveTemplate(false)} className={`px-3 py-2 rounded-xl text-xs ${c.btnSoft}`}>✕</button></div>
-                )}</div>
-              )}
-            </div>
-
-            {/* Bottom nav */}
-            <div className="grid grid-cols-3 gap-2">
-              {patterns && <button onClick={() => setView('patterns')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('nck_patterns')}</button>}
-              {journal.length > 0 && <button onClick={() => setView('journal')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('nck_journal', { count: journal.length })}</button>}
-              <button onClick={() => setView('ladder')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{ladders.length > 0 ? t('nck_fear_ladder_count', { count: ladders.length }) : t('nck_fear_ladder')}</button>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ RESULTS ════════ */}
-        {view === 'results' && results && (
-          <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
-            <div className="flex gap-2 flex-wrap">
-              <button onClick={() => { setWalkStep(0); setView('walkthrough'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimary}`}>{t('nck_guided')}</button>
-            </div>
-            {results?.mantra && (<div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-lg font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{results?.mantra}"</p><div className="mt-2"></div></div>)}
-            {/* Reframe library in results */}
-            {matchingReframes.length > 0 && (
-              <div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15 border border-emerald-800/30' : 'bg-emerald-50 border border-emerald-200'}`}>
-                <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-2`}>{t('nck_from_journal')}</p>
-                {matchingReframes.map((r, i) => (<div key={i} className="mb-1.5"><p className={`text-xs italic font-bold ${c.text}`}>"{r.saveThis}"</p><p className={`text-[10px] ${c.textMuteded}`}>{r.situation} · {confColor(r.confBefore) ? '' : ''}{r.confBefore}→{r.confAfter}</p></div>))}
-              </div>
-            )}
-            {results?.fear_breakdown && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_whats_going_on')}</p>{renderWalkContent({ key: 'fear' })}</div>)}
-            {results?.why_youre_readier_than_you_think?.length > 0 && (<div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_why_ready')}</p>{renderWalkContent({ key: 'ready' })}</div>)}
-            {results?.prep_plan?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><button onClick={() => toggle('prep')} className="w-full flex items-center justify-between"><p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('nck_prep_plan')}</p><span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.prep !== false} /></span></button>{expandedSections.prep !== false && <div className="mt-3">{renderWalkContent({ key: 'prep' })}</div>}</div>)}
-            {results?.scripts && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_what_to_say')}</p>{renderWalkContent({ key: 'scripts' })}</div>)}
-            {results?.body_hacks?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><button onClick={() => toggle('body')} className="w-full flex items-center justify-between"><p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('nck_body_hacks')}</p><span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.body} /></span></button>{expandedSections.body && <div className="mt-3">{renderWalkContent({ key: 'body' })}</div>}</div>)}
-            {results?.worst_case_autopsy && (<div className={`${c.card} border rounded-2xl p-5`}><button onClick={() => toggle('worst')} className="w-full flex items-center justify-between"><p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('nck_worst_case')}</p><span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.worst} /></span></button>{expandedSections.worst && <div className="mt-3">{renderWalkContent({ key: 'worst' })}</div>}</div>)}
-            {results?.permission_slip && (<div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💌 {results?.permission_slip}</p></div>)}
-            <div className={`${c.card} border rounded-2xl p-5 space-y-2`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>{t('nck_next_steps')}</p>
-              <button onClick={() => { setView('live'); goLive(); }} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnDanger}`}>{t('nck_go_live')}</button>
-              <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setView('specific'); runSpecificPrep(); }} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>🎯 {situationType ? t(SIT_TYPES.find(s => s.value === situationType).tkey) : t('nck_specific_fallback')} {t('nck_specific_prep')}</button>
-                <button onClick={() => setView('debrief')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('nck_debrief_btn')}</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ WALKTHROUGH ════════ */}
-        {view === 'walkthrough' && results && walkSteps.length > 0 && (
-          <div className="space-y-5">
-            <div className="flex items-center justify-between"><button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_full_view')}</button><p className={`text-xs font-bold ${c.textMuteded}`}>{walkStep + 1} / {walkSteps.length}</p></div>
-            <div className="flex justify-center gap-1.5">{walkSteps.map((_, i) => (<button key={i} onClick={() => setWalkStep(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === walkStep ? (isDark ? 'bg-cyan-400 scale-125' : 'bg-cyan-600 scale-125') : i < walkStep ? (isDark ? 'bg-cyan-700' : 'bg-cyan-300') : (isDark ? 'bg-zinc-700' : 'bg-zinc-300')}`} />))}</div>
-            <div className={`${c.card} border-2 rounded-2xl p-6 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-4 ${c.accentTxt}`}>{walkSteps[walkStep].icon} {walkSteps[walkStep].title}</p>{renderWalkContent(walkSteps[walkStep])}</div>
-            <div className="flex gap-3">
-              <button onClick={() => setWalkStep(Math.max(0, walkStep - 1))} disabled={walkStep === 0} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} disabled:opacity-40`}>{t('nck_back')}</button>
-              {walkStep < walkSteps.length - 1 ? (<button onClick={() => setWalkStep(walkStep + 1)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>{t('nck_next')}</button>) : (<button onClick={() => { setView('live'); goLive(); }} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnDanger}`}>{t('nck_go_live')}</button>)}
-            </div>
-          </div>
-        )}
-
-        {/* ════════ LIVE MODE ════════ */}
-        {view === 'live' && (
-          <div className="space-y-5">
-            <div className="flex gap-2">
-              <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-              <div className="flex-1" />
-              <button onClick={() => { setView('sos'); goSOS(); }} className={`text-sm font-black px-4 py-2 rounded-xl ${c.btnDanger}`}>🆘 {t('nck_sos')}</button>
-            </div>
-            {!liveResults && !liveLoading && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-red-700/50' : 'border-red-300'}`}>
-                <p className={`text-lg font-black ${c.text} mb-1`}>{t('nck_live_mode')}</p><p className={`text-xs ${c.textSecondary} mb-4`}>{t('nck_about_to_do')}</p>
-                <div className="space-y-3">
-                  <div><label className={`text-xs font-bold ${c.textMuteded}`}>{t('nck_panic_level')} <span className={`font-black ${confColor(11 - panicLevel)}`}>{panicLevel}/10</span></label><input type="range" min="1" max="10" value={panicLevel} onChange={e => setPanicLevel(Number(e.target.value))} className="w-full accent-red-500" /></div>
-                  <div><label className={`text-xs font-bold ${c.textMuteded}`}>{t('nck_minutes')}</label><div className="flex gap-2 mt-1">{[1, 2, 5, 10, 15].map(m => (<button key={m} onClick={() => setMinutesUntil(m)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${minutesUntil === m ? (isDark ? 'border-red-500 bg-red-900/20' : 'border-red-500 bg-red-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{m}{t('nck_min_suffix')}</button>))}</div></div>
-                  {!situation.trim() && <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_about_to_do_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />}
-                  <button onClick={goLive} disabled={liveLoading} className={`w-full ${c.btnDanger} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{liveLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_loading')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_get_ready')}</>}</button>
-                </div>
-              </div>
-            )}
-            {liveLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>{t('nck_getting_ready')}</p></div>)}
-            {liveResults && (
-              <div className="space-y-4">
-                <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                  {liveResults?.breathe?.pattern && !breathingActive && !breathPhase && (
-                    <p className={`text-xs ${c.textMuteded} mb-2`}>{liveResults.breathe.pattern} · {liveResults.breathe.rounds || 3} {t('nck_rounds')}</p>
-                  )}
-                  {liveResults?.breathe?.instruction && !breathingActive && !breathPhase && (
-                    <p className={`text-xs ${c.textSecondary} mb-3`}>{liveResults.breathe.instruction}</p>
-                  )}
-                  {!breathingActive && !breathPhase && (<button onClick={() => setBreathingActive(true)} className={`w-full py-4 rounded-xl font-black text-base ${c.btnPrimary}`}>{t('nck_start_breathing')}</button>)}
-                  {breathingActive && (<div><p className={`text-3xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-2`}>{breathPhase}</p><p className={`text-xs ${c.textMuteded}`}>{t('nck_round_of', { n: breathCount })}</p><button onClick={() => { setBreathingActive(false); setBreathPhase(''); }} className={`mt-3 text-xs ${c.textMuteded}`}>{t('nck_skip')}</button></div>)}
-                  {!breathingActive && breathPhase && (<div><p className={`text-xl font-black ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✅ {breathPhase}</p><button onClick={() => { setBreathPhase(''); setBreathingActive(true); setBreathCount(0); }} className={`mt-2 text-xs ${c.accentTxt}`}>{t('nck_again')}</button></div>)}
-                </div>
-                {liveResults.first_thing && (<div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}><p className={`text-sm font-black ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>👉 {liveResults.first_thing}</p></div>)}
-                {liveResults.body_reset && (<div className={`${c.card} border rounded-2xl p-4`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{t('nck_body_reset')}</p><p className={`text-sm ${c.text}`}>{liveResults.body_reset}</p></div>)}
-                {liveResults.last_words && (
-                  <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_your_lines')}</p>
-                    <div className="space-y-2.5">
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'}`}><p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('nck_tell_yourself')}</p><p className={`text-sm font-bold ${c.text}`}>"{liveResults.last_words.tell_yourself}"</p></div>
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_first_thing_say')}</p><p className={`text-sm font-bold ${c.text}`}>"{liveResults.last_words.first_thing_to_say}"</p><div className="mt-1"></div></div>
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>{t('nck_if_panic')}</p><p className={`text-xs ${c.text}`}>{liveResults.last_words.if_panic_hits}</p></div>
-                    </div>
-                  </div>
-                )}
-                {liveResults.perspective && (<div className={`p-4 rounded-xl text-center ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🌍 {liveResults.perspective}</p></div>)}
-                {liveResults.after && (<div className={`${c.card} border rounded-2xl p-4`}><p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('nck_after_label')}</p><p className={`text-xs ${c.text}`}>{liveResults.after}</p></div>)}
-                <div className="grid grid-cols-4 gap-2">
-                  <button onClick={() => { setVoiceStep(0); setView('voice'); }} className={`py-3 rounded-xl font-bold text-xs ${c.btnPrimary}`}>{t('nck_focus')}</button>
-                  <button onClick={() => { setView('sos'); goSOS(); }} className={`py-3 rounded-xl font-bold text-xs ${c.btnDanger}`}>🆘</button>
-                  <button onClick={() => setView('debrief')} className={`py-3 rounded-xl font-bold text-xs ${c.btnPrimary}`}>📊</button>
-                  <button onClick={() => { setLiveResults(null); setBreathPhase(''); goLive(); }} className={`py-3 rounded-xl font-bold text-xs ${c.btnSoft}`}>🔄</button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ VOICE / FOCUS MODE ════════ */}
-        {view === 'voice' && voiceCards.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <button onClick={() => setView('live')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-              <p className={`text-xs font-bold ${c.textMuteded}`}>{voiceStep + 1} / {voiceCards.length}</p>
-            </div>
-            <div className={`p-8 rounded-3xl text-center min-h-[40vh] flex flex-col items-center justify-center ${isDark ? 'bg-zinc-800 border-2 border-zinc-600' : 'bg-white border-2 border-zinc-300'}`}>
-              <p className={`text-[10px] font-bold uppercase tracking-widest mb-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{voiceCards[voiceStep].label}</p>
-              <p className={`text-2xl sm:text-3xl font-black leading-snug ${c.text}`}>{voiceCards[voiceStep].text}</p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setVoiceStep(Math.max(0, voiceStep - 1))} disabled={voiceStep === 0} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnSecondary} disabled:opacity-40`}>←</button>
-              {voiceStep < voiceCards.length - 1 ? (
-                <button onClick={() => setVoiceStep(voiceStep + 1)} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>→</button>
-              ) : (
-                <button onClick={() => setView('debrief')} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>{t('nck_done')}</button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ════════ SOS ════════ */}
-        {view === 'sos' && (
-          <div className="space-y-5">
-            <button onClick={() => liveResults ? setView('live') : results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-            {sosLoading && (<div className={`${c.card} border-2 rounded-2xl p-8 text-center ${isDark ? 'border-red-700/50' : 'border-red-300'}`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm font-bold ${c.text} mt-2`}>{t('nck_hold_on')}</p></div>)}
-            {sosResults && (
-              <div className="space-y-3">
-                <div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-red-900/20 border-2 border-red-700/50' : 'bg-red-50 border-2 border-red-300'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-2`}>{t('nck_do_now')}</p><p className={`text-lg font-black ${c.text}`}>{sosResults.do_now}</p></div>
-                <div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'} mb-2`}>{t('nck_think_this')}</p><p className={`text-xl font-black ${c.text}`}>{sosResults.think_this}</p></div>
-                {sosResults.say_this && (<div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_say_this')}</p><p className={`text-sm font-bold ${c.text}`}>"{sosResults.say_this}"</p></div>)}
-                {sosResults.remember && (<div className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'}`}><p className={`text-xs font-bold text-center ${c.text}`}>🧠 {sosResults.remember}</p></div>)}
-                <div className="grid grid-cols-2 gap-2"><button onClick={() => { setSosResults(null); goSOS(); }} className={`py-3 rounded-xl font-bold text-xs ${c.btnDanger}`}>{t('nck_sos_again')}</button><button onClick={() => setBreathingActive(true)} className={`py-3 rounded-xl font-bold text-xs ${c.btnPrimary}`}>{t('nck_breathe')}</button></div>
-                {breathingActive && (<div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}><p className={`text-2xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-2`}>{breathPhase}</p><p className={`text-xs ${c.textMuteded}`}>{t('nck_round_of', { n: breathCount })}</p><button onClick={() => { setBreathingActive(false); setBreathPhase(''); }} className={`mt-2 text-xs ${c.textMuteded}`}>{t('nck_stop')}</button></div>)}
-              </div>
-            )}
-            {!sosResults && !sosLoading && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-red-700/50' : 'border-red-300'}`}>
-                <p className={`text-lg font-black ${c.text} mb-2`}>{t('nck_sos_title')}</p><p className={`text-xs ${c.textSecondary} mb-3`}>{t('nck_sos_whats_happening')}</p>
-                <textarea value={sosWhat} onChange={e => setSosWhat(e.target.value)} placeholder={t('nck_sos_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm mb-3 ${c.input}`} />
-                <button onClick={goSOS} className={`w-full py-3 rounded-xl font-bold ${c.btnDanger}`}>{t('nck_sos_help')}</button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ SPECIFIC PREP ════════ */}
-        {view === 'specific' && (
-          <div className="space-y-5">
-            <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-            {specLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>{t('nck_building_prep', { kind: situationType && SIT_TYPES.find(s => s.value === situationType) ? t(SIT_TYPES.find(s => s.value === situationType).tkey).toLowerCase() : t('nck_specific_fallback').toLowerCase() })}</p></div>)}
-            {specResults && (
-              <div className="space-y-4">
-                {specResults.situation_intel && (
-                  <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_intel')}</p>
-                    <div className="space-y-2.5">
-                      <div><p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('nck_what_to_expect')}</p><p className={`text-xs ${c.text}`}>{specResults.situation_intel.what_to_expect}</p></div>
-                      <div className="flex gap-3">{specResults.situation_intel.typical_duration && <p className={`text-[10px] ${c.textMuteded}`}>⏱️ {specResults.situation_intel.typical_duration}</p>}{specResults.situation_intel.hardest_part && <p className={`text-[10px] ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>⚠️ {specResults.situation_intel.hardest_part}</p>}</div>
-                      {specResults.situation_intel.secret && (<div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('nck_secret')}</p><p className={`text-xs ${c.text}`}>{specResults.situation_intel.secret}</p></div>)}
-                    </div>
-                  </div>
-                )}
-                {specResults.targeted_prep?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_targeted_prep')}</p><div className="space-y-2.5">{specResults.targeted_prep.map((p, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}><p className={`text-xs font-bold ${c.text} mb-1`}>{p.task}</p><p className={`text-[10px] ${c.textSecondary}`}>{p.why} · {p.time}</p>{p.script && <div className="mt-1.5 flex items-center gap-2"><p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>"{p.script}"</p></div>}</div>))}</div></div>)}
-                {specResults.likely_challenges?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_challenges')}</p><div className="space-y-2.5">{specResults.likely_challenges.map((ch, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}><div className="flex items-center justify-between mb-1"><p className={`text-xs font-bold ${c.text}`}>{ch.challenge}</p><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${ch.probability === 'likely' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : ch.probability === 'possible' ? (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>{ch.probability === 'likely' ? t('nck_prob_likely') : ch.probability === 'possible' ? t('nck_prob_possible') : t('nck_prob_unlikely')}</span></div><p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>→ {ch.handle_it}</p>{ch.script && <div className="mt-1 flex items-center gap-2"><p className={`text-xs font-bold ${c.text}`}>"{ch.script}"</p></div>}</div>))}</div></div>)}
-                {specResults.power_moves?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_power_moves')}</p>{specResults.power_moves.map((m, i) => (<div key={i} className="mb-2.5"><p className={`text-xs font-bold ${c.text}`}>{m.move}</p><p className={`text-[10px] ${c.textSecondary}`}>{m.when} · {m.why_it_works}</p></div>))}</div>)}
-                {specResults.cheat_sheet?.length > 0 && (<div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}><div className="flex items-center justify-between mb-2"><p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_cheat_sheet')}</p></div>{specResults.cheat_sheet.map((item, i) => <p key={i} className={`text-xs ${c.text} mb-0.5`}>• {item}</p>)}</div>)}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ COACH ════════ */}
-        {view === 'coach' && (
-          <div className="space-y-5">
-            <button onClick={() => setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-            {!coachResults && !coachLoading && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-lg font-black ${c.text} mb-1`}>{t('nck_coach_mode')}</p><p className={`text-xs ${c.textSecondary} mb-4`}>{t('nck_coach_help_nervous')}</p>
-                <div className="space-y-3">
-                  <label htmlFor="nc-coach-who" className="sr-only">{t('nck_coach_who_label')}</label>
-                  <input id="nc-coach-who" type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder={t('nck_coach_who_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_coach_what_label')} <span className={c.required}>*</span></label>
-                    <textarea value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder={t('nck_coach_what_ph')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
-                  </div>
-                  <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>{t('nck_relationship')}</p><div className="grid grid-cols-3 gap-2">{COACH_RELATIONS.map(r => (<button key={r.value} onClick={() => setCoachRelation(r.value)} className={`p-2 rounded-xl border text-center text-xs font-bold ${coachRelation === r.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {t(r.tkey)}</button>))}</div></div>
-                  <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>{t('nck_age')}</p><div className="flex gap-2">{['child', 'teen', 'adult'].map(a => (<button key={a} onClick={() => setCoachAge(a)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${coachAge === a ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{a === 'child' ? '👶' : a === 'teen' ? '🧑' : '🧑‍💼'} {a === 'child' ? t('nck_age_child') : a === 'teen' ? t('nck_age_teen') : t('nck_age_adult')}</button>))}</div></div>
-                  <button onClick={runCoach} disabled={coachLoading || !coachSituation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{coachLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_thinking')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_how_help')}</>}</button>
-                </div>
-              </div>
-            )}
-            {coachLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span></div>)}
-            {coachResults && (
-              <div className="space-y-4">
-                {coachResults.key_insight && (<div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-sm font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>💡 {coachResults.key_insight}</p></div>)}
-                {coachResults.dont_say?.length > 0 && (<div className={`p-4 rounded-xl ${isDark ? 'bg-red-900/15 border border-red-800/30' : 'bg-red-50 border border-red-200'}`}><p className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-700'} mb-2`}>{t('nck_dont_say')}</p>{coachResults.dont_say.map((d, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {d}</p>)}</div>)}
-                {coachResults.do_say?.length > 0 && (<div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_say_this_title')}</p><div className="space-y-3">{coachResults.do_say.map((s, i) => (<div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{s.when}</p><p className={`text-sm font-bold ${c.text} mb-1`}>"{s.script}"</p><div className="flex items-center justify-between"><p className={`text-[10px] ${c.textSecondary}`}>{s.why_it_helps}</p></div></div>))}</div></div>)}
-                {coachResults.do_this?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_do_this')}</p>{coachResults.do_this.map((d, i) => (<div key={i} className="mb-2.5"><p className={`text-xs font-bold ${c.text}`}>{d.action}</p><p className={`text-[10px] ${c.textSecondary}`}>{d.when} · {d.why}</p></div>))}</div>)}
-                {coachResults.after && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_after_title')}</p><div className="space-y-2">{coachResults.after.if_it_went_well && <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_went_well')}</p><p className={`text-xs ${c.text}`}>{coachResults.after.if_it_went_well}</p></div>}{coachResults.after.if_it_went_badly && <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('nck_didnt_go_well')}</p><p className={`text-xs ${c.text}`}>{coachResults.after.if_it_went_badly}</p></div>}{coachResults.after.either_way && <div className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'}`}><p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('nck_either_way')}</p><p className={`text-xs ${c.text}`}>{coachResults.after.either_way}</p></div>}</div></div>)}
-                <button onClick={() => { setCoachResults(null); setCoachSituation(''); setCoachWho(''); }} className={`w-full py-3 rounded-xl font-bold ${c.btnSecondary}`}>{t('nck_coach_again')}</button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ FEAR LADDER ════════ */}
-        {view === 'ladder' && (
-          <div className="space-y-5">
-            <button onClick={() => setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-
-            {/* Active ladders */}
-            {!activeLadder && ladders.length > 0 && (
-              <div className="space-y-3">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('nck_your_ladders')}</p>
-                {ladders.map(l => {
-                  const done = l.completedRungs?.length || 0;
-                  const total = l.rungs?.length || 6;
-                  const pct = Math.round(done / total * 100);
-                  return (
-                    <div key={l.id} className={`${c.card} border rounded-2xl p-4`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <p className={`text-sm font-bold ${c.text}`}>{l.name}</p>
-                        <div className="flex gap-1.5 shrink-0">
-                          <button onClick={() => setActiveLadder(l)} className={`px-3 py-1 rounded-lg text-xs font-bold ${c.btnPrimary}`}>{t('nck_open')}</button>
-                          <button onClick={() => setLadders(prev => prev.filter(p => p.id !== l.id))} className={`px-2 py-1 rounded-lg text-xs ${c.btnSoft}`}>✕</button>
-                        </div>
-                      </div>
-                      <div className={`w-full h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
-                        <div className={`h-2 rounded-full transition-all ${pct >= 100 ? 'bg-emerald-500' : isDark ? 'bg-cyan-500' : 'bg-cyan-600'}`} style={{ width: `${pct}%` }} />
-                      </div>
-                      <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('nck_rungs_progress', { done, total, pct })}{pct >= 100 ? ' 🎉' : ''}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Active ladder detail */}
-            {activeLadder && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <button onClick={() => setActiveLadder(null)} className={`text-xs font-bold ${c.accentTxt}`}>{t('nck_all_ladders')}</button>
-                  <p className={`text-xs font-bold ${c.textMuteded}`}>{activeLadder.completedRungs?.length || 0}/{activeLadder.rungs?.length || 0}</p>
-                </div>
-                <div className={`p-4 rounded-2xl text-center ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}>
-                  <p className={`text-lg font-black ${c.text}`}>🪜 {activeLadder.name}</p>
-                  {activeLadder.rule && <p className={`text-xs ${c.textSecondary} mt-1`}>📌 {activeLadder.rule}</p>}
-                  {activeLadder.timeframe && <p className={`text-[10px] ${c.textMuteded} mt-1`}>⏱️ {activeLadder.timeframe}</p>}
-                </div>
-                <div className="space-y-2">
-                  {(activeLadder.rungs || []).map((rung, i) => {
-                    const done = (activeLadder.completedRungs || []).includes(rung.level);
-                    const diffColor = rung.difficulty === 'easy' ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : rung.difficulty === 'moderate' ? (isDark ? 'text-amber-400' : 'text-amber-700') : rung.difficulty === 'hard' ? (isDark ? 'text-amber-400' : 'text-amber-700') : (isDark ? 'text-red-400' : 'text-red-700');
-                    return (
-                      <div key={i} className={`${c.card} border rounded-2xl p-4 ${done ? 'opacity-60' : ''}`}>
-                        <div className="flex items-start gap-3">
-                          <button onClick={() => toggleRung(activeLadder.id, rung.level)} className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${done ? (isDark ? 'bg-cyan-600 border-cyan-500' : 'bg-cyan-500 border-cyan-400') : (isDark ? 'border-zinc-600' : 'border-zinc-300')}`}>
-                            {done && <span className="text-white text-xs">✓</span>}
-                          </button>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className={`text-[10px] font-bold ${diffColor}`}>{rung.difficulty?.toUpperCase()}</span>
-                              <span className={`text-[10px] ${c.textMuteded}`}>{t('nck_rung', { level: rung.level })}</span>
-                            </div>
-                            <p className={`text-sm font-bold ${c.text} ${done ? 'line-through' : ''}`}>{rung.challenge}</p>
-                            <p className={`text-[10px] ${c.textSecondary} mt-0.5`}>{rung.why_this_step}</p>
-                            {rung.tip && <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-700'} mt-0.5`}>💡 {rung.tip}</p>}
-                            {rung.you_know_youre_ready_when && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{t('nck_ready_next', { when: rung.you_know_youre_ready_when })}</p>}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* New ladder */}
-            {!activeLadder && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-lg font-black ${c.text} mb-1`}>{t('nck_build_ladder')}</p>
-                <p className={`text-xs ${c.textSecondary} mb-4`}>{t('nck_ladder_desc')}</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_ladder_q')} <span className={c.required}>*</span></label>
-                    <textarea value={ladderFear} onChange={e => setLadderFear(e.target.value)} placeholder={t('nck_ladder_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-                  </div>
-                  <button onClick={runLadder} disabled={ladderLoading || !ladderFear.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{ladderLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_ladder')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_build_my_ladder')}</>}</button>
-                </div>
-                {ladderResults && (
-                  <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}>
-                    <p className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_ladder_created', { name: ladderResults.ladder_name })}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ PATTERNS ════════ */}
-        {view === 'patterns' && patterns && (
-          <div className="space-y-5">
-            <button onClick={() => setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-            <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-              <p className="text-3xl mb-2">📊</p>
-              <p className={`text-lg font-black ${c.text}`}>{t('nck_anxiety_patterns')}</p>
-              <p className={`text-xs ${c.textSecondary} mt-1`}>{t('nck_based_on', { count: patterns.total })}</p>
-            </div>
-
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className={`${c.card} border rounded-2xl p-4 text-center`}>
-                <p className={`text-3xl font-black ${patterns.avgGap > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-700') : (isDark ? 'text-amber-400' : 'text-amber-700')}`}>{patterns.avgGap > 0 ? '+' : ''}{patterns.avgGap}</p>
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('nck_avg_conf_shift')}</p>
-              </div>
-              <div className={`${c.card} border rounded-2xl p-4 text-center`}>
-                <p className={`text-3xl font-black ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{patterns.braveRate}%</p>
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('nck_brave_rate')}</p>
-              </div>
-            </div>
-
-            {/* Key insight */}
-            <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/15 border border-cyan-800/40' : 'bg-cyan-50 border border-cyan-200'}`}>
-              <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>
-                {patterns.avgGap > 1 ? t('nck_insight_up') :
-                 patterns.avgGap > 0 ? t('nck_insight_slight') :
-                 t('nck_insight_dip')}
-              </p>
-            </div>
-
-            {/* Top situation types */}
-            {patterns.topTypes.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_push_most')}</p>
-                {patterns.topTypes.map(([type, count], i) => {
-                  const st = SIT_TYPES.find(s => s.value === type);
-                  return (
-                    <div key={i} className="flex items-center gap-3 mb-2">
-                      <span className="text-lg">{st?.icon || '🌀'}</span>
-                      <div className="flex-1">
-                        <p className={`text-xs font-bold ${c.text}`}>{st ? t(st.tkey) : type}</p>
-                        <div className={`w-full h-1.5 rounded-full mt-1 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
-                          <div className={`h-1.5 rounded-full ${isDark ? 'bg-cyan-500' : 'bg-cyan-600'}`} style={{ width: `${Math.round(count / patterns.total * 100)}%` }} />
-                        </div>
-                      </div>
-                      <span className={`text-xs font-bold ${c.textMuteded}`}>{count}×</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Confidence over time */}
-            {patterns.confOverTime.length >= 3 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_conf_over_time')}</p>
-                <div className="flex items-end gap-1 h-24">
-                  {patterns.confOverTime.map((entry, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
-                      <div className="flex flex-col items-center gap-0.5 flex-1 justify-end w-full">
-                        <div className={`w-full rounded-t ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} style={{ height: `${entry.after * 10}%` }} title={`${t('nck_after')}: ${entry.after}`} />
-                        <div className={`w-full rounded-b ${isDark ? 'bg-zinc-600' : 'bg-zinc-300'}`} style={{ height: `${entry.before * 10}%` }} title={`${t('nck_before')}: ${entry.before}`} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-3 mt-2 justify-center">
-                  <div className="flex items-center gap-1"><div className={`w-2 h-2 rounded ${isDark ? 'bg-zinc-600' : 'bg-zinc-300'}`} /><span className={`text-[9px] ${c.textMuteded}`}>{t('nck_before')}</span></div>
-                  <div className="flex items-center gap-1"><div className={`w-2 h-2 rounded ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`} /><span className={`text-[9px] ${c.textMuteded}`}>{t('nck_after')}</span></div>
-                </div>
-              </div>
-            )}
-
-            {/* Trend */}
-            <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'}`}>
-              <p className={`text-sm font-bold ${c.text}`}>
-                {patterns.growing ? t('nck_trend_growing') : patterns.total >= 5 ? t('nck_trend_steady') : t('nck_trend_keep')}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ DEBRIEF ════════ */}
-        {view === 'debrief' && (
-          <div className="space-y-5">
-            <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-            {!debriefResults && !debriefLoading && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
-                <p className={`text-lg font-black ${c.text} mb-1`}>{t('nck_debrief_title')}</p>
-                <p className={`text-xs ${c.textSecondary} mb-4`}>{t('nck_debrief_desc')}</p>
-                <div className="space-y-3">
-                  <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label><textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} /></div>
-                  <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_conf_now_label')} <span className={`font-black ${confColor(confAfter)}`}>{confAfter}/10</span></label><input type="range" min="1" max="10" value={confAfter} onChange={e => setConfAfter(Number(e.target.value))} className="w-full accent-emerald-500" /></div>
-                  <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_surprised_label')}</label><input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={t('nck_surprised_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} /></div>
-                  <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_processing')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_debrief_me')}</>}</button>
-                </div>
-              </div>
-            )}
-            {debriefLoading && (<div className={`${c.card} border rounded-2xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span><p className={`text-sm ${c.textSecondary} mt-2`}>{t('nck_processing_exp')}</p></div>)}
-            {debriefResults && (
-              <div className="space-y-4">
-                <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
-                  <p className="text-4xl mb-2">{debriefResults.verdict === 'brave' ? '🦁' : debriefResults.verdict === 'you_showed_up' ? '💪' : '📝'}</p>
-                  <p className={`text-lg font-black ${c.text}`}>{debriefResults.headline}</p>
-                </div>
-                <div className={`${c.card} border rounded-2xl p-5 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('nck_conf_shift')}</p>
-                  <div className="flex items-center justify-center gap-4">
-                    <div><p className={`text-3xl font-black ${confColor(confidenceLevel)}`}>{confidenceLevel}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('nck_before')}</p></div>
-                    <span className={`text-2xl ${confAfter > confidenceLevel ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : confAfter < confidenceLevel ? (isDark ? 'text-red-400' : 'text-red-600') : c.textMuteded}`}>{confAfter > confidenceLevel ? '↑' : confAfter < confidenceLevel ? '↓' : '→'}</span>
-                    <div><p className={`text-3xl font-black ${confColor(confAfter)}`}>{confAfter}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('nck_after')}</p></div>
-                  </div>
-                </div>
-                {debriefResults.courage_receipt && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>{t('nck_courage_receipt')}</p>
-                    <div className="space-y-2">
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>{t('nck_feared')}</p><p className={`text-xs ${c.text}`}>{debriefResults.courage_receipt.fear_before}</p></div>
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('nck_reality')}</p><p className={`text-xs ${c.text}`}>{debriefResults.courage_receipt.what_actually_happened}</p></div>
-                      <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/15' : 'bg-cyan-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_the_gap')}</p><p className={`text-xs font-bold ${c.text}`}>{debriefResults.courage_receipt.gap}</p></div>
-                    </div>
-                  </div>
-                )}
-                {debriefResults.what_you_proved?.length > 0 && (<div className={`${c.card} border rounded-2xl p-5`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-2`}>{t('nck_what_proved')}</p>{debriefResults.what_you_proved.map((p, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>✓ {p}</p>)}</div>)}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {debriefResults.growth_note && (<div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/15' : 'bg-cyan-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{t('nck_growth')}</p><p className={`text-xs ${c.textSecondary}`}>{debriefResults.growth_note}</p></div>)}
-                  {debriefResults.next_stretch && (<div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('nck_next_stretch')}</p><p className={`text-xs ${c.textSecondary}`}>{debriefResults.next_stretch}</p></div>)}
-                </div>
-                {debriefResults.save_this && (
-                  <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('nck_save_next')}</p>
-                    <p className={`text-sm font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{debriefResults.save_this}"</p>
-                    <div className="mt-2"></div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ════════ JOURNAL ════════ */}
-        {view === 'journal' && (
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
-              <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('nck_back')}</button>
-              <div className="flex gap-2">
-                {patterns && <button onClick={() => setView('patterns')} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>{t('nck_patterns')}</button>}
-                <p className={`text-xs font-bold ${c.textMuteded} self-center`}>{journal.length}</p>
-              </div>
-            </div>
-            <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-              <p className="text-3xl mb-2">🏆</p>
-              <p className={`text-lg font-black ${c.text}`}>{t('nck_courage_journal')}</p>
-              <p className={`text-xs ${c.textSecondary} mt-1`}>{t('nck_journal_desc')}</p>
-              {journal.length > 0 && (
-                <div className="flex items-center justify-center gap-4 mt-3">
-                  <div><p className={`text-2xl font-black ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{journal.length}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('nck_faced')}</p></div>
-                  <div><p className={`text-2xl font-black ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{journal.filter(j => j.confAfter > j.confBefore).length}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('nck_grew')}</p></div>
-                  <div><p className={`text-2xl font-black ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{journal.filter(j => j.verdict === 'brave').length}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('nck_brave')}</p></div>
-                </div>
-              )}
-            </div>
-
-            {/* Reframe library highlight */}
-            {journal.filter(j => j.saveThis).length >= 2 && (
-              <div className={`p-4 rounded-xl ${isDark ? 'bg-emerald-900/15 border border-emerald-800/30' : 'bg-emerald-50 border border-emerald-200'}`}>
-                <p className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-2`}>{t('nck_reframe_library')}</p>
-                {journal.filter(j => j.saveThis).slice(0, 3).map((j, i) => (
-                  <div key={i} className="mb-1.5">
-                    <p className={`text-xs italic font-bold ${c.text}`}>"{j.saveThis}"</p>
-                    <p className={`text-[10px] ${c.textMuteded}`}>{j.situation}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {journal.length === 0 && (
-              <div className={`${c.card} border rounded-2xl p-8 text-center`}>
-                <p className={`text-sm ${c.textSecondary}`}>{t('nck_no_entries')}</p>
-                <button onClick={() => setView('form')} className={`mt-3 px-4 py-2 rounded-xl text-xs font-bold ${c.btnPrimary}`}>{t('nck_get_started')}</button>
-              </div>
-            )}
-            <div className="space-y-2">
-              {journal.map(j => (
-                <div key={j.id} className={`${c.card} border rounded-2xl p-4`}>
-                  <div className="flex items-start justify-between mb-1.5">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span>{j.verdict === 'brave' ? '🦁' : j.verdict === 'you_showed_up' ? '💪' : '📝'}</span>
-                        <p className={`text-sm font-bold ${c.text} truncate`}>{j.situation}</p>
-                      </div>
-                      {j.headline && <p className={`text-xs ${c.textSecondary}`}>{j.headline}</p>}
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0 ms-2">
-                      <span className={`text-sm font-black ${confColor(j.confBefore)}`}>{j.confBefore}</span>
-                      <span className={`${j.confAfter > j.confBefore ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>→</span>
-                      <span className={`text-sm font-black ${confColor(j.confAfter)}`}>{j.confAfter}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] ${c.textMuteded}`}>{j.date}</span>
-                    <button onClick={() => setJournal(prev => prev.filter(p => p.id !== j.id))} className={`text-[10px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
-                  </div>
-                  {j.saveThis && (
-                    <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-cyan-900/10' : 'bg-cyan-50'}`}>
-                      <p className={`text-[10px] italic ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>"{j.saveThis}"</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-      {/* ── Post-result cross-refs ── */}
-      {results && (
+      {/* ── Related tools (results screens only) ── */}
+      {(view === 'results' || view === 'debrief-results') && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('nck_related')}</p>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('nck_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('nck_xref_dtc_short')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('nck_xref_spiral')}</a>
+            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('nck_xref_dtc_short')}</a>
+            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>{t('nck_xref_spiral')}</a>
+            {situationType === 'medical' && <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>{t('nck_xref_dvt')}</a>}
           </div>
         </div>
       )}
+
       <p className={`text-xs text-center ${c.textMuted}`}>{t('nck_disclaimer')}</p>
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('nck_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('nck_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

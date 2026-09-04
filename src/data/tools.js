@@ -6310,39 +6310,39 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "The day before something you are dreading, or ten minutes before it starts.",
-    give: "Prep mode: what you're facing and who's involved. SOS mode: just start.",
-    get: "A fear breakdown and a plan, or immediate help mid-panic.",
-    edge: "Two modes because preparation and panic need opposite things — one wants detail, the other wants none.",
+    when: "The day before something you are dreading, or minutes before it starts.",
+    give: "What you're facing, how ready you feel, and when it is.",
+    get: "A grounded plan — what you know, what you can prepare, words if you need them — or a short sequence for right before you walk in.",
+    edge: "It won't tell you the real fear underneath, predict how it'll go, or promise you'll feel confident. It preps what can actually be prepped.",
   },
-  seoDescription: "Free confidence coach for interviews, presentations, dates, and hard talks. Break down the fear, build a prep plan, and hit SOS mode for live panic.",
-  seoTitle: "Interview & Presentation Confidence Coach",
+  seoDescription: "Free prep tool for interviews, presentations, hard conversations, and medical appointments. A grounded plan — what you know, what you can prepare, words if you need them — plus a mode for when the moment is minutes away.",
+  seoTitle: "Interview & Presentation Prep Tool",
   title: "Nerve Check",
-  tagline: 'Real confidence for scary moments.',
-  tags: ['confidence', 'anxiety', 'interview', 'presentation', 'nervous', 'fear', 'preparation'],
+  tagline: 'Practical prep for scary moments.',
+  tags: ['preparation', 'anxiety', 'interview', 'presentation', 'nervous', 'confidence'],
   icon: '💪',
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.",
+  description: "Pre-event prep for interviews, presentations, hard conversations, dates, and medical appointments. Separates what you actually know from what you're just afraid of, builds a short grounded plan, and has a Help Me Now mode for when the moment is close.",
   guide: {
-    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you're facing and get a fear breakdown — what's a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a 'worst case + survive it' walkthrough. SOS mode is for when you're already in it: a 60-second reset sequence calibrated to your situation.",
+    overview: "Nerve Check helps you prepare for something you're nervous about without inventing a story about why. Describe the situation and it separates what you've established (facts, fears you've actually named) from what's merely possible and what's genuinely unknown — then gives you a small number of useful preparations, words to use if you need them, and one next action. It does not diagnose a 'real fear underneath' the one you named, estimate your odds, or promise you'll feel confident. Help Me Now is for when the event is minutes away; Debrief afterward extracts evidence for next time instead of a verdict on your character.",
     howToUse: [
-      "Choose Prep mode for advance preparation (day before, morning of) or SOS mode if you need help right now",
-      "Describe the event: what it is, who's involved, what outcome you need",
-      "Add what specifically scares you — the more honest, the better the breakdown",
-      "In Prep mode: review your fear analysis, prep plan, and confidence anchor",
-      "In SOS mode: follow the real-time reset sequence step by step"
+      "Describe what you're facing and pick the kind of situation, if one fits",
+      "Rate how ready you feel right now — it's a starting point for the plan, not a diagnosis",
+      "Add what you're specifically worried might happen, if anything",
+      "Review the plan: what you know, what you can prepare, and words if you need them",
+      "Close to the event, use Help Me Now instead for a short, immediate sequence"
     ],
     example: {
-      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now your confidence is shot.",
-      action: "Select Interview, describe the role and format, add 'I bombed my last interview and I'm scared of freezing up again'.",
-      result: "Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description."
+      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now you're dreading this one.",
+      action: "Describe the interview, select Job Interview, rate your readiness, and add 'I froze in my last interview and I'm scared of doing it again'.",
+      result: "The plan separates what you know (you froze once before) from what's still unknown (whether it happens again), gives you a short, specific way to prepare for freezing — a pre-loaded sentence to say if it happens — and a line to say out loud before you walk in. No invented reason for the fear, no predicted odds of it happening again."
     },
     tips: [
-      "The fear breakdown is the most valuable part — read it carefully. Most fears are real but inflated, and seeing that in writing changes your relationship to them",
-      "SOS mode works best if you've done Prep mode first — it references your anchor",
-      "For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point",
-      "Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan"
+      "The more specific your worry, the more specific the plan — 'I'll freeze on the hardest question' gets you something more useful than 'I'm nervous'",
+      "Help Me Now works well even without doing the full plan first — it's built for exactly the situation you give it",
+      "For medical appointments, name your specific concern (getting bad news, not being heard) — it shapes what to write down and ask",
+      "Debrief afterward even if it went badly — the evidence is still useful for next time, not just when things go well"
     ]
   }
 },

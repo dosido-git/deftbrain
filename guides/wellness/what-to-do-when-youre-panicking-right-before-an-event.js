@@ -22,12 +22,12 @@ module.exports = {
   cta: {
     glyph:    '💪',
     headline: "A pre-event toolkit calibrated to your specific high-stakes moment.",
-    body:     "Tell it what you are facing. Get a fear breakdown that separates real risk from inflated risk, a custom prep plan, a confidence anchor, and an SOS mode for live panic.",
+    body:     "Tell it what you are facing. Get a grounded plan built from what you actually said — what you know, what you can prepare, and words if you need them — plus a Help Me Now mode for when the moment is close.",
     features: [
-      "Prep mode for the day before and morning of",
-      "SOS mode for when you are already in it",
-      "60-second reset sequence",
-      "Worst case plus survive it walkthrough"
+      "A plan built from what you told it, not invented psychology",
+      "Help Me Now for when you are minutes away",
+      "Words ready for if you blank or it gets awkward",
+      "A debrief that extracts evidence, not a verdict on your character"
     ],
     toolId:   'NerveCheck',
     toolName: 'Nerve Check',

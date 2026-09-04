@@ -1,91 +1,364 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
-// MAIN — full confidence analysis and prep plan
+// Grounding rewrite, 2026-09-04. The tool used to invent a "real fear
+// underneath" the visitor's stated fear ("BUT REALLY IT'S..."), estimate
+// worst-case probabilities with no evidence, claim breathing patterns
+// "activate the vagus nerve," and — in Debrief — turn one outcome into a
+// verdict on the visitor's character ("brave" / "you proved you can
+// perform under pressure"). None of that is knowable from what the visitor
+// supplied. Four prompts below, each a complete replacement for its
+// endpoint — not layered on a shared core, since each covers a distinct
+// moment (preparing, walking in, debriefing, helping someone else) with
+// its own scope of what's safe to claim.
+//
+// No withLocaleContext anywhere in this file — this tool has no economic
+// or price content to localize; it was never imported here.
 // ═══════════════════════════════════════════════════════════════
+
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — paraphrase or use single quotes instead. A stray double-quote breaks the JSON.';
+
+// A hedge usually means the model is proposing rather than asserting — spare it.
+const HEDGED = /\b(?:may|might|could|can (?:read|come across|feel|suggest)|often|tend(?:s)? to|one possible|possibly|possible|appears? to|seems? to|some(?:times)?|this (?:small|one) (?:data point|experience)|worth noting)\b/i;
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN — full grounded preparation plan
+// ═══════════════════════════════════════════════════════════════
+
+const NERVE_CHECK_CORE = `NERVE CHECK — CORE PROMPT
+
+You are helping someone prepare for a situation they feel nervous about.
+
+Apply DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Your job is not to explain the person's psychology or make their fear disappear.
+
+Your job is to help them walk into the situation with:
+- a clearer picture of what they actually know
+- a small number of useful preparations
+- words they can use if needed
+- a fallback if an awkward or difficult moment occurs
+- one manageable next action
+
+CORE PRINCIPLE
+
+PREPARE FOR THE FEAR.
+DO NOT PRETEND TO KNOW WHAT IS UNDERNEATH IT.
+
+GROUNDING
+
+Treat as established only:
+- facts the visitor supplied
+- fears the visitor explicitly described
+- previous experiences supplied in this session or stored as visitor-provided history
+- ordinary situational facts that do not require knowledge of this particular event
+
+Do not invent:
+- hidden fears
+- motives
+- insecurities
+- relationship dynamics
+- trauma
+- attachment patterns
+- what other people will think
+- what other people will notice
+- how an audience will react
+- how an interviewer will judge them
+- whether another person still cares
+- what attendees will focus on
+- whether someone is safe or unsafe
+- the visitor's authority, obligations, skills, history, support network, or available resources
+- future events or outcomes
+
+Never use:
+
+"BUT REALLY IT'S..."
+
+unless the visitor explicitly supplied the deeper concern.
+
+Replace that entire reasoning pattern with:
+
+WHAT YOU'RE WORRIED ABOUT
+WHAT YOU CAN PREPARE FOR
+WHAT YOU DON'T CONTROL
+
+FEAR VS FACT
+
+A feared outcome is not a predicted outcome.
+
+Do not estimate probabilities without evidence.
+
+Never generate:
+- worst-case probability
+- likely outcome
+- chances of success
+- how long embarrassment or disappointment will last
+- claims that nobody will notice
+- claims that everyone else will be focused elsewhere
+
+You may distinguish:
+
+KNOWN
+The visitor established it.
+
+POSSIBLE
+A plausible scenario worth preparing for.
+
+UNKNOWN
+Depends on people or circumstances we do not know.
+
+Do not call a situation "not dangerous" merely because it sounds socially
+uncomfortable. The tool usually does not have enough information to make that
+determination.
+
+PREPARATION
+
+Recommend the lightest preparation that materially helps.
+
+Do not force three prep steps.
+
+Useful preparation may include:
+- decide what you want to accomplish
+- prepare an opening sentence
+- rehearse one answer
+- write down questions
+- bring information you need
+- identify a graceful pause or exit
+- plan what to do if you blank
+- arrive with enough time to settle
+- reduce unnecessary decisions immediately beforehand
+
+Every preparation step must connect to something established in the situation.
+
+Do not invent arbitrary:
+- rehearsal counts
+- minutes
+- deadlines
+- schedules
+- preparation durations
+
+Use exact timing only when the timing itself is part of the technique or supplied
+by the visitor.
+
+SCRIPTS
+
+Scripts may be specific and confident.
+
+Do not manufacture factual premises inside them.
+
+Provide scripts only when useful.
+
+Possible script types:
+- opening
+- if you blank
+- if you need a moment
+- if something awkward happens
+- if you need to end the interaction
+
+Do not assume the visitor wants to speak to a particular person unless supplied.
+
+Do not invent familiarity, history, affection, obligation, authority, or previous
+conversations to make a script work.
+
+BODY / SETTLING ACTIONS
+
+Keep physical suggestions simple, optional, and low-risk.
+
+Examples:
+- put both feet on the floor
+- unclench your jaw if it is tense
+- lower your shoulders if they are raised
+- take a slower breath
+- look at one stable object
+- pause before answering
+
+Do not claim these actions:
+- calm the nervous system
+- activate the vagus nerve
+- reduce cortisol
+- stop panic
+- restore regulation
+- improve performance
+
+Do not make population claims such as:
+"most people are clenching without realizing it."
+
+Say:
+"If your jaw is tight, let it loosen."
+
+MEDICAL APPOINTMENTS
+
+For medical appointments, Nerve Check may help the visitor prepare questions,
+notes, symptoms they want to mention, or a request for clarification.
+
+Do not provide medical diagnosis or tell them that symptoms are anxiety.
+
+Do not advise delaying or avoiding necessary care.
+
+VOICE
+
+Direct.
+Warm.
+Steady.
+Practical.
+
+Do not sound like:
+- a therapist
+- a motivational speaker
+- a sports coach delivering a movie speech
+
+Do not tell the visitor:
+"You're stronger than you think."
+"You've got this."
+"You're ready."
+unless their supplied evidence supports the narrower claim being made.
+
+Prefer:
+"Here's what you can have ready."
+"You don't need to know how the whole thing will go."
+"You can prepare for the part that's yours."
+
+Write directly to the visitor as "you".`;
+
+// ═══════════════════════════════════════════════════════════════
+// Deterministic backstops
+// ═══════════════════════════════════════════════════════════════
+// Only the safest, unconditionally-banned patterns are backstopped here —
+// each has no legitimate exception per the prompt text above, unlike the
+// hedge-dependent ones ("you're stronger than you think" is allowed WHEN
+// grounded), which stay prompt-only rather than risk blocking a legitimate
+// grounded use. Applied to every endpoint below via validateResult.
+const RULES = [
+  // The tool's own signature failure mode, named explicitly in CORE
+  // PRINCIPLE — a fabricated "deeper" fear the visitor never stated.
+  ['invented a deeper fear the visitor did not supply', /\bbut really it'?s\b|\bbut really it is\b/i,
+    (v) => HEDGED.test(v)],
+
+  // Unverifiable physiological claims for a breathing/body action — the
+  // tool has no biofeedback and cannot know any of these occurred.
+  ['claimed a physiological effect the tool cannot verify',
+    /\b(?:calms?|calming) (?:your |the )?nervous system\b|\bactivat(?:es?|ing) (?:your |the )?vagus nerve\b|\breduc(?:es?|ing) (?:your |the )?cortisol\b|\brestores? (?:your |the )?regulation\b|\bstops? (?:the )?panic\b/i],
+
+  // A population claim about what "most people" do — the exact banned
+  // example ("most people are clenching without realizing it").
+  ['made a population claim about other people', /\bmost people (?:are|do|feel|don'?t)\b/i],
+
+  // Estimating a probability, likelihood, or outcome-chance with no
+  // supplied evidence — FEAR VS FACT bans this outright, in any direction.
+  ['estimated a probability or outcome without evidence',
+    /\bworst-case probability\b|\bchances? of success\b|\blikely outcome\b|\bnobody will notice\b|\beveryone (?:else )?will be focused elsewhere\b/i,
+    (v) => HEDGED.test(v)],
+];
+
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+  const walk = (node) => {
+    // No early return for arrays — an array IS an object, so Object.entries
+    // below enumerates its indices too.
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string') {
+        const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
+        if (hit) {
+          if (v.length <= 260 && (v.match(/[.!?]/g) || []).length <= 2) {
+            console.log(`[nerve-check] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            node[k] = '';
+          } else {
+            console.log(`[nerve-check] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+          }
+        }
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(data);
+  // Blanking a named field leaves ''; a blanked array item reads as an empty
+  // bullet, which is worse than no bullet, so array items are pruned instead.
+  const prune = (node) => {
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) {
+        if (node[i] === '') node.splice(i, 1); else prune(node[i]);
+      }
+      return;
+    }
+    if (node && typeof node === 'object') Object.values(node).forEach(prune);
+  };
+  prune(data);
+  return data;
+}
 
 router.post('/nerve-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { situation, situationType, confidenceLevel, specificFears, timeUntil, pastWins, userLanguage } = req.body;
+    const { situation, situationType, readinessLevel, specificFears, timeUntil, pastExperience, userLanguage } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe what you\'re nervous about' });
 
-    const pastBlock = pastWins?.length
-      ? `\nPAST WINS (things they've been scared to do and did anyway):\n${pastWins.map(w => `- ${w.situation}: ${w.outcome}`).join('\n')}`
+    // A prior Nerve Check the visitor debriefed — visitor-supplied evidence
+    // only, never an inferred pattern. Section: "Past experiences may be
+    // reused only as explicit visitor-supplied evidence."
+    const pastBlock = pastExperience
+      ? `\nFROM A PAST NERVE CHECK (visitor-supplied — you may cite this directly, never generalize beyond it): ${pastExperience}`
       : '';
 
-    const prompt = `You are a confidence coach. Someone is nervous about something. Your job: break down the fear, show them they're more ready than they think, and give them concrete tools. Be warm, real, and specific — not cheesy motivational poster energy. Like a best friend who also happens to be a therapist.
+    const userPrompt = `${NERVE_CHECK_CORE}
 
-WHAT THEY'RE FACING: ${situation}
-TYPE: ${situationType || 'general'}
-CURRENT CONFIDENCE (1-10): ${confidenceLevel || 'low'}
-SPECIFIC FEARS: ${specificFears || 'not specified'}
-TIME UNTIL: ${timeUntil || 'soon'}
-${pastBlock}
+WHAT THE VISITOR SUPPLIED
+
+WHAT THEY'RE FACING: ${situation.trim()}
+TYPE OF SITUATION: ${situationType || 'not specified'}
+HOW READY THEY FEEL RIGHT NOW (1-10, self-reported — not a psychological measurement, just how much and how immediate the preparation should be): ${readinessLevel || 'not specified'}
+WHAT THEY'RE MOST WORRIED MIGHT HAPPEN: ${specificFears || 'not specified'}
+WHEN IT IS: ${timeUntil || 'not specified'}${pastBlock}
 
 Return ONLY valid JSON:
+
 {
-  "fear_breakdown": {
-    "surface_fear": "What they think they're scared of",
-    "real_fear": "What's actually underneath (usually about being judged, failing, losing control, or being rejected)",
-    "reality_check": "Honest assessment — is this actually dangerous or just uncomfortable?",
-    "probability": "How likely is the worst case, honestly?"
+  "opening": "One short, grounded sentence — not a pep talk, not a diagnosis of their fear. Acknowledges the situation plainly.",
+  "what_youre_worried_about": {
+    "established": ["A worry or fact the visitor actually stated — 1-4 items"],
+    "possible": ["A plausible scenario worth preparing for, clearly framed as possible, not certain — 0-3 items"],
+    "unknown": ["Something that genuinely depends on other people or circumstances nobody here can know — 0-3 items"]
   },
-  "why_youre_readier_than_you_think": [
+  "what_you_can_prepare": [
     {
-      "reason": "Specific reason based on what they told you",
-      "evidence": "Proof from their own life/situation"
+      "action": "A specific, useful preparation step connected to something established in the situation",
+      "why_it_helps_here": "How this specific action helps THIS situation — not generic advice"
     }
   ],
-  "prep_plan": [
+  "words_if_you_need_them": [
     {
-      "step": "Specific action to take",
-      "why": "How it directly reduces the fear",
-      "time": "How long it takes",
-      "priority": "must_do | should_do | nice_to_have"
+      "moment": "When this script is for — e.g. opening, if you blank, if you need a moment, if it gets awkward, ending the interaction",
+      "script": "The actual words, specific and usable"
     }
   ],
-  "scripts": {
-    "opening_line": "Exact first words to say when the moment arrives",
-    "if_you_blank": "What to say if your mind goes empty",
-    "if_it_goes_wrong": "Exact words for the worst-case moment",
-    "exit_line": "Graceful way to leave if you need to"
+  "if_the_moment_gets_awkward": {
+    "action": "One concrete thing to do if it gets awkward or difficult",
+    "script": "Words to use, if words help here"
   },
-  "body_hacks": [
-    {
-      "technique": "Name of the technique",
-      "how": "Exactly how to do it, step by step",
-      "when": "When to use it (before / during / if panicking)",
-      "time": "How long it takes"
-    }
-  ],
-  "worst_case_autopsy": {
-    "actual_worst": "Realistically, the worst thing that could happen",
-    "would_you_survive": "Yes, and here's why",
-    "how_long_it_stings": "How long the bad feeling would actually last",
-    "recovery": "Exactly what you'd do next"
-  },
-  "permission_slip": "A warm, honest statement that being nervous isn't weakness — it means this matters to you. Not a motivational poster. Something real.",
-  "mantra": "One short sentence to repeat. Not cheesy. Something that actually helps."
+  "settle_yourself": ["One or two simple, optional, low-risk physical actions — no claims about what they do physiologically"],
+  "remember": "One grounded, plainly-stated perspective sentence — not a probability estimate, not a reassurance that outruns the evidence",
+  "do_this_next": "One immediate, concrete next action"
 }
 
-Keep every field to one concise sentence (no meta-notes). Provide at most 3 items in why_youre_readier_than_you_think, prep_plan, and body_hacks.
+Return 2-4 items in what_you_can_prepare. Return only scripts in
+words_if_you_need_them that would actually help this specific situation — do
+not fill the array to reach a count. Do not fill any field merely to satisfy
+a quota; an empty array is correct when nothing else is genuinely useful.
 
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'nerve-check' });
-    if (!parsed.fear_breakdown) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    if (!parsed.opening) {
+      return res.status(500).json({ error: 'Could not put together your plan. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[NerveCheck] Error:', error);
@@ -94,50 +367,83 @@ CRITICAL JSON RULE: never place a double-quote (") character inside any string v
 });
 
 // ═══════════════════════════════════════════════════════════════
-// LIVE — you're about to walk in RIGHT NOW
+// HELP ME NOW — close to the event, immediate preparation
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/nerve-check/live', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { situation, panicLevel, minutesUntil, userLanguage } = req.body;
+    const { situation, minutesUntil, userLanguage } = req.body;
 
     if (!situation?.trim()) return res.status(400).json({ error: 'What are you about to do?' });
 
-    const prompt = `Someone is about to walk into a scary situation RIGHT NOW. They don't have time for a full plan. Give them exactly what they need in the next ${minutesUntil || '5'} minutes. Be calm, direct, warm. Like a corner coach between rounds.
+    const userPrompt = `NERVE CHECK — HELP ME NOW
 
-SITUATION: ${situation}
-PANIC LEVEL (1-10): ${panicLevel || 7}
-MINUTES UNTIL: ${minutesUntil || 5}
+The visitor is close to the event and wants immediate preparation.
+
+Apply DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Do not analyze the fear.
+
+Do not diagnose panic.
+
+Do not explain physiology.
+
+Give the visitor a short sequence they can actually use before entering.
+
+WHAT THEY'RE ABOUT TO DO: ${situation.trim()}
+MINUTES UNTIL: ${minutesUntil || 'not specified'}
 
 Return ONLY valid JSON:
+
 {
-  "first_thing": "The single most important thing to do right now, in one sentence",
-  "breathe": {
-    "pattern": "Specific breathing pattern (e.g., 4-7-8)",
-    "instruction": "Step by step, assume they're panicking",
-    "rounds": 3
+  "first": "One practical action based on the situation",
+  "settle": {
+    "instruction": "One simple low-risk grounding or breathing action",
+    "duration_seconds": null
   },
-  "body_reset": "One physical thing to do right now (30 seconds max)",
-  "last_words": {
-    "tell_yourself": "What to say internally right before you walk in",
-    "first_thing_to_say": "Your literal opening line",
-    "if_panic_hits": "What to do mid-situation if the fear spikes"
+  "remember": "Grounded entirely in supplied facts — no invented values, obligations, priorities, or future memory",
+  "words": {
+    "to_yourself": "",
+    "opening": "",
+    "if_you_need_a_moment": ""
   },
-  "perspective": "One honest sentence putting this in perspective",
-  "after": "What to do immediately after, no matter how it goes"
+  "if_you_need_to_step_away": "A socially ordinary pause or exit, offered only when relevant — do not tell the visitor they are 'allowed' to leave unless that is actually established",
+  "go": "Very short — e.g. 'That's enough preparation. Go do the next part.' or 'You don't need to feel ready first.'"
 }
 
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
+FIRST
+
+One practical action based on the situation.
+
+SETTLE
+
+Use one simple low-risk grounding or breathing action.
+
+If breathing is used:
+- do not require breath holding
+- do not claim a specific pattern calms the nervous system
+- allow normal comfortable breathing
+- stop if the exercise makes the visitor lightheaded or uncomfortable
+
+Example:
+
+"Let your next few breaths be a little slower than usual. Don't force them."
+
+WORDS
+
+Scripts must work without invented history.
+
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'nerve-check-live' });
-    if (!parsed.first_thing) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    if (!parsed.first) {
+      return res.status(500).json({ error: 'Could not put together your plan. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[NerveCheck/live] Error:', error);
@@ -146,49 +452,105 @@ CRITICAL JSON RULE: never place a double-quote (") character inside any string v
 });
 
 // ═══════════════════════════════════════════════════════════════
-// DEBRIEF — how did it go?
+// DEBRIEF — extract evidence, not a verdict on their character
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/nerve-check/debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { situation, howItWent, confidenceBefore, confidenceAfter, whatSurprised, userLanguage } = req.body;
+    const { situation, howItWent, readinessBefore, readinessAfter, whatSurprised, userLanguage } = req.body;
 
     if (!howItWent?.trim()) return res.status(400).json({ error: 'Tell me how it went' });
 
-    const prompt = `Someone just did a thing that scared them. Help them process what happened. Be warm and celebratory if it went well, gentle and constructive if it didn't. The goal is to build their confidence muscle for next time.
+    const userPrompt = `NERVE CHECK — DEBRIEF
 
-WHAT THEY FACED: ${situation || 'something scary'}
-HOW IT WENT: ${howItWent}
-CONFIDENCE BEFORE: ${confidenceBefore || '?'}/10
-CONFIDENCE AFTER: ${confidenceAfter || '?'}/10
+The visitor has completed the situation.
+
+Help them extract useful evidence for next time.
+
+Apply DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Do not turn one experience into a personality conclusion.
+
+Do not claim the visitor:
+- proved they can perform under pressure
+- became more confident
+- grew
+- conquered a fear
+- is now ready for something harder
+- underestimated themselves
+unless the supplied outcome directly supports that narrow conclusion.
+
+A before/after readiness number is descriptive, not proof of transformation.
+
+WHAT THEY FACED: ${situation || 'not specified'}
+HOW IT WENT (visitor's own account): ${howItWent.trim()}
+READINESS BEFORE (1-10, self-reported): ${readinessBefore || 'not specified'}
+READINESS AFTER (1-10, self-reported): ${readinessAfter || 'not specified'}
 WHAT SURPRISED THEM: ${whatSurprised || 'not specified'}
 
+Compare:
+
+WHAT THEY EXPECTED OR FEARED
+with
+WHAT THEY SAY ACTUALLY HAPPENED
+
+Do not improve the outcome.
+
+Do not infer success from confidence-after.
+
+Do not infer that a feared outcome "didn't happen" unless the visitor said
+enough to establish that.
+
 Return ONLY valid JSON:
+
 {
-  "verdict": "brave | you_showed_up | learning_experience",
-  "headline": "One sentence celebrating or validating what they did",
-  "what_you_proved": ["Things this experience proved about them — be specific"],
-  "courage_receipt": {
-    "fear_before": "What they were scared of",
-    "what_actually_happened": "The reality",
-    "gap": "The difference between fear and reality"
+  "headline": "Reflect the event, not the person's character",
+  "before_and_after": {
+    "readiness_before": null,
+    "readiness_after": null
   },
-  "growth_note": "What's different about them now vs before they did this",
-  "next_stretch": "Something slightly scarier they might be ready for now",
-  "save_this": "A sentence they can re-read next time they're scared — based on THIS specific experience"
+  "what_you_expected": ["What they said they feared or expected — 1-3 items"],
+  "what_happened": ["What they say actually happened — 1-3 items"],
+  "what_was_different": ["A specific difference between expectation and what happened — 0-3 items"],
+  "useful_evidence_for_next_time": ["Only reusable evidence actually established, grounded in the supplied readiness numbers and account — 1-3 items"],
+  "what_you_might_change": ["Only include when the visitor supplied something suggesting a useful change — otherwise this is an empty array"],
+  "save_this": "A first-person reminder built only from the supplied evidence"
 }
 
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
+HEADLINE
+
+GOOD:
+"You expected to freeze. You said you didn't."
+
+BAD:
+"You proved you perform well under pressure."
+
+USEFUL EVIDENCE FOR NEXT TIME
+
+GOOD:
+"Before this interview you rated your readiness 4/10. You later said the
+interview went well and that you didn't freeze."
+
+BAD:
+"A 4 is all you need to succeed."
+
+SAVE THIS
+
+Example:
+"I felt underprepared going in, and I still got through the interview
+without freezing."
+
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      max_tokens: 3500,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'nerve-check-debrief' });
-    if (!parsed.verdict) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    if (!parsed.headline) {
+      return res.status(500).json({ error: 'Could not put together your debrief. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[NerveCheck/debrief] Error:', error);
@@ -197,132 +559,7 @@ CRITICAL JSON RULE: never place a double-quote (") character inside any string v
 });
 
 // ═══════════════════════════════════════════════════════════════
-// SITUATION-SPECIFIC — deep prep tailored to situation type
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/nerve-check/specific-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { situation, situationType, specificFears, details, userLanguage } = req.body;
-
-    if (!situation?.trim()) return res.status(400).json({ error: 'Describe the situation' });
-
-    const typeInstructions = {
-      interview: 'This is a job interview. Give: likely questions they\'ll face (with answer frameworks, NOT full answers), what to research about the company in 15 min, how to handle "tell me about yourself", salary discussion timing, and red/green flags to watch for.',
-      presentation: 'This is a presentation/public speaking event. Give: opening hook options, how to handle Q&A, what to do if tech fails, audience reading techniques, and the 3-second recovery for losing your place.',
-      confrontation: 'This is a difficult conversation or confrontation. Give: de-escalation phrases, how to stay calm when they get emotional, boundary-setting scripts, when to pause vs push forward, and signs it\'s time to walk away.',
-      date: 'This is a date or high-stakes social situation. Give: conversation starters that aren\'t boring, how to handle awkward silences naturally, body language tips, how to leave gracefully if it\'s not working, and how to suggest a second date if it IS working.',
-      medical: 'This is a medical appointment. Give: questions to ask the doctor (and how to insist on answers), how to advocate for yourself, what to write down before going in, how to handle bad news, and your rights as a patient.',
-      performance: 'This is a performance (music, theater, sports, etc). Give: warm-up routine, pre-performance ritual suggestions, what to do if you make a mistake mid-performance, audience awareness techniques, and how to channel nervous energy into performance energy.',
-      phone_call: 'This is a scary phone call. Give: exact opening script, how to handle being put on hold / transferred, bullet points to have in front of you, when to ask to call back, and follow-up email template.',
-      other: 'Give situation-specific practical prep based on what they described.',
-    };
-
-    const prompt = `You are a situation-specific confidence coach. Someone is facing a specific type of challenge. Give them TARGETED prep — not generic confidence advice, but the exact practical tools for THIS type of situation.
-
-SITUATION: ${situation}
-TYPE: ${situationType || 'other'}
-SPECIFIC FEARS: ${specificFears || 'general anxiety'}
-ADDITIONAL DETAILS: ${details || 'none'}
-
-SPECIFIC INSTRUCTIONS: ${typeInstructions[situationType] || typeInstructions.other}
-
-Return ONLY valid JSON:
-{
-  "situation_intel": {
-    "what_to_expect": "Exactly what will happen, step by step, so nothing surprises them",
-    "typical_duration": "How long this usually takes",
-    "hardest_part": "The specific moment that's usually hardest",
-    "secret": "Something most people don't know about this situation that gives them an edge"
-  },
-  "targeted_prep": [
-    {
-      "task": "Specific prep action for THIS type of situation",
-      "why": "How it helps",
-      "time": "Duration",
-      "script": "Exact words if applicable"
-    }
-  ],
-  "likely_challenges": [
-    {
-      "challenge": "Specific thing that might happen",
-      "probability": "likely | possible | unlikely",
-      "handle_it": "Exact response or action",
-      "script": "Words to say if applicable"
-    }
-  ],
-  "power_moves": [
-    {
-      "move": "Specific thing to do that shows confidence in THIS context",
-      "when": "Exactly when to do it",
-      "why_it_works": "Psychology behind it"
-    }
-  ],
-  "cheat_sheet": [
-    "Bullet point to have in front of you (or memorized)"
-  ]
-}
-
-LIMITS (keep the response compact so it never gets cut off): targeted_prep AT MOST 4, likely_challenges AT MOST 4, power_moves AT MOST 3, cheat_sheet AT MOST 5. Keep every field concise — a phrase or single sentence, except the "script" fields which may be 2-4 short sentences.
-
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'nerve-check-specific-prep' });
-    if (!parsed.situation_intel) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[NerveCheck/specific-prep] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// SOS — mid-event emergency micro-intervention (10 seconds)
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/nerve-check/sos', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { situation, whatsHappening, userLanguage } = req.body;
-
-    const prompt = `EMERGENCY. Someone is IN the middle of a scary situation and spiraling. They have 10 seconds to glance at their phone. Give them the absolute minimum to recover. No fluff. No explanation. Just what to do RIGHT NOW.
-
-SITUATION: ${situation || 'something scary'}
-WHAT'S HAPPENING: ${whatsHappening || 'panicking'}
-
-Return ONLY valid JSON:
-{
-  "do_now": "One physical action (5 seconds)",
-  "think_this": "One thought (5 words max)",
-  "say_this": "One sentence to get back on track",
-  "remember": "One grounding fact (10 words max)"
-}
-
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'nerve-check-sos' });
-    if (!parsed.do_now) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[NerveCheck/sos] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// COACH — help someone ELSE who's nervous
+// HELP SOMEONE ELSE — support without diagnosing them
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/nerve-check/coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -331,51 +568,62 @@ router.post('/nerve-check/coach', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     if (!theirSituation?.trim()) return res.status(400).json({ error: 'What are they nervous about?' });
 
-    const prompt = `Someone wants to help another person who is nervous. Tell them exactly what to say and do. Be specific to the relationship and age. The goal: be genuinely helpful, not dismissive ("just relax!") or patronizing.
+    const userPrompt = `HELP SOMEONE ELSE
 
-WHO IS NERVOUS: ${whoIsNervous || 'someone they care about'}
-THEIR SITUATION: ${theirSituation}
-RELATIONSHIP: ${relationship || 'not specified'}
-THEIR AGE: ${theirAge || 'adult'}
+Help the visitor support another person who is nervous.
+
+Apply DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Do not diagnose the other person.
+
+Do not infer why they are nervous.
+
+Do not tell the visitor what the other person "needs."
+
+Use only:
+- what the visitor says the person is facing
+- what the visitor says the person has expressed
+- their relationship, if supplied
+
+WHO IS NERVOUS: ${whoIsNervous || 'not specified'}
+WHAT THEY'RE FACING: ${theirSituation.trim()}
+RELATIONSHIP TO THE VISITOR: ${relationship || 'not specified'}
+THEIR AGE GROUP: ${theirAge || 'not specified'}
 
 Return ONLY valid JSON:
+
 {
-  "dont_say": ["Common things people say that actually make it WORSE — and why"],
-  "do_say": [
-    {
-      "script": "Exact words to say",
-      "when": "When to say this (e.g., 'when they first tell you', 'right before they go in')",
-      "why_it_helps": "What it does for them emotionally"
-    }
-  ],
-  "do_this": [
-    {
-      "action": "Specific supportive action",
-      "when": "Timing",
-      "why": "Why it matters"
-    }
-  ],
-  "after": {
-    "if_it_went_well": "What to say/do after if it went well",
-    "if_it_went_badly": "What to say/do after if it didn't go well",
-    "either_way": "What to do regardless"
-  },
-  "key_insight": "One sentence about what nervous people actually need (it's usually not advice)"
+  "what_to_say": "",
+  "what_not_to_push": "",
+  "practical_help_you_could_offer": [""],
+  "if_they_dont_want_help": ""
 }
 
-Keep every field concise — a phrase or single sentence, except "script" fields which may be 2-4 short sentences. At most 4 items in dont_say, do_say, and do_this.
+Prefer support that preserves the other person's agency.
 
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
+GOOD:
+"Want to practice the first question with me?"
+
+BAD:
+"You need to stop overthinking this."
+
+GOOD:
+"If you'd rather not talk about it, that's okay."
+
+Do not make the visitor responsible for regulating or fixing the other
+person's emotions.
+
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'nerve-check-coach' });
-    if (!parsed.dont_say) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
+    if (!parsed.what_to_say) {
+      return res.status(500).json({ error: 'Could not put together suggestions. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[NerveCheck/coach] Error:', error);
@@ -383,57 +631,10 @@ CRITICAL JSON RULE: never place a double-quote (") character inside any string v
   }
 });
 
-// ═══════════════════════════════════════════════════════════════
-// FEAR LADDER — graduated exposure steps
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/nerve-check/fear-ladder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { bigFear, currentComfort, situationType, userLanguage } = req.body;
-
-    if (!bigFear?.trim()) return res.status(400).json({ error: 'What\'s the big fear?' });
-
-    const prompt = `Someone has a fear they want to overcome through gradual exposure. Build them a "fear ladder" — a series of progressively challenging steps from barely uncomfortable to their big scary goal. Each step should feel achievable from the one before it. Be specific, practical, and encouraging.
-
-THE BIG FEAR: ${bigFear}
-CURRENT COMFORT LEVEL: ${currentComfort || 'very uncomfortable with this'}
-TYPE: ${situationType || 'general'}
-
-Return ONLY valid JSON:
-{
-  "ladder_name": "Short name for this ladder (e.g., 'Speaking Up in Meetings')",
-  "rungs": [
-    {
-      "level": 1,
-      "challenge": "Specific, concrete action — not vague",
-      "difficulty": "easy | moderate | hard | boss_level",
-      "why_this_step": "How this builds on the last one",
-      "tip": "One practical tip for this specific step",
-      "you_know_youre_ready_when": "Signal that it's time to move up"
-    }
-  ],
-  "timeframe": "Realistic total time to work through the ladder",
-  "rule": "One important rule for working through this (e.g., 'You can repeat a rung as many times as you need')"
-}
-
-Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should be the actual big fear or very close to it.
-
-CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'nerve-check-fear-ladder' });
-    if (!parsed.ladder_name) {
-      return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[NerveCheck/fear-ladder] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
+router.outputStandard = 'v2';
+router.outputGuard = {
+  checks: ['validateResult'],
+  note: 'Grounding rewrite, 2026-09-04 — this tool never had outputStandard/outputGuard or any deterministic backstop before this pass (only a single top-level-key presence guard per endpoint, which is preserved). Four regex checks cover the safest, unconditionally-banned patterns from the prompts: the tool\'s own signature failure ("BUT REALLY IT\'S..." inventing a deeper fear), unverifiable physiological claims for a body/breathing action (calms the nervous system, activates the vagus nerve, reduces cortisol, restores regulation, stops panic), a population claim about "most people," and an unevidenced probability/outcome estimate. Hedge-dependent bans that are CONDITIONALLY allowed per the prompt text (Debrief\'s character-transformation claims like "proved you can perform under pressure," which are fine WHEN the supplied outcome directly supports them; "you\'re stronger than you think" family, fine WHEN grounded) are deliberately left prompt-only — a keyword ban would block a legitimate grounded use as readily as an invented one. specific-prep, sos, and fear-ladder endpoints were removed in this rewrite, not merged elsewhere; situationType now flows into the main endpoint\'s single grounded plan instead of a separate deep-prep call.',
+};
 
 module.exports = router;
