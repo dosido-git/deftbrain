@@ -310,6 +310,59 @@ that composes a template literal by hand, and a reason not to fully trust a
 clean `grep` result as proof of anything until the file's byte-validity is
 separately confirmed.
 
+## The evidence-boundary consolidation
+
+A bug report plus a rule addition, both from the same root cause: "Clicking
+'compare these names' changes focus to the bottom of the page" didn't
+reproduce — `78ea2a27` (the focus-scroll fix above) already excludes the
+loading phase from the reveal effect, live-tested clean on a fresh tab. Most
+likely a stale cached bundle on the deployed site at the moment it was
+reported, not a live regression. No code change; a hard refresh should
+resolve it.
+
+**The rule addition was real, and it replaced rather than stacked onto the
+existing framework.** The user supplied two verbatim blocks — NAME AUDIT —
+EVIDENCE BOUNDARY for the CORE PROMPT, COMPARE NAMES — WINNER RULE for the
+Compare route — explicitly as ONE compact, generalizable rule rather than
+more Kindling/Loomly-specific patching. Both blocks cover almost exactly the
+same ground as language already in the prompt (OBSERVABLE / REASONABLE
+INTERPRETATION / REQUIRES VERIFICATION; the Compare "follows exactly the same
+verification boundary" paragraph) — same three-way split, same "worth
+checking" phrasing, same ban on asserting an unverified conflict. Keeping
+both would have meant two frameworks the model has to reconcile in one
+prompt, which is the kind of redundancy this session has repeatedly found
+correlates with truncation and self-contradiction, not extra safety. Replaced
+the old DISTINGUISH section (and its follow-up "do not predict a domain's
+status" / "do not infer audience response" / "do not confuse epistemic
+caution" paragraphs) with EVIDENCE BOUNDARY verbatim, and replaced the old
+Compare-specific grounding paragraphs with WINNER RULE verbatim — keeping only
+what neither block covers: the "do not perform naming theater" line and the
+"do not manufacture a winner merely because the interface asks for one" line.
+This was a judgment call, not something explicitly requested — flagged to the
+user rather than silently made.
+
+**The sentence the user flagged as most important wasn't in the prompt
+before in any form.** "A candidate does not need an external problem for
+another candidate to be better" has no equivalent in the old Compare
+grounding — that text banned asserting unverified facts, but never told the
+model the winner's OWN stated reason is sufficient on its own, which is what
+let the model go looking for a supporting problem with the loser even after
+correctly picking a winner on the name's own merits. This is the actual
+mechanism behind the user's diagnosis of the Kindling/Loomly leak: the model
+had already reached the right verdict and then over-justified it.
+
+Verified live against the exact case from the bug report (Kindling vs.
+Loomly, bakery, "warmth and approachability"): Kindling wins with
+`decision_driver` grounded entirely in semantic fit ("Kindling earns its
+warmth from the word itself; Loomly would have to build that association
+from scratch"), Loomly's `biggest_risk` is a real semantic gap ("no clear
+semantic connection to baking"), not a fabricated competitor/domain/trademark
+claim, and no candidate anywhere says "no known conflicts." Also re-ran the
+single-name Analyze endpoint on the same input as a regression check on the
+CORE PROMPT replacement — `what_could_get_in_the_way` correctly hedges the
+Kindle-adjacent product-name collision ("worth verifying what comes up when
+someone searches it") instead of asserting it.
+
 ## Things allowed, deliberately
 
 - **A stable, well-known name collision, stated as what it is.** The Compare
