@@ -10,7 +10,7 @@
     {
       "name": "generate-two-hours-art-walk",
       "endpoint": "/api/micro-adventure-mapper",
-      "guards": "The case the 2026-09-03 rewrite exists for — the same input produced 'Pilsen is where Chicago's street art scene actually lives', 'work most tourists miss', 'afternoon light hits murals better between 2-4 PM', 'many have open doors on weekends' and 'if a door is propped open, you're welcome to look'. NONE of that may return. No clock times anywhere (the schema has no time_start/time_end). No street address or cross street (the schema has area, not location). No claim about who goes somewhere, how busy it is, whether doors are open, or what staff will do. Named venues only where broadly stable; otherwise a described place TYPE. Every stop that depends on something current carries a `verify` line.",
+      "guards": "The case the 2026-09-03 rewrite exists for — the same input produced 'Pilsen is where Chicago's street art scene actually lives', 'work most tourists miss', 'afternoon light hits murals better between 2-4 PM', 'many have open doors on weekends' and 'if a door is propped open, you're welcome to look'. NONE of that may return. No clock times anywhere (the schema has no time_start/time_end). No street address or cross street (the schema has area, not location). No claim about who goes somewhere, how busy it is, whether doors are open, or what staff will do. Named venues only where broadly stable; otherwise a described place TYPE. Every stop that depends on something current carries a `verify` line.  Plus the 2026-09-03 final pass: no companion type turned into a personal preference ('lets you linger where history interests you most'), no physical state the itinerary supposedly causes ('walked enough to be genuinely hungry', 'rest your feet'), no ornamental history ('a gathering space since the 1600s', 'built in 1723'), no statement of what a place currently sells or serves ('Faneuil Hall has vendors and casual spots', 'areas with independent cafes'), no admission claim ('many have free or low-cost admission'), no distance more precise than it can know ('a 2.4-mile route'), and no neighbourhood appended to a place name in parentheses — Old North Church is not in Beacon Hill, and a broad accurate area label beats a precise wrong one. `verify` should be EMPTY on most stops: walking a public route does not depend on whether every site along it is open, and an over-broad chore trains people to skip the ones that matter.",
       "input": {
         "action": "generate",
         "location": "Pilsen, Chicago",
@@ -33,64 +33,64 @@
       ],
       "output": {
         "adventure": {
-          "name": "Pilsen Mural Walk & Gallery Drift",
-          "tagline": "Two hours following street art and artist spaces through one of Chicago's most visually alive neighborhoods.",
-          "category": "Art + Photography",
+          "name": "Pilsen Mural Walk",
+          "tagline": "Two hours exploring street art and independent galleries on foot.",
+          "category": "Art and Photography",
           "total_time": "2 hours",
           "total_cost": "Free",
           "activity_level": "Easy",
-          "why_this_fits": "Pilsen's public murals and independent galleries are stable, free, and walkable—perfect for solo photography and art interest without a fixed schedule or budget. The balanced vibe means you can move at your own pace between stops."
+          "why_this_fits": "Pilsen is known for public murals and galleries accessible by walking, which works well for a solo outing at your own pace with photography and art as interests. The low budget fits since street art and many galleries are free to view."
         },
         "stops": [
           {
             "number": 1,
-            "name": "Pilsen mural corridor (18th Street and surrounding blocks)",
-            "area": "Central Pilsen",
-            "duration_min": 45,
-            "description": "Walk the blocks between roughly the commercial core and the residential areas, looking for large-scale murals on building facades. Pilsen has a long tradition of public street art; many murals remain visible and change seasonally. Spend time on whichever walls catch your eye—photograph details, full pieces, or how light hits them at different angles.",
-            "small_twist": "Rather than hit all the famous walls at once, pick one block and look up, down, and into alleys. You'll find work people typically walk past.",
-            "photo_op": "Early or late light will show texture and shadow on the murals. Even midday, the scale and color work well.",
+            "name": "Pilsen commercial district murals",
+            "area": "Pilsen, Chicago",
+            "duration_min": 50,
+            "description": "Walk the main commercial blocks looking for public murals and street art. Stop wherever a piece catches your eye to photograph and study the work. Pilsen has significant public art, but specific current murals change—your maps app can help you locate 'Pilsen murals' or 'Chicago street art' to see what's documented as currently visible. Move at your own pace; there is no destination, only direction.",
+            "small_twist": "Photograph the same mural from at least two different angles or times of day if the light shifts while you walk.",
+            "photo_op": "Murals are the main draw; look for compositions with strong light, interesting angles, or details that reward close focus.",
             "cost": "Free",
-            "verify": "Current murals and their locations; use Google Maps or a current street art database to confirm which pieces are still visible. Pilsen murals do get painted over or fade."
+            "verify": ""
           },
           {
             "number": 2,
-            "name": "Independent gallery or artist workspace in Pilsen",
-            "area": "Pilsen (various locations)",
-            "duration_min": 30,
-            "description": "Pilsen has several small independent galleries and artist-run spaces, many of which are open to walk-ins during the day. Visit a gallery or workspace that feels accessible—look for open doors, posted hours, or a welcoming entrance. Spend time with whatever is on display; talk to staff or artists if they are present.",
-            "small_twist": "",
-            "photo_op": "Check before photographing inside; some spaces permit it, others do not. If welcome, interior lighting can be interesting.",
+            "name": "Independent gallery or arts space",
+            "area": "Pilsen, Chicago",
+            "duration_min": 40,
+            "description": "Use your maps app to locate an independent gallery, artist studio, or arts nonprofit within walking distance of where you are. Many are free to enter and open to foot traffic. Step inside, spend time with the work, and ask yourself what drew you to it. If the door is closed or the space is not open to visitors, this is a natural point to turn back or explore a different block.",
+            "small_twist": "If the gallery has work by a local artist, look for something you would not expect to see—a technique, subject, or material that surprises you.",
+            "photo_op": "",
             "cost": "Free",
-            "verify": "Current gallery or workspace hours and locations. Use Google Maps or a local Chicago arts directory to find a specific space with current hours before you go. Assume nothing about walk-in policy; call or check online if the venue matters to your plan."
+            "verify": "Current gallery hours and whether walk-in visitors are welcome. Check before entering or use a closed door as a signal to explore the surrounding blocks instead."
           }
         ],
         "between_stops": [
           {
             "from_stop": 1,
             "to_stop": 2,
-            "guidance": "",
-            "estimated_time": "5–10 minutes walking"
+            "guidance": "Continue walking through the neighborhood. Choose a gallery or arts space that is within reasonable walking distance of where you end the first stop.",
+            "estimated_time": "5–10 minutes"
           }
         ],
         "what_to_bring": [
           "Phone or camera for photography",
-          "Water bottle"
+          "Water"
         ],
         "backup_plan": {
-          "when_to_use": "If a specific gallery is closed or you prefer to stay outdoors",
-          "description": "Extend your time in the mural corridor instead. Walk a wider loop through residential blocks adjacent to the main commercial strip—murals are distributed throughout the neighborhood, not just on one street. If rain comes, duck into a coffee shop or covered area and switch focus to photographing rain reflections on murals or take time to review and edit what you've shot so far."
+          "when_to_use": "If weather makes outdoor photography uncomfortable or if you want to move indoors before the 2 hours are done",
+          "description": "Use your maps app to find an open museum, cultural center, or independent bookstore in Pilsen. Many host art and photography and welcome walk-ins. Spend the remaining time indoors with work you can study closely."
         },
         "keep_going": {
           "extra_time": "30–45 minutes",
-          "suggestion": "Continue the mural walk into blocks you haven't covered yet, or visit a second gallery space. If you want to add a social element, find a neighborhood café or small restaurant and review your photos over coffee (optional purchase)."
+          "suggestion": "If you still have time, pick one street or block you liked and walk it again more slowly, or use your maps app to find a cafe or small independent shop nearby to sit and review the photos you took."
         }
       }
     },
     {
       "name": "generate-one-hour-free-accessible",
       "endpoint": "/api/micro-adventure-mapper",
-      "guards": "One hour, free-only, transit, family, wheelchair. One hour may justify only 1-2 stops — a forced 3-5 is the failure this catches. `free` is a hard budget constraint, so no cost may imply spending. Accessibility is a hard constraint: nothing may be CALLED accessible, and anything that depends on current local conditions belongs in `verify`. Photography is not among the interests, so a photo_op is allowed only where the scene naturally supports it.",
+      "guards": "One hour, free-only, transit, family, wheelchair. One hour may justify only 1-2 stops — a forced 3-5 is the failure this catches. `free` is a hard budget constraint, so no cost may imply spending. Accessibility is a hard constraint: nothing may be CALLED accessible, and anything that depends on current local conditions belongs in `verify`. Photography is not among the interests, so a photo_op is allowed only where the scene naturally supports it.  Plus the 2026-09-03 final pass: no companion type turned into a personal preference ('lets you linger where history interests you most'), no physical state the itinerary supposedly causes ('walked enough to be genuinely hungry', 'rest your feet'), no ornamental history ('a gathering space since the 1600s', 'built in 1723'), no statement of what a place currently sells or serves ('Faneuil Hall has vendors and casual spots', 'areas with independent cafes'), no admission claim ('many have free or low-cost admission'), no distance more precise than it can know ('a 2.4-mile route'), and no neighbourhood appended to a place name in parentheses — Old North Church is not in Beacon Hill, and a broad accurate area label beats a precise wrong one. `verify` should be EMPTY on most stops: walking a public route does not depend on whether every site along it is open, and an over-broad chore trains people to skip the ones that matter.",
       "input": {
         "action": "generate",
         "location": "Porto",
@@ -114,47 +114,46 @@
       ],
       "output": {
         "adventure": {
-          "name": "Evening Riverside Grazing",
-          "tagline": "Find free food moments along Porto's waterfront on transit.",
-          "category": "Food + Waterfront",
+          "name": "Evening Market Wander & Taste",
+          "tagline": "A slow evening walk through a public market with free sampling and low-key people-watching.",
+          "category": "Food exploration",
           "total_time": "About 1 hour",
           "total_cost": "Free",
           "activity_level": "Easy",
-          "why_this_fits": "Porto's riverside is accessible by transit and naturally wheelchair-friendly along the main paths. You'll sample local food culture without purchasing, move at a chill pace suited to families, and have a simple themed outing that feels more intentional than wandering."
+          "why_this_fits": "Public markets in Porto are accessible, moving slowly suits a chill vibe with kids, transit gets you there, and market stalls often offer free tastes without obligation to buy. One straightforward stop fits your hour without rushing."
         },
         "stops": [
           {
             "number": 1,
-            "name": "Ribeira waterfront public space",
-            "area": "Ribeira district, along the Douro River",
-            "duration_min": 40,
-            "description": "Walk the riverside promenade and observe the food culture around you. Watch fishmongers, street vendors, and restaurant activity. Stop at a public bench or accessible spot to sit and take in the working waterfront. Many vendors offer samples or you may find free food moments—local custom sometimes includes small tastes at fish counters or market stalls, though this is never guaranteed. The real focus is experiencing how locals interact with food here: the rhythm of the market, what's seasonal, how people shop and gather.",
-            "small_twist": "Rather than eating as transaction, treat it as observation: What are people buying? What smells interesting? What would you try if you could? This shifts the outing from consumption to curiosity.",
-            "photo_op": "The light on the water in early evening, the stacked boats, the activity of vendors—all strong without needing to photograph people closely.",
+            "name": "A public market in central Porto",
+            "area": "Central Porto, accessible by transit",
+            "duration_min": 55,
+            "description": "Walk slowly through the market, watch vendors, ask about samples (many offer them freely), notice what foods are local or unfamiliar, and let the kids explore at their own pace. No purchase needed — the point is presence and discovery. Wheelchair users should verify accessibility of specific market entrance and main aisles before visiting.",
+            "small_twist": "Ask one vendor a genuine question about something you don't recognize — how it is used, where it comes from, or what it tastes like. Most people enjoy sharing.",
+            "photo_op": "",
             "cost": "Free",
-            "verify": "Confirm that the Ribeira waterfront promenade is currently accessible by wheelchair—paving, ramps, and accessible seating can change seasonally or due to maintenance. Check transit accessibility to your entry point."
+            "verify": "Confirm the market is open this evening and has accessible entry/main aisles for wheelchair access."
           }
         ],
         "between_stops": [],
         "what_to_bring": [
-          "Phone with transit app to confirm routes and accessibility info",
-          "Water bottle (refillable)",
-          "Small notebook if the family wants to jot notes on foods spotted"
+          "Transit card or payment for fares",
+          "Small bag for any unexpected finds"
         ],
         "backup_plan": {
-          "when_to_use": "If the Ribeira waterfront is unusually crowded, has barriers, or accessibility is compromised on the day",
-          "description": "Use your remaining time to explore a neighborhood market or covered food hall by transit instead. Look for a public market (mercado) in a central, transit-accessible area. These are free to enter, wheelchair-accessible by design, and offer the same food-culture observation without the river crowds. Sit, watch, and notice what people are buying and how vendors interact with regulars."
+          "when_to_use": "If the market is closed or inaccessible this evening, or if the vibe feels too crowded for a chill outing with kids",
+          "description": "Use your maps app to find an open public space in central Porto — a plaza, waterfront area, or park — where you can sit and watch the evening. Stop for street food or a casual vendor spot if you find one that appeals, or stay free and simply observe. The same slow-walking, low-key food discovery works in a different setting."
         },
         "keep_going": {
-          "extra_time": "30+ minutes",
-          "suggestion": "If energy and time allow, take transit to another neighborhood with a different character—perhaps a local residential area—and repeat the same exercise: find a public square, market corner, or café area and observe the food rhythms there. Compare what you noticed at Ribeira to this quieter spot."
+          "extra_time": "15–20 minutes",
+          "suggestion": "If energy and time allow, take transit to a waterfront viewpoint or public plaza in central Porto and sit while evening light changes. This extends the chill vibe without adding structure."
         }
       }
     },
     {
       "name": "regenerate-different-outing",
       "endpoint": "/api/micro-adventure-mapper",
-      "guards": "Same constraints, a different outing. It must differ in at least two of activity, area, pace, stop type or theme — but must NOT switch away from the vibe the visitor selected. Same grounding rules as generate.",
+      "guards": "Same constraints, a different outing. It must differ in at least two of activity, area, pace, stop type or theme — but must NOT switch away from the vibe the visitor selected. Same grounding rules as generate.  Plus the 2026-09-03 final pass: no companion type turned into a personal preference ('lets you linger where history interests you most'), no physical state the itinerary supposedly causes ('walked enough to be genuinely hungry', 'rest your feet'), no ornamental history ('a gathering space since the 1600s', 'built in 1723'), no statement of what a place currently sells or serves ('Faneuil Hall has vendors and casual spots', 'areas with independent cafes'), no admission claim ('many have free or low-cost admission'), no distance more precise than it can know ('a 2.4-mile route'), and no neighbourhood appended to a place name in parentheses — Old North Church is not in Beacon Hill, and a broad accurate area label beats a precise wrong one. `verify` should be EMPTY on most stops: walking a public route does not depend on whether every site along it is open, and an over-broad chore trains people to skip the ones that matter.",
       "input": {
         "action": "regenerate",
         "location": "Pilsen, Chicago",
@@ -178,64 +177,64 @@
       ],
       "output": {
         "adventure": {
-          "name": "Pilsen Industrial & Detail Hunt",
-          "tagline": "Photograph the textures, patterns, and small architectural moments most people walk past.",
-          "category": "Photography walk with visual discovery",
+          "name": "Pilsen Gallery Crawl & Street Detail Hunt",
+          "tagline": "Move slowly through galleries and side streets, hunting for visual details that reward close attention.",
+          "category": "Gallery + street photography walk",
           "total_time": "2 hours",
           "total_cost": "Free",
           "activity_level": "Easy",
-          "why_this_fits": "Shifts from mural-focused to micro-scale observation—same neighborhood, different lens. Walking pace with intentional stops to study detail rather than cover distance. Solo works well for patient, close-looking work."
+          "why_this_fits": "A slower-paced alternative to the mural walk that keeps photography as the active task but shifts focus from standoff murals to indoor gallery work and found details on side streets. The pace works for solo exploration at your own rhythm, and galleries are free or low-cost in Pilsen."
         },
         "stops": [
           {
             "number": 1,
-            "name": "Industrial alley or side street in Pilsen",
-            "area": "Central/eastern Pilsen",
-            "duration_min": 35,
-            "description": "Walk slowly through one industrial block or alley. Look for peeling paint, layered signage, rust patterns, window reflections, brick textures, weathered metal, graffiti tags as graphic design, shadows cast by fire escapes or utility lines. Photograph 10-15 details that interest you rather than full buildings.",
-            "small_twist": "Zoom in on one square foot at a time. Ignore the big picture and hunt for abstractions—what looks like a small painting or pattern when you frame it tightly?",
-            "photo_op": "Decay, texture, color contrast, shadow play, graphic repetition",
+            "name": "Pilsen gallery district",
+            "area": "Pilsen, Chicago",
+            "duration_min": 45,
+            "description": "Pick one or two smaller galleries to move through deliberately. Rather than aiming to see everything, spend time on individual pieces — composition, materials, what the work is asking you to look at. This is different work than photographing the obvious thing. If a gallery has a back room or upstairs, go there.",
+            "small_twist": "Challenge yourself to find one piece in each gallery that would be hard to photograph well, and spend a moment understanding why.",
+            "photo_op": "Work you see inside, if the gallery permits photography — ask first. Many contemporary galleries do.",
             "cost": "Free",
-            "verify": ""
+            "verify": "Which galleries are open right now — search your maps app for 'galleries Pilsen Chicago' and check hours before entering."
           },
           {
             "number": 2,
-            "name": "Public market, community grocery, or neighborhood corner store in Pilsen",
-            "area": "Central Pilsen",
-            "duration_min": 35,
-            "description": "Step into a market or small grocer. Photograph the visual language: produce arrangements, hand-painted signs, product stacks, color palettes in the window, vendor setups, light filtering through displays. Notice how color and order are used differently than in chain stores.",
-            "small_twist": "Find one section—produce, spice, flowers, canned goods—and photograph it from multiple angles to see how it changes.",
-            "photo_op": "Color, arrangement, hand-lettering, vendor setup, natural light through windows",
-            "cost": "Free (photography only); Optional purchase if you want to buy something small",
-            "verify": "Confirm store is open before heading there. Some may not permit photography inside—if you're unsure, ask at the entrance."
+            "name": "Side streets and architectural details",
+            "area": "Pilsen, Chicago",
+            "duration_min": 40,
+            "description": "Walk the quieter blocks between the main gallery and commercial streets. Look for: brick textures, fire escapes, window frames, small hand-painted signs, peeling paint that forms accidental colors, reflections in glass, how light hits a corner at this hour. The point is to see what you walked past before. Stop when something catches your eye and look at it for a minute.",
+            "small_twist": "Try photographing the same subject (a door, a wall, a window) from three different distances or angles. Notice what changes about how you see it.",
+            "photo_op": "Details, textures, light, reflections — the unglamorous visual stuff that exists everywhere if you look.",
+            "cost": "Free",
+            "verify": ""
           }
         ],
         "between_stops": [
           {
             "from_stop": 1,
             "to_stop": 2,
-            "guidance": "Walk toward the main commercial street in central Pilsen. The market or grocery should be within a 10-minute walk.",
-            "estimated_time": "~10 minutes"
+            "guidance": "Exit the gallery district and walk toward one of the quieter residential blocks nearby. You'll shift from curated interiors to the street itself.",
+            "estimated_time": "5-10 minutes"
           }
         ],
         "what_to_bring": [
-          "Phone or camera with full battery",
+          "Phone or camera",
           "Water"
         ],
         "backup_plan": {
-          "when_to_use": "If rain starts or you want less walking",
-          "description": "Spend the full 2 hours in one covered space—a market interior, laundromat interior, or transit station waiting area. The goal stays the same: photograph patterns, light, color, and human-scale details in confined space. Interior light changes throughout, so you can return to the same spot after 30 minutes and find new angles."
+          "when_to_use": "If the galleries you planned to visit are closed or too crowded, or if you want to move indoors for any reason",
+          "description": "Use your maps app to find an open library or museum with current exhibits in or near Pilsen. Many have free hours or low admission. Alternatively, look for a used bookstore or vintage shop in the area — these often have visual richness worth photographing, and the browsing pace matches a solo visit."
         },
         "keep_going": {
-          "extra_time": "30-60 more minutes",
-          "suggestion": "Pick one photograph from the outing. Go back to that location and photograph it in different light, from different distances, or from angles you missed. Sit with one subject instead of hunting for novelty."
+          "extra_time": "30-45 minutes",
+          "suggestion": "If you still have time and energy, move into one of the adjacent residential blocks you have not explored yet and continue the detail hunt. The visual reward of that kind of work deepens the longer you stay with it. Alternatively, find a casual coffee spot or cafe along your route and review the photos you took — this helps you see what you were drawn to and what worked photographically."
         }
       }
     },
     {
       "name": "swap-stop-one",
       "endpoint": "/api/micro-adventure-mapper",
-      "guards": "Returns ONE stop and ONE transition — `{stop, transition}`, not the arrays the old version returned, which the frontend merges by number. The replacement must preserve the theme, fit roughly the same time, respect the transport, and carry no invented address, price, opening hour or exact travel time. If no current venue can safely be named, a described place type plus a `verify` line is the correct answer.",
+      "guards": "Returns ONE stop and ONE transition — `{stop, transition}`, not the arrays the old version returned, which the frontend merges by number. The replacement must preserve the theme, fit roughly the same time, respect the transport, and carry no invented address, price, opening hour or exact travel time. If no current venue can safely be named, a described place type plus a `verify` line is the correct answer.  Plus the 2026-09-03 final pass: no companion type turned into a personal preference ('lets you linger where history interests you most'), no physical state the itinerary supposedly causes ('walked enough to be genuinely hungry', 'rest your feet'), no ornamental history ('a gathering space since the 1600s', 'built in 1723'), no statement of what a place currently sells or serves ('Faneuil Hall has vendors and casual spots', 'areas with independent cafes'), no admission claim ('many have free or low-cost admission'), no distance more precise than it can know ('a 2.4-mile route'), and no neighbourhood appended to a place name in parentheses — Old North Church is not in Beacon Hill, and a broad accurate area label beats a precise wrong one. `verify` should be EMPTY on most stops: walking a public route does not depend on whether every site along it is open, and an over-broad chore trains people to skip the ones that matter.",
       "input": {
         "action": "swap",
         "location": "Pilsen, Chicago",
@@ -253,57 +252,57 @@
         "accessibility": [],
         "currentItinerary": {
           "adventure": {
-            "name": "Pilsen Mural Walk & Gallery Drift",
-            "tagline": "Two hours following street art and artist spaces through one of Chicago's most visually alive neighborhoods.",
-            "category": "Art + Photography",
+            "name": "Pilsen Mural Walk",
+            "tagline": "Two hours exploring street art and independent galleries on foot.",
+            "category": "Art and Photography",
             "total_time": "2 hours",
             "total_cost": "Free",
             "activity_level": "Easy",
-            "why_this_fits": "Pilsen's public murals and independent galleries are stable, free, and walkable—perfect for solo photography and art interest without a fixed schedule or budget. The balanced vibe means you can move at your own pace between stops."
+            "why_this_fits": "Pilsen is known for public murals and galleries accessible by walking, which works well for a solo outing at your own pace with photography and art as interests. The low budget fits since street art and many galleries are free to view."
           },
           "stops": [
             {
               "number": 1,
-              "name": "Pilsen mural corridor (18th Street and surrounding blocks)",
-              "area": "Central Pilsen",
-              "duration_min": 45,
-              "description": "Walk the blocks between roughly the commercial core and the residential areas, looking for large-scale murals on building facades. Pilsen has a long tradition of public street art; many murals remain visible and change seasonally. Spend time on whichever walls catch your eye—photograph details, full pieces, or how light hits them at different angles.",
-              "small_twist": "Rather than hit all the famous walls at once, pick one block and look up, down, and into alleys. You'll find work people typically walk past.",
-              "photo_op": "Early or late light will show texture and shadow on the murals. Even midday, the scale and color work well.",
+              "name": "Pilsen commercial district murals",
+              "area": "Pilsen, Chicago",
+              "duration_min": 50,
+              "description": "Walk the main commercial blocks looking for public murals and street art. Stop wherever a piece catches your eye to photograph and study the work. Pilsen has significant public art, but specific current murals change—your maps app can help you locate 'Pilsen murals' or 'Chicago street art' to see what's documented as currently visible. Move at your own pace; there is no destination, only direction.",
+              "small_twist": "Photograph the same mural from at least two different angles or times of day if the light shifts while you walk.",
+              "photo_op": "Murals are the main draw; look for compositions with strong light, interesting angles, or details that reward close focus.",
               "cost": "Free",
-              "verify": "Current murals and their locations; use Google Maps or a current street art database to confirm which pieces are still visible. Pilsen murals do get painted over or fade."
+              "verify": ""
             },
             {
               "number": 2,
-              "name": "Independent gallery or artist workspace in Pilsen",
-              "area": "Pilsen (various locations)",
-              "duration_min": 30,
-              "description": "Pilsen has several small independent galleries and artist-run spaces, many of which are open to walk-ins during the day. Visit a gallery or workspace that feels accessible—look for open doors, posted hours, or a welcoming entrance. Spend time with whatever is on display; talk to staff or artists if they are present.",
-              "small_twist": "",
-              "photo_op": "Check before photographing inside; some spaces permit it, others do not. If welcome, interior lighting can be interesting.",
+              "name": "Independent gallery or arts space",
+              "area": "Pilsen, Chicago",
+              "duration_min": 40,
+              "description": "Use your maps app to locate an independent gallery, artist studio, or arts nonprofit within walking distance of where you are. Many are free to enter and open to foot traffic. Step inside, spend time with the work, and ask yourself what drew you to it. If the door is closed or the space is not open to visitors, this is a natural point to turn back or explore a different block.",
+              "small_twist": "If the gallery has work by a local artist, look for something you would not expect to see—a technique, subject, or material that surprises you.",
+              "photo_op": "",
               "cost": "Free",
-              "verify": "Current gallery or workspace hours and locations. Use Google Maps or a local Chicago arts directory to find a specific space with current hours before you go. Assume nothing about walk-in policy; call or check online if the venue matters to your plan."
+              "verify": "Current gallery hours and whether walk-in visitors are welcome. Check before entering or use a closed door as a signal to explore the surrounding blocks instead."
             }
           ],
           "between_stops": [
             {
               "from_stop": 1,
               "to_stop": 2,
-              "guidance": "",
-              "estimated_time": "5–10 minutes walking"
+              "guidance": "Continue walking through the neighborhood. Choose a gallery or arts space that is within reasonable walking distance of where you end the first stop.",
+              "estimated_time": "5–10 minutes"
             }
           ],
           "what_to_bring": [
             "Phone or camera for photography",
-            "Water bottle"
+            "Water"
           ],
           "backup_plan": {
-            "when_to_use": "If a specific gallery is closed or you prefer to stay outdoors",
-            "description": "Extend your time in the mural corridor instead. Walk a wider loop through residential blocks adjacent to the main commercial strip—murals are distributed throughout the neighborhood, not just on one street. If rain comes, duck into a coffee shop or covered area and switch focus to photographing rain reflections on murals or take time to review and edit what you've shot so far."
+            "when_to_use": "If weather makes outdoor photography uncomfortable or if you want to move indoors before the 2 hours are done",
+            "description": "Use your maps app to find an open museum, cultural center, or independent bookstore in Pilsen. Many host art and photography and welcome walk-ins. Spend the remaining time indoors with work you can study closely."
           },
           "keep_going": {
             "extra_time": "30–45 minutes",
-            "suggestion": "Continue the mural walk into blocks you haven't covered yet, or visit a second gallery space. If you want to add a social element, find a neighborhood café or small restaurant and review your photos over coffee (optional purchase)."
+            "suggestion": "If you still have time, pick one street or block you liked and walk it again more slowly, or use your maps app to find a cafe or small independent shop nearby to sit and review the photos you took."
           }
         },
         "swapStopNumber": 1
@@ -312,18 +311,18 @@
       "output": {
         "stop": {
           "number": 1,
-          "name": "Pilsen streetscape and architectural details walk",
-          "area": "Central Pilsen",
-          "duration_min": 45,
-          "description": "Walk a few blocks of the residential and commercial streets in Pilsen, paying close attention to the built environment itself: storefront typography, window displays, architectural trim, fire escapes, doorways, color combinations, and how businesses use their street-facing walls. Pilsen's character comes as much from how people occupy and decorate their spaces as from formal public art. Photograph whatever catches your eye—a painted gate, a hand-lettered sign, the way light falls across a facade, details most foot traffic misses.",
-          "small_twist": "Rather than follow a planned route, pick one block and spend ten minutes just looking: up at cornices and roof lines, down at basement-level details, across at how adjacent buildings relate. Move on when something pulls you forward.",
-          "photo_op": "Storefront signs, architectural details, and weathered surfaces often look sharp in natural light. Shadows from fire escapes and building edges create strong compositions.",
+          "name": "Artist studio or workspace open to visitors",
+          "area": "Pilsen, Chicago",
+          "duration_min": 50,
+          "description": "Pilsen has a working artist community, and some studios and shared creative spaces periodically open their doors or maintain visiting hours. Use your maps app to search 'Pilsen artist studio' or 'open studio Chicago' to find current options. When you find one that is open, spend time observing the work in progress, talking with artists if they are available, and photographing pieces that interest you. If no studio is currently open to visitors, use this time to explore the surrounding blocks on foot—look for storefronts with artist signage, community bulletin boards, or visible creative work that signals where local makers work.",
+          "small_twist": "Ask an artist on-site (if present) about one piece—what drew them to that subject or technique. Photograph both the finished work and any materials or process visible in the space.",
+          "photo_op": "",
           "cost": "Free",
-          "verify": "No verification needed—you're observing the street itself rather than visiting a specific venue. Street conditions, storefronts, and building details remain stable."
+          "verify": "Before heading out, check your maps app for 'Pilsen artist studio,' 'open studio,' or 'artist workspace visitor hours' to confirm a space is accessible when you plan to visit."
         },
         "transition": {
-          "guidance": "From wherever you finish this walk, head toward the independent gallery or artist workspace for your second stop. If you end up far from it, that's fine—use the walk as a natural transition and a chance to see another block.",
-          "estimated_time": "5–15 minutes depending on how far apart the stops end up being"
+          "guidance": "Walk toward the second stop (the independent gallery or arts space you selected) using your maps app for routing.",
+          "estimated_time": "About 10–15 minutes walking, depending on which studio you visit and where the gallery is located."
         }
       }
     }

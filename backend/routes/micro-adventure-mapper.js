@@ -183,6 +183,61 @@ Suggest a natural way to continue if the user still has time or energy.
 
 Do not invent additional current businesses or attractions.
 
+FINAL GROUNDING PASS
+
+Ten more, each a move the tool made after the first rewrite. Be adventurous in
+the plan, conservative about local facts.
+
+1. A companion type is who is coming, not what the visitor likes. Solo does not
+   establish that they enjoy lingering, independence, reflection, or setting
+   their own pace.
+   Avoid: Solo walking lets you linger where history interests you most.
+   Prefer: The route works for a solo outing and can be taken at your own pace.
+
+2. Do not invent physical states the itinerary supposedly causes. You do not
+   know that anyone will be hungry, footsore, tired or thirsty.
+   Avoid: By this point you'll have walked enough to be genuinely hungry.
+   Prefer: This is a natural point to pause for food if you want it.
+
+3. Do not assign historical significance beyond what the outing needs. An
+   ornamental factual claim — the ground you're standing on has been a
+   gathering space since the 1600s — is an unsourced tour guide, not a plan.
+   Leave it out unless it was supplied or is genuinely load-bearing.
+
+4. A known route or landmark does not make every descriptive fact about it
+   established. Historical significance, route markings, vendors, public
+   access, photography, indoor seating, admission, exhibits and the state of
+   individual sites all still have to satisfy the local-fact rule.
+
+5. Do not create verification chores. Ask the visitor to check something only
+   when the itinerary MATERIALLY depends on it. Walking a public route does not
+   depend on whether every site along it is open, so do not ask them to confirm
+   that. An over-broad verify line is noise that trains people to skip the ones
+   that matter.
+
+6. Do not state current commercial composition as fact.
+   Avoid: Faneuil Hall itself has vendors and casual spots.
+   Prefer: Look for a casual food option near Faneuil Hall or elsewhere along
+   the route, and check current hours before relying on it.
+
+7. Do not place a landmark in a named neighbourhood unless you are confident it
+   is there. Old North Church and the Paul Revere House are not in Beacon Hill.
+   A broader accurate area label beats a precise wrong one — prefer the city or
+   a well-known district over a neighbourhood you are guessing at, and never
+   append a neighbourhood to a place name in parentheses.
+
+8. KEEP GOING is held to the same standard as the itinerary. Do not casually
+   introduce further named attractions unless they are stable, confidently
+   located and relevant.
+
+9. BACKUP PLAN must be usable without assuming any particular museum, library,
+   market or food hall is open.
+   Prefer: If you need to move indoors, use your maps app to find an open
+   museum, library, market or cafe near your current point on the route.
+
+10. WHY THIS FITS explains the match between the supplied constraints and the
+    itinerary. It does not explain the visitor.
+
 VOICE
 Write directly to the user as you.
 
@@ -242,6 +297,8 @@ const LOCAL_INSIDER = new RegExp([
 // An admission price, opening state or menu price presented as fact.
 const INVENTED_PRICE_OR_HOURS = new RegExp([
   '\\badmission is\\b|\\bentry is\\b|\\bcosts? (?:about |around )?[\\p{Sc}]\\s?\\d',
+  '\\b(?:many|most|some|several|they)\\b[^.]{0,20}\\b(?:have|offer|are)\\b[^.]{0,20}\\b(?:free|low[- ]cost|cheap|no charge|pay[- ]what[- ]you)\\b[^.]{0,15}\\b(?:admission|entry|entrance)\\b',
+  '\\b(?:free|low[- ]cost) (?:admission|entry|entrance)\\b',
   '\\bfree (?:on|every) (?:\\p{Lu}\\p{L}+day|the first \\p{Lu}\\p{L}+day)\\b',
   '\\bopen (?:daily|every day|until|from|on weekends?|\\p{Lu}\\p{L}+day)\\b',
   '\\bclosed (?:on )?(?:\\p{Lu}\\p{L}+days?|Mondays)\\b',
@@ -253,6 +310,55 @@ const INVENTED_ADDRESS = new RegExp([
   '\\b(?:corner of|at the corner of|junction of)\\s+\\p{Lu}',
   '\\b\\p{Lu}[\\p{L}\\x27-]+\\s+(?:St|Street|Ave|Avenue)\\s+(?:and|&|at)\\s+\\p{Lu}',
 ].join('|'), 'u');
+
+// ── Final pass, 2026-09-03 ───────────────────────────────────────────────
+// Four more. Each is a real sentence from the Boston Freedom Trail probe.
+
+// "Solo walking lets you linger where history interests you most." The
+// companion type says who is coming, not what they enjoy.
+const COMPANION_AS_PREFERENCE = new RegExp([
+  '\\b(?:solo|going alone|walking alone|being alone)\\b[^.]{0,45}\\b(?:lets? you|means you can|gives you the freedom|suits? (?:people |those )?who)\\b',
+  '\\bwhere (?:history|art|architecture|food) interests you most\\b',
+  '\\byou(?:\\x27ll| will)? (?:enjoy|prefer|like|appreciate|love)\\b',
+  '\\bif you(?:\\x27re| are) the (?:kind|sort|type) of\\b',
+  '\\b(?:perfect|ideal|great) for (?:people|those|anyone) who\\b',
+].join('|'), 'i');
+
+// "By this point you'll have walked enough to be genuinely hungry."
+const INVENTED_BODY_STATE = new RegExp([
+  '\\byou(?:\\x27ll| will| may)? ?(?:have )?(?:be|feel|get) (?:genuinely |properly |quite |pretty )?(?:hungry|thirsty|tired|footsore|worn out|ready for a (?:sit|break|rest))\\b',
+  '\\brest your (?:feet|legs)\\b|\\bgive your (?:feet|legs) a (?:break|rest)\\b',
+  '\\bwalked enough to\\b|\\bby (?:this point|now) you(?:\\x27ll| will)\\b',
+  '\\byour (?:feet|legs) will\\b',
+].join('|'), 'i');
+
+// "the ground you're standing on has been a gathering space since the 1600s"
+const ORNAMENTAL_HISTORY = new RegExp([
+  '\\bsince the \\d{4}s?\\b|\\bsince \\d{4}\\b',
+  '\\bdat(?:es|ing) (?:back )?(?:to|from) (?:the )?\\d{3,4}\\b',
+  '\\b(?:built|founded|established|erected|opened) in \\d{4}\\b',
+  '\\b(?:\\d{2}th|\\d{1}st|\\d{1}nd|\\d{1}rd)[- ]century\\b',
+  '\\bfor (?:over |more than )?\\d{2,3} years\\b',
+  '\\bthe (?:ground|spot|place) you(?:\\x27re| are) standing on\\b',
+].join('|'), 'i');
+
+// "Faneuil Hall itself has vendors and casual spots."
+const COMMERCIAL_COMPOSITION = new RegExp([
+  '\\b(?:has|have|hosts?|houses?|contains?|offers?|is home to)\\b[^.]{0,30}\\b(?:vendors?|stalls?|shops?|boutiques?|restaurants?|cafes?|caf\\u00e9s?|bars?|food (?:stalls?|halls?|courts?|options?|spots?)|casual spots?|eateries)\\b',
+  '\\bthere (?:are|is) (?:several |a few |plenty of |lots of )?(?:vendors?|stalls?|shops?|restaurants?|cafes?|caf\\u00e9s?)\\b',
+  '\\b(?:lined|filled|packed) with (?:shops?|vendors?|restaurants?|cafes?|caf\\u00e9s?|stalls?)\\b',
+  '\\b(?:areas?|streets?|blocks?|a stretch) with\\b[^.]{0,30}\\b(?:cafes?|caf\\u00e9s?|shops?|restaurants?|bakeries|vendors?|stalls?|food (?:spots?|options?))\\b',
+].join('|'), 'i');
+
+// "a stable 2.4-mile walking route" — the Freedom Trail is about 2.5 miles, and
+// a decimal makes a remembered figure look measured. Distances stay qualitative
+// or rounded; "about a ten minute walk" and "a short walk" are the wanted forms
+// and neither matches here.
+const PRECISE_DISTANCE = new RegExp([
+  '\\b\\d+\\.\\d+\\s*[- ]?(?:mile|mi|kilometer|kilometre|km)s?\\b',
+  '\\b\\d{3,4}\\s*(?:meters?|metres?|feet|ft|yards?)\\b',
+  '\\bexactly \\d+\\s*(?:mile|km|minute|block)s?\\b',
+].join('|'), 'i');
 
 // A hedge means the sentence proposes rather than asserts — spare it.
 const HEDGED = /\b(?:if|whether|may|might|could|check|confirm|look for|see whether|verify|some|often vary|not sure)\b/i;
@@ -267,12 +373,44 @@ const RULES = [
   ['claimed local insider knowledge', LOCAL_INSIDER],
   ['stated a price or opening state as fact', INVENTED_PRICE_OR_HOURS, (v) => HEDGED.test(v)],
   ['invented an address or cross street', INVENTED_ADDRESS],
+  ['turned a companion type into a personal preference', COMPANION_AS_PREFERENCE],
+  ['invented a physical state the itinerary would cause', INVENTED_BODY_STATE],
+  ['added ornamental history the outing does not need', ORNAMENTAL_HISTORY],
+  ['stated what a place currently sells or serves', COMMERCIAL_COMPOSITION, (v) => HEDGED.test(v)],
+  ['gave a distance more precisely than it can know', PRECISE_DISTANCE],
 ];
 
 // Arrays are objects: Object.entries enumerates their indices, so the walk
 // reaches strings inside arrays without a special case.
+// Old North Church and the Paul Revere House came back as
+// "Old North Church (Beacon Hill)" — right landmark, wrong neighbourhood,
+// appended to a field that is not for neighbourhoods. The `area` field exists
+// for that and the prompt now says a broad accurate label beats a precise wrong
+// one; this removes the parenthetical that gets there anyway. Only fires when
+// the parenthetical looks like a place label rather than a clarifier, so
+// "Pilsen mural district (16th Street corridor)" survives.
+const NAME_PARENTHETICAL = /\s*\((?:in |the )?[A-Z][\p{L}'’-]*(?:\s+[A-Z][\p{L}'’-]*){0,2}\)\s*$/u;
+
+function stripNameParenthetical(data) {
+  for (const stop of (data && data.stops) || []) {
+    if (stop && typeof stop.name === 'string' && NAME_PARENTHETICAL.test(stop.name)) {
+      const cleaned = stop.name.replace(NAME_PARENTHETICAL, '').trim();
+      if (cleaned.length > 2) {
+        console.log(`[micro-adventure-mapper] stop name parenthetical dropped: ${stop.name} -> ${cleaned}`);
+        stop.name = cleaned;
+      }
+    }
+  }
+  if (data && data.stop && typeof data.stop.name === 'string' && NAME_PARENTHETICAL.test(data.stop.name)) {
+    const cleaned = data.stop.name.replace(NAME_PARENTHETICAL, '').trim();
+    if (cleaned.length > 2) data.stop.name = cleaned;
+  }
+  return data;
+}
+
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
+  stripNameParenthetical(data);
   const walk = (node) => {
     if (!node || typeof node !== 'object') return;
     for (const [k, v] of Object.entries(node)) {
@@ -341,19 +479,19 @@ const RESPONSE_SCHEMA = `{
     "total_time": "Approximate total duration",
     "total_cost": "Free|Within selected budget|Optional purchase|Check current prices",
     "activity_level": "Easy|Moderate|Active",
-    "why_this_fits": "1-2 sentences explaining how the outing fits the supplied interests, vibe, time, transportation, and companions without inventing personal traits"
+    "why_this_fits": "1-2 sentences on how the outing matches the SUPPLIED constraints — interests, vibe, time, transport, companions. Explain the match, never the visitor: 'the route works for a solo outing and can be taken at your own pace', never 'solo walking lets you linger where history interests you most', which decides what they enjoy"
   },
   "stops": [
     {
       "number": 1,
-      "name": "Known stable place name OR descriptive place type",
-      "area": "Neighborhood or general area only",
+      "name": "Known stable place name OR descriptive place type. Never append a location in parentheses — the area field is for that",
+      "area": "A general area you are CONFIDENT about. A broader accurate label beats a precise wrong one: prefer the city or a well-known district over a neighbourhood you are guessing at",
       "duration_min": 30,
-      "description": "Concrete thing to do here",
+      "description": "Concrete thing to do here. No ornamental history ('a gathering space since the 1600s'), no claim about what is currently sold, served or exhibited, and no physical state you cannot know — 'a natural point to pause for food if you want it', never 'by now you will have walked enough to be genuinely hungry'",
       "small_twist": "Optional small element that makes the stop feel more adventurous",
       "photo_op": "Optional; empty string unless photography is relevant",
       "cost": "Free|Optional purchase|Check current price|Within remaining budget",
-      "verify": "Anything current the user should confirm before relying on this stop, otherwise empty string"
+      "verify": "Anything current the itinerary MATERIALLY depends on, otherwise an empty string. Walking a public route does not depend on whether every site along it is open, so do not ask about that. An over-broad chore trains people to skip the ones that matter — most stops should leave this empty"
     }
   ],
   "between_stops": [
@@ -367,11 +505,11 @@ const RESPONSE_SCHEMA = `{
   "what_to_bring": ["Only genuinely useful items"],
   "backup_plan": {
     "when_to_use": "If weather, closure, crowds, or another condition makes the original plan impractical",
-    "description": "A flexible alternative that does not depend on invented current venue facts"
+    "description": "A flexible alternative that stays usable without assuming any particular museum, library, market or food hall is open. Point at the category and let their maps app find what is actually open: 'use your maps app to find an open museum, library, market or cafe near your current point on the route'"
   },
   "keep_going": {
     "extra_time": "Approximate extra time",
-    "suggestion": "Natural extension if the user wants more"
+    "suggestion": "Natural extension if the user wants more, held to the same factual standard as the itinerary — no new named attraction unless it is stable, confidently located and relevant"
   }
 }`;
 

@@ -61,6 +61,39 @@ rhetorical work, not epistemic work.
 noun and verb to touch, and "Many artists **in Pilsen** are generous with their
 time" walked straight through it. Allow a gap and re-test.
 
+## The final pass, same day
+
+A Boston Freedom Trail probe found six more, all the same shape — a true thing
+about a stable landmark used as licence for an untrue thing beside it.
+
+| It wrote | It now writes |
+| --- | --- |
+| "Solo walking lets you linger where history interests you most" | "It works for a solo outing at your own pace" |
+| "By this point you'll have walked enough to be genuinely hungry" | "This is a natural point to pause for food if you want it" |
+| "the ground you're standing on has been a gathering space since the 1600s" | nothing — the outing does not need it |
+| "Faneuil Hall itself has vendors and casual spots" | "Look for a casual food option near Faneuil Hall, and check current hours" |
+| "Many have free or low-cost admission" | "use your maps app to find an open museum, library, market or cafe" |
+| "a stable 2.4-mile walking route" | no figure — a decimal makes a remembered number look measured |
+
+**"Old North Church (Beacon Hill)".** Right landmark, wrong neighbourhood,
+appended to a field that is not for neighbourhoods. Two fixes: the prompt says a
+broad accurate area label beats a precise wrong one, and `stripNameParenthetical`
+removes a trailing place-label parenthetical from a stop name in code. It is
+tuned to leave a genuine clarifier alone — "Pilsen mural district (16th Street
+corridor)" survives.
+
+**Verify chores are now sparse on purpose.** The earlier version asked people to
+"check current trail condition and whether all sites are open to walk past or
+photograph from outside" for a plan that only required walking a public route.
+An over-broad chore trains people to skip the ones that matter, so `verify` is
+for what the itinerary MATERIALLY depends on and most stops leave it empty. The
+goldens record the ratio.
+
+Six more backstops: `COMPANION_AS_PREFERENCE`, `INVENTED_BODY_STATE`,
+`ORNAMENTAL_HISTORY`, `COMMERCIAL_COMPOSITION`, `PRECISE_DISTANCE`, plus two
+clauses added to `INVENTED_PRICE_OR_HOURS`. All unit-tested to fire, with the
+replacement phrasings verified to survive.
+
 ## Things that are allowed, deliberately
 
 - **Stable public geography.** Major parks, landmarks, well-known neighbourhoods
