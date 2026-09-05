@@ -1,42 +1,88 @@
 {
   "_meta": {
-    "tool": "OnePercenter",
-    "generated": "2026-07-14",
+    "tool": "SmallChangeBigDifference",
+    "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 SSE endpoint",
-    "baseline_commit": "onepercenter-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE, anthropic.messages.stream) — the client accumulates `chunk` events and parses the final JSON; there is no server-side guard. Diff for QUALITY not exact match: all 4 top-level keys present (routine_diagnosis, the_one_change, why_not_other_things, the_year_from_now), no annotation suffixes. GUARDS: (1) the schema emits NO `when_to_start` — the frontend buildText() must NOT reference `ch.when_to_start` (it rendered literal 'undefined' into every copy/share; the 'when to start' info lives in `implementation`). (2) frontend has the PF-2 alias `c.label = c.labelText`. DO NOT reverse: keep streaming; no when_to_start reference in buildText; c.label alias; the global brevity line in PERSONALITY; no annotation suffixes."
+    "baseline_commit": "smallchangebigdifference-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE, anthropic.messages.stream) — the client accumulates `chunk` events and parses the final JSON; there is no server-side LLM-adversarial guard, only a local regex `validateResult` run once on the fully-assembled object before the `done` event. Diff for QUALITY not exact match: all 4 top-level keys present (what_i_notice, change_to_try, why_not_start_elsewhere, what_to_watch_for), no annotation suffixes. GUARDS: (1) never a mathematically-optimal claim ('the true bottleneck', 'largest compound effect', 'highest-leverage intervention', 'objectively second-order') — calibrated language only ('the change I'd try first', 'may make', 'worth testing'). (2) never invented physiology (cortisol, melatonin, dopamine, nervous system, threat-detection mode, stress debt, cognitive depletion/fuel/load, circadian, reactive mode) — case 1's why_it_matters correctly stays behavioral ('reactive input', a plain description, not a claimed mechanism). (3) no 'a year from now' field exists in the schema at all; the model must not volunteer a future-life prediction anywhere else either. (4) change_to_try.math is either grounded arithmetic from a SUPPLIED quantity (case 1: '20 minutes x 5 weekdays = 100 minutes...') or an empty string when there's no defensible calculation (case 2: math omitted entirely, correctly, since no quantity was supplied to compute from) — never an invented number ('hours recovered', 'earlier sleep onset'). (5) why_not_start_elsewhere names at most 2 alternatives and never claims they'd fail, only that this one is easier to test first. (6) what_to_watch_for gives observable, checkable signs, not a prediction. DO NOT reverse: keep streaming; the validateResult regex list (5 rule categories); the PF-2 `c.label` alias; the global no-inner-double-quote rule; no annotation suffixes."
   },
   "cases": [
     {
-      "name": "de-phone-in-bed-routine",
+      "name": "phone-in-bed-morning-routine",
       "endpoint": "/api/one-percenter",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "routine": "Ich wache um 7 auf, checke sofort mein Handy im Bett für 30 Minuten, dann gestresst zur Arbeit ohne Frühstück. Abends scrolle ich bis Mitternacht.",
-        "goals": "Weniger Stress, mehr Energie",
-        "painPoints": "Ich fühle mich den ganzen Tag reaktiv statt fokussiert"
+        "routine": "Wake at 6:30, snooze the alarm twice, check my phone in bed for 20 minutes before getting up, shower, coffee, commute 30 min listening to a podcast, at my desk by 9. Meetings 9-12, lunch at my desk, more meetings 1-4, try to do focused work 4-6 but usually get interrupted. Home by 7, dinner, then TV or scrolling until midnight.",
+        "goals": "Better focus, less exhausted, want to do creative work in the evenings but never have energy",
+        "painPoints": "The 2pm slump is brutal. I feel behind before I even start.",
+        "userLanguage": "en"
       },
       "output": {
-        "routine_diagnosis": {
-          "how_the_system_works": "Das Handy am Morgen setzt den Cortisolspiegel auf Alarmstufe, bevor der Körper natürlich aufgewacht ist — das Nervensystem startet im Reaktionsmodus statt im Planungsmodus. Dieser erste emotionale Zustand prägt die Entscheidungsarchitektur des gesamten Tages: kein Frühstück, kein Puffer, kein eigener Impuls. Das abendliche Scrollen ist keine eigenständige Gewohnheit, sondern die direkte Erschöpfungsreaktion auf einen Tag, der nie unter eigener Kontrolle stand.",
-          "the_bottleneck": "Der 30-minütige Handy-Konsum unmittelbar nach dem Aufwachen ist der einzige Engpass — er erzeugt Stress, verhindert Frühstück und programmiert das Gehirn auf passives Reagieren, was sich als Dominostein durch den gesamten Tag zieht."
+        "what_i_notice": {
+          "pattern": "The day starts with two snoozes and 20 minutes of phone use in bed, so by the time you are upright you are already running about 40 minutes behind the alarm you set. You arrive at your desk having had no unstructured mental space — just reactive input from the moment you woke.",
+          "why_it_matters": "You said you feel behind before you even start. That feeling is already present before the commute or the first meeting. The evening creative work you want requires something left in reserve, and the day as described offers no quiet pocket where that reserve might build."
         },
-        "the_one_change": {
-          "the_change": "Das Handy heute Abend noch in ein anderes Zimmer legen — nicht auf dem Nachttisch, sondern physisch außer Reichweite — sodass es morgen früh nicht das Erste ist, was die Hand berührt.",
-          "the_mechanism": "Kein Handy griffbereit → Aufstehen wird zur einzigen Option → Körper bewegt sich, bevor das Gehirn im Reaktionsmodus landet → Cortisol steigt natürlich statt durch Social-Media-Alarm → 10 Minuten entstehen für ein minimales Frühstück → erster eigener Impuls des Tages kommt von innen statt von außen → Arbeitstag beginnt mit einem Gefühl von Handlungsfähigkeit → abends ist die Erschöpfung geringer → das Scrollen bis Mitternacht verliert seinen Sog → Schlafqualität steigt → Aufwachen am nächsten Morgen wird leichter.",
-          "the_math": "30 Minuten Reaktionsmodus täglich eingespart × 365 Tage = 182 Stunden pro Jahr, die nicht mehr als neurologischer Stressvorlauf verbraucht werden — plus geschätzte 20 Minuten besserer Schlaf durch reduziertes Abend-Scrollen = weitere 122 Stunden, insgesamt über 300 Stunden zurückgewonnene Kapazität.",
-          "implementation": "Heute Abend, vor dem Schlafengehen, Handy in die Küche oder ins Bad legen — fertig. Kein Wecker-Problem: Entweder einen separaten Wecker nutzen (falls vorhanden) oder das Handy im Nebenzimmer klingeln lassen und aufstehen müssen, um ihn auszuschalten. Genau das ist der Mechanismus. Start: heute Nacht, 22:00 Uhr."
+        "change_to_try": {
+          "change": "Stop the in-bed phone use. When the alarm goes off — on whichever snooze is your last — put the phone face-down on the nightstand and do not pick it up again until after you have had your coffee.",
+          "why_this_one": "It is the earliest point in the day where a change is completely within your control and requires no cooperation from anyone else. The 20 minutes you spend scrolling in bed is the only block in your described morning that is discretionary. Everything after it — shower, coffee, commute, 9am meetings — is fixed. This is the one movable piece.",
+          "how_to_try_it": "If the phone is also your alarm, you do not need to move it out of the room — just commit to not unlocking it after the alarm sounds. Leave it screen-down. If you find the temptation too easy to give in to, put it somewhere that still lets you hear the alarm but requires you to stand up to reach it. The goal is simply: shower and coffee happen before the first scroll.",
+          "what_it_may_change": "You recover 20 minutes of morning time, which may make the pre-commute window feel less rushed. More usefully, you start the commute without having already spent 20 minutes in reactive, input-heavy mode. That commute podcast time stays the same, but it arrives before any scrolling rather than after it. Whether that shifts how you feel at 9am is worth testing — it is not guaranteed, but it is the most plausible nearby effect given what you described.",
+          "math": "20 minutes x 5 weekdays = 100 minutes of morning time per workweek currently spent on in-bed phone use."
         },
-        "why_not_other_things": {
-          "the_tempting_alternatives": "Früher ins Bett gehen, mit Frühstück anfangen, abendliches Scrollen begrenzen.",
-          "why_those_are_second_order": "Früher schlafen ist unmöglich, solange das Scrollen bis Mitternacht anhält — und das Scrollen ist eine Folge des reaktiven Tages, nicht die Ursache. Das Frühstück scheitert nicht an Willensstärke, sondern daran, dass 30 Minuten Handy den Zeitpuffer bereits aufgefressen haben. Alle anderen Probleme lösen sich nachgelagert, sobald der Morgenmechanismus geändert ist."
+        "why_not_start_elsewhere": {
+          "alternatives": "The midnight bedtime is an obvious target — getting to bed earlier would give you more sleep before the 6:30 alarm. The 4-6pm focus block is another candidate, since that is where your creative work nominally lives.",
+          "reason": "The bedtime change depends on the evening actually winding down earlier, which is harder to engineer than a morning default. The 4-6pm block is controlled partly by other people interrupting you, so it is less clean to test on your own. The morning phone change is small, self-contained, and tells you something useful within a few days."
         },
-        "the_year_from_now": "Im Juli 2027 wachst du auf und der erste Gedanke gehört dir — nicht einem Algorithmus. Du isst jeden Morgen etwas, kommst ausgeruht zur Arbeit und bemerkst, dass du in Meetings Themen setzt statt nur reagierst. Das Scrollen bis Mitternacht ist auf eine Stunde pro Woche geschrumpft, nicht weil du dich gezwungen hast, sondern weil du abends schlicht nicht mehr so ausgehungert nach Stimulation bist. Kollegen fragen dich, was du anders machst."
+        "what_to_watch_for": {
+          "signs_it_is_helping": [
+            "You stop feeling behind before you leave the house.",
+            "The pre-commute window feels less compressed.",
+            "You notice any difference in how you feel arriving at your desk — even a small one is worth noting."
+          ],
+          "signs_to_rethink_it": [
+            "The change creates no noticeable difference after a week or two, which would suggest the source of the 'already behind' feeling is elsewhere.",
+            "You find yourself compensating by scrolling heavily at another point — commute, lunch — in which case the habit has moved rather than shrunk, and the experiment is telling you something different."
+          ]
+        }
+      }
+    },
+    {
+      "name": "freelance-no-workday-boundary",
+      "endpoint": "/api/one-percenter",
+      "input": {
+        "routine": "Wake 7am, gym 7:30-8:30, work from home 9-6 (freelance), lunch whenever, afternoon is usually most productive, evenings free but I end up working anyway. Bed around 1am. Sleep is bad.",
+        "goals": "Better sleep, stop working evenings, make progress on a side project",
+        "painPoints": "I have freedom but feel less productive than when I had an office job.",
+        "userLanguage": "en"
       },
-      "_transport": "sse"
+      "output": {
+        "what_i_notice": {
+          "pattern": "There is no defined end to the workday. The day runs from 9am with no stopping point, and evenings described as 'free' are still being used for work, pushing bedtime to 1am.",
+          "why_it_matters": "Without a boundary, work expands into the time you want for the side project and rest. The late nights connect directly to the sleep problem you mentioned, and the blurred workday may be part of why the day feels less productive than a structured office environment did."
+        },
+        "change_to_try": {
+          "change": "Set a hard stop time for client work — pick a specific time, say 6pm or 7pm — and mark it with a brief closing ritual: write down where you left off and what you are doing first tomorrow, then close your work tools.",
+          "why_this_one": "Everything you want to improve sits downstream of this one point. Evening work is the direct cause of the late bedtime. The late bedtime is the likely cause of poor sleep. And unstructured evenings leave no protected time for the side project. A defined stop creates the gap where those things could fit. It also gives the day a shape that an office job had built in — a natural end point that freelance work does not supply on its own.",
+          "how_to_try_it": "Pick a stop time tonight and treat it like a meeting you cannot move. At that time: write two or three sentences on paper or in a doc — where you are in current work, first task tomorrow. Close your work tabs or apps. That is the ritual. It does not need to be elaborate; its job is to make stopping feel finished rather than abandoned, so you are less pulled to return.",
+          "what_it_may_change": "Stopping at a fixed time creates a block of evening that is not work. That block could hold the side project, wind-down time, or both. Getting to bed earlier may become easier when the evening is not still half-work. The note about tomorrow may also make the next morning easier to start — you have something concrete to pick up rather than reconstructing where you were.",
+          "math": ""
+        },
+        "why_not_start_elsewhere": {
+          "alternatives": "You could also try protecting a fixed time block for the side project, or setting a target bedtime and working backward.",
+          "reason": "The stop-time change is the hinge the others depend on. A side-project block in the evening does not work if client work is still running. A target bedtime is hard to hit if the evening has no structure. Starting here is smaller and makes the others easier to add later if needed."
+        },
+        "what_to_watch_for": {
+          "signs_it_is_helping": [
+            "You actually stop working near the chosen time most evenings.",
+            "You get into bed earlier than 1am without feeling like you left something unfinished.",
+            "You find you have usable time in the evening for the side project.",
+            "The next morning you pick up work faster because you left yourself a note."
+          ],
+          "signs_to_rethink_it": [
+            "Client deadlines make a fixed stop time genuinely unworkable most days — in which case the stop time may need to float, or the issue is workload rather than structure.",
+            "You stop at the chosen time but then feel anxious and end up working anyway — which would suggest the ritual needs adjustment, or that something else is driving the evening work."
+          ]
+        }
+      }
     }
   ]
 }

@@ -91,7 +91,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/NerveCheck.js',
   'src/tools/VelvetHammer.js',
   'src/tools/WhatsMyVibe.js',
-  'src/tools/OnePercenter.js',
+  'src/tools/SmallChangeBigDifference.js',
   'src/tools/WrongAnswersOnly.js',
   'src/tools/TimeWarp.js',
   'src/tools/GetNoticed.js',

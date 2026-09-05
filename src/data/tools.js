@@ -812,43 +812,42 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "OnePercenter",
+  id: "SmallChangeBigDifference",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You want one change to make, not a list of twelve.",
-    give: "Your daily routine honestly, bad habits included, and what isn't working.",
-    get: "The single change with the largest downstream effect, and why that one.",
-    edge: "The discipline is picking the right 1%. Anyone can generate a list of improvements.",
+    when: "You want one change to try, not a list of twelve.",
+    give: "Your typical day, honestly, and what you'd like to make better.",
+    get: "One small, concrete change worth trying, and what to watch for to know if it's helping.",
+    edge: "Not a mathematically optimal bottleneck — a sensible first experiment, grounded in the day you actually described.",
   },
-  seoDescription: "Find the single 1% habit change with the biggest compound effect on your year. Free analysis of your routine reveals the one bottleneck holding everything back.",
-  seoTitle: "Find the 1% Habit Change That Compounds",
-  title: "One Percenter",
-  tagline: "The single 1% change with the largest compound effect on your year",
-  tags: ['habit', 'routine', 'productivity', 'compound', 'improvement', 'focus', 'health', 'sleep', 'small change', 'systems', 'optimize'],
+  seoDescription: "Walk through a typical day and get one small, concrete change worth trying — grounded in your actual routine, with what to watch for to know if it helped. Free.",
+  seoTitle: "Find One Small Change Worth Trying",
+  title: "Small Change, Big Difference",
+  tagline: "One small change that could make the rest easier.",
+  tags: ['habit', 'routine', 'productivity', 'improvement', 'focus', 'health', 'sleep', 'small change', 'systems'],
   icon: "⚡",
   categories: ['Me', 'Veer'],
   headerColor: "#e0b8b8",
-  description: "Analyzes your daily routine as a system, finds the single bottleneck producing the most constraint, and delivers one specific 1% adjustment with the highest compound effect. Includes the full chain reaction, the actual math, why the tempting alternatives are second-order, and why you haven't done this already.",
+  description: "Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.",
   guide: {
-      overview: "OnePercenter analyzes your routine the way an engineer analyzes a system — looking for the single chokepoint where a small change produces the most downstream relief. The discipline of this tool is identifying the right 1%, not a menu of 10 things to try.",
+      overview: "Small Change, Big Difference reasons only from the day you actually describe — it doesn't diagnose you or claim to have found the scientifically optimal bottleneck in your life. It looks for one small, concrete change that occurs at a useful point in your routine and may make later parts of the day easier, and commits to that one experiment instead of handing you a list.",
       howToUse: [
-        "Describe your daily routine in honest detail — include the bad habits",
-        "Note what you're trying to improve and what you notice isn't working",
-        "Read the system diagnosis — how your routine actually functions as a system",
-        "Implement the one change exactly as specified",
-        "Read 'A Year From Now' — it's the motivation to actually do it"
+        "Walk through a typical day in honest detail — include the parts that aren't working especially well",
+        "Optionally note what you'd like to make better, and where the day seems to go off track",
+        "Read what the tool noticed in your routine and the one change it suggests trying",
+        "Try the change and use 'What to Watch For' to judge whether it's actually helping"
       ],
       example: {
-        scenario: "Productive some days, derailed others, never feel rested",
-        action: "Detail the full weekday routine from alarm to bed, including phone habits and meal timing",
-        result: "The bottleneck: checking your phone in bed is corrupting your first 20 minutes and setting a reactive mode for the day. The 1% change: move charger to kitchen. Chain reaction: no phone in bed → first 20 minutes intentional → creative work before reactive work. The math: 20 min × 365 = 121 hours of recovered intentional time per year."
+        scenario: "Productive some days, derailed others, mornings feel rushed",
+        action: "Walk through the full day from alarm to bed, including phone habits",
+        result: "What I notice: mornings start with 20 minutes of phone-in-bed scrolling before anything else happens. The small change: charge the phone outside the bedroom. What it may change: removes the easiest way to start scrolling before getting up, which may make the morning feel less rushed. What to watch for: do you actually get out of bed sooner, and does the change create a new problem elsewhere?"
       },
       tips: [
-        "Be honest about the routine — the tool can only work with what you share",
-        "The 'why the alternatives are second-order' section explains why not to start elsewhere",
-        "Implement for 3 weeks before judging — compound effects are slow to start",
-        "Run this again in 3 months — the bottleneck shifts once you fix the first one"
+        "Be honest about the routine — the tool can only reason from what you share",
+        "There's no claim this is the mathematically optimal change — it's a sensible first experiment",
+        "'What to Watch For' is the actual test — give the change a real try before judging it",
+        "If it doesn't help, that's useful information too — try the tool again with what you learned"
       ]
     }
 },
@@ -911,7 +910,7 @@ export const tools = [
   seoTitle: "Get Noticed: Become More Visible to the People Who Matter",
   title: "Get Noticed",
   tagline: "Widen the circle of people who know what you do",
-  tags: ['get noticed', 'visibility', 'professional visibility', 'be more visible', 'networking', 'connections', 'new people', 'new ideas', 'opportunity', 'serendipity', 'career visibility', 'share your work', 'meet collaborators', 'expand network', 'create opportunities'],
+  tags: ['luck', 'serendipity', 'opportunity', 'networking', 'connections', 'visibility', 'career'],
   icon: "🧲",
   categories: ['Pursuits'],
   headerColor: "#e8d5b7",
@@ -1734,7 +1733,7 @@ export const tools = [
   seoTitle: "How to Ask for a Refund, Upgrade or Favor",
   title: "Magic Mouth (M²)",
   tagline: "The art of the ask.",
-  tags: ['ask for something', 'make a request', 'persuasion', 'script', 'what to say', 'refund', 'upgrade', 'waived fee', 'favor', 'customer service', 'escalation', 'phone call', 'charm', 'difficult ask', 'backup angle', 'graceful exit', 'talk your way into'],
+  tags: ['ask', 'script', 'phone', 'negotiate', 'charm', 'request', 'refund', 'upgrade', 'fee waived', 'customer service', 'escalate', 'nuclear', 'legal', 'leverage', 'complaint'],
   icon: "🗣️",
   categories: ['Loot', 'Discourse'],
   headerColor: "#c0d8b8",
@@ -1770,35 +1769,35 @@ export const tools = [
   primer: {
     when: "You feel something and 'sad' or 'anxious' isn't it.",
     give: "The feeling in your own messy words — when it happens, what it's near but not quite.",
-    get: "Language for it — the strongest match, how well it actually fits, and a plain-English phrase either way.",
+    get: "The precise word, from forgotten English terms to ones other languages have and English doesn't.",
   },
-  seoDescription: "Can't name what you're feeling? Describe it in your own words and find language that comes close — an English phrase, a word from another language, or one we coin, honestly labeled either way.",
+  seoDescription: "Can't name what you're feeling? Describe it in your own messy words and get the precise word back — from English to terms other languages nailed.",
   seoTitle: "Find the Word for a Feeling: Emotion Namer",
   title: "Name That Feeling",
   tagline: "There's a word for that. Let's find it.",
-  tags: ['emotion', 'game', 'feelings', 'quiz', 'mood', 'fun'],
+  tags: ['emotion', 'feelings', 'name a feeling', 'word for a feeling', 'emotional vocabulary', 'mixed emotions', 'hard to describe feeling', 'emotion word', 'foreign language word', 'plain english phrase', 'feeling dictionary', 'personal vocabulary', 'invented phrase', 'nuanced emotion', 'bittersweet', 'saudade'],
   icon: "🎭",
   categories: ['Energy', 'Me'],
   headerColor: "#e0b8b8",
-  description: "Describe a feeling you can't quite name — a strange mix, a familiar ache, or something there should be a word for. Name That Feeling looks across languages for words that come close, explains the differences, and gives you language for what you're experiencing.",
+  description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
   guide: {
-    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and it finds the strongest word or phrase it can actually support — an ordinary English one when that's the honest answer, a word from another language when one genuinely fits closer, and it says plainly where even the best match falls short. Because sometimes knowing there's language for something makes it easier to carry.",
+    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and AI finds the precise word for it — from common English terms you forgot to obscure words from other languages that captured the exact feeling. Because sometimes knowing the name for something makes it easier to carry.",
     howToUse: [
       "Describe the feeling in your own words — messy is fine",
-      "Optionally add what was happening and why it's hard to name — not required",
-      "Read the word, how closely it actually matches, and where it doesn't",
-      "Check the other words that come close, and what each one captures or misses",
-      "Share the word — or the plain-English phrase — with someone who'd get it"
+      "Be as specific as possible about the nuances (when it happens, what triggers it, what it's close to but not quite)",
+      "Read the word, its origin, and why it fits",
+      "Discover words from languages around the world that nailed feelings English missed",
+      "Share the perfect word with someone who's feeling the same thing"
     ],
     example: {
       scenario: "You feel nostalgic for a time you never actually experienced — like missing the 1970s even though you were born in 1995.",
       action: "Describe that feeling as best you can.",
-      result: "Name That Feeling surfaces 'anemoia' as a close match — nostalgia for a time you've never known — names exactly where it fits and where it's broader than your specific feeling, and offers a plain-English phrase you could use just as easily."
+      result: "AI surfaces 'anemoia' — nostalgia for a time you've never known. It explains the origin, why it fits, and gives you related words like 'saudade' and 'sehnsucht' that live in the same emotional neighborhood."
     },
     tips: [
       "The weirder and more specific your description, the better the match",
-      "A plain English phrase is not a consolation prize — sometimes it's the more honest answer than a foreign word stretched to fit",
-      "Pay attention to 'where it doesn't' — that's usually more interesting than the match itself",
+      "If the first word doesn't quite fit, tell it why — it'll dig deeper",
+      "Some of the best emotion words come from German, Japanese, Portuguese, and Finnish",
       "This is a surprisingly fun party game — describe a feeling and see who guesses closest"
     ]
   }
@@ -2462,44 +2461,44 @@ export const tools = [
 
 {
   modified: "",
-  id: "DocumentDetective",
+  id: "CutToTheChase",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A long document arrived and most of it isn't about you.",
-    give: "The full text and your situation.",
-    get: "Only the parts that need your attention, affect your money, or matter to your circumstances — grounded in what the document actually says.",
-    edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you, and says so when it can't tell.",
+    give: "The full text and the document type.",
+    get: "Only the parts that affect your situation, and what to do about each.",
+    edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you.",
   },
-  seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and see only what needs your attention, grounded in the document itself.",
-  seoTitle: "Document Detective: Find What Actually Matters to You",
-  title: "Document Detective",
-  tagline: "Paste the document. Find what matters to you.",
-  tags: ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
-  icon: "🔎",
+  seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and see only what costs you money or needs action.",
+  seoTitle: "Cut to the Chase: Find What Actually Affects You",
+  title: "Cut to the Chase",
+  tagline: "Paste any long document — we'll extract only what affects you",
+  tags: ['document', 'document analysis', 'long document', 'what matters', 'personalized document', 'fine print', 'notice', 'policy', 'benefits', 'EOB', 'lease amendment', 'company policy', 'government notice', 'medical bill', 'legal document', 'deadline', 'action required', 'fee', 'document question', 'document relevance', 'understand document'],
+  icon: "✂️",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
-  description: "Long document, one question: what actually matters to you? Paste a notice, policy, benefits packet, lease change, EOB, or other document and tell us your situation. Document Detective pulls out the parts that may require action, affect your money, or matter to your circumstances — and shows what still needs clarification.",
+  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Cut to the Chase extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
-    overview: "Document Detective solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator — that's Jargon Assassin's job. It's a relevance engine that cross-references the document against YOUR specific situation, grounded strictly in what the document actually says: every finding traces to document text, a fact you supplied, or a clearly-labeled cautious connection between the two, never outside knowledge about what insurers, employers, or landlords 'normally' do.",
+    overview: "Cut to the Chase solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
     howToUse: [
       "Paste the full text of the document you received",
-      "Optionally select the document type — it helps interpretation but never overrides the document itself",
-      "Tell us your situation — only the facts that affect what this document means for you ('renter, lease ends in December, have a dog')",
-      "Optionally add what you especially want to know ('Did the deadline change?')",
-      "Review what needs your attention, what it costs or saves you, what's buried, what doesn't appear relevant, and what genuinely needs clarification from the issuer"
+      "Select the document type (insurance, HOA, lease, policy update, etc.)",
+      "Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')",
+      "Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')",
+      "Review action items, cost changes, savings opportunities, and what you can safely ignore"
     ],
     example: {
       scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
-      action: "Paste the full text, select 'HOA / Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
-      result: "Document Detective finds: 1 item needing attention (new pet registration form due by March 15, per the document's own deadline), 1 money item (parking lot B rates increasing $25/month starting April, as stated), and flags a buried clause about package delivery changes that affects work-from-home residents. New playground hours are marked doesn't-appear-relevant, with the note that this would change if there were children in the household. Notes that most of the document concerns owner-only assessments that don't affect renters."
+      action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
+      result: "Cut to the Chase finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
     },
     tips: [
-      "More situation detail helps the filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
-      "Each finding shows its status — clear from the document, a reasonable reading, or needs clarification — instead of one overall confidence score",
-      "'Buried but Important' calls out things easy to miss because of where or how they're worded — not a guess about how you're feeling",
-      "'Doesn't Appear Relevant' always says what fact would change that — the tool never assumes an unmentioned detail means the opposite is true",
-      "'Outside Help' only appears when the document genuinely can't resolve something, and points to the least escalatory place to ask first"
+      "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
+      "Action Required items show deadlines and consequences — these are the ones people miss and regret",
+      "'Buried but Important' specifically calls out things hidden in fine print or dense paragraphs",
+      "The 'Safely Ignore' section is genuinely useful — it gives you permission to stop reading",
+      "'Consult Professional' flags appear when the tool spots something that needs expert review, not just AI analysis"
     ]
   }
 },
@@ -3200,12 +3199,12 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoDescription: "Navigate every awkward money moment — tips, bill splits, lending, gifts, and salary talks. Get the right number and the words to say it. Free, no signup.",
   seoTitle: "Tip, Bill Split & Money Etiquette Calculator",
   title: "Money Diplomat",
-  tagline: "💵 Clearer money decisions when other people are involved",
-  tags: ['money', 'awkward', 'negotiate', 'bill', 'tip', 'salary', 'social'],
+  tagline: "The right number for every money moment — tips, splits, gifts, salary",
+  tags: ['money', 'money etiquette', 'money conversation', 'awkward money', 'split bill', 'who pays', 'tipping', 'pay me back', 'lending money', 'salary expectations', 'salary negotiation', 'group expenses', 'roommate money', 'family money', 'gift amount', 'donation amount', 'affordability', 'inheritance', 'subscriptions', 'travel money', 'cultural money'],
   icon: "💵",
   categories: ['Humans', 'Loot'],
   headerColor: "#e0b8b8",
-  description: "Money gets awkward when other people are involved. Money Diplomat helps you think through what’s fair, what you actually know, what you can afford, and what to say next—without pretending there’s one universal rule for tipping, lending, gifts, dating, family, or shared expenses.",
+  description: "Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.",
   guide: {
       overview: "Money Diplomat handles the social side of money — the conversations, calculations, and etiquette nobody teaches you. Pick from 18 situation types (tipping, splitting, lending, dating, gifts, salary, inheritance, and more) and get tailored scripts, amounts, and strategies. Use Quick Math for instant tip/split calculations without AI. Track who owes you with They Owe Me and generate tactful nudge messages. Practice high-stakes money conversations in the simulator. Set your profile once (budget, culture, relationship status) and every response adapts automatically.",
 
@@ -3538,41 +3537,41 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You have a shortlist and need to know which name survives contact.",
     give: "The name or names, and what it's for.",
-    get: "A read on how it sounds, looks, and travels by word of mouth — plus a verdict and what's still worth verifying before you commit.",
+    get: "A twelve-dimension read — first impression, sound, spelling, crowding, trademark risk — and a verdict.",
     edge: "It's the other half of naming: NameStorm gives you options, this tells you which ones break.",
   },
-  seoDescription: "Stress-test any name — business, pet, band, baby, or brand — for how it sounds, spells, and travels by word of mouth before you commit. Free, with a domain DNS check.",
+  seoDescription: "Stress-test any name — business, pet, band, baby, or brand — across 12 dimensions before you commit. Free, with live domain and social checks.",
   seoTitle: "Name Checker & Rater: Business, Pet, Baby & More",
   title: "Name Audit",
   tagline: "Stress-test any name before you commit",
-  tags: ['name', 'brand', 'business', 'rename', 'check', 'domain'],
+  tags: ['name', 'naming', 'brand name', 'business name', 'product name', 'project name', 'name evaluation', 'name audit', 'naming decision', 'compare names', 'naming finalists', 'pronunciation', 'spelling', 'memorability', 'word of mouth', 'distinctiveness', 'brand fit', 'naming risk', 'trademark concern', 'domain availability'],
   icon: "🔍",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#ccdfc4",
-  description: "Thinking about a name for a business, product, project, band, pet, character, or something else? Name Audit stress-tests how it sounds, looks, travels by word of mouth, fits its purpose, and where it could cause trouble before you commit.",
+  description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
   guide: {
-      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you whether one holds up. Enter a name and get a verdict plus a clear-eyed read: how it's likely to sound and be pronounced, whether word of mouth will carry it or lose it, how it looks as a URL and a wordmark, the tone and associations it may create, and where it could get in the way. Genuine language or pronunciation concerns are flagged when they surface — never a blanket 'clean' claim, because no scan across every language actually happened. For business and product names, a domain DNS check and a suggested social handle run automatically, alongside a plain checklist of what to verify before you commit — existing businesses, trademarks, registration, handles, and languages that matter to you. Use Compare mode to pit 2-4 finalists against each other for a clear recommendation, or go deeper with a context-specific Deep Dive, Fix This Name for alternatives, or Challenge This Audit for a second, adversarial pass.",
+      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Use Compare mode to pit 2-4 finalists against each other for a clear winner.",
       howToUse: [
         "Choose Analyze (single name) or Compare (2-4 names head to head)",
         "Enter the name and select what it's for — Business, Product, Pet, Baby, etc.",
-        "Optionally add industry, target audience, and what matters most about the name",
-        "Review the verdict — STRONG FIT, GOOD FIT, MIXED, HAS PROBLEMS, or RECONSIDER",
-        "Check What Works against What Could Get In The Way, and the Check Before You Commit list",
-        "Expand each section for detail — how it sounds, word-of-mouth test, how it looks, tone, competition, longevity",
-        "For business names, scroll to Live Availability for the domain check and a suggested handle",
-        "Use Next Steps to test it with real people, compare finalists, generate alternatives, or explore a new direction"
+        "Optionally add industry context and target audience for sharper analysis",
+        "Review the overall grade and verdict — STRONG, GOOD, FAIR, WEAK, or RECONSIDER",
+        "Check Strengths vs. Weaknesses at a glance, and watch for any Deal Breakers",
+        "Expand each analysis section for deep detail — phonetics, memorability tests, language scan, etc.",
+        "For business names, scroll to Live Availability to see domain and social handle status",
+        "Use the suggestions section for guidance on strengthening the name or pivoting direction"
       ],
       example: {
-        scenario: "You're weighing three names for a new software product — Loomly, Verdana, and Kindling — before registering a domain.",
-        action: "Enter all three in Compare mode, select Business, industry: 'Software,' and note that distinctiveness matters most.",
-        result: "Name Audit rates Verdana HAS PROBLEMS: it's one of the most recognized typefaces in the world, created by Microsoft, and flags the specific thing left to check — whether Microsoft's trademark coverage extends beyond typefaces into software. Loomly gets the same treatment for its own existing-brand risk. Kindling comes back the clear recommendation, with the reasoning stated plainly: the other two carry real pre-existing name conflicts, and this one doesn't."
+        scenario: "You're about to register a domain and file a trademark for your new sustainable fashion brand called 'Verdana.' Before spending money, you want to know if it's a good name.",
+        action: "Enter 'Verdana' in Analyze mode, select Business, industry: 'Sustainable fashion,' target audience: 'Environmentally conscious millennials.'",
+        result: "NameAudit grades it RECONSIDER with a deal breaker: Verdana is an existing Microsoft typeface — you'd face trademark issues and impossible SEO competition. The language scan notes it derives from verdant (positive). The phonetic profile is strong — warm open vowels, 3-syllable rhythm. Memorability tests pass. But the competitive landscape and trademark flags are disqualifying. Suggestions direct you toward similar-sounding alternatives that don't conflict."
       },
       tips: [
         "NameAudit and NameStorm are designed to work together — generate candidates with NameStorm, then bring your top 3 here to analyze and compare",
-        "A language flag only appears when something genuinely surfaced — no flags doesn't mean cleared, so verify with native speakers if international use matters",
-        "Pay attention to the word-of-mouth test for any name that will spread by ear — if people can't spell it from hearing it once, they can't find you",
-        "Compare mode gives a clear recommendation, not a manufactured winner — when finalists are genuinely close, it says so",
-        "The domain check is a DNS signal, not a registration check, and the social handle is a suggestion — always confirm both with a registrar and the platforms directly before you commit"
+        "The global language scan checks 15+ languages — if you're going international, this section alone could save you from an expensive mistake",
+        "Pay special attention to the Radio Test for any name that will spread by word of mouth — if people can't spell it from hearing it, they can't find you",
+        "Compare mode gives a definitive winner — use it when you're stuck between finalists instead of going back and forth in your head",
+        "Domain and social checks use DNS lookups and profile page checks — 'likely available' is a strong signal but always confirm through official registrars before purchasing"
       ]
     }
 },
@@ -4714,7 +4713,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoTitle: "Meeting Agenda Builder & Facilitation Scripts",
   title: "Meeting Hijack Stopper",
   tagline: "🛡️ A plan for the meeting—and the moments that could derail it.",
-  tags: ['meeting', 'run a meeting', 'meeting agenda', 'agenda builder', 'facilitation', 'meeting facilitator', 'keep meeting on track', 'meeting derailed', 'meeting tangent', 'people interrupt', 'dominant speaker', 'meeting decision', 'meeting timer', 'meeting follow up', 'meeting next steps', 'meeting structure'],
+  tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
   categories: ['The Office'],
   headerColor: "#97b4d8",
@@ -5137,7 +5136,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoTitle: "Should This Meeting Be a Meeting? Checker",
   title: "Justify My Meeting",
   tagline: "🕵️ Is a meeting justified?",
-  tags: ['meeting', 'should this meeting happen', 'unnecessary meeting', 'meeting audit', 'meeting verdict', 'keep meeting', 'shorten meeting', 'fix meeting', 'make meeting async', 'cancel meeting', 'decline meeting', 'recurring meeting', 'zombie meeting', 'meeting week', 'meeting rescue', 'meeting cost', 'person hours'],
+  tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
   icon: "🕵️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
@@ -5448,7 +5447,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoTitle: "Cheap Micro-Adventure Planner Near You",
   title: "Micro-Adventure Mapper",
   tagline: "🗺️ Turn a free hour into a small adventure",
-  tags: ['micro adventure', 'local adventure', 'things to do', 'things to do near me', 'local outing', 'free hour', 'bored', 'explore', 'local exploration', 'weekend activity', 'cheap activity', 'free activity', 'walking adventure', 'mini adventure', 'spontaneous outing', 'what to do today'],
+  tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
   categories: ['Out & About'],
   headerColor: "#ccdfc4",
@@ -6310,39 +6309,39 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "The day before something you are dreading, or minutes before it starts.",
-    give: "What you're facing, how ready you feel, and when it is.",
-    get: "A grounded plan — what you know, what you can prepare, words if you need them — or a short sequence for right before you walk in.",
-    edge: "It won't tell you the real fear underneath, predict how it'll go, or promise you'll feel confident. It preps what can actually be prepped.",
+    when: "The day before something you are dreading, or ten minutes before it starts.",
+    give: "Prep mode: what you're facing and who's involved. SOS mode: just start.",
+    get: "A fear breakdown and a plan, or immediate help mid-panic.",
+    edge: "Two modes because preparation and panic need opposite things — one wants detail, the other wants none.",
   },
-  seoDescription: "Free prep tool for interviews, presentations, hard conversations, and medical appointments. A grounded plan — what you know, what you can prepare, words if you need them — plus a mode for when the moment is minutes away.",
-  seoTitle: "Interview & Presentation Prep Tool",
+  seoDescription: "Free confidence coach for interviews, presentations, dates, and hard talks. Break down the fear, build a prep plan, and hit SOS mode for live panic.",
+  seoTitle: "Interview & Presentation Confidence Coach",
   title: "Nerve Check",
-  tagline: 'Practical prep for nerve-racking moments.',
-  tags: ['preparation', 'anxiety', 'interview', 'presentation', 'nervous', 'confidence'],
+  tagline: 'Real confidence for scary moments.',
+  tags: ['nervous', 'nerve-racking', 'anxiety', 'interview nerves', 'presentation nerves', 'performance nerves', 'stage fright', 'difficult conversation prep', 'date nerves', 'medical appointment nerves', 'pre-event prep', 'help me now', 'readiness', 'what to say', 'blanking', 'grounding', 'calm down', 'prepare for interview'],
   icon: '💪',
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Pre-event prep for interviews, presentations, hard conversations, dates, or any other encounters that might make you nervous. Separates what you know from what you're worried might happen, builds a short grounded plan, and has a Help Me Now mode for when the moment is close.",
+  description: "Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.",
   guide: {
-    overview: "Nerve Check helps you prepare for something you're nervous about without inventing a story about why. Describe the situation and it separates what you've established (facts, fears you've actually named) from what's merely possible and what's genuinely unknown — then gives you a small number of useful preparations, words to use if you need them, and one next action. It does not diagnose a 'real fear underneath' the one you named, estimate your odds, or promise you'll feel confident. Help Me Now is for when the event is minutes away; Debrief afterward extracts evidence for next time instead of a verdict on your character.",
+    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you're facing and get a fear breakdown — what's a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a 'worst case + survive it' walkthrough. SOS mode is for when you're already in it: a 60-second reset sequence calibrated to your situation.",
     howToUse: [
-      "Describe what you're facing and pick the kind of situation, if one fits",
-      "Rate how ready you feel right now — it's a starting point for the plan, not a diagnosis",
-      "Add what you're specifically worried might happen, if anything",
-      "Review the plan: what you know, what you can prepare, and words if you need them",
-      "Close to the event, use Help Me Now instead for a short, immediate sequence"
+      "Choose Prep mode for advance preparation (day before, morning of) or SOS mode if you need help right now",
+      "Describe the event: what it is, who's involved, what outcome you need",
+      "Add what specifically scares you — the more honest, the better the breakdown",
+      "In Prep mode: review your fear analysis, prep plan, and confidence anchor",
+      "In SOS mode: follow the real-time reset sequence step by step"
     ],
     example: {
-      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now you're dreading this one.",
-      action: "Describe the interview, select Job Interview, rate your readiness, and add 'I froze in my last interview and I'm scared of doing it again'.",
-      result: "The plan separates what you know (you froze once before) from what's still unknown (whether it happens again), gives you a short, specific way to prepare for freezing — a pre-loaded sentence to say if it happens — and a line to say out loud before you walk in. No invented reason for the fear, no predicted odds of it happening again."
+      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now your confidence is shot.",
+      action: "Select Interview, describe the role and format, add 'I bombed my last interview and I'm scared of freezing up again'.",
+      result: "Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description."
     },
     tips: [
-      "The more specific your worry, the more specific the plan — 'I'll freeze on the hardest question' gets you something more useful than 'I'm nervous'",
-      "Help Me Now works well even without doing the full plan first — it's built for exactly the situation you give it",
-      "For medical appointments, name your specific concern (getting bad news, not being heard) — it shapes what to write down and ask",
-      "Debrief afterward even if it went badly — the evidence is still useful for next time, not just when things go well"
+      "The fear breakdown is the most valuable part — read it carefully. Most fears are real but inflated, and seeing that in writing changes your relationship to them",
+      "SOS mode works best if you've done Prep mode first — it references your anchor",
+      "For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point",
+      "Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan"
     ]
   }
 },

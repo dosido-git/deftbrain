@@ -18,6 +18,7 @@ const TOOL_ALIASES = {
   MeetingHijackPreventer: 'MeetingHijackStopper', // renamed 2026-09-03
   NoiseCanceler: 'DocumentDetective', // renamed 2026-07-16, then 2026-09-04 (chain collapsed)
   CutToTheChase: 'DocumentDetective', // renamed 2026-09-04
+  OnePercenter: 'SmallChangeBigDifference', // renamed 2026-09-05
 };
 
 const ToolRenderer = ({ college }) => {

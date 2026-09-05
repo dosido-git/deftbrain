@@ -243,7 +243,7 @@ const TOOL_IDS = [
   'LeaseTrapDetector','LeverageLogic','GetNoticed','MagicMouth','MarkupDetective',
   'JustifyMyMeeting','MeetingHijackStopper','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
-  'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
+  'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
@@ -274,6 +274,9 @@ RETIRED_SLUGS.forEach(slug => {
 
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
+  '/OnePercenter':             '/SmallChangeBigDifference',  // renamed 2026-09-05
+  '/onepercenter':             '/SmallChangeBigDifference',
+  '/one-percenter':            '/SmallChangeBigDifference',
   '/MeetingHijackPreventer':   '/MeetingHijackStopper',  // renamed 2026-09-03
   '/meetinghijackpreventer':   '/MeetingHijackStopper',
   '/meeting-hijack-preventer': '/MeetingHijackStopper',
