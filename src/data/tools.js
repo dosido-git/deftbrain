@@ -2476,7 +2476,7 @@ export const tools = [
   title: "Document Detective",
   tagline: "Paste the document. Find what matters to you.",
   tags: ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
-  icon: "✂️",
+  icon: "🔎",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
   description: "Long document, one question: what actually matters to you? Paste a notice, policy, benefits packet, lease change, EOB, or other document and tell us your situation. Document Detective pulls out the parts that may require action, affect your money, or matter to your circumstances — and shows what still needs clarification.",

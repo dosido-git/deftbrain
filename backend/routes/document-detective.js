@@ -7,9 +7,12 @@ const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
 // ════════════════════════════════════════════════════════════
-// POST /noise-canceler — Document Detective (was Cut to the Chase, was
-// Noise Canceler; route/endpoint/i18n prefix `nc_` deliberately stay put
-// per the naming-consistency rule — see audit/RENAMES.md).
+// POST /document-detective — Document Detective (was Cut to the Chase, was
+// Noise Canceler). Route file + endpoint renamed to match on 2026-09-05, per
+// the naming-consistency rule (audit/RENAMES.md) — i18n filename/prefix
+// (noise-canceler.js / `nc_`) deliberately stay put, since that's a separate,
+// narrower exception (a re-key touches every key × 13 languages for zero
+// user-facing benefit).
 //
 // Full rewrite, 2026-09-04. The old prompt was a generic "extract what
 // matters" filter with no source discipline: it invented likely dollar
@@ -35,6 +38,17 @@ router.outputGuard = {
     'aggregate_confidence_score_or_badge',
     'invented_effort_or_time_estimate',
     'unsourced_conclusion',
+    // Added in the FINAL LLM CORRECTIONS pass — the governing-law/
+    // enforceability leak was the most important one still getting through:
+    // calling an absent clause "the primary factor," a "material gap," or
+    // "typically present," then explaining how different states treat a
+    // clause, all from remembered legal knowledge the document never
+    // supplied.
+    'outside_legal_or_practice_conclusion',
+    'invented_missing_clause_significance',
+    'invented_legal_consequence_from_signing',
+    'invented_visitor_context_not_supplied',
+    'document_called_incomplete_rather_than_silent',
   ],
   require: [
     'source_field_names_where_in_the_document',
@@ -246,6 +260,10 @@ Do not use outside claims such as:
 "insurers routinely..."
 "employers normally..."
 "HOAs typically..."
+"clauses of this type are typically present..."
+
+The section should reveal something easy to overlook IN THIS DOCUMENT, not
+teach the visitor what documents of this type normally contain.
 
 CONFIDENCE
 
@@ -259,6 +277,60 @@ REASONABLE READING
 NEEDS CLARIFICATION
 
 A document may contain both very clear and very uncertain points.
+
+OUTSIDE-WORLD QUESTIONS
+
+The visitor may ask something this document cannot answer by itself —
+"Is this enforceable?" "Is this typical?" "Is this legal?" "Is this a good deal?"
+
+Separate what the document itself establishes from what would need outside
+verification. Never answer the second kind from remembered legal, financial,
+medical, insurance, HR, or industry knowledge.
+
+GOOD:
+"The agreement contains a 12-month North America-wide non-compete. Whether
+that restriction is enforceable cannot be determined from this document alone."
+
+BAD:
+"Enforceability depends on which state's law governs."
+
+That is outside legal analysis unless verified separately — and nothing here
+verifies it. The single most important form of this rule: governing law,
+jurisdiction, and how different states or regions treat a clause are OUTSIDE
+KNOWLEDGE, never document content, even when the question the visitor is
+really asking is "can they enforce this against me."
+
+Do not claim a document SHOULD contain something merely because it doesn't.
+
+BAD: "The absence of a governing law clause is a material gap."
+BAD: "Governing law clauses are typically present in agreements of this type."
+BAD: calling any single missing clause "the primary factor" in an unresolved
+question — that ranks unknowns against each other using outside judgment this
+tool doesn't have.
+GOOD: "This document does not state which law governs the agreement."
+
+When a missing piece of information is what stands between the document and
+the visitor's question, say so plainly — "The document alone therefore cannot
+answer your enforceability question" — never that the document is defective
+for lacking it.
+
+Only conclude a provision is absent if the supplied text is complete enough to
+support that. An excerpt supports "no such provision appears in the text you
+supplied," not "no such clause exists anywhere in the document." Prefer
+"this document doesn't state X" over calling a section "incomplete," unless
+the document itself says more terms live elsewhere.
+
+Do not state a legal consequence of signing beyond what the document itself
+says. "The agreement says disputes are subject to binding arbitration and
+includes jury-trial and class-action waivers" is supported; "by signing, you
+accept these waivers" states a legal effect this tool cannot establish.
+
+Do not silently convert a general visitor statement ("I want to know what I'd
+be giving up") into a specific unstated fact — unvested equity at a current
+employer, an existing non-compete, a resignation plan. A conditional is fine:
+"If you have unvested compensation or restrictions at your current employer,
+compare those separately — this agreement doesn't tell us what you'd be
+leaving behind."
 
 OUTSIDE HELP
 
@@ -277,6 +349,13 @@ before
 
 unless professional expertise is clearly warranted.
 
+OUTSIDE HELP stays inside the same boundary as OUTSIDE-WORLD QUESTIONS above.
+Never explain how different jurisdictions treat a clause ("some states void
+non-competes entirely; others enforce them with modifications" is outside
+knowledge, not document content, even inside an outside-help item). State only
+that the document doesn't resolve the question and name who could — never add
+the jurisdiction-specific legal explanation yourself.
+
 VOICE
 
 Direct.
@@ -292,6 +371,22 @@ Do not congratulate yourself for finding hidden fine print.
 
 The output should feel like someone carefully read the document with the visitor's
 question in mind.
+
+DOCUMENT DETECTIVE — NORTH STAR
+
+Document Detective does not complete the document.
+
+It investigates the document the visitor supplied.
+
+Tell them:
+- what it says
+- what matters to their stated situation
+- what is easy to overlook
+- what it does not answer
+- what they might reasonably ask next
+
+When the visitor asks a question the document cannot answer, identifying that
+boundary is a successful answer. Never cross it merely to be more helpful.
 
 Return only valid JSON matching the requested schema.`;
 
@@ -317,30 +412,50 @@ function capArrays(data) {
   return data;
 }
 
-router.post('/noise-canceler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/document-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       document,        // The full text of the document
+      pdfBase64,       // Optional: a data URL ("data:application/pdf;base64,...") from an uploaded file
       documentType,    // 'insurance_eob', 'school_newsletter', 'hoa_notice', 'lease', 'policy_update', 'benefits', 'government', 'medical', 'legal', 'other'
       mySituation,     // Their context: "renter, no kids, have a dog", "single, 28, healthy, basic plan"
       concerns,        // Optional: specific things they're worried about
       userLanguage, userLocale, userCurrency, userRegion,
     } = req.body;
 
-    if (!document?.trim()) {
-      return res.status(400).json({ error: 'Paste the document you received.' });
+    const hasPdf = typeof pdfBase64 === 'string' && pdfBase64.length > 100;
+
+    if (!hasPdf && !document?.trim()) {
+      return res.status(400).json({ error: 'Paste the document you received, or upload the file.' });
     }
     if (!mySituation?.trim()) {
       return res.status(400).json({ error: "Tell us your situation so we can filter what's relevant." });
     }
+
+    // The "data:application/pdf;base64,..." header is stripped here, not on
+    // the client — the client just hands the browser's own data URL across
+    // unmodified. media_type is fixed to 'application/pdf', never guessed
+    // from the data URL's own prefix — bill-rescue shipped a PDF as
+    // 'image/jpeg' that way (commit 164fffee) and every upload 500'd.
+    const pdfBlocks = hasPdf
+      ? [{
+          type: 'document',
+          source: {
+            type: 'base64',
+            media_type: 'application/pdf',
+            data: pdfBase64.slice(pdfBase64.indexOf(',') + 1),
+          },
+        }]
+      : [];
 
     const userPrompt = `DOCUMENT TYPE (a hint for interpreting conventions in this kind of document — it assists interpretation, never overrides what the document text actually says): ${documentType || 'not specified'}
 
 VISITOR'S SITUATION: ${mySituation.trim()}
 VISITOR'S CONCERN: ${concerns?.trim() || 'not specified'}
 
-DOCUMENT TEXT (the sole source of truth for what it says):
-${document.trim().slice(0, 12000)}
+${hasPdf
+  ? 'DOCUMENT: attached as a PDF above this message — it is the sole source of truth for what it says.'
+  : `DOCUMENT TEXT (the sole source of truth for what it says):\n${document.trim().slice(0, 12000)}`}
 
 Return ONLY valid JSON matching this schema:
 
@@ -422,11 +537,16 @@ LIMITS (keep the response compact so it never gets cut off): needs_attention AT 
 
 ${NO_QUOTE_RULE}`;
 
+    // withLanguage/withLocaleContext apply only to the system STRING, never to
+    // a message content array — `array + string` coerces the array to
+    // "[object Object],…", destroying both the prompt and the PDF block (this
+    // exact bug broke every PDF upload on doctor-visit-translator, commit
+    // 8199f070). userPrompt itself is always a plain string either way.
     let parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ role: 'user', content: hasPdf ? [...pdfBlocks, { type: 'text', text: userPrompt }] : userPrompt }],
     }, { label: 'document-detective' });
 
     if (!parsed?.document?.bottom_line) {
@@ -474,6 +594,18 @@ ${NO_QUOTE_RULE}`;
         if (item.who_to_ask_first) fields.push([`outside_help[${i}].who_to_ask_first`, item.who_to_ask_first]);
       });
 
+      // The guard's own check call is text-only and never receives the PDF
+      // (attaching it twice would double the cost for no real benefit — the
+      // guard is checking for invented outside facts, not re-reading the
+      // document). When the document was a PDF, tell the checker so plainly,
+      // the same way contract-decoder does for its own PDF path: it cannot
+      // verify a `source` locator against text it never saw, so it must
+      // trust this tool's own extraction for THAT and confine itself to the
+      // violation types that don't require seeing the document at all.
+      const documentBlock = hasPdf
+        ? `THE DOCUMENT WAS SUPPLIED AS A PDF. You cannot see it — the "source" and quoted/paraphrased document language in the proposed output below is this tool's own extraction from a document you were not shown. Do not flag an item as unsupported merely because you cannot confirm its source locator or wording against text you don't have — that test would fail every true statement about a document you can't open. Flag only the violation types below that don't depend on seeing the document itself (invented outside practice, invented reader psychology, invented third-party obligations, absence-treated-as-opposite reasoning, a requirement stated for a suggestion, an aggregate confidence badge, an invented time/effort estimate) — never "unsourced_conclusion" or "broadened_or_strengthened_document_language" on this PDF path, since both require reading the document to judge.`
+        : `THE DOCUMENT TEXT ITSELF IS THE SOLE SOURCE OF TRUTH:\n${document.trim().slice(0, 12000)}`;
+
       await runOutputGuard(parsed, {
         label: 'document-detective',
         fields,
@@ -481,13 +613,16 @@ ${NO_QUOTE_RULE}`;
 VISITOR'S SITUATION: ${mySituation.trim()}
 VISITOR'S CONCERN: ${concerns?.trim() || '(not supplied)'}
 
-THE DOCUMENT TEXT ITSELF IS THE SOLE SOURCE OF TRUTH:
-${document.trim().slice(0, 12000)}`,
+${documentBlock}`,
         promise: `Read a long document through this visitor's specific situation and surface only what actually requires their attention, affects their money, or matters to their circumstances — grounded in the document's own language, with genuine uncertainty shown rather than filled in.
 
 THE ONE RULE THAT DECIDES MOST OF THESE. A conclusion is supported when the document text actually says it, or is a cautious, clearly-labeled connection between the document and a fact the visitor supplied. Anything else — outside law, standard practice, what an organization usually does, what a professional would advise, who besides the document's own party owes money — is NOT supported unless the visitor supplied it.
 
-Flag "your claim is almost certainly still valid" (the document alone can't establish claim validity), "the neighbour or their insurer would need to cover that" (the document saying something isn't covered under one provision doesn't establish who else owes for it), "insurers routinely apply betterment" or "easy to miss when anxious" (invented outside practice or reader psychology), and "there is no indication the flat was unoccupied, so this exclusion isn't a concern" (absence of a fact is not evidence of its opposite — the correct handling states what would need to be true and notes the visitor didn't say). Do not flag a status of REASONABLE READING or NEEDS CLARIFICATION merely for existing — those are the tool's own way of showing real uncertainty, which is correct, not a violation.`,
+Flag "your claim is almost certainly still valid" (the document alone can't establish claim validity), "the neighbour or their insurer would need to cover that" (the document saying something isn't covered under one provision doesn't establish who else owes for it), "insurers routinely apply betterment" or "easy to miss when anxious" (invented outside practice or reader psychology), and "there is no indication the flat was unoccupied, so this exclusion isn't a concern" (absence of a fact is not evidence of its opposite — the correct handling states what would need to be true and notes the visitor didn't say).
+
+THE MOST IMPORTANT ONE: governing-law and enforceability reasoning. Flag "the absence of a governing-law clause is a material gap," calling that absence "the primary factor" in an unresolved question, "governing law clauses are typically present in agreements of this type," and any explanation of how different states or jurisdictions treat a clause (e.g. "some states void non-competes entirely; others enforce them with modifications") — all of that is outside legal knowledge, not document content, however naturally it reads. The correct handling is flat and short: "This document does not state which law governs the agreement," and if that's what stands between the document and the visitor's question, "the document alone cannot answer that." Also flag a legal-effect verb standing in for a consequence ("by signing, you accept these waivers") when the document itself only states what the clause provides, and any visitor fact that got invented rather than supplied (unvested equity, an existing non-compete, a resignation plan the visitor never mentioned).
+
+Do not flag a status of REASONABLE READING or NEEDS CLARIFICATION merely for existing — those are the tool's own way of showing real uncertainty, which is correct, not a violation.`,
         guard: router.outputGuard,
         requiredNonEmpty: ['document.bottom_line'],
         userLanguage,

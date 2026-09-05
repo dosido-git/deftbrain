@@ -1,0 +1,396 @@
+{
+  "_meta": {
+    "tool": "DocumentDetective",
+    "generated": "2026-09-05",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "documentdetective-v2",
+    "how_to_regression_diff": "Re-run (npm run check:golden document-detective). Diff for QUALITY not exact match: HTTP 200, no truncation across all 8 arrays (needs_attention/money/also_relevant/doesnt_appear_relevant/buried_but_important/practical_next_steps/questions_to_ask/outside_help). GUARDS: (1) every needs_attention/money/also_relevant item's `status` must be exactly one of CLEAR FROM DOCUMENT | REASONABLE READING | NEEDS CLARIFICATION, in English, even in the German case — the prompt pins this enum regardless of response language; a translated status renders as a blank badge on the frontend, which matches literally. (2) no aggregate `confidence`/`confidence_note` field. (3) needs_attention[].deadline/if_you_do_nothing/what_to_do must be empty string, not invented, when the document doesn't support them. (4) money[].amount_or_rule states the document's discretion/formula plainly when no number is given, never invents a magnitude word like 'significant'. (5) doesnt_appear_relevant[] always carries a non-empty could_change_if. (6) practical_next_steps[] never phrased as a requirement and never carries an invented time/effort estimate. (7) array caps enforced in code via capArrays. (8) runOutputGuard (v2, LLM-adversarial) repairs flagged fields in place before the response ships — case 3 (employment-agreement-governing-law) is the FINAL LLM CORRECTIONS regression target: the guard must never let through a governing-law/enforceability conclusion from outside legal knowledge ('the absence of a governing-law clause is a material gap', 'governing law clauses are typically present', state-by-state non-compete treatment, 'by signing you accept these waivers'). The correct shape is document.bottom_line + outside_help flatly stating the document doesn't specify governing law and naming an employment attorney, never explaining WHY or HOW enforceability varies. DO NOT reverse: the status-enum English-pinning instruction; capArrays; the runOutputGuard call and its prohibit list (especially outside_legal_or_practice_conclusion, invented_missing_clause_significance, invented_visitor_context_not_supplied); the no-inner-double-quote rule. KNOWN LIMITATION, not a regression: the guard repairs each flagged field independently, so a rare run can leave two practical_next_steps items saying nearly the same thing (seen once on case 3) — cosmetic, not a grounding violation; not worth a fix that risks the guard's real job."
+  },
+  "cases": [
+    {
+      "name": "flood-claim-validity-and-third-party-obligation",
+      "endpoint": "/api/document-detective",
+      "input": {
+        "document": "SECTION 4 — ESCAPE OF WATER\n\n4.1 We will cover loss of or damage to the contents caused by water escaping from any fixed water or heating installation, or from any domestic appliance connected to such an installation.\n\n4.2 We will not cover:\n(a) damage occurring where the premises have been unoccupied for more than 30 consecutive days, unless the water supply has been turned off at the main and the system drained;\n(b) the cost of repairing or replacing the installation or appliance from which the water escaped;\n(c) damage caused by water entering the premises from outside the building;\n(d) any amount in respect of wear, tear or gradual deterioration.\n\nSECTION 9 — YOUR OBLIGATIONS\n\n9.3 You must notify us as soon as reasonably possible, and in any event within 30 days, of any event which may give rise to a claim. Failure to do so may prejudice your claim to the extent that our position has been adversely affected.\n\n9.7 Where we replace an item with a new equivalent and the replacement represents a material improvement on the item lost or damaged, we may make a proportionate deduction to reflect that improvement.\n\nSECTION 12 — RECOVERY FROM THIRD PARTIES\n\n12.1 We are entitled to pursue recovery in your name against any party responsible for the loss. You must provide all reasonable assistance and must not, without our written consent, admit liability or make any agreement with such a party that prejudices our right of recovery.",
+        "documentType": "insurance_eob",
+        "mySituation": "My flat was flooded by the upstairs neighbour's washing machine three weeks ago. I am trying to work out what my own contents policy actually covers before I ring them.",
+        "concerns": "Whether 'escape of water' covers someone else's appliance, whether the three weeks has already cost me the claim, and what 'betterment' means when they replace a ten-year-old carpet.",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States"
+      },
+      "output": {
+        "document": {
+          "type": "Contents insurance policy — Escape of Water section and related obligations",
+          "bottom_line": "The document covers water escaping from a domestic appliance connected to a fixed installation, which on a reasonable reading includes a neighbour's washing machine, but your 30-day notification obligation is approaching and a betterment deduction may reduce what you receive for the carpet."
+        },
+        "needs_attention": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Notify the insurer of the event within 30 days",
+            "why_it_matters_to_you": "The flood happened three weeks ago — roughly 21 days — leaving approximately 9 days before the 30-day window closes, assuming the event date is exact",
+            "source": "Section 9.3",
+            "deadline": "Within 30 days of the event. If the flood was exactly 21 days ago, approximately 9 days remain.",
+            "if_you_do_nothing": "The document states failure to notify within 30 days may prejudice your claim to the extent the insurer's position has been adversely affected. The document does not say the claim is automatically voided.",
+            "what_to_do": "Contact the insurer promptly to register the event, even before you have all the details ready"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Do not admit liability or reach any agreement with the upstairs neighbour about the loss without the insurer's written consent",
+            "why_it_matters_to_you": "The neighbour's appliance caused the damage, so informal settlement discussions between you could prejudice the insurer's recovery rights",
+            "source": "Section 12.1",
+            "deadline": "",
+            "if_you_do_nothing": "The document does not state a specific consequence, but the obligation is framed as a requirement you must comply with",
+            "what_to_do": "If the neighbour has offered to contribute or settle, do not agree to anything before speaking with the insurer"
+          }
+        ],
+        "money": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Betterment deduction on replacement items",
+            "amount_or_rule": "Where a replacement represents a material improvement on the damaged item, the insurer may make a proportionate deduction to reflect that improvement. The document gives discretion; it does not specify a formula or percentage.",
+            "when": "At the point of settlement, if replacement is offered",
+            "source": "Section 9.7"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "No payment for the cost of repairing or replacing the appliance that caused the escape",
+            "amount_or_rule": "Explicitly excluded — the washing machine itself is not covered under this policy",
+            "when": "Applicable to any claim under Section 4",
+            "source": "Section 4.2(b)"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "No payment for wear, tear or gradual deterioration",
+            "amount_or_rule": "Any amount attributed to the pre-existing condition of damaged items is excluded",
+            "when": "Applicable to any claim under Section 4",
+            "source": "Section 4.2(d)"
+          }
+        ],
+        "also_relevant": [
+          {
+            "status": "REASONABLE READING",
+            "what": "The escape of water coverage on a reasonable reading of 4.1 extends to a neighbour's appliance",
+            "why_it_matters": "Your concern was whether the upstairs washing machine qualifies. Section 4.1 covers water escaping from any domestic appliance connected to a fixed water or heating installation. It does not restrict this to appliances within your own flat.",
+            "source": "Section 4.1"
+          },
+          {
+            "status": "NEEDS CLARIFICATION",
+            "what": "Whether the washing machine qualifies as connected to a fixed water installation",
+            "why_it_matters": "Section 4.1 requires the appliance to be connected to a fixed water or heating installation. A standard plumbed-in washing machine likely meets this, but the policy does not define the terms and the insurer may apply its own interpretation.",
+            "source": "Section 4.1"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "The insurer may pursue the neighbour for recovery without your needing to take separate legal action",
+            "why_it_matters": "If the neighbour is responsible, Section 12.1 entitles the insurer to pursue recovery in your name. You are required to assist, but you do not have to initiate any action yourself.",
+            "source": "Section 12.1"
+          }
+        ],
+        "doesnt_appear_relevant": [
+          {
+            "what": "Exclusion for unoccupied premises (Section 4.2(a))",
+            "why": "The exclusion applies where the premises have been unoccupied for more than 30 consecutive days. The flood was three weeks ago, and you have not stated the flat was empty for any extended period.",
+            "could_change_if": "You were away from the flat for more than 30 consecutive days before or during the period of damage"
+          },
+          {
+            "what": "Exclusion for water entering from outside the building (Section 4.2(c))",
+            "why": "Your damage originated from an upstairs flat's appliance, which is internal to the building rather than water entering from outside.",
+            "could_change_if": "The water entered from an external source rather than from within the building"
+          }
+        ],
+        "buried_but_important": [
+          {
+            "what": "The prejudice qualifier on the notification obligation",
+            "source": "Section 9.3, second sentence",
+            "why_easy_to_miss": "The heading and first sentence state a 30-day notification requirement, which could read as an absolute cut-off. The second sentence immediately qualifies this: failure to notify may prejudice the claim only to the extent the insurer's position has been adversely affected. The consequence is conditional, not automatic, but the qualifier appears after the deadline rather than alongside it."
+          },
+          {
+            "what": "Betterment applies only where replacement represents a material improvement — the word material is the operative threshold",
+            "source": "Section 9.7",
+            "why_easy_to_miss": "The section is headed with what sounds like a routine replacement provision. The word material sets a threshold before any deduction applies, but the section does not define what counts as material, leaving the determination to the insurer's judgment."
+          },
+          {
+            "what": "The recovery rights clause requires your written consent before any agreement with the responsible third party",
+            "source": "Section 12.1",
+            "why_easy_to_miss": "This obligation appears in Section 12 under the heading Recovery from Third Parties, which is a different section from claims obligations. Someone reviewing only the claims and escape of water sections could act on a neighbourly settlement offer without realising the restriction exists."
+          }
+        ],
+        "practical_next_steps": [
+          "Call the insurer today or tomorrow to register the event — you can clarify details later, but getting the notification on record before the 30-day window closes is the priority",
+          "Before you call, note the date of the flood and gather whatever evidence you have: photos, a written account of what happened, and any correspondence with the neighbour or building management",
+          "Make a list of every damaged item, including the carpet, with an estimate of when each was purchased — this will support the discussion about what any betterment deduction should and should not cover",
+          "Keep copies of any messages exchanged with the upstairs neighbour about the incident, and avoid agreeing to any arrangement with them until you have spoken with the insurer"
+        ],
+        "questions_to_ask": [
+          "Does the policy treat a washing machine in an upstairs flat as a domestic appliance connected to a fixed installation for the purposes of Section 4.1?",
+          "Given that I am notifying you three weeks after the event, can you confirm whether your position has been adversely affected and whether the claim will be considered in full?",
+          "How do you determine whether a replacement item represents a material improvement, and how would you calculate the proportionate deduction for a ten-year-old carpet?",
+          "If you pursue recovery from the neighbour under Section 12.1, what does the reasonable assistance I must provide actually require me to do?",
+          "Is there a specific claims form or reference number I need to obtain before we proceed?"
+        ],
+        "outside_help": [
+          {
+            "question": "Whether a late or near-deadline notification has actually prejudiced the insurer's position, and whether the insurer can refuse the claim on that basis",
+            "why_the_document_doesnt_resolve_it": "Section 9.3 says failure to notify may prejudice the claim to the extent the insurer's position has been adversely affected — whether that condition is met is a factual and interpretive question the document alone cannot answer",
+            "who_to_ask_first": "Start with the insurer directly; if they dispute the claim on notification grounds, a free financial ombudsman service or a consumer advice body is the next step before engaging a solicitor"
+          }
+        ]
+      }
+    },
+    {
+      "name": "de-dense-lease-notice",
+      "endpoint": "/api/document-detective",
+      "input": {
+        "document": "MIETVERTRAG — ÄNDERUNGSMITTEILUNG (Wirkung ab 1. September 2026)\nSehr geehrte Mieterin, sehr geehrter Mieter,\n1. Die monatliche Kaltmiete erhöht sich um 85 EUR aufgrund der ortsüblichen Vergleichsmiete. Widerspruch bis 15. August 2026 schriftlich.\n2. Nebenkostenvorauszahlung steigt um 40 EUR pro Monat. Die Jahresabrechnung ergab eine Nachzahlung von 320 EUR, fällig binnen 30 Tagen.\n3. Neue Hausordnung: Ruhezeiten 22-7 Uhr, Waschküche nur mit Buchung über das neue Online-Portal (Registrierung erforderlich).\n4. Haustierhaltung: Hunde nur mit schriftlicher Genehmigung; bestehende Genehmigungen bleiben gültig.\n5. Für Fragen zur Mieterhöhung empfehlen wir rechtliche Beratung durch den Mieterverein.\n6. Kündigungsfrist unverändert 3 Monate.",
+        "documentType": "lease",
+        "mySituation": "Alleinstehend, 34, mit Hund, arbeite im Homeoffice, knappes Budget",
+        "concerns": "Ob ich der Mieterhöhung widersprechen kann",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany"
+      },
+      "output": {
+        "document": {
+          "type": "Mietvertrag – Änderungsmitteilung (Wirkung ab 1. September 2026)",
+          "bottom_line": "Die Frist für einen schriftlichen Widerspruch gegen die Mieterhöhung war laut Dokument der 15. August 2026 – dieser Termin liegt vor dem heutigen Datum (4. September 2026), weshalb die Widerspruchsfrist nach dem Dokument bereits abgelaufen ist."
+        },
+        "needs_attention": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Nachzahlung aus der Nebenkostenabrechnung in Höhe von 320 EUR begleichen",
+            "why_it_matters_to_you": "Sie haben ein knappes Budget; diese Zahlung ist fällig und kann nicht ignoriert werden.",
+            "source": "Ziffer 2",
+            "deadline": "Binnen 30 Tagen nach Zugang der Mitteilung – das genaue Fälligkeitsdatum hängt davon ab, wann das Schreiben bei Ihnen eingegangen ist. Das Dokument nennt kein konkretes Datum.",
+            "if_you_do_nothing": "Das Dokument nennt keine explizite Konsequenz, gibt aber eine verbindliche Zahlungspflicht an.",
+            "what_to_do": "Zahlen Sie die 320 EUR innerhalb der im Dokument genannten 30-Tage-Frist. Falls Sie das genaue Eingangsdatum nicht mehr kennen, klären Sie es mit dem Vermieter."
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Registrierung im Online-Portal für die Waschküchenbuchung",
+            "why_it_matters_to_you": "Ohne Registrierung kann die Waschküche laut neuer Hausordnung nicht mehr genutzt werden.",
+            "source": "Ziffer 3",
+            "deadline": "",
+            "if_you_do_nothing": "Das Dokument nennt keine explizite Konsequenz, aber die Nutzung der Waschküche setzt die Buchung über das Portal voraus.",
+            "what_to_do": "Registrieren Sie sich im neuen Online-Portal, um die Waschküche weiterhin nutzen zu können."
+          },
+          {
+            "status": "NEEDS CLARIFICATION",
+            "what": "Prüfen, ob für Ihren Hund eine schriftliche Genehmigung vorliegt",
+            "why_it_matters_to_you": "Sie halten einen Hund; das Dokument verlangt eine schriftliche Genehmigung.",
+            "source": "Ziffer 4",
+            "deadline": "",
+            "if_you_do_nothing": "Das Dokument nennt keine explizite Konsequenz bei fehlender Genehmigung.",
+            "what_to_do": "Prüfen Sie Ihre Unterlagen auf eine bestehende schriftliche Genehmigung. Falls vorhanden, sind Sie laut Dokument abgesichert. Falls nicht, klären Sie dies mit dem Vermieter."
+          }
+        ],
+        "money": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Erhöhung der Kaltmiete",
+            "amount_or_rule": "+85 EUR pro Monat",
+            "when": "Ab 1. September 2026",
+            "source": "Ziffer 1"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Erhöhung der Nebenkostenvorauszahlung",
+            "amount_or_rule": "+40 EUR pro Monat",
+            "when": "Ab 1. September 2026 (Wirkungsdatum der Mitteilung)",
+            "source": "Ziffer 2"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Nachzahlung aus der Nebenkostenjahresabrechnung",
+            "amount_or_rule": "320 EUR, einmalig fällig binnen 30 Tagen",
+            "when": "Binnen 30 Tagen nach Zugang der Mitteilung",
+            "source": "Ziffer 2"
+          }
+        ],
+        "also_relevant": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Ruhezeiten 22–7 Uhr gelten laut neuer Hausordnung",
+            "why_it_matters": "Die neue Hausordnung regelt die Ruhezeiten; diese gelten für alle Bewohner unabhängig von ihrer beruflichen Situation.",
+            "source": "Ziffer 3"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Kündigungsfrist bleibt bei 3 Monaten",
+            "why_it_matters": "Das Dokument bestätigt, dass sich die Kündigungsfrist nicht ändert.",
+            "source": "Ziffer 6"
+          }
+        ],
+        "doesnt_appear_relevant": [],
+        "buried_but_important": [
+          {
+            "what": "Die Widerspruchsfrist gegen die Mieterhöhung (15. August 2026) steht in Ziffer 1 in einem einzigen Satz, direkt nach der Begründung der Erhöhung.",
+            "source": "Ziffer 1, zweiter Satz",
+            "why_easy_to_miss": "Die Widerspruchsfrist steht in Ziffer 1 zusammen mit der Erhöhungsmitteilung."
+          },
+          {
+            "what": "Bestehende Hundegenehmigungen bleiben gültig – das ist eine Ausnahme von der neuen Genehmigungspflicht.",
+            "source": "Ziffer 4, zweiter Halbsatz",
+            "why_easy_to_miss": "Die Ausnahme steht im selben Satz wie die neue Pflicht und könnte beim Lesen übersehen werden."
+          }
+        ],
+        "practical_next_steps": [
+          "Prüfen Sie den genauen Eingangstag der Mitteilung (z. B. Poststempel, Briefkasteneinwurf), um den Beginn der 30-Tage-Frist für die Nachzahlung zu bestimmen.",
+          "Suchen Sie in Ihren Mietunterlagen nach einer schriftlichen Hundegenehmigung und bewahren Sie diese sorgfältig auf.",
+          "Kontaktieren Sie den Mieterverein – das Dokument empfiehlt dies ausdrücklich für Fragen zur Mieterhöhung, auch wenn die Widerspruchsfrist abgelaufen ist.",
+          "Registrieren Sie sich zeitnah im Online-Portal für die Waschküchenbuchung, damit die Nutzung nicht unterbrochen wird."
+        ],
+        "questions_to_ask": [
+          "An welchem Datum gilt die Mitteilung als zugegangen, damit ich die 30-Tage-Frist für die Nachzahlung korrekt berechnen kann?",
+          "Liegt für meinen Hund bereits eine schriftliche Genehmigung in Ihren Unterlagen vor?",
+          "Wie und wo kann ich mich für das neue Online-Portal zur Waschküchenbuchung registrieren?",
+          "Ist die Widerspruchsfrist vom 15. August 2026 absolut, oder gibt es eine Möglichkeit, nachträglich Einwände zur Mieterhöhung geltend zu machen?"
+        ],
+        "outside_help": [
+          {
+            "question": "Ob die Mieterhöhung trotz abgelaufener Widerspruchsfrist noch anfechtbar ist und auf welcher Grundlage die ortsübliche Vergleichsmiete ermittelt wurde",
+            "why_the_document_doesnt_resolve_it": "Das Dokument nennt die ortsübliche Vergleichsmiete als Begründung, enthält aber keine näheren Angaben dazu. Es regelt auch nicht, ob und unter welchen Umständen ein verspäteter Widerspruch möglich ist.",
+            "who_to_ask_first": "Mieterverein – das Dokument empfiehlt dies ausdrücklich in Ziffer 5."
+          }
+        ]
+      }
+    },
+    {
+      "name": "employment-agreement-governing-law",
+      "endpoint": "/api/document-detective",
+      "input": {
+        "document": "EMPLOYMENT AGREEMENT\n\nThis Agreement is entered into by and between Acme Corp ('Company') and the undersigned employee ('Employee').\n\n1. POSITION. Employee shall serve as Senior Engineer, reporting to the VP of Engineering.\n\n2. COMPENSATION. Base salary of $145,000 annually, payable bi-weekly. Eligible for annual performance bonus of up to 15%, at Company's sole discretion.\n\n3. EQUITY. 12,000 RSUs vesting over 4 years with a 1-year cliff, subject to continued employment.\n\n4. NON-COMPETE. For a period of 12 months following termination, Employee shall not engage in any business that competes with Company within North America.\n\n5. ARBITRATION. Any dispute arising from this agreement shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association. Employee waives the right to a jury trial and to participate in any class or collective action.\n\n6. TERMINATION. Employment is at-will and may be terminated by either party at any time, with or without cause or notice.",
+        "documentType": "legal",
+        "mySituation": "Mid-level engineer evaluating a job offer. The base + equity look reasonable but I want to know what I'd be giving up.",
+        "concerns": "Especially the non-compete and the arbitration clause — how enforceable are these in practice, and what's typical?",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States"
+      },
+      "output": {
+        "document": {
+          "type": "At-will employment agreement",
+          "bottom_line": "The non-compete (12 months, all of North America) and the arbitration clause (binding, with jury-trial and class-action waivers) are the provisions most likely to affect what you can do after this job ends — and this document alone cannot tell you how enforceable either one is against you."
+        },
+        "needs_attention": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Understand that you can be terminated at any time, for any reason, with no notice required",
+            "why_it_matters_to_you": "The at-will clause means no minimum tenure is guaranteed, which directly affects whether you will reach the 1-year RSU cliff at Acme.",
+            "source": "Section 6 — Termination",
+            "deadline": "",
+            "if_you_do_nothing": "",
+            "what_to_do": "Factor the at-will nature into how you value the equity offer — there is no document protection ensuring you reach any vesting milestone."
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "If you sign and later leave (voluntarily or not), a 12-month, North America-wide non-compete begins immediately",
+            "why_it_matters_to_you": "You asked specifically about the non-compete. This restriction is broad geographically (all of North America) and applies regardless of why employment ends — including if the company terminates you.",
+            "source": "Section 4 — Non-Compete",
+            "deadline": "12 months from the date of termination",
+            "if_you_do_nothing": "The document does not state a consequence for breach, but the existence of the clause is what matters before signing.",
+            "what_to_do": "Before signing, identify whether your likely next roles would fall within 'any business that competes with Company within North America' — that phrase is not defined in the document."
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "By agreeing to arbitration, you waive your right to a jury trial and to join any class or collective action",
+            "why_it_matters_to_you": "You asked specifically about the arbitration clause. This means any dispute — including a wage claim or wrongful termination claim — must go through AAA arbitration, not a court, and must be brought individually.",
+            "source": "Section 5 — Arbitration",
+            "deadline": "",
+            "if_you_do_nothing": "",
+            "what_to_do": "Decide whether this waiver is acceptable to you before signing. If you have questions about whether it would apply to a specific type of dispute, ask the company or an employment attorney."
+          }
+        ],
+        "money": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Base salary",
+            "amount_or_rule": "$145,000 annually, paid bi-weekly",
+            "when": "From start of employment",
+            "source": "Section 2 — Compensation"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Annual performance bonus",
+            "amount_or_rule": "Up to 15% of base salary (up to $21,750), at Company's sole discretion — the document does not guarantee any bonus payment",
+            "when": "Annual, if awarded",
+            "source": "Section 2 — Compensation"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "RSU equity grant",
+            "amount_or_rule": "12,000 RSUs, vesting over 4 years with a 1-year cliff, subject to continued employment. The document states no share price or company valuation.",
+            "when": "Vesting begins after 1 year of continued employment",
+            "source": "Section 3 — Equity"
+          }
+        ],
+        "also_relevant": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "The bonus is entirely at the company's discretion — the document does not establish criteria, a formula, or any minimum",
+            "why_it_matters": "You noted the compensation looks reasonable. The 15% figure is a ceiling, not a commitment — no portion of it is guaranteed by this document.",
+            "source": "Section 2 — Compensation"
+          },
+          {
+            "status": "NEEDS CLARIFICATION",
+            "what": "The non-compete applies 'following termination' but the document does not define 'competes with Company' or limit the clause to a specific industry or role type",
+            "why_it_matters": "As a mid-level engineer evaluating future optionality, the breadth of what counts as a competitor is directly relevant and unresolved in this text.",
+            "source": "Section 4 — Non-Compete"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "RSU vesting is subject to continued employment — if you leave or are terminated before the 1-year cliff, you receive no RSUs at all",
+            "why_it_matters": "You mentioned equity as part of what looks reasonable. Combined with at-will termination (Section 6), there is no document protection ensuring you reach the cliff.",
+            "source": "Sections 3 and 6"
+          }
+        ],
+        "doesnt_appear_relevant": [],
+        "buried_but_important": [
+          {
+            "what": "The non-compete applies regardless of how employment ends — there is no carve-out for company-initiated termination or layoff",
+            "source": "Section 4 — Non-Compete: 'following termination' without qualification",
+            "why_easy_to_miss": "The restriction follows the compensation and equity sections in a single sentence with no exceptions listed."
+          },
+          {
+            "what": "The class-action waiver is contained in the same sentence as the arbitration clause, not in a separate section",
+            "source": "Section 5 — Arbitration, second sentence",
+            "why_easy_to_miss": "The waiver of jury trial and class/collective action appear together in a single sentence appended to the arbitration provision, rather than as a separately headed clause."
+          },
+          {
+            "what": "The bonus discretion phrase — 'at Company's sole discretion' — removes any implied obligation to pay any bonus in any year",
+            "source": "Section 2 — Compensation",
+            "why_easy_to_miss": "The phrase 'at Company's sole discretion' appears at the end of the bonus sentence, after the 15% figure."
+          }
+        ],
+        "practical_next_steps": [
+          "List the specific companies or roles you would most likely pursue after leaving Acme, and consider whether they would plausibly fall under 'any business that competes with Company within North America' — that question is worth raising with the company or an attorney before signing.",
+          "Ask the company to define what it considers a 'competing business' — some companies will provide a written clarification or list of named competitors.",
+          "Ask the company to define what it considers a 'competing business' — some companies will provide a written clarification or list of named competitors.",
+          "Keep a copy of the agreement as signed, and note your start date — it is the reference point for the 1-year RSU cliff and for any future non-compete calculation."
+        ],
+        "questions_to_ask": [
+          "What companies or business types does Acme consider to be competitors for purposes of the non-compete?",
+          "Does the non-compete apply if I am laid off or if the company terminates me without cause?",
+          "Is there any circumstance under which the non-compete would not be enforced or would be waived?",
+          "What criteria does the company use to determine whether and how much of the performance bonus is awarded?",
+          "Are there any additional agreements — IP assignment, confidentiality, or acceptable-use policies — that I would also be required to sign?"
+        ],
+        "outside_help": [
+          {
+            "question": "Is the 12-month, North America-wide non-compete enforceable against me?",
+            "why_the_document_doesnt_resolve_it": "This document does not state which law governs the agreement.",
+            "who_to_ask_first": "An employment attorney in your state, before signing — this is not a question HR at the hiring company can answer neutrally on your behalf."
+          },
+          {
+            "question": "Is the arbitration clause, including the class-action waiver, enforceable in my situation?",
+            "why_the_document_doesnt_resolve_it": "This document does not state which law governs disputes or arbitration clauses.",
+            "who_to_ask_first": "An employment attorney, if this waiver is a material concern for you before signing."
+          }
+        ]
+      }
+    }
+  ]
+}

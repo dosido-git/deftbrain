@@ -125,6 +125,7 @@ const LARGE_BODY_PREFIXES = [
 const PDF_BODY_PREFIXES = [
   '/api/bill-rescue', '/api/doctor-visit-translator', '/api/jargon-assassin',
   '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
+  '/api/document-detective',
 ];
 const matches = (path, prefixes) => prefixes.some(p => path === p || path.startsWith(p + '/'));
 const largeJson = express.json({ limit: '12mb' });

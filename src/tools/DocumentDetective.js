@@ -26,7 +26,7 @@ const DOC_TYPE_VALUES = [
 
 // A frontend-mapped switch on a model-produced enum is only safe when the
 // prompt pins that enum to exact English regardless of response language
-// (see backend/routes/noise-canceler.js) — otherwise a German response
+// (see backend/routes/document-detective.js) — otherwise a German response
 // translates the value and nothing here matches it. STATUS_STYLE's fallback
 // branch is what a translated value degrades to: a plain, unstyled badge
 // showing whatever text came back, never a crash.
@@ -38,6 +38,7 @@ const DocumentDetective = ({ tool }) => {
   const resultsRef = useRef(null);
   const filterRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const fileInputRef = useRef(null);
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -121,6 +122,8 @@ const DocumentDetective = ({ tool }) => {
 
   // ─── State ───
   const [docText, setDocText] = useState('');
+  const [pdfBase64, setPdfBase64] = useState(null);
+  const [fileName, setFileName] = useState('');
   const [documentType, setDocumentType] = useState('other');
   const [mySituation, setMySituation] = useState('');
   const [concerns, setConcerns] = useState('');
@@ -142,13 +145,41 @@ const DocumentDetective = ({ tool }) => {
   const [results, setResults] = usePersistentState('noisecanceler-result-v2', null);
 
   // ═══ HANDLERS ═══
+  // Upload mirrors ContractDecoder's pattern exactly (this repo has no shared
+  // dropzone component — every tool hand-rolls this the same way): a PDF goes
+  // to FileReader as a data URL and the backend strips the header; any other
+  // accepted type is read as plain text straight into the textarea. The two
+  // paths are mutually exclusive — picking a PDF clears any pasted text, and
+  // the textarea/upload-button UI below never shows both at once.
+  const handleFile = useCallback(async (file) => {
+    if (!file) return;
+    setError('');
+    if (file.size > 10 * 1024 * 1024) { setError(t('nc_err_too_large')); return; }
+    if (file.type === 'application/pdf') {
+      const reader = new FileReader();
+      reader.onerror = () => setError(t('nc_err_read'));
+      reader.onload = (ev) => { setPdfBase64(ev.target.result); setFileName(file.name); setDocText(''); };
+      reader.readAsDataURL(file);
+      return;
+    }
+    try {
+      const text = await file.text();
+      setPdfBase64(null); setFileName(file.name); setDocText(text);
+    } catch { setError(t('nc_err_read')); }
+  }, [t]);
+
+  const removeFile = useCallback(() => {
+    setPdfBase64(null); setFileName(''); setError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
+
   const filter = useCallback(async () => {
-    if (!docText.trim()) { setError(t('nc_err_paste_doc')); return; }
+    if (!docText.trim() && !pdfBase64) { setError(t('nc_err_paste_doc')); return; }
     if (!mySituation.trim()) { setError(t('nc_err_situation')); return; }
     setError(''); setResults(null);
     try {
-      const data = await callToolEndpoint('noise-canceler', {
-        document: docText.trim(), documentType, mySituation: mySituation.trim(),
+      const data = await callToolEndpoint('document-detective', {
+        document: docText.trim(), pdfBase64, documentType, mySituation: mySituation.trim(),
         concerns: concerns.trim() || null,
         userLocale, userCurrency, userRegion,
       });
@@ -163,7 +194,7 @@ const DocumentDetective = ({ tool }) => {
         results: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('nc_err_failed')); }
-  }, [docText, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [docText, pdfBase64, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('DocumentDetective', [
@@ -172,6 +203,7 @@ const DocumentDetective = ({ tool }) => {
     ]);
     const k = f => `nc_ex${ex.n}_${f}`;
     setDocText(t(k('doc'), { sym }));
+    setPdfBase64(null); setFileName('');
     setDocumentType(ex.type);
     setMySituation(t(k('situation')));
     setConcerns(t(k('concerns')));
@@ -179,7 +211,8 @@ const DocumentDetective = ({ tool }) => {
   }, [setResults, t, sym]);
 
   const handleReset = useCallback(() => {
-    setDocText(''); setMySituation(''); setConcerns(''); setResults(null); setError('');
+    setDocText(''); setPdfBase64(null); setFileName(''); setMySituation(''); setConcerns(''); setResults(null); setError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }, [setResults]);
 
   const buildCopy = useCallback(() => {
@@ -199,7 +232,7 @@ const DocumentDetective = ({ tool }) => {
   }, [results, t]);
 
   filterRef.current = filter;
-  canSubmitRef.current = !!docText.trim() && !!mySituation.trim();
+  canSubmitRef.current = !!(docText.trim() || pdfBase64) && !!mySituation.trim();
 
   useRegisterActions(buildCopy(), tool?.title || 'Document Detective');
 
@@ -266,10 +299,10 @@ const DocumentDetective = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
-        {/* The Chase */}
+        {/* What Matters Here (was "The Chase" under the old Cut to the Chase name) */}
         <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">✂️</span>
+            <span className="text-lg">🔎</span>
             <span className={`text-xs font-bold uppercase tracking-wide ${c.tipText}`}>{t('nc_result_the_chase')}</span>
           </div>
           <p className={`text-sm font-bold ${c.text}`}>{results?.document?.bottom_line}</p>
@@ -467,11 +500,11 @@ const DocumentDetective = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '✂️'}</span>{tool?.tagline ?? t('nc_tagline')}
+                  <span className="me-2 text-lg">{tool?.icon ?? '🔎'}</span>{tool?.tagline ?? t('nc_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {(results || docText.trim()) && (
+              {(results || docText.trim() || pdfBase64) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                   ↺ {t('start_over')}
                 </button>
@@ -484,20 +517,39 @@ const DocumentDetective = ({ tool }) => {
         {!results && (
           <div className="px-5 pb-5 pt-4 space-y-4">
 
-            {/* Document paste */}
+            {/* Document paste or upload */}
             <div>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
                 {t('nc_paste_label')} <span className={c.required}>*</span>
               </label>
               <p className={`text-xs ${c.textMuted} mb-2`}>{t('nc_paste_hint')}</p>
-              <textarea
+
+              {pdfBase64 ? (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3 mb-2`}>
+                  <span className="text-lg">📄</span>
+                  <span className={`text-sm ${c.text} truncate flex-1`}>{fileName}</span>
+                  <button onClick={removeFile} className={`text-xs ${linkStyle} flex-shrink-0`}>{t('nc_remove_file')}</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 mb-2">
+                  <button type="button" onClick={() => fileInputRef.current?.click()}
+                    className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>
+                    📎 {t('nc_upload')}
+                  </button>
+                  <span className={`text-xs ${c.textMuted}`}>{t('nc_upload_hint')}</span>
+                  <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf,.html" className="hidden"
+                    onChange={e => handleFile(e.target.files?.[0])} />
+                </div>
+              )}
+
+              {!pdfBase64 && <textarea
                 value={docText}
                 onChange={e => setDocText(e.target.value)}
                 placeholder={t('nc_paste_ph')}
                 rows={8}
                 className={`w-full p-4 border rounded-xl text-sm font-mono resize-none ${c.input}`}
-              />
-              {docText.length > 0 && <p className={`text-xs ${c.textMuted} mt-1`}>{t('nc_char_count', { n: docText.length.toLocaleString(userLocale || undefined) })}</p>}
+              />}
+              {!pdfBase64 && docText.length > 0 && <p className={`text-xs ${c.textMuted} mt-1`}>{t('nc_char_count', { n: docText.length.toLocaleString(userLocale || undefined) })}</p>}
             </div>
 
             {/* Document type */}
@@ -544,12 +596,12 @@ const DocumentDetective = ({ tool }) => {
             {/* Submit */}
           <button title={t('cmd_enter')}
             onClick={filter}
-            disabled={loading || !docText.trim() || !mySituation.trim()}
-            className={`relative w-full ${(!docText.trim() || !mySituation.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-40`}
+            disabled={loading || !(docText.trim() || pdfBase64) || !mySituation.trim()}
+            className={`relative w-full ${(!(docText.trim() || pdfBase64) || !mySituation.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-40`}
             >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> {t('nc_filtering')}</>
-              : <><span className="me-1">{tool?.icon ?? '✂️'}</span> {t('nc_filter_btn')}</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔎'}</span> {t('nc_filtering')}</>
+              : <><span className="me-1">{tool?.icon ?? '🔎'}</span> {t('nc_filter_btn')}</>}
             {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

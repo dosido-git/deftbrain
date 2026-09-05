@@ -174,3 +174,133 @@ told "respond in German" will translate an enum value unless explicitly told
 not to.
 
 ## Original lock notes carried forward below (pre-2026-09-04)
+
+## Follow-up pass, 2026-09-05: file upload, FINAL LLM CORRECTIONS, backend rename, icon
+
+**File upload.** Matches ContractDecoder's pattern exactly — this repo has no
+shared dropzone component, every tool hand-rolls the same ~15-line
+FileReader/base64 flow. PDF → `FileReader.readAsDataURL`, sent as
+`pdfBase64` (the full data URL, untouched by the client); any other accepted
+type (`.txt`/`.md`/`.rtf`/`.html`) is read as plain text straight into the
+existing textarea. The two paths are mutually exclusive in the UI — picking
+a file clears any pasted text and hides the textarea; removing the file
+clears the file input's own value too, not just React state. 10 MB client
+cap, matching the majority convention (ContractDecoder/PlainTalk/DVT/
+BillRescue/QuoteCheck) over LeaseTrapDetector's 20 MB outlier.
+
+Backend: `hasPdf = typeof pdfBase64 === 'string' && pdfBase64.length > 100`;
+the `data:application/pdf;base64,` header is stripped server-side
+(`pdfBase64.slice(pdfBase64.indexOf(',') + 1)`), never on the client, and
+`media_type` is hardcoded to `'application/pdf'` rather than guessed from
+the data URL's own prefix — bill-rescue shipped a PDF as `image/jpeg` that
+way (commit `164fffee`) and every upload 500'd instantly. `messages[].content`
+becomes `[...pdfBlocks, {type:'text', text: userPrompt}]` only when a PDF is
+present; `system` is untouched either way — `withLanguage`/`withLocaleContext`
+apply only to the system STRING, never to a content array (`array + string`
+coerces to `"[object Object],…"`, the exact bug that broke every PDF upload
+on doctor-visit-translator, commit `8199f070`).
+
+Added `/api/document-detective` to `PDF_BODY_PREFIXES` in `backend/server.js`
+(30 MB body limit) — it wasn't there before because the route accepted no
+uploads until this pass. In the process, noticed `/api/contract-decoder` is
+missing from that same list despite advertising 10 MB PDFs in its own
+frontend — a pre-existing gap, unrelated to this tool, flagged as a separate
+task rather than folded in here.
+
+**The v2 guard's own check call never sees the PDF** (attaching it twice
+would double the cost for no benefit — the guard checks for invented outside
+facts, not document re-verification). When `hasPdf`, the guard's `supplied`
+block says so explicitly and narrows which violation categories are even
+askable: it must not flag `unsourced_conclusion` or
+`broadened_or_strengthened_document_language` on the PDF path, since both
+require reading text it was never given — mirrors how contract-decoder's own
+PDF path instructs its guard ("you cannot see it — but the quotes below ARE
+the contract... assume the generator read the document and you did not").
+
+**FINAL LLM CORRECTIONS.** The most important leak, per live review: the
+tool would answer "is this enforceable" from remembered legal knowledge —
+calling an absent governing-law clause "a material gap" or "the primary
+factor," asserting such clauses are "typically present," then explaining how
+different states treat a non-compete. None of that is document content. Added
+a new CORE_PROMPT section, OUTSIDE-WORLD QUESTIONS, placed right before
+OUTSIDE HELP (the section is the correct destination for exactly these
+questions): separates what the document establishes from what needs outside
+verification, with the governing-law case as the worked example precisely
+because it was the one that kept getting through. Also strengthened BURIED
+BUT IMPORTANT's existing banned-outside-claims list (already had "insurers
+routinely.../employers normally.../HOAs typically...") to include "clauses
+of this type are typically present," since it's the same violation in a new
+domain, and reinforced OUTSIDE HELP to ban jurisdiction-specific legal
+explanation even inside an outside-help item. Added a closing NORTH STAR
+("Document Detective does not complete the document... investigates the
+document the visitor supplied... identifying a boundary the document can't
+answer IS a successful answer") right before the JSON instruction.
+
+Five new `outputGuard.prohibit` categories, anchored in the guard's `promise`
+text with the exact bad examples so the adversarial checker has concrete
+positive/negative cases, not just abstract labels:
+`outside_legal_or_practice_conclusion`, `invented_missing_clause_significance`,
+`invented_legal_consequence_from_signing`, `invented_visitor_context_not_supplied`,
+`document_called_incomplete_rather_than_silent`.
+
+Live-verified on the employment-agreement example (the same one the bug
+report used): first draft failed the guard on 7 fields — including 2 hits
+each on the two new categories that map directly to this correction
+(`invented_visitor_context_not_supplied`, `outside_legal_or_practice_conclusion`)
+— and the repaired final answer contains zero mentions of "governing,"
+"jurisdiction," "material gap," "primary factor," or "typically present."
+`document.bottom_line` correctly reads "...this document alone cannot tell
+you how enforceable either one is against you," and the `outside_help` items
+state flatly that the document doesn't specify governing law and name an
+employment attorney — without explaining why or how enforceability varies
+by state. This case is now `employment-agreement-governing-law` in the
+golden sample specifically to regression-test this leak.
+
+**Known limitation, not a regression:** the guard repairs each flagged field
+independently, with no view of sibling array items, so a rare run can leave
+two `practical_next_steps` entries saying nearly the same thing (seen once,
+this session). Cosmetic — not a grounding violation, and not worth a
+cross-field dedup pass that risks the guard's actual job.
+
+**Backend route rename** (separate decision from the icon/prompt work,
+requested directly): `noise-canceler.js`/`/api/noise-canceler` →
+`document-detective.js`/`/api/document-detective`, so the backend finally
+matches the frontend component name. i18n filename/prefix
+(`noise-canceler.js`/`nc_`) deliberately did NOT move — same call as
+JustifyMyMeeting/MeetingHijackStopper. Updated: the route file itself
+(`git mv`), the frontend's `callToolEndpoint('document-detective', ...)`
+call, `PDF_BODY_PREFIXES` in `backend/server.js`, the golden sample
+(renamed + both `endpoint` fields inside), and `audit/RENAMES.md`'s
+`NoiseCanceler` row. `backend/routes/index.js` needed no manual wiring — it
+auto-discovers every route file in the directory by filename.
+
+**Icon rebrand**, completing the transition away from "Cut to the Chase":
+`icon` in `tools.js` changed ✂️ → 🔎, along with every hardcoded ✂️ fallback
+literal inside `DocumentDetective.js` (header icon, the results-header "What
+Matters Here" card, the loading spinner, the submit button) — the exact
+"changed the icon but left the fallback behind" gotcha this file itself
+warns about, caught by grepping for the old emoji rather than trusting the
+one `tools.js` edit. `nc_copy_header`'s hardcoded ✂️ prefix (13 languages)
+also updated — that one isn't a React fallback, it's plain text baked into
+the copy-to-clipboard header string. Tagline TEXT is unchanged
+("Paste the document. Find what matters to you.") — the 🔎 the user wrote in
+their instruction is the icon that already renders separately via
+`tool?.icon` before the tagline text; baking it into the string too would
+double it, the same reasoning applied to NerveCheck's tagline earlier this
+session. "✂️ THE CHASE" → "🔎 WHAT MATTERS HERE": the icon prop on that card
+became 🔎, and `nc_result_the_chase`'s VALUE (not its key name — matches this
+session's established practice of leaving key names stable across a copy
+change) was retranslated to a "what matters here" equivalent across all 13
+languages.
+
+**Bug found and fixed in passing, unrelated to any of the above:** the
+original 2026-09-04 rewrite's i18n assembly double-escaped every embedded
+newline in `nc_ex_doc`/`nc_ex2_doc` (the two "Try an Example" document texts)
+across all 13 languages — the source carried a literal `\\n` (backslash,
+backslash, n) instead of `\n`, so the parsed string held a literal
+backslash-n character pair rather than a line break. Every example document
+shown via "Try an Example," in every language, rendered as one run-on
+paragraph with visible `\n\n` text instead of paragraph breaks. Caused by my
+own extraction script treating already-escaped source text as raw and
+re-escaping it. Fixed with a single global replace (416 occurrences, all
+confined to those two keys — verified before applying).
