@@ -3,8 +3,8 @@
     "tool": "PartyArchitect",
     "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 2 parallel calls (arc + mechanics) merged, + 1 FAST v2 guard check/repair, + a 10s keep-alive heartbeat",
-    "baseline_commit": "party-architect-v4",
-    "how_to_regression_diff": "Re-run (npm run check:golden party-architect). PARTY ARCHITECT REWRITE INSTRUCTIONS pass, 2026-09-05: full schema replacement. Old schema (energy_curve, mixing_strategies, conversation_starters, food_and_drink_strategy, music_plan, the_exit, budget_breakdown, disaster_prevention) is GONE — do not resurrect those keys. New: event_read{what_matters,design_priority}, event_shape (pacing STRATEGY, never a feelings prediction), timeline[]{time,phase,action,host_job,why,adjust_if} with RELATIVE time offsets only (Arrival/+20 min/Around halfway/Final 45 min — never a clock time, since this form collects no start time), helping_people_connect[] (was mixing_strategies, 0-3, no forced count), conversation_catalysts[] (0-3), food_and_drink{format,timing,dietary_considerations,special_touch} (dietary_considerations must be procedural — 'identify/separate/label' — never a safety ASSURANCE like 'will keep guests safe'), music{show,arrival,later,wind_down} (show=false + empty fields when irrelevant), budget_priorities{approach,protect_spending_on[],keep_secondary[],use_what_you_have[]} (priorities, never a fabricated total or a 'budget is workable' verdict), things_to_plan_for[] (was disaster_prevention, 0-4, grounded only in supplied facts, never a predicted future event), wind_down{signals[],script} (top-level — DIFFERENT from music.wind_down, which is about lowering volume). Uses router.outputStandard='v2' + runOutputGuard (prohibit/require list) instead of the old bare toArray()-coerce with no guard. IMPORTANT GOTCHA FIXED THIS PASS: the guard's own repair sometimes blanks a flagged field to '' when it can't produce a clean rewrite (observed live on conversation_catalysts and budget_priorities.protect_spending_on) — outputGuard's requiredNonEmpty only protects a fixed known-in-advance path, not a dynamically-indexed array item, so party-architect.js adds its own pruneEmpties() pass AFTER the guard to drop any blanked plain-string array item or object-array item whose primary field (how/plan/action+host_job) came back blank. DO NOT remove pruneEmpties — it is the only thing standing between a guard repair and a visible blank line/empty bullet in production. Case 1 (housewarming) is a guard PASS with zero violations on this run — case 2 (40th birthday) exercises a guard FAIL-then-repair cycle (7 fields, all successfully rewritten with real content, none needed pruning on this particular run, but the dietary_considerations field is the reference for the 'never a safety assurance' fix — compare it against the pre-fix version in git history, which said a labeling setup 'will keep guests safe'). Frontend Recent Plans is a NEW store (`party-plans`, full inputs+plan+date) — the old `party-history` store (preview-only) stays read-only/legacy, same migration pattern as Small Change Big Difference's Recent Small Changes. GENERAL REASONING & GROUNDING RULES pass (2026-09-05, second same-day pass): SHARED_PROMPT was fully replaced (not appended to) with a 25-section grounding spec supplied whole by the user — output schema, arc/mechanics split, and each half's own schema-mechanics (item counts, field names) are UNCHANGED. Both cases re-recorded against the new prompt (output content differs from the prior baseline; structure does not). Also added this same day: a keep-alive heartbeat in the route handler (res.write(' ') every 10s while the two parallel generations + guard run) after a live report of \"NetworkError when attempting to fetch resource\" at 43s on a non-streaming request — this tool already had documented history of tripping a browser/proxy idle-timeout at this shape (the original pre-split version measured ~82s). Verified: (1) the heartbeat's leading whitespace bytes don't break JSON.parse/response.json() — confirmed via a real browser test, not just Node's http client; (2) an error occurring AFTER the heartbeat has already committed the HTTP status to 200 is still surfaced correctly, via a matching change in src/hooks/useClaudeAPI.js's callToolEndpoint (checks for a bare single-key {error} body even on a 200 response) — verified with a temporary forced-error test exercising exactly that path, then reverted. DO NOT remove the keep-alive or the useClaudeAPI.js check together — removing one without the other reopens either the timeout bug or the silent-blank-result bug. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-05, third same-day pass): 18 more sections ADDED (not replacing) to SHARED_PROMPT — §26-43 plus a closing FINAL OPERATING RULE, all before FINAL NORTH STAR. These target failures the first grounding pass still let through on live review of this exact housewarming case: inventing relationship topology between guest groups beyond what was supplied (§26), fabricating introduction content — jobs/hometowns/backstory (§27), manufacturing a midpoint shared moment without an established need (§28 — the schema's 'Shared Moment' timeline phase must now be genuinely optional, see case 1/case 2's own adjust_if fields), claiming a planned element already 'landed' or 'worked' (§29), diagnosing ordinary quiet/standing behavior as a problem (§30), manufacturing conversational value for ordinary objects/food (§31), inventing a psychological effect of music (§32 — this is the exact category the v2 guard fired on twice in the case 1 live test, both repaired cleanly), unsupported quantity/sufficiency claims and invented purchase-value claims in budget (§33-34), assuming standing duration from a seating-capacity gap (§35), expanding a supplied noise rule beyond its literal wording (§36), ranking who is 'most affected' without support (§37), inventing guest arrival/departure order (§38), using cleanup as a covert end-of-party signal rather than a practical step (§39 — case 2's timeline explicitly says cleanup is 'a practical step, not a signal'), forcing conversation_catalysts to be non-empty (§40), a logistical/social-opportunity/social-prediction classification test (§41), an inference-chain-length limit (§42), and a final 'what problem am I solving' generation test (§43). router.outputGuard gained 11 new prohibit categories matching the most mechanically-checkable of these (e.g. invented_psychological_effect_of_music, claimed_design_element_already_succeeded) — both golden cases exercised several of them live (guard FAILED then repaired 3 fields on each case; check the git history for this file's pre-repair content if you need the negative example). Case 1's input gained the visitor's own 'Nobody knows anybody outside their own pair' sentence (it was in the original bug report's scenario and is a SUPPLIED fact, not one the model should be inventing — §26 governs going BEYOND it, e.g. asserting coworkers-among-themselves don't know each other, not the supplied sentence itself)."
+    "baseline_commit": "party-architect-v5",
+    "how_to_regression_diff": "Re-run (npm run check:golden party-architect). PARTY ARCHITECT REWRITE INSTRUCTIONS pass, 2026-09-05: full schema replacement. Old schema (energy_curve, mixing_strategies, conversation_starters, food_and_drink_strategy, music_plan, the_exit, budget_breakdown, disaster_prevention) is GONE — do not resurrect those keys. New: event_read{what_matters,design_priority}, event_shape (pacing STRATEGY, never a feelings prediction), timeline[]{time,phase,action,host_job,why,adjust_if} with RELATIVE time offsets only (Arrival/+20 min/Around halfway/Final 45 min — never a clock time, since this form collects no start time), helping_people_connect[] (was mixing_strategies, 0-3, no forced count), conversation_catalysts[] (0-3), food_and_drink{format,timing,dietary_considerations,special_touch} (dietary_considerations must be procedural — 'identify/separate/label' — never a safety ASSURANCE like 'will keep guests safe'), music{show,arrival,later,wind_down} (show=false + empty fields when irrelevant), budget_priorities{approach,protect_spending_on[],keep_secondary[],use_what_you_have[]} (priorities, never a fabricated total or a 'budget is workable' verdict), things_to_plan_for[] (was disaster_prevention, 0-4, grounded only in supplied facts, never a predicted future event), wind_down{signals[],script} (top-level — DIFFERENT from music.wind_down, which is about lowering volume). Uses router.outputStandard='v2' + runOutputGuard (prohibit/require list) instead of the old bare toArray()-coerce with no guard. IMPORTANT GOTCHA FIXED THIS PASS: the guard's own repair sometimes blanks a flagged field to '' when it can't produce a clean rewrite (observed live on conversation_catalysts and budget_priorities.protect_spending_on) — outputGuard's requiredNonEmpty only protects a fixed known-in-advance path, not a dynamically-indexed array item, so party-architect.js adds its own pruneEmpties() pass AFTER the guard to drop any blanked plain-string array item or object-array item whose primary field (how/plan/action+host_job) came back blank. DO NOT remove pruneEmpties — it is the only thing standing between a guard repair and a visible blank line/empty bullet in production. Case 1 (housewarming) is a guard PASS with zero violations on this run — case 2 (40th birthday) exercises a guard FAIL-then-repair cycle (7 fields, all successfully rewritten with real content, none needed pruning on this particular run, but the dietary_considerations field is the reference for the 'never a safety assurance' fix — compare it against the pre-fix version in git history, which said a labeling setup 'will keep guests safe'). Frontend Recent Plans is a NEW store (`party-plans`, full inputs+plan+date) — the old `party-history` store (preview-only) stays read-only/legacy, same migration pattern as Small Change Big Difference's Recent Small Changes. GENERAL REASONING & GROUNDING RULES pass (2026-09-05, second same-day pass): SHARED_PROMPT was fully replaced (not appended to) with a 25-section grounding spec supplied whole by the user — output schema, arc/mechanics split, and each half's own schema-mechanics (item counts, field names) are UNCHANGED. Both cases re-recorded against the new prompt (output content differs from the prior baseline; structure does not). Also added this same day: a keep-alive heartbeat in the route handler (res.write(' ') every 10s while the two parallel generations + guard run) after a live report of \"NetworkError when attempting to fetch resource\" at 43s on a non-streaming request — this tool already had documented history of tripping a browser/proxy idle-timeout at this shape (the original pre-split version measured ~82s). Verified: (1) the heartbeat's leading whitespace bytes don't break JSON.parse/response.json() — confirmed via a real browser test, not just Node's http client; (2) an error occurring AFTER the heartbeat has already committed the HTTP status to 200 is still surfaced correctly, via a matching change in src/hooks/useClaudeAPI.js's callToolEndpoint (checks for a bare single-key {error} body even on a 200 response) — verified with a temporary forced-error test exercising exactly that path, then reverted. DO NOT remove the keep-alive or the useClaudeAPI.js check together — removing one without the other reopens either the timeout bug or the silent-blank-result bug. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-05, third same-day pass): 18 more sections ADDED (not replacing) to SHARED_PROMPT — §26-43 plus a closing FINAL OPERATING RULE, all before FINAL NORTH STAR. These target failures the first grounding pass still let through on live review of this exact housewarming case: inventing relationship topology between guest groups beyond what was supplied (§26), fabricating introduction content — jobs/hometowns/backstory (§27), manufacturing a midpoint shared moment without an established need (§28 — the schema's 'Shared Moment' timeline phase must now be genuinely optional, see case 1/case 2's own adjust_if fields), claiming a planned element already 'landed' or 'worked' (§29), diagnosing ordinary quiet/standing behavior as a problem (§30), manufacturing conversational value for ordinary objects/food (§31), inventing a psychological effect of music (§32 — this is the exact category the v2 guard fired on twice in the case 1 live test, both repaired cleanly), unsupported quantity/sufficiency claims and invented purchase-value claims in budget (§33-34), assuming standing duration from a seating-capacity gap (§35), expanding a supplied noise rule beyond its literal wording (§36), ranking who is 'most affected' without support (§37), inventing guest arrival/departure order (§38), using cleanup as a covert end-of-party signal rather than a practical step (§39 — case 2's timeline explicitly says cleanup is 'a practical step, not a signal'), forcing conversation_catalysts to be non-empty (§40), a logistical/social-opportunity/social-prediction classification test (§41), an inference-chain-length limit (§42), and a final 'what problem am I solving' generation test (§43). router.outputGuard gained 11 new prohibit categories matching the most mechanically-checkable of these (e.g. invented_psychological_effect_of_music, claimed_design_element_already_succeeded) — both golden cases exercised several of them live (guard FAILED then repaired 3 fields on each case; check the git history for this file's pre-repair content if you need the negative example). Case 1's input gained the visitor's own 'Nobody knows anybody outside their own pair' sentence (it was in the original bug report's scenario and is a SUPPLIED fact, not one the model should be inventing — §26 governs going BEYOND it, e.g. asserting coworkers-among-themselves don't know each other, not the supplied sentence itself). FINAL PROMPT REFINEMENTS pass (2026-09-05, fourth same-day pass, additive): 14 more sections ADDED, §44-57 plus a FINAL SELF-CHECK, both placed before FINAL OPERATING RULE — the prior 43 sections stay exactly as they were. Targets the layer of fabrication one level subtler still: not the recommendations, but their own explanatory prose, plus a handful of specific residual misses (a visitor's approximate forecast getting rewritten into a stronger new fact — 'warm until around 9' becoming 'the cooling temperature after 9pm'; an occasion assigned unsupported emotional weight — 'a 40th birthday is a meaningful occasion'; the host silently assumed to be the person being celebrated; 'the planned end time' invented from a duration alone with no start/end time supplied; children, sober guests, and unfamiliar guests treated as automatic planning problems; dietary safety implied from a single partial measure like labeling alone). §56 is the one the user called out as most important: a recommendation's own WHY/explanation field must never assert more than the recommendation itself — 'keep food self-serve' needs no justification, and does not get 'because otherwise everyone will queue at once' bolted onto it. Fixed one pre-existing internal contradiction found while adding these: §4's own example list of 'observable event states' included 'the planned end time is approaching' — exactly what new §54 now bans; changed to 'the gathering is approaching the length the visitor intended'. router.outputGuard gained 10 more prohibit categories. Also fixed a real repair-artifact bug found live during this pass's testing: a guard repair on a plain-string array (this time budget_priorities.protect_spending_on) copied a sibling item verbatim instead of writing something new, producing an exact duplicate line — pruneEmpties() (renamed in spirit, not in name) now also collapses exact-duplicate strings within the same array, case-insensitive/trimmed, not just blanks. Live-verified across THREE scenarios including a genuinely different party type per the user's own explicit final-verification request (a children's birthday party, ages 6, peanut allergy, no play structure) — added as a permanent third golden case since it exercises a materially different architecture (two-phase structure, kid-safety framing) the other two never would. The guard fired on all three runs and used SEVERAL of the brand-new categories live, including explanation_asserts_more_than_the_recommendation_it_supports (§56) and visitor_forecast_strengthened_into_a_new_fact (§44) — confirmed load-bearing, not decorative. optionalSections added to all 3 cases (helping_people_connect, conversation_catalysts, things_to_plan_for) after a live push-gate false positive: §57 (EMPTY SECTIONS ARE ALLOWED) means these arrays are DESIGNED to be sometimes empty, and a fresh live call on case 1 correctly returned an empty conversation_catalysts where the recorded golden had a non-empty one — check-golden flagged that as a regression by default. This is the checker's own documented escape hatch (see check-golden.js's optionalSections mechanism, same pattern as drive-home's factors_in_favor) for a section that's deliberately variable, not a workaround. Do not remove these three from optionalSections without also reverting §57 and §40."
   },
   "cases": [
     {
@@ -25,116 +25,119 @@
         "helping_people_connect": [
           {
             "idea": "Host-led introductions at the door.",
-            "how": "When each pair arrives, introduce them briefly to whoever is already there by name and how you know each person — nothing more unless you have a genuine connection to mention.",
-            "when": "As each pair arrives, before they settle.",
-            "why_it_fits": "With nine people in a small flat and no existing connections across groups, a name and a context ('from the old job,' 'my neighbours downstairs') are the facts available to introduce people."
+            "how": "When each pair arrives, briefly introduce them to whoever is already there by name and how you know them — nothing more unless you know a genuine connection worth sharing.",
+            "when": "Each time a new pair arrives, before stepping back.",
+            "why_it_fits": "The flat is small enough that people will be physically close regardless, and a name plus context removes the need to guess how someone fits."
           }
         ],
         "conversation_catalysts": [
-          "The flat itself — what you kept, what you got rid of, what you are still figuring out — is a ready topic at a housewarming that requires nothing to set up.",
-          "If you already have anything in the flat that has a story attached to it — a piece of furniture, artwork, or an object from somewhere — it can be talked about if someone asks, without needing to stage it as a prompt."
+          "The flat itself — the layout, what you kept, what you got rid of, what you still need — is a natural subject for a housewarming and gives people something concrete to ask about without preparation.",
+          "If you have anything in the flat that has a story behind it, leaving it somewhere visible gives people something specific to react to rather than having to generate a topic cold."
         ],
         "food_and_drink": {
-          "format": "Grazing, with everything laid out before the first guest arrives. A corridor kitchen makes serving individual portions from in there impractical, and a self-serve spread means you are not stuck in the kitchen for the first half of the gathering.",
-          "timing": "Have food available from the moment people arrive so there is no waiting period and no serving moment that interrupts early conversation. Replenish from the kitchen as needed rather than doing a single big reveal.",
+          "format": "Self-serve grazing. With nine people in a one-bed flat, a corridor kitchen and five seats, a served or plated format would require the host to make repeated trips and create a queue. Food set out where people can reach it lets the gathering run without those interruptions.",
+          "timing": "Have food out from the start. It gives arriving guests something to do immediately and removes the need for a timed serving moment that would interrupt conversation.",
           "dietary_considerations": "",
-          "special_touch": "One drink that feels slightly deliberate — a simple punch, a specific beer, or a non-alcoholic option you made rather than bought — can mark the occasion without adding much effort or cost, if that appeals to you."
+          "special_touch": "A couple of drinks that feel slightly more considered than the basics — a specific soft drink, a sparkling water, or a single good beer — without overcomplicating the selection."
         },
         "music": {
           "show": true,
-          "arrival": "Keep it quiet enough that people do not have to raise their voices — the flat is small and sound will build quickly once nine people are talking. Background level only.",
-          "later": "Once the room is full, consider turning it down further or off entirely. In a one-bed flat at capacity, music competes with conversation and adds to overall noise.",
-          "wind_down": "Lower or stop music before the building noise rule applies — this also reduces the overall sound level at a point when the gathering is naturally entering its final phase."
+          "arrival": "Something with a relaxed, low-key quality that does not compete with conversation — keep it at a level where people do not need to raise their voices to be heard across a small room.",
+          "later": "No change needed unless the mood shifts noticeably — if conversation is carrying the room, the music level it is already at is working.",
+          "wind_down": "Lower the volume gradually as the gathering approaches the length you intended, and stop or mute it before the building noise rule applies if it would otherwise be audible to neighbours below."
         },
         "budget_priorities": {
-          "approach": "With $120 and nine guests, decide on food and drink first, since those are the only practical expenses that directly affect all nine people. Anything left can go toward optional extras.",
+          "approach": "With a $120 budget and nine guests, decide first what the gathering needs to function — food and drink — and only then consider anything optional. There is no basis to say whether $120 will cover the full cost without knowing what you plan to serve or what you already have.",
           "protect_spending_on": [
-            "Enough food for nine people to graze across roughly three hours.",
-            "Drinks, including at least one non-alcoholic option, since you cannot know in advance what people do and do not drink."
+            "Enough food for a three-hour grazing spread.",
+            "A reasonable selection of drinks, including non-alcoholic options."
           ],
           "keep_secondary": [
-            "Decorative or occasion-specific items — the flat being new is the occasion, and it does not need to be dressed for the event."
+            "Decorations or occasion-specific items — a housewarming is already a reason to be in the flat."
           ],
           "use_what_you_have": [
-            "If you already have serving dishes, use them rather than buying disposables.",
-            "If you have a speaker, it covers music at no cost.",
-            "If you have floor cushions, extra chairs, or a folding chair available, bring them out — the seating gap is real and worth closing before guests arrive."
+            "If you already have serving dishes, boards, or trays, use those before buying disposables.",
+            "If you have speakers or a device that can play music in the living room, that is sufficient — there is no need to buy or rent audio equipment for a space this size without knowing whether what you own already works for it."
           ]
         },
         "things_to_plan_for": [
           {
-            "issue": "The described space does not comfortably seat all nine guests at once, and the gap between available seating and guest count is significant.",
-            "plan": "Decide before the gathering whether you want to supplement seating — borrowed chairs, floor cushions — or treat it as a stand-and-move gathering from the start, so you are not improvising once people arrive."
+            "issue": "The living room seats five and the flat holds nine guests — not everyone will have a seat at the same time.",
+            "plan": "Decide in advance whether you are comfortable with a standing-and-moving gathering, and if you want more seating, identify what you could add from what you already have or borrow before the event."
           },
           {
-            "issue": "The corridor kitchen limits how much you can do in there while people are present.",
-            "plan": "Have everything set out and ready before anyone arrives so the kitchen is only needed for replenishing, not for active hosting."
+            "issue": "The corridor kitchen is not a usable social space and will create a bottleneck if it becomes a gathering point.",
+            "plan": "Keep the kitchen a service area only — set food and drinks in or near the living room so guests do not need to go into the kitchen during the event."
           },
           {
-            "issue": "You said the building has a noise rule after 10pm and thin floors.",
-            "plan": "Know when your gathering started relative to that limit, and plan to reduce avoidable noise — music, volume of activity — before that point rather than at it."
+            "issue": "The building has a noise rule and thin floors, both of which are relevant with nine people in a first-floor flat.",
+            "plan": "Decide what time you want to begin winding down relative to the noise rule, and keep music and general volume in check throughout — not just at the end."
           },
           {
-            "issue": "The neighbours from downstairs are guests, which means the usual option of accepting some downstairs noise complaints does not apply.",
-            "plan": "Know when your gathering started relative to the 10pm noise limit, and plan to reduce avoidable noise — music, volume of activity — before that point rather than at it."
+            "issue": "The neighbours from downstairs are guests, and they are also directly affected by noise from the flat above them.",
+            "plan": "You do not need to treat this as a problem in advance, but it is worth being straightforward with them early in the evening if noise or footsteps are a concern for them — they are well placed to say so."
           }
         ],
         "event_read": {
-          "what_matters": "Nine people in a one-bed flat with corridor kitchen and five-seat living room means the physical setup is the central design problem — not the social one. The neighbours are a genuine wildcard only in the sense that they are less familiar to you; that is worth one deliberate introduction, not a structural intervention.",
-          "design_priority": "Keep the host free from continuous room management so the gathering can run on conversation and comfort rather than coordination."
+          "what_matters": "Nine people in a one-bed flat with five-seat capacity means the room will feel full, and guests from three separate parts of your life may not know anyone outside their own pair — so the design should make that physical reality comfortable rather than fight it. The noise constraint and thin floors set a practical ceiling on how lively the gathering can get.",
+          "design_priority": "Keep the setup simple and low-effort enough that you spend the three hours as a host who is present, not one who is managing."
         },
-        "event_shape": "Let arrival be slow and unstructured — people finding spots, drinks in hand, no moment where everyone is expected to do the same thing at once. Around halfway, if it feels right, make one brief occasion of the housewarming itself — something simple that acknowledges the new place — then return to open time. The final stretch needs no new activity; the host simply stops introducing anything new and lets the evening find its own level before wrapping up directly.",
+        "event_shape": "Let arrival run until it has run its course naturally, with food and drinks available from the start so there is nothing to wait for. Once guests have settled, the gathering can simply be conversation — no programmed midpoint activity is needed for a chill housewarming at this scale. Keep an eye on the noise level as the evening progresses given the thin floors and building rule, and begin winding down before the three hours are up so the ending does not feel abrupt.",
         "timeline": [
           {
             "time": "Arrival",
             "phase": "Arrival",
-            "action": "Have drinks accessible immediately — on a surface guests can reach themselves — so no one is waiting to be served and the corridor kitchen stays clear.",
-            "host_job": "Welcome each arrival, introduce the neighbours by name and how you know them since they are the least-connected guests, then step back.",
-            "why": "Self-serve removes a repeated logistical trip through a corridor kitchen and means you are not stuck in there while guests are arriving.",
-            "adjust_if": "If the neighbours arrive before any of the work couples, spend a few more minutes with them until another guest arrives who you can fold them into."
+            "action": "Have drinks and food set out and accessible before the first guest arrives. Clear a path through the corridor kitchen so it is not a bottleneck.",
+            "host_job": "Welcome each arrival, point out where drinks and food are, and make introductions where you know a useful connection between people.",
+            "why": "Self-serve from the start means you are not running back and forth to the kitchen every time someone arrives, and guests are not waiting on you.",
+            "adjust_if": ""
           },
           {
             "time": "+20 min",
             "phase": "Settling In",
-            "action": "Nothing new. Let people settle — standing, sitting on the floor, wherever they land. Food if you are serving it can come out now or was already accessible.",
-            "host_job": "Move around the room naturally. Make any remaining introductions where you know a genuine point of connection; otherwise names and context are enough.",
-            "why": "The room is small and will feel full. The plan at this point is simply to not add any new demands on it.",
-            "adjust_if": ""
+            "action": "Nothing new to introduce. Let the room continue as it is.",
+            "host_job": "Stop managing arrivals and join the conversation. If you notice someone standing without an obvious group, draw them into what you are already discussing or make an introduction if you have a genuine connection to offer.",
+            "why": "The practical setup is done. The host being at ease is more useful now than any further arrangement.",
+            "adjust_if": "If guests are still arriving steadily, stay in arrival mode a little longer."
           },
           {
             "time": "Around halfway",
-            "phase": "Shared Moment",
-            "action": "If you want one brief occasion moment — a short toast to the new flat, a thank-you for coming — do it here. Keep it under a minute. This is optional: skip it if conversation is already running well and an interruption would cost more than it adds.",
-            "host_job": "Say the thing simply and briefly, then return to the room. Do not extend it.",
-            "why": "A housewarming has a natural occasion built in. A brief acknowledgment takes under a minute and lets you return to the room immediately.",
-            "adjust_if": "If it feels unnecessary or the moment does not present itself naturally, leave it out entirely. The gathering does not require it."
+            "phase": "Open",
+            "action": "Nothing new to introduce. The gathering is in full swing — let it run.",
+            "host_job": "Refresh drinks if needed, check that food is still accessible, and otherwise be a guest at your own party.",
+            "why": "A three-hour gathering at this scale does not need a midpoint intervention. If conversation is working, interrupting it adds nothing.",
+            "adjust_if": ""
           },
           {
             "time": "Final 45 min",
-            "phase": "Open",
-            "action": "Nothing new. Stop introducing any activities or topics. If food is largely done, consolidate what remains rather than replenishing.",
-            "host_job": "Enjoy the gathering. You do not need to manage the room at this point.",
-            "why": "Adding anything new this late extends the event past its natural close and increases the risk of running into the noise constraint.",
-            "adjust_if": ""
+            "phase": "Wind-down",
+            "action": "Stop introducing anything new. Begin light, practical tidying — clear obviously finished plates and bottles as you pass them.",
+            "host_job": "Keep talking with guests, but begin moving naturally toward the end. Clear up only what you would clear anyway, not as a signal — it reduces work later.",
+            "why": "A gradual, practical wind-down avoids a sudden ending while ensuring the gathering finishes before the noise rule becomes relevant.",
+            "adjust_if": "If the gathering is still going and noise levels are comfortable, there is no need to rush. Hold here until the room feels ready."
           },
           {
             "time": "Final 15 min",
             "phase": "Wind-down",
-            "action": "Begin saying goodnight to guests who are already making moves to leave. Do any light, practical tidying — collecting empty cups, consolidating bottles — because it needs doing regardless.",
-            "host_job": "Be warm and direct. If the event needs to end by a particular point because of the noise rule, say so clearly rather than hoping the room reads environmental signals.",
-            "why": "A small flat with a noise constraint needs a clear ending, not a gradual one managed through atmosphere.",
-            "adjust_if": "If guests are already gathering coats and wrapping up naturally, you may not need to say anything beyond goodbye."
+            "action": "Thank guests directly and let them know the evening is wrapping up.",
+            "host_job": "Say the script below warmly and clearly. See guests out individually as they leave.",
+            "why": "A clear, friendly statement is simpler and kinder than hoping people read environmental cues.",
+            "adjust_if": ""
           }
         ],
         "wind_down": {
           "signals": [
-            "Stop replenishing food and drinks — consolidate what is left rather than opening anything new.",
-            "Begin saying proper goodbyes to the first guests who move toward leaving, which naturally brings the evening to a close.",
-            "If the noise constraint is approaching and the room is still lively, name it directly rather than hoping people infer it."
+            "Clear remaining food and bottles from the table — practical tidying, not theater.",
+            "Lower music volume if it has been on, so conversation becomes the natural closing mode."
           ],
-          "script": "This has been really lovely — thank you all for coming to see the place. I should start winding things down, partly because of the building noise rule, but mostly because it is getting late. So glad you came."
+          "script": "This has been such a good evening — really glad you all came. I am going to start wrapping up, but it has meant a lot to have you here."
         }
-      }
+      },
+      "optionalSections": [
+        "helping_people_connect",
+        "conversation_catalysts",
+        "things_to_plan_for"
+      ]
     },
     {
       "name": "fortieth-birthday-mixed-guests-with-allergies",
@@ -153,132 +156,254 @@
       "output": {
         "helping_people_connect": [
           {
-            "idea": "Host-led introductions at the door.",
-            "how": "When you greet arriving guests, briefly introduce them to whoever is nearby using names and how you know each person — nothing more unless you know a genuine point of connection.",
-            "when": "As each guest arrives, during the first part of the gathering.",
-            "why_it_fits": "About a third of the 22 guests haven't met each other, and arrivals are a natural moment to make introductions without interrupting ongoing conversations."
-          },
-          {
-            "idea": "Keep the space open between inside and outside.",
-            "how": "Leave the kitchen-to-backyard flow unobstructed so guests move between areas naturally rather than settling into fixed clusters.",
-            "when": "From the start and throughout.",
-            "why_it_fits": "The indoor-outdoor layout means guests can move between areas naturally without clustering in one spot, and the kitchen-to-backyard flow makes that easy to do."
+            "idea": "Host-led introductions at arrival.",
+            "how": "When you greet someone who hasn't met the people already there, introduce them by name and how you know them — nothing more is needed unless you know a genuine point of connection.",
+            "when": "As each new guest arrives, before the gathering gets large enough that you lose track of who has met whom.",
+            "why_it_fits": "About a third of 22 guests haven't met each other. A few introductions from you as people arrive help them orient to the space."
           }
         ],
-        "conversation_catalysts": [
-          "Leave the space unstructured. Guests will naturally gravitate toward conversation and the food and drinks available to them."
-        ],
+        "conversation_catalysts": [],
         "food_and_drink": {
-          "format": "Grazing-style — food set out for guests to help themselves. With 22 people across an indoor-outdoor space and a relaxed vibe, this avoids a serving bottleneck, keeps the host out of a serving role, and suits a four-hour gathering where people arrive and move around.",
-          "timing": "Have food available from the moment guests start arriving rather than at a designated serving moment. With kids in attendance and a four-hour window, having something out immediately reduces wait and keeps the gathering low-maintenance from the start.",
-          "dietary_considerations": "Two guests have tree nut allergies — keep tree nuts out of shared dishes entirely rather than labeling around them, since cross-contact on a grazing table is hard to control. One guest is gluten-free — label gluten-containing items clearly and make sure at least a few dishes are naturally gluten-free and clearly identified as such. One guest is sober — have appealing non-alcoholic options available from the start alongside any alcohol, not as an afterthought.",
-          "special_touch": "A dedicated non-alcoholic drink option that's a bit more considered than water or soda — a simple fruit-based punch, a sparkling mocktail, or a make-your-own spritzer setup if you're up for it. It serves the sober guest without singling them out and gives everyone an alternative."
+          "format": "Self-serve grazing spread. With 22 people across a backyard, patio, kitchen, and living room, this format lets guests eat on their own schedule without requiring the host to coordinate a serving moment.",
+          "timing": "Have food available from the start so arriving guests can help themselves immediately rather than waiting for a signal.",
+          "dietary_considerations": "Two guests have tree nut allergies — keep all tree-nut-containing items clearly labeled, use separate serving utensils for those dishes, and verify any purchased or catered items for tree nut ingredients before the event; do not rely on appearance alone. One guest is gluten-free — label gluten-free items clearly and use separate serving utensils to avoid cross-contact. One guest is sober and fine with others drinking — make sure at least one appealing non-alcoholic option is available alongside anything alcoholic, no special treatment needed beyond that.",
+          "special_touch": "If you want one cohesive birthday-specific food moment — a cake, dessert spread, or whatever fits the person — keep it simple and bring it out when the gathering feels settled rather than scheduling it to the minute."
         },
         "music": {
           "show": true,
-          "arrival": "Keep music present but at a volume where guests don't need to raise their voices — the purpose at this stage is to fill silence, not to set a performance tone.",
-          "later": "You can let the volume or tempo shift slightly as the gathering fills out and conversation is carrying itself, but keep it low enough that people across the patio can still talk easily.",
-          "wind_down": "As the gathering moves toward its end and you expect it to cool down after a few hours, lowering the volume gradually is a simple way to reduce the overall sound level without an abrupt change — useful given the late-evening temperature shift may already be moving people indoors."
+          "arrival": "Start at a volume low enough that people can talk at a normal level without raising their voices — the covered patio and indoor-outdoor flow mean sound carries across the whole space.",
+          "later": "Keep the level consistent through the main part of the evening; adjust only if the gathering moves predominantly indoors, where the same volume may feel louder.",
+          "wind_down": "You mentioned the temperature should cool by around 9pm — if guests move indoors or the outdoor group thins, lower the volume to match the smaller, quieter setting."
         },
         "budget_priorities": {
-          "approach": "With 22 guests over four hours, food and drink will be the most variable cost — plan that first and let everything else follow from what remains. Dietary constraints here are hard constraints, not preferences, so reliable labeling and safe food handling are part of that core spend, not optional extras.",
+          "approach": "With 22 guests, food and drink will be the largest practical expense — plan those first and see what remains for anything else.",
           "protect_spending_on": [
-            "Food and grazing spread — enough variety to cover the dietary constraints without making the constrained guests feel like an afterthought.",
-            "Drinks — including a considered non-alcoholic option alongside whatever else you're offering.",
-            "Any rental or borrowing needed if your current setup doesn't seat or serve 22 comfortably across the indoor-outdoor space."
+            "Food and drink for 22, including clearly safe options for the two tree nut allergies, the gluten-free guest, and non-alcoholic choices for the sober guest.",
+            "Any rental or additional seating and surface space if the backyard and patio won't otherwise give people somewhere to set food and drinks."
           ],
           "keep_secondary": [
-            "Decorations — the backyard and covered patio described are already a setting; decor is optional at a relaxed gathering.",
-            "Activity or game equipment — only worth spending on if the group specifically calls for it."
+            "Decorations — the backyard and covered patio already provide a setting.",
+            "Any entertainment or structured activity — the stated vibe is chill and the guest list is mostly close friends."
           ],
           "use_what_you_have": [
-            "If you already have serving platters, coolers, or a drinks station of some kind, use those before buying anything new.",
-            "If you have outdoor lighting already — string lights, lanterns, or otherwise — have it ready to switch on as it cools and gets darker toward the end of the evening.",
-            "If you have a speaker, use it; this gathering doesn't call for anything more than that."
+            "If you already have a speaker that covers the patio and indoor space adequately, use it rather than renting.",
+            "If you have serving platters, coolers, or tables, use them before buying or renting equivalents."
           ]
         },
         "things_to_plan_for": [
           {
-            "issue": "The covered patio fits around 25 standing, but the full guest list is 22 — so if guests are spread across the patio, kitchen, and living room at different times, the patio alone may feel at or near capacity during peak moments.",
-            "plan": "Decide in advance whether the kitchen and living room are genuinely usable overflow space or just passthrough — if they're usable, make that clear by having drinks or food accessible there too, not only outside."
+            "issue": "The described outdoor space fits roughly 25 standing, and guests will also have kitchen and living room access — but if most people are outside at once, it will be near capacity.",
+            "plan": "Decide in advance whether the kitchen and living room are open as overflow guest space or primarily for food preparation, so you can direct people if the patio feels crowded."
           },
           {
-            "issue": "Late September with an expected temperature drop around the later part of the evening means the outdoor setup may become uncomfortable for some guests before the gathering ends.",
-            "plan": "Have a plan for what happens when it cools — whether that's moving the core of the party indoors, having something warm available to drink, or simply accepting that some guests may drift inside as the temperature drops."
+            "issue": "You expect it to stay warm until around 9pm — if the gathering runs to its intended length, the later portion may be cooler.",
+            "plan": "Decide in advance whether the kitchen and living room are open as overflow guest space or primarily for food preparation, so you can direct people if the patio feels crowded. If the weather shifts to be uncomfortable, you'll have an indoor option to offer."
           },
           {
-            "issue": "Three children under 10 are attending a four-hour evening gathering.",
-            "plan": "Check in with the parents about what those kids will need — whether that's a quieter indoor spot, something to do, or simply knowing where the bathroom is — rather than building assumptions about it into the plan."
+            "issue": "Tree nut allergies require ingredient verification, not just label reading.",
+            "plan": "Before the event, check ingredient lists on anything purchased or prepared by someone else — surface-level avoidance is not a substitute for confirmed ingredient safety."
           },
           {
-            "issue": "Tree nut allergies require more than labeling on a shared grazing table — cross-contact between dishes is a real consideration.",
-            "plan": "Decide before shopping whether to make the entire spread tree-nut-free (simpler and safer) or to keep nut-containing items physically separate with dedicated serving utensils — and communicate whichever approach you choose to those guests directly."
+            "issue": "Three children under 10 are attending, and their needs during a four-hour adult gathering are unknown.",
+            "plan": "Check with their caregivers ahead of time whether they need anything specific — don't assume the standard setup covers it."
           }
         ],
         "event_read": {
-          "what_matters": "About a third of 22 guests haven't met each other, so the design needs to make it easy for people to move and talk without requiring the host to actively manage introductions all night. The covered patio is the natural center, but the kitchen and living room create useful overflow that prevents the space from feeling crowded.",
-          "design_priority": "Keep the host present and relaxed, not orchestrating — the setup should do most of the work."
+          "what_matters": "About a third of 22 guests haven't met each other, so the gathering needs enough openness for conversation to form naturally without requiring the host to orchestrate it. The two dietary allergies and the gluten-free requirement need to be handled at the food setup so no one has to ask or guess.",
+          "design_priority": "Keep the host free to be present and enjoy the gathering rather than managing it — the setup does the work, the host just shows up."
         },
-        "event_shape": "Let the first stretch be purely arrival and settling: food and drinks available from the start, no structured moments, no host announcements. Around the midpoint, if it feels right, mark the birthday briefly — a toast or a simple 'glad you're all here' moment — then return to open conversation for the rest of the event. As the weather cools later on, the indoor spaces become a natural extension rather than a fallback. The plan has one optional focal point and otherwise stays out of the way.",
+        "event_shape": "Let the gathering open loosely so arriving guests can settle into the space and find their footing without needing direction. Food and drinks available from the start removes the need for any formal 'opening.' If a shared birthday moment fits naturally at some point in the middle stretch, it can happen then — but only if it genuinely suits whoever is being celebrated. The final stretch winds down without ceremony: consolidate food, slow the pace, and close warmly when the time feels right.",
         "timeline": [
           {
             "time": "Arrival",
             "phase": "Arrival",
-            "action": "Food and drinks fully set out before the first guest arrives. Dietary-safe options clearly labeled for the tree nut and gluten-free constraints. The sober guest should have at least one appealing non-alcoholic option, not just water.",
-            "host_job": "Welcome people as they arrive, point them toward food and drinks, make introductions where you know a useful connection exists.",
-            "why": "Removing any wait for food or drink means the host doesn't need to manage a serving moment during the busiest part of arrival.",
+            "action": "Food, drinks, and seating already out. Allergy-safe options labeled clearly at the table. The covered patio is the main gathering space, with kitchen and living room available.",
+            "host_job": "Welcome each person, make introductions where you know a useful connection, then step back. You don't need to place people.",
+            "why": "Having everything ready removes the need for any serving moment and lets the host stay present rather than running logistics.",
             "adjust_if": ""
           },
           {
             "time": "+30 min",
             "phase": "Settling In",
-            "action": "Nothing new to introduce. Let food, drinks, and conversation continue. The patio, kitchen, and living room are all open — people can find their own comfortable spots.",
-            "host_job": "Stop managing arrivals and join the gathering. Make any remaining introductions that seem genuinely useful, then let it run.",
-            "why": "By this point most guests who plan to arrive early will have arrived. The host's job shifts from logistics to presence.",
-            "adjust_if": "If people are still arriving steadily, stay in arrival mode a little longer before stepping back."
+            "action": "No new setup needed. Let the gathering continue as it is.",
+            "host_job": "Check that allergy-labeled food is still clearly marked if things have shifted around. Otherwise, join a conversation.",
+            "why": "A brief practical check at this point keeps the food table accurate without requiring ongoing monitoring.",
+            "adjust_if": ""
           },
           {
             "time": "Around halfway",
             "phase": "Shared Moment",
-            "action": "One brief birthday acknowledgment — a short toast, a simple 'thanks for being here,' or whatever fits the birthday person's preference. Keep it under two minutes. This is optional: if the night is already going well and a pause would interrupt rather than add anything, skip it.",
-            "host_job": "If you want this moment, gather loose attention, say something brief and genuine, and move on. No need to corral everyone into one spot.",
-            "why": "A 40th birthday is a reason people gathered — one small acknowledgment of that is available if it fits. It is not required.",
-            "adjust_if": "If conversation is running well and a pause feels like an interruption, leave it out entirely."
-          },
-          {
-            "time": "Around halfway, continuing",
-            "phase": "Open",
-            "action": "Return immediately to open, unstructured time. No new activities. Replenish food and drinks if needed.",
-            "host_job": "Be a guest at your own party. Check food levels once, handle anything practical that needs handling, otherwise enjoy it.",
-            "why": "The longest stretch of the evening should have the least host involvement. If the setup is working, there is nothing to manage.",
-            "adjust_if": ""
+            "action": "If a shared birthday moment makes sense — a toast, dessert, a brief acknowledgment — this is a natural point to do it. If conversation is going well and nothing is calling for it, skip it entirely.",
+            "host_job": "Make a simple call: does a shared moment serve whoever is being celebrated right now, or would it interrupt something that's already working? Either answer is fine.",
+            "why": "The midpoint is a reasonable time to pause if a pause is wanted — not because the occasion requires one, but because it's the least disruptive slot if you choose to use it.",
+            "adjust_if": "If the moment feels unnecessary or forced, leave it out. The timeline is complete without it."
           },
           {
             "time": "Final 45 min",
-            "phase": "Wind-down",
-            "action": "Stop introducing anything new. If the temperature has dropped and people are moving indoors, let that happen naturally. Begin light cleanup of finished items — empty platters, used cups — as a practical step, not as a signal.",
-            "host_job": "Stay present and social. Do not disappear into cleanup. Remove finished items when convenient, not continuously.",
-            "why": "Reducing available food and tidying finished items is practical end-of-event maintenance, not a behavioral nudge.",
-            "adjust_if": "If the group is still going strong and the planned end time is not a hard constraint, there is no reason to intervene."
+            "phase": "Open",
+            "action": "Stop introducing any new elements. Let the gathering continue at whatever pace it has found.",
+            "host_job": "No managing needed. Be present, enjoy it.",
+            "why": "Protecting this stretch from new activity lets the gathering close at its own pace rather than being restarted.",
+            "adjust_if": ""
           },
           {
             "time": "Final 15 min",
             "phase": "Wind-down",
-            "action": "Say clearly and warmly that the night is wrapping up. Thank people directly. Say goodbye to guests as they leave.",
-            "host_job": "Be explicit that the event is ending — no need to hint. Personal goodbyes are the close.",
-            "why": "Clarity is kinder than ambiguity. A direct, warm close is enough.",
+            "action": "Begin consolidating food — cover or put away items that are mostly finished. You expect it to stay warm until around 9, so if the gathering runs close to that and it has become uncomfortable outside, invite people to move indoors.",
+            "host_job": "Start saying genuine goodbyes to people who are leaving. If the gathering needs to end clearly, say so — see wind-down script.",
+            "why": "Consolidating food is practical cleanup and makes it easier for you to manage the table.",
+            "adjust_if": "If guests are still in full conversation and showing no sign of leaving, don't force it — let it continue a little longer and close when it feels right."
+          }
+        ],
+        "wind_down": {
+          "signals": [
+            "Consolidate and begin putting away food that has been picked over.",
+            "Stop refreshing drinks or offering new ones.",
+            "Begin saying warm, unhurried goodbyes to people who are wrapping up naturally."
+          ],
+          "script": "This has been such a good night — I'm so glad you came. I'm going to start wrapping things up, but thank you for being here."
+        }
+      },
+      "optionalSections": [
+        "helping_people_connect",
+        "conversation_catalysts",
+        "things_to_plan_for"
+      ]
+    },
+    {
+      "name": "kids-sixth-birthday-peanut-allergy",
+      "endpoint": "/api/party-architect",
+      "input": {
+        "occasion": "Kids' birthday party — my daughter is turning 6",
+        "guestCount": "14 (8 kids, 6 accompanying parents)",
+        "whoIsComing": "Kids from her school class and a couple of neighborhood friends. Most of the parents don't know each other — school drop-off nodding acquaintances at most.",
+        "space": "Small backyard with a patch of grass and a covered deck. No pool, no big play structure.",
+        "budget": "$150",
+        "vibe": "Fun & lively",
+        "duration": "~2 hrs",
+        "constraints": "One kid has a severe peanut allergy. Early afternoon on a Saturday, so kids will be full of energy.",
+        "userLanguage": "en"
+      },
+      "output": {
+        "helping_people_connect": [
+          {
+            "idea": "Brief parent introductions at arrival",
+            "how": "As each family arrives, introduce the accompanying parent by name and mention which child is theirs — names and relationship only, nothing invented about them.",
+            "when": "Each time a new family arrives, before the kids scatter.",
+            "why_it_fits": "The parents described share only a nodding acquaintance, and the natural structure of kids arriving with adults gives you a repeated, low-effort moment to make first-name introductions without gathering everyone at once."
+          }
+        ],
+        "conversation_catalysts": [
+          "A visible sign, chalkboard, or sheet of paper near the parents area asking 'What does your kid think today is going to be like?' — parents fill in their child's answer before the party starts, and the results stay up for others to read."
+        ],
+        "food_and_drink": {
+          "format": "Self-serve grazing — food laid out on a table so kids and parents help themselves rather than waiting for a serving moment. For a two-hour kids party with high energy, a seated meal is harder to coordinate than accessible snacks and a birthday cake or treat at a natural pause point.",
+          "timing": "Have food available from the start so arrivals have something to go to immediately. If you are planning a birthday cake or dessert moment, keep that for the second half of the gathering when most guests have arrived.",
+          "dietary_considerations": "One child has a severe peanut allergy. Keep all food peanut-free — check labels on every packaged item, including items that may contain traces. If you are buying or ordering food prepared elsewhere, verify the ingredients directly rather than relying on appearance or category. Make the peanut-free status clear to the parents of that child so they can verify themselves — do not treat labeling alone as sufficient.",
+          "special_touch": "A small cup of something cold for each kid — juice, lemonade, or similar — ready on a tray when they arrive, so they have something in hand straight away without anyone needing to ask."
+        },
+        "music": {
+          "show": true,
+          "arrival": "Something upbeat and kid-friendly at a volume comfortable for adult conversation — background level, not performance level.",
+          "later": "Keep the same energy or raise it slightly during active play if it fits what is happening outside. If the kids are absorbed in an activity, the music level matters less.",
+          "wind_down": "Lower volume noticeably in the final portion of the gathering so that conversation and goodbyes do not require raised voices."
+        },
+        "budget_priorities": {
+          "approach": "With a fixed budget of $150 covering food, drink, and any supplies or activities, identify the non-negotiable items first and see what remains before spending on extras. Peanut-free compliance may constrain which packaged foods are usable, so check labels before buying in bulk.",
+          "protect_spending_on": [
+            "Peanut-safe food and drink for all 14 guests — kids and parents.",
+            "Birthday cake or a dessert moment, since that is the one food item most likely to be the focal point.",
+            "Any activity supplies if an activity is part of the plan — spend on these before decorative extras."
+          ],
+          "keep_secondary": [
+            "Decorations beyond what you already own.",
+            "Party favors or take-home bags — optional, and easy to skip or simplify."
+          ],
+          "use_what_you_have": [
+            "If you already have a portable speaker, use it rather than buying or renting audio equipment.",
+            "If you have outdoor furniture on the deck, that is your seating for parents without any rental needed.",
+            "If you have a folding table, it can serve as the food station."
+          ]
+        },
+        "things_to_plan_for": [
+          {
+            "issue": "Peanut allergy — food safety cannot be assumed from appearance or general category.",
+            "plan": "Read every label before the party, verify any outside-prepared food directly with the source, and let the allergic child's parent know exactly what is being served so they can make their own assessment."
+          },
+          {
+            "issue": "The covered deck and grass patch may not accommodate all 14 guests comfortably at the same moment, particularly if kids and parents occupy different parts of the space.",
+            "plan": "Note which areas of the yard and deck you expect kids to use for active play and where you'll place food and drinks, so you can set things up accordingly."
+          },
+          {
+            "issue": "Two hours is a short window, and energy among six-year-olds at an early afternoon party on a Saturday may be high throughout.",
+            "plan": "Have at least one structured activity ready to use if free play needs a reset — even something simple like a relay or a group game that does not require equipment you do not already have."
+          },
+          {
+            "issue": "Parents dropping off versus staying is not established, and the mix affects how the space and supervision work.",
+            "plan": "Clarify on the invitation whether parents are expected to stay, so you can plan food quantities and seating accordingly."
+          }
+        ],
+        "event_read": {
+          "what_matters": "Eight energetic kids in a small backyard for two hours means the design job is keeping movement possible and the space from feeling chaotic — not engineering fun, which kids this age generally supply themselves. The peanut allergy is a hard constraint that affects every food decision and needs to be handled before the first guest arrives.",
+          "design_priority": "Give the kids room to move and play, keep the host out of continuous crowd-management, and make the ending clear and easy."
+        },
+        "event_shape": "The first stretch is arrival and free play — kids disperse into the yard and need almost nothing from the host beyond a welcome. Around the midpoint, one brief structured moment (cake, a game, or whatever shared birthday beat fits) gives the party a shape without requiring the host to orchestrate the whole afternoon. After that, the gathering returns to open play and winds down on a clear, practical signal rather than a gradual fade.",
+        "timeline": [
+          {
+            "time": "Arrival",
+            "phase": "Arrival",
+            "action": "Have the yard open and accessible from the moment guests arrive. Any food or drinks that are out should already be confirmed peanut-safe and clearly labeled. No structured activity yet.",
+            "host_job": "Welcome each family, show parents where to put bags and where drinks are, and point kids toward the yard. No herding needed.",
+            "why": "Kids arriving at a backyard with open space and other kids don't need instructions — they'll use it. Getting parents oriented immediately reduces repeat questions.",
+            "adjust_if": ""
+          },
+          {
+            "time": "+20 min",
+            "phase": "Settling In",
+            "action": "Once most expected guests appear to have arrived, stop treating the gathering as in arrival mode. Let play continue without intervention.",
+            "host_job": "Check in briefly with any parents who are standing apart, not to engineer mingling but to make sure they know where things are. Then step back.",
+            "why": "The host's logistical job is mostly done at this point. Continued active management isn't needed and adds work without benefit.",
+            "adjust_if": "If guests are still arriving steadily, stay in arrival mode a little longer."
+          },
+          {
+            "time": "Around halfway",
+            "phase": "Shared Moment",
+            "action": "Bring the kids together for the central birthday moment — cake, candles, singing, or whatever you have planned. Gather them on the deck or a defined spot so the moment has a frame.",
+            "host_job": "Call the kids over, manage the candles or serving, and make sure allergy-safe portions are identifiable for the one guest with a peanut allergy.",
+            "why": "A two-hour kids' party benefits from one anchoring moment that marks it as a birthday rather than just a playdate. Placing it around halfway means kids have already burned energy and the party still has time after it.",
+            "adjust_if": "If kids are mid-game and fully absorbed, wait a few minutes rather than interrupting a moment that doesn't need interrupting."
+          },
+          {
+            "time": "+10 min after shared moment",
+            "phase": "Open",
+            "action": "Return to open play. No new activities needed unless something you already had planned is waiting.",
+            "host_job": "Nothing specific — stay available for practical needs but don't introduce new structure.",
+            "why": "The party has had its shape. The remaining time is for kids to keep playing and parents to finish any conversations before pickup.",
+            "adjust_if": ""
+          },
+          {
+            "time": "Final 15 min",
+            "phase": "Wind-down",
+            "action": "Give families a clear verbal heads-up that the party is wrapping up. If you're sending anything home with kids — a favor, leftover cake — have it ready to hand out.",
+            "host_job": "Make the announcement (see wind_down script), then help gather small belongings and say goodbye to each family as they leave.",
+            "why": "A two-hour kids' party ends better with a clear verbal signal than an ambiguous fade — parents with young children generally appreciate a defined endpoint.",
             "adjust_if": ""
           }
         ],
         "wind_down": {
           "signals": [
-            "Say directly and warmly that the night is winding down — no need to imply it.",
-            "Stop replenishing food and consolidate what remains to one area.",
-            "Begin saying personal goodbyes as people start to leave."
+            "Give a direct verbal announcement to the group that the party is wrapping up in about 15 minutes.",
+            "Begin handing out any take-home items, which makes the ending concrete rather than implied.",
+            "Start saying individual goodbyes to families as they gather their things."
           ],
-          "script": "Hey everyone — this has been such a good night and I am so glad you all came. We are going to start wrapping up, so finish your drinks, grab anything you need, and thank you genuinely for being here."
+          "script": "Okay everyone, we are wrapping up in about 15 minutes — thank you so much for coming to celebrate with us! Grab your kids and your things whenever you are ready, and we will get you sorted on the way out."
         }
-      }
+      },
+      "optionalSections": [
+        "helping_people_connect",
+        "conversation_catalysts",
+        "things_to_plan_for"
+      ]
     }
   ]
 }

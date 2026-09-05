@@ -262,23 +262,105 @@ scenario, input's `whoIsComing` updated to include the visitor's own "Nobody kno
 anybody outside their own pair" sentence (present in the original bug report, omitted
 from the prior golden case by oversight).
 
+## FINAL PROMPT REFINEMENTS pass (2026-09-05, fourth same-day pass — TUNING CLOSED)
+
+User's own framing: "final-polish territory... I would ship it rather than continue
+tuning" once this pass survived one materially different scenario. **§44-57 + a FINAL
+SELF-CHECK were ADDED** (the user was explicit again: keep everything existing, add
+these), placed before FINAL OPERATING RULE. This pass targets the layer under the
+layer: not the recommendations themselves anymore, but their own explanatory prose, plus
+several specific residual misses live review caught in the exact birthday case:
+
+- §44 a visitor's approximate forecast stays exactly what was supplied — "warm until
+  around 9" must never become "the cooling temperature after 9pm" or "a known factor"
+- §45 no invented arrival-time distribution ("most guests will have arrived by...")
+- §46 children attending is not automatically a planning problem — solve a supplied
+  constraint, don't manufacture one; when genuinely unsure, say "check with the parent"
+- §47 an occasion label carries no emotional significance the visitor didn't state
+  ("a 40th birthday is a meaningful occasion" is unsupported)
+- §48 optional must really mean optional — don't schedule a slot for something in the
+  main timeline and then call it optional; the plan must be genuinely complete without it
+- §49 no invented food urgency to justify a design choice that's already sufficient on
+  its own ("self-serve" doesn't need "otherwise everyone will queue at once")
+- §50 dietary: identification and precautions, never a safety GUARANTEE from a single
+  partial measure (labeling alone, utensils alone) — "verify, don't assume from
+  appearance" language, live-matched almost verbatim in testing
+- §51 a sober guest needs a non-alcoholic option, not a special mocktail or ceremonial
+  equal treatment nobody asked for
+- §52 equipment sufficiency depends on the equipment and the space, never guest count
+  alone
+- §53 no invented darkness/sunset fact from a season or month alone
+- §54 a duration is not an end time — never "the planned end time" without a supplied
+  start or end time
+- §55 an occasion doesn't establish who's being celebrated — never assume the host is
+  the person whose birthday it is
+- §56 **the one the user called most important**: a recommendation's WHY/explanation
+  must never assert more than the recommendation itself
+- §57 empty sections are allowed — a shorter plan beats a comprehensive one full of
+  invented needs
+
+**Fixed one pre-existing internal contradiction** found while adding these: §4's own
+"observable event states" example list included "the planned end time is approaching" —
+exactly what new §54 now bans. Changed to "the gathering is approaching the length the
+visitor intended."
+
+`router.outputGuard.prohibit` gained 10 more categories matching the above, and the
+`promise` text gained matching concrete examples, closing with an explicit callout on
+§56 marked "most importantly."
+
+**A real repair-artifact bug found live during this pass's own testing** (not present
+before, or at least not previously observed): a guard repair on
+`budget_priorities.protect_spending_on` copied a sibling array item VERBATIM instead of
+writing something genuinely new, producing an exact duplicate line
+("Drinks — both alcoholic and non-alcoholic options..." twice). Same root cause as the
+earlier "guard blanks a field with no restoration net" bug (`requiredNonEmpty` can't
+help with a dynamically-indexed field) — just a different failure shape. Fixed:
+`pruneEmpties()`'s plain-string-array handling now runs through a new
+`cleanStringArray()` helper that drops blanks AND collapses an exact duplicate
+(case-insensitive, trimmed) within the same array. Re-tested: no recurrence across 3
+fresh live calls.
+
+**Live-verified across three scenarios**, including a genuinely different party type per
+the user's own explicit request as the final gate before shipping: a 6-year-old's
+birthday party (peanut allergy, no play structure, 2-hour window). The guard fired on
+all three and used several of THIS pass's brand-new categories live —
+`explanation_asserts_more_than_the_recommendation_it_supports` (§56),
+`visitor_forecast_strengthened_into_a_new_fact` (§44),
+`childrens_presence_treated_as_a_default_problem` (§46) — confirmed load-bearing, not
+decorative. The children's-party case is kept as a **permanent third golden case**
+(`kids-sixth-birthday-peanut-allergy`) since it exercises a materially different
+architecture (a two-phase structure, kid-safety framing) the other two never would —
+this also satisfies §25's own "quality test across different parties" with a second
+data point in the golden suite, not just the housewarming/birthday pair.
+
+Golden re-recorded as `party-architect-v5`, 3 cases.
+
+**This closes the tuning loop on Party Architect** per the user's own stated intent —
+further correction passes should only happen in response to a NEW concrete live failure,
+not speculative tightening.
+
 ## DO NOT silently reverse
 
 - The new schema shape (see table above) — especially `music.wind_down` vs top-level
   `wind_down` being two DIFFERENT fields.
 - Relative-time-only timeline (no clock times) — this form has no start-time input.
-- `pruneEmpties()` after the v2 guard.
-- The dietary "never a safety assurance, always the procedural step" framing.
+- `pruneEmpties()` / `cleanStringArray()` after the v2 guard (drops blanks AND exact
+  duplicates — both are real, live-observed repair artifacts, not hypothetical ones).
+- The dietary "identify and take precautions, never guarantee safety" framing.
 - `router.outputStandard = 'v2'` + `runOutputGuard` (this tool did NOT have a guard
-  before this pass — do not strip it back to bare `toArray()`).
+  before the first rewrite pass — do not strip it back to bare `toArray()`).
 - `party-plans` as a genuine stored-plan history, not a preview-only log.
-- `SHARED_PROMPT`'s 25-section grounding spec — it replaced the first pass's
-  design/grounding block; don't restore the old prose alongside it.
+- `SHARED_PROMPT`'s 25-section grounding spec (§1-25) — it replaced the very first
+  pass's design/grounding block; don't restore the old prose alongside it.
 - The keep-alive heartbeat + the matching `useClaudeAPI.js` bare-`{error}` check —
-  see above, these two only work together.
-- §26-43 + FINAL OPERATING RULE — these are ADDITIVE to the 25-section spec, not a
-  replacement of it; both pieces stay.
-- The 11 new `outputGuard.prohibit` categories and their matching `promise` examples —
-  live-confirmed load-bearing (see above), not speculative additions.
-- "Shared Moment" must stay conditional in both the prompt AND the generated
-  `adjust_if`/skip framing — do not let it drift back to an assumed default.
+  these two only work together.
+- §26-43 + FINAL OPERATING RULE, and §44-57 + FINAL SELF-CHECK — both ADDITIVE to the
+  25-section spec, not replacements of it or of each other; all pieces stay.
+- All 21 `outputGuard.prohibit` categories added across the three correction passes and
+  their matching `promise` examples — every one of them has fired live in testing at
+  least once (not speculative additions).
+- "Shared Moment" (and any other optional element) must stay conditional in both the
+  prompt AND the generated `adjust_if`/skip framing — do not let it drift back to an
+  assumed default.
+- §56 in particular — if a future correction finds an over-explained recommendation
+  again, sharpen §56 rather than adding a narrower duplicate rule next to it.

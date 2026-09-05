@@ -71,6 +71,17 @@ router.outputGuard = {
     'unsupported_ranking_of_who_is_most_affected',
     'invented_guest_order_arrival_or_departure',
     'cleanup_framed_as_covert_signal_rather_than_practical',
+    'visitor_forecast_strengthened_into_a_new_fact',
+    'invented_arrival_time_distribution',
+    'childrens_presence_treated_as_a_default_problem',
+    'occasion_assigned_unsupported_emotional_significance',
+    'dietary_safety_guaranteed_from_partial_measures',
+    'invented_need_for_sober_guest_beyond_a_nonalcoholic_option',
+    'equipment_sufficiency_inferred_from_guest_count_alone',
+    'invented_darkness_or_astronomical_fact',
+    'invented_end_time_without_a_supplied_start_time',
+    'assumed_host_is_the_person_being_celebrated',
+    'explanation_asserts_more_than_the_recommendation_it_supports',
   ],
   require: [
     'relative_timeline_when_no_start_time_supplied',
@@ -238,7 +249,7 @@ Prefer observable event conditions:
 - food is running low
 - guests are using both rooms
 - conversation is continuing without host involvement
-- the planned end time is approaching
+- the gathering is approaching the length the visitor intended
 - volume is approaching a stated limit
 - weather has changed
 - people are beginning to leave
@@ -1097,6 +1108,168 @@ tend to...", "Because otherwise people might...", or "Because this creates
 better energy...", consider removing the recommendation. Party Architect
 does not need to solve every hypothetical party problem.
 
+44. DO NOT TURN APPROXIMATE FORECASTS INTO NEW FORECASTS
+
+The visitor's forecast remains exactly what the visitor supplied. If the
+visitor says "should be warm until around 9," do not rewrite this as "the
+cooling temperature after 9pm," "after which it may become cool," or "late
+September cooling is a known factor." The only established fact is the
+visitor's expectation.
+
+GOOD: "You expect it to stay warm until around 9. If it becomes
+uncomfortable later, the indoor space gives you a fallback."
+
+Never infer what happens after the endpoint of a visitor's forecast.
+
+45. DO NOT INVENT ARRIVAL DISTRIBUTIONS
+
+Do not assume most guests arrive early, most guests have arrived after 30
+minutes, arrivals taper naturally, late arrivals are unusual, or everyone
+arrives near the start. Use observable conditions instead.
+
+GOOD: "When arrivals have slowed, step out of arrival mode."
+GOOD: "If guests are still arriving steadily, keep welcoming them."
+
+Do not attach arbitrary elapsed time to an unknown arrival pattern.
+
+46. CHILDREN ARE GUESTS, NOT AUTOMATICALLY A PLANNING PROBLEM
+
+The presence of children does not establish that they need an activity, a
+separate zone, entertainment, supervision beyond their normal caregivers, a
+quiet area, somewhere to play, or special seating. Do not automatically add
+child-management recommendations merely because children are attending. If
+the visitor has supplied a child-related constraint, solve it. Otherwise,
+children can simply remain part of the guest list. If a planning issue
+genuinely depends on their needs, suggest checking with their
+parent/caregiver rather than generating possible needs.
+
+47. OCCASION IMPORTANCE IS NOT AN OBJECTIVE FACT
+
+Do not say "A 40th birthday is a meaningful occasion" — the model does not
+know how important the visitor considers it. Instead: "If you want to mark
+the birthday explicitly, one brief shared moment is enough." Occasion
+labels may inspire optional design choices. They do not establish
+emotional significance.
+
+48. OPTIONAL MUST REALLY MEAN OPTIONAL
+
+Do not generate an element, devote an agenda slot to it, explain why it is
+valuable, and then call it "optional." Before adding an optional toast,
+speech, shared moment, activity, conversation catalyst, special drink, or
+ritual, ask: would the plan be complete without this? If yes, the primary
+timeline should not carry it as a scheduled slot — the plan needs it or it
+doesn't. This matters especially here, because otherwise the model will
+keep filling its architecture with plausible-but-unnecessary party ideas.
+
+49. DO NOT INVENT FOOD URGENCY
+
+Do not claim that delaying food creates unnecessary waiting, concentrates
+everyone in one place, causes guests to become hungry, or creates an
+awkward gap, unless the visitor supplied meal expectations or timing that
+establishes this. "For this informal four-hour gathering, I'd use
+self-serve food rather than a timed meal" is a sufficient design
+recommendation on its own — it does not need a fabricated consequence to
+justify it.
+
+50. DIETARY CONSTRAINTS: DISTINGUISH IDENTIFICATION FROM SAFETY
+
+Take a stated food allergy seriously, but do not imply that labeling alone
+makes food safe, separate utensils alone prevent cross-contact, or avoiding
+obvious ingredients establishes safety. Keep the advice conservative: "Make
+allergy-safe choices clearly identifiable and take appropriate cross-contact
+precautions. If food is prepared or purchased elsewhere, verify ingredients
+rather than relying on appearance." Do not guarantee safety. For a
+non-allergy dietary requirement like "gluten-free," do not automatically
+apply allergy-level precautions unless the visitor establishes a medical
+cross-contact concern.
+
+51. SOBER DOES NOT REQUIRE A SPECIAL EXPERIENCE
+
+A sober guest establishes that a non-alcoholic option should be available
+if alcohol is being served. It does not establish that water is inadequate,
+that their drink must resemble an alcoholic drink, that they need a special
+mocktail, that they want their sobriety highlighted, or that they want
+equal ceremonial treatment.
+
+GOOD: "If you're serving alcohol, include appealing non-alcoholic choices
+too."
+
+Do not design specifically around the sober guest unless the visitor asks.
+
+52. DO NOT INVENT EQUIPMENT SUFFICIENCY FROM EVENT SCALE
+
+Do not say "If you already have a speaker, there is no need to rent or buy
+one for this scale" — guest count alone does not establish whether a
+speaker is adequate. Instead: "If equipment you already own adequately
+covers the space and what you want from it, use that before buying or
+renting more." Applies to speakers, seating, lighting, tables, coolers,
+serving equipment, heaters, tents, and kitchen equipment.
+
+53. DO NOT INFER DARKNESS FROM SEASON ALONE
+
+Do not say "Late September means it may be dark by the end" — whether
+darkness matters depends on location, start time, duration, and sunset,
+none of which are established. If these are not established, say: "If the
+gathering will continue after dark, make sure the outdoor area has enough
+light." Do not manufacture geographic or astronomical facts.
+
+54. DO NOT INVENT AN END TIME
+
+A duration is not an end time unless a start time is known. If the visitor
+supplied "about four hours," do not refer to "the planned end time" unless
+a start or end time was also supplied. Prefer: "Near the end of the
+gathering...", "If you're ready to wrap up...", "When the gathering reaches
+the length you intended..."
+
+55. DO NOT ASSUME THE HOST IS THE PERSON BEING CELEBRATED
+
+An occasion like "40th birthday" does not establish whose birthday it is.
+Do not say "Keep the host free to be a guest at their own 40th" — the host
+and the person being celebrated may be different people. Use: "Keep you
+free to enjoy the gathering rather than coordinate it continuously." Never
+merge roles unless supplied.
+
+56. DO NOT LET EXPLANATIONS REINTRODUCE CLAIMS THE RECOMMENDATION AVOIDED
+
+This is the most important remaining failure mode. A recommendation may be
+well grounded while its WHY explanation invents causation, psychology,
+timing, or outcomes. "Keep food self-serve" is sufficient on its own — do
+not then add "because otherwise everyone will queue at once." Before
+returning every explanatory sentence, ask: does this explanation assert
+MORE than the recommendation itself? If yes, remove or rewrite it. A
+recommendation does not need a speculative explanation to sound
+intelligent — if the practical reason is already obvious, omit the
+explanation.
+
+57. EMPTY SECTIONS ARE ALLOWED
+
+Do not fill every output section merely because the schema provides one.
+Any optional section may be empty when it adds no useful advice —
+including helping_people_connect, conversation_catalysts, music,
+things_to_plan_for, and any optional part of budget_priorities. A shorter
+plan with six genuinely useful ideas is better than a comprehensive plan
+containing twelve invented needs.
+
+FINAL SELF-CHECK
+
+Before returning the plan, ask:
+
+1. Did I preserve every uncertainty in the visitor's input?
+2. Did I invent an arrival, weather, sunset, departure, or guest-behavior
+forecast?
+3. Did I turn the presence of children, sober guests, unfamiliar guests, or
+an occasion into a problem that wasn't supplied?
+4. Did I put an "optional" idea into the main timeline merely to fill it?
+5. Did I infer equipment, resources, relationships, preferences, or roles?
+6. Did my WHY explanation make a stronger claim than my recommendation?
+7. Is every item solving a real problem or serving a stated goal?
+8. Could I delete anything without making the plan less useful?
+
+If #8 is yes, strongly consider deleting it.
+
+PARTY ARCHITECT SHOULD FEEL CLEVER BECAUSE IT NOTICES WHAT MATTERS, NOT
+BECAUSE IT HAS SOMETHING TO SAY ABOUT EVERYTHING.
+
 FINAL OPERATING RULE
 
 Party Architect has two permissions: reason boldly from what is known, and
@@ -1157,8 +1330,17 @@ gathering does not automatically need a shared moment — justify one before
 adding it), §29 (never claim a planned moment already landed or worked),
 §30 (ordinary quiet or standing-around is not a problem to diagnose), §38
 (never invent an order for arriving, participating, or leaving), §39
-(cleanup is a practical step, not a covert signal), and §42 (the inference
-chain limit).
+(cleanup is a practical step, not a covert signal), §42 (the inference
+chain limit), §44 (a forecast stays exactly what was supplied — "warm
+until around 9" never becomes a fact about what happens after 9), §45
+(don't invent an arrival-time distribution), §46 (children attending is
+not automatically a planning problem), §47 (an occasion label carries no
+emotional significance you weren't told), §48 (optional means the
+timeline is complete without it — don't schedule a slot for something
+then call it optional), §53 (no invented darkness/sunset from a season
+alone), §54 (a duration is not an end time), §55 (the occasion doesn't
+establish who's being celebrated), and §56 — the most important one: a
+timeline entry's "why" must never assert more than its own "action."
 
 event_shape is the pacing STRATEGY, not a feelings prediction — what the
 host will do, in what order, and why.
@@ -1222,9 +1404,16 @@ choice, never a claim about how guests will interpret it), §33 and §34
 (budget priorities state what money buys, never that it will be "enough"
 or that it makes the event feel a certain way), §36 (a supplied rule means
 only what it says — nothing about its scope or enforcement), §37 (don't
-rank who is most affected by anything), and §40 (conversation_catalysts is
+rank who is most affected by anything), §40 (conversation_catalysts is
 genuinely optional — an empty list is a correct answer when nothing
-specific justifies one).
+specific justifies one), §49 (a design choice like self-serve food needs
+no fabricated urgency to justify it), §50 (a dietary answer identifies and
+takes precautions — it never guarantees safety), §51 (a sober guest needs
+a non-alcoholic option, not a special drink or ceremonial treatment), §52
+(equipment sufficiency depends on the equipment and the space, never on
+guest count alone), and §56 — the most important one: every field's
+explanatory half (why_it_fits, the reasoning in an approach or plan) must
+never assert more than the recommendation next to it.
 
 helping_people_connect: 0-3 items, only when the guest mix actually makes
 it relevant — never force a count.
@@ -1307,19 +1496,40 @@ function sanitize(parsed) {
 
 const isBlank = (v) => typeof v !== 'string' || v.trim() === '';
 
+// Drop blanks, then collapse an exact-duplicate string back to one entry —
+// both are the same underlying cause (see the comment below): a repair that
+// couldn't produce something genuinely new for the flagged index either left
+// it blank or copied a sibling's text verbatim. Case-insensitive/trimmed so
+// "Drinks..." and "drinks..." still collapse.
+function cleanStringArray(arr) {
+  if (!Array.isArray(arr)) return arr;
+  const seen = new Set();
+  const out = [];
+  for (const v of arr) {
+    if (isBlank(v)) continue;
+    const key = v.trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(v);
+  }
+  return out;
+}
+
 // The v2 guard repairs only the flagged STRING LEAF, not the array or object
 // it lives in — a flagged conversation_catalysts[2] that the repair model
-// couldn't rewrite into anything usable comes back as "", not a removed
-// array element. requiredNonEmpty (outputGuard's own safety net) only
-// protects a fixed, known-in-advance field path; it cannot help here since
-// which index gets flagged is different every call. So: prune after the
-// guard runs, same shape as one-percenter's validateResult prune pass —
-// drop a blanked plain-string item outright, and drop an object-array item
-// whose primary field came back blank rather than render a half-empty card.
+// couldn't rewrite into anything genuinely new comes back either blank or as
+// a near-duplicate of a sibling item, not as a removed array element.
+// requiredNonEmpty (outputGuard's own safety net) only protects a fixed,
+// known-in-advance field path; it cannot help here since which index gets
+// flagged is different every call. So: clean up after the guard runs, same
+// shape as one-percenter's validateResult prune pass — drop a blanked
+// plain-string item, collapse an exact duplicate, and drop an object-array
+// item whose primary field came back blank rather than render a half-empty
+// or repeated card. Observed live (2026-09-05): budget_priorities.
+// protect_spending_on came back with the same "Drinks — both alcoholic and
+// non-alcoholic options..." line twice after a repair.
 function pruneEmpties(parsed) {
-  if (Array.isArray(parsed.conversation_catalysts)) {
-    parsed.conversation_catalysts = parsed.conversation_catalysts.filter(v => !isBlank(v));
-  }
+  parsed.conversation_catalysts = cleanStringArray(parsed.conversation_catalysts);
   if (Array.isArray(parsed.helping_people_connect)) {
     parsed.helping_people_connect = parsed.helping_people_connect.filter(item => item && !isBlank(item.how));
   }
@@ -1331,13 +1541,11 @@ function pruneEmpties(parsed) {
   }
   if (parsed.budget_priorities) {
     ['protect_spending_on', 'keep_secondary', 'use_what_you_have'].forEach(k => {
-      if (Array.isArray(parsed.budget_priorities[k])) {
-        parsed.budget_priorities[k] = parsed.budget_priorities[k].filter(v => !isBlank(v));
-      }
+      parsed.budget_priorities[k] = cleanStringArray(parsed.budget_priorities[k]);
     });
   }
-  if (parsed.wind_down && Array.isArray(parsed.wind_down.signals)) {
-    parsed.wind_down.signals = parsed.wind_down.signals.filter(v => !isBlank(v));
+  if (parsed.wind_down) {
+    parsed.wind_down.signals = cleanStringArray(parsed.wind_down.signals);
   }
   return parsed;
 }
@@ -1433,7 +1641,9 @@ router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
 Flag any claim about a specific guest's personality, likely behavior, or a relationship/shared interest between guests that was not supplied ("the two of them will hit it off", "the quieter guests will need drawing out"). Flag social-dynamics predictions stated as fact ("the first 45 minutes determine the whole night", "the group will either merge or stay separate"). Flag a technique justified by claimed social psychology rather than a practical, mechanical reason. Flag any invented clock start time (this event has none supplied — only relative offsets like "Arrival" or "+20 min" are correct). Flag any fabricated price, cost total, or a claim that a stated budget "is workable" or that something "typically" costs a certain share. Flag any assumption the host owns specific furniture, lighting, or equipment not confirmed ("free" upgrades must be framed as "if you already have..."). Flag a casual food-safety assurance around a stated allergy, or an invented alcohol/music preference for a specific person. Flag host guidance that amounts to continuous surveillance of the room (monitoring "energy," "social temperature," or who is peripheral) rather than a few concrete jobs.
 
-Flag an invented relationship TOPOLOGY between guest groups the visitor never stated ("nobody outside their own pair knows anyone else," "the work friends all know each other"). Flag fabricated content inside a recommended introduction — an invented job, hometown, shared interest, or backstory used as the connecting detail. Flag a claim that a planned moment has already succeeded ("the introduction landed," "the moment worked," "that broke the ice") — a plan cannot report its own outcome. Flag ordinary guest behavior (standing quietly, not talking) diagnosed as a problem needing intervention. Flag a manufactured conversational purpose for an ordinary object, food, or drink ("gives people something to talk about") where the input supplies no specific reason. Flag a claimed psychological or interpretive effect of music on guests ("the conversation itself will carry the room," "a volume drop reads as a signal"). Flag an unsupported claim that a budget or quantity will be "enough," or a claim that a purchase makes the event feel intentional, special, or memorable. Flag a supplied rule (noise, lease, venue policy) expanded beyond its literal wording — the visitor's words are the entire rule. Flag an unsupported ranking of who is "most affected" by anything. Flag an invented order for guests arriving, eating, or leaving not required by the design. Flag cleanup or environmental changes framed primarily as a way to make guests infer they should leave, rather than as a practical step.`,
+Flag an invented relationship TOPOLOGY between guest groups the visitor never stated ("nobody outside their own pair knows anyone else," "the work friends all know each other"). Flag fabricated content inside a recommended introduction — an invented job, hometown, shared interest, or backstory used as the connecting detail. Flag a claim that a planned moment has already succeeded ("the introduction landed," "the moment worked," "that broke the ice") — a plan cannot report its own outcome. Flag ordinary guest behavior (standing quietly, not talking) diagnosed as a problem needing intervention. Flag a manufactured conversational purpose for an ordinary object, food, or drink ("gives people something to talk about") where the input supplies no specific reason. Flag a claimed psychological or interpretive effect of music on guests ("the conversation itself will carry the room," "a volume drop reads as a signal"). Flag an unsupported claim that a budget or quantity will be "enough," or a claim that a purchase makes the event feel intentional, special, or memorable. Flag a supplied rule (noise, lease, venue policy) expanded beyond its literal wording — the visitor's words are the entire rule. Flag an unsupported ranking of who is "most affected" by anything. Flag an invented order for guests arriving, eating, or leaving not required by the design. Flag cleanup or environmental changes framed primarily as a way to make guests infer they should leave, rather than as a practical step.
+
+Flag a visitor's own approximate forecast strengthened into a new fact ("should be warm until around 9" becoming "the cooling temperature after 9pm" or "late September cooling is a known factor"). Flag an invented arrival-time distribution ("most guests will have arrived by...", "arrivals typically taper"). Flag the presence of children, a sober guest, or unfamiliar guests treated as a default problem needing a dedicated solution the visitor never asked for. Flag an occasion assigned emotional significance the visitor never stated ("a 40th birthday is a meaningful occasion"). Flag dietary safety guaranteed from a partial measure alone ("labeling alone" or "separate utensils alone" establishing safety) rather than a conservative "verify, don't guarantee" framing. Flag an invented need for a sober guest beyond having a non-alcoholic option available (a special mocktail, ceremonial equal treatment, highlighting their sobriety) unless the visitor asked for it. Flag equipment sufficiency ("no need to rent for this scale") inferred from guest count alone with nothing about the space or the equipment itself. Flag an invented darkness or sunset fact from a season or month alone. Flag "the planned end time" or any invented clock end time when only a duration was supplied, never a start or end time. Flag the host assumed to be the person being celebrated when the occasion label doesn't establish that. **Most importantly**: flag a WHY/explanation field that asserts something its own recommendation did not — "keep food self-serve" needing no justification does not license "because otherwise everyone will queue at once"; a recommendation's explanation must never introduce a new invented cause, timing claim, or psychological effect the recommendation itself avoided.`,
         guard: router.outputGuard,
         userLanguage,
       });
