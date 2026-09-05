@@ -263,3 +263,113 @@ than dismissing it. Neither this run nor the freelance-routine companion
 case triggered `validateResult` — both first drafts were already clean.
 Golden re-recorded with this exact case as the reference example for all
 three new corrections at once (`smallchangebigdifference-v3`).
+
+## FINAL POLISH pass, same day, fourth round
+
+Three more narrow phrasings, all found live testing a genuinely good
+recommendation (the user explicitly said "I would not change the
+recommendation. It's a very good one" — these were pure wording fixes, not
+a content problem):
+
+1. **"Entirely within your control"** — said of a freelancer whose day
+   involves clients. The visitor's own routine establishes other parties
+   affect the day; "entirely" overclaims. Fixed to "largely" + naming what
+   actually makes it easy (no new equipment, easy to reverse).
+2. **"That is useful information about what is pulling you there"** — the
+   same armchair-psychology problem as `NO "WHY YOU HAVEN'T DONE THIS
+   ALREADY"`, but applied mid-experiment to a relapse. Fixed to "notice
+   what was happening at the time" — observe, don't presume a hidden force.
+3. **"A bedtime target sits at the end of the chain"** — constructs an
+   unearned causal hierarchy between alternatives instead of justifying the
+   choice from supplied facts directly.
+
+New RULES entries for all three, tested both directions. The "pulling"
+regex needed a follow-up widening the same day: a live response used "pull
+you back" (base verb) rather than "pulling you back" (gerund), which the
+first version of the pattern didn't match — broadened to
+`pull(?:s|ing)? you (?:back|there)`, re-verified both directions.
+
+## RECENT SMALL CHANGES — experiment memory, same day, fifth addition
+
+The biggest addition of the day: replaced the plain "Recent" history
+(routine preview + date only) with an experiment-memory system. Core
+principle, stated in the prompt itself: **evidence accumulates, psychology
+does not** — the tool remembers what was tried and what the visitor
+reported, never builds a behavioral profile.
+
+**Data model** (`onepercenter-experiments`, a NEW store — not a version
+bump of `onepercenter-history`, which is left alone and read-only as the
+legacy migration path): each entry carries `originalInput`, `recommendation`
+(change/whyThisOne/howToTryIt/whatItMayChange, extracted from the result),
+`experimentContext.routineArea`, `checkIn` (`status` one of
+unreviewed/helped/helped_a_little/not_really/not_tried,
+`visitorReport`, `reviewedAt`), and the full `storedResult` for reopening
+without regenerating. Capped at 15.
+
+**The explicit product choice the user called out**: the check-in prompt
+("How did it go?") is NEVER an interstitial after generating a result — it
+only ever appears as a passive row in the Recent Small Changes panel below,
+which a visitor sees when they return later. No code path shows it
+immediately after `onDone`.
+
+**Backend additions**:
+- `routine_area` — new top-level output field, pinned to exact English
+  (Morning/Daytime/Work/Evening/Sleep/Other) regardless of response
+  language, same enum-pinning discipline as Document Detective's `status`
+  field (a translated value would render unlabeled on the frontend, which
+  matches literally).
+- `previous_experiments` — new optional top-level `{used, summary,
+  how_it_affected_this_choice}`. Relevance selection happens on the
+  FRONTEND, not the backend (`relevantPreviousExperiments()`): only
+  reviewed experiments (status != unreviewed) count as evidence, most
+  recent 3. The route just formats whatever it's handed into a "PREVIOUS
+  EXPERIMENT EVIDENCE" block.
+- New CORE_PROMPT section, EXPERIMENT HISTORY: the recommendation from a
+  prior run is historical context, never evidence of what happened — only
+  the visitor's own reported outcome is evidence. An unreviewed experiment
+  tells you what was recommended and when, never an outcome. A single
+  experiment establishes only what was reported about that one experiment
+  — never generalized into a trait or category verdict ("isn't your real
+  problem," "you've discovered that," "you're becoming more disciplined,"
+  all backstopped). A dedicated HISTORY SELF-CHECK (6 questions) runs
+  alongside the main FINAL SELF-CHECK when evidence is supplied.
+- One new RULES category for the overgeneralization phrases; the
+  distinction between a prior PREDICTION and an observed RESULT is
+  prompt-only — too contextual for a keyword ban.
+
+**Frontend**: check-in UI lives entirely inside the history panel — 4
+neutral-toned pill buttons (🟢/🟡/⚪/⬜, deliberately no red/trophy —
+the North Star states all four outcomes are "useful evidence") plus an
+optional text field with a check-in-status-dependent placeholder (helped/
+helped_a_little get one example set, not_really/not_tried get another,
+matching the spec). Viewing a reviewed experiment (`viewExperiment`) shows
+the STORED result directly — never regenerates — and also repopulates the
+input fields so "Start Over" doesn't leave them empty. Legacy
+`onepercenter-history` entries render in a visually muted, non-interactive
+row below the rich ones — no fabricated recommendation or check-in, per the
+explicit migration rule; they're only ever read, never written to again.
+
+**Two diff-audit findings fixed during this pass**: `bg-purple-*` is a
+banned color family in this codebase (blue/purple/violet/indigo/teal/
+stone/yellow/rose/pink) — the "From Your Recent Experiments" callout was
+recolored to cyan (`memoryBg`/`memoryText`), reusing the tool's own brand
+accent rather than introducing a new palette color. And the S1.5 name-keyed
+history-preview check (`preview\s*:` must appear somewhere in the file) —
+satisfied by adding a genuine `preview` field to each experiment record
+(40-char truncation of the recommended change, same PF-25 convention as
+every other tool's history entry), even though the row itself normally
+renders `recommendation.change` directly.
+
+**Live-verified end-to-end through the actual UI**, not just the API:
+generated a result → confirmed it auto-saved as `unreviewed` → expanded
+Recent Small Changes → clicked "How did it go?" → selected "Helped a
+little" (confirmed the correct contextual placeholder text appeared) →
+typed a report → saved → confirmed the row updated to show the emoji,
+label, and quoted report with a "View →" button → clicked Start Over,
+resubmitted the same routine → confirmed the resulting analysis rendered a
+genuine "🧪 From Your Recent Experiments" section that correctly summarized
+the prior report and reasoned from it into a meaningfully different next
+experiment (moving the boundary earlier in the day) without generalizing
+into a trait. Golden re-recorded with 3 cases (`smallchangebigdifference-v4`)
+— the third is this exact previous-experiment-evidence scenario, the new
+regression reference for the whole history feature.

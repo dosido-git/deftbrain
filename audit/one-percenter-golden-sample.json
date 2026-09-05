@@ -3,8 +3,8 @@
     "tool": "SmallChangeBigDifference",
     "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 SSE endpoint",
-    "baseline_commit": "smallchangebigdifference-v3",
-    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE) — no server-side LLM-adversarial guard, only a local regex `validateResult`. Diff for QUALITY not exact match: all 5 top-level keys present. THIRD-PASS GUARDS (2026-09-05, same day as the schema restructure): the subtlest failure mode caught yet — chronology silently turned into causation, and 'creates room for a goal' silently turned into 'directly produces the goal.' Case 1's what_i_notice.pattern is the reference case: 'Your evening currently runs from dinner through TV or scrolling until midnight, while you said you want to do creative work in that window' — a chronological/goal-connection statement with NO claim that late-night screens cause tiredness or that the visitor established how rested they feel. Case 1's change_to_try.what_it_may_change is the reference case for room-vs-produce: 'the change creates the opening, it does not fill it' — explicit, not implied. Case 1's what_to_watch_for.signs_it_may_be_helping is the reference case for the 4-step template: (1) direct mechanical effect happens — 'the screen-free window exists' — before (2) visitor uses the room, (3) visitor reaches the stated goal activity, (4) open catch-all — never opening with a presupposed downstream feeling like sleep or energy. Case 1's why_not_start_elsewhere never claims the alternative (moving the phone) 'does nothing to address' anything — it's 'a reasonable experiment' targeting 'a different part of the routine.' DO NOT reverse: the CHRONOLOGY IS NOT CAUSATION / KEEP MECHANICAL CLAIMS ACTUALLY MECHANICAL / CREATES ROOM DOES NOT PRODUCE THE GOAL prompt sections; the ordered 4-step watch-for template in the userPrompt schema hint; the 2 new RULES entries (chronology-to-causation, room-for-vs-produces); capAlternatives; keep SSE streaming; no annotation suffixes."
+    "baseline_commit": "smallchangebigdifference-v4",
+    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE) — no server-side LLM-adversarial guard, only a local regex `validateResult`. FOURTH-PASS ADDITIONS (2026-09-05, Recent Small Changes / experiment memory): (1) top-level `routine_area` — pinned to exact English (Morning|Daytime|Work|Evening|Sleep|Other) regardless of response language, same enum-pinning discipline as Document Detective's status field; the frontend matches it literally to a label. (2) top-level `previous_experiments` {used, summary, how_it_affected_this_choice} — case 3 is the reference: `used` correctly false in cases 1-2 (no history supplied), true in case 3 where a previousExperiments array was supplied in the request. Case 3's `summary` states only what the visitor actually reported ('helped a little... still too tired'), never treating the PRIOR RECOMMENDATION's prediction as an observed result. `how_it_affected_this_choice` reasons from that report plus the visitor's own originally-stated fact (afternoon is their most productive period) to justify a DIFFERENT next experiment — never repeating the prior one automatically, never generalizing into a trait ('you respond better to X'). GUARDS carried from the 3rd pass (chronology-vs-causation, room-for-vs-produces) plus this pass's 3 new ones: never 'entirely/completely within your control' when the routine involves other people (case 2's why_this_one correctly says 'largely control yourself'); never an invented force 'pulling' the visitor back to an old behavior; never an unearned causal hierarchy between alternatives ('sits at the end of the chain', 'downstream of'). DO NOT reverse: routine_area English-pinning; the previous_experiments schema shape; capAlternatives; keep SSE streaming; no annotation suffixes."
   },
   "cases": [
     {
@@ -18,42 +18,52 @@
       },
       "output": {
         "what_i_notice": {
-          "pattern": "Your evening currently runs from dinner through TV or scrolling until midnight, while you said you want to do creative work in that window but never have energy for it. The creative time you want and the time you actually have are the same block — the question is what fills it.",
-          "why_it_matters": "You named evening creative work as something you want more of. That window is already there; right now it ends with TV or scrolling rather than the work you described wanting to do."
+          "pattern": "Your day begins with two snoozes and about 20 minutes on your phone before you get out of bed. You said you already feel behind before the day starts, and this is one of the first things that happens — before the commute, before the meetings, before any of the interruptions.",
+          "why_it_matters": "You mentioned feeling behind before you even start. The morning phone habit is a specific, repeatable behavior that occupies the first stretch of the day you actually control. That makes it a useful place to experiment."
         },
         "change_to_try": {
-          "change": "Pick a point in the evening — say, 9pm or wherever feels feasible — and treat it as when screens stop and the creative window opens. Even 30 minutes is enough to start.",
-          "why_this_one": "Your meetings, commute, and interrupted 4-6pm block are largely outside your control on any given day. The evening is not. This is a small boundary at a point in the routine that is already yours, and it is easy to walk back if it does not fit.",
-          "how_to_try_it": "Before you sit down after dinner, decide on a stopping point for TV or scrolling — pick a specific time, not 'when I feel like it.' When that time arrives, put the phone down or turn off the screen and move to whatever you consider creative work, even briefly. No other changes needed to start.",
-          "what_it_may_change": "The direct effect is that a screen-free period opens before midnight that does not currently exist. That gives you a window to attempt the creative work you described wanting. Whether you use it, and whether anything about your energy or the next morning changes, is something to observe — the change creates the opening, it does not fill it."
+          "change": "Before you go to sleep tonight, put your phone somewhere you cannot reach from bed.",
+          "why_this_one": "It is a small physical change you can make tonight, requires nothing new, and is easy to undo if it does not help. It targets a behavior that happens before the rest of the day becomes dependent on meetings and other people's demands.",
+          "how_to_try_it": "Place your phone far enough from the bed that you would have to get up to reach it. If you use it as an alarm, the alarm will still work — you will just need to stand up to silence it. Try this for several mornings, long enough to see whether the pattern actually changes.",
+          "what_it_may_change": "The immediate effect is that starting the morning scroll becomes less convenient. If that leads you to get out of bed instead of reaching for the phone, you may recover some or all of the 20 minutes currently attached to that habit. Whether that changes how rushed you feel at the start of the day, or creates any room for the creative work or energy you want in the evenings, is something to observe — not something to assume."
         },
+        "routine_area": "Morning",
         "math": {
-          "show": false,
-          "calculation": "",
-          "meaning": ""
+          "show": true,
+          "calculation": "20 minutes x 365 days = 121 hours per year.",
+          "meaning": "That is how much time is currently attached to the in-bed phone habit, not a promised saving. What you actually recover depends on what happens when scrolling becomes less convenient."
         },
         "why_not_start_elsewhere": {
           "show": true,
           "alternatives": [
             {
-              "alternative": "Moving the phone out of reach at night to address the morning scroll and the 'already behind' feeling.",
-              "why_not_first": "That is a reasonable experiment and targets a different part of the routine. I would start with the evening because you specifically named creative work there as the thing you want and are not getting — the gap between what you want and what is happening is most visible there."
+              "alternative": "Protect the 4-6pm focused work block from interruptions.",
+              "why_not_first": "That block depends partly on other people respecting your time — colleagues, calendar invites, whoever is interrupting. The phone change is something you can implement tonight without coordination."
+            },
+            {
+              "alternative": "Set an earlier cutoff for TV or scrolling in the evening.",
+              "why_not_first": "That is another reasonable place to experiment, especially given your goal of creative work in the evenings. I would try the morning change first because it is a smaller adjustment and does not require restructuring anything else in your day before you know whether it helps."
             }
           ]
         },
         "what_to_watch_for": {
           "signs_it_may_be_helping": [
-            "You consistently reach the stopping point and screens actually go off — the screen-free window exists.",
-            "You use some of that time attempting the creative work you described wanting.",
-            "You reach the creative activity more than occasionally, not just on easy nights.",
-            "You notice some other improvement in the evening or the next day that matters to you."
+            "You get out of bed without scrolling first — the direct thing the change is designed to produce.",
+            "You recover some of the 20 minutes and use the start of your morning differently.",
+            "The 'already behind' feeling you described is less present on mornings when you try this.",
+            "You notice some other improvement in the day that matters to you."
           ],
           "signs_to_rethink_it": [
-            "Screens stop but the time fills with something else you do not value — the window exists but does not go where you want.",
-            "The cutoff is consistently hard to hold in your actual evenings — it keeps slipping.",
-            "The window opens but energy is too low to use it, and that does not change after a fair trial.",
-            "The morning routine or the interrupted 4-6pm block starts to look like a more useful place to experiment."
+            "You retrieve the phone and scroll from another location — the behavior moves but does not change.",
+            "The phone placement creates a problem with your alarm or something else in the actual routine.",
+            "Mornings change but nothing you care about — focus, exhaustion, evening energy — shifts at all.",
+            "A different part of the day starts to look like a more useful place to intervene."
           ]
+        },
+        "previous_experiments": {
+          "used": false,
+          "summary": "",
+          "how_it_affected_this_choice": ""
         }
       }
     },
@@ -68,15 +78,16 @@
       },
       "output": {
         "what_i_notice": {
-          "pattern": "Your workday is officially 9-6, but you describe evenings as free while also ending up working through them until around 1am. There is no clear point in the day where work stops — the boundary you said you want exists in intention but not in practice.",
-          "why_it_matters": "All three things you want to improve — sleep, stopping evening work, and making progress on a side project — depend on the same thing: a point where the regular work day actually ends."
+          "pattern": "Your workday is nominally 9-6, but work continues into the evening and you go to bed around 1am. You described your afternoons as your most productive period, which means the time you actually want for a side project and for stopping work is currently occupied by more work.",
+          "why_it_matters": "All three things you want to improve — better sleep, stopping evening work, and making side project progress — run into the same unresolved boundary: no clear point at which the workday ends."
         },
         "change_to_try": {
-          "change": "Set a specific time at which you stop client work for the day — 6pm matches what you already described as the end of your workday — and treat anything after that as off-limits for it.",
-          "why_this_one": "You already have the structure in place: a stated end time of 6pm. This change does not require building anything new, only treating a boundary you already named as real. It is reversible — if a day genuinely requires evening work, you can make that call — and it connects directly to all three things you want to improve rather than just one.",
-          "how_to_try_it": "At 6pm, close whatever you are working on for clients and do not reopen it. If you find yourself drifting back — checking messages, picking up a task — notice it and stop. You do not need to fill the evening with anything specific; the first experiment is just whether you can hold the boundary.",
-          "what_it_may_change": "The immediate effect is that evening hours are no longer occupied by client work. That creates a block of time that could go toward the side project you mentioned, or toward winding down before bed. Whether either of those actually happens — and whether sleep improves — is something to observe rather than assume. What you will be able to see fairly quickly is whether holding the 6pm line is feasible in your actual routine."
+          "change": "Set a fixed time to stop all client work each evening — 6pm is the one you already named — and treat that as the moment you switch to side project time or personal time, not a suggestion to wind down whenever work feels done.",
+          "why_this_one": "You already have a notional end time (9-6), so this is not inventing a new structure — it is making the one you described function as an actual boundary. It is a change you can largely control yourself, requires nothing new, and is easy to reverse if it does not help. Freelance work can expand to fill available time, and evenings are the time most directly attached to all three goals you mentioned.",
+          "how_to_try_it": "At 6pm, close whatever client work is open. If you want to use that time for your side project, have it ready to open so the transition requires minimal decision-making. If you find yourself returning to client work, note what was happening at the time — that will help you decide whether the experiment needs adjusting.",
+          "what_it_may_change": "The immediate effect is that client work stops at a specific point rather than continuing by default. That creates a defined block between 6pm and whenever you go to sleep. Whether you use that block for your side project, whether it eventually shifts your bedtime earlier, or whether sleep improves is something to observe rather than assume."
         },
+        "routine_area": "Evening",
         "math": {
           "show": false,
           "calculation": "",
@@ -86,24 +97,93 @@
           "show": true,
           "alternatives": [
             {
-              "alternative": "Set a fixed bedtime and work backward from there.",
-              "why_not_first": "A fixed bedtime is worth trying, but if client work is still running until midnight, a bedtime target has nothing to push against. The 6pm boundary creates the space that a bedtime experiment would then operate in."
+              "alternative": "Set a fixed bedtime to address sleep directly.",
+              "why_not_first": "A fixed bedtime does not change what you are doing in the hours before it, and client work continuing into the evening is the activity most directly occupying the time you said you want to use differently. I would try the 6pm boundary first and see whether bedtime follows."
             }
           ]
         },
         "what_to_watch_for": {
           "signs_it_may_be_helping": [
-            "You consistently stop client work at or near 6pm most evenings.",
-            "You use some of that evening time in a way you chose — side project, rest, anything that feels like yours.",
-            "You find yourself at the side project at least occasionally, even briefly.",
-            "You notice some other improvement that matters to you — sleep, how the next morning feels, something else."
+            "You actually stop client work at 6pm on most evenings.",
+            "You use some of the freed time in a way you prefer — side project, genuine downtime, or something else you chose.",
+            "You make occasional progress on the side project during that block.",
+            "You notice some other improvement that matters to you, such as feeling less like the workday has no end."
           ],
           "signs_to_rethink_it": [
-            "You stop client work but fill the time with something else you do not value, and the evening still does not feel free.",
-            "The boundary is consistently broken by genuine client demands you cannot defer, making 6pm unrealistic.",
-            "The evening time opens up but you still cannot make contact with the side project — which would suggest the obstacle is elsewhere.",
-            "Another part of the routine — the late bedtime, or the unstructured lunch hours — starts to look like a more useful place to intervene."
+            "You stop client work but spend the time on something you do not value either.",
+            "Client deadlines or the nature of your freelance schedule make a fixed cutoff difficult to maintain most evenings.",
+            "The boundary holds but does not help with anything you wanted to improve.",
+            "A different part of the routine — the unstructured lunch period, for instance, or the lack of a morning work start signal — starts to look like a more useful place to experiment."
           ]
+        },
+        "previous_experiments": {
+          "used": false,
+          "summary": "",
+          "how_it_affected_this_choice": ""
+        }
+      }
+    },
+    {
+      "name": "freelance-with-previous-experiment-evidence",
+      "endpoint": "/api/one-percenter",
+      "input": {
+        "routine": "Wake 7am, gym 7:30-8:30, work from home 9-6 (freelance), lunch whenever, afternoon is usually most productive, evenings free but I end up working anyway. Bed around 1am. Sleep is bad.",
+        "goals": "Better sleep, stop working evenings, make progress on a side project",
+        "painPoints": "I have freedom but feel less productive than when I had an office job.",
+        "userLanguage": "en",
+        "previousExperiments": [
+          {
+            "change": "Set a fixed time to stop all client work each evening — 6pm.",
+            "routineArea": "Evening",
+            "checkInLabel": "Helped a little",
+            "visitorReport": "It gave me more free time, but I was still too tired to work on my side project."
+          }
+        ]
+      },
+      "output": {
+        "what_i_notice": {
+          "pattern": "You already tried stopping client work at 6pm, and it created free time in the evening. But you reported being too tired to use that time for your side project. Your day runs gym at 7:30, work from 9, and you noted the afternoon is your most productive stretch — yet evenings still pull you back into work, and bed comes around 1am.",
+          "why_it_matters": "The previous experiment showed the evening boundary can hold. The remaining problem you named is arriving at that free time too tired to do anything with it. That points to something earlier in the day — specifically, whether your most productive afternoon hours are being used for the side project at all."
+        },
+        "change_to_try": {
+          "change": "Reserve one specific afternoon slot — say, 3pm to 4pm — for your side project only, and treat it like a client commitment for that hour.",
+          "why_this_one": "You already said afternoons are your most productive period. That is when you have the best chance of actually making progress on the side project, rather than arriving at evening free time already depleted. The previous experiment gave you evening room but not evening energy — so moving side project time into the afternoon is a sensible next experiment. It is one hour, uses a slot you already identified as productive, requires no new tools, and is easy to abandon if it does not fit.",
+          "how_to_try_it": "Block 3-4pm in your calendar as you would a client call — mark it unavailable for client work. Use that hour only for your side project. Do not try to extend it at first; the goal is just to protect the slot and show up to it.",
+          "what_it_may_change": "Protecting that hour removes client work as the default during a period you already find productive. If you use it consistently, it gives your side project a recurring foothold in your day rather than leaving it dependent on evening energy you reported not having. Whether it also reduces the pull toward evening work — by giving the side project a dedicated time elsewhere — is something to observe."
+        },
+        "routine_area": "Daytime",
+        "math": {
+          "show": false,
+          "calculation": "",
+          "meaning": ""
+        },
+        "why_not_start_elsewhere": {
+          "show": true,
+          "alternatives": [
+            {
+              "alternative": "Work on the side project in the evening, now that the 6pm boundary has created more free time there.",
+              "why_not_first": "You already tried the evening approach and reported arriving too tired to use it. Repeating the same timing without changing what leads up to it is unlikely to produce a different result."
+            }
+          ]
+        },
+        "what_to_watch_for": {
+          "signs_it_may_be_helping": [
+            "You consistently protect the 3-4pm slot from client work for several days in a row.",
+            "You use most of that hour on the side project rather than drifting to other tasks.",
+            "You make at least occasional meaningful progress on the side project during that slot.",
+            "You notice any other improvement that matters to you — whether that is the evening feeling different, sleep shifting, or something else."
+          ],
+          "signs_to_rethink_it": [
+            "The slot gets taken over by client work most days and you cannot recover it.",
+            "You protect the hour but find you are not using it for the side project — something else fills it instead.",
+            "The side project gets time but you are still not making progress in a way that feels meaningful to you.",
+            "A different part of the routine — morning, for instance — starts to look like a more reliable slot to try."
+          ]
+        },
+        "previous_experiments": {
+          "used": true,
+          "summary": "You tried stopping client work at 6pm each evening. You reported it helped a little and gave you more free time, but that you were still too tired to work on your side project.",
+          "how_it_affected_this_choice": "Your report shifted the focus away from the evening entirely. The boundary worked; the energy was not there. That makes the afternoon — which you already described as your most productive period — the more promising place to put side project time."
         }
       }
     }

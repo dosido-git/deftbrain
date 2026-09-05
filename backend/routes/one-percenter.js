@@ -26,7 +26,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
+  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. A fourth-pass polish added three more narrow phrase bans the same day: overstating control as "entirely"/"completely" within the visitor\'s control when their own routine involves other people; inventing a hidden force "pulling" the visitor back to an old behavior mid-experiment (the same armchair-psychology problem, applied to relapse); and constructing an unearned causal hierarchy between alternatives ("sits at the end of the chain," "downstream of"). EXPERIMENT HISTORY (added same day) governs the new previous_experiments feature: overgeneralizing one reported experiment into a trait or category verdict ("isn\'t your real problem," "you\'ve discovered that," "this reveals that") is backstopped; treating a prior recommendation\'s PREDICTION as an observed RESULT, or an unreviewed experiment as outcome evidence, is prompt-only — too contextual for a keyword ban. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
 };
 
 const CORE_PROMPT = `SMALL CHANGE, BIG DIFFERENCE
@@ -257,6 +257,20 @@ Do not use: will, guarantees, causes, fixes, resets, rewires, trains your
 brain, restores, prevents, determines, transforms — unless the claim
 follows directly and mechanically from the user's supplied facts.
 
+Do not call a behavior "entirely" or "completely" within the visitor's
+control when their own description involves clients, an employer, family,
+a schedule, or other people. Prefer "largely" or "mostly" within their
+control, and name what actually makes it easy instead — no new equipment,
+easy to reverse.
+
+BAD:
+"It is entirely within your control..." (said of a freelancer whose day
+involves client work).
+
+GOOD:
+"It is a change you can largely control yourself, requires no new
+equipment, and is easy to reverse if it does not help."
+
 MATH
 
 Math is optional. Only calculate from user-supplied quantities.
@@ -319,6 +333,19 @@ GOOD:
 start with the evening because that is where you specifically said you
 want room for creative work."
 
+Keep the comparison mechanical, not a constructed causal hierarchy between
+alternatives. Justify the choice from supplied facts directly — do not
+place alternatives "upstream," "downstream," or "at the end of a chain"
+merely to make the choice sound more strategic.
+
+BAD:
+"A bedtime target ... sits at the end of the chain."
+
+GOOD:
+"You could also set a fixed bedtime. I'd try the 6pm work boundary first
+because evening client work is one of the activities you explicitly said
+is occupying the time you want to use differently."
+
 IMPLEMENTATION
 
 Give only what the user needs to try the change. Do not invent alarm
@@ -342,6 +369,20 @@ Never infer resistance, denial, weak discipline, blind spots, emotional
 avoidance, need for decompression, habit compensation, or fear of change.
 The routine tells us what happens. It does not tell us why the user has not
 already changed it.
+
+This applies mid-experiment too: if the visitor might drift back to the old
+behavior, do not name what is "pulling" them there — that invents a hidden
+force, need, or cause the visitor never established. Ask them to observe
+what happened instead, and leave the cause open.
+
+BAD:
+"If you notice yourself drifting back to it, that is useful information
+about what is pulling you there."
+
+GOOD:
+"If you find yourself returning to client work after 6pm, notice what was
+happening at the time. That may help you decide whether the experiment
+needs adjusting."
 
 FUTURE PROJECTION
 
@@ -442,6 +483,63 @@ supplied routine but remains an inference), and UNKNOWN (the routine does
 not establish it). Never silently turn a reasonable implication into an
 established fact. Never fill an unknown with generic behavioral science
 merely because it makes the answer sound sophisticated.
+
+EXPERIMENT HISTORY
+
+Small Change, Big Difference gradually learns from the visitor's
+EXPERIMENTS, not a theory of the visitor. Evidence accumulates. Psychology
+does not.
+
+When previous experiment evidence is supplied, treat it as follows:
+
+- The RECOMMENDATION from a previous run is historical context, not
+evidence of what happened. A prior "may make mornings easier" prediction
+does not become true merely because the visitor tried the experiment.
+- Only the visitor's own reported OUTCOME is evidence. "I stopped
+scrolling in bed" establishes that fact — nothing about whether mornings
+became easier unless the visitor said so.
+- Absence of a check-in is not evidence the experiment failed. An
+unreviewed experiment tells you only what was recommended and when — use
+it only to avoid repeating an unreviewed suggestion, never as an outcome.
+- A single experiment establishes only what the visitor reported about
+that one experiment. Never generalize it into a trait, a category verdict,
+or a behavioral law.
+
+BAD: "Screen time isn't your real problem." "Evening interventions don't
+work for you." "You respond better to environmental changes." "You've
+discovered that afternoons are your productive window." "This reveals
+that..." "You're becoming more disciplined."
+
+GOOD: "You said the earlier screen cutoff created more free time but
+didn't give you more creative energy." "The evening change you tried did
+not produce the particular result you wanted." "Moving your phone out of
+reach is one change you previously said helped." "You said protecting the
+4-6 block helped your focus somewhat."
+
+If a previous intervention did not help, do not conclude the entire
+category of intervention is ineffective. If a previous intervention
+helped, do not automatically repeat it or assume similar ones will help.
+
+Use previous experiments only when they materially help choose the next
+small change — a handful of relevant, reviewed experiments, not the whole
+history. If mentioning one would not change or strengthen the
+recommendation, set previous_experiments.used to false and omit the
+section entirely — never include it merely to demonstrate memory.
+
+WHAT I NOTICE may combine the current routine with visitor-reported
+previous results when doing so is more useful than analyzing the routine
+as if this were the first visit — e.g. "You've already tested two obvious
+places to intervene... Your current description still shows the 4-6pm work
+period being interrupted. That's where I'd experiment next."
+
+HISTORY SELF-CHECK, when previous experiment evidence is supplied:
+1. Did the visitor actually report this outcome?
+2. Am I treating my own previous prediction as an observed result?
+3. Am I generalizing from one experiment into a trait or category verdict?
+4. Am I inventing why something helped or didn't?
+5. Is this previous experiment actually relevant to today's choice?
+6. Does mentioning it improve the recommendation, or just show the tool
+remembers?
 
 WORKED EXAMPLE — the desired reasoning standard
 
@@ -568,6 +666,14 @@ const RULES = [
     /\bkeeps? you up\b|\bextending your night\b|\bending your night\b|\bdoes nothing to address\b|\bdirectly connected to how (?:rested|tired|energized|awake) you feel\b/i],
   ['claimed the change directly produces a goal it only creates room for',
     /\bis the only change\b[^.!?]{0,60}\bdirectly addresses\b/i],
+  ['overgeneralized a single reported experiment into a trait or category verdict',
+    /\bisn'?t your real problem\b|\bdon'?t work for you\b|\byou respond better to\b|\byou'?ve discovered that\b|\bthis reveals that\b|\bthis shows that\b|\byou'?re becoming more disciplined\b|\byou clearly thrive\b/i],
+  ['overstated how much control the visitor has',
+    /\b(?:entirely|completely|fully|100%) within your control\b/i],
+  ['invented a hidden force pulling the visitor back to the old behavior',
+    /\bwhat is pulling you\b|\bpull(?:s|ing)? you (?:back|there)\b/i],
+  ['constructed an unearned causal hierarchy between alternatives',
+    /\bsits at the end of the chain\b|\bdownstream of (?:that|this|the)\b/i],
 ];
 
 // Structural backstop matching the prompt's own "at most TWO alternatives"
@@ -615,12 +721,33 @@ function validateResult(data) {
 
 router.post('/one-percenter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { routine, goals, painPoints, userLanguage } = req.body;
+    const { routine, goals, painPoints, userLanguage, previousExperiments } = req.body;
     if (!routine?.trim()) return res.status(400).json({ error: 'Walk us through a typical day.' });
+
+    // Relevance selection happens client-side (recent + reviewed only, capped
+    // at 3 — see SmallChangeBigDifference.js) so this route just formats
+    // whatever it's handed. A reviewed check-in is the only thing treated as
+    // evidence; an unreviewed one would need a different, much weaker prompt
+    // framing this route doesn't build (the frontend excludes those before
+    // ever calling here).
+    const evidenceBlock = Array.isArray(previousExperiments) && previousExperiments.length
+      ? `\n\nPREVIOUS EXPERIMENT EVIDENCE
+
+The following comes from previous Small Change results and the visitor's
+own check-ins. Treat each recommendation as historical context only — treat
+only the visitor's reported outcome as evidence of what happened. Use this
+only if it materially helps choose today's change; otherwise set
+previous_experiments.used to false and say nothing about it.
+
+${previousExperiments.slice(0, 3).map((exp, i) => `${i + 1}. Recommendation: ${exp.change || '(not recorded)'}
+   Routine area: ${exp.routineArea || 'not recorded'}
+   Visitor check-in: ${exp.checkInLabel || 'not recorded'}
+   Visitor report: ${exp.visitorReport?.trim() ? `"${exp.visitorReport.trim()}"` : '(no written report)'}`).join('\n')}`
+      : '';
 
     const userPrompt = `ROUTINE: "${routine.trim()}"
 ${goals?.trim() ? `WHAT THEY'D LIKE TO MAKE BETTER: ${goals.trim()}` : ''}
-${painPoints?.trim() ? `WHERE THE DAY SEEMS TO GO OFF TRACK: ${painPoints.trim()}` : ''}
+${painPoints?.trim() ? `WHERE THE DAY SEEMS TO GO OFF TRACK: ${painPoints.trim()}` : ''}${evidenceBlock}
 
 Choose one small, practical change worth trying. Return ONLY valid JSON:
 {
@@ -634,6 +761,7 @@ Choose one small, practical change worth trying. Return ONLY valid JSON:
     "how_to_try_it": "Simple implementation instructions using only what the visitor supplied.",
     "what_it_may_change": "A short, calibrated explanation of 2-4 plausible nearby effects — direct consequence, reasonable possibility, or user-observable result. Never labeled a guaranteed chain reaction."
   },
+  "routine_area": "Morning | Daytime | Work | Evening | Sleep | Other",
   "math": {
     "show": false,
     "calculation": "Arithmetic using ONLY quantities the visitor supplied, or empty if show is false.",
@@ -652,14 +780,26 @@ Choose one small, practical change worth trying. Return ONLY valid JSON:
     "signs_to_rethink_it": [
       "2-4 items, roughly in order: (1) the direct thing happens but gets replaced by something not valued, (2) hard to maintain in the actual routine, (3) creates room but doesn't help anything the visitor wanted, (4) another part of the routine looks more useful to intervene on."
     ]
+  },
+  "previous_experiments": {
+    "used": false,
+    "summary": "Only when used is true: a plain, descriptive account of what was tried and what the visitor reported — no interpretation beyond the visitor's own words. Otherwise empty.",
+    "how_it_affected_this_choice": "Only when used is true: why that evidence changed or reinforced today's recommendation. Otherwise empty."
   }
 }
 
 RULES: exactly ONE recommended change. At most 2 items in "alternatives" —
 set why_not_start_elsewhere.show to false and leave alternatives empty when
 none add value. Set math.show to false and leave calculation/meaning empty
-when no defensible calculation exists. Never populate an optional field
-just to avoid it being empty.`;
+when no defensible calculation exists. Set previous_experiments.used to
+false and leave summary/how_it_affected_this_choice empty unless supplied
+evidence actually changed today's choice. Never populate an optional field
+just to avoid it being empty.
+
+"routine_area" must be written exactly as one of these six English words —
+Morning, Daytime, Work, Evening, Sleep, Other — even when the rest of your
+response is in another language. The frontend matches this value literally
+to choose a label and icon; a translated value renders as unlabeled.`;
 
     // SSE headers
     res.setHeader('Content-Type', 'text/event-stream');
