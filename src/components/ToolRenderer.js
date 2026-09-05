@@ -16,6 +16,8 @@ const TOOL_ALIASES = {
   LuckSurface: 'GetNoticed',   // renamed 2026-09-02
   MeetingBSDetector: 'JustifyMyMeeting', // renamed 2026-09-02
   MeetingHijackPreventer: 'MeetingHijackStopper', // renamed 2026-09-03
+  NoiseCanceler: 'DocumentDetective', // renamed 2026-07-16, then 2026-09-04 (chain collapsed)
+  CutToTheChase: 'DocumentDetective', // renamed 2026-09-04
 };
 
 const ToolRenderer = ({ college }) => {

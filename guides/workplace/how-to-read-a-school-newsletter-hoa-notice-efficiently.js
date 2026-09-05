@@ -57,7 +57,7 @@ module.exports = {
       "Audience-targeted summary",
       "Calendar-ready action list",
     ],
-    toolId:   'CutToTheChase',
+    toolId:   'DocumentDetective',
     toolName: 'Noise Canceler',
   },
 };

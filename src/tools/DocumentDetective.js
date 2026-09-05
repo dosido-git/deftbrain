@@ -24,7 +24,13 @@ const DOC_TYPE_VALUES = [
   { value: 'other', labelKey: 'nc_dt_other' },
 ];
 
-const CutToTheChase = ({ tool }) => {
+// A frontend-mapped switch on a model-produced enum is only safe when the
+// prompt pins that enum to exact English regardless of response language
+// (see backend/routes/noise-canceler.js) — otherwise a German response
+// translates the value and nothing here matches it. STATUS_STYLE's fallback
+// branch is what a translated value degrades to: a plain, unstyled badge
+// showing whatever text came back, never a crash.
+const DocumentDetective = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -75,14 +81,17 @@ const CutToTheChase = ({ tool }) => {
     tipText:       isDark ? 'text-sky-300' : 'text-sky-700',
     costBg:        isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
     costText:      isDark ? 'text-red-300' : 'text-red-700',
-    saveBg:        isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    saveText:      isDark ? 'text-emerald-300' : 'text-emerald-700',
     badge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-500',
     inset:         isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     infoBg:        isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     infoText:      isDark ? 'text-sky-300' : 'text-sky-700',
     histBg:        isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     histCard:      isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-gray-200',
+    // Status badges — CLEAR/REASONABLE/NEEDS CLARIFICATION. Calm, not
+    // alarming: this is a clarity signal, not a risk score.
+    statusClear:       isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-800',
+    statusReasonable:  isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-100 text-sky-800',
+    statusClarify:     isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -91,20 +100,46 @@ const CutToTheChase = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
+  const STATUS_LABEL = {
+    'CLEAR FROM DOCUMENT': t('nc_status_clear'),
+    'REASONABLE READING': t('nc_status_reasonable'),
+    'NEEDS CLARIFICATION': t('nc_status_needs_clarification'),
+  };
+  const STATUS_STYLE = {
+    'CLEAR FROM DOCUMENT': c.statusClear,
+    'REASONABLE READING': c.statusReasonable,
+    'NEEDS CLARIFICATION': c.statusClarify,
+  };
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
+    return (
+      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLE[status] || c.badge}`}>
+        {STATUS_LABEL[status] || status}
+      </span>
+    );
+  };
+
   // ─── State ───
   const [docText, setDocText] = useState('');
   const [documentType, setDocumentType] = useState('other');
   const [mySituation, setMySituation] = useState('');
   const [concerns, setConcerns] = useState('');
   const [error, setError] = useState('');
-  const [showAffects, setShowAffects] = useState(true);
+  const [showAlsoRelevant, setShowAlsoRelevant] = useState(true);
+  const [showNeedsClarification, setShowNeedsClarification] = useState(true);
+  const [showDoesntApply, setShowDoesntApply] = useState(false);
   const [showBuried, setShowBuried] = useState(true);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [showOutsideHelp, setShowOutsideHelp] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
 
   // ─── Persistent ───
-  const [sessionHistory, setSessionHistory] = usePersistentState('noisecanceler-history', []);
-  const [results, setResults] = usePersistentState('noisecanceler-result', null);
+  // -v2 because the result shape changed completely in the Document
+  // Detective rewrite (flat fields → document{} + 8 arrays with a per-item
+  // status). Prefix stays `noisecanceler-` per the naming-consistency rule
+  // — a rename pass doesn't touch localStorage keys.
+  const [sessionHistory, setSessionHistory] = usePersistentState('noisecanceler-history-v2', []);
+  const [results, setResults] = usePersistentState('noisecanceler-result-v2', null);
 
   // ═══ HANDLERS ═══
   const filter = useCallback(async () => {
@@ -119,17 +154,19 @@ const CutToTheChase = ({ tool }) => {
       });
       setResults(data);
       setSessionHistory(prev => [{
-        id: 'nc_' + Date.now(), date: new Date().toISOString(),
-        type: data?.document_type || documentType,
-        tldr: data?.tldr?.substring(0, 60) || '...',
-        preview: docText.slice(0, 40),
+        id: 'dd_' + Date.now(), date: new Date().toISOString(),
+        documentType: data?.document?.type || documentType,
+        situation: mySituation.trim().slice(0, 60),
+        preview: mySituation.trim().slice(0, 40),
+        concern: concerns.trim().slice(0, 60),
+        bottomLine: data?.document?.bottom_line?.slice(0, 80) || '',
         results: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('nc_err_failed')); }
   }, [docText, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('CutToTheChase', [
+    const ex = pickExample('DocumentDetective', [
       { n: '',  type: 'legal' },
       { n: '2', type: 'benefits' },
     ]);
@@ -147,20 +184,15 @@ const CutToTheChase = ({ tool }) => {
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
-    const lines = [t('nc_copy_header'), '', t('nc_copy_tldr') + ' ' + (results?.tldr || ''), ''];
-    if (results?.action_required?.length) {
+    const lines = [t('nc_copy_header'), '', t('nc_copy_tldr') + ' ' + (results?.document?.bottom_line || ''), ''];
+    if (results?.needs_attention?.length) {
       lines.push(t('nc_copy_action'));
-      results?.action_required?.forEach(a => lines.push('  • ' + a.what + (a.deadline ? ' (' + t('nc_copy_by') + ' ' + a.deadline + ')' : '')));
+      results?.needs_attention?.forEach(a => lines.push('  • ' + a.what + (a.deadline ? ' (' + t('nc_copy_by') + ' ' + a.deadline + ')' : '')));
       lines.push('');
     }
-    if (results?.costs_you_money?.length) {
+    if (results?.money?.length) {
       lines.push(t('nc_copy_costs'));
-      results?.costs_you_money?.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
-      lines.push('');
-    }
-    if (results?.saves_you_money?.length) {
-      lines.push(t('nc_copy_saves'));
-      results?.saves_you_money?.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
+      results?.money?.forEach(item => lines.push('  • ' + item.what + (item.amount_or_rule ? ': ' + item.amount_or_rule : '')));
       lines.push('');
     }
     return lines.join('\n') + BRAND;
@@ -169,7 +201,7 @@ const CutToTheChase = ({ tool }) => {
   filterRef.current = filter;
   canSubmitRef.current = !!docText.trim() && !!mySituation.trim();
 
-  useRegisterActions(buildCopy(), tool?.title || 'Cut to the Chase');
+  useRegisterActions(buildCopy(), tool?.title || 'Document Detective');
 
   // ─── Scroll to results ───
   useEffect(() => {
@@ -192,7 +224,7 @@ const CutToTheChase = ({ tool }) => {
   }, [loading]);
 
   // ═══ RENDER HELPERS ═══
-  const Section = ({ title, emoji, open, onToggle, badge, children }) => (
+  const Section = ({ title, emoji, open, onToggle, badge, hint, children }) => (
     <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
       <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
@@ -202,7 +234,12 @@ const CutToTheChase = ({ tool }) => {
         </div>
         <Caret open={open} />
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
+      {open && (
+        <div className={`px-5 pb-5 border-t ${c.border}`}>
+          {hint && <p className={`text-xs ${c.textMuted} mt-3 mb-1`}>{hint}</p>}
+          {children}
+        </div>
+      )}
     </div>
   );
 
@@ -212,132 +249,150 @@ const CutToTheChase = ({ tool }) => {
     </button>
   );
 
-  const effortBadge = (e) => {
-    if (e === 'quick') return t('nc_effort_quick');
-    if (e === 'moderate') return t('nc_effort_moderate');
-    return t('nc_effort_involved');
-  };
-
   const renderResults = () => {
     if (!results) return null;
-    const hasActions = results?.action_required?.length > 0;
-    const hasCosts = results?.costs_you_money?.length > 0;
-    const hasSaves = results?.saves_you_money?.length > 0;
+    const needsAttention = results?.needs_attention || [];
+    const money = results?.money || [];
+    const alsoRelevant = results?.also_relevant || [];
+    const doesntApply = results?.doesnt_appear_relevant || [];
+    const buried = results?.buried_but_important || [];
+    const nextSteps = results?.practical_next_steps || [];
+    const questions = results?.questions_to_ask || [];
+    const outsideHelp = results?.outside_help || [];
+    // A derived, scanability-only view — every item still appears in its own
+    // section above with its own badge. Never a separate backend field.
+    const needsClarification = [...needsAttention, ...money, ...alsoRelevant]
+      .filter(item => item.status === 'NEEDS CLARIFICATION');
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
-        {/* TL;DR */}
-        <div className={`p-5 rounded-2xl border-2 ${hasActions ? c.actionBg : c.tipBg}`}>
+        {/* The Chase */}
+        <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">{hasActions ? '⚡' : '✅'}</span>
-            <span className={`text-sm font-bold ${hasActions ? c.actionText : c.tipText}`}>
-              {results?.document_type || t('nc_default_doc_label')}
-            </span>
-            {results?.confidence && results?.confidence !== 'high' && (
-              <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>⚠️ {results?.confidence} {t('nc_confidence_suffix')}</span>
-            )}
+            <span className="text-lg">✂️</span>
+            <span className={`text-xs font-bold uppercase tracking-wide ${c.tipText}`}>{t('nc_result_the_chase')}</span>
           </div>
-          <p className={`text-sm font-bold ${c.text}`}>{results?.tldr}</p>
-          {results?.confidence_note && <p className={`text-xs ${c.textMuted} mt-2 italic`}>{results?.confidence_note}</p>}
+          <p className={`text-sm font-bold ${c.text}`}>{results?.document?.bottom_line}</p>
+          {results?.document?.type && <p className={`text-xs ${c.textMuted} mt-2`}>{results?.document?.type}</p>}
         </div>
 
-        {/* Action Required */}
-        {hasActions && (
+        {/* Needs Your Attention */}
+        {needsAttention.length > 0 && (
           <div className="space-y-2">
-            <p className={`text-xs font-bold ${c.actionText} uppercase`}>{t('nc_action_required')}</p>
-            {results?.action_required?.map((a, idx) => (
+            <p className={`text-xs font-bold ${c.actionText} uppercase`}>⚡ {t('nc_needs_attention_title')}</p>
+            {needsAttention.map((a, idx) => (
               <div key={idx} className={`p-4 rounded-xl border-2 ${c.actionBg}`}>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1 gap-2">
                   <span className={`text-sm font-bold ${c.text}`}>{a.what}</span>
-                  {a.effort && <span className={`text-[10px] px-2 py-0.5 rounded-full ${c.badge}`}>{effortBadge(a.effort)}</span>}
+                  <StatusBadge status={a.status} />
                 </div>
-                {a.deadline && <p className={`text-xs font-bold ${c.actionText} mb-1`}>{t('nc_deadline')} {a.deadline}</p>}
-                {a.consequence && <p className={`text-xs ${c.textSecondary} mb-1`}>{t('nc_if_you_dont')} {a.consequence}</p>}
-                {a.how && <p className={`text-xs ${c.textMuted}`}>{t('nc_how')} {a.how}</p>}
+                {a.why_it_matters_to_you && <p className={`text-xs ${c.textSecondary} mb-1`}>{t('nc_why_matters_to_you')}: {a.why_it_matters_to_you}</p>}
+                {a.source && <p className={`text-[10px] ${c.textMuted} mb-1`}>{t('nc_source_label')}: {a.source}</p>}
+                {a.deadline && <p className={`text-xs font-bold ${c.actionText} mb-1`}>{t('nc_deadline')}: {a.deadline}</p>}
+                {a.if_you_do_nothing && <p className={`text-xs ${c.textSecondary} mb-1`}>{t('nc_if_you_do_nothing')}: {a.if_you_do_nothing}</p>}
+                {a.what_to_do && <p className={`text-xs ${c.textMuted}`}>{t('nc_what_to_do')}: {a.what_to_do}</p>}
               </div>
             ))}
           </div>
         )}
 
-        {/* Costs you money */}
-        {hasCosts && (
+        {/* Money */}
+        {money.length > 0 && (
           <div className="space-y-2">
-            <p className={`text-xs font-bold ${c.costText} uppercase`}>{t('nc_costs_title')}</p>
-            {results?.costs_you_money?.map((item, idx) => (
+            <p className={`text-xs font-bold ${c.costText} uppercase`}>💸 {t('nc_money_title')}</p>
+            {money.map((item, idx) => (
               <div key={idx} className={`p-4 rounded-xl border ${c.costBg}`}>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1 gap-2">
                   <span className={`text-sm font-bold ${c.text}`}>{item.what}</span>
-                  {item.amount && <span className={`text-sm font-bold ${c.costText}`}>{item.amount}</span>}
+                  <StatusBadge status={item.status} />
                 </div>
-                {item.when && <p className={`text-xs ${c.textSecondary}`}>{t('nc_effective')} {item.when}</p>}
-                {item.avoidable && <p className={`text-xs ${c.tipText} mt-1`}>💡 {item.avoidable}</p>}
+                {item.amount_or_rule && <p className={`text-sm font-bold ${c.costText}`}>{item.amount_or_rule}</p>}
+                {item.when && <p className={`text-xs ${c.textSecondary}`}>{t('nc_effective')}: {item.when}</p>}
+                {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
               </div>
             ))}
           </div>
         )}
 
-        {/* Saves you money */}
-        {hasSaves && (
-          <div className="space-y-2">
-            <p className={`text-xs font-bold ${c.saveText} uppercase`}>{t('nc_saves_title')}</p>
-            {results?.saves_you_money?.map((item, idx) => (
-              <div key={idx} className={`p-4 rounded-xl border ${c.saveBg}`}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-sm font-bold ${c.text}`}>{item.what}</span>
-                  {item.amount && <span className={`text-sm font-bold ${c.saveText}`}>{item.amount}</span>}
-                </div>
-                {item.how_to_claim && <p className={`text-xs ${c.textSecondary}`}>{t('nc_how_label')} {item.how_to_claim}</p>}
-                {item.deadline && <p className={`text-xs ${c.saveText} mt-1`}>{t('nc_by_label')} {item.deadline}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Affects you */}
-        {results?.affects_you?.length > 0 && (
-          <Section title={t('nc_also_relevant')} emoji="📌" open={showAffects} onToggle={() => setShowAffects(p => !p)} badge={String(results?.affects_you?.length)}>
+        {/* Also Relevant */}
+        {alsoRelevant.length > 0 && (
+          <Section title={t('nc_also_relevant')} emoji="📌" open={showAlsoRelevant} onToggle={() => setShowAlsoRelevant(p => !p)} badge={String(alsoRelevant.length)}>
             <div className="space-y-2 mt-4">
-              {results?.affects_you?.map((item, idx) => (
+              {alsoRelevant.map((item, idx) => (
                 <div key={idx} className={`p-3 rounded-lg border ${c.cardAlt} ${c.border}`}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${item.priority === 'high' ? c.badge : c.badge}`}>{item.priority}</span>
+                    <StatusBadge status={item.status} />
                     <span className={`text-sm font-semibold ${c.text}`}>{item.what}</span>
                   </div>
                   <p className={`text-xs ${c.textSecondary}`}>{item.why_it_matters}</p>
+                  {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
                 </div>
               ))}
             </div>
           </Section>
         )}
 
-        {/* Doesn't affect you */}
-        {results?.does_not_affect_you && (
-          <div className={`p-4 rounded-xl ${c.inset} border ${c.border}`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('nc_safely_ignore')}</p>
-            <p className={`text-sm ${c.text}`}>{results?.does_not_affect_you}</p>
+        {/* Needs Clarification (derived rollup) */}
+        {needsClarification.length > 0 && (
+          <Section title={t('nc_needs_clarification_title')} emoji="❔" open={showNeedsClarification} onToggle={() => setShowNeedsClarification(p => !p)} badge={String(needsClarification.length)} hint={t('nc_needs_clarification_hint')}>
+            <div className="space-y-2 mt-1">
+              {needsClarification.map((item, idx) => (
+                <div key={idx} className={`p-3 rounded-lg border ${c.warningBox}`}>
+                  <p className={`text-sm font-semibold ${c.text}`}>{item.what}</p>
+                  {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Doesn't Appear Relevant */}
+        {doesntApply.length > 0 && (
+          <Section title={t('nc_doesnt_apply_title')} emoji="➖" open={showDoesntApply} onToggle={() => setShowDoesntApply(p => !p)} badge={String(doesntApply.length)}>
+            <div className="space-y-2 mt-4">
+              {doesntApply.map((item, idx) => (
+                <div key={idx} className={`p-3 rounded-lg ${c.inset}`}>
+                  <p className={`text-sm font-semibold ${c.text}`}>{item.what}</p>
+                  <p className={`text-xs ${c.textSecondary} mt-1`}>{item.why}</p>
+                  {item.could_change_if && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_doesnt_apply_could_change')}: {item.could_change_if}</p>}
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Buried But Important */}
+        {buried.length > 0 && (
+          <Section title={t('nc_buried_title')} emoji="🔎" open={showBuried} onToggle={() => setShowBuried(p => !p)} badge={String(buried.length)}>
+            <div className="space-y-2 mt-4">
+              {buried.map((item, idx) => (
+                <div key={idx} className={`p-3 rounded-lg border ${c.tipBg}`}>
+                  <p className={`text-xs font-bold ${c.tipText} mb-1`}>{item.what}</p>
+                  {item.source && <p className={`text-[10px] ${c.textMuted}`}>{t('nc_source_label')}: {item.source}</p>}
+                  <p className={`text-xs ${c.tipText} mt-1`}>{t('nc_buried_why_miss_label')}: {item.why_easy_to_miss}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Practical Next Steps */}
+        {nextSteps.length > 0 && (
+          <div className={`p-4 rounded-xl border ${c.infoBg}`}>
+            <p className={`text-xs font-bold ${c.infoText} mb-2`}>➡️ {t('nc_practical_next_steps_title')}</p>
+            <div className="space-y-1">
+              {nextSteps.map((step, idx) => (
+                <p key={idx} className={`text-sm ${c.text}`}>• {step}</p>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Buried but important */}
-        {results?.buried_important?.length > 0 && (
-          <Section title={t('nc_buried_title')} emoji="🔍" open={showBuried} onToggle={() => setShowBuried(p => !p)} badge={String(results?.buried_important?.length)}>
-            <div className="space-y-2 mt-4">
-              {results?.buried_important?.map((item, idx) => (
-                <div key={idx} className={`p-3 rounded-lg border ${c.tipBg}`}>
-                  <p className={`text-xs font-bold ${c.tipText} mb-1`}>{item.what}</p>
-                  <p className={`text-[10px] ${c.textMuted}`}>{t('nc_found')} {item.where}</p>
-                  <p className={`text-xs ${c.tipText} mt-1`}>{t('nc_why_buried')} {item.why_buried}</p>
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* Questions to ask */}
-        {results?.questions_to_ask?.length > 0 && (
+        {/* Questions to Ask */}
+        {questions.length > 0 && (
           <Section title={t('nc_questions_title')} emoji="❓" open={showQuestions} onToggle={() => setShowQuestions(p => !p)}>
             <div className="space-y-1 mt-4">
-              {results?.questions_to_ask?.map((q, idx) => (
+              {questions.map((q, idx) => (
                 <div key={idx} className={`p-2 rounded-lg ${c.inset}`}>
                   <p className={`text-xs ${c.text}`}>"{q}"</p>
                 </div>
@@ -346,17 +401,19 @@ const CutToTheChase = ({ tool }) => {
           </Section>
         )}
 
-        {/* Consider consulting a professional */}
-        {results?.consult_professional?.length > 0 && (
-          <div className={`p-4 rounded-xl border ${c.infoBg}`}>
-            <p className={`text-xs font-bold ${c.infoText} mb-2`}>{t('nc_consult_title')}</p>
-            {results?.consult_professional?.map((item, idx) => (
-              <div key={idx} className="mb-2 last:mb-0">
-                <p className={`text-xs font-semibold ${c.text}`}>{item.topic}</p>
-                <p className={`text-[10px] ${c.textSecondary}`}>{item.why} → {t('nc_talk_to_a')} {item.who}</p>
-              </div>
-            ))}
-          </div>
+        {/* Outside Help */}
+        {outsideHelp.length > 0 && (
+          <Section title={t('nc_outside_help_title')} emoji="👤" open={showOutsideHelp} onToggle={() => setShowOutsideHelp(p => !p)}>
+            <div className="space-y-2 mt-4">
+              {outsideHelp.map((item, idx) => (
+                <div key={idx} className="pb-2 last:pb-0">
+                  <p className={`text-xs font-semibold ${c.text}`}>{item.question}</p>
+                  <p className={`text-[10px] ${c.textSecondary}`}>{item.why_the_document_doesnt_resolve_it}</p>
+                  {item.who_to_ask_first && <p className={`text-[10px] ${c.infoText} mt-1`}>{t('nc_outside_help_who_first')}: {item.who_to_ask_first}</p>}
+                </div>
+              ))}
+            </div>
+          </Section>
         )}
 
       </div>
@@ -385,8 +442,8 @@ const CutToTheChase = ({ tool }) => {
             {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
-                  <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.tldr}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.type}</div>
+                  <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.bottomLine || entry.situation}</div>
+                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.documentType}</div>
                 </div>
                 <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('nc_view')}</button>
@@ -445,7 +502,7 @@ const CutToTheChase = ({ tool }) => {
 
             {/* Document type */}
             <div>
-              <label className={`block text-xs font-bold ${c.labelText} uppercase tracking-wide mb-2`}>{t('nc_doc_type_label')}</label>
+              <label className={`block text-xs font-bold ${c.labelText} uppercase tracking-wide mb-2`}>{t('nc_doc_type_label')} <span className={`normal-case font-normal ${c.textMuted}`}>({t('optional')})</span></label>
               <div className="flex flex-wrap gap-1.5">
                 {DOC_TYPE_VALUES.map(dt => (
                   <Pill key={dt.value} active={documentType === dt.value} onClick={() => setDocumentType(dt.value)}>
@@ -460,7 +517,8 @@ const CutToTheChase = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
                 {t('nc_situation_label')} <span className={c.required}>*</span>
               </label>
-              <p className={`text-xs ${c.textMuted} mb-2`}>{t('nc_situation_hint')}</p>
+              <p className={`text-xs ${c.textMuted} mb-1`}>{t('nc_situation_hint')}</p>
+              <p className={`text-xs ${c.textMuted} mb-2 italic`}>{t('nc_situation_ex1')} · {t('nc_situation_ex2')}</p>
               <textarea
                 value={mySituation}
                 onChange={e => setMySituation(e.target.value)}
@@ -470,9 +528,10 @@ const CutToTheChase = ({ tool }) => {
               />
             </div>
 
-            {/* Specific concerns */}
+            {/* Anything you especially want to know */}
             <div>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('nc_concerns_label')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+              <p className={`text-xs ${c.textMuted} mb-2 italic`}>{t('nc_concerns_ex1')} · {t('nc_concerns_ex2')} · {t('nc_concerns_ex3')} · {t('nc_concerns_ex4')}</p>
               <input
                 type="text"
                 value={concerns}
@@ -486,7 +545,7 @@ const CutToTheChase = ({ tool }) => {
           <button title={t('cmd_enter')}
             onClick={filter}
             disabled={loading || !docText.trim() || !mySituation.trim()}
-            className={`relative w-full ${(!docText.trim() || !mySituation.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            className={`relative w-full ${(!docText.trim() || !mySituation.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-40`}
             >
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> {t('nc_filtering')}</>
@@ -535,5 +594,5 @@ const CutToTheChase = ({ tool }) => {
   );
 };
 
-CutToTheChase.displayName = 'CutToTheChase';
-export default CutToTheChase;
+DocumentDetective.displayName = 'DocumentDetective';
+export default DocumentDetective;

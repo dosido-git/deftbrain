@@ -63,7 +63,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/ConceptCoach.js',
   'src/tools/SleepArchitect.js',
   'src/tools/ConflictCoach.js',
-  'src/tools/CutToTheChase.js',
+  'src/tools/DocumentDetective.js',
   'src/tools/DecoderRing.js',
   'src/tools/DoctorVisitPrep.js',
   'src/tools/JargonAssassin.js',

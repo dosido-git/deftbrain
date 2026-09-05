@@ -2462,44 +2462,44 @@ export const tools = [
 
 {
   modified: "",
-  id: "CutToTheChase",
+  id: "DocumentDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A long document arrived and most of it isn't about you.",
-    give: "The full text and the document type.",
-    get: "Only the parts that affect your situation, and what to do about each.",
-    edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you.",
+    give: "The full text and your situation.",
+    get: "Only the parts that need your attention, affect your money, or matter to your circumstances — grounded in what the document actually says.",
+    edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you, and says so when it can't tell.",
   },
-  seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and see only what costs you money or needs action.",
-  seoTitle: "Cut to the Chase: Find What Actually Affects You",
-  title: "Cut to the Chase",
-  tagline: "Paste any long document — we'll extract only what affects you",
+  seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and see only what needs your attention, grounded in the document itself.",
+  seoTitle: "Document Detective: Find What Actually Matters to You",
+  title: "Document Detective",
+  tagline: "Paste the document. Find what matters to you.",
   tags: ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
   icon: "✂️",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
-  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Cut to the Chase extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
+  description: "Long document, one question: what actually matters to you? Paste a notice, policy, benefits packet, lease change, EOB, or other document and tell us your situation. Document Detective pulls out the parts that may require action, affect your money, or matter to your circumstances — and shows what still needs clarification.",
   guide: {
-    overview: "Cut to the Chase solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
+    overview: "Document Detective solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator — that's Jargon Assassin's job. It's a relevance engine that cross-references the document against YOUR specific situation, grounded strictly in what the document actually says: every finding traces to document text, a fact you supplied, or a clearly-labeled cautious connection between the two, never outside knowledge about what insurers, employers, or landlords 'normally' do.",
     howToUse: [
       "Paste the full text of the document you received",
-      "Select the document type (insurance, HOA, lease, policy update, etc.)",
-      "Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')",
-      "Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')",
-      "Review action items, cost changes, savings opportunities, and what you can safely ignore"
+      "Optionally select the document type — it helps interpretation but never overrides the document itself",
+      "Tell us your situation — only the facts that affect what this document means for you ('renter, lease ends in December, have a dog')",
+      "Optionally add what you especially want to know ('Did the deadline change?')",
+      "Review what needs your attention, what it costs or saves you, what's buried, what doesn't appear relevant, and what genuinely needs clarification from the issuer"
     ],
     example: {
       scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
-      action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
-      result: "Cut to the Chase finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
+      action: "Paste the full text, select 'HOA / Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
+      result: "Document Detective finds: 1 item needing attention (new pet registration form due by March 15, per the document's own deadline), 1 money item (parking lot B rates increasing $25/month starting April, as stated), and flags a buried clause about package delivery changes that affects work-from-home residents. New playground hours are marked doesn't-appear-relevant, with the note that this would change if there were children in the household. Notes that most of the document concerns owner-only assessments that don't affect renters."
     },
     tips: [
-      "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
-      "Action Required items show deadlines and consequences — these are the ones people miss and regret",
-      "'Buried but Important' specifically calls out things hidden in fine print or dense paragraphs",
-      "The 'Safely Ignore' section is genuinely useful — it gives you permission to stop reading",
-      "'Consult Professional' flags appear when the tool spots something that needs expert review, not just AI analysis"
+      "More situation detail helps the filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
+      "Each finding shows its status — clear from the document, a reasonable reading, or needs clarification — instead of one overall confidence score",
+      "'Buried but Important' calls out things easy to miss because of where or how they're worded — not a guess about how you're feeling",
+      "'Doesn't Appear Relevant' always says what fact would change that — the tool never assumes an unmentioned detail means the opposite is true",
+      "'Outside Help' only appears when the document genuinely can't resolve something, and points to the least escalatory place to ask first"
     ]
   }
 },

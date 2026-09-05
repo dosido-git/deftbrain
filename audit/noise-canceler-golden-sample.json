@@ -1,135 +1,290 @@
 {
   "_meta": {
-    "tool": "NoiseCanceler",
-    "generated": "2026-07-14",
+    "tool": "DocumentDetective",
+    "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
-    "baseline_commit": "noisecanceler-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden noise-canceler). Diff for QUALITY not exact match: HTTP 200 on a dense document, no truncation. GUARDS: (1) action_required[].effort MUST be a clean enum (quick|moderate|involved) — the frontend does strict === 'quick'/=== 'moderate' for the effort badge; the schema used to carry parentheticals ('quick (< 5 min) | ...') so every effort fell through to the 'involved' label. (2) 7 arrays were uncapped at max_tokens 2000 → dense German docs (leases/EOBs, the target inputs) truncated → 500; capped (action<=5, costs<=5, saves<=4, affects<=4, buried<=4, consult<=3, questions<=5) + max_tokens 3500. (3) amount fields render RAW → local currency, no '(number)' annotation. (4) confidence clean enum. (5) guard keys top-level parsed.document_type. DO NOT reverse: clean pipe enums (effort/confidence/priority); array caps + max_tokens 3500; local-currency amounts; the no-inner-double-quote rule; no annotation suffixes."
+    "baseline_commit": "documentdetective-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden noise-canceler). Diff for QUALITY not exact match: HTTP 200, no truncation across all 8 arrays (needs_attention/money/also_relevant/doesnt_appear_relevant/buried_but_important/practical_next_steps/questions_to_ask/outside_help). GUARDS: (1) every needs_attention/money/also_relevant item's `status` must be exactly one of CLEAR FROM DOCUMENT | REASONABLE READING | NEEDS CLARIFICATION, in English, even in the German case — the prompt pins this enum regardless of response language; a translated status renders as a blank badge on the frontend, which matches literally. (2) no aggregate `confidence`/`confidence_note` field — CONFIDENCE section bans an overall AI score; capArrays() also strips these defensively if a stale-shaped response ever slips through. (3) needs_attention[].deadline/if_you_do_nothing/what_to_do must be empty string, not invented, when the document doesn't support them (case 1's third needs_attention item correctly has empty if_you_do_nothing). (4) money[].amount_or_rule states the document's discretion/formula plainly when no number is given (case 1's betterment item), never invents a magnitude word like 'significant'. (5) doesnt_appear_relevant[] always carries a non-empty could_change_if. (6) practical_next_steps[] never phrased as a requirement and never carries an invented time/effort estimate. (7) array caps: needs_attention<=6, money<=5, also_relevant<=5, doesnt_appear_relevant<=4, buried_but_important<=4, practical_next_steps<=5, questions_to_ask<=5, outside_help<=3 (enforced in code via capArrays, not just the prompt's own limits). (8) runOutputGuard (v2, LLM-adversarial) runs after generation and repairs flagged fields in place — case 1's first draft actually failed the guard on 7 fields (unsupported_prediction, invented_third_party_obligation x1, invented_reader_psychology x3, practical_suggestion_stated_as_document_requirement, unsupported_claim_or_coverage_validity) and was repaired before this case was recorded; that repair is a FEATURE being exercised, not a fluke — see backend/routes/noise-canceler.js's guard prohibit list. DO NOT reverse: the status-enum English-pinning instruction; capArrays; the runOutputGuard call; the no-inner-double-quote rule."
   },
   "cases": [
+    {
+      "name": "flood-claim-validity-and-third-party-obligation",
+      "endpoint": "/api/noise-canceler",
+      "input": {
+        "document": "SECTION 4 — ESCAPE OF WATER\n\n4.1 We will cover loss of or damage to the contents caused by water escaping from any fixed water or heating installation, or from any domestic appliance connected to such an installation.\n\n4.2 We will not cover:\n(a) damage occurring where the premises have been unoccupied for more than 30 consecutive days, unless the water supply has been turned off at the main and the system drained;\n(b) the cost of repairing or replacing the installation or appliance from which the water escaped;\n(c) damage caused by water entering the premises from outside the building;\n(d) any amount in respect of wear, tear or gradual deterioration.\n\nSECTION 9 — YOUR OBLIGATIONS\n\n9.3 You must notify us as soon as reasonably possible, and in any event within 30 days, of any event which may give rise to a claim. Failure to do so may prejudice your claim to the extent that our position has been adversely affected.\n\n9.7 Where we replace an item with a new equivalent and the replacement represents a material improvement on the item lost or damaged, we may make a proportionate deduction to reflect that improvement.\n\nSECTION 12 — RECOVERY FROM THIRD PARTIES\n\n12.1 We are entitled to pursue recovery in your name against any party responsible for the loss. You must provide all reasonable assistance and must not, without our written consent, admit liability or make any agreement with such a party that prejudices our right of recovery.",
+        "documentType": "insurance_eob",
+        "mySituation": "My flat was flooded by the upstairs neighbour's washing machine three weeks ago. I am trying to work out what my own contents policy actually covers before I ring them.",
+        "concerns": "Whether 'escape of water' covers someone else's appliance, whether the three weeks has already cost me the claim, and what 'betterment' means when they replace a ten-year-old carpet.",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States"
+      },
+      "output": {
+        "document": {
+          "type": "Home contents insurance policy — Section extracts covering escape of water, policyholder obligations, betterment, and third-party recovery",
+          "bottom_line": "The escape of water cover in Section 4.1 covers water escaping from a domestic appliance connected to a fixed water or heating installation. Whether your neighbour's washing machine qualifies depends on whether it was connected to the building's fixed water supply — you should confirm this with the insurer when you notify them. You are within the 30-day notification deadline if you contact them now. A proportionate deduction may be applied when replacing a ten-year-old carpet, and a separate deduction may also apply for wear and tear."
+        },
+        "needs_attention": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Notify your insurer of the flood event",
+            "why_it_matters_to_you": "The flood happened three weeks ago; the document requires notification within 30 days",
+            "source": "Section 9.3",
+            "deadline": "Within 30 days of the event. If the flood was exactly 21 days ago, approximately 9 days remain — but if your date is approximate, treat this as urgent",
+            "if_you_do_nothing": "The document states that failure to notify within 30 days may prejudice your claim to the extent the insurer's position has been adversely affected",
+            "what_to_do": "Notify the insurer now, before you complete all your preparation, so the deadline is met"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Do not admit liability to the neighbour or make any agreement with them about the loss without the insurer's written consent",
+            "why_it_matters_to_you": "The neighbour's washing machine caused the damage; the insurer may wish to pursue recovery from them under Section 12.1",
+            "source": "Section 12.1",
+            "deadline": "",
+            "if_you_do_nothing": "An agreement or admission made without written consent could prejudice the insurer's right of recovery, which Section 12.1 expressly prohibits",
+            "what_to_do": "Avoid settling informally with the neighbour or signing anything until the insurer has confirmed in writing that it consents"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Provide all reasonable assistance to the insurer if it pursues recovery from the neighbour",
+            "why_it_matters_to_you": "The neighbour is the responsible third party; Section 12.1 gives the insurer the right to pursue recovery in your name",
+            "source": "Section 12.1",
+            "deadline": "",
+            "if_you_do_nothing": "",
+            "what_to_do": "Keep records of communications with the neighbour, any acknowledgements they made, and anything the building management said — these may be needed"
+          }
+        ],
+        "money": [
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Betterment deduction on the carpet replacement",
+            "amount_or_rule": "If the replacement carpet is a material improvement on the damaged one, the insurer may make a proportionate deduction to reflect that improvement. The document gives the insurer discretion on the amount; no formula or cap is stated.",
+            "when": "At the point of settlement or replacement",
+            "source": "Section 9.7"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "No cover for the cost of repairing or replacing the neighbour's washing machine itself",
+            "amount_or_rule": "The cost of the appliance from which water escaped is excluded entirely — this is a zero-benefit item under your contents policy",
+            "when": "Applies to any claim",
+            "source": "Section 4.2(b)"
+          },
+          {
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "No cover for any portion of the carpet loss attributed to wear, tear or gradual deterioration",
+            "amount_or_rule": "Any amount representing wear and tear is excluded. For a ten-year-old carpet, the insurer may attribute some portion of the value to deterioration rather than flood damage. The document does not state a formula.",
+            "when": "At the point of settlement",
+            "source": "Section 4.2(d)"
+          }
+        ],
+        "also_relevant": [
+          {
+            "status": "REASONABLE READING",
+            "what": "The escape of water cover in Section 4.1 extends to water escaping from a domestic appliance connected to a fixed installation — which a washing machine plumbed into the building's water supply would be",
+            "why_it_matters": "Your concern was whether the neighbour's appliance qualifies. Section 4.1 does not restrict cover to appliances within your own flat; it covers damage to your contents caused by water escaping from any such appliance. Whether the neighbour's machine was connected to a fixed installation is a factual question about that machine, not a policy restriction.",
+            "source": "Section 4.1"
+          },
+          {
+            "status": "NEEDS CLARIFICATION",
+            "what": "Whether the water entered your flat from outside the building or through the building's internal structure matters to cover",
+            "why_it_matters": "Section 4.2(c) excludes damage caused by water entering from outside the building. Water coming through a ceiling from an upstairs flat is internal to the building, which would not trigger this exclusion — unless the path of the water involved an external element such as an outside drain or exterior wall breach.",
+            "source": "Section 4.2(c)"
+          },
+          {
+            "status": "NEEDS CLARIFICATION",
+            "what": "The 'prejudice' language in the notification clause limits but does not automatically void a late or borderline-late claim",
+            "why_it_matters": "Section 9.3 says failure to notify may prejudice your claim to the extent the insurer's position has been adversely affected — not that the claim is automatically refused. If you notify promptly now and the insurer cannot point to actual adverse effect from the three-week gap, this clause may not reduce your recovery. The document does not resolve how the insurer will apply it.",
+            "source": "Section 9.3"
+          }
+        ],
+        "doesnt_appear_relevant": [
+          {
+            "what": "Unoccupied premises exclusion (Section 4.2(a))",
+            "why": "You described the flood as affecting your flat, implying you occupy it. An unoccupied-premises exclusion requires more than 30 consecutive days of unoccupancy.",
+            "could_change_if": "You have been away from the flat for more than 30 consecutive days, or you do not live there full-time"
+          },
+          {
+            "what": "Water entering from outside the building (Section 4.2(c))",
+            "why": "The source of the water was the upstairs neighbour's washing machine — an internal source. Water travelling through the floor/ceiling of the building is not the same as water entering from outside.",
+            "could_change_if": "The water's path involved an external element, such as an outside drain or exterior wall breach"
+          }
+        ],
+        "buried_but_important": [
+          {
+            "what": "The 'prejudice' qualifier on late notification is conditional, not an automatic bar — but the document leaves its application entirely to the insurer's assessment",
+            "source": "Section 9.3, second sentence",
+            "why_easy_to_miss": "The word 'may' and the limiting phrase 'to the extent that our position has been adversely affected' in Section 9.3 mean the insurer cannot refuse your claim simply because you notified late; the refusal or reduction depends on showing actual adverse effect from the delay."
+          },
+          {
+            "what": "The betterment deduction in Section 9.7 applies only when replacement represents a 'material improvement' — it is not automatic on any new-for-old replacement",
+            "source": "Section 9.7",
+            "why_easy_to_miss": "The betterment deduction in Section 9.7 applies only when the replacement represents a 'material improvement' — it is not automatic on any new-for-old replacement. The word 'material' sets a threshold the insurer must meet before making the deduction."
+          },
+          {
+            "what": "Section 4.2(d) excludes wear, tear and gradual deterioration as a separate head of exclusion from betterment — a claim could face both reductions applied independently",
+            "source": "Section 4.2(d) and Section 9.7",
+            "why_easy_to_miss": "Betterment (Section 9.7) and the wear-and-tear exclusion (Section 4.2(d)) appear in different sections. Both could apply to a replacement carpet: the insurer may deduct for material improvement and also deduct any portion attributable to wear and tear as a separate exclusion."
+          }
+        ],
+        "practical_next_steps": [
+          "Notify the insurer today or within the next day or two — you can flag that you are still gathering details, but getting the notification in now protects you against the 30-day limit",
+          "Photograph or video all damaged contents and the carpet before cleaning, moving or disposal — the insurer may need this evidence to assess the claim.",
+          "Write down — or save — any messages or statements from the upstairs neighbour acknowledging the washing machine leak",
+          "Do not agree to any payment or settlement with the neighbour, or sign anything they offer, without first getting written consent from your insurer",
+          "When you call, ask the insurer to confirm in writing how it will apply Section 9.3 given the three-week gap, so you have a record of their position"
+        ],
+        "questions_to_ask": [
+          "Given that I am notifying you three weeks after the event, will you confirm in writing whether you consider your position to have been adversely affected, and if so, in what way?",
+          "The water came from my neighbour's washing machine upstairs — can you confirm this falls within 'any domestic appliance connected to a fixed water or heating installation' under Section 4.1?",
+          "For the carpet replacement, how will you assess whether the replacement represents a 'material improvement,' and will you also apply a separate wear-and-tear reduction under Section 4.2(d)?",
+          "Do you intend to pursue recovery from my upstairs neighbour under Section 12.1, and if so, what do you need from me to support that?",
+          "Is there anything I should not say or agree to with the neighbour or the building management while the claim is open?"
+        ],
+        "outside_help": [
+          {
+            "question": "Whether the betterment deduction and the wear-and-tear exclusion can both be applied to the same carpet, and whether that is consistent with the policy wording",
+            "why_the_document_doesnt_resolve_it": "The document does not state whether betterment and wear-and-tear reductions are applied to the same item independently or as a single combined reduction, or what the calculation looks like in practice. The insurer has discretion to make a 'proportionate deduction' for betterment under Section 9.7, but the document leaves the method to their assessment.",
+            "who_to_ask_first": "Your insurer — ask them to explain in writing how both sections will be applied before any settlement figure is agreed"
+          }
+        ]
+      }
+    },
     {
       "name": "de-dense-lease-notice",
       "endpoint": "/api/noise-canceler",
       "input": {
+        "document": "MIETVERTRAG — ÄNDERUNGSMITTEILUNG (Wirkung ab 1. September 2026)\nSehr geehrte Mieterin, sehr geehrter Mieter,\n1. Die monatliche Kaltmiete erhöht sich um 85 EUR aufgrund der ortsüblichen Vergleichsmiete. Widerspruch bis 15. August 2026 schriftlich.\n2. Nebenkostenvorauszahlung steigt um 40 EUR pro Monat. Die Jahresabrechnung ergab eine Nachzahlung von 320 EUR, fällig binnen 30 Tagen.\n3. Neue Hausordnung: Ruhezeiten 22-7 Uhr, Waschküche nur mit Buchung über das neue Online-Portal (Registrierung erforderlich).\n4. Haustierhaltung: Hunde nur mit schriftlicher Genehmigung; bestehende Genehmigungen bleiben gültig.\n5. Für Fragen zur Mieterhöhung empfehlen wir rechtliche Beratung durch den Mieterverein.\n6. Kündigungsfrist unverändert 3 Monate.",
+        "documentType": "lease",
+        "mySituation": "Alleinstehend, 34, mit Hund, arbeite im Homeoffice, knappes Budget",
+        "concerns": "Ob ich der Mieterhöhung widersprechen kann",
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "document": "MIETVERTRAG — ÄNDERUNGSMITTEILUNG (Wirkung ab 1. September 2026)\nSehr geehrte Mieterin, sehr geehrter Mieter,\n1. Die monatliche Kaltmiete erhöht sich um 85 EUR aufgrund der ortsüblichen Vergleichsmiete. Widerspruch bis 15. August 2026 schriftlich.\n2. Nebenkostenvorauszahlung steigt um 40 EUR pro Monat. Die Jahresabrechnung ergab eine Nachzahlung von 320 EUR, fällig binnen 30 Tagen.\n3. Neue Hausordnung: Ruhezeiten 22-7 Uhr, Waschküche nur mit Buchung über das neue Online-Portal (Registrierung erforderlich).\n4. Kaution wird auf ein verzinstes Konto übertragen; Zinsgutschrift jährlich.\n5. Haustierhaltung: Hunde nur mit schriftlicher Genehmigung; bestehende Genehmigungen bleiben gültig.\n6. Rauchmelderwartung: Zutritt am 12. September zwischen 9-12 Uhr erforderlich; Ersatztermin über Hausverwaltung.\n7. Für Fragen zur Mieterhöhung empfehlen wir rechtliche Beratung durch den Mieterverein.\n8. Kündigungsfrist unverändert 3 Monate. Bei Auszug Wohnung besenrein übergeben, sonst Kosten ab 250 EUR.\n",
-        "documentType": "lease",
-        "mySituation": "Alleinstehend, 34, mit Hund, arbeite im Homeoffice, knappes Budget",
-        "concerns": "Ob ich der Mieterhöhung widersprechen kann"
+        "userRegion": "Germany"
       },
       "output": {
-        "document_type": "Mietvertrag-Änderungsmitteilung (Wirkungsänderung zum 01.09.2026)",
-        "tldr": "Deine Miete steigt um 125 EUR/Monat – du kannst der Erhöhung widersprechen, aber nur bis zum 15. August 2026 schriftlich.",
-        "action_required": [
+        "document": {
+          "type": "Mietvertrag – Änderungsmitteilung (Wirkung ab 1. September 2026)",
+          "bottom_line": "Die Widerspruchsfrist gegen die Mieterhöhung (15. August 2026) ist bereits abgelaufen – das ist die dringlichste Information für Sie, da sie Ihr knappes Budget direkt betrifft."
+        },
+        "needs_attention": [
           {
-            "what": "Schriftlichen Widerspruch gegen die Mieterhöhung (85 EUR) einlegen – per Einschreiben mit Rückschein an die Hausverwaltung",
-            "deadline": "15. August 2026",
-            "consequence": "Ohne Widerspruch gilt die Erhöhung als akzeptiert und tritt zum 01.09.2026 in Kraft",
-            "how": "Schriftlich an die Hausverwaltung – Einschreiben empfohlen; Mieterverein kann beim Formulieren helfen",
-            "effort": "moderate"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Nachzahlung aus der Nebenkostenabrechnung von 320 EUR bezahlen",
+            "why_it_matters_to_you": "Sie haben ein knappes Budget – diese Zahlung ist fällig und nicht optional.",
+            "source": "Ziffer 2",
+            "deadline": "Binnen 30 Tagen ab Datum des Schreibens – das genaue Datum des Schreibens ist nicht angegeben, daher lässt sich die Frist nicht exakt berechnen.",
+            "if_you_do_nothing": "Das Dokument nennt keine Konsequenz, aber die Fälligkeit ist ausdrücklich gesetzt.",
+            "what_to_do": "Den Betrag von 320 EUR innerhalb der 30-Tage-Frist überweisen. Das genaue Fälligkeitsdatum beim Vermieter erfragen, falls das Schreibdatum unklar ist."
           },
           {
-            "what": "Nebenkostennachzahlung von 320 EUR begleichen",
-            "deadline": "Binnen 30 Tagen nach Zugang des Schreibens (Datum des Eingangs prüfen!)",
-            "consequence": "Verzugszinsen und mögliche Mahnkosten",
-            "how": "Überweisung an die Hausverwaltung – Verwendungszweck aus dem Schreiben nutzen",
-            "effort": "quick"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Für die Waschküche im neuen Online-Portal registrieren, um sie weiter nutzen zu können",
+            "why_it_matters_to_you": "Sie können die Waschküche ohne Registrierung nicht buchen, laut Dokument.",
+            "source": "Ziffer 3",
+            "deadline": "",
+            "if_you_do_nothing": "Das Dokument nennt keine explizite Konsequenz, aber die Buchung über das Portal wird als Voraussetzung für die Nutzung bezeichnet.",
+            "what_to_do": "Im Online-Portal registrieren, sobald zugänglich."
           },
           {
-            "what": "Für den Rauchmeldertermin am 12. September 2026 zwischen 9–12 Uhr zuhause sein oder Ersatztermin vereinbaren",
-            "deadline": "12. September 2026 (oder Ersatztermin vorher anfragen)",
-            "consequence": "Gesetzlich vorgeschriebene Wartung kann nicht durchgeführt werden; Hausverwaltung darf Zwangszutritt erwirken",
-            "how": "Ersatztermin über die Hausverwaltung anfragen – Kontakt im Schreiben/auf der Webseite der Hausverwaltung",
-            "effort": "quick"
-          },
-          {
-            "what": "Im Online-Portal der Hausverwaltung registrieren, um die Waschküche weiterhin nutzen zu können",
-            "deadline": "Vor der nächsten Waschküchennutzung (spätestens ab 01.09.2026)",
-            "consequence": "Ohne Registrierung keine Buchung möglich – kein Zugang zur Waschküche",
-            "how": "Online-Portal der Hausverwaltung (URL im Schreiben prüfen oder direkt bei der Verwaltung erfragen)",
-            "effort": "quick"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Schriftliche Genehmigung für Ihren Hund prüfen und sicherstellen, dass sie vorliegt",
+            "why_it_matters_to_you": "Sie haben einen Hund – das Dokument verlangt eine schriftliche Genehmigung. Bestehende Genehmigungen bleiben laut Dokument gültig, aber nur wenn sie tatsächlich existieren.",
+            "source": "Ziffer 4",
+            "deadline": "",
+            "if_you_do_nothing": "Das Dokument nennt keine Konsequenz für fehlende Genehmigung, regelt aber Hunde ausdrücklich als genehmigungspflichtig.",
+            "what_to_do": "Prüfen, ob eine schriftliche Genehmigung in Ihren Unterlagen vorhanden ist. Falls nicht, beim Vermieter nachfragen."
           }
         ],
-        "costs_you_money": [
+        "money": [
           {
-            "what": "Mieterhöhung Kaltmiete",
-            "amount": "+85 EUR/Monat",
-            "when": "Ab 01. September 2026 (falls kein Widerspruch)",
-            "avoidable": "Ja – schriftlicher Widerspruch bis 15.08.2026, idealerweise mit Mieterverein prüfen ob Erhöhung zulässig ist"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Erhöhung der Kaltmiete",
+            "amount_or_rule": "+85 EUR pro Monat",
+            "when": "Ab 1. September 2026",
+            "source": "Ziffer 1"
           },
           {
+            "status": "CLEAR FROM DOCUMENT",
             "what": "Erhöhung der Nebenkostenvorauszahlung",
-            "amount": "+40 EUR/Monat",
-            "when": "Ab 01. September 2026",
-            "avoidable": "Schwer vermeidbar, da auf Basis der Jahresabrechnung – Berechtigung prüfen lassen"
+            "amount_or_rule": "+40 EUR pro Monat",
+            "when": "Ab 1. September 2026 (Wirkungsdatum des Schreibens)",
+            "source": "Ziffer 2"
           },
           {
-            "what": "Nebenkostennachzahlung aus der Jahresabrechnung",
-            "amount": "320 EUR einmalig",
-            "when": "Binnen 30 Tagen nach Zugang des Schreibens",
-            "avoidable": "Abrechnung auf Richtigkeit prüfen lassen (Mieterverein); bei Fehlern anfechten"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Nachzahlung Nebenkostenabrechnung",
+            "amount_or_rule": "320 EUR einmalig, fällig binnen 30 Tagen",
+            "when": "Innerhalb von 30 Tagen ab Datum des Schreibens",
+            "source": "Ziffer 2"
+          },
+          {
+            "status": "REASONABLE READING",
+            "what": "Gesamte monatliche Mehrbelastung ab September 2026",
+            "amount_or_rule": "+125 EUR pro Monat (85 EUR Kaltmiete + 40 EUR Nebenkosten), zusätzlich zur einmaligen Nachzahlung von 320 EUR",
+            "when": "Ab 1. September 2026",
+            "source": "Ziffer 1 und 2 zusammen"
           }
         ],
-        "saves_you_money": [],
-        "affects_you": [
+        "also_relevant": [
           {
-            "what": "Hundehaltung: schriftliche Genehmigung erforderlich – bestehende Genehmigungen bleiben gültig",
-            "why_it_matters": "Du hast einen Hund. Falls du bereits eine schriftliche Genehmigung hast, passiert nichts. Falls nicht, solltest du das sofort klären, bevor du abgemahnt wirst.",
-            "priority": "high"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Der Widerspruch gegen die Mieterhöhung war bis 15. August 2026 möglich – diese Frist ist heute (4. September 2026) abgelaufen.",
+            "why_it_matters": "Sie fragen, ob Sie widersprechen können. Laut Dokument war die Frist der 15. August 2026; dieser Termin liegt in der Vergangenheit.",
+            "source": "Ziffer 1"
           },
           {
-            "what": "Ruhezeiten 22–7 Uhr gelten jetzt offiziell laut neuer Hausordnung",
-            "why_it_matters": "Im Homeoffice arbeitest du womöglich auch abends – Videokonferenzen, Lautsprecher etc. könnten unter die neue Regel fallen",
-            "priority": "medium"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Der Vermieter empfiehlt selbst rechtliche Beratung durch den Mieterverein bei Fragen zur Mieterhöhung.",
+            "why_it_matters": "Bei knappem Budget und Unsicherheit über die Mieterhöhung ist dies ein im Dokument genannter Anlaufpunkt – Mietervereine bieten in Deutschland oft günstige oder kostenlose Erstberatung.",
+            "source": "Ziffer 5"
           },
           {
-            "what": "Kaution wird auf ein verzinstes Konto übertragen",
-            "why_it_matters": "Zinsgutschriften stehen dir zu – bei Auszug darauf achten, dass du den vollen Betrag inkl. Zinsen zurückerhältst",
-            "priority": "low"
+            "status": "CLEAR FROM DOCUMENT",
+            "what": "Ruhezeiten 22 bis 7 Uhr gemäß neuer Hausordnung",
+            "why_it_matters": "Mit Hund und Homeoffice (unregelmäßige Arbeitszeiten möglich) ist die Kenntnis der Ruhezeiten relevant.",
+            "source": "Ziffer 3"
           }
         ],
-        "does_not_affect_you": "Punkt 8 (Kündigungsfristen und Übergabe) ist aktuell irrelevant, da kein Auszug geplant scheint – für später aber im Hinterkopf behalten.",
-        "buried_important": [
+        "doesnt_appear_relevant": [
           {
-            "what": "Die Nachzahlung von 320 EUR hat eine Frist von nur 30 Tagen – ohne explizites Datum leicht zu verpassen",
-            "where": "Punkt 2, zweiter Satz",
-            "why_buried": "Die Frist wird nicht als konkretes Datum angegeben – man muss selbst nachrechnen ab Zustelldatum"
-          },
-          {
-            "what": "Hundegenehmigung – Status unklar: hast du eine schriftliche oder nur eine mündliche?",
-            "where": "Punkt 5, letzter Halbsatz",
-            "why_buried": "Klingt harmlos, kann aber zur Abmahnung führen wenn keine schriftliche Genehmigung vorliegt"
-          },
-          {
-            "what": "Empfehlung des Mietervereins zur Rechtsprüfung steht unauffällig in Punkt 7 – kein Hinweis auf konkrete Fristen",
-            "where": "Punkt 7",
-            "why_buried": "Wirkt wie ein Hinweis am Rande, ist aber ein indirektes Eingeständnis, dass die Erhöhung anfechtbar sein könnte"
+            "what": "Kündigungsfrist (Ziffer 6)",
+            "why": "Sie haben nicht geäußert, dass Sie kündigen möchten oder eine Kündigung in Betracht ziehen.",
+            "could_change_if": "Sie erwägen, wegen der Mieterhöhung oder aus anderen Gründen auszuziehen."
           }
         ],
-        "consult_professional": [
+        "buried_but_important": [
           {
-            "topic": "Zulässigkeit der Mieterhöhung (85 EUR) prüfen lassen",
-            "why": "Mieterhöhungen nach ortsüblicher Vergleichsmiete sind an gesetzliche Grenzen gebunden (Kappungsgrenze 20% in 3 Jahren, in Ballungsräumen 15%) – nicht jede Erhöhung ist rechtlich haltbar",
-            "who": "Mieterverein (günstiger Mitgliedsbeitrag, spezialisierte Beratung) oder Mieterrechtsanwalt"
+            "what": "Die Widerspruchsfrist steht im gleichen Satz wie die Ankündigung der Mieterhöhung und wird nicht gesondert hervorgehoben – sie lautet 15. August 2026, was heute bereits überschritten ist.",
+            "source": "Ziffer 1, zweiter Satz",
+            "why_easy_to_miss": "Frist und Begründung der Mieterhöhung stehen in einer einzigen kurzen Ziffer; es gibt keine separate Fristenübersicht im Dokument."
           },
           {
-            "topic": "Nebenkostenabrechnung auf Richtigkeit prüfen",
-            "why": "Nebenkostenabrechnungen enthalten häufig Fehler oder nicht umlagefähige Positionen – 320 EUR Nachzahlung sollte nicht blind bezahlt werden",
-            "who": "Mieterverein"
+            "what": "Bestehende Hundehalter-Genehmigungen bleiben laut Dokument gültig – aber nur solche, die tatsächlich schriftlich erteilt wurden.",
+            "source": "Ziffer 4",
+            "why_easy_to_miss": "Der Satz 'bestehende Genehmigungen bleiben gültig' bezieht sich auf Genehmigungen, die bereits schriftlich erteilt wurden. Das Dokument macht nicht deutlich, dass Sie nachweisen müssen, dass eine solche Genehmigung tatsächlich vorliegt."
           }
+        ],
+        "practical_next_steps": [
+          "Kontaktieren Sie Ihren Mieterverein, um zu klären, ob die Mieterhöhung formell zulässig ist oder ob Einwände noch möglich sind – trotz abgelaufener Frist können formale Fehler relevant sein.",
+          "Suchen Sie Ihren Mieterverein auf: Das Dokument empfiehlt dies ausdrücklich, und Mietervereine können prüfen, ob trotz abgelaufener Frist rechtliche Handlungsoptionen bestehen – etwa wenn die Mieterhöhung formell fehlerhaft ist.",
+          "Legen Sie die 320-EUR-Nachzahlung termingerecht zurück, auch wenn Sie gleichzeitig rechtliche Beratung einholen.",
+          "Suchen Sie die schriftliche Hundehalter-Genehmigung aus Ihren Unterlagen heraus und bewahren Sie sie griffbereit auf.",
+          "Registrieren Sie sich im Online-Portal für die Waschküche, sobald der Zugang verfügbar ist."
         ],
         "questions_to_ask": [
-          "Liegt für meinen Hund bereits eine schriftliche Genehmigung in meiner Akte vor – und wenn nicht, wie beantrage ich sie?",
-          "Auf welchen Mietspiegel und welche Vergleichswohnungen stützt sich die Mieterhöhung konkret?",
-          "Welches ist der genaue URL des Online-Portals für die Waschküchenbuchung?",
-          "An welches Konto und mit welchem Verwendungszweck soll die Nebenkostennachzahlung überwiesen werden?",
-          "Wie lautet der genaue Zustelltag des Schreibens, damit ich die 30-Tage-Frist korrekt berechnen kann?"
+          "Wann genau wurde dieses Schreiben ausgestellt oder zugestellt? (Für die 30-Tage-Frist der Nebenkostennachzahlung relevant.)",
+          "Liegt eine schriftliche Genehmigung zur Hundehaltung in meiner Akte vor, und kann ich eine Kopie erhalten?",
+          "Wie und wann kann ich mich für das Online-Portal der Waschküche registrieren?",
+          "Auf welchem Mietspiegel oder welcher Vergleichsmiete basiert die Erhöhung um 85 EUR?"
         ],
-        "confidence": "high",
-        "confidence_note": "Zustelldatum des Schreibens fehlt – dadurch kann die 30-Tage-Frist für die Nachzahlung nicht exakt bestimmt werden. Sofort prüfen."
+        "outside_help": [
+          {
+            "question": "Kann die Mieterhöhung noch angefochten werden, obwohl die im Dokument genannte Widerspruchsfrist abgelaufen ist – etwa wegen formeller Fehler?",
+            "why_the_document_doesnt_resolve_it": "Das Dokument nennt nur die Frist und empfiehlt Beratung, regelt aber nicht, welche Rechte bei Fristversäumnis oder formellen Mängeln bestehen.",
+            "who_to_ask_first": "Mieterverein (im Dokument selbst empfohlen, Ziffer 5) – vor einem Rechtsanwalt."
+          }
+        ]
       }
     }
   ]

@@ -29,7 +29,7 @@ module.exports = {
       "Flags 'buried but important' items hidden in dense fine print",
       "Tells you explicitly what you can ignore — most of it"
     ],
-    toolId:   'CutToTheChase',
+    toolId:   'DocumentDetective',
     toolName: 'Noise Canceler',
   },
   published: '2026-04-29',
