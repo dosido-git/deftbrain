@@ -67,15 +67,21 @@ const SmallChangeBigDifference = ({ tool }) => {
   const [painPoints, setPainPoints] = useState('');
   const [error, setError] = useState('');
   const [streamStage, setStreamStage] = useState('');
-  // -v2: the result shape changed completely in the Small Change, Big
-  // Difference rewrite (routine_diagnosis/the_one_change/the_year_from_now
-  // → what_i_notice/change_to_try/why_not_start_elsewhere/what_to_watch_for).
-  const [results, setResults] = usePersistentState('onepercenter-result-v2', null);
+  // -v3: -v2 was the 2026-09-05 grounding rewrite's shape
+  // (routine_diagnosis/the_one_change/the_year_from_now →
+  // what_i_notice/change_to_try/why_not_start_elsewhere/what_to_watch_for).
+  // -v3 is the same-day FULL LLM INSTRUCTIONS follow-up, which moved `math`
+  // out of change_to_try into its own top-level {show, calculation, meaning}
+  // object and turned why_not_start_elsewhere.alternatives from a string
+  // into an array of {alternative, why_not_first} — a -v2 cached result
+  // would crash calling .map() on that string.
+  const [results, setResults] = usePersistentState('onepercenter-result-v3', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('onepercenter-history', []);
 
   const getStreamStage = (text) => {
     if (text.includes('"what_to_watch_for"'))       return t('op_stage_watch');
     if (text.includes('"why_not_start_elsewhere"'))  return t('op_stage_alternatives');
+    if (text.includes('"math"'))                     return t('op_stage_math');
     if (text.includes('"change_to_try"'))            return t('op_stage_change');
     if (text.includes('"what_i_notice"'))            return t('op_stage_notice');
     return t('op_stage_default');
@@ -151,11 +157,11 @@ const SmallChangeBigDifference = ({ tool }) => {
     out += `${t('op_copy_notice')}\n${results?.what_i_notice?.pattern}\n\n`;
     out += `${t('op_copy_change')}\n${ch?.change}\n\n`;
     if (ch?.what_it_may_change) out += `${t('op_copy_mechanism')}\n${ch.what_it_may_change}\n\n`;
-    if (ch?.math) out += `${t('op_copy_math')} ${ch.math}\n\n`;
+    if (results?.math?.show && results?.math?.calculation) out += `${t('op_copy_math')} ${results.math.calculation}\n\n`;
     out += `${t('op_copy_implement')}\n${ch?.how_to_try_it}\n\n`;
-    if (results?.what_to_watch_for?.signs_it_is_helping?.length) {
+    if (results?.what_to_watch_for?.signs_it_may_be_helping?.length) {
       out += `${t('op_copy_watch')}\n`;
-      results.what_to_watch_for.signs_it_is_helping.forEach(s => out += `  • ${s}\n`);
+      results.what_to_watch_for.signs_it_may_be_helping.forEach(s => out += `  • ${s}\n`);
       out += '\n';
     }
     return out + BRAND;
@@ -248,7 +254,10 @@ const SmallChangeBigDifference = ({ tool }) => {
                   <p className={`text-sm leading-relaxed mb-2 ${c.textSecondary}`}>{results?.what_i_notice?.pattern}</p>
                 )}
                 {results?.what_i_notice?.why_it_matters && (
-                  <p className={`text-sm ${c.textMuted}`}>{results?.what_i_notice?.why_it_matters}</p>
+                  <div>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>{t('op_why_it_matters_label')}</p>
+                    <p className={`text-sm ${c.textMuted}`}>{results?.what_i_notice?.why_it_matters}</p>
+                  </div>
                 )}
               </div>
             )}
@@ -283,43 +292,51 @@ const SmallChangeBigDifference = ({ tool }) => {
                       <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.change_to_try?.what_it_may_change}</p>
                     </div>
                   )}
-
-                  {results?.change_to_try?.math && (
-                    <div className={`p-3 rounded-xl border font-mono ${c.navyBg}`}>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.navyText}`}>📊 {t('op_the_math')}</p>
-                      <p className={`text-sm font-semibold ${c.navyText}`}>{results?.change_to_try?.math}</p>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
 
-            {/* Why not start somewhere else — optional */}
-            {(results?.why_not_start_elsewhere?.alternatives || results?.why_not_start_elsewhere?.reason) && (
+            {/* The Math — its own section, shown only when math.show is true */}
+            {results?.math?.show && (results?.math?.calculation || results?.math?.meaning) && (
+              <div className={`p-4 rounded-xl border ${c.navyBg}`}>
+                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.navyText}`}>📊 {t('op_the_math')}</p>
+                {results?.math?.calculation && <p className={`text-sm font-mono font-semibold ${c.navyText}`}>{results.math.calculation}</p>}
+                {results?.math?.meaning && <p className={`text-sm mt-1 ${c.navyText} opacity-90`}>{results.math.meaning}</p>}
+              </div>
+            )}
+
+            {/* Why not start somewhere else — optional, up to 2 alternatives */}
+            {results?.why_not_start_elsewhere?.show && results?.why_not_start_elsewhere?.alternatives?.length > 0 && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🤔 {t('op_but_what_about')}</p>
-                {results?.why_not_start_elsewhere?.alternatives && (
-                  <p className={`text-sm mb-2 ${c.textSecondary}`}>
-                    <span className={`font-semibold ${c.text}`}>{t('op_tempted_to')}</span> {results?.why_not_start_elsewhere?.alternatives}
-                  </p>
-                )}
-                {results?.why_not_start_elsewhere?.reason && (
-                  <p className={`text-sm ${c.textSecondary}`}>
-                    <span className={`font-semibold ${c.text}`}>{t('op_why_after')}</span> {results?.why_not_start_elsewhere?.reason}
-                  </p>
-                )}
+                <div className="space-y-3">
+                  {results.why_not_start_elsewhere.alternatives.map((alt, i) => (
+                    <div key={i}>
+                      {alt?.alternative && (
+                        <p className={`text-sm mb-1 ${c.textSecondary}`}>
+                          <span className={`font-semibold ${c.text}`}>{t('op_tempted_to')}</span> {alt.alternative}
+                        </p>
+                      )}
+                      {alt?.why_not_first && (
+                        <p className={`text-sm ${c.textSecondary}`}>
+                          <span className={`font-semibold ${c.text}`}>{t('op_why_after')}</span> {alt.why_not_first}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* What to watch for */}
-            {(results?.what_to_watch_for?.signs_it_is_helping?.length > 0 || results?.what_to_watch_for?.signs_to_rethink_it?.length > 0) && (
+            {(results?.what_to_watch_for?.signs_it_may_be_helping?.length > 0 || results?.what_to_watch_for?.signs_to_rethink_it?.length > 0) && (
               <div className={`rounded-2xl border p-5 ${c.greenBg}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.greenText}`}>👀 {t('op_watch_for')}</p>
-                {results?.what_to_watch_for?.signs_it_is_helping?.length > 0 && (
+                {results?.what_to_watch_for?.signs_it_may_be_helping?.length > 0 && (
                   <div className="mb-3">
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.greenText}`}>{t('op_watch_helping')}</p>
                     <div className="space-y-1">
-                      {results.what_to_watch_for.signs_it_is_helping.map((s, i) => (
+                      {results.what_to_watch_for.signs_it_may_be_helping.map((s, i) => (
                         <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>
                       ))}
                     </div>

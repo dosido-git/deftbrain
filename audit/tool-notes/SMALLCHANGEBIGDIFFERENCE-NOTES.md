@@ -107,3 +107,83 @@ whenever those were first added). `localization-audit` and
 **localStorage**: result key bumped to `onepercenter-result-v2` (result
 shape changed completely); history key (`onepercenter-history`) untouched —
 it only ever stored a preview string, unaffected by the schema change.
+
+## FULL LLM INSTRUCTIONS pass, same day, second round
+
+The 2026-09-05 grounding rewrite above still let real fabrications through
+in live testing — cortisol-adjacent physiology and "upstream of all three
+problems" bottleneck-certainty language, per the follow-up bug report. This
+pass is a complete CORE_PROMPT replacement, not an addition to the first
+one, built around three things the first pass didn't have:
+
+1. **A much longer named-phrase forbidden list**, close to verbatim from
+   the actual bad output that prompted it ("243 hours recovered per year,"
+   "protecting an empty tank," "the morning phone check is upstream of all
+   three problems," a habit "losing its companion behavior," etc.) — naming
+   the exact bad sentences a model produced is a stronger signal than a
+   category description, the same lesson already learned on NerveCheck and
+   Document Detective's own correction passes.
+2. **A literal FINAL SELF-CHECK** (10 questions) the prompt asks the model
+   to run against its own draft before returning — did the user actually
+   say this, am I predicting certainty, did I invent a number, etc.
+3. **A full WORKED EXAMPLE** embedded in the prompt (the exact phone-in-bed
+   scenario from the bug report), labeled "the desired reasoning standard"
+   — proven pattern in this codebase (GOOD/BAD pairs), scaled up to a
+   complete worked case.
+
+**Schema restructured**, not just the prompt:
+- `math` moved from a string nested under `change_to_try` to its own
+  top-level `{show, calculation, meaning}` object — the explicit boolean
+  flag replaces an implicit empty-string convention, and splitting
+  `calculation` from `meaning` forces the model to state what a number does
+  and does not mean (the worked example's own math ends "That does NOT mean
+  the change automatically creates 122 productive hours") rather than
+  leaving that disclaimer to chance.
+- `why_not_start_elsewhere` gained the same explicit `show` flag, and
+  `alternatives` changed from a single combined string to an array of up to
+  2 `{alternative, why_not_first}` objects — each alternative now carries
+  its own reasoning instead of one shared paragraph trying to cover up to
+  two alternatives at once. Capped at 2 in code (`capAlternatives`) as a
+  structural backstop matching the prompt's own limit, same reasoning as
+  Document Detective's `capArrays`.
+- `what_to_watch_for.signs_it_is_helping` renamed to
+  `signs_it_may_be_helping` — matches the more hedged language used
+  throughout this pass.
+
+**RULES expanded** with a new "false bottleneck certainty" category
+("the chokepoint," "is the engine," "upstream of," "determines the rest of
+your day") that didn't exist in the first pass at all, and the physiology
+category widened to catch "threat-detecting" (not just "threat-detection"),
+"ambient anxiety," "passive numbing," "doom-scrolling as compensation," and
+the brain-training/rewiring/resetting verb family. The future/identity
+category widened to catch "describing yourself as someone who" and
+"accumulated a genuine body of" — the specific year-ahead storytelling
+phrasing named in the bug report, not just the generic "a year from now."
+
+**Frontend**: added a "WHY IT MATTERS" sub-label under What I Notice (was
+unlabeled plain text); moved THE MATH out of the hero card into its own
+top-level section, shown only when `math.show` is true, rendering
+`calculation` (mono) and `meaning` (prose) as two distinct lines instead of
+one combined string; restructured Why Not Start Elsewhere to loop over the
+alternatives array, each rendering its own alternative + why-not-first pair
+rather than one shared block. **localStorage result key bumped again**,
+`-v2` → `-v3` — the schema changed a second time same-day, and a `-v2`
+cached result would crash calling `.map()` on `why_not_start_elsewhere
+.alternatives`, which used to be a string.
+
+**i18n**: 2 new keys (`op_stage_math`, `op_why_it_matters_label`) and one
+value update (`op_watch_helping` → the more hedged "Signs It May Be
+Helping," matching the schema key rename) translated across all 13
+languages directly. `localization-audit` and `i18n-convention-audit` both
+clean.
+
+**Live-verified on two fresh routines**: the phone-in-bed case (matching
+the bug report's own scenario) came back with zero forbidden-language hits,
+`math.show: true` with a correctly calibrated `meaning` field ("not a
+promised saving... your actual experience will tell you"), and one
+correctly-reasoned alternative; the freelance/no-boundary case came back
+with `math.show` correctly omitted (no useful calculation existed) and TWO
+alternatives, each with its own non-dismissive reasoning ("is a larger
+adjustment," "depends on... already being under control" — never "would
+fail"). Neither run triggered `validateResult` — both first drafts were
+already clean.
