@@ -1,364 +1,223 @@
 {
   "_meta": {
-    "tool": "PEP (Dopamine Menu Builder)",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 18 action-dispatch",
-    "baseline_commit": "pep-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) FRONTEND: the c color-config must define aliases c.ok=c.success / c.warn=c.warning / c.bad=c.danger — the debt/budget/forecast/radar status cards index c['ok'|'warn'|'bad'] and rendered `className=\"undefined …\"` (no bg/border) without them. NOTE the interventions low-priority fallback uses c['infoBox'] NOT c['info'] (c.info is a banned audit key). (2) generate arrays capped (quick_hits<=4, medium<=4, deep<=3, avoid<=3) + max_tokens 4000 (was uncapped at 3000 — the biggest output at the lowest budget). (3) forecast guard keys parsed.forecast (was parsed.weekly_capacity, which is hardcoded 100 but a model 0 would false-500). (4) recharge-insights dashboard emits total_sessions + best_category (frontend renders these 2 tiles — were blank). (5) rate-activity: frontend sends `history` (was `sessionHistory`, which the backend ignored). (6) radar-checkin max_tokens 2500 (was 1500). (7) no annotation suffixes. DO NOT reverse: c.ok/warn/bad aliases + infoBox (not info) fallback; generate caps+4000; forecast guard !parsed.forecast; dashboard total_sessions/best_category; history param; radar-checkin 2500."
+    "tool": "PEP (Personal Energy Planner)",
+    "generated": "2026-09-05",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 17 action-dispatch",
+    "baseline_commit": "pep-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): the entire tool was rebuilt to remove a fabricated measurement system that the old pep-v1 golden's own captured output demonstrates (energy_read/pleasure_vs_numbing language, nervous-system claims, quick_hits/medium_recharge/deep_reset categories, battery percentages, introvert/extrovert energy types, task-cost arithmetic, burnout-risk radar, and a debt-check 'prescription' action) — none of that exists in v2. DO NOT reintroduce it while chasing a golden diff. New schema per mode: generate={read,top_pick,other_options,from_your_history} (was energy_read/mood_note/time_note/transition_tip/pleasure_vs_numbing/menu.quick_hits+medium+deep+avoid); budget={read,protect,consider_next,postpone_or_drop,sequence,one_decision} (was capacity_status/total_cost/available/permissions/tomorrow_note — no more summing task 'cost' as literal arithmetic); forecast={week_shape,demanding_stretches,breathing_room,commitments_to_reconsider,from_your_history,one_move_now} (was current_battery/recharge_hours/introvert-extrovert drain multipliers — inputs are now demanding_factors checkboxes + starting_capacity, not an energy_type slider); disruption={situation,keep,lighten,pause,temporary_shape,unknowns,reassess_when,one_next_step} (was acknowledgment/survival_schedule/self_care_minimum — critically, disruption with a BLANK normal_routine must not invent a generic exercise/meal/hygiene/medication/sleep routine; it must list the gap under 'unknowns' instead, which the adapt-sick-day-sparse-input case exists specifically to guard). radar-checkin and radar-analyze (Patterns) now share ONE schema shape ({today,what_changed,possible_patterns,not_enough_to_tell,worth_watching,optional_next_step}) instead of radar-checkin's old ad hoc fields vs radar-analyze's separate overall_risk/time_until_concern/interventions shape — no green/yellow/orange/red status, no 'time until burnout' estimate. debt-check action REMOVED ENTIRELY (was prescription/debt_level/gentle_warning — all now-banned terms). Wire field names productivity/social_energy/physical_symptoms on radar-checkin/radar-analyze are DELIBERATELY UNCHANGED from v1 despite the UI relabeling 'Productivity' to 'Focus / getting things done' — preserves existing users' checkinLog history; do not rename these on a future pass without a migration. activityLog client-side cap raised from 6 to 100 (PF-25 exception, see src/tools/PEP.js). menu items no longer store category/effort/avg_rating/use_count/sensory_anchor — My Menu now computes timesTried/avgRating/energy ranges fresh from activityLog on every render (menuStats()), so a stale-cache class of bug is structurally gone. DO NOT reverse: the removal of battery/introvert-extrovert/burnout-radar/debt-check language; the disruption blank-routine guard; the unified Patterns schema; the productivity/social_energy field name preservation; the fresh-computed (not stored) menu stats."
   },
   "cases": [
     {
-      "name": "de-generate-low-energy",
+      "name": "right-now-low-energy-evening",
       "endpoint": "/api/pep",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
         "action": "generate",
-        "energy": 3,
-        "time_available": "30 Minuten",
-        "mood": "erschöpft und gereizt",
-        "environment": "zu Hause",
-        "time_of_day": "Abend",
-        "recent_activities": "den ganzen Tag Meetings"
+        "energy": 2,
+        "time_available": "15 minutes",
+        "mood": "numb",
+        "environment": "home",
+        "context": "Been staring at screens all day, doom-scrolling between meetings. A hike sounds awful right now.",
+        "time_of_day": "evening",
+        "userLanguage": "en"
       },
       "output": {
-        "energy_read": "Du bist nach einem Tag voller Meetings auf 3/10 – dein Akku ist wirklich leer, nicht nur ein bisschen müde.",
-        "mood_note": "Erschöpft und gereizt ist eine völlig nachvollziehbare Reaktion auf stundenlangen sozialen und kognitiven Dauerstress – das ist keine Schwäche, das ist Biologie.",
-        "time_note": "30 Minuten sind genug für echte Erholung, wenn du sie gezielt nutzt – kein Druck, mehr rauszuholen.",
-        "transition_tip": "Steh jetzt auf, zieh die Schuhe aus, und geh barfuß in die Küche, um dir ein Glas Wasser zu holen.",
-        "pleasure_vs_numbing": "Nach einem Meeting-Marathon zieht es dich vielleicht zum Scrollen oder Serienmarathon – das betäubt die Erschöpfung nur, ohne sie aufzulösen; dein Nervensystem braucht stille Reize, keine neuen.",
-        "menu": {
-          "top_pick": {
-            "activity": "Heißes Bad oder lange Dusche mit gedimmtem Licht, Handy bleibt draußen",
-            "why": "Wärme entspannt aktiv die Muskelspannung, die sich durch stundenlanges Sitzen und konzentriertes Zuhören aufgebaut hat, und signalisiert deinem Nervensystem: der Tag ist vorbei.",
-            "duration": "20–25 Minuten",
-            "effort": "low",
-            "category": "medium_recharge"
+        "read": "You've been screen-bound all day and have very little in you right now — so the options below ask almost nothing of you and keep you away from another screen.",
+        "top_pick": {
+          "activity": "Sit or lie somewhere away from your screens with a drink or nothing at all, and just let the room be quiet for 15 minutes.",
+          "why_it_fits": "No setup, no screen, no decisions, and you're already home — it fits a 2/10 and a numb mood about as closely as anything can.",
+          "first_step": "Close or turn away from whatever screen you're on right now and find a spot to sit or lie down.",
+          "duration": "15 minutes.",
+          "done_when": "When the 15 minutes are up, or whenever you feel like moving."
+        },
+        "other_options": [
+          {
+            "activity": "Put something on to listen to — music, a podcast, an audiobook — with your eyes closed or looking at the ceiling.",
+            "why_it_fits": "Audio only means no additional screen time, and you can do it lying completely still with zero setup beyond pressing play.",
+            "duration": "As long as feels right up to 15 minutes."
           },
-          "quick_hits": [
-            {
-              "activity": "Fenster aufmachen, 10 tiefe Atemzüge in die Abendluft – 4 Sekunden ein, 6 Sekunden aus",
-              "why": "Verlängertes Ausatmen aktiviert den Parasympathikus und bremst das aufgedrehte Nervensystem nach Meetings schnell herunter.",
-              "duration": "3–5 Minuten",
-              "effort": "low",
-              "category": "quick_hit"
-            },
-            {
-              "activity": "Hände und Unterarme für 2 Minuten unter warmes Wasser halten und dabei bewusst nichts denken",
-              "why": "Die Konzentration auf einen einfachen körperlichen Reiz unterbricht das Gedankenkarussell der Meetings ohne Willensanstrengung.",
-              "duration": "2–3 Minuten",
-              "effort": "low",
-              "category": "quick_hit"
-            },
-            {
-              "activity": "Strecke dich 5 Minuten auf dem Boden aus – Arme ausbreiten, Augen zu, einfach liegen",
-              "why": "Der Bodenkontakt und die horizontale Lage senken den Cortisolspiegel messbar und geben dem Körper das Signal, die Wachhaltung zu beenden.",
-              "duration": "5 Minuten",
-              "effort": "low",
-              "category": "quick_hit"
-            },
-            {
-              "activity": "Eine Tasse Kräutertee kochen (z. B. Melisse oder Baldrian) und dabei nur auf das Geräusch des kochenden Wassers achten",
-              "why": "Das Ritual des Kochens ist ein einfacher Übergang vom Arbeitsmodus in den Abendmodus – kein Bildschirm, kein Input, nur ein kleiner, sinnlicher Akt.",
-              "duration": "7–10 Minuten",
-              "effort": "low",
-              "category": "quick_hit"
-            }
-          ],
-          "medium_recharges": [
-            {
-              "activity": "Kurzer Abendspaziergang ums Haus ohne Kopfhörer – achte auf 3 Dinge, die du hörst, und 3 Dinge, die du siehst",
-              "why": "Leichte Bewegung und bewusstes Wahrnehmen der Umgebung löst die kognitive Starrheit nach einem langen Meeting-Tag, ohne neue Energie zu erfordern.",
-              "duration": "15–20 Minuten",
-              "effort": "low",
-              "category": "medium_recharge"
-            },
-            {
-              "activity": "Ruhige Musik auflegen (kein Podcast, keine Lyrics, die du mitdenkst) und dabei einfach auf dem Sofa liegen",
-              "why": "Instrumentalmusik kann das Nervensystem beruhigen, ohne neue Informationen zu liefern – du tankst auf, statt weiter zu verarbeiten.",
-              "duration": "20–30 Minuten",
-              "effort": "low",
-              "category": "medium_recharge"
-            },
-            {
-              "activity": "Etwas Einfaches kochen, das du auswendig kannst – z. B. Nudeln mit Butter und Parmesan – ohne Rezept zu googeln",
-              "why": "Eine vertraute körperliche Tätigkeit mit konkretem Ergebnis gibt dir das Gefühl von Handlungsfähigkeit zurück, das Meetings oft wegnehmen.",
-              "duration": "20–25 Minuten",
-              "effort": "low",
-              "category": "medium_recharge"
-            },
-            {
-              "activity": "Tagebuch-Dump: 5 Minuten alles aufschreiben, was dich heute genervt hat – ohne Zensur, niemand liest es",
-              "why": "Das Externalisieren von Frust schließt offene mentale Schleifen, die sonst noch Stunden im Hintergrund laufen und dich wachhalten.",
-              "duration": "10–15 Minuten",
-              "effort": "low",
-              "category": "medium_recharge"
-            }
-          ],
-          "deep_resets": [
-            {
-              "activity": "Frühzeitig ins Bett gehen – kein Bildschirm ab 21 Uhr, Buch lesen bis du einschläfst",
-              "why": "Bei 3/10 Energie ist Schlaf die wirkungsvollste Erholung überhaupt; ein langer Abend kostet dich morgen mehr, als er heute bringt.",
-              "duration": "Ab jetzt bis zum Schlafen",
-              "effort": "low",
-              "category": "deep_reset"
-            },
-            {
-              "activity": "Yoga Nidra (geführte Tiefenentspannung) – z. B. eine kostenlose 45-Minuten-Session auf YouTube oder Spotify",
-              "why": "Yoga Nidra erreicht tiefe Erholungszustände ohne körperliche Anstrengung und ist wissenschaftlich belegt für die Reduktion von Erschöpfung nach kognitivem Stress.",
-              "duration": "45–60 Minuten",
-              "effort": "low",
-              "category": "deep_reset"
-            },
-            {
-              "activity": "Morgigen Tag radikal entschleunigen: Plane jetzt konkret eine Puffer-Stunde ohne Meetings für morgen früh ein",
-              "why": "Echte Erholung beginnt manchmal damit, die Ursache zu ändern – ein freier Morgen gibt dir die Kontrolle zurück, die heute gefehlt hat.",
-              "duration": "10 Minuten planen, Wirkung dauerhaft",
-              "effort": "low",
-              "category": "deep_reset"
-            }
-          ],
-          "avoid_right_now": [
-            {
-              "activity": "Social Media oder endloses Scrollen",
-              "why": "Es fühlt sich wie Pause an, ist aber weiterer Input für ein Gehirn, das dringend Stille braucht – du wirst danach gereizter sein als vorher."
-            },
-            {
-              "activity": "Eine neue Serie oder einen Film anfangen",
-              "why": "Das passive Konsumieren betäubt kurzfristig, aber dein Nervensystem bleibt im Wachmodus und die Erschöpfung wird nur aufgeschoben, nicht aufgelöst."
-            },
-            {
-              "activity": "Noch schnell E-Mails checken oder Aufgaben für morgen planen",
-              "why": "Dein Gehirn ist nach einem vollen Meeting-Tag nicht in der Lage, kluge Entscheidungen zu treffen – du erzeugst nur mehr offene Schleifen, die dich wachhalten."
-            }
-          ]
+          {
+            "activity": "Make a simple drink — tea, water, whatever is easy — and just hold it for a bit.",
+            "why_it_fits": "One short task with a clear end, no screen involved, and it gets you off the couch briefly without anything resembling a hike.",
+            "duration": "5 minutes or less to make it, then however long you want to sit with it."
+          }
+        ],
+        "from_your_history": {
+          "activity": "",
+          "evidence": ""
         }
       }
     },
     {
-      "name": "de-forecast-guard",
+      "name": "prioritize-overloaded-workday",
       "endpoint": "/api/pep",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "action": "forecast",
-        "energy_type": 30,
-        "current_battery": 70,
-        "recharge_hours": 3,
-        "events": [
+        "action": "budget",
+        "available_energy": 3,
+        "mood": "stressed",
+        "tasks": [
           {
-            "name": "Team-Offsite",
-            "day": "Montag",
-            "duration": "8h",
-            "people": 25,
-            "role": "presenting",
-            "type": "work",
-            "canLeave": false
+            "task": "Finish quarterly report",
+            "cost": 8,
+            "priority": "required"
           },
           {
-            "name": "Abendessen mit Schwiegereltern",
-            "day": "Mittwoch",
-            "duration": "3h",
-            "people": 6,
-            "role": "attending",
-            "type": "social",
-            "canLeave": true
+            "task": "Reply to 40 emails",
+            "cost": 5,
+            "priority": "important"
           },
           {
-            "name": "Geburtstagsparty",
-            "day": "Samstag",
-            "duration": "5h",
-            "people": 40,
-            "role": "attending",
-            "type": "social",
-            "canLeave": true
+            "task": "Organize desk",
+            "cost": 2,
+            "priority": "optional"
+          },
+          {
+            "task": "Go to the gym",
+            "cost": 6,
+            "priority": "optional"
           }
-        ]
+        ],
+        "userLanguage": "en"
       },
       "output": {
-        "weekly_capacity": 100,
-        "total_committed": 87,
-        "capacity_status": "danger",
-        "forecast": [
+        "read": "You've rated your capacity at 3/10 and you're stressed, while your one required task is your most demanding item. That gap is worth acknowledging before deciding how to spend what you have.",
+        "protect": [
           {
-            "event": "Team-Offsite",
-            "day": "Montag",
-            "energy_cost": 58,
-            "cost_breakdown": "8 Stunden × 25 Personen (teils unbekannt) × Rolle Präsentieren (1,5×-Faktor) × kein frühzeitiger Abgang möglich. Für einen starken Introvertierten (30/100) ist Präsentieren vor großer Gruppe ganztags der teuerste mögliche Drain. Basiskosten ~38, ×1,5 Rolle, leichter Abzug für Arbeitskollegen als 'halbbekannte' Gruppe.",
-            "battery_after": 12,
-            "warning": "BURNOUT-RISIKO: Akku fällt auf 12 %. Weit unter der kritischen Schwelle von 20 %. Kollaps möglich noch am Montag.",
-            "recovery_needed": "Mindestens 5–6 Stunden vollständige Einsamkeit (kein Soziales, kein Bildschirm) vor dem nächsten Event am Mittwoch."
-          },
-          {
-            "event": "Abendessen mit Schwiegereltern",
-            "day": "Mittwoch",
-            "energy_cost": 22,
-            "cost_breakdown": "3 Stunden × 6 Personen (bekannt, aber beziehungsdynamisch anspruchsvoll) × Rolle Attending. Kleiner Kreis reduziert Kosten deutlich. Frühzeitiger Abgang möglich spart ~20 % der Gesamtkosten. Trotz niedrigem Grundakkustand (12 %) reichen Di–Mi für 2× 3-Stunden-Regeneration, um auf ~35 % zu kommen.",
-            "battery_after": 13,
-            "warning": "BURNOUT-RISIKO: Akku fällt auf 13 %. Auch nach Erholung bleibt die Reserve gefährlich niedrig. Frühzeitiger Abgang dringend empfohlen.",
-            "recovery_needed": "Do–Fr vollständig sozial frei halten. Mindestens 6 Stunden bewusste Erholung pro Tag, um bis Samstag auf ~35 % zu kommen."
-          },
-          {
-            "event": "Geburtstagsparty",
-            "day": "Samstag",
-            "energy_cost": 35,
-            "cost_breakdown": "5 Stunden × 40 Personen (Mischung bekannt/unbekannt, Großgruppe mit starkem Draineffekt für Introvertierte) × Attending. Frühzeitiger Abgang möglich spart ~25 % — dringend nutzen. Wenn Akku Do–Fr auf ~35 % erholt: nach Event Restakku ~0 %.",
-            "battery_after": 0,
-            "warning": "BURNOUT-RISIKO EXTREM: Akku erreicht 0 %. Selbst mit frühzeitigem Abgang nach 2–3 Stunden nur ~10 % Reserve. Sonntag vollständige Erschöpfung wahrscheinlich.",
-            "recovery_needed": "Sonntag komplett freihalten. 24 Stunden ohne soziale Verpflichtungen, idealerweise mit Struktur (Natur, Stille, Routine)."
+            "task": "Finish quarterly report",
+            "why": "You marked it required, so I'd protect time for it unless you know it can move.",
+            "make_it_easier": "Rather than finishing it in one sitting, decide the smallest version of 'done' that satisfies the actual deadline — a complete draft, a specific section, or hitting send on what exists. Starting with one defined piece may be more workable than approaching the whole thing at once."
           }
         ],
-        "critical_days": [
-          "Montag (Akku 12 % nach Offsite)",
-          "Mittwoch (Akku 13 % nach Schwiegereltern)",
-          "Samstag (Akku 0 % nach Party)"
+        "consider_next": [
+          "Reply to 40 emails — if you do this at all today, consider whether you can reply to fewer: the ones that are actually time-sensitive, rather than all 40."
         ],
-        "recovery_plan": "Dienstag: 3+ Stunden aktive Stille am Stück, kein Small Talk, kein ungeplanter Output. Mittwoch: vor dem Abendessen frühestmöglich nach Hause, Abend ab 21 Uhr vollständig allein. Donnerstag & Freitag: soziale Nulltage — keine spontanen Verabredungen, Feierabend sofort nach Hause. Samstag: Geburtstagsparty maximal 2 Stunden, dann geordnet abreisen — das 'Ich muss morgen früh raus'-Skript bereithalten. Sonntag: keine Pläne, kein Druck.",
-        "weekly_summary": "Die Woche ist für diesen Energietyp objektiv zu voll: Ein ganztägiges Präsenz-Event zu Beginn lässt den Akku auf ein Niveau fallen, von dem aus jedes weitere soziale Event zum echten Risiko wird. Ohne konsequente Erholung an Dienstag, Donnerstag und Freitag sowie frühzeitigen Abgang bei allen optionalen Events ist ein Wochenende in vollständiger Erschöpfung sehr wahrscheinlich.",
-        "permissions": [
-          "Es ist völlig in Ordnung, die Geburtstagsparty nach 2 Stunden zu verlassen — du bist überhaupt erschienen, das zählt.",
-          "Es ist völlig in Ordnung, beim Abendessen mit den Schwiegereltern früh aufzubrechen mit der ehrlichen Begründung: 'Die Woche war sehr intensiv, ich brauche Schlaf.'",
-          "Es ist völlig in Ordnung, Dienstag, Donnerstag und Freitag alle sozialen Anfragen — auch kleine — abzulehnen.",
-          "Es ist völlig in Ordnung, beim Team-Offsite in Pausen aktiv Rückzug zu suchen (kurze Spaziergänge, Toilettenpause als Reset-Ritual)."
+        "postpone_or_drop": [
+          {
+            "task": "Organize desk",
+            "reason": "Optional, and doing it now adds demand on top of your required task without a clear payoff today."
+          },
+          {
+            "task": "Go to the gym",
+            "reason": "Optional and higher demand than most of your other tasks. Nothing here suggests today is the right day to stack it in."
+          }
         ],
-        "capacity_note": "Die Woche ist über das vertretbare Limit hinaus verplant (87 von 100 Einheiten bei einem Startakku von 70 %). Das Team-Offsite allein überschreitet die Hälfte der Wochenkapazität. Wenn irgendetwas gestrichen werden kann: Die Geburtstagsparty ist das sinnvollste Streichkandidat — großes Gruppen-Event, keine Pflichtveranstaltung, größter Drain bei kleinstem Beziehungsschaden durch Absage. Alternativ: Absage des Abendessens mit Schwiegereltern verschieben auf eine Woche ohne Offsite."
+        "sequence": [
+          "Quarterly report first — while your capacity is at its highest point of the day, whatever that is.",
+          "If something is left afterward and you want to use it, a reduced version of the email task."
+        ],
+        "one_decision": "Define what 'finish' actually means for the quarterly report today — a specific, bounded output — so you know exactly what you are protecting capacity for."
       }
     },
     {
-      "name": "de-recharge-insights-dashboard-tiles",
+      "name": "week-hosting-and-presenting",
       "endpoint": "/api/pep",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "action": "recharge-insights",
-        "activity_log": [
+        "action": "forecast",
+        "starting_capacity": 4,
+        "demanding_factors": [
+          "Hosting or leading",
+          "Back-to-back commitments"
+        ],
+        "what_helps": "A quiet evening the night before",
+        "events": [
           {
-            "activity": "Aktivität 0",
-            "rating": 5,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-01"
+            "name": "Team offsite",
+            "day": "Wednesday",
+            "time": "9am",
+            "duration": "all day",
+            "canLeave": false
           },
           {
-            "activity": "Aktivität 1",
-            "rating": 6,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-02"
+            "name": "Client dinner",
+            "day": "Wednesday",
+            "time": "7pm",
+            "duration": "2 hours",
+            "canLeave": false
           },
           {
-            "activity": "Aktivität 2",
-            "rating": 7,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-03"
-          },
-          {
-            "activity": "Aktivität 3",
-            "rating": 8,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-04"
-          },
-          {
-            "activity": "Aktivität 4",
-            "rating": 9,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-05"
-          },
-          {
-            "activity": "Aktivität 5",
-            "rating": 5,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-06"
-          },
-          {
-            "activity": "Aktivität 6",
-            "rating": 6,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-07"
-          },
-          {
-            "activity": "Aktivität 7",
-            "rating": 7,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-08"
-          },
-          {
-            "activity": "Aktivität 8",
-            "rating": 8,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-09"
-          },
-          {
-            "activity": "Aktivität 9",
-            "rating": 9,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-10"
-          },
-          {
-            "activity": "Aktivität 10",
-            "rating": 5,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-11"
-          },
-          {
-            "activity": "Aktivität 11",
-            "rating": 6,
-            "energy_before": 4,
-            "energy_after": 6,
-            "category": "quick_hit",
-            "mood": "ok",
-            "date": "2026-07-12"
+            "name": "Big presentation",
+            "day": "Thursday",
+            "time": "10am",
+            "duration": "1 hour",
+            "canLeave": true
           }
-        ]
+        ],
+        "userLanguage": "en"
       },
       "output": {
-        "dashboard": {
-          "avg_rating": "6,8/10",
-          "avg_energy_gain": "+2,0",
-          "high_rated_pct": "33%",
-          "total_sessions": 12,
-          "best_category": "quick_hit – einzige und beste Kategorie"
-        },
-        "trend": "stable",
-        "trend_detail": "Die Bewertungen schwanken in einem wiederkehrenden Muster zwischen 5 und 9, ohne dauerhaften Aufwärtstrend. Alle 5 Einträge wiederholt sich der Zyklus (5, 6, 7, 8, 9), was auf eine stabile, aber nicht wachsende Recharge-Routine hindeutet. Der Energiegewinn ist konstant bei +2 pro Sitzung, und die Stimmung bleibt durchgehend auf 'ok' – weder besonders hoch noch niedrig.",
-        "recommendation": "Da alle Aktivitäten derselben Kategorie 'quick_hit' angehören und die Stimmung dauerhaft nur 'ok' ist, empfiehlt es sich, mindestens eine neue Kategorie (z. B. 'deep_rest' oder 'social') in den Wochenplan einzubauen. Tiefergehende Erholungsformate wie ein ruhiger Spaziergang ohne Handy oder ein kurzes Gespräch mit einer vertrauten Person könnten helfen, die Stimmung über 'ok' hinaus zu steigern und die Bewertungen dauerhaft auf einem höheren Niveau zu stabilisieren."
+        "week_shape": "The week is relatively open until Wednesday, which carries two back-to-back commitments — an all-day offsite followed immediately by a client dinner — with a major presentation the following morning. You are starting at 4/10 self-reported capacity.",
+        "demanding_stretches": [
+          {
+            "when": "Wednesday all day into evening",
+            "what_makes_it_notable": "The team offsite is all day with no early exit option, and the client dinner follows at 7pm the same day. You identified back-to-back commitments as especially demanding for you, and this is the clearest example of that pattern in the week you described."
+          },
+          {
+            "when": "Thursday 10am",
+            "what_makes_it_notable": "The big presentation falls the morning after the longest day of the week, with no buffer between Wednesday evening and a 10am start. You identified hosting or leading as especially demanding, and presenting is a form of leading."
+          }
+        ],
+        "breathing_room": [
+          {
+            "when": "Tuesday evening",
+            "option": "You mentioned a quiet evening the night before helps around busy days. Tuesday night is the evening before Wednesday's packed schedule — keeping it unscheduled or low-key is an option worth protecting."
+          },
+          {
+            "when": "Monday and Tuesday",
+            "option": "These days appear unscheduled based on what you entered. Moving any flexible tasks or preparation work into these days could reduce what you are carrying into Wednesday."
+          },
+          {
+            "when": "Wednesday, between offsite end and dinner at 7pm",
+            "option": "Depending on when the offsite ends, there may be a gap before 7pm. If there is, even a short unstructured window could give you a pause between the two commitments."
+          }
+        ],
+        "commitments_to_reconsider": [
+          "The client dinner on Wednesday evening — you marked it as cannot leave early, but if there is any flexibility on whether to attend at all, it sits at the most compressed point of your week. Worth confirming whether attendance is truly required."
+        ],
+        "from_your_history": "",
+        "one_move_now": "Protect Tuesday evening. It is the only quiet-evening slot before your most demanding stretch, and you named that pattern as something that helps you around busy days."
+      }
+    },
+    {
+      "name": "adapt-sick-day-sparse-input",
+      "endpoint": "/api/pep",
+      "input": {
+        "action": "disruption",
+        "disruption_type": "sick_day",
+        "available_energy": 2,
+        "normal_routine": "",
+        "critical_tasks": "Take my medication",
+        "constraints": "",
+        "duration_estimate": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "situation": "You have a sick day with very low self-reported capacity (2/10) and one identified requirement: taking your medication. Your normal routine was not described, so this plan is built around only what you supplied.",
+        "keep": [
+          {
+            "item": "Take medication",
+            "lighter_version": ""
+          }
+        ],
+        "lighten": [],
+        "pause": [],
+        "temporary_shape": [
+          {
+            "part_of_day": "Now or next natural pause",
+            "what_matters": "Take your medication if the time is right for your schedule."
+          },
+          {
+            "part_of_day": "Rest of the day",
+            "what_matters": "Nothing else has been identified as required. What you do beyond your medication is open."
+          }
+        ],
+        "unknowns": [
+          "What your normal routine contains.",
+          "Whether there are other obligations or constraints today.",
+          "What kind of sick day this is and how it affects what you can or want to do.",
+          "How long this disruption is expected to last.",
+          "Whether there are things you would like to do today but are unsure about."
+        ],
+        "reassess_when": "Revisit this temporary plan when your capacity starts to shift or when your normal routine starts feeling workable again.",
+        "one_next_step": "Take your medication if you have not yet today."
       }
     }
   ]

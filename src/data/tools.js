@@ -2827,49 +2827,54 @@ export const tools = [
 },
 
 {
-  modified: "2026-03-11",
+  modified: "2026-09-05",
 id: "PEP",
 // Preamble — the four questions a new visitor has, in order.
 // `give` states the input burden before the form; see ToolPageWrapper.
+// FULL V2 REWRITE, 2026-09-05: replaced the old "5-mode energy management
+// system" framing (measured battery drain, predicted burnout, introvert/
+// extrovert drain rates) with planning + adaptation + learning from the
+// visitor's own reported experience. See backend/routes/pep.js and
+// audit/tool-notes/PEP-NOTES.md for the full rewrite.
 primer: {
-  when: "You're depleted, or planning a week you may not have the energy for.",
-  give: "Recharge: your energy, mood, environment, time. Budget: your tasks.",
-  get: "A menu of restorative options matched to what you actually have, or your tasks mapped against available energy.",
-  edge: "It plans around your energy rather than assuming it. Most planners assume you'll have the capacity when the day arrives.",
+  when: "You're not sure what fits the energy you have right now, or a demanding stretch is coming up.",
+  give: "How much capacity and time you have right now — or the tasks and commitments you're weighing.",
+  get: "A few manageable options that actually fit, or a clear read on what to protect, postpone, or drop.",
+  edge: "It treats your own reported energy and what you've actually tried as the evidence — not a formula that claims to measure or predict it.",
 },
-  seoDescription: "Beat burnout before it hits. Build a personalized recharge menu, budget tasks to your energy, and spot warning signs early with 15-second check-ins. Free, no signup.",
-seoTitle: "Personal Energy & Burnout Planner",
-title: "PEP-Personal Energy Planner",
-tagline: "Personal Energy Planner — understand your energy, plan around it",
-  tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus', 'routine', 'self-care', 'rest'],
+  seoDescription: "Not sure what fits the energy you have? PEP helps you choose what to do right now, prioritize tasks against your capacity, spot a demanding week coming, and learn from what you've actually tried. Free, no signup.",
+seoTitle: "Energy-Based Daily Planner",
+title: "PEP — Personal Energy Planner",
+tagline: "Work with the energy you have.",
+  tags: ['energy', 'recharge', 'motivation', 'mood', 'focus', 'routine', 'self-care', 'rest', 'planning', 'prioritize'],
   icon: '✨',
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "5-mode energy management system: build a personalized recharge menu with pattern tracking, map tasks against your available energy, forecast battery drain across your week, spot burnout early with 15-second daily check-ins, and get adapted routines when life disrupts your schedule.",
+  description: "Low on energy and not sure what to do with the day you have? PEP helps you choose what fits right now, decide what deserves your limited capacity, learn what actually helps you recharge, and adapt when your routine gets knocked sideways.",
   guide: {
-    overview: "The Dopamine Menu Builder is your complete energy management system. Recharge mode builds a personalized activity menu based on your current energy, mood, and environment. Budget mode maps your tasks against available energy to show what actually fits. Forecast mode predicts battery drain from your week's events. Radar mode tracks daily wellbeing signals to catch burnout patterns early. Disruption mode gives you an adapted structure when sick, traveling, or in an emergency.",
+    overview: "PEP treats your energy as something you report, not something it measures. Right Now suggests a few manageable activities that fit your current capacity, time, mood, and location. Prioritize weighs your tasks against your capacity without pretending the numbers are a strict budget. Week helps you spot demanding stretches in your upcoming schedule and make room around them. Patterns is a repeatable check-in that compares what you log over time — descriptively, never as a burnout prediction. Adapt builds a lighter, temporary version of your day when your normal routine is disrupted. Rate what you try, and PEP gets more personal from real evidence, not inference.",
     howToUse: [
-      "Recharge: set your energy level (1-10), mood, environment, and available time — get a personalized menu with a top pick, quick hits, and deep resets",
-      "Budget: list today's tasks with energy costs and priorities — see what you can actually do and get explicit permission to drop the rest",
-      "Forecast: add upcoming events for the week, set your energy type (introvert/extrovert), and get a battery drain prediction with recovery windows",
-      "Radar: log 4 daily signals (sleep, mood, productivity, social energy) for 30 seconds — patterns appear after a few days",
-      "Disruption: select what's happening (sick day, travel, emergency), describe your normal routine, and get a simplified adapted structure"
+      "Right Now: set your energy (1-10), mood, location, and available time — get a top pick and a couple of other options that fit",
+      "Prioritize: list what you're weighing today and how demanding each one feels — see what to protect, simplify, postpone, or drop",
+      "Week: add the commitments you already know about and what tends to make things demanding for you — spot crowded stretches and where to make room",
+      "Patterns: log sleep, mood, focus, and social capacity in a few taps — repeat it and PEP compares entries descriptively, never predicting burnout",
+      "Adapt: say what changed (sick day, travel, a hard day) and what still needs attention — get a lighter temporary version of your routine"
     ],
     example: {
-      scenario: "It's 3pm. You've been in back-to-back meetings. Energy is 3/10, you have 45 minutes, you're at the office and feeling drained.",
-      action: "Set energy to 3, mood to 'drained', environment to 'office', time to '30 minutes'. Click Build Menu.",
-      result: "Top pick: 10-minute walk outside. Quick hits: cold water splash, 5-minute breathing, close tabs and tidy desk. Avoid right now: social media doom-scroll, long creative tasks. First step: stand up and walk to the window."
+      scenario: "It's 3pm. You've been in back-to-back meetings. Energy is 3/10, you have 30 minutes, you're at the office.",
+      action: "In Right Now, set energy to 3, location to 'office', time to '30 minutes', and submit.",
+      result: "Top pick: a 10-minute walk outside, with the first step being just standing up and heading to the door. A couple of other options alongside it — none framed as guaranteed to restore anything, just things that fit what you described."
     },
     tips: [
-      "The 'Been doing?' field is powerful — it prevents the AI from suggesting more screen time when you've been staring at screens all day",
-      "Rate activities after doing them to build a personalized menu that actually works for you",
-      "Use Radar mode consistently for a week — patterns become visible faster than you'd expect",
-      "The Budget mode 'permissions' section is the real value — explicit permission to drop or defer things"
+      "The open 'anything that would help PEP choose?' field is powerful — mention what you've been doing or what sounds awful right now and the suggestions adjust",
+      "Rate activities after trying them ('How did that go?') — that's what makes My Menu and future suggestions genuinely personal instead of generic",
+      "Use Patterns consistently for a week or two — comparisons only get more useful the more you've actually logged",
+      "In Week, the 'what tends to make a commitment demanding' checklist is where your own experience feeds the read, instead of PEP guessing"
     ],
     pitfalls: [
-      "Quick hits are for buying time, not restoring energy — deep resets are what actually refill the tank",
-      "Forecasting works best when you're honest about your energy type; ambivert is the most common default but may not be accurate",
-      "Radar trends only appear after 5+ check-ins — the tool gets smarter the more you use it"
+      "PEP won't tell you an activity is guaranteed to help — it explains why something fits what you reported, and lets your own rating be the evidence",
+      "My Menu's stats (times tried, typical rating) only show up once you've actually logged a few attempts at the same activity",
+      "Patterns needs at least 5 check-ins before it can compare across days — a single day's numbers are just a snapshot, not a trend"
     ]
   }
 },
