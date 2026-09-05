@@ -2496,4 +2496,180 @@ export const toolFinderMetadata = {
     whenNotToRecommend: "Do not recommend for live event discovery, exact current venue availability, full travel itineraries, date-specific planning, or parties and gatherings.",
   },
 
+  MoneyDiplomat: {
+    problems: [
+      "I have an awkward money situation and do not know what is fair or what to say",
+      "I need to split a bill, request repayment, decide who pays, or handle money with friends, family, roommates, or coworkers",
+      "I need practical guidance on tipping, gifts, donations, group expenses, subscriptions, affordability, or travel money",
+      "I need to discuss salary expectations or another everyday money question without turning it into a full negotiation strategy",
+    ],
+    capabilities: [
+      "adapts everyday money guidance to the specific situation, relationship, amounts, and context the user supplies",
+      "helps with socially awkward money moments such as splitting costs, requesting repayment, lending, dining, gifts, and family money",
+      "provides grounded wording for money conversations without inventing what the other person thinks, owes, can afford, or will accept",
+      "handles practical money-etiquette contexts including tipping, group events, travel, cultural context, donations, subscriptions, and affordability",
+      "supports salary-expectation questions using the user's supplied role, pay, location, and experience while keeping unverified market facts separate",
+    ],
+    accepts: [
+      "the type of money situation",
+      "a description of what happened or what the user is deciding",
+      "relevant amounts, people, relationship, location, timing, or other context depending on the selected situation",
+    ],
+    notFor: [
+      "investment, tax, legal, or debt advice requiring professional or verified outside information",
+      "live salary, tipping, price, exchange-rate, or market research unless current data is separately verified",
+      "predicting another person's finances, motives, willingness to pay, or reaction",
+      "building a full negotiation strategy when leverage, counteroffers, and bargaining position are the central problem",
+    ],
+    handoffs: [
+      { when: "the user is preparing for an actual negotiation and needs to assess leverage, assumptions, counters, and what to say", toolId: "LeverageLogic" },
+      { when: "the main problem is understanding, disputing, or responding to a bill rather than navigating the social money conversation", toolId: "BillRescue" },
+      { when: "the user is choosing between broader alternatives and wants one decision rather than money-etiquette guidance", toolId: "DecisionCoach" },
+    ],
+    primaryIntent: "help with everyday money decisions and awkward money conversations using the amounts, relationships, and circumstances the user actually supplies",
+    whenToRecommend: "Recommend when the user asks what is fair, appropriate, or useful to say in an everyday money situation such as paying, splitting, lending, repayment, tipping, gifts, family money, group expenses, affordability, or salary expectations.",
+    whenNotToRecommend: "Do not recommend for investment or tax advice, live market research, definitive legal conclusions, or a negotiation whose central need is leverage and bargaining strategy.",
+  },
+
+  NameAudit: {
+    problems: [
+      "I have a name for a business, product, project, band, pet, character, or other idea and want to know whether it works",
+      "I am choosing between two or more name finalists and want a clear comparison",
+      "I want to know how a name sounds, looks, travels by word of mouth, fits its purpose, and where it may create problems",
+      "I like a name but want to know what should be tested or verified before I commit",
+    ],
+    capabilities: [
+      "stress-tests a proposed name for sound, spelling, pronunciation, semantic associations, distinctiveness, fit, flexibility, and word-of-mouth behavior",
+      "separates qualities inherent to the name from plausible effects and current-world facts that still require verification",
+      "compares finalists and chooses a winner from the names themselves, the intended use, and the user's stated priorities without inventing external disadvantages",
+      "identifies practical naming tradeoffs and gives focused questions for real-person testing",
+      "flags domains, trademarks, existing uses, search results, and social handles as verification tasks rather than pretending model memory establishes availability",
+    ],
+    accepts: [
+      "one proposed name or multiple finalists",
+      "what is being named and the intended audience or context",
+      "qualities or priorities the name should communicate",
+      "optional notes, stakeholder feedback, or other naming context",
+    ],
+    notFor: [
+      "generating a large fresh list of names when the user does not yet have candidates",
+      "guaranteeing trademark availability, legal protectability, domain availability, search ranking, or social-handle availability",
+      "predicting what customers will remember, prefer, trust, confuse, or buy without evidence",
+      "inventing current competitors, products, naming trends, or marketplace conflicts",
+    ],
+    handoffs: [
+      { when: "the user needs fresh name ideas or wants to explore a different naming direction before auditing finalists", toolId: "NameStorm" },
+    ],
+    primaryIntent: "stress-test one or more proposed names and help the user decide what works, what does not, and what still needs real-world verification before committing",
+    whenToRecommend: "Recommend when the user already has a name or shortlist and wants evaluation, comparison, naming tradeoffs, or a clear winner grounded in the intended use.",
+    whenNotToRecommend: "Do not recommend when the user primarily needs name generation, guaranteed trademark or domain clearance, or predictions about actual customer behavior without testing.",
+  },
+
+  NameThatFeeling: {
+    problems: [
+      "I know what I am feeling but cannot find the right word for it",
+      "the feeling is a strange mix and ordinary labels like happy, sad, jealous, or nostalgic do not quite fit",
+      "I want words or phrases from English or other languages that come close to a nuanced feeling",
+      "I found an emotion word I want to save and remember later",
+    ],
+    capabilities: [
+      "looks for established words and phrases whose central meaning fits the feeling the user actually described",
+      "explains where each candidate fits and where it misses instead of forcing an impressive but strained match",
+      "may offer a plain-English description and one clearly labeled invented phrase when no established word captures the whole feeling",
+      "preserves ambiguity about the cause of a feeling rather than inventing motives, hidden psychology, or relationship meaning",
+      "lets the user save useful discoveries in My Feeling Dictionary as personal vocabulary rather than treating searches as emotional profiling",
+    ],
+    accepts: [
+      "a free-form description of a feeling that is hard to name",
+      "optional context that helps distinguish the emotional ingredients without requiring the user to diagnose themselves",
+      "the user's choice of which suggested word or phrase feels closest and should be saved",
+    ],
+    notFor: [
+      "diagnosing a mental-health condition or explaining why the user feels something",
+      "inventing foreign-language compounds or presenting coined phrases as established vocabulary",
+      "inferring emotional patterns, personality traits, relationship dynamics, or recurring moods from saved or recent searches",
+      "support around bereavement when grief itself, rather than finding language for a feeling, is the central need",
+    ],
+    handoffs: [
+      { when: "the central issue is grief after a loss and the user wants support, words to use, or a manageable next step rather than an emotion label", toolId: "GriefGuide" },
+      { when: "the user needs to prepare for a difficult live conversation about the feeling rather than name it", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "help the user find accurate, nuanced language for a feeling they can describe but cannot quite name",
+    whenToRecommend: "Recommend when the user says there should be a word for what they are feeling, rejects a too-simple emotion label, or wants language for a mixed or hard-to-describe feeling.",
+    whenNotToRecommend: "Do not recommend for diagnosis, emotional pattern analysis, grief support as the primary task, or situations where the main need is what to say in a conversation.",
+  },
+
+  NerveCheck: {
+    problems: [
+      "I have an interview, presentation, performance, date, medical appointment, phone call, or hard conversation coming up and I am nervous",
+      "I am worried I will blank, freeze, get flustered, or not know what to say in an upcoming moment",
+      "the event is close and I need a short Help Me Now plan rather than a long explanation",
+      "someone I care about is nervous about an upcoming event and I want to support them without pushing",
+    ],
+    capabilities: [
+      "separates what the user actually told us from what could happen and what cannot be known yet",
+      "builds a short practical preparation plan tied to the specific upcoming situation",
+      "writes grounded lines for starting, pausing, blanking, awkward moments, or other predictable points where words would help",
+      "offers a compact Help Me Now and Focus experience when the event is close without diagnosing fear or manufacturing confidence",
+      "helps the user support another nervous person by offering rather than inventing what that person needs",
+    ],
+    accepts: [
+      "what the user is nervous about and the kind of situation",
+      "how ready the user feels right now",
+      "what the user is most worried might happen",
+      "when the event is happening",
+      "for Help Someone Else, who is nervous, what they are facing, and the relationship or age context supplied",
+    ],
+    notFor: [
+      "diagnosing anxiety, panic, trauma, or the hidden psychological cause of fear",
+      "predicting how an interviewer, audience, date, clinician, or other person will react",
+      "guaranteeing confidence, performance, safety, or a particular outcome",
+      "designing a long-term exposure program or fear ladder",
+    ],
+    handoffs: [
+      { when: "the main challenge is planning the substance and wording of a difficult conversation rather than managing pre-event nerves", toolId: "DifficultTalkCoach" },
+      { when: "the user primarily needs help naming a hard-to-describe feeling rather than preparing for an event", toolId: "NameThatFeeling" },
+    ],
+    primaryIntent: "prepare the user for a nerve-racking upcoming moment with a grounded plan, usable words, and a manageable next action",
+    whenToRecommend: "Recommend when the user is nervous about something they are about to do and wants practical preparation, scripts, a quick pre-event reset, or help supporting someone else who is nervous.",
+    whenNotToRecommend: "Do not recommend for diagnosis, long-term anxiety treatment, fear-exposure programs, or situations where the main task is the content of a difficult conversation rather than getting ready to face it.",
+  },
+
+  DocumentDetective: {
+    problems: [
+      "I have a long notice, policy, benefits packet, lease change, EOB, agreement, bill, or other document and only want to know what matters to my situation",
+      "I need to know whether this document requires me to do something or contains a deadline, fee, condition, exception, or money issue that affects me",
+      "I have a specific question about a document and want to know what the supplied text can actually answer",
+      "I want important qualifications or buried details surfaced without reading a full generic summary",
+    ],
+    capabilities: [
+      "reads the supplied document through the user's stated circumstances and pulls forward the parts that appear personally relevant",
+      "separates document facts, user-supplied facts, and cautious reasoning while refusing to fill gaps with remembered outside-world knowledge",
+      "surfaces actions, deadlines, amounts, conditions, exceptions, and unresolved questions while preserving the document's exact level of certainty",
+      "distinguishes document requirements from optional practical next steps",
+      "shows what does not appear relevant only when the user's supplied facts support that conclusion and identifies missing facts that could change it",
+    ],
+    accepts: [
+      "pasted document text",
+      "optional document type such as EOB, school notice, HOA or condo notice, lease, company policy, benefits enrollment, government notice, medical or billing document, legal document, or other",
+      "the user's situation and facts that affect what the document means for them",
+      "an optional specific question such as whether a deadline changed, a rule applies, a fee was added, or an action is required",
+    ],
+    notFor: [
+      "a full clause-by-clause plain-language translation when the main problem is understanding the document's wording",
+      "definitive legal, medical, insurance, tax, HR, or financial conclusions that require information outside the supplied document",
+      "inventing laws, company practices, insurer practices, market norms, likely outcomes, or missing procedures",
+      "guaranteeing that an omitted issue is absent when the user supplied only an excerpt or incomplete document",
+    ],
+    handoffs: [
+      { when: "the main need is translating difficult jargon or understanding what the document says rather than filtering for personal relevance", toolId: "JargonAssassin" },
+      { when: "the document is a contract and the user wants a contract-focused explanation of important terms and negotiation questions", toolId: "ContractDecoder" },
+      { when: "the document is a lease and the user wants a lease-specific review of clauses and renter concerns", toolId: "LeaseTrapDetector" },
+      { when: "the user wants to compare two versions of a document or identify what changed between them", toolId: "PlainTalk" },
+      { when: "the document is from a medical visit and the main need is understanding the visit or clinician's explanation", toolId: "DoctorVisitTranslator" },
+    ],
+    primaryIntent: "filter a supplied document for the parts that matter to the user's stated situation, including actions, money, deadlines, qualifications, and unresolved questions",
+    whenToRecommend: "Recommend when the user has a long or consequential document and asks what applies to them, what requires attention, what affects their money, or what the document can and cannot answer for their circumstances.",
+    whenNotToRecommend: "Do not recommend for generic full-document translation, definitive outside-world legal or professional advice, or comparisons between multiple document versions when change detection is the primary task.",
+  },
 };
