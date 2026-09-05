@@ -373,3 +373,73 @@ experiment (moving the boundary earlier in the day) without generalizing
 into a trait. Golden re-recorded with 3 cases (`smallchangebigdifference-v4`)
 — the third is this exact previous-experiment-evidence scenario, the new
 regression reference for the whole history feature.
+
+**Also live-verified in production** (deftbrain.com, not just localhost),
+same day: generate → auto-save as unreviewed → expand panel → check in
+("Helped" + written report) → save → row updates correctly. Confirmed via
+`localStorage.getItem('onepercenter-experiments')` at every step. No defect
+found — this was in response to a user question ("what happened to the
+Recent Small Changes implementation?") that turned out to have no bug
+behind it on this specific point.
+
+## HISTORY FINAL CORRECTIONS pass, same day, sixth addition
+
+A live test surfaced two subtler failures in the EXPERIMENT HISTORY
+reasoning itself (not the UI):
+
+1. **A bare check-in status was read as a detailed report.** Given a
+   previous experiment marked "Helped" with an EMPTY `visitorReport`, the
+   model said "the evening boundary is already working" / "already helped
+   with the evening" — treating the status alone as confirmation that the
+   ORIGINAL recommendation's predicted effect actually occurred. A status
+   is the visitor's overall rating; it is not a description of what
+   changed or why. Fixed with a new prompt section (A BARE STATUS IS NOT A
+   DETAILED REPORT) plus a regex backstop for the exact reported phrasing
+   (`already working/helped with/resolved/fixed/solved`).
+
+2. **Two unrelated experiments got narrated into a deliberate strategy.**
+   The model produced "you've now tested both ends of the day" / "this
+   targets the other bookend" — turning two independently-chosen
+   experiments into a constructed cross-session plan. Nothing in the
+   supplied evidence supports a "strategy" framing; each recommendation is
+   chosen from the CURRENT routine and goals, not from a narrative about
+   progress across visits. Fixed with a new prompt section (DO NOT
+   CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS) plus a regex backstop
+   for the exact reported phrasing (`tested both ends` / `other bookend` /
+   `natural next place to experiment`).
+
+The WHAT I NOTICE worked-example line was also rewritten — it had
+literally been modeling the "two obvious places to intervene" framing that
+caused failure #2, so the fix included cleaning up the example that was
+teaching the bad pattern.
+
+Both fixes are backstopped the same way as every prior pass: a prompt-only
+section for the general judgment call (too varied/contextual for a keyword
+ban) plus a narrow regex matching only the exact reported wording. Neither
+rule fired on any of the 4 golden cases or on 3 additional live test calls
+built specifically to exercise a bare "Helped"-with-no-report scenario —
+the model got it right without needing the backstop, which is the
+intended outcome (the backstop is a net, not the primary mechanism).
+
+Also added: an explicit "Not checked in yet" label on unreviewed rows in
+the Recent Small Changes list (`op_not_checked_in`, 13 languages), so an
+unreviewed experiment's status is never ambiguous even without reading the
+CTA button text. Verified the underlying invariant (new experiments are
+always created with `checkIn.status = 'unreviewed'`, and `reviewed` is
+computed as `status && status !== 'unreviewed'`) was already correct in
+code — no rendering bug was actually found; this was a belt-and-suspenders
+clarity addition, made defensively rather than because a defect was
+reproduced.
+
+Golden re-recorded as `smallchangebigdifference-v5`, 4 cases — the new
+`freelance-bare-helped-status-no-report` case is the regression reference
+for the bare-status-overclaim fix, using the exact scenario from this
+pass's live testing.
+
+**Flagged, not applied:** the correction message's illustrative check-in
+list used 🔴 for "Not really" and ⚪ for "Didn't try it," which would
+reverse the deliberate no-red/no-trophy North Star ("all four outcomes are
+useful evidence") from the original Recent Small Changes spec. Left the
+existing 🟢/🟡/⚪/⬜ scheme in place since the message's actual subject was
+timing (don't show a status before check-in), not color, and asked rather
+than silently changing a previously locked design decision.

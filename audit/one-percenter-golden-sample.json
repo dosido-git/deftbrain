@@ -3,8 +3,8 @@
     "tool": "SmallChangeBigDifference",
     "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 SSE endpoint",
-    "baseline_commit": "smallchangebigdifference-v4",
-    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE) — no server-side LLM-adversarial guard, only a local regex `validateResult`. FOURTH-PASS ADDITIONS (2026-09-05, Recent Small Changes / experiment memory): (1) top-level `routine_area` — pinned to exact English (Morning|Daytime|Work|Evening|Sleep|Other) regardless of response language, same enum-pinning discipline as Document Detective's status field; the frontend matches it literally to a label. (2) top-level `previous_experiments` {used, summary, how_it_affected_this_choice} — case 3 is the reference: `used` correctly false in cases 1-2 (no history supplied), true in case 3 where a previousExperiments array was supplied in the request. Case 3's `summary` states only what the visitor actually reported ('helped a little... still too tired'), never treating the PRIOR RECOMMENDATION's prediction as an observed result. `how_it_affected_this_choice` reasons from that report plus the visitor's own originally-stated fact (afternoon is their most productive period) to justify a DIFFERENT next experiment — never repeating the prior one automatically, never generalizing into a trait ('you respond better to X'). GUARDS carried from the 3rd pass (chronology-vs-causation, room-for-vs-produces) plus this pass's 3 new ones: never 'entirely/completely within your control' when the routine involves other people (case 2's why_this_one correctly says 'largely control yourself'); never an invented force 'pulling' the visitor back to an old behavior; never an unearned causal hierarchy between alternatives ('sits at the end of the chain', 'downstream of'). DO NOT reverse: routine_area English-pinning; the previous_experiments schema shape; capAlternatives; keep SSE streaming; no annotation suffixes."
+    "baseline_commit": "smallchangebigdifference-v5",
+    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE) — no server-side LLM-adversarial guard, only a local regex `validateResult`. FOURTH-PASS ADDITIONS (2026-09-05, Recent Small Changes / experiment memory): (1) top-level `routine_area` — pinned to exact English (Morning|Daytime|Work|Evening|Sleep|Other) regardless of response language, same enum-pinning discipline as Document Detective's status field; the frontend matches it literally to a label. (2) top-level `previous_experiments` {used, summary, how_it_affected_this_choice} — case 3 is the reference: `used` correctly false in cases 1-2 (no history supplied), true in case 3 where a previousExperiments array was supplied in the request. Case 3's `summary` states only what the visitor actually reported ('helped a little... still too tired'), never treating the PRIOR RECOMMENDATION's prediction as an observed result. `how_it_affected_this_choice` reasons from that report plus the visitor's own originally-stated fact (afternoon is their most productive period) to justify a DIFFERENT next experiment — never repeating the prior one automatically, never generalizing into a trait ('you respond better to X'). GUARDS carried from the 3rd pass (chronology-vs-causation, room-for-vs-produces) plus this pass's 3 new ones: never 'entirely/completely within your control' when the routine involves other people (case 2's why_this_one correctly says 'largely control yourself'); never an invented force 'pulling' the visitor back to an old behavior; never an unearned causal hierarchy between alternatives ('sits at the end of the chain', 'downstream of'). DO NOT reverse: routine_area English-pinning; the previous_experiments schema shape; capAlternatives; keep SSE streaming; no annotation suffixes. FIFTH-PASS ADDITION (2026-09-05, HISTORY FINAL CORRECTIONS): case 4 (`freelance-bare-helped-status-no-report`) is the reference for a bare check-in status ('Helped', empty visitorReport) — previous_experiments.summary correctly states only 'marked it Helped but left no written report about what specifically changed,' never inventing what the outcome was or claiming the boundary is 'already working'/'already helped with' the evening. No bookend/both-ends/progression framing across sessions. Guards added this pass: 'already working/helped with/resolved/fixed/solved' (bare-status overclaim) and 'tested both ends/other bookend/natural next place to experiment' (invented cross-session strategy) — both prompt-only sections (A BARE STATUS IS NOT A DETAILED REPORT / DO NOT CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS) plus narrow regex backstops for the exact reported phrasings. DO NOT reverse."
   },
   "cases": [
     {
@@ -184,6 +184,70 @@
           "used": true,
           "summary": "You tried stopping client work at 6pm each evening. You reported it helped a little and gave you more free time, but that you were still too tired to work on your side project.",
           "how_it_affected_this_choice": "Your report shifted the focus away from the evening entirely. The boundary worked; the energy was not there. That makes the afternoon — which you already described as your most productive period — the more promising place to put side project time."
+        }
+      }
+    },
+    {
+      "name": "freelance-bare-helped-status-no-report",
+      "endpoint": "/api/one-percenter",
+      "input": {
+        "routine": "Wake 7am, gym 7:30-8:30, work from home 9-6 (freelance), lunch whenever, afternoon is usually most productive, evenings free but I end up working anyway. Bed around 1am. Sleep is bad. Also check my phone in bed for 20 minutes before getting up.",
+        "goals": "Better sleep, stop working evenings, make progress on a side project",
+        "painPoints": "I have freedom but feel less productive than when I had an office job.",
+        "userLanguage": "en",
+        "previousExperiments": [
+          {
+            "change": "Set a fixed time to stop all client work each evening — 6pm.",
+            "routineArea": "Evening",
+            "checkInLabel": "Helped",
+            "visitorReport": ""
+          }
+        ]
+      },
+      "output": {
+        "what_i_notice": {
+          "pattern": "Your workday runs 9-6, but you describe evenings as 'free' while acknowledging you end up working anyway — and bed comes at 1am. You previously tried setting a 6pm stop and marked it 'Helped,' yet the evening work pattern appears to still be present in your current routine.",
+          "why_it_matters": "Stopping evening work and improving sleep are both things you said you want. The evening-into-night stretch — working past 6pm, bed at 1am — is the part of the day most directly connected to both."
+        },
+        "change_to_try": {
+          "change": "Set a specific, non-negotiable end time for all work — client and side project — and put your laptop somewhere that requires a deliberate action to reopen it for the evening.",
+          "why_this_one": "You already found a 6pm boundary helpful before. The current routine suggests that boundary has softened — evenings are nominally free but work fills them anyway. Making the close-of-work physical rather than just mental adds a small layer of friction that the intention alone may not be providing. It targets the thing you said is most off: evenings going to work instead of staying free.",
+          "how_to_try_it": "At your chosen stop time, close your laptop and put it in a different room, a bag, or anywhere that is not your immediate workspace. The goal is that reopening it for work requires a noticeable choice rather than a casual reach. Pick a stop time you can actually hit most days given your freelance schedule — 6pm if that worked before, or later if that is more realistic right now.",
+          "what_it_may_change": "Reopening the laptop for evening work becomes a deliberate act rather than a default drift. That may make it easier to notice when you are about to work in the evening and decide whether you actually want to. If it holds, it could free up time you said you want for a side project — or simply for evenings that are genuinely free. Whether bed time or sleep quality shifts is something to observe rather than assume."
+        },
+        "routine_area": "Evening",
+        "math": {
+          "show": false,
+          "calculation": "",
+          "meaning": ""
+        },
+        "why_not_start_elsewhere": {
+          "show": true,
+          "alternatives": [
+            {
+              "alternative": "Address the 20-minute phone check in bed each morning.",
+              "why_not_first": "That is a real place to experiment, but your stated priorities are sleep and stopping evening work. The laptop habit is more directly connected to both of those than the morning phone habit is."
+            }
+          ]
+        },
+        "what_to_watch_for": {
+          "signs_it_may_be_helping": [
+            "You consistently put the laptop away at the stop time and do not reopen it for work.",
+            "You use some of the evening time in a way you prefer — rest, the side project on its own terms, or something else you value.",
+            "You find yourself reaching the side project more often than before, or noticing the evening feels different.",
+            "You notice some other improvement that matters to you — sleep, how the next morning feels, or anything else."
+          ],
+          "signs_to_rethink_it": [
+            "You put the laptop away but find yourself doing client work on your phone or another device instead.",
+            "The stop time is regularly impossible to hit because of how your freelance work actually lands.",
+            "Evenings free up but you do not use them in any way that feels better than before.",
+            "Another part of the routine — the 1am bedtime, the undefined lunch, the morning phone habit — starts to look like a more useful place to intervene."
+          ]
+        },
+        "previous_experiments": {
+          "used": true,
+          "summary": "You previously tried setting a hard stop for client work at 6pm. You marked it 'Helped' but left no written report about what specifically changed.",
+          "how_it_affected_this_choice": "Because you rated that experiment positively, this recommendation builds on the same area rather than moving elsewhere. The current routine still shows evenings going to work, which suggests the boundary may have drifted — so the change here adds a physical element to reinforce what the time-based intention started."
         }
       }
     }

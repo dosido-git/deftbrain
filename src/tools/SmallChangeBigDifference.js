@@ -305,11 +305,13 @@ const SmallChangeBigDifference = ({ tool }) => {
             <p className={`text-xs ${c.textMuted} mt-0.5`}>
               {ROUTINE_AREA_LABEL[exp.experimentContext?.routineArea] || exp.experimentContext?.routineArea} · {dateStr}
             </p>
-            {reviewed && (
+            {reviewed ? (
               <p className={`text-xs mt-1 ${c.textSecondary}`}>
                 {meta.emoji} {meta.label}
                 {exp.checkIn.visitorReport && <span className="italic"> — "{exp.checkIn.visitorReport}"</span>}
               </p>
+            ) : (
+              <p className={`text-xs mt-1 italic ${c.textMuted}`}>{t('op_not_checked_in')}</p>
             )}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

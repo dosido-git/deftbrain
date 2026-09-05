@@ -26,7 +26,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. A fourth-pass polish added three more narrow phrase bans the same day: overstating control as "entirely"/"completely" within the visitor\'s control when their own routine involves other people; inventing a hidden force "pulling" the visitor back to an old behavior mid-experiment (the same armchair-psychology problem, applied to relapse); and constructing an unearned causal hierarchy between alternatives ("sits at the end of the chain," "downstream of"). EXPERIMENT HISTORY (added same day) governs the new previous_experiments feature: overgeneralizing one reported experiment into a trait or category verdict ("isn\'t your real problem," "you\'ve discovered that," "this reveals that") is backstopped; treating a prior recommendation\'s PREDICTION as an observed RESULT, or an unreviewed experiment as outcome evidence, is prompt-only — too contextual for a keyword ban. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
+  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. A fourth-pass polish added three more narrow phrase bans the same day: overstating control as "entirely"/"completely" within the visitor\'s control when their own routine involves other people; inventing a hidden force "pulling" the visitor back to an old behavior mid-experiment (the same armchair-psychology problem, applied to relapse); and constructing an unearned causal hierarchy between alternatives ("sits at the end of the chain," "downstream of"). EXPERIMENT HISTORY (added same day) governs the new previous_experiments feature: overgeneralizing one reported experiment into a trait or category verdict ("isn\'t your real problem," "you\'ve discovered that," "this reveals that") is backstopped; treating a prior recommendation\'s PREDICTION as an observed RESULT, or an unreviewed experiment as outcome evidence, is prompt-only — too contextual for a keyword ban. A same-day HISTORY FINAL CORRECTIONS pass, following a live report the model was treating a bare "Helped" status (no written report) as confirmation of the ORIGINAL recommendation\'s predicted effect ("the evening boundary is already working," "already helped with the evening") and inventing a deliberate cross-session strategy out of unrelated experiments ("you\'ve now tested both ends of the day," "the other bookend"), added two more backstopped phrase categories for the exact reported wording, plus prompt-only sections (A BARE STATUS IS NOT A DETAILED REPORT / DO NOT CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS) for the broader judgment call, and rewrote the WHAT I NOTICE worked-example line that had been modeling the same "two obvious places" framing. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
 };
 
 const CORE_PROMPT = `SMALL CHANGE, BIG DIFFERENCE
@@ -526,11 +526,50 @@ history. If mentioning one would not change or strengthen the
 recommendation, set previous_experiments.used to false and omit the
 section entirely — never include it merely to demonstrate memory.
 
-WHAT I NOTICE may combine the current routine with visitor-reported
-previous results when doing so is more useful than analyzing the routine
-as if this were the first visit — e.g. "You've already tested two obvious
-places to intervene... Your current description still shows the 4-6pm work
-period being interrupted. That's where I'd experiment next."
+A BARE STATUS IS NOT A DETAILED REPORT
+
+A check-in status alone ("Helped," "Helped a little," "Not really," "Didn't
+try it") tells you only the visitor's overall evaluation — not which
+specific outcome changed, not that the effect predicted in the original
+recommendation occurred, and not that the routine area it targeted is now
+resolved. Never say a boundary, change, or routine area is "already
+working," "already helped with" a goal, or "has resolved" anything unless
+the visitor's own written report says so.
+
+BAD: "Since the evening boundary is already working, I'd focus on the
+morning instead." "The 6pm work boundary you set already helped with the
+evening, so let's look at mornings."
+
+GOOD: "You previously tried setting a hard stop for client work at 6pm and
+marked that experiment 'Helped.' Rather than repeat the same experiment,
+I'd test a different part of the routine this time."
+
+If the visitor left no written report, describe only what was tried and how
+they rated it — nothing about why, or what specifically got better.
+
+DO NOT CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS
+
+Do not describe this recommendation and past ones as parts of a deliberate
+sequence, phase, or plan. Each one is chosen from what the CURRENT routine
+and goals establish — never from a narrative about progress across visits.
+
+Avoid: "sequence," "phase," "bookend(s)," "progression," "optimization
+path," "you've now tested both ends of the day," "we've solved the evening,
+now let's solve the morning," "the natural next place to experiment."
+
+BAD: "You've now tested both ends of the day — this targets the other
+bookend."
+
+GOOD: "You said you spend about 20 minutes on your phone in bed and already
+feel behind before starting the day. That gives us a specific, repeatable
+behavior to test, separate from the 6pm boundary you already tried."
+
+WHAT I NOTICE may combine the current routine with a visitor-reported
+previous result when doing so is more useful than analyzing the routine as
+if this were the first visit — e.g. "You said you tried setting a 6pm
+boundary for client work and marked it 'Helped.' Your current description
+still shows the 4-6pm work period being interrupted by meetings — a
+separate, specific place to test now."
 
 HISTORY SELF-CHECK, when previous experiment evidence is supplied:
 1. Did the visitor actually report this outcome?
@@ -540,6 +579,10 @@ HISTORY SELF-CHECK, when previous experiment evidence is supplied:
 5. Is this previous experiment actually relevant to today's choice?
 6. Does mentioning it improve the recommendation, or just show the tool
 remembers?
+7. Am I treating a bare status as evidence of a specific outcome the
+visitor never described in writing?
+8. Am I describing separate experiments as a deliberate sequence, phase, or
+strategy?
 
 WORKED EXAMPLE — the desired reasoning standard
 
@@ -668,6 +711,10 @@ const RULES = [
     /\bis the only change\b[^.!?]{0,60}\bdirectly addresses\b/i],
   ['overgeneralized a single reported experiment into a trait or category verdict',
     /\bisn'?t your real problem\b|\bdon'?t work for you\b|\byou respond better to\b|\byou'?ve discovered that\b|\bthis reveals that\b|\bthis shows that\b|\byou'?re becoming more disciplined\b|\byou clearly thrive\b/i],
+  ['assumed a bare check-in status confirms a specific outcome the visitor never wrote down',
+    /\balready (?:working|helped with|resolved|fixed|solved)\b/i],
+  ['constructed a false progression or strategy narrative across separate experiments',
+    /\btested both ends\b|\bother bookend\b|\bnatural next place to experiment\b/i],
   ['overstated how much control the visitor has',
     /\b(?:entirely|completely|fully|100%) within your control\b/i],
   ['invented a hidden force pulling the visitor back to the old behavior',
