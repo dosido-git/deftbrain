@@ -36,7 +36,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'No per-call runOutputGuard — 17 actions on one route makes per-call fields/promise construction disproportionate to the risk here (this tool never diagnoses a medical condition; the schema itself is the main safeguard). validateResult is a regex walk over every action\'s parsed JSON before it returns. Rule categories, drawn directly from the rewrite\'s own "REMOVE FROM PEP" list: burnout terminology (approaching/risk/pattern, "N weeks to burnout", the old "Burnout Radar" name); battery/energy-cost arithmetic framed as a measurement (percentages, "recharge debt"); introvert/extrovert drain-rate stereotypes and the hosting/presenting cost multipliers; nervous-system or "deep rest" physiological claims; forced encouragement/moralized productivity ("you\'re not failing", "that\'s strength", "it\'s math"); the restorative-vs-numbing binary; and an invented causal mechanism for why an activity worked, including the ordinal-rating-as-quantity error ("nearly doubled your energy"). Schema removal is the primary fix (no more status enum, no more battery/energy_type fields, no debt-check action at all) — these regexes are the backstop for a free-text field smuggling the same claim back in.',
+  note: 'No per-call runOutputGuard — 17 actions on one route makes per-call fields/promise construction disproportionate to the risk here (this tool never diagnoses a medical condition; the schema itself is the main safeguard). validateResult is a regex walk over every action\'s parsed JSON before it returns. Rule categories, drawn directly from the rewrite\'s own "REMOVE FROM PEP" list: burnout terminology (approaching/risk/pattern, "N weeks to burnout", the old "Burnout Radar" name); battery/energy-cost arithmetic framed as a measurement (percentages, "recharge debt"); introvert/extrovert drain-rate stereotypes and the hosting/presenting cost multipliers; nervous-system or "deep rest" physiological claims; forced encouragement/moralized productivity ("you\'re not failing", "that\'s strength", "it\'s math"); the restorative-vs-numbing binary; and an invented causal mechanism for why an activity worked, including the ordinal-rating-as-quantity error ("nearly doubled your energy"). Added in the RIGHT NOW FINAL CORRECTIONS pass (2026-09-05): unsupported absolutes about effort ("zero setup," "no attention," "completely passive" where "very little" is honest); internal-effect claims standing in for a fit explanation ("fills the window without demanding attention"); and saved-menu status oversold as proven effectiveness ("likely to recharge you" — saved means chosen, not shown to work). Schema removal is the primary fix (no more status enum, no more battery/energy_type fields, no debt-check action at all) — these regexes are the backstop for a free-text field smuggling the same claim back in.',
 };
 
 // A generic recursive walk, same shape as one-percenter.js's validateResult:
@@ -59,6 +59,12 @@ const RULES = [
     /\bthis (?:activity )?restored you\b|\bnearly doubled your energy\b|\bthis increased your energy\b/i],
   ['generic medical or medication instruction',
     /\bnon-negotiable regardless of time zone\b|\bset an alarm for every dose\b|\btake it at \d/i],
+  ['unsupported absolute about effort',
+    /\bzero (?:setup|effort|decisions?|attention|thought)\b|\bno decisions?\b|\bno attention\b|\bcompletely passive\b/i],
+  ['internal-effect claim instead of a fit explanation',
+    /\bwithout demanding attention\b|\bwill (?:calm|clear|relax) your mind\b|\bkeeps? your mind (?:clear|calm|blank)\b/i],
+  ['saved-menu status oversold as proven effectiveness',
+    /\blikely to recharge you\b|\byour body (?:already )?responds? well\b|\byour best recovery tool\b|\bproven (?:match|recharge)\b|\breliable recharge\b/i],
 ];
 
 function validateResult(data) {
@@ -283,12 +289,50 @@ stopping point, never a predicted feeling.
 
 10. Fewer suggestions are better when capacity is low.
 
+11. NEVER INTRODUCE A CLOCK TIME THE VISITOR DID NOT SUPPLY. TIME OF DAY above is a
+period (morning/afternoon/evening), not a clock time — do not derive "3pm" or any
+other specific time from it. If the visitor's own text (TIME AVAILABLE or ANYTHING
+THAT WOULD HELP CHOOSE) contains an exact clock time, you may echo it. Otherwise use
+relative timing only: "before your call," "in the time you have," "for the next 30
+minutes" — never a time you invented.
+BAD: time of day is "Evening" but the read says "between now and 3pm."
+GOOD: "You have 30 minutes before a call where you need to be present..."
+
+12. AVOID ABSOLUTES ABOUT EFFORT UNLESS LITERALLY TRUE. Do not write "zero setup,"
+"zero effort," "zero decisions," "no attention," or "completely passive" — say "very
+little setup," "very little decision-making," or describe the activity as
+low-demand instead. An activity can be low-demand without requiring literally none.
+
+13. EXPLAIN FIT, NOT AN INTERNAL EFFECT. Do not claim an activity "requires no
+attention," "fills the window without demanding attention," or will produce any
+particular mental state. Describe what the activity asks of the visitor and how that
+matches their conditions — not what it will do inside them.
+BAD: "it fills the window without demanding attention."
+GOOD: "it gives you a low-demand way to use some of the time before your call."
+
+14. SAVED DOES NOT MEAN EFFECTIVE. An activity on the visitor's saved menu tells you
+they chose to keep it — nothing more. Do not promote a saved activity to "something
+that works," "restorative," a "proven match," or a "reliable recharge" unless actual
+prior ratings from this visitor support that specific claim. It is fine to say a
+saved activity fits well right now (low-demand, matches the time available) without
+implying it will succeed.
+GOOD: "This is already on your saved menu, asks very little of you, and fits inside
+your 30-minute window."
+BAD: "...so it is likely to recharge you" / "your body already responds well to
+this" / "this is your best recovery tool" — none of that follows from being saved.
+
+15. FINAL CHECK for every explanation you write: does it answer "why does this fit
+the conditions the visitor gave me" (time available, location, self-reported
+capacity, stated mood, stated constraints, saved preference, actual prior ratings)?
+If it instead answers "why will this change the visitor's internal state," rewrite
+it.
+
 Return ONLY valid JSON:
 {
-  "read": "1-2 sentences of practical reflection using only supplied information.",
+  "read": "1-2 sentences of practical reflection using only supplied information. No invented clock times — relative timing only unless the visitor supplied an exact time.",
   "top_pick": {
     "activity": "The single best option for their exact state right now.",
-    "why_it_fits": "Explains fit against what was supplied — never a predicted benefit.",
+    "why_it_fits": "Explains fit against what was supplied — never a predicted benefit or internal effect.",
     "first_step": "The literal first physical action. e.g. 'Stand up and walk to the kitchen.'",
     "duration": "How long.",
     "done_when": "A concrete stopping point — never a predicted feeling."

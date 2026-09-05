@@ -165,3 +165,46 @@ key migration for no visible benefit.
 
 - `pep_partner_builder` must never mention "AI" again — say what the feature does
   ("Shared Menu Builder"), not what generates it.
+
+## RIGHT NOW FINAL CORRECTIONS pass (2026-09-05, same day)
+
+Six corrections to the `generate` (Right Now) prompt, all found by the user reviewing
+a live result, not by any gate:
+
+1. **Never invent a clock time.** A result showed `time_of_day: "Evening"` but the
+   `read` text said "between now and 3pm" — a specific hour nobody supplied. Fixed:
+   §11 bans deriving a clock time from a period-of-day; relative timing only
+   ("before your call," "in the time you have") unless the visitor's own text names
+   an exact time. Regression-guarded by the new
+   `right-now-evening-no-clock-time-with-saved-menu` golden case.
+2. **No effort absolutes unless literally true.** "Zero setup or decisions" →
+   "very little setup." §12 bans zero-setup/effort/decisions/attention and
+   "completely passive"; low-demand framing stays fine.
+3. **Explain fit, not an internal effect.** "Fills the window without demanding
+   attention" claims a mental effect. §13 requires describing what the activity
+   asks of the visitor and how that matches their stated conditions, never what it
+   will produce inside them.
+4. **Saved ≠ effective (confirmed correct, unchanged).** The existing "no prior
+   ratings under similar conditions are on record here" framing was already right —
+   explicitly kept as-is.
+5. **Top pick may cite saved-menu status without overselling it.** §14 permits "this
+   is already on your saved menu, asks very little of you, and fits inside your
+   window" but bans promoting saved-but-unrated to "likely to recharge you," "your
+   body already responds well to this," or "your best recovery tool."
+6. **Universal test added (§15):** every explanation must answer "why does this fit
+   the conditions supplied" (time, location, capacity, mood, constraints, saved
+   preference, actual prior ratings) — never "why will this change the visitor's
+   internal state."
+
+Three new `validateResult()` regex categories (global across all 17 actions, not
+just `generate`, since these are general failure patterns): unsupported absolute
+about effort, internal-effect claim instead of a fit explanation, saved-menu status
+oversold as proven effectiveness. Live-verified on the exact reported bug scenario
+(Evening + "before a call" + saved-menu item) and a second scenario (high energy,
+no saved menu) — clean on both, output now nearly matches the user's own supplied
+GOOD examples verbatim. Golden re-recorded (`right-now-low-energy-evening` output
+refreshed, new case added) — 5 cases total, `check:golden pep` 5/5.
+
+**Do not weaken:** §11-15 in the `generate` prompt, or the three new regex
+categories — they are a second layer specifically because the model had already
+drifted into exactly these patterns once in production.

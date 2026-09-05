@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "PEP (Personal Energy Planner)",
-    "generated": "2026-09-05",
+    "generated": "2026-09-05 (RIGHT NOW FINAL CORRECTIONS pass)",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 17 action-dispatch",
     "baseline_commit": "pep-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): the entire tool was rebuilt to remove a fabricated measurement system that the old pep-v1 golden's own captured output demonstrates (energy_read/pleasure_vs_numbing language, nervous-system claims, quick_hits/medium_recharge/deep_reset categories, battery percentages, introvert/extrovert energy types, task-cost arithmetic, burnout-risk radar, and a debt-check 'prescription' action) — none of that exists in v2. DO NOT reintroduce it while chasing a golden diff. New schema per mode: generate={read,top_pick,other_options,from_your_history} (was energy_read/mood_note/time_note/transition_tip/pleasure_vs_numbing/menu.quick_hits+medium+deep+avoid); budget={read,protect,consider_next,postpone_or_drop,sequence,one_decision} (was capacity_status/total_cost/available/permissions/tomorrow_note — no more summing task 'cost' as literal arithmetic); forecast={week_shape,demanding_stretches,breathing_room,commitments_to_reconsider,from_your_history,one_move_now} (was current_battery/recharge_hours/introvert-extrovert drain multipliers — inputs are now demanding_factors checkboxes + starting_capacity, not an energy_type slider); disruption={situation,keep,lighten,pause,temporary_shape,unknowns,reassess_when,one_next_step} (was acknowledgment/survival_schedule/self_care_minimum — critically, disruption with a BLANK normal_routine must not invent a generic exercise/meal/hygiene/medication/sleep routine; it must list the gap under 'unknowns' instead, which the adapt-sick-day-sparse-input case exists specifically to guard). radar-checkin and radar-analyze (Patterns) now share ONE schema shape ({today,what_changed,possible_patterns,not_enough_to_tell,worth_watching,optional_next_step}) instead of radar-checkin's old ad hoc fields vs radar-analyze's separate overall_risk/time_until_concern/interventions shape — no green/yellow/orange/red status, no 'time until burnout' estimate. debt-check action REMOVED ENTIRELY (was prescription/debt_level/gentle_warning — all now-banned terms). Wire field names productivity/social_energy/physical_symptoms on radar-checkin/radar-analyze are DELIBERATELY UNCHANGED from v1 despite the UI relabeling 'Productivity' to 'Focus / getting things done' — preserves existing users' checkinLog history; do not rename these on a future pass without a migration. activityLog client-side cap raised from 6 to 100 (PF-25 exception, see src/tools/PEP.js). menu items no longer store category/effort/avg_rating/use_count/sensory_anchor — My Menu now computes timesTried/avgRating/energy ranges fresh from activityLog on every render (menuStats()), so a stale-cache class of bug is structurally gone. DO NOT reverse: the removal of battery/introvert-extrovert/burnout-radar/debt-check language; the disruption blank-routine guard; the unified Patterns schema; the productivity/social_energy field name preservation; the fresh-computed (not stored) menu stats."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): the entire tool was rebuilt to remove a fabricated measurement system that the old pep-v1 golden's own captured output demonstrates (energy_read/pleasure_vs_numbing language, nervous-system claims, quick_hits/medium_recharge/deep_reset categories, battery percentages, introvert/extrovert energy types, task-cost arithmetic, burnout-risk radar, and a debt-check 'prescription' action) — none of that exists in v2. DO NOT reintroduce it while chasing a golden diff. New schema per mode: generate={read,top_pick,other_options,from_your_history} (was energy_read/mood_note/time_note/transition_tip/pleasure_vs_numbing/menu.quick_hits+medium+deep+avoid); budget={read,protect,consider_next,postpone_or_drop,sequence,one_decision} (was capacity_status/total_cost/available/permissions/tomorrow_note — no more summing task 'cost' as literal arithmetic); forecast={week_shape,demanding_stretches,breathing_room,commitments_to_reconsider,from_your_history,one_move_now} (was current_battery/recharge_hours/introvert-extrovert drain multipliers — inputs are now demanding_factors checkboxes + starting_capacity, not an energy_type slider); disruption={situation,keep,lighten,pause,temporary_shape,unknowns,reassess_when,one_next_step} (was acknowledgment/survival_schedule/self_care_minimum — critically, disruption with a BLANK normal_routine must not invent a generic exercise/meal/hygiene/medication/sleep routine; it must list the gap under 'unknowns' instead, which the adapt-sick-day-sparse-input case exists specifically to guard). radar-checkin and radar-analyze (Patterns) now share ONE schema shape ({today,what_changed,possible_patterns,not_enough_to_tell,worth_watching,optional_next_step}) instead of radar-checkin's old ad hoc fields vs radar-analyze's separate overall_risk/time_until_concern/interventions shape — no green/yellow/orange/red status, no 'time until burnout' estimate. debt-check action REMOVED ENTIRELY (was prescription/debt_level/gentle_warning — all now-banned terms). Wire field names productivity/social_energy/physical_symptoms on radar-checkin/radar-analyze are DELIBERATELY UNCHANGED from v1 despite the UI relabeling 'Productivity' to 'Focus / getting things done' — preserves existing users' checkinLog history; do not rename these on a future pass without a migration. activityLog client-side cap raised from 6 to 100 (PF-25 exception, see src/tools/PEP.js). menu items no longer store category/effort/avg_rating/use_count/sensory_anchor — My Menu now computes timesTried/avgRating/energy ranges fresh from activityLog on every render (menuStats()), so a stale-cache class of bug is structurally gone. DO NOT reverse: the removal of battery/introvert-extrovert/burnout-radar/debt-check language; the disruption blank-routine guard; the unified Patterns schema; the productivity/social_energy field name preservation; the fresh-computed (not stored) menu stats. RIGHT NOW FINAL CORRECTIONS pass (2026-09-05, same day): fixed an invented-clock-time bug (time_of_day='Evening' but the read stated a specific hour like '3pm' that was never supplied — now relative timing only unless the visitor's own text names an exact time); added an effort-absolutes ban ('zero setup/effort/decisions', 'no attention', 'completely passive' → 'very little' instead); banned internal-effect explanations standing in for a fit explanation ('fills the window without demanding attention'); and reinforced that a saved-menu item is preference evidence only, never promoted to 'likely to recharge you' or 'your best recovery tool' without actual prior ratings. Three new validateResult() regex categories added for these (unsupported absolute about effort / internal-effect claim / saved-menu oversold). The 'right-now-evening-no-clock-time-with-saved-menu' case exists specifically to guard the clock-time regression — DO NOT let a future edit reintroduce an invented specific hour when only a period of day (morning/afternoon/evening) was supplied."
   },
   "cases": [
     {
@@ -21,24 +21,24 @@
         "userLanguage": "en"
       },
       "output": {
-        "read": "You've been screen-bound all day and have very little in you right now — so the options below ask almost nothing of you and keep you away from another screen.",
+        "read": "You've reported energy at 2/10, a numb mood, and a full day of screen time — so the conditions point toward something that asks very little of you and doesn't add more screen exposure.",
         "top_pick": {
-          "activity": "Sit or lie somewhere away from your screens with a drink or nothing at all, and just let the room be quiet for 15 minutes.",
-          "why_it_fits": "No setup, no screen, no decisions, and you're already home — it fits a 2/10 and a numb mood about as closely as anything can.",
-          "first_step": "Close or turn away from whatever screen you're on right now and find a spot to sit or lie down.",
-          "duration": "15 minutes.",
-          "done_when": "When the 15 minutes are up, or whenever you feel like moving."
+          "activity": "Sit somewhere away from your screens with a drink and do nothing in particular.",
+          "why_it_fits": "It asks nothing of you — no setup, no task, no screen — and fits inside your 15 minutes with no transitions required beyond moving from where you are.",
+          "first_step": "Put your phone face-down, go to a different seat or room, and make or grab something to drink.",
+          "duration": "However long feels right inside the 15 minutes.",
+          "done_when": "When the 15 minutes are up, or whenever you feel like moving on."
         },
         "other_options": [
           {
-            "activity": "Put something on to listen to — music, a podcast, an audiobook — with your eyes closed or looking at the ceiling.",
-            "why_it_fits": "Audio only means no additional screen time, and you can do it lying completely still with zero setup beyond pressing play.",
-            "duration": "As long as feels right up to 15 minutes."
+            "activity": "Put on music or a podcast with your eyes closed.",
+            "why_it_fits": "Low-demand listening without a screen matches your stated constraint around screens and fits easily inside 15 minutes at home.",
+            "duration": "One song or a short podcast segment — 5 to 15 minutes."
           },
           {
-            "activity": "Make a simple drink — tea, water, whatever is easy — and just hold it for a bit.",
-            "why_it_fits": "One short task with a clear end, no screen involved, and it gets you off the couch briefly without anything resembling a hike.",
-            "duration": "5 minutes or less to make it, then however long you want to sit with it."
+            "activity": "Step outside briefly — even just onto a doorstep or balcony.",
+            "why_it_fits": "You noted a hike sounds awful, but a few minutes outside with no destination is a different scale of demand entirely — very short, no gear, no plan needed.",
+            "duration": "5 to 10 minutes."
           }
         ],
         "from_your_history": {
@@ -218,6 +218,51 @@
         ],
         "reassess_when": "Revisit this temporary plan when your capacity starts to shift or when your normal routine starts feeling workable again.",
         "one_next_step": "Take your medication if you have not yet today."
+      }
+    },
+    {
+      "name": "right-now-evening-no-clock-time-with-saved-menu",
+      "endpoint": "/api/pep",
+      "input": {
+        "action": "generate",
+        "energy": 5,
+        "time_available": "30 minutes",
+        "mood": "neutral",
+        "environment": "home",
+        "time_of_day": "Evening",
+        "context": "I have a call I need to be present for later, not sure what to do until then.",
+        "curated_menu": [
+          {
+            "name": "Sit outside with tea"
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "read": "You have 30 minutes before a call where you need to be present, your energy is mid-range, and your mood is neutral — so something low-demand that doesn't require winding down or cleaning up afterward fits well here.",
+        "top_pick": {
+          "activity": "Sit outside with tea",
+          "why_it_fits": "This is already on your saved menu, fits inside your 30-minute window, works from home, and asks very little of you — no transitions, very little setup, and nothing that would leave you mid-task when your call starts.",
+          "first_step": "Put the kettle on.",
+          "duration": "As long as it takes to drink the tea — likely 15 to 25 minutes.",
+          "done_when": "You finish the tea and head in before your call."
+        },
+        "other_options": [
+          {
+            "activity": "Put on music or a podcast and do nothing in particular",
+            "why_it_fits": "Requires very little setup, keeps you at home, and is easy to stop cleanly when the call is ready to start.",
+            "duration": "Up to 30 minutes, stopping whenever you need to."
+          },
+          {
+            "activity": "Tidy one small area — a counter, a bag, a drawer",
+            "why_it_fits": "A single contained task fits the time available, has a clear stopping point, and asks a moderate but bounded amount of you at 5/10 energy.",
+            "duration": "10 to 15 minutes."
+          }
+        ],
+        "from_your_history": {
+          "activity": "",
+          "evidence": ""
+        }
       }
     }
   ]
