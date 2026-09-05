@@ -188,6 +188,80 @@ fix in two files. Removing the heartbeat alone reopens the timeout bug; removing
 `useClaudeAPI.js` check while keeping the heartbeat means any error occurring after
 generation starts renders as a blank/broken result instead of a clean error message.
 
+## FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-05, third same-day pass)
+
+Live review of this exact housewarming case (9 guests, one-bed flat, "Nobody knows
+anybody outside their own pair" — a fact the VISITOR supplied) found the model still
+inventing the *social mechanism* behind otherwise-reasonable recommendations, even
+though it had stopped inventing the party itself. **Added — this time genuinely
+additive, §26 through §43 plus a closing FINAL OPERATING RULE, all before FINAL NORTH
+STAR** (the user was explicit: add to the existing prompt, don't replace it, and don't
+patch the specific housewarming output — fix the general rule):
+
+- §26 relationship topology between guest GROUPS (broader than the existing
+  guest-to-guest "shared interest" rule — "nobody outside their own pair knows anyone
+  else" as an INVENTED extension is the violation; the visitor's own identical sentence
+  as a supplied fact is not)
+- §27 introduction content (names/context only, never an invented job/hometown/shared
+  interest used as the connecting detail)
+- §28 a shared moment must be justified, not assumed — this is the one that most
+  changed the OUTPUT SCHEMA'S OWN "Shared Moment" timeline phase: every case now frames
+  it explicitly optional with a skip-if `adjust_if` ("if it feels unnecessary... leave
+  it out entirely — the gathering does not require it")
+- §29 never claim a planned element already "landed" or "worked"
+- §30 ordinary quiet/standing behavior is not a diagnosable problem
+- §31 no manufactured conversational value for ordinary objects/food ("gives people
+  something to talk about" needs a specific reason, not a default justification)
+- §32 no invented psychological effect of music — **this is the exact category the v2
+  guard caught live, twice in one case**, both repaired cleanly (see below)
+- §33-34 budget: no "enough" sufficiency claims, no invented emotional value from a
+  purchase ("makes it feel intentional/special")
+- §35 a seating-capacity gap only establishes the gap, never who stands or for how long
+- §36 a supplied rule (noise, lease, policy) means only its literal wording — nothing
+  about scope, enforcement, or what counts as a violation
+- §37 no ranking of who is "most affected" by anything without support
+- §38 no invented arrival/participation/departure order
+- §39 cleanup is a practical step, never a covert end-of-party signal — verified live:
+  case 2's timeline explicitly says "a practical step, not a signal"
+- §40 `conversation_catalysts` is genuinely optional (0 items is correct when nothing
+  specific justifies one)
+- §41 a three-way classification test for every recommendation: LOGISTICAL / SOCIAL
+  OPPORTUNITY / SOCIAL PREDICTION — prefer the first, avoid the third
+- §42 the inference-chain limit — collapse a multi-hop inference back to its first
+  supplied fact before using it
+- §43 the final generation test — "what problem am I solving," traceable to a supplied
+  fact/goal/derivation/explicit design choice, or cut
+
+`buildArcPrompt`/`buildMechanicsPrompt`'s own "apply §X, §Y..." pointer lines were
+extended to reference the new relevant sections (schema itself untouched, per
+instruction). `router.outputGuard.prohibit` gained 11 new categories matching the most
+mechanically-checkable of the above (`invented_relationship_topology_between_guest_
+groups`, `fabricated_introduction_content`, `claimed_design_element_already_succeeded`,
+`ordinary_guest_behavior_diagnosed_as_a_problem`, `manufactured_conversational_value_
+for_an_object_or_food`, `invented_psychological_effect_of_music`, `unsupported_
+quantity_or_sufficiency_claim`, `invented_emotional_value_of_a_purchase`, `expanded_a_
+supplied_rule_beyond_its_stated_scope`, `unsupported_ranking_of_who_is_most_affected`,
+`invented_guest_order_arrival_or_departure`, `cleanup_framed_as_covert_signal_rather_
+than_practical`), and the guard's own `promise` text gained matching concrete examples.
+
+**Live-verified**: re-ran both golden scenarios. The guard actually FIRED on this pass —
+FAILED and repaired 3 fields on each case, using several of the brand-new categories
+(`invented_psychological_effect_of_music` twice on case 1,
+`invented_relationship_or_shared_interest_between_guests` on a `things_to_plan_for`
+item, `social_dynamics_prediction_stated_as_fact`, `unsupported_prediction` on case 2) —
+concrete proof the new categories are load-bearing, not decorative. One "container hit"
+per case (the checker named a whole `things_to_plan_for[i]` object instead of a leaf
+string) was correctly dropped rather than mis-repaired, per `outputGuard.js`'s own
+documented behavior — left as pre-existing/accepted, not something this pass caused.
+One pre-existing minor quality nit observed, not chased: two `things_to_plan_for` items
+in the same case ended up with near-duplicate `.plan` text — a repetitiveness issue, not
+a grounding/fabrication one, and not worth a new mechanism for a single occurrence.
+
+Golden re-recorded as `party-architect-v4` with the live outputs from this exact
+scenario, input's `whoIsComing` updated to include the visitor's own "Nobody knows
+anybody outside their own pair" sentence (present in the original bug report, omitted
+from the prior golden case by oversight).
+
 ## DO NOT silently reverse
 
 - The new schema shape (see table above) — especially `music.wind_down` vs top-level
@@ -202,3 +276,9 @@ generation starts renders as a blank/broken result instead of a clean error mess
   design/grounding block; don't restore the old prose alongside it.
 - The keep-alive heartbeat + the matching `useClaudeAPI.js` bare-`{error}` check —
   see above, these two only work together.
+- §26-43 + FINAL OPERATING RULE — these are ADDITIVE to the 25-section spec, not a
+  replacement of it; both pieces stay.
+- The 11 new `outputGuard.prohibit` categories and their matching `promise` examples —
+  live-confirmed load-bearing (see above), not speculative additions.
+- "Shared Moment" must stay conditional in both the prompt AND the generated
+  `adjust_if`/skip framing — do not let it drift back to an assumed default.
