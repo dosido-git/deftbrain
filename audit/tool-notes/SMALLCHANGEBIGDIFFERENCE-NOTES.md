@@ -187,3 +187,79 @@ alternatives, each with its own non-dismissive reasoning ("is a larger
 adjustment," "depends on... already being under control" — never "would
 fail"). Neither run triggered `validateResult` — both first drafts were
 already clean.
+
+## FINAL CORRECTIONS pass, same day, third round
+
+The subtlest failure mode yet, and the hardest to catch with a keyword ban:
+not fabricated physiology (already fixed) but ORDINARY language quietly
+converting a chronological fact into a causal claim, or "creates room for a
+goal" into "directly produces the goal." Live bug report gave 5 verbatim
+bad quotes, all from the same underlying pattern:
+
+- "The late endpoint of your day is the one part of the routine most
+  directly connected to how rested you feel the next morning" — invents
+  that the visitor established how rested they feel, and that a late
+  bedtime causes morning tiredness, from nothing but a stated end-of-day
+  time.
+- "This is the only change... that directly addresses both the evening
+  creative energy problem and the compressed, already-behind feeling" —
+  claims the change PRODUCES creative energy and fixes a morning feeling,
+  when at most it creates room for the former and says nothing about the
+  latter.
+- "Stopping screens earlier removes the main thing currently EXTENDING your
+  night" — the routine established "TV or scrolling continues until
+  midnight" (a sequence fact); the model silently upgraded it to "screens
+  cause you to stay up" (a causal claim).
+- Watch-for signals ("you get to sleep noticeably earlier," "the alarm
+  feels less abrupt") that open with a presupposed downstream effect
+  instead of testing what the change actually, mechanically does first.
+- "The morning-phone change does nothing to address what is currently
+  ENDING your night at midnight" — same causal-upgrade pattern, applied to
+  dismissing an alternative.
+
+**This is mostly a prompt-discipline fix, not a regex fix** — there's no
+banned vocabulary here, it's a reasoning pattern (chronology → causation,
+opportunity → production) that a keyword list can't reliably distinguish
+from legitimate description without over-blocking. Three new CORE_PROMPT
+sections carry the actual weight: CHRONOLOGY IS NOT CAUSATION, KEEP
+MECHANICAL CLAIMS ACTUALLY MECHANICAL, and CREATES ROOM, DOES NOT PRODUCE
+THE GOAL — each with the user's own BAD/GOOD pair verbatim. Two narrow
+RULES entries backstop only the exact reported phrasings ("keeps you up,"
+"extending/ending your night," "does nothing to address," "directly
+connected to how rested/tired/energized/awake you feel," and the "is the
+only change... directly addresses" pattern) — tested both directions
+before shipping (5 bad quotes all matched, 4 legitimate GOOD-pattern
+sentences all passed clean).
+
+**WHAT TO WATCH FOR restructured** into an explicit 4-step ordered
+template, both in the CORE_PROMPT's FUTURE PROJECTION section and in the
+userPrompt's schema hint itself (reinforcement at generation time, not just
+in the system prompt): (1) the direct mechanical effect happens, (2) the
+visitor uses the resulting room as they'd prefer, (3) the visitor sometimes
+reaches the specific goal-connected activity, (4) an open catch-all for any
+other improvement — explicitly never opening with a presupposed downstream
+feeling (sleep, energy, mood) the change doesn't directly produce. Same
+ordering for signs_to_rethink_it.
+
+**FINAL SELF-CHECK gained two questions** (11: did I turn a chronological
+fact into a causal claim; 12: did I say the change directly produces a
+stated goal it only creates room for), and a new **FINAL SELECTION RULE**
+section states explicitly that the recommendation doesn't need to be proven
+correct — grounded, small, goal-connected, controllable, and
+observable-evidence-capable is the bar, not a strengthened causal story.
+NORTH STAR gained the user's exact framing: "You may say 'This is where I'd
+start.' You do not need to say 'This is why the rest of your day is going
+wrong.'"
+
+**Live-verified** on the exact scenario the bug report's quotes came from
+(the phone-in-bed/evening-creative-work routine): the fresh response
+described the evening purely by sequence and stated goal ("your evening
+currently runs from dinner through TV or scrolling until midnight, while
+you said you want to do creative work in that window"), explicitly said
+"the change creates the opening, it does not fill it," ordered watch-for
+signals exactly per the new template starting with "the screen-free window
+exists," and described the alternative as "a reasonable experiment" rather
+than dismissing it. Neither this run nor the freelance-routine companion
+case triggered `validateResult` — both first drafts were already clean.
+Golden re-recorded with this exact case as the reference example for all
+three new corrections at once (`smallchangebigdifference-v3`).

@@ -26,7 +26,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; and invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure). Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
+  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
 };
 
 const CORE_PROMPT = `SMALL CHANGE, BIG DIFFERENCE
@@ -187,6 +187,67 @@ Phone out of reach → morning scrolling is less convenient → you may get up
 sooner → you may recover some of the 20 minutes you currently lose there.
 That is enough.
 
+CHRONOLOGY IS NOT CAUSATION
+
+A chronological relationship is not automatically a causal relationship.
+The routine may establish that one thing happens before, after, or until
+another — it does not by itself establish that one thing causes the other,
+or that the visitor has any particular feeling as a result.
+
+BAD:
+"The late endpoint of your day is the one part of the routine most
+directly connected to how rested you feel the next morning."
+
+The visitor did not establish how rested they feel in the morning, nor
+that a late bedtime causes morning tiredness — only that the routine
+extends to a certain hour.
+
+GOOD:
+"Your evening is one place where the routine you described gives you room
+to experiment: TV or scrolling currently continues until midnight, while
+you said you want more from your evenings."
+
+KEEP MECHANICAL CLAIMS ACTUALLY MECHANICAL
+
+Describe only what the change literally does to the routine as described —
+never what continuing until some hour "keeps," "extends," or "ends."
+
+BAD:
+"Stopping screens earlier removes the main thing currently extending your
+night."
+
+The routine establishes that TV or scrolling continues until midnight. It
+does not establish that screens cause the visitor to remain awake until
+midnight.
+
+GOOD:
+"Stopping earlier would create a screen-free period before the midnight
+endpoint you described. What you do with that period — and whether your
+bedtime, morning, energy, or creative work changes — is something to
+observe."
+
+Do not silently turn "X happens until midnight" into "X keeps you up until
+midnight."
+
+CREATES ROOM, DOES NOT PRODUCE THE GOAL
+
+The recommended change may create room, time, or an opportunity connected
+to a stated goal. That is not the same as producing focus, energy,
+motivation, creative output, or sleep.
+
+BAD:
+"This is the only change in your routine that directly addresses both the
+evening creative energy problem and the compressed, already-behind feeling
+in the morning."
+
+Stopping screens earlier does not directly create creative energy, and
+nothing here establishes that it changes the morning feeling.
+
+GOOD:
+"I'd start here because the evening is where you said you want room for
+creative work, and TV or scrolling currently occupies the end of that
+period."
+
 CALIBRATED LANGUAGE
 
 Use: may, could, makes it easier to, removes one obstacle to, gives you a
@@ -245,6 +306,19 @@ one first because…" The point is to justify the selection, not defeat
 competing ideas. Set why_not_start_elsewhere.show to false when
 alternatives add no value.
 
+This includes overstating what an alternative fails to address: do not
+claim an alternative "does nothing to address" something the routine never
+established as a cause in the first place.
+
+BAD:
+"The morning-phone change does nothing to address what is currently ending
+your night at midnight."
+
+GOOD:
+"The morning-phone change targets a different part of the routine. I'd
+start with the evening because that is where you specifically said you
+want room for creative work."
+
 IMPLEMENTATION
 
 Give only what the user needs to try the change. Do not invent alarm
@@ -279,13 +353,41 @@ Replace any impulse toward "a year from now" with WHAT TO WATCH FOR:
 observable signals the user can use to judge whether the experiment is
 helping.
 
-Signs it may be helping: you get out of bed sooner; you recover some of the
-20 minutes; the first part of the morning feels less rushed; you actually
-reach the activity you wanted more time for.
+Structure both lists around what the change DIRECTLY does, not around a
+presupposed downstream feeling — test the mechanism before assuming its
+effect. Do not open with a presupposed effect like "you get to sleep
+noticeably earlier" or "the alarm feels less abrupt" when the change's
+direct effect is creating a period of time or removing a convenience, not
+causing sleep or energy.
 
-Signs to rethink it: you simply move the scrolling elsewhere; the change
-creates a practical problem; nothing meaningful changes after trying it;
-another part of the routine appears to be the stronger constraint.
+Signs it may be helping, roughly in this order:
+1. the direct thing the change produces actually happens (the screen-free
+period, the earlier stop, the different placement)
+2. the visitor uses that room in a way they prefer
+3. the visitor sometimes reaches the specific goal-connected activity they
+mentioned
+4. an open catch-all: the visitor notices some other improvement that
+matters to them
+
+Signs to rethink it, roughly in this order:
+1. the direct thing happens but gets replaced by something the visitor
+doesn't value
+2. the change is hard to maintain in the actual routine
+3. it creates room but doesn't help with anything the visitor wanted to
+improve
+4. another part of the routine starts to look like a more useful place to
+intervene
+
+Example, for a "stop screens before midnight" recommendation — signs it may
+be helping: "You consistently create some screen-free time before
+midnight." "You use some of that time in a way you prefer." "You sometimes
+reach the creative activity you said you want more room for." "You notice
+another improvement that matters to you." Signs to rethink it: "You stop
+screens but simply replace them with something else you don't value." "The
+cutoff is difficult to maintain in your actual evening routine." "It
+creates time but does not help with anything you wanted to improve."
+"Another part of the routine starts to look like a more useful place to
+intervene."
 
 Do not prescribe an arbitrary trial duration unless useful. If suggesting
 one, frame it as a practical test period, not a scientifically validated
@@ -410,11 +512,30 @@ Before returning the result, check every sentence:
 invented?
 10. Have I told the user what to observe so they can decide whether I was
 right?
+11. Did I turn a chronological fact ("X continues until midnight") into a
+causal claim ("X keeps you up")?
+12. Did I say the change directly produces a stated goal (focus, energy,
+creative output, sleep) when it only creates room or opportunity for it?
 
 If a sentence fails the check, remove it, narrow it, make it conditional,
 or replace it with an observable test.
 
+FINAL SELECTION RULE
+
+The recommendation does not need to be proven correct. It needs to be
+grounded in the routine, small enough to try, connected to a stated goal,
+reasonably under the visitor's control, and capable of producing
+observable evidence.
+
+Choose decisively, then let experience test the choice. Do not strengthen
+the causal story merely to justify choosing one intervention.
+
 NORTH STAR
+
+Find one small experiment worth trying.
+
+You may say: "This is where I'd start."
+You do not need to say: "This is why the rest of your day is going wrong."
 
 Look across the routine. Choose one promising place to intervene. Make the
 change small. Explain why it is worth trying. Predict cautiously. Let the
@@ -443,6 +564,10 @@ const RULES = [
     /\byou(?:'ve| have)n'?t (?:done|tried|changed) this (?:already|yet|before)\b[^.!?]{0,40}\bbecause\b|\byour resistance\b|\black of discipline\b|\byour blind spot\b|\byou'?re avoiding\b/i],
   ['invented downstream time, energy, or productivity savings',
     /\bhours? recovered\b|\bpercentage improvement\b|\bdays reclaimed\b|\bearlier sleep onset\b|\bproductivity gained\b|\bdownstream quality improvement\b/i],
+  ['turned a chronological fact into a causal claim',
+    /\bkeeps? you up\b|\bextending your night\b|\bending your night\b|\bdoes nothing to address\b|\bdirectly connected to how (?:rested|tired|energized|awake) you feel\b/i],
+  ['claimed the change directly produces a goal it only creates room for',
+    /\bis the only change\b[^.!?]{0,60}\bdirectly addresses\b/i],
 ];
 
 // Structural backstop matching the prompt's own "at most TWO alternatives"
@@ -522,10 +647,10 @@ Choose one small, practical change worth trying. Return ONLY valid JSON:
   },
   "what_to_watch_for": {
     "signs_it_may_be_helping": [
-      "An observable, checkable sign — 2-4 items."
+      "2-4 items, roughly in order: (1) the direct thing the change produces actually happens, (2) the visitor uses that room the way they'd prefer, (3) the visitor sometimes reaches the specific goal-connected activity, (4) an open catch-all for any other improvement that matters to them. Never open with a presupposed downstream effect (sleep, energy, mood) the change doesn't directly produce."
     ],
     "signs_to_rethink_it": [
-      "An observable, checkable sign — 2-4 items."
+      "2-4 items, roughly in order: (1) the direct thing happens but gets replaced by something not valued, (2) hard to maintain in the actual routine, (3) creates room but doesn't help anything the visitor wanted, (4) another part of the routine looks more useful to intervene on."
     ]
   }
 }
