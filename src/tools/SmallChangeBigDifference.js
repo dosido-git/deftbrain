@@ -73,13 +73,14 @@ const SmallChangeBigDifference = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
-  // Neutral on purpose — the North Star says all four outcomes are "useful
-  // evidence," so nothing here reads as pass/fail. No red, no trophy.
+  // All four outcomes are "useful evidence" (North Star) — none of them is
+  // hidden or dismissed. Explicit user request 2026-09-05 to use red for
+  // "not really" (reversing this file's earlier no-red default).
   const CHECK_IN_META = {
     helped:            { emoji: '🟢', label: t('op_ci_helped') },
     helped_a_little:   { emoji: '🟡', label: t('op_ci_helped_a_little') },
-    not_really:        { emoji: '⚪', label: t('op_ci_not_really') },
-    not_tried:         { emoji: '⬜', label: t('op_ci_not_tried') },
+    not_really:        { emoji: '🔴', label: t('op_ci_not_really') },
+    not_tried:         { emoji: '⚪', label: t('op_ci_not_tried') },
   };
   const ROUTINE_AREA_LABEL = {
     Morning: t('op_area_morning'), Daytime: t('op_area_daytime'), Work: t('op_area_work'),

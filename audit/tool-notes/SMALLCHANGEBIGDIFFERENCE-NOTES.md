@@ -436,10 +436,10 @@ Golden re-recorded as `smallchangebigdifference-v5`, 4 cases — the new
 for the bare-status-overclaim fix, using the exact scenario from this
 pass's live testing.
 
-**Flagged, not applied:** the correction message's illustrative check-in
-list used 🔴 for "Not really" and ⚪ for "Didn't try it," which would
-reverse the deliberate no-red/no-trophy North Star ("all four outcomes are
-useful evidence") from the original Recent Small Changes spec. Left the
-existing 🟢/🟡/⚪/⬜ scheme in place since the message's actual subject was
-timing (don't show a status before check-in), not color, and asked rather
-than silently changing a previously locked design decision.
+**Flagged, then applied on explicit confirmation:** the correction
+message's illustrative check-in list used 🔴 for "Not really" and ⚪ for
+"Didn't try it," which reverses the deliberate no-red/no-trophy North Star
+("all four outcomes are useful evidence") from the original Recent Small
+Changes spec. Asked rather than silently changing a previously locked
+design decision; user confirmed ("Yes, make the swap"). CHECK_IN_META is
+now 🟢 helped / 🟡 helped_a_little / 🔴 not_really / ⚪ not_tried.
