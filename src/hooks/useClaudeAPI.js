@@ -36,6 +36,16 @@ export const useClaudeAPI = () => {
       }
 
       const json = await response.json();
+      // A route that sends a keep-alive heartbeat before it knows the
+      // outcome (party-architect — see its tool-notes) can no longer report
+      // a failure via HTTP status once bytes are already flowing: the
+      // status is committed to 200 the moment the first heartbeat byte goes
+      // out. Such a route reports failure as a bare single-key {error}
+      // body instead. No normal tool result is ever shaped like that, so
+      // this only ever fires on a genuine error.
+      if (json && typeof json === 'object' && Object.keys(json).length === 1 && typeof json.error === 'string') {
+        throw new Error(json.error);
+      }
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       return json;
 

@@ -123,6 +123,71 @@ names), 4 keys' VALUES changed (`pa_tagline`, `pa_food_drink`, `pa_music`,
 browser (tagline, "¿Quién viene?", helper text, Recent Plans row with translated vibe
 label, "Ver →"/"Duplicar y editar →") — all rendered correctly.
 
+## GENERAL REASONING & GROUNDING RULES pass (2026-09-05, second same-day pass)
+
+`SHARED_PROMPT` was **replaced whole**, not appended to — a 25-section grounding spec
+supplied verbatim by the user (three information types — ESTABLISHED/DESIGN
+CHOICE/UNKNOWN; recommendations-may-add-things-facts-may-not; don't write the future as
+fact; observable event states not predicted social states; no social psychology as
+decoration; no invented causation; no invented "typical" event rituals from an occasion
+label; no invented resources; exact numerical relationships; the time/budget/food/music/
+wind-down rules; an internal provenance tag pass; a final adversarial word-scan). The
+output schema, the arc/mechanics split, and each half's own schema-mechanics (item
+counts, field names) are **unchanged** — `buildArcPrompt`/`buildMechanicsPrompt` were
+trimmed to schema mechanics only (item counts, JSON field meanings, the
+`music.wind_down`-vs-top-level-`wind_down` disambiguation) since the general reasoning
+they used to carry now lives once in `SHARED_PROMPT`, referenced by section number.
+
+Live-tested against both golden scenarios post-rewrite: clean on dietary handling (never
+diagnosing "gluten-free" into celiac, never a safety assurance), clean on budget
+(priorities only, no fabricated totals), clean on relative timeline, no invented guest
+facts. One soft miss observed on an early run — "the environment itself will shift the
+energy... without the host needing to do anything to prompt it" (a `will`-stated
+emotional/energy prediction, exactly what §3/§6/§24 exist to prevent) — the v2 guard
+did not flag it. Did not recur on a second full run. Documented rather than chased with
+a bespoke fix: this route has no regex backstop layer (unlike one-percenter's
+`validateResult`), so a single non-recurring guard miss is accepted risk rather than
+grounds for a new mechanism — re-open this note if the same phrasing pattern shows up
+again.
+
+## Keep-alive heartbeat (2026-09-05, same day)
+
+**Live bug report**: "NetworkError when attempting to fetch resource" at 43s on the
+first attempt, succeeded on retry. This route is non-streaming (`res.json()` at the very
+end) and this tool already has documented history of tripping a browser/proxy
+idle-connection timeout at this shape — the original pre-split version measured ~82s,
+past the point Safari abandons the fetch. Local testing measured 35-52s end to end
+across several calls even on a warm dev backend; production, under load or network
+variance, plausibly runs longer. 43s matches no timeout constant in this file, which
+points to an idle-socket proxy/browser timeout rather than a code crash.
+
+**Fix**: `res.setHeader('Content-Type', 'application/json'); res.flushHeaders();` then
+`setInterval(() => res.write(' '), 10000)` right before the two parallel generation
+calls start, cleared on both the success and error paths. `JSON.parse`/
+`response.json()` ignore leading whitespace, so the SUCCESS path needed zero frontend
+change — verified via a real browser test (React DevTools console clean, full render).
+
+**The catch**: writing any byte commits the HTTP status to 200. An error discovered
+*after* the heartbeat has started (Anthropic failure, guard exception, anything) can no
+longer be reported via a 4xx/5xx — it can only go in the JSON body, as a bare
+`{"error": "..."}`. Matching change in `src/hooks/useClaudeAPI.js`'s `callToolEndpoint`:
+after `await response.json()`, checks `Object.keys(json).length === 1 &&
+typeof json.error === 'string'` and throws if so — no normal tool result is ever shaped
+like that single-key object, so this only ever fires on a genuine error, and it's
+backward compatible with every other tool (none of them emit leading whitespace, so
+none of them can accidentally match this shape). Verified with a temporary
+`PA_TEST_FORCE_ERROR` env-gated throw placed right after the heartbeat starts, hit with
+Node's real `fetch()` (not the raw `http` module, to match browser `Response.json()`
+semantics) — confirmed `response.ok === true`, `status === 200`, body
+`{"error":"..."}"}`, and the new check in `callToolEndpoint` correctly throws instead of
+returning it as a result. Reverted the test hook before shipping (`grep -c
+PA_TEST_FORCE_ERROR` → 0).
+
+**DO NOT remove the heartbeat and the `useClaudeAPI.js` check separately** — they're one
+fix in two files. Removing the heartbeat alone reopens the timeout bug; removing the
+`useClaudeAPI.js` check while keeping the heartbeat means any error occurring after
+generation starts renders as a blank/broken result instead of a clean error message.
+
 ## DO NOT silently reverse
 
 - The new schema shape (see table above) — especially `music.wind_down` vs top-level
@@ -133,3 +198,7 @@ label, "Ver →"/"Duplicar y editar →") — all rendered correctly.
 - `router.outputStandard = 'v2'` + `runOutputGuard` (this tool did NOT have a guard
   before this pass — do not strip it back to bare `toArray()`).
 - `party-plans` as a genuine stored-plan history, not a preview-only log.
+- `SHARED_PROMPT`'s 25-section grounding spec — it replaced the first pass's
+  design/grounding block; don't restore the old prose alongside it.
+- The keep-alive heartbeat + the matching `useClaudeAPI.js` bare-`{error}` check —
+  see above, these two only work together.
