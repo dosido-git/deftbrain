@@ -66,7 +66,7 @@ module.exports = {
       "Questions to ask the vet if you go",
       "What to track if you're watching and waiting",
     ],
-    toolId:   'PetWeirdnessDecoder',
+    toolId:   'PetBehaviorDecoder',
     toolName: 'Pet Behavior Decoder',
   },
 };

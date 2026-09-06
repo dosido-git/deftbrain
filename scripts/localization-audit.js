@@ -74,7 +74,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/ArgueSmarter.js',
   'src/tools/RoommateCourt.js',
   'src/tools/ResearchDecoder.js',
-  'src/tools/PetWeirdnessDecoder.js',
+  'src/tools/PetBehaviorDecoder.js',
   // TEMPORARILY OFF THE ALLOWLIST — 2026-08-28.
   // The tool was rewritten front and back; the owner is holding translations
   // until the design settles, which is the right order. Seven strings are still

@@ -452,7 +452,7 @@ Output: A prioritized document checklist plus a 7-step order that starts with lo
 
 ### Pet Behavior Decoder
 
-URL: https://deftbrain.com/PetWeirdnessDecoder
+URL: https://deftbrain.com/PetBehaviorDecoder
 Tagline: Weird, normal, or worth a vet call?
 Categories: The Grind
 
@@ -487,35 +487,34 @@ Output: An action level (likely watch closely, given a new week-long pattern), a
 ### Plant Rescue
 
 URL: https://deftbrain.com/PlantRescue
-Tagline: Diagnose and rescue your struggling plants
+Tagline: Figure out what's wrong—and what to do next
 Categories: The Grind
 
-Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.
+Something wrong with your plant? Upload a photo or describe what you're seeing and Plant Rescue helps you narrow down what may be happening, decide what to check next, and make a practical rescue plan.
 
-**What it does.** Your plant is dying and you don't know why. This tool uses AI image analysis to identify your plant species, diagnose problems (overwatering, pests, nutrient deficiency), and provide a prioritized rescue plan. Upload a photo of the affected leaves/stems or describe symptoms, and get expert advice within seconds.
+**What it does.** A plant symptom rarely has one cause — yellow leaves, brown tips, and drooping can each mean several different things. Plant Rescue lays out the plausible explanations for what you're seeing, tells you the one thing most worth checking before you change anything, and gives you a next step that depends on what you find, instead of a confident-sounding guess.
 
 **How to use it.**
 
-1. Upload a clear photo of your plant (focus on affected areas) OR describe symptoms
-2. Add environmental details: light level, watering frequency, location
-3. Optional: How long you've had the plant
-4. Get instant diagnosis with severity rating
-5. Follow prioritized action plan (Priority 1 = do immediately)
+1. Upload a clear photo OR describe what you're seeing OR select the symptoms that apply
+2. Add how long it's been happening and anything that changed recently
+3. Add light, how you water, drainage, and location if you have them
+4. Get plausible explanations, the check that would distinguish them, and what to do first
+5. Save the plant to compare a later check against what you reported this time
 
 **Tips.**
 
-- Take photos in good lighting - show both the whole plant and close-ups of problem areas
-- Be honest about watering frequency - overwatering is the #1 killer
-- Follow the priority order - Priority 1 actions are urgent
-- The tool identifies common issues: overwatering, underwatering, light problems, pests, disease
-- If diagnosis says 'critical', act within 24 hours
-- Prevention tips help avoid the same problem recurring
+- A photo of the affected leaf and one of the soil surface help more than a single whole-plant shot
+- How you decide to water (checking the soil vs. a fixed schedule) matters more than how often
+- The single suggested check usually matters more than jumping straight to a fix
+- Selecting more symptoms doesn't make the read more certain — describing what changed recently often does
+- Save a plant to build a short observation history instead of starting over each time
 
 **Example.**
 
-Input: Your fiddle leaf fig has yellowing lower leaves with brown spots. You water it every 3 days and it's in a bright corner indoors.
+Input: A pothos in a 6-inch pot has lower leaves yellowing over the past two weeks, a few brown tips, and new growth that's smaller than before. Watered on a fixed weekly schedule.
 
-Output: Diagnosis: CONCERNING - Overwatering with early root rot. Primary problem: Too-frequent watering for indoor conditions. Action Plan: Priority 1 (NOW): Stop watering for 7-10 days, check soil moisture before next watering. Priority 2 (Today): Move to brighter location with more air circulation. Priority 3 (This week): Check drainage - pot should have holes, soil should dry between waterings. Environmental adjustments: Water: Only when top 2 inches of soil are dry (test with finger). Light: Move closer to window for 4-6 hours indirect sun. Recovery timeline: 3-4 weeks if root rot hasn't spread. Is saveable: Yes, if acted on quickly.
+Output: Bottom line: watch and check — new growth continuing is a good sign, but it's worth a closer look. Possible explanations: the mix may still be wet when watered on a fixed schedule, this could be normal lower-leaf turnover, or light may be on the low end. Check first: whether the soil is still damp an inch or two down at watering time. What to do now: switch from a schedule to checking the soil, and remove leaves that are already fully yellow.
 
 ### Procedure Probe
 

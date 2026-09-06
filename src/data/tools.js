@@ -4466,14 +4466,19 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-05",
-  id: "PetWeirdnessDecoder",
+  modified: "2026-09-06",
+  id: "PetBehaviorDecoder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
-  // V2 REWRITE + display rename, 2026-09-05: id/route/i18n prefix kept as
-  // PetWeirdnessDecoder/pwd_ (see backend/routes/pet-weirdness-decoder.js
-  // and audit/tool-notes/PETWEIRDNESSDECODER-NOTES.md); only the visible
-  // name changed to Pet Behavior Decoder. Replaced likelihood-scored
+  // V2 REWRITE, 2026-09-05, then FULL RENAME 2026-09-06 (PetWeirdnessDecoder
+  // -> PetBehaviorDecoder): id, this file's frontend filename, TOOL_IDS,
+  // LEGACY_REDIRECTS, TOOL_ALIASES, and tool-og-slugs.json all updated per
+  // audit/REWRITE-INSTALL-KIT.md §7 (see audit/tool-notes/
+  // PETWEIRDNESSDECODER-NOTES.md — filename kept, matching the
+  // CrashPredictor/BeforeTheCrash precedent). The backend route
+  // (pet-weirdness-decoder.js) and the i18n key prefix (pwd_) are
+  // DELIBERATELY kept as the old name — internal, renaming them buys
+  // nothing and breaks saved state. Replaced likelihood-scored
   // "differentials," breed genetic predispositions, arbitrary age-bucket
   // rules, invented prevalence, fabricated anecdotes, and behavior-mod
   // timelines with plausible explanations grounded in what was actually

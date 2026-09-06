@@ -79,6 +79,7 @@
   "PaperworkPath": "paperwork-path",
   "PartyArchitect": "party-architect",
   "PetWeirdnessDecoder": "pet-weirdness-decoder",
+  "PetBehaviorDecoder": "pet-weirdness-decoder",
   "PlainTalk": "plain-talk",
   "PlantRescue": "plant-rescue",
   "PlotHole": "plot-hole",

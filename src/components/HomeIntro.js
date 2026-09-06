@@ -52,7 +52,7 @@ const SITUATIONS = [
   { key: 'sit_organized',   tools: ['BatchFlow', 'TaskAvalancheBreaker', 'BrainDumpBuddy', 'ChaosPilot'] },
   { key: 'sit_planning',    tools: ['PartyArchitect', 'MicroAdventureMapper', 'LayoverMaximizer', 'PreMortem'] },
   { key: 'sit_learn',       tools: ['AnalogyEngine', 'ResearchDecoder', 'SkillGapMap', 'TheCrux'] },
-  { key: 'sit_curious',     tools: ['BrainRoulette', 'FanTheory', 'PetWeirdnessDecoder'] },
+  { key: 'sit_curious',     tools: ['BrainRoulette', 'FanTheory', 'PetBehaviorDecoder'] },
 ];
 
 // ── Density ────────────────────────────────────────────────────────────────

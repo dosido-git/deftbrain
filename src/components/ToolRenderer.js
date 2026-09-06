@@ -19,6 +19,7 @@ const TOOL_ALIASES = {
   NoiseCanceler: 'DocumentDetective', // renamed 2026-07-16, then 2026-09-04 (chain collapsed)
   CutToTheChase: 'DocumentDetective', // renamed 2026-09-04
   OnePercenter: 'SmallChangeBigDifference', // renamed 2026-09-05
+  PetWeirdnessDecoder: 'PetBehaviorDecoder', // renamed 2026-09-06
 };
 
 const ToolRenderer = ({ college }) => {

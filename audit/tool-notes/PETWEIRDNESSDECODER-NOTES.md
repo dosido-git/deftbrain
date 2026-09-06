@@ -1,11 +1,12 @@
 # Pet Behavior Decoder — architecture & lock notes (`petweirdnessdecoder-v2`)
 
-Displays as **Pet Behavior Decoder**. **id/route/i18n prefix deliberately kept as
-`PetWeirdnessDecoder`/`pet-weirdness-decoder`/`pwd_`** — a display-name-only rename,
-following the Before the Crash precedent (memory: `deftbrain-before-the-crash`),
-not the full REWRITE-INSTALL-KIT §7 rename checklist. This avoids touching
-`TOOL_IDS`, `LEGACY_REDIRECTS`, `TOOL_ALIASES`, and `tool-og-slugs.json` (the id
-itself never moves, so none of those need to change).
+Displays as **Pet Behavior Decoder**, id **`PetBehaviorDecoder`** (full rename,
+2026-09-06 — see below). **Route, i18n prefix, and backend filename stay
+`pet-weirdness-decoder`/`pwd_`** — internal, deliberately kept per
+REWRITE-INSTALL-KIT §7's own instruction and the CrashPredictor/BeforeTheCrash
+precedent (its i18n/backend files are still named `crash-predictor.js` too).
+This tool-notes file also keeps its old filename for the same reason —
+matching CRASHPREDICTOR-NOTES.md, which never became BEFORETHECRASH-NOTES.md.
 
 **2026-09-06: the display-text side of the rename was finished.** The initial
 display-only rename correctly left the URL/id alone, but it also left every
@@ -27,13 +28,93 @@ The DemoCards.js example `output` text was also rewritten in the same pass — i
 had a confident invented-motivation line ("it's the reflection... irresistible
 to a hunter brain") that no longer matches how the real V2 tool answers.
 
+**2026-09-06, later the same day: the URL/id side of the rename was finished
+too.** The 2026-09-05 rename was explicitly display-name-only — id, route, and
+i18n prefix all stayed `PetWeirdnessDecoder`/`pwd_`, matching the Before the
+Crash precedent. That is a legitimate pattern **when the id genuinely isn't
+changing**, but it was the wrong call here: the visitor now sees "Pet Behavior
+Decoder" everywhere, so the URL not moving means every new link, bookmark, and
+search result forming today points at a name the product no longer uses. The
+user caught this directly: "Filenames are not correct, there is no redirect."
+Completed per `audit/REWRITE-INSTALL-KIT.md` §7, following the
+CrashPredictor → BeforeTheCrash precedent exactly (same shape: frontend file
++ id renamed, backend + i18n deliberately not):
+
+1. `src/tools/PetWeirdnessDecoder.js` → `PetBehaviorDecoder.js` (`git mv`).
+   Component name and `displayName` updated to match. `pickExample`'s
+   `'PetWeirdnessDecoder'` argument is a **localStorage key** (`db-ex-<key>`
+   in `exampleRotation.js`) — deliberately left as the old string; changing
+   it would reset every visitor's example-rotation position for no reason.
+2. `id: "PetWeirdnessDecoder"` → `"PetBehaviorDecoder"` in `src/data/tools.js`.
+3. `backend/server.js`: `TOOL_IDS` — old id swapped for the new one (removed,
+   not left alongside — leaving it in would 301-loop the old id to itself
+   before reaching `LEGACY_REDIRECTS`). `LEGACY_REDIRECTS` gained 3 real
+   301 entries: `/PetWeirdnessDecoder`, `/petweirdnessdecoder`,
+   `/pet-weirdness-decoder` — all three, because removing the id from
+   `TOOL_IDS` also removes the case-insensitive middleware's dash-stripped
+   matching for it (that middleware only recognizes CURRENT ids).
+4. `TOOL_ALIASES` in `src/components/ToolRenderer.js` — the client-side
+   fallback for in-SPA navigation to the old URL (a real 301 from
+   `server.js` is what a crawler needs; this is belt-and-suspenders for an
+   already-loaded page).
+5. `src/data/tool-og-slugs.json` and `public/og/og-slug-map.json` — both
+   gained a `"PetBehaviorDecoder": "pet-weirdness-decoder"` entry (the
+   value is the stable backend/asset slug, unaffected by the id rename).
+   The old `"PetWeirdnessDecoder"` key was **kept alongside**, not replaced
+   — cheap insurance against a stray reference during the brief client
+   render before a redirect fires. **Note found in passing, not fixed
+   here** (out of scope, flagged for a separate look): the CrashPredictor
+   precedent this rename followed never got a `"BeforeTheCrash"` key added
+   at all — only the stale old-id entry exists in both og-slug files today,
+   so `TOOL_OG_SLUGS['BeforeTheCrash']` currently resolves to `undefined`.
+   This rename does not repeat that gap.
+6. `scripts/localization-audit.js`'s `LOCALIZED_TOOLS` allowlist path
+   updated to the new filename — Gate 5 would otherwise silently stop
+   auditing this tool (the old path no longer exists, and
+   `resolveTargets()` filters to `fs.existsSync`).
+7. The 6 `guides/pets/*.js` source files' `toolId` field (not just
+   `toolName`, already fixed in the earlier pass) updated to the new id —
+   this is what actually drives the `href` in the generated cross-ref
+   cards. Regenerated via `node scripts/build-guides.js` (all 552 hrefs
+   flipped to `/PetBehaviorDecoder`) and `node scripts/generate-llms.js`.
+8. `src/components/DemoCards.js` and `src/components/HomeIntro.js` — both
+   reference tool ids that are **looked up against `tools.js`**
+   (`to={\`/${ex.id}\`}` in DemoCards; a `tools.find(i => i.id === ...)`-style
+   lookup elsewhere for HomeIntro's curated lists) — a stale id here doesn't
+   404, it just silently drops the tool from that surface. Both updated.
+9. `audit/tool-notes/PETWEIRDNESSDECODER-NOTES.md` (this file) — filename
+   kept (see the top of this file), content updated.
+
+**Verified with real HTTP status codes against the running server**, per the
+checklist's own explicit instruction, not by reasoning about the dev SPA:
+
+```
+/PetBehaviorDecoder     200 (served)
+/petbehaviordecoder     301 -> /PetBehaviorDecoder
+/PetWeirdnessDecoder    301 -> /PetBehaviorDecoder
+/petweirdnessdecoder    301 -> /PetBehaviorDecoder
+/pet-weirdness-decoder  301 -> /PetBehaviorDecoder
+```
+
+**Trap hit and fixed, matching the checklist's own warning almost exactly**:
+the new canonical URL initially 404'd. Not a routing bug — `build/` existed
+locally (a stale build from an earlier session) but had no
+`PetBehaviorDecoder.html`, since that id didn't exist when it was generated.
+Fixed with `node scripts/prerender.js` alone (not a full `npm run build` —
+that would also run `indexnow.js`, an external side effect this fix doesn't
+need or want). `build/` is gitignored, so the stale `PetWeirdnessDecoder.html`
+left behind there is inert (unreachable — its id is no longer in `TOOL_IDS`,
+so the server never looks for that file) and needs no cleanup; the next real
+deploy's full build won't regenerate it at all.
+
 Reasons about an observed pet behavior — plausible explanations grounded in what
 was reported, an action-level triage (never a diagnosis or probability), and a
 factual vet summary. Vision-capable (photo/video of the pet).
-**Frontend:** `src/tools/PetWeirdnessDecoder.js`. **Backend:**
+**Frontend:** `src/tools/PetBehaviorDecoder.js` (renamed from
+`PetWeirdnessDecoder.js` 2026-09-06). **Backend:**
 `backend/routes/pet-weirdness-decoder.js` (2 endpoints, `MODELS.SMART` +
 `MODELS.FAST` v2 guard). **Golden:**
-`audit/pet-weirdness-decoder-golden-sample.json` (3 cases, incl. 1 DE). Verify:
+`audit/pet-weirdness-decoder-golden-sample.json` (5 cases). Verify:
 `npm run check:golden pet-weirdness-decoder`.
 
 ## V2 REWRITE (2026-09-05)
@@ -492,3 +573,17 @@ pet-weirdness-decoder`: 5/5 PASS.
 - The 5th golden case (`spay-status-and-frequency-conflict-not-used-as-
   color`) — it's the only case exercising the spay/indoor-as-color and
   frequency-conflict rules together; don't drop it in a future re-record.
+- The id `PetBehaviorDecoder` — do not revert to `PetWeirdnessDecoder` in
+  `tools.js`, `TOOL_IDS`, or `src/tools/*.js`'s filename. The route file,
+  i18n prefix (`pwd_`), this notes file's filename, and the `pickExample`
+  localStorage key argument stay on the OLD name — that split (frontend id
+  renamed, everything internal kept) is deliberate, not an oversight to
+  "clean up" later.
+- The 3 `LEGACY_REDIRECTS` entries (`/PetWeirdnessDecoder`,
+  `/petweirdnessdecoder`, `/pet-weirdness-decoder`) and the `TOOL_ALIASES`
+  entry — removing any of these breaks a real, indexed URL with no warning
+  from any gate that doesn't specifically check redirects
+  (`node scripts/check-renames.js`).
+- Both `PetWeirdnessDecoder` and `PetBehaviorDecoder` keys staying in
+  `tool-og-slugs.json` / `og-slug-map.json` — this rename deliberately did
+  NOT repeat the CrashPredictor precedent's gap (no new-id key at all).

@@ -23,8 +23,8 @@
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): The hard part isn't the cooking. It's deciding.
 - [Not So Fast!](https://deftbrain.com/NotSoFast): The overlooked options, key conversations, and escalation paths nobody ever explains
 - [Paperwork Path](https://deftbrain.com/PaperworkPath): The documents you need — and the order to handle them
-- [Pet Behavior Decoder](https://deftbrain.com/PetWeirdnessDecoder): Weird, normal, or worth a vet call?
-- [Plant Rescue](https://deftbrain.com/PlantRescue): Diagnose and rescue your struggling plants
+- [Pet Behavior Decoder](https://deftbrain.com/PetBehaviorDecoder): Weird, normal, or worth a vet call?
+- [Plant Rescue](https://deftbrain.com/PlantRescue): Figure out what's wrong—and what to do next
 - [Procedure Probe](https://deftbrain.com/ProcedureProbe): Be an informed patient before you say yes.
 - [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): Your kitchen 911 — from crisis to confidence
 - [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day

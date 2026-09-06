@@ -62,7 +62,7 @@ const EXAMPLE_BUCKETS = {
         'Squeal first, then sponginess = pads got contaminated, probably with chain lube. They won\u2019t recover \u2014 swap them tonight. While you\u2019re in there, check the rotor: if it\u2019s shiny, sand it lightly with 80-grit before installing the new pads.',
     },
     {
-      id: 'PetWeirdnessDecoder',
+      id: 'PetBehaviorDecoder',
       title: 'Pet Behavior Decoder',
       icon: '🐾',
       tagline: 'Weird, normal, or worth a vet call?',
