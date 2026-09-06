@@ -297,13 +297,21 @@ function buildImageContent(imageBase64, extraPhotos) {
 // ── Main endpoint — mode dispatch (rescue | care | identify) ──
 router.post('/plant-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { mode, imageBase64, extraPhotos, plantDescription, symptoms, userLanguage } = req.body;
+    const { mode, imageBase64, extraPhotos, plantDescription, symptoms, careSpecies, userLanguage } = req.body;
     const activeMode = mode === 'care' ? 'care' : mode === 'identify' ? 'identify' : 'rescue';
 
     if (activeMode === 'identify' && !imageBase64) {
       return res.status(400).json({ error: 'A photo is needed to identify a plant.' });
     }
-    if (activeMode !== 'identify' && !imageBase64 && (!plantDescription || plantDescription.trim().length < 3) && (!symptoms || symptoms.length === 0)) {
+    // Care has no symptom checkboxes — its own required input is "what plant
+    // is it," satisfied by careSpecies (typed, or handed off from Identify /
+    // My Plants) or a photo the model can identify from directly. Checking
+    // for plantDescription/symptoms here (Rescue's fields) rejected every
+    // otherwise-complete Care submission with Rescue-flavored error copy.
+    if (activeMode === 'care' && !careSpecies?.trim() && !imageBase64) {
+      return res.status(400).json({ error: "Provide the plant's name, or a photo." });
+    }
+    if (activeMode === 'rescue' && !imageBase64 && (!plantDescription || plantDescription.trim().length < 3) && (!symptoms || symptoms.length === 0)) {
       return res.status(400).json({ error: 'Provide a photo, description, or select symptoms.' });
     }
 

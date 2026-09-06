@@ -410,6 +410,13 @@ const PlantRescue = ({ tool }) => {
       setActivePlantId(entry.id);
       return [entry, ...prev].slice(0, 6);
     });
+    // Open the list and move focus there — otherwise the only sign a save
+    // did anything is the count in a header button the visitor isn't
+    // looking at. Called directly (not left to the showCollection effect)
+    // so this also fires when the list was already open and just gained
+    // a new entry, not only on the closed -> open transition.
+    setShowCollection(true);
+    setTimeout(() => revealSection(collectionRef.current, { block: 'nearest' }), 200);
   };
   const handleDeletePlant = (id) => { setPlantCollection(p => p.filter(pl => pl.id !== id)); if (activePlantId === id) setActivePlantId(null); };
   // An explicit handoff, not a tab switch: preload the stable information
@@ -507,7 +514,7 @@ const PlantRescue = ({ tool }) => {
   // "clicking did nothing."
   useEffect(() => {
     if (!showCollection || !collectionRef.current) return;
-    const timer = setTimeout(() => revealSection(collectionRef.current), 200);
+    const timer = setTimeout(() => revealSection(collectionRef.current, { block: 'nearest' }), 200);
     return () => clearTimeout(timer);
   }, [showCollection]);
 
@@ -538,7 +545,13 @@ const PlantRescue = ({ tool }) => {
                 <p className={`text-base ${c.textSecondary}`}>
                   <span className="me-2 text-lg">{tool?.icon ?? '🪴'}</span>{tool?.tagline ?? t('pr_tagline')}
                 </p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                {/* This tool's headerColor is a deliberately dark navy (see
+                    src/utils/headerGradient.js) — near-black text/border on
+                    it reads fine blended with a light page but disappears
+                    blended with a dark one, so both flip with isDark. Alpha
+                    stays the standard '80' (PF-17b: the header pill regex
+                    matches that literal). */}
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold border ${isDark ? 'border-white/25 text-zinc-50' : 'border-black/25 text-zinc-900'} shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
               </div>
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 {(results || plantDescription.trim() || imagePreview) && (

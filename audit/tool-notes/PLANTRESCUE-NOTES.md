@@ -416,3 +416,76 @@ stress this exact edge.
 - The "IF 'WHAT THE VISITOR SUPPLIED' SAYS A PHOTO WAS PROVIDED, ONE WAS"
   paragraph and its outputGuard category — removing it reopens the
   false-no-image bug documented above.
+
+## Three more fixes found live-testing the above (2026-09-06, same day, third pass)
+
+1. **Care's 400 used Rescue's validation.** The shared non-identify guard
+   checked `plantDescription`/`symptoms` — fields Care's redesigned form
+   doesn't even collect (no symptom checkboxes; description is optional
+   context) — so a complete, correct Care submission carrying only
+   `careSpecies` was rejected with `"Provide a photo, description, or
+   select symptoms."`, copy that describes a screen the visitor wasn't on.
+   Reported directly: *"Care panel will not submit input without [that
+   error]. First, there are no symptom inputs because this is not the
+   Rescue screen. Second, shouldn't a common name be enough and then the
+   LLM supplies the rest of the data?"* — yes, exactly the intended design.
+   Fixed by giving `activeMode === 'care'` its own branch: `careSpecies`
+   (trimmed) or a photo satisfies it, nothing else required. New golden
+   case `care-species-name-only-no-other-fields` verifies a bare
+   `{mode: 'care', careSpecies: 'Pothos'}` now returns a full guide instead
+   of a 400.
+2. **"Try an example" was invisible in dark mode.** Root cause: this
+   tool's `headerColor` (`#1e2a3a`) is one of the catalog's four
+   *deliberately* dark entries (see the comment in
+   `src/utils/headerGradient.js` — this is intentional, not a data-entry
+   mistake, and headerColor must NOT be changed to a light pastel to
+   "fix" this). The shared "Try an example" pill pattern used across ~120
+   tool files hardcodes near-black text (`text-zinc-900`) and a
+   `border-black/25` — correct when `headerColor+'80'` is blended with a
+   light page background, but blended with a dark one it composites to a
+   near-black chip with near-black text and an invisible border. Fixed
+   *for this tool only* by flipping text/border with `isDark`
+   (`text-zinc-50`/`border-white/25` in dark mode); the background alpha
+   stays the literal `+ '80'` so PF-17b's header-pill audit regex
+   (`headerColor[^\n]*\+\s*'80'`) still matches — an earlier attempt that
+   bumped dark-mode alpha to `'cc'` broke that pattern match and had to be
+   reverted. Verified via computed styles against the real dark-mode page
+   background (`rgb(24,24,27)`, from the `[data-print-wrapper]` div) —
+   this pane's screenshot tool wasn't reliably rendering this session, so
+   contrast was confirmed numerically rather than visually. **The other
+   five tools sharing a dark `headerColor`** (DriveHome, SafeWalk,
+   SpiralStopper, SensoryMinefieldMapper, PronounceItRight) likely have
+   the identical latent bug — out of scope here since only Plant Rescue
+   was reported, flagged as a separate follow-up.
+3. **"My Plants" overshot, and saving didn't move focus at all.** Two
+   related reports: *"Clicking 'my plants' overshoots focus"* and
+   *"Clicking 'Save to my plants' should bring focus to my list."* The
+   collection panel is short (~160px) and renders near the bottom of the
+   page; `revealSection`'s default `block: 'start'` aligned its TOP to the
+   viewport top, an unnecessarily large scroll for a small in-place
+   disclosure panel (unlike a full results screen, which legitimately
+   wants that framing) — measured 740px more scroll than necessary in a
+   900px-tall viewport. Both `collectionRef` reveal call sites now pass
+   `{ block: 'nearest' }`, which scrolls only as far as needed and leaves
+   the panel bottom-aligned with more of the page still visible above it.
+   `handleSavePlant` previously didn't open or focus the collection at
+   all — the only visible confirmation a save happened was a count
+   incrementing in a header button the visitor wasn't looking at. It now
+   calls `setShowCollection(true)` and schedules `revealSection` directly
+   (not only via the `showCollection` effect), so focus moves to the list
+   whether or not the panel was already open before the save.
+
+## DO NOT silently reverse (third-pass additions)
+
+- Care's own validation branch (`careSpecies?.trim() || imageBase64`) —
+  reverting to the shared Rescue-shaped check breaks every Care submission
+  that doesn't happen to also fill in `plantDescription` or symptoms.
+- `headerColor` staying `#1e2a3a` — this is one of four *deliberately*
+  dark catalog entries per `headerGradient.js`; the fix for its clash with
+  the "Try an example" pill lives in the button's text/border, not here.
+- The "Try an example" background alpha staying the literal `+ '80'`
+  (not a conditional expression) — PF-17b's audit regex requires that
+  exact literal on the same line as `headerColor`.
+- `collectionRef`'s `block: 'nearest'` on both reveal call sites, and
+  `handleSavePlant` calling `revealSection` directly rather than relying
+  solely on the `showCollection` effect.
