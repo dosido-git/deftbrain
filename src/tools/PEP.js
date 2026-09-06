@@ -13,7 +13,10 @@ const ENERGY_EMOJIS = ['', '😵', '😩', '😮‍💨', '😐', '🫤', '🙂'
 // Reused from the prior PEP rewrite — same values, same i18n keys, already
 // localized in all 13 languages. Keep the `v` (English, sent to the backend)
 // separate from `l` (localized display label).
-const TIME_META = [{ v: '5 minutes', lk: 'pep_time_5m' }, { v: '15 minutes', lk: 'pep_time_15m' }, { v: '30 minutes', lk: 'pep_time_30m' }, { v: '1 hour', lk: 'pep_time_1hr' }, { v: '2 hours', lk: 'pep_time_2hr' }, { v: 'All evening', lk: 'pep_time_evening' }];
+// 'All evening' (pep_time_evening) was dropped — it mixed a daypart into a
+// row of durations. Open-ended is a duration concept (no fixed end), not a
+// time of day.
+const TIME_META = [{ v: '5 minutes', lk: 'pep_time_5m' }, { v: '15 minutes', lk: 'pep_time_15m' }, { v: '30 minutes', lk: 'pep_time_30m' }, { v: '1 hour', lk: 'pep_time_1hr' }, { v: '2 hours', lk: 'pep_time_2hr' }, { v: 'open-ended', lk: 'pep_time_open_ended' }];
 const MOOD_META = [{ v: 'stressed', e: '😤', lk: 'pep_mood_stressed' }, { v: 'sad', e: '😢', lk: 'pep_mood_sad' }, { v: 'anxious', e: '😰', lk: 'pep_mood_anxious' }, { v: 'restless', e: '🫠', lk: 'pep_mood_restless' }, { v: 'overstimulated', e: '🤯', lk: 'pep_mood_overstimulated' }, { v: 'bored', e: '😑', lk: 'pep_mood_bored' }, { v: 'numb', e: '😶', lk: 'pep_mood_numb' }];
 const ENV_META = [{ v: 'home', e: '🏠', lk: 'pep_env_home' }, { v: 'office', e: '🏢', lk: 'pep_env_office' }, { v: 'commuting', e: '🚌', lk: 'pep_env_commuting' }, { v: 'outdoors', e: '🌳', lk: 'pep_env_outdoors' }, { v: 'in_bed', e: '🛏️', lk: 'pep_env_in_bed' }];
 
@@ -99,12 +102,31 @@ const PEP = ({ tool }) => {
     const rows = activityLog.filter((x) => x.activity === name);
     if (!rows.length) return null;
     const ratings = rows.map((x) => x.rating).filter((x) => Number.isFinite(x));
+    const allSame = ratings.length > 0 && ratings.every((r) => r === ratings[0]);
     return {
       tries: rows.length,
-      avg: ratings.length ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : null,
+      allSame,
+      rating: ratings.length ? ratings[0] : null,
+      min: ratings.length ? Math.min(...ratings) : null,
+      max: ratings.length ? Math.max(...ratings) : null,
       last: rows[0]?.date || null,
     };
   }, [activityLog]);
+
+  // The most literal summary the evidence supports — "typically rated" for
+  // two identical 7/10s overstates a pattern from two data points. One
+  // rating, one wording; identical repeats, another; genuine variation, a
+  // range instead of a single misleadingly-precise average.
+  const ratingSummary = useCallback((stats) => {
+    if (!stats || stats.rating == null) return null;
+    if (stats.tries === 1) return t('pep_menu_rated_once', { r: stats.rating });
+    if (stats.allSame) {
+      return stats.tries === 2
+        ? t('pep_menu_rated_both_times', { r: stats.rating })
+        : t('pep_menu_rated_all_times', { r: stats.rating, n: stats.tries });
+    }
+    return t('pep_menu_rated_range', { lo: stats.min, hi: stats.max });
+  }, [t]);
 
   const addToMenu = useCallback((activity) => {
     if (!activity) return;
@@ -144,11 +166,13 @@ const PEP = ({ tool }) => {
       if (!data) return;
 
       if (oneOnly) {
+        // No why_it_fits here on purpose — Just Tell Me What To Do is meant
+        // to feel noticeably simpler than Show Me What Fits: one activity,
+        // one first step, one stopping point, no analysis paragraph.
         const wrapped = {
           read: '',
           top_pick: {
             activity: data.activity,
-            why_it_fits: data.why_it_fits,
             first_step: data.first_step,
             duration: data.duration,
             done_when: data.done_when,
@@ -220,9 +244,11 @@ const PEP = ({ tool }) => {
         prior_same_activity: historyFor(entry.activity),
         ...localeParams,
       });
+      // My Menu and What I've Tried stay distinct: rating an activity logs it
+      // as an attempt (activityLog) but does NOT save it to My Menu on its
+      // own — that stays an explicit "+ My Menu" choice on the Activity card.
       setActivityLog((prev) => [entry, ...prev].slice(0, 100));
       if (data) setReflection(data);
-      addToMenu(entry.activity);
     } catch (e) {
       setError(e.message || t('pep_err_request_failed'));
     } finally {
@@ -358,7 +384,8 @@ const PEP = ({ tool }) => {
 
     {results && (results.top_pick && <div id="pep-result" className="space-y-4">
       {results.read && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{results.read}</p></div>}
-      <div><h3 className="font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>
+      {/* Just Tell Me What To Do skips the "Top pick" framing — there was no menu to pick from. */}
+      {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}
       {results.alternatives?.length > 0 && <div><h3 className="font-bold text-base mb-2">{t('pep_other_options')}</h3><div className="space-y-2">{results.alternatives.slice(0, 2).map((x, i) => <Activity key={`${x.activity}-${i}`} item={x} />)}</div></div>}
       {results.history_note && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold uppercase mb-1">{t('pep_from_history')}</p><p className="text-sm">{results.history_note}</p></div>}
       <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>🔄 {t('pep_swap_cta')}</button>
@@ -389,7 +416,8 @@ const PEP = ({ tool }) => {
       <div className="flex justify-between"><h3 className="font-bold">📋 {t('pep_my_menu')}</h3><button onClick={() => setShowMenu(false)} className={c.textMuted}>✕</button></div>
       {!myMenu.length ? <p className={`text-sm ${c.textMuted}`}>{t('pep_my_menu_empty')}</p> : myMenu.map((x) => {
         const stats = menuStats(x.name);
-        return <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><div><p className="font-semibold text-sm">{x.name}</p>{stats ? <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_times_tried', { n: stats.tries })}{stats.avg != null ? ` · ${t('pep_menu_typical_rating', { r: stats.avg })}` : ''}{stats.last ? ` · ${t('pep_menu_last_tried', { d: new Date(stats.last).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }) })}` : ''}</p> : <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_not_tried_yet')}</p>}</div><button onClick={() => removeFromMenu(x.id)} className={c.textMuted}>🗑️</button></div></div>;
+        const summary = ratingSummary(stats);
+        return <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><div><p className="font-semibold text-sm">{x.name}</p>{stats ? <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_times_tried', { n: stats.tries })}{summary ? ` · ${summary}` : ''}{stats.last ? ` · ${t('pep_menu_last_tried', { d: new Date(stats.last).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }) })}` : ''}</p> : <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_not_tried_yet')}</p>}</div><button onClick={() => removeFromMenu(x.id)} className={c.textMuted}>🗑️</button></div></div>;
       })}
     </div>}
 

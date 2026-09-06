@@ -35,7 +35,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'Only 3 actions on this route (generate, just-do-this, reflect) — a regex-walk validateResult() over the parsed JSON before it returns, same pattern as the fuller PEP rewrite this replaces. Categories carried forward because they target failure modes the SYSTEM prompt already argues against in prose (burnout terminology, battery/energy-cost arithmetic, nervous-system/deep-rest claims, forced encouragement, the restorative-vs-numbing binary, invented causal mechanisms / the ordinal-rating-as-quantity error, generic medical instruction) plus the three added in the prior RIGHT NOW FINAL CORRECTIONS pass, which this rebuild\'s own SELECTION RULES text already targets: unsupported absolutes about effort ("zero setup," "no attention"), internal-effect claims standing in for a fit explanation, and saved-menu status oversold as proven effectiveness. Dropped: the introvert/extrovert energy-stereotype category — it targeted the Week/Forecast mode, which no longer exists in this rebuild.',
+  note: 'Only 3 actions on this route (generate, just-do-this, reflect) — a regex-walk validateResult() over the parsed JSON before it returns, same pattern as the fuller PEP rewrite this replaces. Categories carried forward because they target failure modes the SYSTEM prompt already argues against in prose (burnout terminology, battery/energy-cost arithmetic, nervous-system/deep-rest claims, forced encouragement, the restorative-vs-numbing binary, invented causal mechanisms / the ordinal-rating-as-quantity error, generic medical instruction) plus the three added in the RIGHT NOW FINAL CORRECTIONS pass (unsupported absolutes about effort, internal-effect claims standing in for a fit explanation, saved-menu status oversold as proven effectiveness) plus two added in the FINAL FOCUSED TOOL CORRECTIONS pass: an observed before/after rating change converted into a caused or measured effect ("gave you 3 points," "raises your energy" — the visitor\'s rating changed, the activity did not measurably do anything), and an unsupported behavioral-pattern generalization from sparse history ("low stimulation works for you," "stillness is your best recharge pattern"). Dropped: the introvert/extrovert energy-stereotype category — it targeted the Week/Forecast mode, which no longer exists in this rebuild.',
 };
 
 const RULES = [
@@ -54,11 +54,15 @@ const RULES = [
   ['generic medical or medication instruction',
     /\bnon-negotiable regardless of time zone\b|\bset an alarm for every dose\b|\btake it at \d/i],
   ['unsupported absolute about effort',
-    /\bzero (?:setup|effort|decisions?|attention|thought)\b|\bno decisions?\b|\bno attention\b|\bcompletely passive\b/i],
+    /\bzero (?:setup|effort|decisions?|attention|thought)\b|\bno decisions?\b|\bno attention\b|\bcompletely passive\b|\byou'?re not (?:doing|tracking|deciding) anything\b|\bnot making (?:any )?decisions\b|\bnothing (?:is )?required\b|\basks? nothing of you\b|\brequires? nothing\b/i],
   ['internal-effect claim instead of a fit explanation',
     /\bwithout demanding attention\b|\bwill (?:calm|clear|relax) your mind\b|\bkeeps? your mind (?:clear|calm|blank)\b/i],
   ['saved-menu status oversold as proven effectiveness',
     /\blikely to recharge you\b|\byour body (?:already )?responds? well\b|\byour best recovery tool\b|\bproven (?:match|recharge)\b|\breliable recharge\b/i],
+  ['observed rating change converted into a caused or measured effect',
+    /\bgave you \d+ points?\b|\braises? your energy\b|\brestores? \d+ points?\b|\bproduces? a reliable lift\b/i],
+  ['unsupported behavioral-pattern generalization from sparse history',
+    /\blow stimulation works for you\b|\bstillness is your (?:best|preferred) recharge pattern\b|\bpassive activities are (?:consistently )?effective\b/i],
 ];
 
 // Same shape as the prior PEP rewrite's validateResult / one-percenter.js:
@@ -100,6 +104,7 @@ function validateResult(data) {
       if (typeof v === 'string') {
         const hit = RULES.find(([, re]) => re.test(v));
         if (hit && v.length <= 400 && (v.match(/[.!?]/g) || []).length <= 3) {
+          if (process.env.PEP_DEBUG) console.error(`[pep validateResult] blanked ${k} (rule: ${hit[0]}): ${JSON.stringify(v)}`);
           node[k] = '';
         }
       } else if (Array.isArray(v)) {
@@ -150,9 +155,10 @@ Do not promise that an activity will restore energy, improve mood, reduce stress
 HISTORY
 A saved activity means only that the visitor chose to save it.
 A rating means only what the visitor rated.
-A before/after energy score is an ordinal self-report. You may say the later rating was N points higher/lower; never say energy doubled or that an activity caused the change.
+A before/after energy score is an ordinal self-report: describe it as before-rating → after-rating (e.g. "your rating went from 5 to 8, a 3-point rise"). Never convert that into a claim about what the activity did — banned: "gave you 3 points," "raises your energy," "restores 3 points," "produces a reliable lift." The visitor's rating changed; the activity did not measurably do anything.
 A single favorable attempt is not a reliable pattern.
-Repeated similar visitor-reported outcomes may be described carefully and descriptively.
+Repeated similar visitor-reported outcomes may be described carefully and descriptively — at the ACTIVITY level first ("you rated these two lying-down activities 7/10 each"), not by inventing an abstract category the visitor never confirmed ("low stimulation works for you," "stillness is your best recharge pattern," "passive activities are consistently effective"). If two or more saved or tried activities share an obvious surface trait, you may name the trait, but say plainly that sparse history can't yet confirm whether that trait is what mattered — do not present it as an established preference.
+Only surface history at all when it materially affects the current answer — it changed what you picked, what you avoided repeating, or the ranking, or it is otherwise genuinely useful context. Do not mention history, saved status, or past ratings just because they exist; if none of that applies here, leave the history field empty.
 
 VOICE
 Write directly to the visitor as 'you'.
@@ -160,6 +166,8 @@ Be practical, calm, economical, and specific.
 Explain FIT, not predicted BENEFIT.
 Be willing to suggest doing less.
 Never moralize productivity or manufacture encouragement.
+Never frame an activity as "recharging" or any other measurable physiological outcome — including in a heading, a read-out, or a recommendation's own framing. Prefer "something that fits what you have," "manageable given your capacity," or "uses the time you have" over "recharge," "restore," or "recovery."
+Do not add an internal-state explanation ("your attention has been demanded continuously") when the visitor's own supplied facts are enough on their own — restate what they told you plainly ("you've been in back-to-back meetings all morning with no real breaks"), then explain the recommendation from that, rather than translating it into a claim about their internal state.
 
 FINAL CHECK
 Every recommendation should answer: Why does this fit the conditions the visitor gave me?
@@ -212,8 +220,9 @@ Avoid repeating this session: ${Array.isArray(avoid) && avoid.length ? avoid.joi
 
 TASK
 ${oneOnly
-  ? 'Give exactly ONE concrete, low-friction suggestion. The visitor asked not to choose from a menu.'
+  ? 'Give exactly ONE concrete, low-friction suggestion. The visitor asked not to choose from a menu — this mode should feel noticeably simpler than the full menu: one activity, one first step, one stopping point. No alternatives, no analysis paragraph. Only include a history note if the visitor\'s own history is genuinely essential to why this particular thing was chosen — most of the time it will not be, and the field should stay empty.'
   : 'Give ONE top pick and at most TWO alternatives. Fewer is fine.'}
+${Array.isArray(avoid) && avoid.length ? `\nThe visitor asked for different suggestions than before. The items above under "Avoid repeating this session" must not reappear, and a suggestion that is just a reworded version of one of them does not count as different. If the honest answer is that little else fits equally well, say so plainly rather than manufacturing false novelty.` : ''}
 
 SELECTION RULES
 - Lower self-reported capacity should generally mean fewer steps, less setup, less physical demand, fewer transitions, and less decision-making.
@@ -223,7 +232,7 @@ SELECTION RULES
 - Do not classify ordinary activities as universally restorative, numbing, healthy, unhealthy, productive, or unproductive.
 - Do not prescribe medication, nutrition, hydration, sleep, breathing, exercise, or medical care as treatment.
 - Do not invent exact clock times. Use only relative timing unless the visitor supplied an exact time in their own text.
-- An activity that is genuinely low-demand still asks something of the visitor — say it takes very little setup, attention, or decision-making rather than claiming it takes none at all. Do not describe a suggestion using the word "zero" or "no" paired with setup, effort, decisions, attention, or thought — say "very little" or "barely any" instead.
+- An activity that is genuinely low-demand still asks something of the visitor — say it takes very little setup, attention, or decision-making rather than claiming it takes none at all. Do not describe a suggestion using the word "zero" or "no" paired with setup, effort, decisions, attention, or thought, and do not say things like "you're not doing anything," "not tracking anything," "nothing is required," "asks nothing of you," or "requires nothing" — say "very little" or "barely any" instead, unless it is literally true that nothing at all is asked of the visitor.
 - Do not predict how the visitor will feel afterward.
 - "duration" is a SHORT time span only — "20 minutes," "10-15 minutes" — never a
   full sentence and never more than about 4 words. It renders next to the
@@ -235,11 +244,10 @@ SELECTION RULES
 ${oneOnly ? `Return ONLY valid JSON:
 {
   "activity": "",
-  "why_it_fits": "",
   "first_step": "",
   "duration": "A short time span only, e.g. '20 minutes' — never a full sentence.",
   "done_when": "",
-  "history_note": ""
+  "history_note": "Empty unless history is genuinely essential to why this was chosen — do not include just because history exists."
 }` : `Return ONLY valid JSON:
 {
   "read": "One or two short sentences grounded only in current input.",
@@ -253,7 +261,7 @@ ${oneOnly ? `Return ONLY valid JSON:
   "alternatives": [
     { "activity": "", "why_it_fits": "", "duration": "A short time span only, e.g. '10-15 minutes'." }
   ],
-  "history_note": "Only if relevant visitor-reported history materially affected the choice; otherwise empty."
+  "history_note": "Only if relevant visitor-reported history materially affected the choice — changed what was picked, avoided a repeat, or changed the ranking. Otherwise empty. Do not mention history just because it exists."
 }`}`;
 
       const parsed = await callClaudeWithRetry({
@@ -293,17 +301,18 @@ Prior visitor-reported attempts of this same activity: ${JSON.stringify(compactH
 
 RULES
 - Report what the visitor recorded. Do not infer why it happened.
-- If both before and after ratings exist, you may state the point difference.
+- If both before and after ratings exist, describe it as before-rating → after-rating (e.g. "went from 5 to 8, a 3-point rise"). Never convert that into what the activity did to them — banned phrasing: "gave you N points," "raised your energy," "restored N points," "produced a reliable lift."
 - Never say an activity doubled energy or caused the change.
 - One attempt can be worth remembering without becoming a pattern.
-- If repeated ratings are genuinely similar, describe that carefully.
+- If repeated ratings are genuinely similar, describe that carefully and at the activity level ("you rated this the same both times") — do not generalize into a claim about what kind of activity or trait works for the visitor.
 - If repeated ratings vary, say they vary.
 - Do not invent a mechanism or therapeutic explanation.
+- Only include history_observation if the visitor's actual prior records genuinely add something — otherwise leave it empty. Do not fill it just because prior records exist.
 
 Return ONLY valid JSON:
 {
   "reflection": "1-2 concise sentences.",
-  "history_observation": "Optional concise observation from actual prior same-activity records; empty if too little or mixed data."
+  "history_observation": "Optional concise observation from actual prior same-activity records; empty if too little, mixed, or genuinely uninformative data."
 }`;
 
       const parsed = await callClaudeWithRetry({

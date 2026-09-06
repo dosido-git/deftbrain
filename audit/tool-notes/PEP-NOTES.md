@@ -205,3 +205,104 @@ in the first place, it only bounds the damage).
   with the 3-action product — none of it should re-promise Prioritize/Week/
   Patterns/Adapt/battery-drain/burnout-prediction language.
 - `pep_xref_intro` never mentioning "AI" again.
+
+## FINAL FOCUSED TOOL CORRECTIONS pass (2026-09-05, same day)
+
+Twelve numbered corrections, most already substantially addressed by the
+earlier passes — this one closed the remaining gaps.
+
+1. **No "recharge" as a promised outcome.** Already true throughout (the
+   prompt already bans promising "restore energy" as an outcome; the only
+   "recharge" occurrences were banned-phrase regexes, a search tag, and
+   the visitor's own example text — which is explicitly fine). Added the
+   preferred-phrasing guidance directly to VOICE anyway: "something that
+   fits what you have" / "manageable given your capacity" over "recharge,"
+   "restore," "recovery."
+2. **History at the activity level first.** HISTORY section rewritten:
+   describe multiple saved/tried activities individually ("you rated these
+   two lying-down activities 7/10 each"), and if they share a surface
+   trait, name the trait but say plainly that sparse history can't yet
+   confirm it's what mattered — never present it as an established
+   preference ("low stimulation works for you").
+3. **Capacity rise stays before→after, never a caused effect.** Extended in
+   both HISTORY (generate/`history_note`) and REFLECT ON AN ACTIVITY
+   (`history_observation`): "went from 5 to 8, a 3-point rise" — never
+   "gave you 3 points," "raised your energy," "restored 3 points,"
+   "produced a reliable lift." New regex category.
+4. **No invented internal-demand claims when the visitor's own words are
+   enough.** Added directly to VOICE: restate the visitor's own supplied
+   fact plainly, then explain from it — don't translate it into an
+   internal-state claim ("your attention has been demanded continuously").
+5. **"You're not doing anything" is too absolute — extended, not new.** The
+   effort-absolutes ban (from the earlier RIGHT NOW pass) now also covers
+   "you're not doing/tracking/deciding anything," "not making decisions,"
+   "nothing is required." **Live-caught during this pass's own testing**:
+   "asks nothing of you" slipped through the original zero/no-paired-with-
+   noun pattern — a genuinely different phrasing of the same violation.
+   Added `\basks? nothing of you\b|\brequires? nothing\b/i`, verified in
+   both directions (catches "asks nothing of you," spares "asks barely
+   anything of you").
+6. **My Menu and What I've Tried are now structurally distinct.** Found a
+   real bug: `submitReflection()` called `addToMenu(entry.activity)` on
+   every rating, meaning ANY tried activity was auto-saved to My Menu —
+   exactly the merge the correction asked to undo. Removed the auto-add;
+   saving is now only ever the explicit "+ My Menu" button on an Activity
+   card. Live-verified: rated a brand-new, never-saved activity — it
+   correctly appeared in "What I've Tried" without appearing in My Menu.
+7. **Menu summary language is now the most literal claim the evidence
+   supports.** New `ratingSummary()` helper: 1 try → "rated R/10"; 2
+   identical → "rated R/10 both times"; 3+ identical → "rated R/10 all N
+   times"; varying → "usually rated LO–HI/10" (a range, not a single
+   average that implies more precision than 2-3 data points support).
+   Replaces the old universal "typically rated R/10." Live-verified: a
+   second identical 7/10 rating correctly produced "rated 7/10 both times."
+8. **History only shown when it changes the answer — already the design,
+   reinforced.** `history_note`/`history_observation` were already
+   conditionally rendered and prompted as "only if it mattered"; wording
+   tightened to explicitly forbid mentioning history "just because it
+   exists." Live-verified both states: empty when irrelevant, populated
+   with real reasoning when it actually changed the pick or ranking.
+9. **"Show me different" must actually exclude the prior set.** Added an
+   explicit rule, applied whenever the avoid list is non-empty: items on
+   it must not reappear, and a reworded version of one doesn't count as
+   different — if little else fits, say so rather than manufacturing
+   novelty. Live-verified: avoid list of 3 activities correctly excluded
+   from a fresh generate call, and `history_note` explicitly named which
+   ones were excluded and why.
+10. **Just Tell Me What To Do is now structurally simpler, not just
+    differently worded.** `why_it_fits` REMOVED from the just-do-this
+    schema entirely (was: activity, why_it_fits, first_step, duration,
+    done_when, history_note → now: activity, first_step, duration,
+    done_when, history_note). Frontend also drops the "⭐ Top pick" heading
+    for this mode — it goes straight to the activity card, since there was
+    no menu to pick from. Live-verified: response has no why_it_fits key,
+    UI shows no heading and no analysis paragraph.
+11. **"Evening" removed from the duration row.** `TIME_META`'s `'All
+    evening'` (a daypart) replaced with `'open-ended'` (a duration concept,
+    matching pep_time_5m/15m/30m/1hr/2hr). Dead key `pep_time_evening`
+    removed; new key `pep_time_open_ended` added, all 13 languages.
+    Live-verified: time row now reads 5m · 15m · 30m · 1hr · 2hr ·
+    Open-ended.
+12. **North Star reaffirmed, no functional change** — scope stays at
+    generate/just-do-this/reflect; no new modes were added by this pass.
+
+**New diagnostic tooling, not user-facing:** `validateResult()` now logs
+which field got blanked and by which rule when `PEP_DEBUG=1` is set in the
+environment — used during this pass to confirm several blanks were genuine
+catches (the model writing "no decisions to track" or "asks nothing of you"
+inside an otherwise-good sentence), not false positives. Zero cost when the
+env var isn't set; safe to leave in.
+
+## DO NOT silently reverse (cont'd)
+
+- The removal of `addToMenu()` from `submitReflection()` — rating an
+  activity must never automatically save it to My Menu again.
+- `ratingSummary()`'s four-way split (once / both times / all N times /
+  range) — do not collapse back to a single "typically rated" average.
+- `why_it_fits` staying absent from the just-do-this schema, and the "⭐ Top
+  pick" heading staying suppressed for `results.justDo`.
+- `pep_time_open_ended` (not a daypart) in the duration row.
+- The two regex categories added this pass (observed-rating-change-as-
+  effect, unsupported-pattern-generalization) and the widened effort-
+  absolutes pattern (`asks nothing of you` / `requires nothing`).
+- `PEP_DEBUG=1` diagnostic logging in `validateResult()` — cheap, keep it.
