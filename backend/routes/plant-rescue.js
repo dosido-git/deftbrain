@@ -52,6 +52,8 @@ router.outputGuard = {
     'prior_possibility_treated_as_an_established_diagnosis_in_a_followup',
     'identification_evidence_drawn_from_non_visual_prior_context_instead_of_the_current_photo',
     'response_claims_no_photo_or_image_was_provided_despite_one_being_supplied',
+    'confidence_level_assigned_to_a_visitor_supplied_identity_the_tool_did_not_independently_establish',
+    'numeric_threshold_or_measurement_invented_where_an_observable_condition_would_do',
   ],
   require: [
     'attention_or_status_level_is_one_of_the_defined_categories_not_a_diagnosis',
@@ -92,6 +94,12 @@ PLANT AGE / OWNERSHIP
 PLANT IDENTIFICATION
 Identification may come from a photo, a visitor-supplied species/name, or descriptive evidence. If the visitor explicitly identifies the plant, preserve that as user-supplied unless there is strong contradictory evidence. If identification is visual, use HIGH CONFIDENCE, MODERATE CONFIDENCE, or LOW CONFIDENCE — never a numeric percentage; a number like "90%" implies calibration the model does not possess. When identity is uncertain and identity materially changes care or toxicity advice, say so. Offer 1-3 alternatives only when genuinely useful — never manufacture alternatives merely to populate a field.
 
+IDENTITY PROVENANCE
+Set identity_source to reflect where the identity actually came from: "visitor_supplied" when the visitor told you what the plant is and nothing here independently confirms it, "photo_identified" when a supplied photo independently supports (or established) the identity, or "unclear" when neither is solid. Confidence describes the TOOL'S OWN identification — never assign high/moderate/low confidence to identity_source "visitor_supplied"; that would be rating your confidence in something you did not determine. If a photo is ALSO supplied and it independently supports the visitor-given identity, set identity_source to "photo_identified" and confidence may reflect that photo-based read. Never quietly re-derive an identification that overrides what the visitor told you merely to have something to rate.
+
+PRACTICAL PRECISION
+Use a specific number only when the number itself is necessary to carry out the recommendation correctly — a dilution ratio on a product label, a temperature a species genuinely cannot tolerate, a count that changes what to do. Do not invent a numerical threshold merely to make advice sound concrete. Prefer an observable condition to a measurement. BAD: "Push a chopstick 5-7cm into the soil." GOOD: "Check below the dry surface layer with a finger or wooden chopstick." BAD: "If it is more than a couple of metres from a window..." GOOD: "Compare the new location with the old one. If it is substantially dimmer or farther from useful window light, reduced light may be contributing." BAD: "Remove leaves only if they are more than half damaged." GOOD: "Leave substantially green leaves in place. Remove a badly damaged leaf only when there is little healthy tissue left or another reason to remove it." TEST: if changing the number somewhat would not materially change the advice, the number does not belong in the answer — this includes light/duration figures like "four to six hours of direct light," not only distances and depths.
+
 TOXICITY / PET / CHILD SAFETY
 Safety information deserves a higher evidence standard than ordinary care advice. Only provide a toxicity classification when plant identity is sufficiently established AND the toxicity information is sufficiently reliable. If identity is uncertain: "Because I can't confidently identify the plant, don't rely on this result to decide whether it's safe around pets or children." Do not invent a toxin, mechanism, symptoms, severity, or species affected merely from general plant knowledge if confidence is insufficient, and do not automatically say "contact your vet immediately" for every possible ingestion — calibrate to the established hazard, and if case-specific guidance would require verification this tool can't provide, say so and point to a vet or poison-information service. Do not generate a "safe alternative plants" list unless the visitor asks for one. A pet or child in the household triggers relevant safety information, never an unrelated replacement-plant shopping list, and is never evidence about what happened to the plant (a pet in the household is not evidence the pet ate it, that damage came from it, or that the plant must be relocated).
 
@@ -105,7 +113,7 @@ INPUT CONFLICTS
 Compare selected symptoms, free text, image, light/watering selections, location, ownership duration, climate, and any saved plant history. Do not silently reconcile contradictions — if a selection and the free text disagree in a way that affects the answer, surface it. Specific deliberate free text generally carries more evidentiary weight than a generic or default selection. Never average contradictory facts together.
 
 FINAL SELF-CHECK
-Before returning an answer, ask: (1) What did the visitor actually tell me? (2) What can I actually see? (3) Did I turn watering frequency into overwatering? (4) Did I turn ownership duration into soil/root history? (5) Did I infer root rot without root evidence? (6) Did I infer nutrient deficiency without evidence? (7) Did I infer a humidity problem from a symptom alone? (8) Did I recommend treatment before distinguishing causes? (9) Did I prescribe an unnecessary chemical treatment? (10) Did I invent a recovery timeline? (11) Did I invent exact schedules or ratios? (12) Did I make identification look more certain than it is? (13) Did I generate content because a field existed rather than because the visitor needs it? (14) Is every action tied to evidence or a clearly stated conditional? If yes to 3-13, revise before returning.
+Before returning an answer, ask: (1) What did the visitor actually tell me? (2) What can I actually see? (3) Did I turn watering frequency into overwatering? (4) Did I turn ownership duration into soil/root history? (5) Did I infer root rot without root evidence? (6) Did I infer nutrient deficiency without evidence? (7) Did I infer a humidity problem from a symptom alone? (8) Did I recommend treatment before distinguishing causes? (9) Did I prescribe an unnecessary chemical treatment? (10) Did I invent a recovery timeline? (11) Did I invent exact schedules or ratios? (12) Did I make identification look more certain than it is, OR assign confidence to an identity the visitor supplied rather than one I established myself? (13) Did I generate content because a field existed rather than because the visitor needs it? (14) Is every action tied to evidence or a clearly stated conditional? (15) Did I state a number (a depth, a distance, a duration, an hour count) that isn't actually necessary to follow the advice correctly? If yes to 3-13 or 15, revise before returning.
 
 VOICE
 Write directly to the visitor as "you." Be practical, calm, and beginner-friendly. Do not sound like a plant pathology report, an encyclopedia, a gardening influencer, or an emergency room. Prefer "Here's what I'd check first" over "P1 — Immediate intervention." Prefer "This could fit, but we don't know yet" over "The most likely diagnosis is..."`;
@@ -165,12 +173,22 @@ IDENTIFY MODE
 Answer "What plant is this?" Prioritize the best match, why it fits, what else it could be (only if genuinely ambiguous), and what would confirm it. Do not automatically append a full care schedule, a "when conditions change" list, a repotting guide, or a propagation guide after identification — identification and care are separate intents. If the visitor wants care information, that's a separate request.
 
 IDENTIFY MODE PROVENANCE
-Identify the plant from the CURRENT photo. Every statement under "why it fits" must be a feature actually visible in THAT photo. Never use Rescue-mode symptoms, Care-mode information, watering or light history, move history, a previous plant description, saved-plant history, or a previous analysis's conclusion as evidence for botanical identity — none of that is something you can see. That context, if present, may be held in mind, but never presented as visual evidence supporting the identification. If the current photo conflicts with that prior context (e.g. it was previously described as one species and the photo looks like another), say so plainly rather than blending the two into one answer. BAD: "Rhododendron — high confidence," followed by reasoning that pulls in a different plant's leaf-drop, moving stress, watering, or light history. GOOD: "The plant in this photo appears more consistent with a Rhododendron. That doesn't match the [prior plant] described earlier." Before returning, check every sentence under "why it fits" against: "What can I actually see in the current photo that supports this?" If a sentence doesn't answer that, remove it.`;
+Identify the plant from the CURRENT photo. Every distinguishing feature you cite must be actually visible in THAT photo. Never use Rescue-mode symptoms, Care-mode information, watering or light history, move history, a previous plant description, saved-plant history, or a previous analysis's conclusion as evidence for botanical identity — none of that is something you can see. That context, if present, may be held in mind, but never presented as visual evidence supporting the identification. If the current photo conflicts with that prior context (e.g. it was previously described as one species and the photo looks like another), say so plainly rather than blending the two into one answer. BAD: "Rhododendron — high confidence," followed by reasoning that pulls in a different plant's leaf-drop, moving stress, watering, or light history. GOOD: "The plant in this photo appears more consistent with a Rhododendron. That doesn't match the [prior plant] described earlier." Before returning, check every distinguishing feature against: "What can I actually see in the current photo that supports this?" If it doesn't answer that, remove it.
+
+IDENTIFY IMAGE CONSISTENCY — ONE EVIDENCE OBJECT
+Every section of an Identify response — the identification itself, confidence, the reasoning for why it fits, alternatives, what would confirm it, and the safety note — must be generated FROM the single "identification_evidence" object in the schema below, not decided independently section by section. Do not let one section assume a photo exists while another assumes it doesn't; they all describe the same current image.
+
+The visitor context above already states plainly whether a photo was supplied ("PHOTO PROVIDED" vs "No photo provided") — treat that as settled fact, not something to re-derive or second-guess per section.
+
+If a photo WAS supplied: never write "no photo was provided," "upload a photo to identify this plant," or any equivalent denial anywhere in the response — you have image content in this message. If the image is unclear, low-detail, an illustration rather than a real photograph, or doesn't show a plant clearly, say exactly that in current_image_observations — describe what you can actually make out and why it falls short — rather than claiming no image exists.
+
+If NO photo was supplied: never write "visible here," "in this photo," or any claim about a visible leaf, stem, flower, growth-form, or color feature — there is nothing to see. current_image_observations should say plainly that no photo was given, distinguishing_visible_features must be empty, and best_match/confidence should reflect that no visual evidence exists (identity_source "visitor_supplied" if the visitor named the plant, otherwise leave best_match empty and confidence "low").`;
 
 const RESCUE_SCHEMA = `{
   "plant_identification": {
     "best_match": "",
     "scientific_name": "",
+    "identity_source": "visitor_supplied|photo_identified|unclear",
     "confidence": "high|moderate|low",
     "why_it_fits": "",
     "alternatives": [],
@@ -196,7 +214,7 @@ const RESCUE_SCHEMA = `{
 }`;
 
 const CARE_SCHEMA = `{
-  "plant": { "name": "", "scientific_name": "", "confidence": "high|moderate|low" },
+  "plant": { "name": "", "scientific_name": "", "identity_source": "visitor_supplied|photo_identified|unclear", "confidence": "high|moderate|low" },
   "core_care": { "light": "", "watering": "", "soil_and_drainage": "", "feeding": "", "temperature_and_humidity": "" },
   "repot_when": [""],
   "when_conditions_change": [ { "condition": "", "adjustment": "" } ],
@@ -205,9 +223,15 @@ const CARE_SCHEMA = `{
 }`;
 
 const IDENTIFY_SCHEMA = `{
-  "best_match": { "common_name": "", "scientific_name": "", "confidence": "high|moderate|low", "why_it_fits": [""] },
-  "alternatives": [ { "name": "", "why_possible": "", "how_to_distinguish": "" } ],
-  "what_would_help_confirm": [""],
+  "current_image_present": true,
+  "identification_evidence": {
+    "current_image_observations": [""],
+    "best_match": { "common_name": "", "scientific_name": "", "identity_source": "visitor_supplied|photo_identified|unclear" },
+    "confidence": "high|moderate|low",
+    "distinguishing_visible_features": [""],
+    "plausible_alternatives": [ { "name": "", "why_possible": "", "how_to_distinguish": "" } ],
+    "unresolved_identification_questions": [""]
+  },
   "safety_note": { "show": false, "guidance": "" }
 }`;
 
@@ -294,6 +318,30 @@ function buildImageContent(imageBase64, extraPhotos) {
   return content;
 }
 
+// ── Identify mode: image-consistency check ──
+// current_image_present is decided by CODE, not trusted from the model's own
+// self-report — the route already knows definitively whether an image was
+// sent, so there is no reason to let a model guess get that fact wrong.
+// These patterns catch the two ways a per-section response can contradict
+// that ground truth: denying a photo that was supplied, or describing visual
+// features when none exists to see.
+// Bounded {0,20}-char gaps (not bare \s+) deliberately absorb a stray word
+// like "data" or "file" between the noun and the verb — "No image DATA was
+// received" reads exactly like a denial and must still match.
+const NO_IMAGE_DENIAL_RE = /\bno\s+(?:photo|image|picture)s?\b.{0,20}?\b(?:was|were|is|are)\b.{0,15}?\b(?:provided|supplied|attached|given|received|uploaded)\b|\bupload\s+a\s+photo\s+to\s+identify\b|\bplease\s+(?:provide|share|upload|attach)\s+a\s+photo\b|\bwithout\s+(?:a|an)\s+(?:actual\s+)?(?:photo|image|picture)\b/i;
+const VISUAL_FEATURE_CLAIM_RE = /\bvisible\s+here\b|\bin\s+this\s+photo\b|\bthe\s+photo\s+shows\b|\bshown\s+in\s+the\s+(?:photo|image)\b|\b(?:leaf|leaves|stem|stems|flower|flowers|petal|petals)\s+(?:are|is|appear|appears|look|looks)\b/i;
+
+function identifyImageConsistencyViolation(parsed, imagePresent) {
+  const ev = parsed?.identification_evidence || {};
+  const blobs = [
+    ...(Array.isArray(ev.current_image_observations) ? ev.current_image_observations : []),
+    ...(Array.isArray(ev.distinguishing_visible_features) ? ev.distinguishing_visible_features : []),
+    ...(Array.isArray(ev.unresolved_identification_questions) ? ev.unresolved_identification_questions : []),
+  ].filter((s) => typeof s === 'string' && s);
+  if (imagePresent) return blobs.some((s) => NO_IMAGE_DENIAL_RE.test(s));
+  return blobs.some((s) => VISUAL_FEATURE_CLAIM_RE.test(s));
+}
+
 // ── Main endpoint — mode dispatch (rescue | care | identify) ──
 router.post('/plant-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -333,7 +381,7 @@ ${supplied}${historyBlock}
 Return ONLY valid JSON matching this exact shape:
 ${schema}
 
-LIMITS: possible_explanations/check_first/what_to_do_now AT MOST 3 each. what_you_reported/what_improvement_looks_like/watch_for/repot_when/what_would_help_confirm AT MOST 6 each. alternatives AT MOST 3. Keep every field to one or two concise sentences. ALL top-level keys in the schema MUST be present — use false/empty string/empty array for anything not applicable, never omit a key.
+LIMITS: possible_explanations/check_first/what_to_do_now AT MOST 3 each. what_you_reported/what_improvement_looks_like/watch_for/repot_when/unresolved_identification_questions AT MOST 6 each. alternatives/plausible_alternatives AT MOST 3. current_image_observations/distinguishing_visible_features AT MOST 5 each. Keep every field to one or two concise sentences. ALL top-level keys in the schema MUST be present — use false/empty string/empty array for anything not applicable, never omit a key.
 
 ${NO_QUOTE_RULE}`;
 
@@ -341,17 +389,22 @@ ${NO_QUOTE_RULE}`;
     const content = buildImageContent(imageBase64, extraPhotos);
     content.push({ type: 'text', text: activeMode === 'identify' ? 'Identify this plant.' : (plantDescription?.trim() || 'See selected symptoms and supplied details above.') });
 
-    const parsed = await callClaudeWithRetry({
+    let parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
       system: systemPrompt,
       messages: [{ role: 'user', content }],
     }, { label: `plant-rescue-${activeMode}` });
 
-    const requiredKey = activeMode === 'care' ? 'core_care' : activeMode === 'identify' ? 'best_match' : 'bottom_line';
+    const requiredKey = activeMode === 'care' ? 'core_care' : activeMode === 'identify' ? 'identification_evidence' : 'bottom_line';
     if (!parsed?.[requiredKey]) {
       return res.status(500).json({ error: 'Could not complete that. Please try again.' });
     }
+
+    // Identify mode: current_image_present is set by CODE (never trusted from
+    // the model) immediately, so every downstream consumer — including the
+    // v2 guard's own check below — sees the correct ground truth.
+    if (activeMode === 'identify') parsed.current_image_present = !!imageBase64;
 
     // v2 guard (PF-39a). Fail-open: it wraps a working answer.
     try {
@@ -376,14 +429,17 @@ ${NO_QUOTE_RULE}`;
         fields.push(['core_care.feeding', parsed.core_care?.feeding]);
         (parsed.when_conditions_change || []).forEach((w, i) => fields.push([`when_conditions_change[${i}].adjustment`, w.adjustment]));
       } else {
-        // best_match.why_it_fits is an array per IDENTIFY_SCHEMA — pushing the
-        // container path itself would make getByPath return an array, which
-        // outputGuard.js correctly refuses to repair (a repair can only
-        // rewrite a string leaf, not a whole array) and silently drops.
-        (Array.isArray(parsed.best_match?.why_it_fits) ? parsed.best_match.why_it_fits : []).forEach((v, i) => fields.push([`best_match.why_it_fits[${i}]`, v]));
-        (parsed.alternatives || []).forEach((a, i) => {
-          fields.push([`alternatives[${i}].why_possible`, a.why_possible]);
-          fields.push([`alternatives[${i}].how_to_distinguish`, a.how_to_distinguish]);
+        // Array fields live under identification_evidence per IDENTIFY_SCHEMA
+        // — pushing a container path itself would make getByPath return an
+        // array, which outputGuard.js correctly refuses to repair (a repair
+        // can only rewrite a string leaf, not a whole array) and silently
+        // drops.
+        const ev = parsed.identification_evidence || {};
+        (Array.isArray(ev.distinguishing_visible_features) ? ev.distinguishing_visible_features : []).forEach((v, i) => fields.push([`identification_evidence.distinguishing_visible_features[${i}]`, v]));
+        (Array.isArray(ev.current_image_observations) ? ev.current_image_observations : []).forEach((v, i) => fields.push([`identification_evidence.current_image_observations[${i}]`, v]));
+        (ev.plausible_alternatives || []).forEach((a, i) => {
+          fields.push([`identification_evidence.plausible_alternatives[${i}].why_possible`, a.why_possible]);
+          fields.push([`identification_evidence.plausible_alternatives[${i}].how_to_distinguish`, a.how_to_distinguish]);
         });
       }
 
@@ -397,6 +453,37 @@ ${NO_QUOTE_RULE}`;
       });
     } catch (guardErr) {
       console.log(`[plant-rescue-${activeMode}] v2 guard skipped:`, guardErr.message);
+    }
+
+    // Reject-and-regenerate for Identify's image-consistency contradiction.
+    // Runs LAST, after the v2 guard's own repair pass — a repair rewrites the
+    // TEXT of one flagged field without knowing the code's ground truth about
+    // current_image_present, so it can just as easily reintroduce this
+    // contradiction as fix it. Checking only the original generation would
+    // miss that. A single field-level repair also can't fix a whole response
+    // built on the wrong premise, which is why this regenerates rather than
+    // repairing in place.
+    if (activeMode === 'identify') {
+      const imagePresent = !!imageBase64;
+      if (identifyImageConsistencyViolation(parsed, imagePresent)) {
+        console.log('[plant-rescue-identify] image-consistency violation — regenerating once');
+        const retryPrompt = `${prompt}
+
+CORRECTION: your previous attempt contradicted current_image_present=${imagePresent} — ${imagePresent ? 'it denied having a photo that was actually supplied' : 'it described visual features with no photo supplied'}. Do not repeat that. Every section must agree that current_image_present is ${imagePresent}.
+
+Return ONLY valid JSON matching the same shape as before.`;
+        const retrySystemPrompt = withLanguage(retryPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+        const retry = await callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 2500,
+          system: retrySystemPrompt,
+          messages: [{ role: 'user', content }],
+        }, { label: 'plant-rescue-identify-regenerate' });
+        if (retry?.identification_evidence) {
+          retry.current_image_present = imagePresent;
+          if (!identifyImageConsistencyViolation(retry, imagePresent)) parsed = retry;
+        }
+      }
     }
 
     res.json(parsed);
@@ -422,9 +509,10 @@ router.post('/plant-rescue/followup', rateLimit(DEFAULT_LIMITS), async (req, res
       ctx.push(`Plant: ${originalDiagnosis.plant.name || 'Unknown'} (identification confidence: ${originalDiagnosis.plant.confidence || 'unknown'})`);
       if (originalDiagnosis.core_care) ctx.push(`Care given: ${JSON.stringify(originalDiagnosis.core_care)}`);
       if (originalDiagnosis.watch_for?.length) ctx.push(`Watch for: ${originalDiagnosis.watch_for.join('; ')}`);
-    } else if (mode === 'identify' && originalDiagnosis.best_match) {
-      ctx.push(`Best match: ${originalDiagnosis.best_match.common_name || 'Unknown'} (confidence: ${originalDiagnosis.best_match.confidence || 'unknown'})`);
-      if (originalDiagnosis.alternatives?.length) ctx.push(`Alternatives considered: ${originalDiagnosis.alternatives.map((a) => a.name).join(', ')}`);
+    } else if (mode === 'identify' && originalDiagnosis.identification_evidence) {
+      const ev = originalDiagnosis.identification_evidence;
+      ctx.push(`Best match: ${ev.best_match?.common_name || 'Unknown'} (confidence: ${ev.confidence || 'unknown'})`);
+      if (ev.plausible_alternatives?.length) ctx.push(`Alternatives considered: ${ev.plausible_alternatives.map((a) => a.name).join(', ')}`);
     } else {
       if (originalDiagnosis.plant_identification) ctx.push(`Plant identification: ${originalDiagnosis.plant_identification.best_match || 'Unknown'} (confidence: ${originalDiagnosis.plant_identification.confidence || 'unknown'})`);
       if (originalDiagnosis.bottom_line) ctx.push(`Attention level: ${originalDiagnosis.bottom_line.attention_level} — ${originalDiagnosis.bottom_line.summary}`);
@@ -483,25 +571,31 @@ router.post('/plant-rescue/companions', rateLimit(DEFAULT_LIMITS), async (req, r
 
     const plantList = plants.map((p) => `- ${p.name} (${p.species || 'unknown species'})${p.lightNeeds ? ` | light: ${p.lightNeeds}` : ''}${p.waterNeeds ? ` | water: ${p.waterNeeds}` : ''}`).join('\n');
 
-    const prompt = `Help group a visitor's houseplants by CARE COMPATIBILITY — never by claims that one houseplant biologically benefits another, which "companion planting" can wrongly imply for a bed of outdoor vegetables but doesn't apply the same way indoors.
+    const prompt = `Help a visitor understand which of their houseplants share a CARE routine and which don't — never claims that one houseplant biologically benefits another, which "companion planting" can wrongly imply for a bed of outdoor vegetables but doesn't apply the same way indoors.
 
 Use only established plant identities and reasonably supported care requirements. Do not invent room availability, window direction, household humidity, exact placement, air-purifying benefits, or companion-plant biological benefits. If the visitor hasn't described their rooms or windows, say what TYPE of location would fit rather than inventing one. Do not automatically recommend buying additional plants.
+
+VERDICT WORDING MATTERS. This is about care routines, not physical proximity — a verdict here never means the plants shouldn't be near each other. Pick one of exactly three verdicts per pair:
+- "good_match": genuinely similar light, water, and temperature needs — the same placement and routine works for both.
+- "separate_care": the needs differ enough to matter, but not enough to call them fundamentally different — a bit of individual attention (a different watering check, a slightly different spot) covers it.
+- "different_needs": the needs meaningfully diverge (e.g. one wants to dry out between waterings, the other wants consistent moisture; one wants bright direct light, the other wants low light) — forcing the same routine on both risks one of them.
+
+For every pair, "why" should explain what a shared ROUTINE would get wrong, not suggest physical separation — e.g. "These can live in the same room, but they shouldn't automatically get the same placement or watering routine" is the right shape for "different_needs," not "keep them apart."
 
 PLANTS:
 ${plantList}
 ${climateZone ? `Climate: ${climateZone}` : ''}
 ${location ? `Setting: ${location}` : ''}
 
-Group by light compatibility, watering/dry-down compatibility, temperature compatibility, and humidity compatibility when materially relevant.
+Compare every distinct pair for light compatibility, watering/dry-down compatibility, temperature compatibility, and humidity compatibility when materially relevant.
 
 Return ONLY valid JSON:
 {
-  "good_to_group": [ { "plants": ["Plant Name 1", "Plant Name 2"], "why": "" } ],
-  "better_kept_apart": [ { "plants": ["Plant Name 1", "Plant Name 2"], "why": "" } ],
+  "pairs": [ { "plants": ["Plant Name 1", "Plant Name 2"], "verdict": "good_match|separate_care|different_needs", "why": "" } ],
   "placement_principle": ""
 }
 
-LIMITS: good_to_group AT MOST 6, better_kept_apart AT MOST 5. Keep every field to one concise sentence.
+LIMITS: pairs AT MOST 10. Keep every field to one or two concise sentences.
 
 ${NO_QUOTE_RULE}`;
 

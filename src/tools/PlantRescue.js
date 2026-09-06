@@ -212,6 +212,22 @@ const PlantRescue = ({ tool }) => {
   const attentionEmoji  = (l) => ATTENTION_META[l]?.icon || '🪴';
   const attentionLabel  = (l) => ({ serious_damage_possible: t('pr_attn_serious'), needs_attention: t('pr_attn_needs'), watch_and_check: t('pr_attn_watch'), likely_minor: t('pr_attn_minor') }[l] || l);
   const confidenceLabel = (l) => ({ high: t('pr_conf_high'), moderate: t('pr_conf_moderate'), low: t('pr_conf_low') }[l] || l);
+  // Confidence describes the TOOL's own identification, not confidence in
+  // something the visitor typed. A visitor-supplied identity the tool never
+  // independently confirmed gets "Identity supplied by you" instead of a
+  // high/moderate/low badge — shared by Rescue's plant_identification,
+  // Care's plant, and Identify's identification_evidence.best_match.
+  const identityBadge = (identitySource, confidence) => {
+    if (identitySource === 'visitor_supplied') {
+      return <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600'}`}>{t('pr_identity_supplied')}</span>;
+    }
+    if (!confidence) return null;
+    return (
+      <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${confidence === 'high' ? 'bg-green-100 text-green-700' : confidence === 'moderate' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+        {confidenceLabel(confidence)}
+      </span>
+    );
+  };
 
   // ── Symptom / duration / change / watering option definitions ──
   const symptomOptions = [
@@ -384,7 +400,7 @@ const PlantRescue = ({ tool }) => {
   // history. See PETWEIRDNESSDECODER-NOTES for the same discipline elsewhere.
   const handleSavePlant = () => {
     if (!results) return;
-    const identity = mode === 'care' ? results?.plant : mode === 'identify' ? results?.best_match : results?.plant_identification;
+    const identity = mode === 'care' ? results?.plant : mode === 'identify' ? results?.identification_evidence?.best_match : results?.plant_identification;
     const name = plantName.trim() || identity?.name || identity?.common_name || identity?.best_match || t('pr_default_plant_name');
     const check = {
       date: new Date().toISOString(),
@@ -439,8 +455,9 @@ const PlantRescue = ({ tool }) => {
   // clean-form tab switch above, but this stays independent of that so it's
   // correct even if Identify is ever reached a different way).
   const handleShowCareFromIdentify = () => {
-    if (!results?.best_match) return;
-    const identifiedName = results.best_match.common_name || results.best_match.scientific_name || '';
+    const bestMatch = results?.identification_evidence?.best_match;
+    if (!bestMatch) return;
+    const identifiedName = bestMatch.common_name || bestMatch.scientific_name || '';
     const keepImage = imageBase64;
     const keepPreview = imagePreview;
     handleReset();
@@ -469,8 +486,9 @@ const PlantRescue = ({ tool }) => {
       l.push('', `📷 ${pi.best_match || t('pr_unknown')}`, `  ${confidenceLabel(pi.confidence)}`);
     } else if (mode === 'care' && results?.plant) {
       l.push('', `📷 ${results.plant.name || t('pr_unknown')}`);
-    } else if (mode === 'identify' && results?.best_match) {
-      l.push('', `📷 ${results.best_match.common_name || t('pr_unknown')}`, `  ${confidenceLabel(results.best_match.confidence)}`);
+    } else if (mode === 'identify' && results?.identification_evidence) {
+      const ev = results.identification_evidence;
+      l.push('', `📷 ${ev.best_match?.common_name || t('pr_unknown')}`, `  ${confidenceLabel(ev.confidence)}`);
     }
     if (mode === 'rescue' && results?.bottom_line) {
       l.push('', `🚑 ${attentionLabel(results.bottom_line.attention_level)}`, `  ${results.bottom_line.summary || ''}`);
@@ -485,12 +503,12 @@ const PlantRescue = ({ tool }) => {
       l.push('', t('pr_copy_action')); results.what_to_do_now.forEach((a) => l.push(`  • ${a.action}`));
     }
     if (mode === 'care' && results?.core_care) {
-      const cc = results.core_care; l.push('', `💧 ${t('pr_copy_care_head')}`);
+      const cc = results.core_care; l.push('', `🌿 ${t('pr_copy_care_head')}`);
       if (cc.watering) l.push(`  ${t('pr_copy_water')} ${cc.watering}`);
       if (cc.feeding) l.push(`  ${t('pr_copy_fertilize')} ${cc.feeding}`);
     }
-    if (mode === 'identify' && results?.best_match?.why_it_fits?.length) {
-      l.push('', t('pr_copy_why_it_fits')); results.best_match.why_it_fits.forEach((w) => l.push(`  • ${w}`));
+    if (mode === 'identify' && results?.identification_evidence?.distinguishing_visible_features?.length) {
+      l.push('', t('pr_copy_why_it_fits')); results.identification_evidence.distinguishing_visible_features.forEach((w) => l.push(`  • ${w}`));
     }
     if (followUpAnswer) l.push('', `${t('pr_copy_q')} ${followUpQuestion}`, `${t('pr_copy_a')} ${followUpAnswer}`);
     l.push(BRAND);
@@ -915,32 +933,32 @@ const PlantRescue = ({ tool }) => {
             </div>
           )}
 
-          {/* Companion results */}
+          {/* Companion results — grouped by care-routine verdict, not physical
+              proximity. "different_needs" means these plants shouldn't
+              automatically share a routine, never that they can't be near
+              each other. */}
           {companionResults && (
             <div className={`mt-4 p-4 rounded-lg border ${isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'}`}>
               <h4 className={`font-bold mb-2 ${c.text}`}>{t('pr_companion_analysis')}</h4>
-              {companionResults.good_to_group?.length > 0 && (
-                <div className="space-y-2 mb-3">
-                  <p className={`text-xs font-bold ${c.label}`}>{t('pr_good_to_group')}</p>
-                  {companionResults.good_to_group.map((g, i) => (
-                    <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
-                      <p className={`text-sm ${c.text}`}>{g.plants?.join(', ')}</p>
-                      <p className={`text-xs ${c.textMuted}`}>{g.why}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {companionResults.better_kept_apart?.length > 0 && (
-                <div className="space-y-2 mb-3">
-                  <p className={`text-xs font-bold ${c.label}`}>{t('pr_better_apart')}</p>
-                  {companionResults.better_kept_apart.map((g, i) => (
-                    <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
-                      <p className={`text-sm ${c.text}`}>⚠️ {g.plants?.join(', ')}</p>
-                      <p className={`text-xs ${c.textMuted}`}>{g.why}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {[
+                { verdict: 'good_match', icon: '✅', label: t('pr_verdict_good_match') },
+                { verdict: 'separate_care', icon: '🔸', label: t('pr_verdict_separate_care') },
+                { verdict: 'different_needs', icon: '🔀', label: t('pr_verdict_different_needs') },
+              ].map(({ verdict, icon, label }) => {
+                const pairs = (companionResults.pairs || []).filter((p) => p.verdict === verdict);
+                if (!pairs.length) return null;
+                return (
+                  <div key={verdict} className="space-y-2 mb-3">
+                    <p className={`text-xs font-bold ${c.label}`}>{label}</p>
+                    {pairs.map((g, i) => (
+                      <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+                        <p className={`text-sm ${c.text}`}>{icon} {g.plants?.join(', ')}</p>
+                        <p className={`text-xs ${c.textMuted}`}>{g.why}</p>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
               {companionResults.placement_principle && (
                 <p className={`text-sm ${c.textSecondary} mt-2`}>💡 {companionResults.placement_principle}</p>
               )}
@@ -975,9 +993,7 @@ const PlantRescue = ({ tool }) => {
                   <h3 className={`font-bold mb-1 ${c.text}`}>{t('pr_identification')}</h3>
                   <p className={`text-lg font-bold ${c.text}`}>{results.plant_identification.best_match}</p>
                   {results.plant_identification.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.plant_identification.scientific_name}</p>}
-                  <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results.plant_identification.confidence === 'high' ? 'bg-green-100 text-green-700' : results.plant_identification.confidence === 'moderate' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
-                    {confidenceLabel(results.plant_identification.confidence)}
-                  </span>
+                  {identityBadge(results.plant_identification.identity_source, results.plant_identification.confidence)}
                   {results.plant_identification.why_it_fits && <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.plant_identification.why_it_fits}</p>}
                   {results.plant_identification.alternatives?.filter((a) => a && a.trim()).length > 0 && (
                     <div className="mt-2">{results.plant_identification.alternatives.filter((a) => a && a.trim()).map((a, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {a}</p>)}</div>
@@ -1067,7 +1083,7 @@ const PlantRescue = ({ tool }) => {
                 <div className="text-6xl mb-3">🌿</div>
                 <div className={`text-2xl font-black ${c.text}`}>{results?.plant?.name || t('pr_care_guide_title')}</div>
                 {results?.plant?.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.plant.scientific_name}</p>}
-                {results?.plant?.confidence && <span className="text-xs px-2 py-1 rounded mt-2 inline-block bg-green-100 text-green-700">{confidenceLabel(results.plant.confidence)}</span>}
+                {identityBadge(results?.plant?.identity_source, results?.plant?.confidence)}
               </div>
 
               <div className={`${c.card} ${c.success} border border-s-4 rounded-xl p-6`}>
@@ -1119,28 +1135,36 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {/* ═══ IDENTIFY MODE ═══ */}
-          {mode === 'identify' && results?.best_match && (
+          {/* Every section below reads from the single identification_evidence
+              object the backend builds — none of them independently decide
+              whether a photo exists (see IDENTIFY IMAGE CONSISTENCY). */}
+          {mode === 'identify' && results?.identification_evidence && (
             <>
               <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
                 <div className="text-6xl mb-3">🔍</div>
-                <div className={`text-2xl font-black ${c.text}`}>{results.best_match.common_name || t('pr_identified')}</div>
-                {results.best_match.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.best_match.scientific_name}</p>}
-                <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results.best_match.confidence === 'high' ? 'bg-green-100 text-green-700' : results.best_match.confidence === 'moderate' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
-                  {confidenceLabel(results.best_match.confidence)}
-                </span>
+                <div className={`text-2xl font-black ${c.text}`}>{results.identification_evidence.best_match?.common_name || t('pr_identified')}</div>
+                {results.identification_evidence.best_match?.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.identification_evidence.best_match.scientific_name}</p>}
+                {identityBadge(results.identification_evidence.best_match?.identity_source, results.identification_evidence.confidence)}
               </div>
 
-              {results.best_match.why_it_fits?.filter((x) => x && x.trim()).length > 0 && (
+              {results.identification_evidence.current_image_observations?.filter((x) => x && x.trim()).length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                  <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_why_it_fits')}</h3>
-                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.best_match.why_it_fits.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
+                  <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_image_observations')}</h3>
+                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.identification_evidence.current_image_observations.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
 
-              {results.alternatives?.length > 0 && (
+              {results.identification_evidence.distinguishing_visible_features?.filter((x) => x && x.trim()).length > 0 && (
+                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                  <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_why_it_fits')}</h3>
+                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.identification_evidence.distinguishing_visible_features.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
+                </div>
+              )}
+
+              {results.identification_evidence.plausible_alternatives?.length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_could_also_be')}</h3>
-                  {results.alternatives.map((a, i) => (
+                  {results.identification_evidence.plausible_alternatives.map((a, i) => (
                     <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}>
                       <p className={`font-semibold ${c.text}`}>{a.name}</p>
                       {a.why_possible && <p className={`text-sm ${c.textSecondary}`}>{a.why_possible}</p>}
@@ -1150,10 +1174,10 @@ const PlantRescue = ({ tool }) => {
                 </div>
               )}
 
-              {results.what_would_help_confirm?.filter((x) => x && x.trim()).length > 0 && (
+              {results.identification_evidence.unresolved_identification_questions?.filter((x) => x && x.trim()).length > 0 && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_would_confirm')}</h3>
-                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.what_would_help_confirm.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
+                  <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.identification_evidence.unresolved_identification_questions.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
 

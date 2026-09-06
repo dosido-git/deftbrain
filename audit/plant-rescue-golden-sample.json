@@ -4,7 +4,7 @@
     "generated": "2026-09-06",
     "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 3 routes",
     "baseline_commit": "plantrescue-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden plant-rescue). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-06): replaced a forced diagnosis (single primary_problem, numeric identification confidence_score, is_saveable boolean, a recovery_timeline, a 12-month seasonal calendar, an unconditional propagation_guide with a success_rate) with an evidence-first structure grounded only in what was reported/visible. One endpoint (/api/plant-rescue) now dispatches on mode (rescue|care|identify) to three distinct schemas instead of the old parallel-split diagnose+care calls — the new schemas are lean enough (no calendar, no forced repotting/propagation) that a single call per mode is fast without needing the split. Rescue: plant_identification{best_match,scientific_name,confidence,why_it_fits,alternatives,what_would_confirm} / bottom_line{attention_level,summary} / what_you_reported[] / possible_explanations[]{possibility,why_it_could_fit,check} / check_first[]{check,what_to_look_for,if_yes,if_no} / what_to_do_now[]{action,why,condition} / what_improvement_looks_like[] / safety{show,who_or_what,guidance} / useful_next_photo. Care: plant{name,scientific_name,confidence} / core_care{light,watering,soil_and_drainage,feeding,temperature_and_humidity} / repot_when[] / when_conditions_change[]{condition,adjustment} / watch_for[] / pet_child_safety{show,guidance}. Identify: best_match{common_name,scientific_name,confidence,why_it_fits[]} / alternatives[]{name,why_possible,how_to_distinguish} / what_would_help_confirm[] / safety_note{show,guidance}. attention_level is one of likely_minor|watch_and_check|needs_attention|serious_damage_possible — never a percentage, never saveable/not-saveable. confidence is high|moderate|low — never a numeric percentage. router.outputStandard='v2' + router.outputGuard with runOutputGuard (LLM-judge check + repair) — same mechanism as Pet Behavior Decoder, since the failure mode here is invented facts (a cause, a schedule, a recovery timeline), not fixed-vocabulary phrasing. Follow-up now passes forward REPORTED/POSSIBILITIES/CHECKS structured context instead of a flattened 'Diagnosis: [claim]' string, and is explicitly allowed to revise the earlier interpretation. Companion planting reframed from an 'indoor plant placement expert' inventing rooms/windows/air-purifying claims to CARE COMPATIBILITY grouping only (good_to_group/better_kept_apart/placement_principle), no automatic upsell to buy more plants. Input form changes: 'What do you see?' -> 'What's happening?'; 'Bad smell/possible root rot' symptom relabeled to plain 'Bad smell' (no pre-supposed diagnosis in a checkbox label); the old ageOfOwnership free-text field replaced by a symptomDuration dropdown (owner reports ownership duration, if relevant, in free text instead — the PLANT AGE/OWNERSHIP prompt rule explicitly warns against converting either into horticultural history); new 'Has anything changed recently?' checklist; old flat wateringFreq bucket (daily/few-days/weekly/rarely) replaced by a wateringMethod practice question (checks soil first / fixed schedule / waits for thirsty signs / varies) plus an optional free-text frequency, since a calendar interval alone can't establish over- or under-watering; new optional hasDrainage yes/no/not-sure. A client-side detectFieldConflict()-style check was NOT added here (unlike Pet Behavior Decoder) since no equivalent hard numeric contradiction exists in this input set — the model's own INPUT CONFLICTS rule handles the softer cases (a symptom selection vs. free text) that can arise. IDENTIFY MODE PROVENANCE fix (2026-09-06, same day): identification evidence must come only from the CURRENT photo — Rescue-mode symptoms, Care-mode information, watering/light/move history, a previous plant description, saved-plant history, and a previous analysis's conclusion must never be used as evidence for botanical identity, only retained as context, with any conflict between the current photo and prior context surfaced rather than blended. Fixed at two layers: (1) the frontend now sends ONLY imageBase64 + mode + plantName for an Identify-mode request — Rescue/Care fields left in state from switching tabs without resetting are no longer sent at all, closing the realistic leak path; (2) a new IDENTIFY MODE PROVENANCE prompt rule + outputGuard.prohibit category is the defense-in-depth backstop for any request that reaches the backend with that context anyway (verified directly against the API, bypassing the frontend fix, in the new 'identify-does-not-use-prior-plant-history-as-visual-evidence' case below). MODE STATE ISOLATION + CARE REDESIGN (2026-09-06, same day, later pass): manually switching mode tabs now clears every prior mode's form fields and result via handleReset() (My Plants and saved history are exempt); two explicit handoffs build on the same reset — handleShowCareFromIdentify (Identify result -> Care, carries the photo + seeds careSpecies) and handleCheckAgain (My Plants -> Rescue, carries only that plant's identity). Care mode's inputs were redesigned around normal growing conditions instead of symptoms: new careSpecies/careWhereIsIt/careLight (6-option, its own scale)/careHelpWith fields, deliberately kept separate from Rescue's lightLevel/location rather than merged; Care no longer shows symptom checkboxes, duration, or recent-changes. The 'care-pothos-thriving' case's input was updated to the new field names to match. A separate bug found while live-testing this (not caused by it): Identify mode could falsely claim no photo was supplied when one was — see the new 'identify-does-not-falsely-claim-no-photo-was-provided' case for the fix and its documented non-deterministic residual. THREE MORE FIXES (2026-09-06, same day, third pass, found live-testing the above): (1) the backend's shared non-identify validation still checked plantDescription/symptoms (Rescue's fields) for Care too, so a valid careSpecies-only submission — Care has no symptom checkboxes — was rejected with Rescue-flavored 400 copy; Care now has its own branch requiring careSpecies or a photo, matching the intended design where a common name is enough and the model supplies the rest (see 'care-species-name-only-no-other-fields'). (2) The 'Try an example' header pill hardcoded near-black text and a black/25 border, invisible against this tool's deliberately-dark headerColor (see src/utils/headerGradient.js) once blended with a dark page background; text/border now flip with isDark, alpha stays the standard '80' so the PF-17b header-pill audit pattern still matches. (3) Opening 'My Plants' and saving a plant both used revealSection's default block:'start', slamming the panel to the very top of the viewport — a much bigger jump than necessary for a short, in-place disclosure panel (unlike a full results screen); both now use block:'nearest'. handleSavePlant also now opens the collection and moves focus to it directly, not only via the showCollection effect, so it fires whether or not the panel was already open."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden plant-rescue). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-06): replaced a forced diagnosis (single primary_problem, numeric identification confidence_score, is_saveable boolean, a recovery_timeline, a 12-month seasonal calendar, an unconditional propagation_guide with a success_rate) with an evidence-first structure grounded only in what was reported/visible. One endpoint (/api/plant-rescue) now dispatches on mode (rescue|care|identify) to three distinct schemas instead of the old parallel-split diagnose+care calls — the new schemas are lean enough (no calendar, no forced repotting/propagation) that a single call per mode is fast without needing the split. Rescue: plant_identification{best_match,scientific_name,confidence,why_it_fits,alternatives,what_would_confirm} / bottom_line{attention_level,summary} / what_you_reported[] / possible_explanations[]{possibility,why_it_could_fit,check} / check_first[]{check,what_to_look_for,if_yes,if_no} / what_to_do_now[]{action,why,condition} / what_improvement_looks_like[] / safety{show,who_or_what,guidance} / useful_next_photo. Care: plant{name,scientific_name,confidence} / core_care{light,watering,soil_and_drainage,feeding,temperature_and_humidity} / repot_when[] / when_conditions_change[]{condition,adjustment} / watch_for[] / pet_child_safety{show,guidance}. Identify: best_match{common_name,scientific_name,confidence,why_it_fits[]} / alternatives[]{name,why_possible,how_to_distinguish} / what_would_help_confirm[] / safety_note{show,guidance}. attention_level is one of likely_minor|watch_and_check|needs_attention|serious_damage_possible — never a percentage, never saveable/not-saveable. confidence is high|moderate|low — never a numeric percentage. router.outputStandard='v2' + router.outputGuard with runOutputGuard (LLM-judge check + repair) — same mechanism as Pet Behavior Decoder, since the failure mode here is invented facts (a cause, a schedule, a recovery timeline), not fixed-vocabulary phrasing. Follow-up now passes forward REPORTED/POSSIBILITIES/CHECKS structured context instead of a flattened 'Diagnosis: [claim]' string, and is explicitly allowed to revise the earlier interpretation. Companion planting reframed from an 'indoor plant placement expert' inventing rooms/windows/air-purifying claims to CARE COMPATIBILITY grouping only (good_to_group/better_kept_apart/placement_principle), no automatic upsell to buy more plants. Input form changes: 'What do you see?' -> 'What's happening?'; 'Bad smell/possible root rot' symptom relabeled to plain 'Bad smell' (no pre-supposed diagnosis in a checkbox label); the old ageOfOwnership free-text field replaced by a symptomDuration dropdown (owner reports ownership duration, if relevant, in free text instead — the PLANT AGE/OWNERSHIP prompt rule explicitly warns against converting either into horticultural history); new 'Has anything changed recently?' checklist; old flat wateringFreq bucket (daily/few-days/weekly/rarely) replaced by a wateringMethod practice question (checks soil first / fixed schedule / waits for thirsty signs / varies) plus an optional free-text frequency, since a calendar interval alone can't establish over- or under-watering; new optional hasDrainage yes/no/not-sure. A client-side detectFieldConflict()-style check was NOT added here (unlike Pet Behavior Decoder) since no equivalent hard numeric contradiction exists in this input set — the model's own INPUT CONFLICTS rule handles the softer cases (a symptom selection vs. free text) that can arise. IDENTIFY MODE PROVENANCE fix (2026-09-06, same day): identification evidence must come only from the CURRENT photo — Rescue-mode symptoms, Care-mode information, watering/light/move history, a previous plant description, saved-plant history, and a previous analysis's conclusion must never be used as evidence for botanical identity, only retained as context, with any conflict between the current photo and prior context surfaced rather than blended. Fixed at two layers: (1) the frontend now sends ONLY imageBase64 + mode + plantName for an Identify-mode request — Rescue/Care fields left in state from switching tabs without resetting are no longer sent at all, closing the realistic leak path; (2) a new IDENTIFY MODE PROVENANCE prompt rule + outputGuard.prohibit category is the defense-in-depth backstop for any request that reaches the backend with that context anyway (verified directly against the API, bypassing the frontend fix, in the new 'identify-does-not-use-prior-plant-history-as-visual-evidence' case below). MODE STATE ISOLATION + CARE REDESIGN (2026-09-06, same day, later pass): manually switching mode tabs now clears every prior mode's form fields and result via handleReset() (My Plants and saved history are exempt); two explicit handoffs build on the same reset — handleShowCareFromIdentify (Identify result -> Care, carries the photo + seeds careSpecies) and handleCheckAgain (My Plants -> Rescue, carries only that plant's identity). Care mode's inputs were redesigned around normal growing conditions instead of symptoms: new careSpecies/careWhereIsIt/careLight (6-option, its own scale)/careHelpWith fields, deliberately kept separate from Rescue's lightLevel/location rather than merged; Care no longer shows symptom checkboxes, duration, or recent-changes. The 'care-pothos-thriving' case's input was updated to the new field names to match. A separate bug found while live-testing this (not caused by it): Identify mode could falsely claim no photo was supplied when one was — see the new 'identify-does-not-falsely-claim-no-photo-was-provided' case for the fix and its documented non-deterministic residual. THREE MORE FIXES (2026-09-06, same day, third pass, found live-testing the above): (1) the backend's shared non-identify validation still checked plantDescription/symptoms (Rescue's fields) for Care too, so a valid careSpecies-only submission — Care has no symptom checkboxes — was rejected with Rescue-flavored 400 copy; Care now has its own branch requiring careSpecies or a photo, matching the intended design where a common name is enough and the model supplies the rest (see 'care-species-name-only-no-other-fields'). (2) The 'Try an example' header pill hardcoded near-black text and a black/25 border, invisible against this tool's deliberately-dark headerColor (see src/utils/headerGradient.js) once blended with a dark page background; text/border now flip with isDark, alpha stays the standard '80' so the PF-17b header-pill audit pattern still matches. (3) Opening 'My Plants' and saving a plant both used revealSection's default block:'start', slamming the panel to the very top of the viewport — a much bigger jump than necessary for a short, in-place disclosure panel (unlike a full results screen); both now use block:'nearest'. handleSavePlant also now opens the collection and moves focus to it directly, not only via the showCollection effect, so it fires whether or not the panel was already open. FOURTH PASS (2026-09-06, same day): IDENTIFY IMAGE CONSISTENCY — the Identify schema was restructured from four independent top-level fields (best_match, alternatives, what_would_help_confirm, safety_note) to current_image_present (set by CODE from imageBase64, never trusted from the model) plus one identification_evidence object {current_image_observations, best_match{common_name,scientific_name,identity_source}, confidence, distinguishing_visible_features, plausible_alternatives, unresolved_identification_questions} that every section reads from, so no section can independently assume a photo exists while another assumes it doesn't. The false-no-photo-claim guard from the third pass was moved to run LAST, after the v2 guard's own repair step (a repair can rewrite a flagged field without knowing the code's ground truth and reintroduce the exact contradiction it was meant to fix), and its regex broadened to catch a stray interposed word ('No image DATA was received') and a softer denial ('Without a photo, ...') — re-verified 6/6 clean with the regenerate step visibly catching 2 along the way. PLANT IDENTITY PROVENANCE: new identity_source field ('visitor_supplied'|'photo_identified'|'unclear') added to Rescue's plant_identification, Care's plant, and Identify's identification_evidence.best_match — confidence badges are no longer shown for a visitor-supplied identity the tool didn't independently confirm ('Identity supplied by you' displays instead), since confidence describes the tool's own identification, not the visitor's. PRACTICAL PRECISION: new GENERAL_RULES paragraph (applies to all 3 modes, not just Rescue's existing rescue-flavored 'NO ARBITRARY PRECISION') bans numeric thresholds that don't change the advice if altered — 'push a chopstick 5-7cm' becomes 'check below the dry surface layer with a finger or wooden chopstick,' 'four to six hours of direct light' becomes a plain description of the light category. Existing golden references containing this pattern (care-pothos-thriving's light field, care-species-name-only's watering field, and the rescue case's soil-check depth) were corrected to match. CARE SCHEDULE RENAMED: '💧 Care Schedule' -> '🌿 Your Care Guide' (13 languages) since it was never a schedule; the plain-text copy output's matching emoji was updated too for consistency. COMPANION CHECK REWORDED: good_to_group/better_kept_apart (two buckets, and 'apart' implied physical separation) replaced with a single pairs[] array carrying a three-way verdict (good_match|separate_care|different_needs) and 'why' text that describes what a shared ROUTINE gets wrong rather than suggesting the plants can't be near each other — see the two companions cases below, the second using the exact Jade Plant + Pothos worked example from feedback."
   },
   "cases": [
     {
@@ -33,6 +33,7 @@
         "plant_identification": {
           "best_match": "Pothos",
           "scientific_name": "Epipremnum aureum",
+          "identity_source": "visitor_supplied",
           "confidence": "high",
           "why_it_fits": "You identified the plant directly, and no contradictory evidence was supplied.",
           "alternatives": [],
@@ -141,10 +142,11 @@
         "plant": {
           "name": "Pothos",
           "scientific_name": "Epipremnum aureum",
+          "identity_source": "visitor_supplied",
           "confidence": "high"
         },
         "core_care": {
-          "light": "Pothos tolerates a wide range, but 3-6 hours of bright indirect light keeps growth vigorous and variegation vivid. It will survive lower light but may grow more slowly and lose color contrast.",
+          "light": "Pothos tolerates a wide range, and bright indirect light keeps growth vigorous and variegation vivid. It will survive lower light but may grow more slowly and lose color contrast — compare growth rate and leaf color to a spot with more usable light if you're not sure it's getting enough.",
           "watering": "You are already doing the right thing by checking the soil first. Pothos tolerates partial light well and does not need frequent watering — most problems come from too much water rather than too little. The drainage and your habit of checking before watering is what keeps it thriving. Watch for changes: if the plant moves to darker conditions, soil stays wet longer and you will water less often. If it moves closer to light, the soil will dry faster and you may need to check more frequently.",
           "soil_and_drainage": "A well-draining all-purpose potting mix works well. The drainage hole you have is important — keep it clear.",
           "feeding": "Pothos does not require feeding to stay healthy. If you notice new growth slowing or leaves losing color over several weeks, that is the time to consider whether the soil needs nutrient replenishment. Most pothos in indoor homes stay thriving without supplemental feeding for years.",
@@ -195,11 +197,12 @@
         "plant": {
           "name": "Pothos",
           "scientific_name": "Epipremnum aureum",
+          "identity_source": "visitor_supplied",
           "confidence": "high"
         },
         "core_care": {
           "light": "Pothos tolerates a wide range of light, adapting from bright indirect light to lower-light corners, though it grows fastest and keeps the strongest color in brighter indirect light.",
-          "watering": "Water when the top inch or two of soil is dry — check by feel before watering rather than on a fixed schedule.",
+          "watering": "Check below the dry surface layer with a finger or wooden chopstick — water once it no longer feels moist there, rather than on a fixed schedule.",
           "soil_and_drainage": "A well-draining all-purpose potting mix in a pot with drainage holes is what matters most.",
           "feeding": "A balanced liquid fertilizer during active growth is optional; hold off if growth has slowed.",
           "temperature_and_humidity": "Typical indoor temperatures and average household humidity suit pothos without special treatment."
@@ -235,20 +238,25 @@
         "userLanguage": "en"
       },
       "output": {
-        "best_match": {
-          "common_name": "",
-          "scientific_name": "",
-          "confidence": "low",
-          "why_it_fits": [
+        "current_image_present": true,
+        "identification_evidence": {
+          "current_image_observations": [
             "The image is a solid green rectangle with no visible plant features — no leaves, stems, texture, or form are present to analyze."
+          ],
+          "best_match": {
+            "common_name": "",
+            "scientific_name": "",
+            "identity_source": "unclear"
+          },
+          "confidence": "low",
+          "distinguishing_visible_features": [],
+          "plausible_alternatives": [],
+          "unresolved_identification_questions": [
+            "A photo showing the actual plant — ideally including leaves, stems, and overall shape",
+            "A close-up of the leaf surface and edges if the plant is small or the detail is subtle",
+            "Any visible flowers, fruit, or soil context would also help"
           ]
         },
-        "alternatives": [],
-        "what_would_help_confirm": [
-          "A photo showing the actual plant — ideally including leaves, stems, and overall shape",
-          "A close-up of the leaf surface and edges if the plant is small or the detail is subtle",
-          "Any visible flowers, fruit, or soil context would also help"
-        ],
         "safety_note": {
           "show": false,
           "guidance": ""
@@ -272,20 +280,25 @@
         "userLanguage": "en"
       },
       "output": {
-        "best_match": {
-          "common_name": "",
-          "scientific_name": "",
-          "confidence": "low",
-          "why_it_fits": [
+        "current_image_present": true,
+        "identification_evidence": {
+          "current_image_observations": [
             "The image does not contain enough detail to identify the plant or assess its condition. A clear, close photo showing leaves, stems, and any visible damage or discoloration would let you compare what you are seeing to specific problems."
+          ],
+          "best_match": {
+            "common_name": "",
+            "scientific_name": "",
+            "identity_source": "unclear"
+          },
+          "confidence": "low",
+          "distinguishing_visible_features": [],
+          "plausible_alternatives": [],
+          "unresolved_identification_questions": [
+            "A clear photo of the actual plant, showing leaves, stems, and overall shape.",
+            "A close-up of the leaf surface and edges if leaf detail is available.",
+            "A photo of the whole plant in its pot or growing location."
           ]
         },
-        "alternatives": [],
-        "what_would_help_confirm": [
-          "A clear photo of the actual plant, showing leaves, stems, and overall shape.",
-          "A close-up of the leaf surface and edges if leaf detail is available.",
-          "A photo of the whole plant in its pot or growing location."
-        ],
         "safety_note": {
           "show": false,
           "guidance": ""
@@ -295,26 +308,31 @@
     {
       "name": "identify-does-not-falsely-claim-no-photo-was-provided",
       "endpoint": "/api/plant-rescue",
-      "why_this_case_exists": "Permanent regression guard (2026-09-06) for a bug found while live-testing the mode-isolation/Care redesign: given an ambiguous, non-photographic test image (a solid-color placeholder here, standing in for the flat cartoon-illustration test case that surfaced it), the model would sometimes claim outright that no photo/image was supplied, even though one plainly was — reproduced via direct API calls that bypassed the frontend, and confirmed byte-for-byte against a raw out-of-band SDK call that the transport was never the problem. A correct response may say the image is unclear, low-detail, or doesn't show a plant — it must never claim no image exists. Fixed with a new GENERAL_RULES paragraph plus an outputGuard.prohibit backstop; documented as an accepted non-deterministic residual (5 of 6 re-test runs correct) rather than a guaranteed fix, matching the Pet Behavior Decoder waiting-period-ban precedent.",
+      "why_this_case_exists": "Permanent regression guard (2026-09-06) for a bug found while live-testing the mode-isolation/Care redesign: given an ambiguous, non-photographic test image (a solid-color placeholder here, standing in for the flat cartoon-illustration test case that surfaced it), the model would sometimes claim outright that no photo/image was supplied, even though one plainly was — reproduced via direct API calls that bypassed the frontend, and confirmed byte-for-byte against a raw out-of-band SDK call that the transport was never the problem. A correct response may say the image is unclear, low-detail, or doesn't show a plant — it must never claim no image exists. Strengthened same day (IDENTIFY IMAGE CONSISTENCY pass): current_image_present is now set by CODE from imageBase64, never trusted from the model, and every section (identification, confidence, observations, alternatives, safety) reads from one identification_evidence object instead of deciding independently whether a photo exists. A reject-and-regenerate check runs as the LAST step, after the v2 guard's own repair pass (a repair can rewrite a flagged field's text without knowing the code's ground truth about the photo, so it can reintroduce this exact contradiction as easily as fix it — checking only the original generation missed that). Re-tested 6/6 clean in the final verified batch, with the regenerate step visibly firing and correcting 2 of those before the response reached the client — a real improvement over the original ~5/6, though still not a mathematical guarantee against a sufficiently novel denial phrasing the regex misses.",
       "input": {
         "mode": "identify",
         "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlqKKK8c8IKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9k=",
         "userLanguage": "en"
       },
       "output": {
-        "best_match": {
-          "common_name": "",
-          "scientific_name": "",
-          "confidence": "low",
-          "why_it_fits": [
+        "current_image_present": true,
+        "identification_evidence": {
+          "current_image_observations": [
             "The image doesn't contain enough visible detail to identify a specific plant — no distinguishable leaves, stems, or form are present to work from."
+          ],
+          "best_match": {
+            "common_name": "",
+            "scientific_name": "",
+            "identity_source": "unclear"
+          },
+          "confidence": "low",
+          "distinguishing_visible_features": [],
+          "plausible_alternatives": [],
+          "unresolved_identification_questions": [
+            "A clearer photo of the actual plant, showing leaves, stems, and overall shape.",
+            "A close-up of the leaf surface and edges if leaf detail is available."
           ]
         },
-        "alternatives": [],
-        "what_would_help_confirm": [
-          "A clearer photo of the actual plant, showing leaves, stems, and overall shape.",
-          "A close-up of the leaf surface and edges if leaf detail is available."
-        ],
         "safety_note": {
           "show": false,
           "guidance": ""
@@ -322,8 +340,9 @@
       }
     },
     {
-      "name": "companions-pothos-and-cactus-incompatible",
+      "name": "companions-pothos-and-cactus-different-needs",
       "endpoint": "/api/plant-rescue/companions",
+      "why_this_case_exists": "Renamed and restructured (2026-09-06) after feedback that 'better_kept_apart' reads as if the plants shouldn't be physically near each other, when the verdict is actually about care routines. Replaced the two-bucket good_to_group/better_kept_apart shape with one pairs[] array carrying a three-way verdict (good_match|separate_care|different_needs), and reworded 'why' to describe what a shared ROUTINE gets wrong rather than suggesting separation. The Jade Plant + Pothos worked example from feedback is exercised directly in a second case below.",
       "input": {
         "plants": [
           {
@@ -342,17 +361,52 @@
         "userLanguage": "en"
       },
       "output": {
-        "good_to_group": [],
-        "better_kept_apart": [
+        "pairs": [
           {
             "plants": [
               "Pothos",
               "Cactus"
             ],
-            "why": "Pothos wants bright indirect light and weekly watering, while the cactus needs full sun and very infrequent watering — a location that suits one will stress the other."
+            "verdict": "different_needs",
+            "why": "Pothos wants bright indirect light and weekly watering, while the cactus needs full sun and very infrequent watering — these two need genuinely separate routines, not a shared spot or schedule."
           }
         ],
         "placement_principle": "Put the cactus in your sunniest spot (a south- or west-facing window with direct sun) and the pothos somewhere with bright but filtered light, watering each on its own schedule."
+      }
+    },
+    {
+      "name": "companions-jade-and-pothos-different-needs-not-keep-apart",
+      "endpoint": "/api/plant-rescue/companions",
+      "why_this_case_exists": "The exact worked example from feedback: a Jade Plant (bright direct sun, fully dry between waterings) and a Pothos (indirect/low light, consistent moisture) should be verdict different_needs with wording like 'these two routines should run independently' — never framed as the plants needing to be kept apart physically.",
+      "input": {
+        "plants": [
+          {
+            "name": "Jade Plant",
+            "species": "Crassula ovata",
+            "lightNeeds": "Bright direct sun, tolerates full sun",
+            "waterNeeds": "Let soil dry out completely between waterings, drought-tolerant succulent"
+          },
+          {
+            "name": "Pothos",
+            "species": "Epipremnum aureum",
+            "lightNeeds": "Bright indirect to low light",
+            "waterNeeds": "Prefers consistent moisture, water when top inch is dry"
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "pairs": [
+          {
+            "plants": [
+              "Jade Plant",
+              "Pothos"
+            ],
+            "verdict": "different_needs",
+            "why": "Jade wants bright direct sun and fully dry soil between waterings; Pothos prefers indirect or low light and consistent moisture. The same placement and watering schedule would either sunburn the Pothos or rot it from overwatering, or leave the Jade too dim and too wet."
+          }
+        ],
+        "placement_principle": "Give the Jade Plant your sunniest spot and water only when the soil is completely dry; find the Pothos a lower-light location and check it when the top inch of soil feels dry — these two routines should run independently."
       }
     },
     {

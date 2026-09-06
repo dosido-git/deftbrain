@@ -489,3 +489,90 @@ stress this exact edge.
 - `collectionRef`'s `block: 'nearest'` on both reveal call sites, and
   `handleSavePlant` calling `revealSection` directly rather than relying
   solely on the `showCollection` effect.
+
+## Fourth pass: Identify image consistency, identity provenance, precision, wording (2026-09-06, same day)
+
+**IDENTIFY IMAGE CONSISTENCY.** The Identify schema was collapsed from four
+independent top-level fields (`best_match`, `alternatives`,
+`what_would_help_confirm`, `safety_note`) into `current_image_present` +
+one `identification_evidence` object
+(`current_image_observations`/`best_match`/`confidence`/`distinguishing_visible_features`/`plausible_alternatives`/`unresolved_identification_questions`)
+that every section reads from — no section can independently decide
+whether a photo exists. `current_image_present` is set by **code** from
+`!!imageBase64` immediately after the first model call, never trusted from
+the model's own self-report, so that fact literally cannot be wrong.
+
+The false-no-photo-claim check from the third pass (`identifyImageConsistencyViolation`
++ reject-and-regenerate) was **moved to run LAST**, after the v2 guard's
+own check-and-repair pass, not right after the first model call. Root
+cause of why it needed to move: the guard's repair rewrites the TEXT of a
+flagged field without knowing the code's ground truth about
+`current_image_present` — a repair aimed at an "invented_fact" violation
+can just as easily land on "No image was provided" as fix it, and checking
+only the pre-guard generation missed that entirely. Live-verified: the
+"regenerating once" log line now fires and visibly replaces a violating
+draft with a clean one; 6/6 clean in the final re-test batch. The regex
+itself was also broadened — `NO_IMAGE_DENIAL_RE` used bare `\s+` between
+the noun and verb ("no image **was** provided"), which missed a real
+observed case with an interposed word ("No image **data** was received");
+now uses a bounded `.{0,20}?` gap, plus a new alternation for the softer
+"without a photo, ..." denial.
+
+**PLANT IDENTITY PROVENANCE.** New `identity_source`
+(`visitor_supplied`|`photo_identified`|`unclear`) field added to Rescue's
+`plant_identification`, Care's `plant`, and Identify's
+`identification_evidence.best_match`. Frontend gained one shared
+`identityBadge(identitySource, confidence)` helper (replacing three
+near-duplicate inline confidence-badge blocks) that shows **"Identity
+supplied by you"** instead of a confidence badge whenever `identity_source`
+is `visitor_supplied` — confidence describes the tool's own identification,
+not the visitor's. Known gap, not chased further: the schema still requires
+`confidence` as a mandatory `high|moderate|low` enum with no "n/a" option,
+so the model still fills in *some* value (observed: "high") even when
+`identity_source` is `visitor_supplied` and the prompt tells it not to;
+harmless because the frontend never renders it in that branch, but the raw
+JSON can carry a stray confidence value that means nothing.
+
+**PRACTICAL PRECISION.** New `GENERAL_RULES` paragraph (applies to all 3
+modes — Rescue's existing "NO ARBITRARY PRECISION" only covered Rescue,
+which is exactly how "four to six hours of direct light" leaked into a
+Care response with no rule against it). Bans a numeric threshold whenever
+changing it "somewhat" wouldn't change the advice: a depth ("push a
+chopstick 5-7cm") becomes an observable condition ("check below the dry
+surface layer with a finger or wooden chopstick"), a light-hours figure
+becomes a plain description of the light category. `care-pothos-thriving`
+and `care-species-name-only-no-other-fields`'s golden references (which
+predate this rule and contained exactly this pattern) were corrected to
+match.
+
+**Renamed "💧 Care Schedule" → "🌿 Your Care Guide"** (`pr_care_schedule`,
+13 languages) — it was never a schedule. The plain-text copy output's
+matching `💧` prefix was updated to `🌿` too, for consistency between the
+two representations of the same heading.
+
+**Companion Check reworded.** `good_to_group`/`better_kept_apart` (two
+buckets; "apart" read as physical separation) replaced with a single
+`pairs[]` array carrying a three-way `verdict`
+(`good_match`|`separate_care`|`different_needs`) and `why` text that
+describes what a shared **routine** gets wrong, never that the plants
+can't be near each other. Live-verified with the exact feedback example
+(Jade Plant + Pothos) — the model correctly returned `different_needs`
+with "these two routines should run independently," matching the
+requested framing exactly.
+
+## DO NOT silently reverse (fourth-pass additions)
+
+- `current_image_present` being set by code (`!!imageBase64`), not read
+  from the model's own JSON output, for Identify mode.
+- The image-consistency check running AFTER the v2 guard block, not
+  before it — this is the actual fix for the guard's repair pass being
+  able to reintroduce the contradiction.
+- The `identityBadge()` helper and `identity_source` staying wired into
+  all three modes' identity displays — removing it brings back a
+  confidence badge on an identity the tool never independently confirmed.
+- The `PRACTICAL PRECISION` paragraph in `GENERAL_RULES` (not only in
+  `RESCUE_MODE_RULES`) — Care mode has no numeric-precision guidance of
+  its own and will drift back to inventing hour counts and depths without it.
+- Companion Check's `pairs[]`/`verdict` shape, and `why` copy framed
+  around routines, not proximity — reverting to `good_to_group`/
+  `better_kept_apart` reopens the "keep them apart" misreading.
