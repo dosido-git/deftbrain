@@ -426,7 +426,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user is trying to identify a song, artist, lyric fragment, or other half-remembered thing rather than choose music for a state transition", toolId: "TipOfTongue" },
-      { when: "the user's main problem is allocating work around changing energy rather than choosing what to listen to", toolId: "PEP" },
+      { when: "the user's main problem is choosing what to do given their current energy rather than choosing what to listen to", toolId: "PEP" },
     ],
     primaryIntent: "choose a phased music-listening approach for moving from a current mental or energy state toward a desired one",
     whenToRecommend: "Recommend when the user wants music or a listening strategy for focus, calming down, energizing, creating, unwinding, or another state transition.",

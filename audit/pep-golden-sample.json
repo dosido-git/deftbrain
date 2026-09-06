@@ -1,14 +1,14 @@
 {
   "_meta": {
-    "tool": "PEP (Personal Energy Planner)",
-    "generated": "2026-09-05 (RIGHT NOW FINAL CORRECTIONS pass)",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 17 action-dispatch",
-    "baseline_commit": "pep-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): the entire tool was rebuilt to remove a fabricated measurement system that the old pep-v1 golden's own captured output demonstrates (energy_read/pleasure_vs_numbing language, nervous-system claims, quick_hits/medium_recharge/deep_reset categories, battery percentages, introvert/extrovert energy types, task-cost arithmetic, burnout-risk radar, and a debt-check 'prescription' action) — none of that exists in v2. DO NOT reintroduce it while chasing a golden diff. New schema per mode: generate={read,top_pick,other_options,from_your_history} (was energy_read/mood_note/time_note/transition_tip/pleasure_vs_numbing/menu.quick_hits+medium+deep+avoid); budget={read,protect,consider_next,postpone_or_drop,sequence,one_decision} (was capacity_status/total_cost/available/permissions/tomorrow_note — no more summing task 'cost' as literal arithmetic); forecast={week_shape,demanding_stretches,breathing_room,commitments_to_reconsider,from_your_history,one_move_now} (was current_battery/recharge_hours/introvert-extrovert drain multipliers — inputs are now demanding_factors checkboxes + starting_capacity, not an energy_type slider); disruption={situation,keep,lighten,pause,temporary_shape,unknowns,reassess_when,one_next_step} (was acknowledgment/survival_schedule/self_care_minimum — critically, disruption with a BLANK normal_routine must not invent a generic exercise/meal/hygiene/medication/sleep routine; it must list the gap under 'unknowns' instead, which the adapt-sick-day-sparse-input case exists specifically to guard). radar-checkin and radar-analyze (Patterns) now share ONE schema shape ({today,what_changed,possible_patterns,not_enough_to_tell,worth_watching,optional_next_step}) instead of radar-checkin's old ad hoc fields vs radar-analyze's separate overall_risk/time_until_concern/interventions shape — no green/yellow/orange/red status, no 'time until burnout' estimate. debt-check action REMOVED ENTIRELY (was prescription/debt_level/gentle_warning — all now-banned terms). Wire field names productivity/social_energy/physical_symptoms on radar-checkin/radar-analyze are DELIBERATELY UNCHANGED from v1 despite the UI relabeling 'Productivity' to 'Focus / getting things done' — preserves existing users' checkinLog history; do not rename these on a future pass without a migration. activityLog client-side cap raised from 6 to 100 (PF-25 exception, see src/tools/PEP.js). menu items no longer store category/effort/avg_rating/use_count/sensory_anchor — My Menu now computes timesTried/avgRating/energy ranges fresh from activityLog on every render (menuStats()), so a stale-cache class of bug is structurally gone. DO NOT reverse: the removal of battery/introvert-extrovert/burnout-radar/debt-check language; the disruption blank-routine guard; the unified Patterns schema; the productivity/social_energy field name preservation; the fresh-computed (not stored) menu stats. RIGHT NOW FINAL CORRECTIONS pass (2026-09-05, same day): fixed an invented-clock-time bug (time_of_day='Evening' but the read stated a specific hour like '3pm' that was never supplied — now relative timing only unless the visitor's own text names an exact time); added an effort-absolutes ban ('zero setup/effort/decisions', 'no attention', 'completely passive' → 'very little' instead); banned internal-effect explanations standing in for a fit explanation ('fills the window without demanding attention'); and reinforced that a saved-menu item is preference evidence only, never promoted to 'likely to recharge you' or 'your best recovery tool' without actual prior ratings. Three new validateResult() regex categories added for these (unsupported absolute about effort / internal-effect claim / saved-menu oversold). The 'right-now-evening-no-clock-time-with-saved-menu' case exists specifically to guard the clock-time regression — DO NOT let a future edit reintroduce an invented specific hour when only a period of day (morning/afternoon/evening) was supplied."
+    "tool": "PEP (Personal Energy Planner) — focused rebuild",
+    "generated": "2026-09-05",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 3 action-dispatch",
+    "baseline_commit": "pep-focused-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. FOCUSED REBUILD (2026-09-05): installed from an owner-supplied rewrite (audit/tool-notes/PEP-NOTES.md) that reduces the prior FULL V2 REWRITE's five modes (Right Now/Prioritize/Week/Patterns/Adapt, 17 actions) down to ONE loop across 3 actions: generate (Right Now menu), just-do-this (single suggestion, no menu), reflect (log what happened). Prioritize/Week/Patterns/Adapt/Shared menu/Match/build-a-plan are GONE, not renamed — do not resurrect their schema keys chasing a 'completeness' instinct. New schema: generate={read,top_pick:{activity,why_it_fits,first_step,duration,done_when},alternatives:[{activity,why_it_fits,duration}],history_note}; just-do-this={activity,why_it_fits,first_step,duration,done_when,history_note}; reflect={reflection,history_observation}. LIVE-CAUGHT BUG, fixed same day: the SYSTEM prompt's own 'avoid absolutes about effort' rule listed the banned phrases ('zero effort, no attention, no decisions, completely passive') as a literal example list, and the model echoed them back near-verbatim on the FIRST test call ('This requires zero setup, zero decisions, and zero physical effort') — the model was handed a copyable bad-phrase template and copied it. Fixed by describing the constraint without listing the banned words as an example set. The validateResult() regex backstop ALSO missed this on the first pass — its 260-char/2-sentence cap (meant to spare a long paragraph from being nuked over one incidental match) let a 3-sentence field with a genuine, repeated 'zero X' violation straight through; raised to 400 chars/3 sentences. Both fixes verified together: re-ran the exact failing input, output came back clean ('asks very little... no setup, no goal, no output' — describing fit, not claiming zero demand). The generate-low-energy-evening-screens case captured here IS that exact regression input — re-running it and finding a 'zero setup/effort/decisions/attention' phrase anywhere in the output is the bug back. DO NOT reintroduce: any of the removed modes' schema keys; a prompt rule that lists banned phrases as a literal copyable example set (describe the constraint, don't hand over the phrase); the tight 260/2 validateResult cap (400/3 is the corrected value)."
   },
   "cases": [
     {
-      "name": "right-now-low-energy-evening",
+      "name": "generate-low-energy-evening-screens",
       "endpoint": "/api/pep",
       "input": {
         "action": "generate",
@@ -17,252 +17,64 @@
         "mood": "numb",
         "environment": "home",
         "context": "Been staring at screens all day, doom-scrolling between meetings. A hike sounds awful right now.",
-        "time_of_day": "evening",
         "userLanguage": "en"
       },
       "output": {
-        "read": "You've reported energy at 2/10, a numb mood, and a full day of screen time — so the conditions point toward something that asks very little of you and doesn't add more screen exposure.",
+        "read": "Screens all day at a 2/10, with 15 minutes and no appetite for anything effortful. The goal is something with barely any setup and very little to decide.",
         "top_pick": {
-          "activity": "Sit somewhere away from your screens with a drink and do nothing in particular.",
-          "why_it_fits": "It asks nothing of you — no setup, no task, no screen — and fits inside your 15 minutes with no transitions required beyond moving from where you are.",
-          "first_step": "Put your phone face-down, go to a different seat or room, and make or grab something to drink.",
-          "duration": "However long feels right inside the 15 minutes.",
-          "done_when": "When the 15 minutes are up, or whenever you feel like moving on."
+          "activity": "Sit somewhere away from your screen — a chair, the floor, a window — and just look at something still for a few minutes",
+          "why_it_fits": "You have been visually active all day with fast-moving content. This asks very little: no setup, no goal, no output. It fits your location, your time, and a 2/10 capacity because you do not have to do anything except stop.",
+          "first_step": "Close or turn away from whatever screen you are on, pick a spot in your home that is not in front of a device, and sit down.",
+          "duration": "Up to 10 minutes, or less if that is all you want",
+          "done_when": "When you decide to stop — there is no task to complete"
         },
-        "other_options": [
+        "alternatives": [
           {
-            "activity": "Put on music or a podcast with your eyes closed.",
-            "why_it_fits": "Low-demand listening without a screen matches your stated constraint around screens and fits easily inside 15 minutes at home.",
-            "duration": "One song or a short podcast segment — 5 to 15 minutes."
-          },
-          {
-            "activity": "Step outside briefly — even just onto a doorstep or balcony.",
-            "why_it_fits": "You noted a hike sounds awful, but a few minutes outside with no destination is a different scale of demand entirely — very short, no gear, no plan needed.",
-            "duration": "5 to 10 minutes."
+            "activity": "Put on one familiar album or playlist you already know well and lie down or sit with your eyes closed",
+            "why_it_fits": "Something familiar requires very little attention — you are not picking tracks or following anything new. It fits 15 minutes, your location, and barely asks anything of you physically.",
+            "duration": "One album side or a few songs, whatever the 15 minutes allows"
           }
         ],
-        "from_your_history": {
-          "activity": "",
-          "evidence": ""
-        }
+        "history_note": ""
       }
     },
     {
-      "name": "prioritize-overloaded-workday",
+      "name": "just-do-this-no-menu-wanted",
       "endpoint": "/api/pep",
       "input": {
-        "action": "budget",
-        "available_energy": 3,
-        "mood": "stressed",
-        "tasks": [
-          {
-            "task": "Finish quarterly report",
-            "cost": 8,
-            "priority": "required"
-          },
-          {
-            "task": "Reply to 40 emails",
-            "cost": 5,
-            "priority": "important"
-          },
-          {
-            "task": "Organize desk",
-            "cost": 2,
-            "priority": "optional"
-          },
-          {
-            "task": "Go to the gym",
-            "cost": 6,
-            "priority": "optional"
-          }
-        ],
+        "action": "just-do-this",
+        "energy": 3,
+        "time_available": "10 minutes",
+        "mood": "anxious",
+        "environment": "office",
+        "context": "Meeting in 10 minutes and I cannot decide anything else right now.",
         "userLanguage": "en"
       },
       "output": {
-        "read": "You've rated your capacity at 3/10 and you're stressed, while your one required task is your most demanding item. That gap is worth acknowledging before deciding how to spend what you have.",
-        "protect": [
-          {
-            "task": "Finish quarterly report",
-            "why": "You marked it required, so I'd protect time for it unless you know it can move.",
-            "make_it_easier": "Rather than finishing it in one sitting, decide the smallest version of 'done' that satisfies the actual deadline — a complete draft, a specific section, or hitting send on what exists. Starting with one defined piece may be more workable than approaching the whole thing at once."
-          }
-        ],
-        "consider_next": [
-          "Reply to 40 emails — if you do this at all today, consider whether you can reply to fewer: the ones that are actually time-sensitive, rather than all 40."
-        ],
-        "postpone_or_drop": [
-          {
-            "task": "Organize desk",
-            "reason": "Optional, and doing it now adds demand on top of your required task without a clear payoff today."
-          },
-          {
-            "task": "Go to the gym",
-            "reason": "Optional and higher demand than most of your other tasks. Nothing here suggests today is the right day to stack it in."
-          }
-        ],
-        "sequence": [
-          "Quarterly report first — while your capacity is at its highest point of the day, whatever that is.",
-          "If something is left afterward and you want to use it, a reduced version of the email task."
-        ],
-        "one_decision": "Define what 'finish' actually means for the quarterly report today — a specific, bounded output — so you know exactly what you are protecting capacity for."
+        "activity": "Sit still and look out a window or at a fixed point in the room",
+        "why_it_fits": "You have 10 minutes, no energy to spare, and a meeting starting at the end of that window. This asks very little setup, attention, or decision-making — you stay exactly where you are and do not start anything new that you will have to stop.",
+        "first_step": "Put your phone face-down, find a spot to rest your eyes, and let your hands sit idle.",
+        "duration": "As long as feels right up to about 8 minutes, leaving a couple of minutes to gather yourself before the meeting.",
+        "done_when": "When you notice the meeting is about to start and you are ready to shift attention to it.",
+        "history_note": "No saved activities or past attempts on record, so this is based only on what you described right now."
       }
     },
     {
-      "name": "week-hosting-and-presenting",
+      "name": "reflect-single-attempt-honest-uncertainty",
       "endpoint": "/api/pep",
       "input": {
-        "action": "forecast",
-        "starting_capacity": 4,
-        "demanding_factors": [
-          "Hosting or leading",
-          "Back-to-back commitments"
-        ],
-        "what_helps": "A quiet evening the night before",
-        "events": [
-          {
-            "name": "Team offsite",
-            "day": "Wednesday",
-            "time": "9am",
-            "duration": "all day",
-            "canLeave": false
-          },
-          {
-            "name": "Client dinner",
-            "day": "Wednesday",
-            "time": "7pm",
-            "duration": "2 hours",
-            "canLeave": false
-          },
-          {
-            "name": "Big presentation",
-            "day": "Thursday",
-            "time": "10am",
-            "duration": "1 hour",
-            "canLeave": true
-          }
-        ],
+        "action": "reflect",
+        "activity": "Walk around the block",
+        "energy_before": 3,
+        "energy_after": 6,
+        "helpfulness": 8,
+        "note": "Felt better once I was outside",
+        "prior_same_activity": [],
         "userLanguage": "en"
       },
       "output": {
-        "week_shape": "The week is relatively open until Wednesday, which carries two back-to-back commitments — an all-day offsite followed immediately by a client dinner — with a major presentation the following morning. You are starting at 4/10 self-reported capacity.",
-        "demanding_stretches": [
-          {
-            "when": "Wednesday all day into evening",
-            "what_makes_it_notable": "The team offsite is all day with no early exit option, and the client dinner follows at 7pm the same day. You identified back-to-back commitments as especially demanding for you, and this is the clearest example of that pattern in the week you described."
-          },
-          {
-            "when": "Thursday 10am",
-            "what_makes_it_notable": "The big presentation falls the morning after the longest day of the week, with no buffer between Wednesday evening and a 10am start. You identified hosting or leading as especially demanding, and presenting is a form of leading."
-          }
-        ],
-        "breathing_room": [
-          {
-            "when": "Tuesday evening",
-            "option": "You mentioned a quiet evening the night before helps around busy days. Tuesday night is the evening before Wednesday's packed schedule — keeping it unscheduled or low-key is an option worth protecting."
-          },
-          {
-            "when": "Monday and Tuesday",
-            "option": "These days appear unscheduled based on what you entered. Moving any flexible tasks or preparation work into these days could reduce what you are carrying into Wednesday."
-          },
-          {
-            "when": "Wednesday, between offsite end and dinner at 7pm",
-            "option": "Depending on when the offsite ends, there may be a gap before 7pm. If there is, even a short unstructured window could give you a pause between the two commitments."
-          }
-        ],
-        "commitments_to_reconsider": [
-          "The client dinner on Wednesday evening — you marked it as cannot leave early, but if there is any flexibility on whether to attend at all, it sits at the most compressed point of your week. Worth confirming whether attendance is truly required."
-        ],
-        "from_your_history": "",
-        "one_move_now": "Protect Tuesday evening. It is the only quiet-evening slot before your most demanding stretch, and you named that pattern as something that helps you around busy days."
-      }
-    },
-    {
-      "name": "adapt-sick-day-sparse-input",
-      "endpoint": "/api/pep",
-      "input": {
-        "action": "disruption",
-        "disruption_type": "sick_day",
-        "available_energy": 2,
-        "normal_routine": "",
-        "critical_tasks": "Take my medication",
-        "constraints": "",
-        "duration_estimate": "",
-        "userLanguage": "en"
-      },
-      "output": {
-        "situation": "You have a sick day with very low self-reported capacity (2/10) and one identified requirement: taking your medication. Your normal routine was not described, so this plan is built around only what you supplied.",
-        "keep": [
-          {
-            "item": "Take medication",
-            "lighter_version": ""
-          }
-        ],
-        "lighten": [],
-        "pause": [],
-        "temporary_shape": [
-          {
-            "part_of_day": "Now or next natural pause",
-            "what_matters": "Take your medication if the time is right for your schedule."
-          },
-          {
-            "part_of_day": "Rest of the day",
-            "what_matters": "Nothing else has been identified as required. What you do beyond your medication is open."
-          }
-        ],
-        "unknowns": [
-          "What your normal routine contains.",
-          "Whether there are other obligations or constraints today.",
-          "What kind of sick day this is and how it affects what you can or want to do.",
-          "How long this disruption is expected to last.",
-          "Whether there are things you would like to do today but are unsure about."
-        ],
-        "reassess_when": "Revisit this temporary plan when your capacity starts to shift or when your normal routine starts feeling workable again.",
-        "one_next_step": "Take your medication if you have not yet today."
-      }
-    },
-    {
-      "name": "right-now-evening-no-clock-time-with-saved-menu",
-      "endpoint": "/api/pep",
-      "input": {
-        "action": "generate",
-        "energy": 5,
-        "time_available": "30 minutes",
-        "mood": "neutral",
-        "environment": "home",
-        "time_of_day": "Evening",
-        "context": "I have a call I need to be present for later, not sure what to do until then.",
-        "curated_menu": [
-          {
-            "name": "Sit outside with tea"
-          }
-        ],
-        "userLanguage": "en"
-      },
-      "output": {
-        "read": "You have 30 minutes before a call where you need to be present, your energy is mid-range, and your mood is neutral — so something low-demand that doesn't require winding down or cleaning up afterward fits well here.",
-        "top_pick": {
-          "activity": "Sit outside with tea",
-          "why_it_fits": "This is already on your saved menu, fits inside your 30-minute window, works from home, and asks very little of you — no transitions, very little setup, and nothing that would leave you mid-task when your call starts.",
-          "first_step": "Put the kettle on.",
-          "duration": "As long as it takes to drink the tea — likely 15 to 25 minutes.",
-          "done_when": "You finish the tea and head in before your call."
-        },
-        "other_options": [
-          {
-            "activity": "Put on music or a podcast and do nothing in particular",
-            "why_it_fits": "Requires very little setup, keeps you at home, and is easy to stop cleanly when the call is ready to start.",
-            "duration": "Up to 30 minutes, stopping whenever you need to."
-          },
-          {
-            "activity": "Tidy one small area — a counter, a bag, a drawer",
-            "why_it_fits": "A single contained task fits the time available, has a clear stopping point, and asks a moderate but bounded amount of you at 5/10 energy.",
-            "duration": "10 to 15 minutes."
-          }
-        ],
-        "from_your_history": {
-          "activity": "",
-          "evidence": ""
-        }
+        "reflection": "You rated this 8/10 for helpfulness, and your energy self-report went from 3 to 6 — a 3-point rise — with a note that being outside felt better. Worth keeping in mind for similar moments.",
+        "history_observation": ""
       }
     }
   ]

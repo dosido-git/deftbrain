@@ -2831,50 +2831,50 @@ export const tools = [
 id: "PEP",
 // Preamble — the four questions a new visitor has, in order.
 // `give` states the input burden before the form; see ToolPageWrapper.
-// FULL V2 REWRITE, 2026-09-05: replaced the old "5-mode energy management
-// system" framing (measured battery drain, predicted burnout, introvert/
-// extrovert drain rates) with planning + adaptation + learning from the
-// visitor's own reported experience. See backend/routes/pep.js and
-// audit/tool-notes/PEP-NOTES.md for the full rewrite.
+// FOCUSED REBUILD, 2026-09-05 (installed from an owner-supplied rewrite —
+// see audit/tool-notes/PEP-NOTES.md): reduces the earlier FULL V2 REWRITE's
+// five modes (Right Now / Prioritize / Week / Patterns / Adapt) to one
+// product loop — report capacity, get a suggestion, try it, report what
+// happened, PEP uses that evidence next time. Prioritize/Week/Patterns/
+// Adapt/Shared menu/Match/build-a-plan sequencing are REMOVED, not reworded.
 primer: {
-  when: "You're not sure what fits the energy you have right now, or a demanding stretch is coming up.",
-  give: "How much capacity and time you have right now — or the tasks and commitments you're weighing.",
-  get: "A few manageable options that actually fit, or a clear read on what to protect, postpone, or drop.",
+  when: "You're not sure what fits the energy you have right now.",
+  give: "How much capacity and time you have right now, and anything else worth knowing about the moment.",
+  get: "One manageable suggestion that fits, plus a couple of alternatives.",
   edge: "It treats your own reported energy and what you've actually tried as the evidence — not a formula that claims to measure or predict it.",
 },
-  seoDescription: "Not sure what fits the energy you have? PEP helps you choose what to do right now, prioritize tasks against your capacity, spot a demanding week coming, and learn from what you've actually tried. Free, no signup.",
-seoTitle: "Energy-Based Daily Planner",
+  seoDescription: "Not sure what fits the energy you have right now? PEP suggests something manageable based on your capacity, time, and mood — then learns from what you tell it worked. Free, no signup.",
+seoTitle: "Energy-Based Activity Suggestions",
 title: "PEP — Personal Energy Planner",
 tagline: "Work with the energy you have.",
-  tags: ['energy', 'recharge', 'motivation', 'mood', 'focus', 'routine', 'self-care', 'rest', 'planning', 'prioritize'],
+  tags: ['energy', 'recharge', 'motivation', 'mood', 'rest', 'self-care'],
   icon: '✨',
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Low on energy and not sure what to do with the day you have? PEP helps you choose what fits right now, decide what deserves your limited capacity, learn what actually helps you recharge, and adapt when your routine gets knocked sideways.",
+  description: "Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.",
   guide: {
-    overview: "PEP treats your energy as something you report, not something it measures. Right Now suggests a few manageable activities that fit your current capacity, time, mood, and location. Prioritize weighs your tasks against your capacity without pretending the numbers are a strict budget. Week helps you spot demanding stretches in your upcoming schedule and make room around them. Patterns is a repeatable check-in that compares what you log over time — descriptively, never as a burnout prediction. Adapt builds a lighter, temporary version of your day when your normal routine is disrupted. Rate what you try, and PEP gets more personal from real evidence, not inference.",
+    overview: "PEP treats your energy as something you report, not something it measures. Tell it your capacity, available time, mood, and location, and it suggests one manageable activity plus a couple of alternatives — never framed as guaranteed to help. Try something and rate how it actually went, and that becomes real evidence PEP can use the next time you're in a similar spot. Save activities you want it to remember for another low-energy moment.",
     howToUse: [
-      "Right Now: set your energy (1-10), mood, location, and available time — get a top pick and a couple of other options that fit",
-      "Prioritize: list what you're weighing today and how demanding each one feels — see what to protect, simplify, postpone, or drop",
-      "Week: add the commitments you already know about and what tends to make things demanding for you — spot crowded stretches and where to make room",
-      "Patterns: log sleep, mood, focus, and social capacity in a few taps — repeat it and PEP compares entries descriptively, never predicting burnout",
-      "Adapt: say what changed (sick day, travel, a hard day) and what still needs attention — get a lighter temporary version of your routine"
+      "Set your energy (1-10), how much time you have, and optionally your mood and location",
+      "Add anything else worth knowing — what you've been doing, what sounds awful right now, what you need to be ready for next",
+      "Get a top pick with a first step and a stopping point, plus up to two alternatives",
+      "In a hurry? 'Just tell me what to do' skips the menu and gives one suggestion",
+      "After trying something, tell PEP how helpful it was and your energy afterward — that's what personalizes future suggestions"
     ],
     example: {
-      scenario: "It's 3pm. You've been in back-to-back meetings. Energy is 3/10, you have 30 minutes, you're at the office.",
-      action: "In Right Now, set energy to 3, location to 'office', time to '30 minutes', and submit.",
-      result: "Top pick: a 10-minute walk outside, with the first step being just standing up and heading to the door. A couple of other options alongside it — none framed as guaranteed to restore anything, just things that fit what you described."
+      scenario: "It's the evening. Energy is 2/10, you have 15 minutes, you've been staring at screens all day.",
+      action: "Set energy to 2, time to '15 minutes', and mention the screen fatigue in the open field, then submit.",
+      result: "Top pick: something low-demand and screen-free that fits the 15 minutes, with a first step, a duration, and a concrete stopping point — no promise about how it will make you feel."
     },
     tips: [
-      "The open 'anything that would help PEP choose?' field is powerful — mention what you've been doing or what sounds awful right now and the suggestions adjust",
-      "Rate activities after trying them ('How did that go?') — that's what makes My Menu and future suggestions genuinely personal instead of generic",
-      "Use Patterns consistently for a week or two — comparisons only get more useful the more you've actually logged",
-      "In Week, the 'what tends to make a commitment demanding' checklist is where your own experience feeds the read, instead of PEP guessing"
+      "The open 'anything else PEP should know?' field is powerful — mention what you've been doing or what sounds awful right now and the suggestion adjusts",
+      "Rate activities after trying them — that's what makes future suggestions genuinely personal instead of generic",
+      "My Menu shows real numbers (times tried, typical rating) only once you've actually logged a few attempts at the same activity"
     ],
     pitfalls: [
       "PEP won't tell you an activity is guaranteed to help — it explains why something fits what you reported, and lets your own rating be the evidence",
-      "My Menu's stats (times tried, typical rating) only show up once you've actually logged a few attempts at the same activity",
-      "Patterns needs at least 5 check-ins before it can compare across days — a single day's numbers are just a snapshot, not a trend"
+      "A saved activity means only that you chose to keep it, not that it's proven to work — that only comes from your own ratings over time",
+      "My Menu's stats only show up once you've actually logged a few attempts at the same activity"
     ]
   }
 },

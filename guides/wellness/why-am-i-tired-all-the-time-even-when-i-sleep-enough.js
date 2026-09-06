@@ -21,18 +21,16 @@ module.exports = {
   ],
   cta: {
     glyph:    '✨',
-    headline: "Five modes for managing your energy — not just managing your time.",
-    body:     "Build a personalized recharge menu with pattern tracking. Map tasks against the energy you actually have. Forecast battery drain across your week. Spot burnout early with 15-second daily check-ins. Get an adapted routine when life disrupts your schedule.",
+    headline: "Not sure what fits the energy you have right now?",
+    body:     "Tell PEP how much you have in you, how much time, and what's going on. Get one suggestion that actually fits, plus a couple of alternatives — never framed as guaranteed to help.",
     features: [
-      "Recharge mode: top pick, quick hits, and deep resets matched to your current state",
-      "Budget mode: explicit permission to drop or defer what does not fit",
-      "Forecast mode: weekly battery drain prediction with recovery windows",
-      "Radar mode: daily 30-second wellbeing log with pattern detection",
-      "Disruption mode: adapted structure for sick days, travel, and emergencies"
+      "One top pick plus alternatives, matched to your energy, time, mood, and location",
+      "Just tell me what to do skips the menu when even choosing feels like too much",
+      "Rate what you try — PEP learns from your own reported results, not a formula"
     ],
     toolId:   'PEP',
     toolName: 'PEP',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-09-05',
 };
