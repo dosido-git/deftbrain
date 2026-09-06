@@ -408,8 +408,8 @@ const PEP = ({ tool }) => {
     </div>}
 
     <div className="grid sm:grid-cols-2 gap-3">
-      <button onClick={() => setShowMenu((x) => !x)} className={`${c.card} border ${c.border} rounded-xl p-4 text-left`}><span className="font-bold">📋 {t('pep_my_menu')}</span><span className={`ms-2 text-sm ${c.textMuted}`}>{myMenu.length}</span><p className={`text-xs mt-1 ${c.textMuted}`}>{t('pep_menu_nav_desc')}</p></button>
-      <button onClick={() => setShowHistory((x) => !x)} className={`${c.card} border ${c.border} rounded-xl p-4 text-left`}><span className="font-bold">🧪 {t('pep_history_nav')}</span><span className={`ms-2 text-sm ${c.textMuted}`}>{activityLog.length}</span><p className={`text-xs mt-1 ${c.textMuted}`}>{t('pep_history_nav_desc')}</p></button>
+      <button onClick={() => setShowMenu((x) => !x)} className={`${c.card} border ${c.border} rounded-xl p-4 text-left`}><span className="font-bold">📋 {t('pep_my_menu')}</span><span className={`ms-2 text-sm ${c.textMuted}`}>{t('pep_count_saved', { n: myMenu.length })}</span><p className={`text-xs mt-1 ${c.textMuted}`}>{t('pep_menu_nav_desc')}</p></button>
+      <button onClick={() => setShowHistory((x) => !x)} className={`${c.card} border ${c.border} rounded-xl p-4 text-left`}><span className="font-bold">🧪 {t('pep_history_nav')}</span><span className={`ms-2 text-sm ${c.textMuted}`}>{t('pep_count_attempts', { n: activityLog.length })}</span><p className={`text-xs mt-1 ${c.textMuted}`}>{t('pep_history_nav_desc')}</p></button>
     </div>
 
     {showMenu && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>

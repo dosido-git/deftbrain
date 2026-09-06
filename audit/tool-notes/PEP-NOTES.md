@@ -378,3 +378,17 @@ RIGHT NOW FINAL CORRECTIONS pass's own lesson).
   lowest) — a lower-priority signal must never override a higher one.
 - The two new regex categories (internal-effect adjective, invented hidden
   explanation) and their verified-both-directions test cases.
+
+## Nav-label rename (2026-09-05, same day) — frontend copy only, no backend change
+
+"My Menu" → "My Activities" (`pep_my_menu`, and `pep_add_my_menu` for the
+"＋ My Activities" button, kept in sync for the same reason the two were
+identical strings before — one renamed label with two render sites would
+read as a mismatch). "What I've Tried" → "Past Attempts" (`pep_history_nav`).
+Both nav cards' bare counts became explicit `{{n}} saved` /
+`{{n}} attempts` via two new keys, `pep_count_saved`/`pep_count_attempts` —
+replacing `{myMenu.length}` / `{activityLog.length}` rendered as a bare
+number. All 13 languages. `pep_on_menu` ("On menu" badge) and internal
+identifiers (`myMenu`/`showMenu`/localStorage key `pep-my-menu`) were
+deliberately left unrenamed — cosmetic label only, no state or storage
+migration needed.
