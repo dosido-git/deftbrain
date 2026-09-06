@@ -72,6 +72,10 @@ const PEP = ({ tool }) => {
   const [rateNote, setRateNote] = useState('');
   const [reflection, setReflection] = useState(null);
   const [reflectLoading, setReflectLoading] = useState(false);
+  // Which of the three generate-triggering buttons is in flight — `loading`
+  // itself is one shared flag from useClaudeAPI, so without this all three
+  // buttons would spin together no matter which one was actually clicked.
+  const [activeAction, setActiveAction] = useState(null);
 
   const [energy, setEnergy] = usePersistentState('pep-energy', 5);
   const [myMenu, setMyMenu] = usePersistentState('pep-my-menu', []);
@@ -145,11 +149,21 @@ const PEP = ({ tool }) => {
     setReflection(null);
     setRatingActivity(null);
     setSessionAvoid([]);
+    // Also clear the input form itself — otherwise "Try an example" (which
+    // fills context/mood/environment/timeAvail) followed by Start Over left
+    // every field showing the example's values, so nothing visibly changed
+    // and the button looked broken.
+    setContext('');
+    setMood('');
+    setEnvironment('');
+    setTimeAvail('15 minutes');
+    setEnergy(5);
   };
 
   const generate = async ({ oneOnly = false, fresh = false } = {}) => {
     setError('');
     setReflection(null);
+    setActiveAction(oneOnly ? 'oneOnly' : fresh ? 'fresh' : 'main');
     try {
       const data = await callToolEndpoint('pep', {
         action: oneOnly ? 'just-do-this' : 'generate',
@@ -191,6 +205,8 @@ const PEP = ({ tool }) => {
       setTimeout(() => revealSection(document.getElementById('pep-result')), 100);
     } catch (e) {
       setError(e.message || t('pep_err_request_failed'));
+    } finally {
+      setActiveAction(null);
     }
   };
 
@@ -368,8 +384,8 @@ const PEP = ({ tool }) => {
         </div>
 
         <div className="grid sm:grid-cols-[1fr_auto] gap-2">
-          <button title={t('cmd_enter')} onClick={() => generate()} disabled={loading} className={`py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-50`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>✨ {t('pep_generate_btn')}</>}</button>
-          <button onClick={() => generate({ oneOnly: true })} disabled={loading} className={`px-5 py-3 rounded-xl font-bold border ${c.border} ${c.btnSecondary} disabled:opacity-50`}>🧊 {t('pep_just_do_btn')}</button>
+          <button title={t('cmd_enter')} onClick={() => generate()} disabled={loading} className={`py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-50`}>{activeAction === 'main' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>✨ {t('pep_generate_btn')}</>}</button>
+          <button onClick={() => generate({ oneOnly: true })} disabled={loading} className={`px-5 py-3 rounded-xl font-bold border ${c.border} ${c.btnSecondary} disabled:opacity-50`}>{activeAction === 'oneOnly' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🧊 {t('pep_just_do_btn')}</>}</button>
         </div>
       </div>
     </div>
@@ -388,7 +404,7 @@ const PEP = ({ tool }) => {
       {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}
       {results.alternatives?.length > 0 && <div><h3 className="font-bold text-base mb-2">{t('pep_other_options')}</h3><div className="space-y-2">{results.alternatives.slice(0, 2).map((x, i) => <Activity key={`${x.activity}-${i}`} item={x} />)}</div></div>}
       {results.history_note && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold uppercase mb-1">{t('pep_from_history')}</p><p className="text-sm">{results.history_note}</p></div>}
-      <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>🔄 {t('pep_swap_cta')}</button>
+      <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>{activeAction === 'fresh' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🔄 {t('pep_swap_cta')}</>}</button>
 
       <p className={`text-xs ${c.textMuted} text-center`}>
         {t('pep_xref_intro')}{' '}

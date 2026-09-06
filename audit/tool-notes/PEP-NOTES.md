@@ -392,3 +392,34 @@ number. All 13 languages. `pep_on_menu` ("On menu" badge) and internal
 identifiers (`myMenu`/`showMenu`/localStorage key `pep-my-menu`) were
 deliberately left unrenamed — cosmetic label only, no state or storage
 migration needed.
+
+## Three UX bug fixes (2026-09-05, same day)
+
+1. **Start Over didn't fully reset — confirmed and fixed.** `reset()` cleared
+   `results`/`error`/`reflection`/`ratingActivity`/`sessionAvoid` but never
+   touched the input fields themselves. After "Try an example" pre-filled
+   context/mood/environment/timeAvail, clicking Start Over left every field
+   showing the example's values — nothing visibly changed, so the button
+   looked broken. Live-verified before and after: `reset()` now also clears
+   `context`, `mood`, `environment`, `timeAvail` (→ '15 minutes'), and
+   `energy` (→ 5).
+2. **No loading feedback on "Not feeling these — show me different ones."**
+   Fixed alongside #3 below via a shared mechanism.
+3. **No loading feedback on "Just tell me what to do."** Both buttons only
+   had `disabled={loading}` (a slight opacity dim) — no spinner, no text
+   change, unlike the main "Show me what fits" button which already had
+   both. Root issue: `loading` is one shared boolean from `useClaudeAPI()`
+   across all three generate-triggering buttons, so a naive `{loading ? ... }`
+   on all three would make them spin together regardless of which was
+   actually clicked. Added `activeAction` state (`'main'|'oneOnly'|'fresh'|
+   null`), set at the top of `generate()` from its own params and cleared in
+   a new `finally` block, and switched each button's spinner condition from
+   bare `loading` to `activeAction === '<its own key>'`. Live-verified: only
+   the clicked button shows the spinner+"Thinking…" state, never more than
+   one at a time.
+
+## DO NOT silently reverse (cont'd, UX bug fixes)
+
+- `reset()` clearing the input fields, not just result/session state.
+- `activeAction` tracking — do not collapse the three buttons' spinners back
+  onto the bare shared `loading` flag.
