@@ -347,6 +347,91 @@ Added directly to `CORE_PROMPT`, still additive. Highlights:
 Golden `contradictory-duration-frequency-vs-description` case re-captured
 against the corrected prompt (`_meta` updated, `check:golden`: 4/4 PASS).
 
+## FINAL DEFTBRAIN QUALITY PASS (2026-09-06, same day, fourth pass)
+
+The user called this pass's cited result "very DeftBrain-like" and asked for
+one more round before considering the tool finished. Live-tested against a
+nighttime-yowling cat case carrying THREE things at once: a spay/indoor
+status, an age, and a frequency-dropdown ("Occasionally") that conflicts
+with clearly more specific free text ("nightly"). 12 new rules, all
+additive:
+
+- **"Nothing obvious" is not reassurance.** BANNED, in substance: "nothing
+  you described points to an obvious medical concern" (implies medical
+  causes were checked and cleared). Required: "no obvious emergency sign
+  was reported" — the tool can say what wasn't flagged, never that concern
+  was ruled out.
+- **A supplied fact must earn its place in an explanation.** Spay/neuter
+  status, indoor/outdoor, breed, age — these get restated as facts in
+  `what_you_reported` freely, but must never appear as decorative color
+  inside a possibility's reasoning unless they actually explain THIS
+  behavior. BANNED pattern: "a spayed indoor cat may cycle through periods
+  of more or less nocturnal energy."
+- No invented prevalence or age-comparison claims ("less common in older
+  cats," "typical for indoor pets").
+- A hypothesis ("something in the environment") must not harden into a
+  specific invented event ("animals in the walls," "she's detecting sounds
+  you can't hear").
+- **Absence of an episode is an observation, not an explanation** — a quiet
+  night doesn't establish the trigger is itself intermittent.
+- **Free-text-overrides-a-vaguer-dropdown must be STATED, not silently
+  applied** — see the sharpening note below.
+- A hypothetical reassuring condition ("if she's herself between episodes")
+  stays conditional; never asserted as already true.
+- Vocalization/behavior tone is one observation among several, never a
+  medical rule-out on its own.
+- A low-risk experiment's changed-pattern outcome is evidence of
+  coincidence with the intervention, never a confirmed mechanism ("the
+  experiment confirmed boredom").
+- Never force a third possibility merely to fill the section — 1-3, not
+  always 3.
+- **Final triage language, precisely defined**: `watch_closely` = no
+  reported emergency sign AND observation is the primary next step;
+  `vet_contact_recommended` = the answer's own body actually recommends
+  contacting a vet. Never let the two disagree.
+- Merged final self-check (10 items now, folding the new concerns into the
+  existing list rather than running two separate checklists).
+
+**Two of the twelve needed a second, sharper pass after live-testing the
+exact scenario twice** — the same "quoting your own bad example doesn't ban
+it" lesson from the third pass, recurring:
+1. The pre-existing "NO ARBITRARY TEST PERIODS" rule (from the second pass)
+   used soft "Avoid X" phrasing. Live-tested output produced "The behavior
+   continuing unchanged for **several more weeks**..." — one of the rule's
+   own listed bad examples, verbatim. Fixed by rewriting the rule itself
+   with "BANNED, verbatim and in substance" framing and adding "a week or
+   two" / "another week or two" / "several more weeks" to its explicit list
+   — the same fix pattern (not a new rule) as the third pass's two banned
+   phrases.
+2. The free-text-vs-dropdown rule's first wording permitted the model to
+   silently use the more specific value without ever naming the conflict —
+   technically not "wrong" but indistinguishable from never having noticed
+   it. Fixed by making the explicit statement a **requirement**, with the
+   line "silently using 'nightly' throughout the answer without ever naming
+   that it overrides 'Occasionally' is a failure of this rule, indistinguish-
+   able from never having noticed the conflict at all."
+
+**KNOWN NON-DETERMINISTIC RESIDUAL, documented rather than chased further**:
+after the sharper "BANNED, verbatim" rewrite, the arbitrary-waiting-period
+ban held in only 1 of 2 live re-test runs — "several more weeks" reappeared
+once, in a fresh run with identical input. Neither the generating call nor
+the v2 guard's checker caught it that time (the checker only sees the
+prohibit SLUG NAMES, not `CORE_PROMPT`'s actual banned-phrase text, so it
+can't reliably catch a phrase-level violation the generating prompt itself
+let through). This is a real limit of prompt-only phrase suppression
+against LLM stochasticity — not a gap to keep chasing with more prompt text,
+just something to know about if this exact phrase resurfaces in production.
+
+9 new `outputGuard.prohibit` categories added matching the most
+guard-catchable of these rules (medical-concern-implied-ruled-out,
+supplied-fact-as-decorative-color, hypothesis-upgraded-to-specific-event,
+absence-of-episode-as-evidence, hypothetical-condition-stated-as-true,
+vocalization-tone-ruling-out-medical, experiment-outcome-upgraded-to-
+mechanism, third-explanation-forced). Golden sample gained a fifth
+permanent regression case, `spay-status-and-frequency-conflict-not-used-as-
+color`, reproducing this pass's exact test scenario. `npm run check:golden
+pet-weirdness-decoder`: 5/5 PASS.
+
 ## DO NOT silently reverse
 
 - The schema replacement — no likelihood labels, no breed-predisposition list,
@@ -389,3 +474,21 @@ against the corrected prompt (`_meta` updated, `check:golden`: 4/4 PASS).
   reinforced in 3 places (general rule, dedicated rule, final self-check
   item 8). This was the user's own top-priority fix; don't let a future edit
   drop any of the three reinforcements.
+- "No obvious emergency sign" as the epistemic ceiling for a clean bottom
+  line — never "no obvious medical concern" or anything implying medical
+  causes were checked and cleared.
+- Supplied facts (spay/neuter, indoor/outdoor, breed, age) staying restricted
+  to plain restatement in `what_you_reported` — never decorative color
+  inside a possibility's reasoning unless they actually explain THIS
+  behavior.
+- The "BANNED, verbatim and in substance" phrasing on "NO ARBITRARY TEST
+  PERIODS" — the original "Avoid X" phrasing let "several more weeks" (one
+  of its own bad examples) straight through live, twice. Even after
+  sharpening it only held 1 of 2 re-test runs — a documented, accepted
+  residual, not a reason to weaken the rule further.
+- The free-text-overrides-dropdown reconciliation being a stated REQUIREMENT
+  in `what_you_reported`, not just a permitted behavior — silently applying
+  it without naming the conflict is explicitly called out as a rule failure.
+- The 5th golden case (`spay-status-and-frequency-conflict-not-used-as-
+  color`) — it's the only case exercising the spay/indoor-as-color and
+  frequency-conflict rules together; don't drop it in a future re-record.

@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "Pet Behavior Decoder (id: PetWeirdnessDecoder — display name only, see notes)",
-    "generated": "2026-09-06 (FINAL OUTPUT CORRECTIONS pass)",
+    "generated": "2026-09-06 (FINAL DEFTBRAIN QUALITY PASS)",
     "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 2 routes",
     "baseline_commit": "petweirdnessdecoder-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05) replaced likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence, fabricated community anecdotes, and behavior-modification timelines with plausible explanations grounded only in what was reported. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06) added 20 general reasoning rules plus an INPUT INTEGRITY ledger-and-self-check, the most important being: contradictory input fields (a free-text description vs. a structured Duration/Frequency selection) must be surfaced as an unresolved conflict, never silently merged or averaged. See case 'contradictory-duration-frequency-vs-description' below — this is the tool's own permanent regression guard for that exact failure mode, reproducing the case the correction was written for almost verbatim. Also renamed the 1-5 slider from 'severity' to a 'how concerning did this seem to you?' concern rating throughout (never described as clinical severity or as 'progressing'), and 6 new outputGuard.prohibit/require categories were added matching the least mechanically-checkable of the new rules (arbitrary test periods, home-observation-as-proof-of-cause, breed-as-personality, checkbox-meaning-expansion, silently-merged contradictions, invented-new-problem-for-generic-advice). KNOWN NON-DETERMINISTIC EDGE CASE (observed, not fixed, tracked in tool-notes): when the v2 guard's repair pass removes a violation from one item of a string array (e.g. what_you_reported[5]=contradicted_supplied_fact), it can leave that array slot as an empty string rather than deleting the slot, since a repair can only rewrite a string leaf, not resize an array. The frontend now defensively filters empty/whitespace-only items out of every rendered list and copy-to-clipboard build (PetWeirdnessDecoder.js) so this never shows as a blank bullet — this is a permanent, correct-either-way defensive fix and does not depend on that guard behavior ever occurring. FINAL OUTPUT CORRECTIONS pass (2026-09-06, same day): 18 more specific wording rules added after a live-judged read of real output — conflict precedence stated up front (not just explained after the fact), banned two specific phrase patterns verbatim ('even if he seems fine between episodes' — an invented reassuring negative; 'something feels off in his gut' — a narrated internal sensation), banned causal-chain language for a mere association, required consolidating overlapping possibilities to at most 3 truly distinct ones, required 'what to watch' and 'what would change the next step' to stay non-overlapping, required the recommendation to be stated directly instead of hedged ('a low threshold for calling your vet') when vet contact is the actual advice, and required action_level to match that actual recommendation (not softened to watch_closely once the answer already recommends contacting a vet). The first two bans needed a second, more forceful pass (an explicit 'BANNED, verbatim and in substance' framing) after the softer 'do not add X, such as EXAMPLE' phrasing let the exact banned phrases straight through in a live test; re-verified clean across 2 fresh runs after sharpening."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05) replaced likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence, fabricated community anecdotes, and behavior-modification timelines with plausible explanations grounded only in what was reported. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06) added 20 general reasoning rules plus an INPUT INTEGRITY ledger-and-self-check, the most important being: contradictory input fields (a free-text description vs. a structured Duration/Frequency selection) must be surfaced as an unresolved conflict, never silently merged or averaged. See case 'contradictory-duration-frequency-vs-description' below — this is the tool's own permanent regression guard for that exact failure mode, reproducing the case the correction was written for almost verbatim. Also renamed the 1-5 slider from 'severity' to a 'how concerning did this seem to you?' concern rating throughout (never described as clinical severity or as 'progressing'), and 6 new outputGuard.prohibit/require categories were added matching the least mechanically-checkable of the new rules (arbitrary test periods, home-observation-as-proof-of-cause, breed-as-personality, checkbox-meaning-expansion, silently-merged contradictions, invented-new-problem-for-generic-advice). KNOWN NON-DETERMINISTIC EDGE CASE (observed, not fixed, tracked in tool-notes): when the v2 guard's repair pass removes a violation from one item of a string array (e.g. what_you_reported[5]=contradicted_supplied_fact), it can leave that array slot as an empty string rather than deleting the slot, since a repair can only rewrite a string leaf, not resize an array. The frontend now defensively filters empty/whitespace-only items out of every rendered list and copy-to-clipboard build (PetWeirdnessDecoder.js) so this never shows as a blank bullet — this is a permanent, correct-either-way defensive fix and does not depend on that guard behavior ever occurring. FINAL OUTPUT CORRECTIONS pass (2026-09-06, same day): 18 more specific wording rules added after a live-judged read of real output — conflict precedence stated up front (not just explained after the fact), banned two specific phrase patterns verbatim ('even if he seems fine between episodes' — an invented reassuring negative; 'something feels off in his gut' — a narrated internal sensation), banned causal-chain language for a mere association, required consolidating overlapping possibilities to at most 3 truly distinct ones, required 'what to watch' and 'what would change the next step' to stay non-overlapping, required the recommendation to be stated directly instead of hedged ('a low threshold for calling your vet') when vet contact is the actual advice, and required action_level to match that actual recommendation (not softened to watch_closely once the answer already recommends contacting a vet). The first two bans needed a second, more forceful pass (an explicit 'BANNED, verbatim and in substance' framing) after the softer 'do not add X, such as EXAMPLE' phrasing let the exact banned phrases straight through in a live test; re-verified clean across 2 fresh runs after sharpening. FINAL DEFTBRAIN QUALITY PASS (2026-09-06, same day, fourth pass): 12 more rules from a live-judged read of a nighttime-yowling case with spay status, age, and a frequency-dropdown/free-text conflict all present at once — 'nothing obvious' must not read as medical concern ruled out (only 'no obvious emergency sign' is the honest boundary); a supplied fact (spay status, indoor/outdoor, breed, age) must materially explain THIS behavior before it's used in an explanation, never included as decorative color merely because it exists; no invented prevalence/age-comparison claims; a hypothesis must not harden into a specific invented event ('animals in the walls'); a quiet night is an observation, not evidence a trigger is intermittent; free-text-overrides-a-vaguer-dropdown must be stated explicitly, not silently applied; a hypothetical reassuring condition stays conditional, never asserted as already true; vocalization tone is one observation among several, never a rule-out; a low-risk experiment's outcome is evidence of coincidence, not a confirmed mechanism; never force a third explanation merely to fill the section; and action_level must match what the answer is actually telling the visitor to do (watch_closely vs. vet_contact_recommended). Two of the twelve needed a SECOND, sharper pass after live-testing the German/cat scenario twice: the arbitrary-waiting-period ban (existing 'NO ARBITRARY TEST PERIODS' rule used soft 'Avoid X' phrasing and the model produced 'several more weeks' — one of its own listed bad examples — anyway; fixed with the same 'BANNED, verbatim and in substance' framing that worked in the prior pass) and the free-text-frequency rule (initial wording permitted silently adopting the specific value; fixed by requiring the reconciliation be STATED, with an explicit 'indistinguishable from never having noticed the conflict' framing). KNOWN NON-DETERMINISTIC RESIDUAL (documented, not fully closed): even after the sharper 'BANNED, verbatim' phrasing, the arbitrary-waiting-period ban held in only 1 of 2 live re-test runs ('several more weeks' still appeared once) — both the generating call AND the v2 guard's checker missed it (the checker only sees the tool's promise + prohibit SLUG NAMES, not the full CORE_PROMPT rule text with its banned examples, so it can't reliably catch a phrase-level violation the generating prompt didn't suppress). This is a real limit of prompt-only phrase suppression against LLM stochasticity, not a bug to chase further with more text."
   },
   "cases": [
     {
@@ -100,6 +100,98 @@
             "Seit wann genau das Verhalten aufgetreten ist und ob es sich verändert hat.",
             "Ob es wirklich keine Umgebungsveränderungen gab – auch kleinere wie neue Möbel, andere Besuchsmuster oder Gerüche.",
             "Wann die letzte allgemeine Untersuchung stattgefunden hat."
+          ]
+        }
+      }
+    },
+    {
+      "name": "spay-status-and-frequency-conflict-not-used-as-color",
+      "endpoint": "/api/pet-weirdness-decoder",
+      "why_this_case_exists": "Permanent regression guard for the FINAL DEFTBRAIN QUALITY PASS (2026-09-06). Three things at once: a frequency-dropdown ('Occasionally') that conflicts with a clearly more specific free-text account ('nightly'), an emergency-adjacent bottom line that must not read as medical concern ruled out, and a supplied spay/indoor status that must NOT be used as decorative explanatory color. The output must (1) explicitly state the free-text-overrides-dropdown reconciliation in what_you_reported rather than silently applying it, (2) say 'no obvious emergency sign' rather than implying medical causes were checked and cleared, and (3) never use spay/indoor status to explain the behavior unless it actually does.",
+      "input": {
+        "petType": "Cat",
+        "breed": "Domestic shorthair",
+        "age": 4,
+        "behavior": "For the past two weeks she has been yowling loudly and running around the apartment nightly, mostly around 3am. She is spayed and indoor-only. Nothing in the environment has changed that I know of.",
+        "duration": "Weeks",
+        "frequency": "Occasionally",
+        "otherChanges": [],
+        "whenItHappens": "Mostly around 3am, settles down after 15-20 minutes.",
+        "currentMeds": "",
+        "recentDietChanges": "",
+        "recentHealthChanges": "",
+        "priorObservations": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "assessment": {
+          "action_level": "watch_closely",
+          "headline": "Nightly yowling and activity bursts around 3am, ongoing two weeks",
+          "bottom_line": "Based on what you reported, there is no obvious emergency sign, and the pattern you described can fit ordinary feline nighttime activity. Because it has been consistent for two weeks and includes loud vocalizing, it is worth tracking closely and mentioning to your vet if it continues or any new changes appear."
+        },
+        "what_you_reported": [
+          "Your cat has been yowling loudly and running around the apartment nightly for approximately two weeks.",
+          "Episodes happen around 3am and settle on their own after 15-20 minutes.",
+          "You described frequency as occasional, but your free-text description says this happens nightly — the more specific nightly description is used here.",
+          "She is 4 years old, spayed, and indoor-only.",
+          "No medications, recent diet changes, or health changes were reported.",
+          "You noted no environmental changes that you are aware of."
+        ],
+        "what_could_explain_it": [
+          {
+            "possibility": "Heightened nighttime activity that happens to cluster around the same hour",
+            "why_it_could_fit": "Cats can have bursts of active, vocal behavior at night, and a consistent time each night is something some cats do.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if daytime activity, appetite, litter-box use, and interaction all remain unchanged.",
+              "Less straightforward if the vocalizing sounds distressed or pained rather than energized, or if episodes are getting longer or more intense."
+            ]
+          },
+          {
+            "possibility": "A response to something in or around the environment that has not been identified",
+            "why_it_could_fit": "Indoor cats can react to sounds, smells, or activity outside the apartment that an owner may not notice, particularly late at night when surroundings are quieter.",
+            "what_would_make_it_more_or_less_plausible": [
+              "Worth considering if the episodes seem to start in or near a window, door, or specific room.",
+              "Less likely to be the main factor if the behavior happens throughout the apartment with no consistent starting point."
+            ]
+          },
+          {
+            "possibility": "An underlying physical issue contributing to nighttime distress",
+            "why_it_could_fit": "Persistent nightly vocalizing that is new and consistent over two weeks can sometimes accompany a medical change, even when no other signs are obvious.",
+            "what_would_make_it_more_or_less_plausible": [
+              "Worth considering more seriously if appetite, drinking, litter-box habits, or daytime demeanor change.",
+              "Also worth considering if the vocalizing sounds painful or distressed rather than active."
+            ]
+          }
+        ],
+        "what_to_watch": [
+          "Whether the vocalizing sounds distressed or painful rather than energized.",
+          "Any change in appetite, drinking, or litter-box use.",
+          "Whether episodes are getting longer, louder, or more frequent.",
+          "Whether daytime behavior, activity level, or interaction with you changes.",
+          "Whether episodes seem to start in a specific location in the apartment."
+        ],
+        "what_would_change_the_next_step": [
+          "The vocalizing starts sounding painful or distressed, or she seems uncomfortable during or between episodes.",
+          "Appetite, drinking, or litter-box habits change.",
+          "The pattern becomes noticeably more intense or frequent.",
+          "Any new physical sign appears — vomiting, limping, hiding, or changes in grooming."
+        ],
+        "what_you_can_do_now": [
+          "Note briefly each morning whether an episode occurred and how it seemed — this record will be useful if a vet visit becomes appropriate.",
+          "If she seems interested in play in the evening, you could try an interactive play session before your usual bedtime and observe whether the nighttime pattern changes on the next few opportunities. This is an experiment to note, not a guaranteed fix.",
+          "Check whether episodes seem to start near a window or door, which could help you determine whether something outside may be a factor."
+        ],
+        "vet_prep": {
+          "show_only_when_useful": true,
+          "what_to_record": [
+            "Whether an episode occurred each night, and roughly how long it lasted.",
+            "Whether the vocalizing sounds different from her usual voice — louder, more urgent, or distressed.",
+            "Any changes in eating, drinking, litter-box use, or daytime behavior."
+          ],
+          "questions_or_details_to_bring": [
+            "When the episodes started and how consistently they occur.",
+            "Whether any recent changes — diet, environment, routine — preceded the start, even if they seem unrelated.",
+            "Whether her last wellness exam included bloodwork, in case baseline values would be useful to compare."
           ]
         }
       }
