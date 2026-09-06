@@ -459,21 +459,22 @@ stress this exact edge.
    was reported, flagged as a separate follow-up.
 3. **"My Plants" overshot, and saving didn't move focus at all.** Two
    related reports: *"Clicking 'my plants' overshoots focus"* and
-   *"Clicking 'Save to my plants' should bring focus to my list."* The
-   collection panel is short (~160px) and renders near the bottom of the
-   page; `revealSection`'s default `block: 'start'` aligned its TOP to the
-   viewport top, an unnecessarily large scroll for a small in-place
-   disclosure panel (unlike a full results screen, which legitimately
-   wants that framing) — measured 740px more scroll than necessary in a
-   900px-tall viewport. Both `collectionRef` reveal call sites now pass
-   `{ block: 'nearest' }`, which scrolls only as far as needed and leaves
-   the panel bottom-aligned with more of the page still visible above it.
+   *"Clicking 'Save to my plants' should bring focus to my list."*
    `handleSavePlant` previously didn't open or focus the collection at
    all — the only visible confirmation a save happened was a count
    incrementing in a header button the visitor wasn't looking at. It now
    calls `setShowCollection(true)` and schedules `revealSection` directly
    (not only via the `showCollection` effect), so focus moves to the list
    whether or not the panel was already open before the save.
+   The "overshoots" half was initially mis-diagnosed as "scrolls further
+   than needed" and fixed by switching `collectionRef`'s reveal to
+   `block: 'nearest'` — **this was wrong and was reverted the same day**
+   once the visitor clarified directly, with a screenshot, that they
+   wanted "My Plants" flush at the top of the screen: exactly
+   `block: 'start'`, `revealSection`'s default. Both `collectionRef`
+   reveal call sites now call `revealSection(collectionRef.current)`
+   with no options again, same as `resultsRef`. See the DO-NOT-REVERSE
+   note below.
 
 ## DO NOT silently reverse (third-pass additions)
 
@@ -486,9 +487,14 @@ stress this exact edge.
 - The "Try an example" background alpha staying the literal `+ '80'`
   (not a conditional expression) — PF-17b's audit regex requires that
   exact literal on the same line as `headerColor`.
-- `collectionRef`'s `block: 'nearest'` on both reveal call sites, and
-  `handleSavePlant` calling `revealSection` directly rather than relying
+- `handleSavePlant` calling `revealSection` directly rather than relying
   solely on the `showCollection` effect.
+- `collectionRef`'s reveal calls staying **plain** `revealSection(collectionRef.current)`
+  (default `block: 'start'`) — a same-day attempt at `{ block: 'nearest' }`
+  was explicitly reverted per direct visitor feedback: "My Plants" is
+  supposed to land flush at the top of the screen, not merely scroll into
+  view. Do not reintroduce `nearest` here without a new, equally direct
+  instruction to do so.
 
 ## Fourth pass: Identify image consistency, identity provenance, precision, wording (2026-09-06, same day)
 

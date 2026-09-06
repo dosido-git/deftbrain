@@ -432,7 +432,7 @@ const PlantRescue = ({ tool }) => {
     // so this also fires when the list was already open and just gained
     // a new entry, not only on the closed -> open transition.
     setShowCollection(true);
-    setTimeout(() => revealSection(collectionRef.current, { block: 'nearest' }), 200);
+    setTimeout(() => revealSection(collectionRef.current), 200);
   };
   const handleDeletePlant = (id) => { setPlantCollection(p => p.filter(pl => pl.id !== id)); if (activePlantId === id) setActivePlantId(null); };
   // An explicit handoff, not a tab switch: preload the stable information
@@ -532,7 +532,7 @@ const PlantRescue = ({ tool }) => {
   // "clicking did nothing."
   useEffect(() => {
     if (!showCollection || !collectionRef.current) return;
-    const timer = setTimeout(() => revealSection(collectionRef.current, { block: 'nearest' }), 200);
+    const timer = setTimeout(() => revealSection(collectionRef.current), 200);
     return () => clearTimeout(timer);
   }, [showCollection]);
 
