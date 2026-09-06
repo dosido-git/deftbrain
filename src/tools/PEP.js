@@ -274,8 +274,8 @@ const PEP = ({ tool }) => {
     const saved = myMenu.some((x) => x.name === item.activity);
     return <div className={`${c.card} border ${top ? 'border-emerald-400 border-2' : c.border} rounded-xl p-4 space-y-2`}>
       <div className="flex items-start justify-between gap-3">
-        <h4 className={`font-bold ${top ? 'text-base' : 'text-sm'} ${c.text}`}>{item.activity}</h4>
-        {item.duration && <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{item.duration}</span>}
+        <h4 className={`font-bold ${top ? 'text-base' : 'text-sm'} ${c.text} flex-1 min-w-0`}>{item.activity}</h4>
+        {item.duration && <span className={`text-xs ${c.textMuted} flex-shrink-0 max-w-[40%] text-end`}>{item.duration}</span>}
       </div>
       {item.why_it_fits && <p className={`text-sm ${c.textSecondary}`}>{item.why_it_fits}</p>}
       {item.first_step && <p className={`text-sm font-semibold ${c.text}`}>→ {item.first_step}</p>}

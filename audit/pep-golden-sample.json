@@ -4,7 +4,7 @@
     "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 3 action-dispatch",
     "baseline_commit": "pep-focused-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. FOCUSED REBUILD (2026-09-05): installed from an owner-supplied rewrite (audit/tool-notes/PEP-NOTES.md) that reduces the prior FULL V2 REWRITE's five modes (Right Now/Prioritize/Week/Patterns/Adapt, 17 actions) down to ONE loop across 3 actions: generate (Right Now menu), just-do-this (single suggestion, no menu), reflect (log what happened). Prioritize/Week/Patterns/Adapt/Shared menu/Match/build-a-plan are GONE, not renamed — do not resurrect their schema keys chasing a 'completeness' instinct. New schema: generate={read,top_pick:{activity,why_it_fits,first_step,duration,done_when},alternatives:[{activity,why_it_fits,duration}],history_note}; just-do-this={activity,why_it_fits,first_step,duration,done_when,history_note}; reflect={reflection,history_observation}. LIVE-CAUGHT BUG, fixed same day: the SYSTEM prompt's own 'avoid absolutes about effort' rule listed the banned phrases ('zero effort, no attention, no decisions, completely passive') as a literal example list, and the model echoed them back near-verbatim on the FIRST test call ('This requires zero setup, zero decisions, and zero physical effort') — the model was handed a copyable bad-phrase template and copied it. Fixed by describing the constraint without listing the banned words as an example set. The validateResult() regex backstop ALSO missed this on the first pass — its 260-char/2-sentence cap (meant to spare a long paragraph from being nuked over one incidental match) let a 3-sentence field with a genuine, repeated 'zero X' violation straight through; raised to 400 chars/3 sentences. Both fixes verified together: re-ran the exact failing input, output came back clean ('asks very little... no setup, no goal, no output' — describing fit, not claiming zero demand). The generate-low-energy-evening-screens case captured here IS that exact regression input — re-running it and finding a 'zero setup/effort/decisions/attention' phrase anywhere in the output is the bug back. DO NOT reintroduce: any of the removed modes' schema keys; a prompt rule that lists banned phrases as a literal copyable example set (describe the constraint, don't hand over the phrase); the tight 260/2 validateResult cap (400/3 is the corrected value)."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. FOCUSED REBUILD (2026-09-05): installed from an owner-supplied rewrite (audit/tool-notes/PEP-NOTES.md) that reduces the prior FULL V2 REWRITE's five modes (Right Now/Prioritize/Week/Patterns/Adapt, 17 actions) down to ONE loop across 3 actions: generate (Right Now menu), just-do-this (single suggestion, no menu), reflect (log what happened). Prioritize/Week/Patterns/Adapt/Shared menu/Match/build-a-plan are GONE, not renamed — do not resurrect their schema keys chasing a 'completeness' instinct. New schema: generate={read,top_pick:{activity,why_it_fits,first_step,duration,done_when},alternatives:[{activity,why_it_fits,duration}],history_note}; just-do-this={activity,why_it_fits,first_step,duration,done_when,history_note}; reflect={reflection,history_observation}. LIVE-CAUGHT BUG, fixed same day: the SYSTEM prompt's own 'avoid absolutes about effort' rule listed the banned phrases ('zero effort, no attention, no decisions, completely passive') as a literal example list, and the model echoed them back near-verbatim on the FIRST test call ('This requires zero setup, zero decisions, and zero physical effort') — the model was handed a copyable bad-phrase template and copied it. Fixed by describing the constraint without listing the banned words as an example set. The validateResult() regex backstop ALSO missed this on the first pass — its 260-char/2-sentence cap (meant to spare a long paragraph from being nuked over one incidental match) let a 3-sentence field with a genuine, repeated 'zero X' violation straight through; raised to 400 chars/3 sentences. Both fixes verified together: re-ran the exact failing input, output came back clean ('asks very little... no setup, no goal, no output' — describing fit, not claiming zero demand). The generate-low-energy-evening-screens case captured here IS that exact regression input — re-running it and finding a 'zero setup/effort/decisions/attention' phrase anywhere in the output is the bug back. DO NOT reintroduce: any of the removed modes' schema keys; a prompt rule that lists banned phrases as a literal copyable example set (describe the constraint, don't hand over the phrase); the tight 260/2 validateResult cap (400/3 is the corrected value). SECOND live-caught bug, same day: a visitor screenshot showed the top_pick activity title rendered one word per line in a collapsed column — root cause was 'duration' holding a full clause ('20 minutes lying still, leaving 10 minutes to sit up, reorient, and prepare for your call.') instead of a short time span; the flex row's whitespace-nowrap duration span demanded its full single-line width and starved the title's share of the row. Fixed at three layers: (1) prompt now explicitly caps duration at ~4 words with an example; (2) a shortenDuration() backstop in validateResult() extracts the leading time span or cuts at the first clause break, deterministically, regardless of prompt compliance; (3) the frontend Activity card gives the title flex-1 min-w-0 and caps the duration span at max-w-[40%] instead of an unbounded whitespace-nowrap sibling, so even an unexpectedly long duration can no longer collapse the title. All three cases here were re-captured after the fix — every duration value is now a short span (e.g. '10–15 minutes'). DO NOT reintroduce whitespace-nowrap on that duration span, and do not let 'duration' drift back into a descriptive clause."
   },
   "cases": [
     {
@@ -20,19 +20,24 @@
         "userLanguage": "en"
       },
       "output": {
-        "read": "Screens all day at a 2/10, with 15 minutes and no appetite for anything effortful. The goal is something with barely any setup and very little to decide.",
+        "read": "You've had a full day of screen-based, passive scrolling with very little physical movement or deliberate choice. At 2/10, something that asks almost nothing of you and gets you off screens fits best.",
         "top_pick": {
-          "activity": "Sit somewhere away from your screen — a chair, the floor, a window — and just look at something still for a few minutes",
-          "why_it_fits": "You have been visually active all day with fast-moving content. This asks very little: no setup, no goal, no output. It fits your location, your time, and a 2/10 capacity because you do not have to do anything except stop.",
-          "first_step": "Close or turn away from whatever screen you are on, pick a spot in your home that is not in front of a device, and sit down.",
-          "duration": "Up to 10 minutes, or less if that is all you want",
-          "done_when": "When you decide to stop — there is no task to complete"
+          "activity": "Lie down with your eyes closed and put on something audio-only — a podcast, an album, a radio station, anything you can pick in under a minute",
+          "why_it_fits": "No screen, very little setup, and you only need to make one small choice upfront — what to play. After that, nothing is asked of you. Lying flat also changes your physical position from a day spent sitting at screens, with barely any effort required to do it.",
+          "first_step": "Grab your phone or speaker, pick something audio without overthinking it, lie down wherever is comfortable, and press play.",
+          "duration": "10–15 minutes",
+          "done_when": "When the 15 minutes are up, or whenever you feel like stopping — whichever comes first."
         },
         "alternatives": [
           {
-            "activity": "Put on one familiar album or playlist you already know well and lie down or sit with your eyes closed",
-            "why_it_fits": "Something familiar requires very little attention — you are not picking tracks or following anything new. It fits 15 minutes, your location, and barely asks anything of you physically.",
-            "duration": "One album side or a few songs, whatever the 15 minutes allows"
+            "activity": "Sit somewhere that isn't your usual screen spot and do nothing in particular — look out a window, look at a wall, let your mind wander",
+            "why_it_fits": "",
+            "duration": "10 minutes"
+          },
+          {
+            "activity": "Handle one small physical thing in your home — fold something, throw something away, fill a glass of water",
+            "why_it_fits": "After a day that was entirely screen-based, something with your hands and body requires very little thought but shifts what you're doing. One item only — no list, no project.",
+            "duration": "5 minutes"
           }
         ],
         "history_note": ""
@@ -51,12 +56,12 @@
         "userLanguage": "en"
       },
       "output": {
-        "activity": "Sit still and look out a window or at a fixed point in the room",
-        "why_it_fits": "You have 10 minutes, no energy to spare, and a meeting starting at the end of that window. This asks very little setup, attention, or decision-making — you stay exactly where you are and do not start anything new that you will have to stop.",
-        "first_step": "Put your phone face-down, find a spot to rest your eyes, and let your hands sit idle.",
-        "duration": "As long as feels right up to about 8 minutes, leaving a couple of minutes to gather yourself before the meeting.",
-        "done_when": "When you notice the meeting is about to start and you are ready to shift attention to it.",
-        "history_note": "No saved activities or past attempts on record, so this is based only on what you described right now."
+        "activity": "Sit still and let your eyes rest on one neutral spot",
+        "why_it_fits": "",
+        "first_step": "Put anything in your hands down, find a neutral spot on the wall or desk, and let your gaze land there.",
+        "duration": "5–8 minutes",
+        "done_when": "When you hear or notice it is time to join the meeting.",
+        "history_note": "No previous attempts on record, so this suggestion is based only on what you shared right now."
       }
     },
     {
@@ -73,7 +78,7 @@
         "userLanguage": "en"
       },
       "output": {
-        "reflection": "You rated this 8/10 for helpfulness, and your energy self-report went from 3 to 6 — a 3-point rise — with a note that being outside felt better. Worth keeping in mind for similar moments.",
+        "reflection": "You rated this 8/10 for helpfulness and reported a 3-point lift in energy — and noted feeling better once you were outside. One attempt worth keeping in mind for low-energy moments.",
         "history_observation": ""
       }
     }

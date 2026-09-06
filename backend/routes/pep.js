@@ -70,11 +70,33 @@ const RULES = [
 // sentences and slipped past the original 2-sentence cap despite containing
 // an unambiguous, repeated "zero X" violation — not an incidental keyword
 // in an otherwise-fine paragraph, exactly what the cap was meant to spare.
+// "duration" renders next to the activity title in a narrow flex row — a
+// full clause there (not just a time span) starves the title's share of the
+// row and collapses it into a one-word-per-line column. The prompt asks for
+// a short span; this is the backstop for when it doesn't comply. Cuts at the
+// first natural break (comma, " - ", " leaving", " then", or a period)
+// rather than a hard character truncation, so "20 minutes lying still,
+// leaving 10 minutes to..." becomes "20 minutes" instead of a mid-word cut.
+function shortenDuration(v) {
+  if (typeof v !== 'string' || v.length <= 30) return v;
+  // Prefer pulling out the leading time span itself ("20 minutes", "10-15
+  // minutes") over cutting mid-clause, when the string starts with one.
+  const span = v.match(/^\s*(?:up to |about |around |as long as )?\d+\s*(?:[-–to]+\s*\d+\s*)?(?:minutes?|mins?|hours?|hrs?)\b/i);
+  if (span) return span[0].trim();
+  const cut = v.search(/,| - |\bleaving\b|\bthen\b|\.|;/i);
+  const short = cut > 0 ? v.slice(0, cut).trim() : v;
+  return short.length <= 40 ? short : short.slice(0, 40).trim();
+}
+
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
   const walk = (node) => {
     if (!node || typeof node !== 'object') return;
     for (const [k, v] of Object.entries(node)) {
+      if (k === 'duration' && typeof v === 'string') {
+        node[k] = shortenDuration(v);
+        continue;
+      }
       if (typeof v === 'string') {
         const hit = RULES.find(([, re]) => re.test(v));
         if (hit && v.length <= 400 && (v.match(/[.!?]/g) || []).length <= 3) {
@@ -203,7 +225,11 @@ SELECTION RULES
 - Do not invent exact clock times. Use only relative timing unless the visitor supplied an exact time in their own text.
 - An activity that is genuinely low-demand still asks something of the visitor — say it takes very little setup, attention, or decision-making rather than claiming it takes none at all. Do not describe a suggestion using the word "zero" or "no" paired with setup, effort, decisions, attention, or thought — say "very little" or "barely any" instead.
 - Do not predict how the visitor will feel afterward.
-- Duration describes how long to do the activity, not when an effect will happen.
+- "duration" is a SHORT time span only — "20 minutes," "10-15 minutes" — never a
+  full sentence and never more than about 4 words. It renders next to the
+  activity title in a narrow card; a long clause there breaks the layout.
+  Anything beyond the plain time span (when to stop, how to use the time)
+  belongs in "why_it_fits" or "done_when" instead.
 - A concrete stopping point is required.
 
 ${oneOnly ? `Return ONLY valid JSON:
@@ -211,7 +237,7 @@ ${oneOnly ? `Return ONLY valid JSON:
   "activity": "",
   "why_it_fits": "",
   "first_step": "",
-  "duration": "",
+  "duration": "A short time span only, e.g. '20 minutes' — never a full sentence.",
   "done_when": "",
   "history_note": ""
 }` : `Return ONLY valid JSON:
@@ -221,11 +247,11 @@ ${oneOnly ? `Return ONLY valid JSON:
     "activity": "",
     "why_it_fits": "",
     "first_step": "",
-    "duration": "",
+    "duration": "A short time span only, e.g. '20 minutes' — never a full sentence.",
     "done_when": ""
   },
   "alternatives": [
-    { "activity": "", "why_it_fits": "", "duration": "" }
+    { "activity": "", "why_it_fits": "", "duration": "A short time span only, e.g. '10-15 minutes'." }
   ],
   "history_note": "Only if relevant visitor-reported history materially affected the choice; otherwise empty."
 }`}`;

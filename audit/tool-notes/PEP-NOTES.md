@@ -148,11 +148,51 @@ attention" again, the bug is back.
 - Hindi: 2 anusvara issues (-एं → -एँ), the same recurring class as prior
   sessions.
 
+## Cramped-title layout bug, caught from a user screenshot after ship
+
+A visitor screenshot showed the top pick's activity title rendering one word
+per line in a narrow collapsed column. Root cause: `duration` held a full
+clause ("20 minutes lying still, leaving 10 minutes to sit up, reorient, and
+prepare for your call.") instead of a short time span, and the duration
+`<span>` was `whitespace-nowrap` — demanding its full single-line width and
+starving the sibling `<h4>`'s share of the flex row down to its
+longest-word minimum. This is the same "cramped-column bug" class documented
+for SEA (Social Energy Audit)'s SHORT-VALUES contract — a card field that's
+supposed to be short but isn't breaks the layout, not just the copy.
+
+Fixed at three layers, all live-verified together on the exact reported
+scenario:
+1. **Prompt**: `duration` is now specified as "a SHORT time span only... never
+   more than about 4 words," with the layout consequence spelled out and a
+   concrete example in the schema itself (`"20 minutes"`).
+2. **Backend backstop**: `shortenDuration()` in `backend/routes/pep.js`,
+   called from inside `validateResult()` for any field literally named
+   `duration` — extracts the leading time-span pattern
+   (`\d+\s*(?:-\d+)?\s*(?:minutes?|hours?)`) if present, otherwise cuts at the
+   first clause break (comma, " - ", "leaving", "then", period, semicolon).
+   Deterministic; does not depend on the model complying with #1.
+3. **Frontend defense**: the `Activity` card's title `<h4>` now carries
+   `flex-1 min-w-0` and the duration `<span>` carries `flex-shrink-0
+   max-w-[40%] text-end` instead of an unbounded `whitespace-nowrap` — even an
+   unexpectedly long duration string can no longer collapse the title, it
+   wraps within its own 40%-width budget instead.
+
+Golden re-recorded with the fix in place — all three cases' `duration` values
+are now short spans. **Do not remove any of the three layers** — they were
+added specifically because the first two together still weren't guaranteed
+(a supplied backend can miss the prompt discipline; a prompt alone can't fix
+an already-shipped bad response; CSS alone doesn't get the field length right
+in the first place, it only bounds the damage).
+
 ## DO NOT silently reverse
 
 - The 3-action scope (`generate`/`just-do-this`/`reflect`) — do not re-add
   Prioritize/Week/Patterns/Adapt/Shared/Match/sequencing without an explicit
   new instruction to do so.
+- `shortenDuration()` and its call from inside `validateResult()` for any
+  `duration`-named field, and the frontend's `flex-1 min-w-0` /
+  `max-w-[40%]` split on the Activity card's title/duration row (no
+  `whitespace-nowrap` on that span again).
 - `NO_QUOTE_RULE`, `router.outputGuard` + `validateResult()`, and the inlined
   (not shared) `withLanguage()` calls at both action sites.
 - The prompt's effort-absolutes rule staying phrased as a constraint
