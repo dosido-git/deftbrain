@@ -4459,78 +4459,64 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-05",
   id: "PetWeirdnessDecoder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
+  // V2 REWRITE + display rename, 2026-09-05: id/route/i18n prefix kept as
+  // PetWeirdnessDecoder/pwd_ (see backend/routes/pet-weirdness-decoder.js
+  // and audit/tool-notes/PETWEIRDNESSDECODER-NOTES.md); only the visible
+  // name changed to Pet Behavior Decoder. Replaced likelihood-scored
+  // "differentials," breed genetic predispositions, arbitrary age-bucket
+  // rules, invented prevalence, fabricated anecdotes, and behavior-mod
+  // timelines with plausible explanations grounded in what was actually
+  // reported, what would make each more or less likely, and observable
+  // next-step triggers instead of a countdown.
   primer: {
     when: "Your pet is doing something odd and you're wondering whether to call the vet.",
-    give: "Species, breed, age, and what they're doing.",
-    get: "Whether it's normal, worth watching, or worth a vet visit — and what to watch for.",
-    edge: "It draws the line between quirky and concerning, which is the actual question.",
+    give: "Species, breed, age, and what they're doing — plus anything else you've noticed.",
+    get: "Plausible explanations grounded in what you reported, what to watch for, and whether a vet call makes sense.",
+    edge: "It won't diagnose your pet or rank explanations by probability — only a vet can do that. It tells you what the facts you gave it do and don't suggest.",
   },
-  seoDescription: "Is your pet's weird behavior an adorable quirk or a vet visit? Get an instant read that tells normal habits from symptoms worth worrying about. Free, no signup.",
+  seoDescription: "Not sure what to make of something your pet is doing? Describe what you're seeing and get plausible explanations, what to watch for, and when it's worth calling a vet. Free, no signup.",
   seoTitle: "Pet Behavior Decoder: Quirk or Vet Visit?",
-  title: "Pet Weirdness Decoder",
-  tagline: "Is it quirky or concerning? Let's find out",
-  tags: ['pet', 'dog', 'cat', 'behavior', 'weird', 'animal'],
+  title: "Pet Behavior Decoder",
+  tagline: "Weird, normal, or worth a vet call?",
+  tags: ['pet', 'dog', 'cat', 'behavior', 'animal'],
   icon: "🐾",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
-  description: "Is your pet's weird behavior quirky or concerning? Get AI analysis to distinguish between adorable quirks and symptoms that need a vet visit.",
+  description: "Not sure what to make of something your pet is doing? Describe what you're seeing and Pet Behavior Decoder helps you understand plausible explanations, what to watch for, and when it's worth calling a vet.",
   guide: {
-    overview: "The Pet Weirdness Decoder helps anxious pet parents understand unusual pet behaviors. Using AI analysis of species-specific behaviors, breed tendencies, and age-related patterns, it distinguishes between normal quirks (enjoy them!), behaviors worth monitoring, and symptoms requiring veterinary attention. NOT a replacement for vet advice - designed to reduce anxiety while being responsible about health concerns.",
+    overview: "Pet Behavior Decoder reasons about a described behavior without pretending to diagnose your pet. It separates what you actually reported from what's merely possible, offers 1-3 plausible explanations with what would make each more or less likely, and gives an action level — likely low concern, watch closely, vet contact recommended, or emergency — never a percentage or a diagnosis. Breed and age are used only when they genuinely help interpret the specific situation, not as a stereotype table. Save an observation to build a light history you and Pet Behavior Decoder can both refer back to, and generate a factual vet summary when you're ready to bring this up at an appointment.",
     howToUse: [
-      "Select your pet type (Dog, Cat, Bird, Rabbit, or Other)",
-      "Enter breed (optional but helps with breed-specific behaviors)",
-      "Enter pet's age in years",
-      "Describe the weird behavior in detail",
-      "Select how long it's been happening and how often",
-      "Check any other changes you've noticed (eating, energy, bathroom, sleep, mood)",
-      "Click 'Decode This Weirdness' to get analysis",
-      "Review urgency level: 😂 Normal Quirk, 🤔 Monitor, ⚠️ Vet Soon, or 🚨 Vet Now",
-      "Read the most likely explanation and why they do it",
-      "Check red flags to know when to worry",
-      "Follow recommendations for monitoring or vet visit"
+      "Select your pet type, and add breed and age",
+      "Describe the behavior in detail, including duration and frequency",
+      "Note anything else that changed (eating, energy, bathroom, sleep, mood, movement) with a short description of what changed",
+      "Optionally describe what happens just before, during, or after the behavior",
+      "Add medications, diet changes, or recent health visits if relevant — this is optional context, not required",
+      "Review the action level and the plausible explanations, each with what would make it more or less likely",
+      "Save the observation if you want to track it, and generate a vet summary before your appointment if a vet visit makes sense"
     ],
     example: {
-      scenario: "Your 3-year-old Golden Retriever has started spinning in circles 3-4 times before lying down in her bed. She's been doing it for a few weeks, multiple times daily. She's eating and acting normal otherwise.",
-      action: "Select Dog, enter 'Golden Retriever' for breed, age 3, describe the spinning behavior, select 'Weeks' for duration and 'Multiple times daily' for frequency",
-      result: "Get analysis showing: 😂 Quirky & Normal - 'Pre-bedtime circling ritual. Ancestral behavior from wild dogs creating comfortable sleeping spots. Completely adorable and normal!' Plus enrichment suggestions and when to worry if behavior changes."
+      scenario: "Your 4-year-old cat has been yowling at 3am and running through the apartment for about a week. She's spayed, indoor-only, and nothing in her environment has changed.",
+      action: "Select Cat, describe the behavior with when it happens (mostly around 3am, settles after 15-20 minutes), and submit.",
+      result: "An action level (likely watch closely, given a new week-long pattern), a few plausible explanations — an activity burst, an external stimulus, or a medical cause not yet showing other signs — each with specific things to watch for that would make it more or less likely, and what would make a vet visit worth it."
     },
-    
     tips: [
-      "Be detailed in behavior description - include what happens before, during, and after",
-      "Note any patterns (time of day, specific situations, triggers)",
-      "Check all 'other changes' boxes that apply - combinations matter",
-      "Don't downplay concerns - if you're worried enough to check, mention it",
-      "For quirky behaviors, enjoy the AI's humor and reassurance",
-      "For concerning behaviors, use the vet questions list at your appointment",
-      "Document with photos/video as suggested for vet visits",
-      "Remember: This tool helps identify patterns, not diagnose conditions",
-      "When in doubt, always call your vet - that's what they're there for!",
-      "Trust your pet parent instincts - you know your pet best"
+      "Be specific about what happens before, during, and after the behavior — that's often more useful than the behavior alone",
+      "\"Anything else that changed?\" is worth checking carefully — a combination of changes matters more than any one alone",
+      "Save an observation after each notable episode — a couple of saved entries let it compare on the details that actually matter, not just guess",
+      "The vet summary is meant to be handed to or emailed to your vet — it states only what you reported, never a suspected diagnosis",
+      "If you're worried enough to use this tool and something feels urgent, don't wait for an answer — use the emergency guidance at the top"
     ],
-    
     pitfalls: [
-      "Don't use this as a replacement for emergency vet care",
-      "Don't delay vet visits if you're genuinely concerned",
-      "Don't ignore red flags even if analysis says 'monitor'",
-      "Remember breed matters - 'normal for Husky' might not be normal for Chihuahua",
-      "Age context is crucial - puppy zoomies vs senior disorientation are different",
-      "Multiple other changes usually means vet visit, not just monitoring",
-      "Tool is educational, not diagnostic - vet has training and can examine pet"
-    ],
-    
-    quickReference: {
-      "😂 Quirky & Normal": "Enjoy it! Totally normal behavior",
-      "🤔 Worth Monitoring": "Keep an eye on it, note patterns",
-      "⚠️ Vet Soon": "Schedule appointment within days",
-      "🚨 Vet Now": "Call vet immediately or go to emergency",
-      "Red flags": "Always call vet if these appear",
-      "Documentation": "Photos/videos help vets diagnose",
-      "Disclaimer": "Educational only, not replacing vet advice"
-    }
+      "This won't diagnose your pet or tell you a behavior is 'completely normal' — only a vet exam can do that",
+      "A breed or age note only appears when it genuinely helps interpret this specific behavior, not as a general profile",
+      "No explanation is ranked by likelihood — a numbered percentage or a high/medium/low label isn't something this tool can responsibly produce",
+      "If a serious symptom is present, don't wait for this tool's analysis — seek urgent veterinary care first",
+      "It won't give you a treatment timeline ('improvement in 1-3 weeks') — next steps are tied to what you actually observe, not a countdown"
+    ]
   }
 },
 

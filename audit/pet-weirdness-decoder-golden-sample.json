@@ -1,280 +1,227 @@
 {
   "_meta": {
-    "tool": "PetWeirdnessDecoder",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 2 endpoints, vision",
-    "baseline_commit": "petweirdnessdecoder-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) Endpoint 1 (JSON analysis) had 8 uncapped arrays at max_tokens 4000 → a detailed German case could truncate → parse fail → 500; capped (other_possibilities<=3, red_flags<=4, questions_to_ask<=4, what_to_observe<=4, enrichment<=4, behavioral_modification<=3, common_breed/genetic<=4) + max_tokens 5000. Guard keys top-level parsed.most_likely_explanation && parsed.behavior_analysis. (2) Endpoint 2 (followup) returns FREE TEXT (not JSON) — max_tokens 800 clipped 2-4 German paragraphs mid-sentence; raised to 1500 + tightened to '2-3 short paragraphs (~150 words)'. (3) placeholder fields behavior_category/life_stage/similar_pet_stories carried '— one sentence'/'string' stubs → real descriptions; how_common de-verbosed. (4) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: array caps + max_tokens 5000; followup 1500; clean placeholder descriptions; no annotation suffixes."
+    "tool": "Pet Behavior Decoder (id: PetWeirdnessDecoder — display name only, see notes)",
+    "generated": "2026-09-05",
+    "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 2 routes",
+    "baseline_commit": "petweirdnessdecoder-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): replaces likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence ('how common'), fabricated community anecdotes, and behavior-modification timelines ('improvement in 1-3 weeks') with plausible explanations grounded only in what was reported, what would make each more or less likely, and observable next-step triggers instead of a countdown. Old schema (behavior_analysis/breed_specific_info/life_stage_context/most_likely_explanation/how_common/other_possibilities with likelihood/when_to_worry/vet_visit_prep/if_its_just_quirky/behavioral_modification/similar_pet_stories) fully replaced by: assessment{action_level,headline,bottom_line} / what_you_reported[] / what_could_explain_it[]{possibility,why_it_could_fit,what_would_make_it_more_or_less_plausible[]} / what_to_watch[] / what_would_change_the_next_step[] / what_you_can_do_now[] / vet_prep{show_only_when_useful,what_to_record[],questions_or_details_to_bring[]}. action_level is one of likely_low_concern|watch_closely|vet_contact_recommended|emergency — never a percentage, never high/medium/low. Added router.outputStandard='v2' + router.outputGuard with runOutputGuard (LLM-judge check + repair), since the failure modes here are invented FACTS (a symptom, a trigger, a medication effect) that a regex can't reliably catch — matches the Party Architect precedent, not PEP's regex-only approach. Fixed a pre-existing anti-pattern in the /followup endpoint: raw anthropic.messages.create with a hand-rolled 3-try loop, now callClaudeWithRetry with a {\"answer\": \"...\"} JSON envelope (callClaudeWithRetry always JSON.parses — there is no free-text mode). Also fixed: an 'AI-assisted' mention in the vet summary footer, present in all 13 languages since the tool shipped, and a display-name rename (Pet Weirdness Decoder → Pet Behavior Decoder) that deliberately keeps id/route/i18n prefix unchanged (see tool-notes) — this golden file's tool name in the header reflects the NEW display name, but the endpoint path is unchanged. DO NOT reintroduce: likelihood labels on possibilities, breed/age as anything but situational context, invented prevalence, community anecdotes, or a behavior-mod timeline."
   },
   "cases": [
     {
-      "name": "de-wall-staring-with-meds-diet",
+      "name": "de-cat-nighttime-yowling-low-concern",
       "endpoint": "/api/pet-weirdness-decoder",
       "input": {
+        "petType": "Cat",
+        "breed": "Domestic shorthair",
+        "age": 4,
+        "behavior": "For the past week she's been yowling at 3am, running laps around the apartment, and knocking things off shelves. She's spayed and indoor-only. Nothing in the environment has changed.",
+        "duration": "Weeks",
+        "frequency": "Occasionally",
+        "otherChanges": [],
+        "whenItHappens": "Mostly around 3am, then she settles down after 15-20 minutes.",
+        "currentMeds": "",
+        "recentDietChanges": "",
+        "recentHealthChanges": "",
+        "priorObservations": [],
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "petType": "Hund",
-        "breed": "Border Collie",
-        "age": 6,
-        "behavior": "Er starrt seit einigen Tagen minutenlang an die Wand und dreht sich dann plötzlich im Kreis, besonders abends. Manchmal bellt er dabei die Wand an.",
-        "duration": "Einige Tage",
-        "frequency": "Mehrmals täglich",
-        "otherChanges": [
-          "sleep",
-          "energy"
-        ],
-        "currentMeds": "Beruhigungsmittel gegen Trennungsangst",
-        "recentDietChanges": "Neues getreidefreies Futter seit 2 Wochen"
+        "userRegion": "Germany"
       },
       "output": {
-        "behavior_analysis": {
-          "behavior_category": "Neurologisches/kognitives Auffallverhalten mit Zwangssymptomen",
-          "urgency_level": "vet_soon",
-          "urgency_emoji": "⚠️"
+        "assessment": {
+          "action_level": "likely_low_concern",
+          "headline": "Nächtliches Schreien und Aktivitätsschübe um 3 Uhr",
+          "bottom_line": "Das Muster – kurze, wiederkehrende Aktivitätsschübe nachts ohne weitere Veränderungen – könnte mehrere Erklärungen haben. Da keine anderen Anzeichen gemeldet wurden, lohnt sich eine Beobachtung der nächsten ein bis zwei Wochen, um zu sehen, ob sich das Verhalten verändert oder sich ein klarer Auslöser abzeichnet."
         },
-        "breed_specific_info": {
-          "is_breed_typical": false,
-          "breed_explanation": "Border Collies neigen zwar zu intensivem Starren als Teil ihres Hüteverhaltens, doch das Kombinieren mit Kreisdrehen, Wandanbellen und veränderten Schlaf- und Energiemustern geht weit über rassetypisches Verhalten hinaus.",
-          "common_breed_behaviors": [
-            "Intensives Anstarren von Objekten oder Tieren",
-            "Hoher Antrieb und Beschäftigungsdrang",
-            "Schattenjagen und Lichtreflexe verfolgen",
-            "Zwanghaftes Ballholen oder Kreisen bei Unterstimulation"
-          ],
-          "genetic_predispositions": [
-            "Zwangsstörungen (OCD-ähnliche Verhaltensweisen)",
-            "Epilepsie mit fokalen Anfällen",
-            "Idiopathische Epilepsie ist in der Rasse bekannt",
-            "Erhöhte Sensitivität gegenüber Medikamenten (MDR1-Mutation möglich)"
-          ]
-        },
-        "life_stage_context": {
-          "life_stage": "Erwachsener Hund (mittleres Alter)",
-          "age_appropriate": false,
-          "stage_explanation": "Mit 6 Jahren befindet sich der Hund im stabilen Erwachsenenalter — neue, täglich wiederkehrende Verhaltensänderungen kombiniert mit Veränderungen bei Schlaf und Energie sind in diesem Alter ein klares Warnsignal.",
-          "age_context": "Neu auftretende repetitive Verhaltensweisen bei erwachsenen Hunden erfordern immer tierärztliche Abklärung, insbesondere wenn weitere Symptome hinzukommen."
-        },
-        "most_likely_explanation": {
-          "what_it_is": "Fokale epileptische Anfälle oder medikamenten-/futterbedingtes neurologisches Reizgeschehen",
-          "why_they_do_it": "Starren, Kreisdrehen und plötzliches Bellen in wiederkehrenden Episoden sind klassische Zeichen fokaler (partieller) Anfälle oder neurolog. Reizzustände — verstärkt möglicherweise durch das neue getreidefreie Futter (Nährstoffveränderungen) oder Wechselwirkungen mit dem Beruhigungsmittel."
-        },
-        "how_common": "Zwanghaftes Starren und Kreisdrehen kommt bei Border Collies häufiger vor als bei anderen Rassen (geschätzt 1–2 % entwickeln klinisch relevante Zwangsstörungen), aber das gleichzeitige Auftreten mit Schlaff- und Energieveränderungen macht eine rein verhaltensbedingte Ursache weniger wahrscheinlich.",
-        "other_possibilities": [
+        "what_you_reported": [
+          "Weibliche Katze, 4 Jahre alt, kastriert, Wohnungskatze",
+          "Seit einer Woche: lautes Schreien, Rennen und Gegenstände herunterschmeißen – hauptsächlich gegen 3 Uhr nachts",
+          "Die Episoden dauern jeweils etwa 15–20 Minuten, danach beruhigt sie sich wieder",
+          "Keine gemeldeten Veränderungen in Umgebung, Futter, Gesundheit oder Medikamenten",
+          "Keine früheren gespeicherten Beobachtungen zu diesem Verhalten"
+        ],
+        "what_could_explain_it": [
           {
-            "explanation": "Zwangsstörung (OCD) durch Unterstimulation oder Stress",
-            "likelihood": "medium",
-            "signs_that_suggest_this": [
-              "Verhalten tritt nur in bestimmten Situationen auf",
-              "Kein Bewusstseinsverlust oder Desorientierung danach",
-              "Gut ablenkbar während der Episode"
+            "possibility": "Nächtliche Aktivitätsphasen als Teil des natürlichen Aktivitätsrhythmus",
+            "why_it_could_fit": "Katzen sind von Natur aus in der Dämmerung und nachts aktiv; auch kastrierte Wohnungskatzen können ausgeprägte Aktivitätsschübe zu bestimmten Nachtzeiten entwickeln.",
+            "what_would_make_it_more_or_less_plausible": [
+              "Eher wahrscheinlich, wenn die Katze tagsüber viel schläft und abends wenig Beschäftigung hat",
+              "Weniger wahrscheinlich, wenn das Schreien anhaltend und intensiv klingt und nicht durch Rennen oder Spielen unterbrochen wird",
+              "Weniger wahrscheinlich, wenn das Schreien auch zu anderen Tageszeiten neu aufgetreten ist"
             ]
           },
           {
-            "explanation": "Nebenwirkung des Beruhigungsmittels oder Wechselwirkung mit neuem Futter",
-            "likelihood": "medium",
-            "signs_that_suggest_this": [
-              "Verhalten begann kurz nach Medikamenten- oder Futterwechsel",
-              "Veränderter Schlaf und Energie passen zu Medikamentennebenwirkungen",
-              "Kein anderes medizinisches Vorerkrankungsbild"
+            "possibility": "Reaktion auf etwas außerhalb der Wohnung, das du nicht wahrnimmst",
+            "why_it_could_fit": "Geräusche, Gerüche oder Bewegungen von anderen Tieren, Nachbarn oder draußen könnten zu dieser Uhrzeit für die Katze wahrnehmbar sein, ohne dass du etwas bemerkst.",
+            "what_would_make_it_more_or_less_plausible": [
+              "Eher wahrscheinlich, wenn die Episoden immer in der Nähe von Fenstern oder Türen stattfinden",
+              "Eher wahrscheinlich, wenn sich die Katze bei den Episoden auf etwas außerhalb zu konzentrieren scheint",
+              "Weniger wahrscheinlich, wenn sie sich gleichmäßig durch alle Räume bewegt ohne erkennbaren Fokus"
             ]
           },
           {
-            "explanation": "Vestibularis-Syndrom oder Innenohr-Problem",
-            "likelihood": "low",
-            "signs_that_suggest_this": [
-              "Kopfneigung zur Seite",
-              "Koordinationsprobleme beim Gehen",
-              "Schnelle Augenbewegungen (Nystagmus)"
+            "possibility": "Körperliches Unwohlsein oder eine beginnende gesundheitliche Veränderung",
+            "why_it_could_fit": "Vermehrtes Schreien kann gelegentlich mit körperlichem Unbehagen zusammenhängen, lässt sich aber nicht ohne weitere Anzeichen von anderen Erklärungen unterscheiden.",
+            "what_would_make_it_more_or_less_plausible": [
+              "Eher bedenkenswert, wenn zusätzlich Veränderungen beim Fressen, Trinken, Katzenklo-Nutzung oder im Allgemeinzustand auftreten",
+              "Eher bedenkenswert, wenn das Schreien sich verändert – zum Beispiel klagender oder anhaltender wird",
+              "Weniger wahrscheinlich, wenn die Katze tagsüber völlig unauffällig ist und die Episoden klar mit Bewegung und Spielverhalten verknüpft sind"
             ]
           }
         ],
-        "when_to_worry": {
-          "red_flags": [
-            "Hund fällt um, zuckt unkontrolliert oder verliert das Bewusstsein",
-            "Desorientierung und fehlende Reaktion nach einer Episode über mehr als 5 Minuten",
-            "Episoden werden häufiger oder länger",
-            "Vollständiger Appetit- oder Trinkverlust"
-          ],
-          "timeline": "Bitte innerhalb von 24–48 Stunden einen Tierarzt aufsuchen — nicht abwarten."
-        },
-        "vet_visit_prep": {
-          "questions_to_ask": [
-            "Könnte dies ein fokaler epileptischer Anfall sein, und welche Diagnostik empfehlen Sie (EEG, MRT, Blutbild)?",
-            "Kann das neue getreidefreie Futter oder das Beruhigungsmittel diese Symptome verursachen oder verstärken?",
-            "Sollte die Beruhigungsmitteldosis angepasst oder vorübergehend pausiert werden?",
-            "Gibt es eine Verbindung zur MDR1-Mutation bei Border Collies, die die Medikamentensensitivität beeinflusst?"
-          ],
-          "what_to_observe": [
-            "Genaue Uhrzeit, Dauer und Verlauf jeder Episode (Beginn, Höhepunkt, Ende)",
-            "Verhalten des Hundes unmittelbar nach der Episode (desorientiert, erschöpft, normal?)",
-            "Zusammenhang mit Fütterungszeiten oder Medikamentengabe",
-            "Augenbewegungen, Kopfhaltung und Gangsicherheit zwischen den Episoden"
-          ],
-          "documentation_tips": "Filmen Sie die nächste Episode mit dem Smartphone — auch kurze 30-Sekunden-Videos sind für den Tierarzt extrem wertvoll und ersparen lange Beschreibungen."
-        },
-        "if_its_just_quirky": {
-          "why_normal": "Falls alle medizinischen Ursachen ausgeschlossen sind, könnten es rassetypische Zwangsmuster sein, die durch den Wechsel zur Trennungsangst-Therapie aufgebrochen wurden.",
-          "enrichment_suggestions": [
-            "Tägliche Nasenarbeit und Suchspiele als mentale Auslastung",
-            "Regelmäßige, strukturierte Agility- oder Hütekurse",
-            "Futterpuzzles und Kong-Spielzeug zur Ablenkung abends",
-            "Feste Abendroutine zur Reduktion von Spannungsspitzen"
-          ],
-          "enjoy_it": "Border Collies sind echte Charakterköpfe — aber diese Kombination von Zeichen verdient zunächst einen Tierarztbesuch, bevor wir es als Eigenart feiern."
-        },
-        "behavioral_modification": [
-          {
-            "if_you_want_to_change_it": "Sofern medizinische Ursachen ausgeschlossen sind: Unterbrechung des Starrens",
-            "how": "Lenken Sie den Hund bei Beginn des Starrens ruhig mit einem bekannten Kommando (z. B. Sitz oder Name) um, ohne ihn zu erschrecken oder zu bestrafen.",
-            "patience_required": "Wochen bis Monate bei Zwangsstörungen — nur sinnvoll nach tierärztlicher Freigabe."
-          },
-          {
-            "if_you_want_to_change_it": "Futterwechsel rückgängig machen oder anpassen",
-            "how": "Sprechen Sie mit dem Tierarzt über einen Wechsel zurück zum vorherigen Futter oder zu einer ausgewogenen, tierärztlich empfohlenen Alternative ohne Getreidefreiheitsdogma.",
-            "patience_required": "Futterwechsel sollten über 7–10 Tage schrittweise erfolgen."
-          },
-          {
-            "if_you_want_to_change_it": "Abendroutine stabilisieren",
-            "how": "Etablieren Sie eine feste, ruhige Abendroutine mit Spaziergang, Schnüffelspiel und Entspannungszeit, um das abendliche Aufflackern der Symptome zu reduzieren.",
-            "patience_required": "2–4 Wochen für spürbare Gewöhnung."
-          }
+        "what_to_watch": [
+          "Veränderungen beim Fressen, Trinken oder der Nutzung der Katzentoilette",
+          "Ob das Schreien sich in Klang oder Intensität verändert – zum Beispiel anhaltender oder klagender wirkt",
+          "Ob Episoden auch tagsüber auftreten oder häufiger werden",
+          "Anzeichen von Unwohlsein: ungewöhnliches Sitzen, Verstecken, verändertes Fell oder Körperhaltung"
         ],
-        "similar_pet_stories": "Eine Border-Collie-Halterin aus Hamburg beschrieb exakt diese Kombination — ihr Tierarzt diagnostizierte fokale Anfälle, die mit leichter Medikation vollständig unter Kontrolle kamen."
+        "what_would_change_the_next_step": [
+          "Das Schreien wird deutlich häufiger, intensiver oder klingt klagend statt spielerisch",
+          "Neue Symptome treten auf: Veränderungen beim Fressen oder Trinken, auffälliges Toilettenverhalten, Erbrechen, Verstecken",
+          "Die Katze wirkt tagsüber teilnahmslos, weniger beweglich oder allgemein verändert",
+          "Die Episoden beginnen auch tagsüber oder weiten sich zeitlich aus"
+        ],
+        "what_you_can_do_now": [
+          "Beobachte, ob die Episoden immer zur selben Zeit stattfinden und ob sie mit bestimmten Orten in der Wohnung verknüpft sind – das hilft, mögliche äußere Auslöser einzugrenzen.",
+          "Falls die Katze abends wenig Beschäftigung hat, kannst du versuchsweise eine kurze interaktive Spieleinheit am frühen Abend einbauen und beobachten, ob sich das nächtliche Muster dadurch verändert – ohne Ergebnis zu erwarten.",
+          "Notiere kurz, wann die Episoden stattfinden und wie sie sich anhören, damit du bei Bedarf klare Informationen für den Tierarzt hast."
+        ],
+        "vet_prep": {
+          "show_only_when_useful": false,
+          "what_to_record": [],
+          "questions_or_details_to_bring": []
+        }
       }
     },
     {
-      "name": "de-followup-freetext",
-      "endpoint": "/api/pet-weirdness-decoder/followup",
+      "name": "senior-dog-vomiting-medication-vet-contact",
+      "endpoint": "/api/pet-weirdness-decoder",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "question": "Sollte ich mir wegen der Kombination aus getreidefreiem Futter und dem Verhalten Sorgen machen?",
-        "originalAnalysis": {
-          "behavior_analysis": {
-            "behavior_category": "Neurologisches/kognitives Auffallverhalten mit Zwangssymptomen",
-            "urgency_level": "vet_soon",
-            "urgency_emoji": "⚠️"
+        "petType": "Dog",
+        "breed": "Labrador mix",
+        "age": 9,
+        "behavior": "He's started eating grass obsessively on every walk, then vomiting within an hour. It's happened 4 times this week.",
+        "duration": "About a week",
+        "frequency": "Multiple times daily",
+        "otherChanges": [
+          {
+            "category": "Eating or drinking",
+            "detail": "Eating less at meals"
           },
-          "breed_specific_info": {
-            "is_breed_typical": false,
-            "breed_explanation": "Border Collies neigen zwar zu intensivem Starren als Teil ihres Hüteverhaltens, doch das Kombinieren mit Kreisdrehen, Wandanbellen und veränderten Schlaf- und Energiemustern geht weit über rassetypisches Verhalten hinaus.",
-            "common_breed_behaviors": [
-              "Intensives Anstarren von Objekten oder Tieren",
-              "Hoher Antrieb und Beschäftigungsdrang",
-              "Schattenjagen und Lichtreflexe verfolgen",
-              "Zwanghaftes Ballholen oder Kreisen bei Unterstimulation"
-            ],
-            "genetic_predispositions": [
-              "Zwangsstörungen (OCD-ähnliche Verhaltensweisen)",
-              "Epilepsie mit fokalen Anfällen",
-              "Idiopathische Epilepsie ist in der Rasse bekannt",
-              "Erhöhte Sensitivität gegenüber Medikamenten (MDR1-Mutation möglich)"
-            ]
-          },
-          "life_stage_context": {
-            "life_stage": "Erwachsener Hund (mittleres Alter)",
-            "age_appropriate": false,
-            "stage_explanation": "Mit 6 Jahren befindet sich der Hund im stabilen Erwachsenenalter — neue, täglich wiederkehrende Verhaltensänderungen kombiniert mit Veränderungen bei Schlaf und Energie sind in diesem Alter ein klares Warnsignal.",
-            "age_context": "Neu auftretende repetitive Verhaltensweisen bei erwachsenen Hunden erfordern immer tierärztliche Abklärung, insbesondere wenn weitere Symptome hinzukommen."
-          },
-          "most_likely_explanation": {
-            "what_it_is": "Fokale epileptische Anfälle oder medikamenten-/futterbedingtes neurologisches Reizgeschehen",
-            "why_they_do_it": "Starren, Kreisdrehen und plötzliches Bellen in wiederkehrenden Episoden sind klassische Zeichen fokaler (partieller) Anfälle oder neurolog. Reizzustände — verstärkt möglicherweise durch das neue getreidefreie Futter (Nährstoffveränderungen) oder Wechselwirkungen mit dem Beruhigungsmittel."
-          },
-          "how_common": "Zwanghaftes Starren und Kreisdrehen kommt bei Border Collies häufiger vor als bei anderen Rassen (geschätzt 1–2 % entwickeln klinisch relevante Zwangsstörungen), aber das gleichzeitige Auftreten mit Schlaff- und Energieveränderungen macht eine rein verhaltensbedingte Ursache weniger wahrscheinlich.",
-          "other_possibilities": [
-            {
-              "explanation": "Zwangsstörung (OCD) durch Unterstimulation oder Stress",
-              "likelihood": "medium",
-              "signs_that_suggest_this": [
-                "Verhalten tritt nur in bestimmten Situationen auf",
-                "Kein Bewusstseinsverlust oder Desorientierung danach",
-                "Gut ablenkbar während der Episode"
-              ]
-            },
-            {
-              "explanation": "Nebenwirkung des Beruhigungsmittels oder Wechselwirkung mit neuem Futter",
-              "likelihood": "medium",
-              "signs_that_suggest_this": [
-                "Verhalten begann kurz nach Medikamenten- oder Futterwechsel",
-                "Veränderter Schlaf und Energie passen zu Medikamentennebenwirkungen",
-                "Kein anderes medizinisches Vorerkrankungsbild"
-              ]
-            },
-            {
-              "explanation": "Vestibularis-Syndrom oder Innenohr-Problem",
-              "likelihood": "low",
-              "signs_that_suggest_this": [
-                "Kopfneigung zur Seite",
-                "Koordinationsprobleme beim Gehen",
-                "Schnelle Augenbewegungen (Nystagmus)"
-              ]
-            }
-          ],
-          "when_to_worry": {
-            "red_flags": [
-              "Hund fällt um, zuckt unkontrolliert oder verliert das Bewusstsein",
-              "Desorientierung und fehlende Reaktion nach einer Episode über mehr als 5 Minuten",
-              "Episoden werden häufiger oder länger",
-              "Vollständiger Appetit- oder Trinkverlust"
-            ],
-            "timeline": "Bitte innerhalb von 24–48 Stunden einen Tierarzt aufsuchen — nicht abwarten."
-          },
-          "vet_visit_prep": {
-            "questions_to_ask": [
-              "Könnte dies ein fokaler epileptischer Anfall sein, und welche Diagnostik empfehlen Sie (EEG, MRT, Blutbild)?",
-              "Kann das neue getreidefreie Futter oder das Beruhigungsmittel diese Symptome verursachen oder verstärken?",
-              "Sollte die Beruhigungsmitteldosis angepasst oder vorübergehend pausiert werden?",
-              "Gibt es eine Verbindung zur MDR1-Mutation bei Border Collies, die die Medikamentensensitivität beeinflusst?"
-            ],
-            "what_to_observe": [
-              "Genaue Uhrzeit, Dauer und Verlauf jeder Episode (Beginn, Höhepunkt, Ende)",
-              "Verhalten des Hundes unmittelbar nach der Episode (desorientiert, erschöpft, normal?)",
-              "Zusammenhang mit Fütterungszeiten oder Medikamentengabe",
-              "Augenbewegungen, Kopfhaltung und Gangsicherheit zwischen den Episoden"
-            ],
-            "documentation_tips": "Filmen Sie die nächste Episode mit dem Smartphone — auch kurze 30-Sekunden-Videos sind für den Tierarzt extrem wertvoll und ersparen lange Beschreibungen."
-          },
-          "if_its_just_quirky": {
-            "why_normal": "Falls alle medizinischen Ursachen ausgeschlossen sind, könnten es rassetypische Zwangsmuster sein, die durch den Wechsel zur Trennungsangst-Therapie aufgebrochen wurden.",
-            "enrichment_suggestions": [
-              "Tägliche Nasenarbeit und Suchspiele als mentale Auslastung",
-              "Regelmäßige, strukturierte Agility- oder Hütekurse",
-              "Futterpuzzles und Kong-Spielzeug zur Ablenkung abends",
-              "Feste Abendroutine zur Reduktion von Spannungsspitzen"
-            ],
-            "enjoy_it": "Border Collies sind echte Charakterköpfe — aber diese Kombination von Zeichen verdient zunächst einen Tierarztbesuch, bevor wir es als Eigenart feiern."
-          },
-          "behavioral_modification": [
-            {
-              "if_you_want_to_change_it": "Sofern medizinische Ursachen ausgeschlossen sind: Unterbrechung des Starrens",
-              "how": "Lenken Sie den Hund bei Beginn des Starrens ruhig mit einem bekannten Kommando (z. B. Sitz oder Name) um, ohne ihn zu erschrecken oder zu bestrafen.",
-              "patience_required": "Wochen bis Monate bei Zwangsstörungen — nur sinnvoll nach tierärztlicher Freigabe."
-            },
-            {
-              "if_you_want_to_change_it": "Futterwechsel rückgängig machen oder anpassen",
-              "how": "Sprechen Sie mit dem Tierarzt über einen Wechsel zurück zum vorherigen Futter oder zu einer ausgewogenen, tierärztlich empfohlenen Alternative ohne Getreidefreiheitsdogma.",
-              "patience_required": "Futterwechsel sollten über 7–10 Tage schrittweise erfolgen."
-            },
-            {
-              "if_you_want_to_change_it": "Abendroutine stabilisieren",
-              "how": "Etablieren Sie eine feste, ruhige Abendroutine mit Spaziergang, Schnüffelspiel und Entspannungszeit, um das abendliche Aufflackern der Symptome zu reduzieren.",
-              "patience_required": "2–4 Wochen für spürbare Gewöhnung."
-            }
-          ],
-          "similar_pet_stories": "Eine Border-Collie-Halterin aus Hamburg beschrieb exakt diese Kombination — ihr Tierarzt diagnostizierte fokale Anfälle, die mit leichter Medikation vollständig unter Kontrolle kamen."
-        },
-        "petType": "Hund",
-        "breed": "Border Collie",
-        "age": 6,
-        "behavior": "Er starrt seit einigen Tagen minutenlang an die Wand und dreht sich dann plötzlich im Kreis, besonders abends. Manchmal bellt er dabei die Wand an."
+          {
+            "category": "Energy/activity",
+            "detail": "More tired than usual"
+          }
+        ],
+        "whenItHappens": "Right after walks, within an hour.",
+        "currentMeds": "Rimadyl for joint pain",
+        "recentDietChanges": "",
+        "recentHealthChanges": "",
+        "priorObservations": [],
+        "userLanguage": "en"
       },
       "output": {
-        "answer": "Ja, diese Kombination sollte ernst genommen werden. Seit etwa 2018 untersuchen Kardiologen und die FDA in den USA einen möglichen Zusammenhang zwischen getreidefreiem Hundefutter und dilatativer Kardiomyopathie (DCM) – einer Herzerkrankung, die auch neurologische Symptome verursachen kann. Obwohl die Forschung noch nicht abgeschlossen ist, sind Border Collies grundsätzlich anfällig für ernährungsbedingte Mangelzustände, besonders bei Taurin.\n\n**Was das für deinen Hund bedeutet:** Das Starren, Kreisdrehen und Bellen könnten theoretisch auf eine verminderte Durchblutung des Gehirns hinweisen – verursacht durch eine Herzfunktionsstörung. Das ist selten, aber bei getreidefreiem Futter *und* neurologischen Symptomen ein konkreter Verdacht, den ein Tierarzt ausschließen sollte.\n\n**Bitte erwähne beim Tierarzttermin konkret:** welches Futter du gibst (Marke, Hauptzutaten), seit wann, und ob Linsen, Erbsen oder Kartoffeln unter den ersten Zutaten stehen. Ein EKG oder Herzultraschall könnte sinnvoll sein.\n\n⚠️ Sollten Ohnmacht, Kollaps oder Zittern auftreten, sofort in die Tierklinik."
+        "assessment": {
+          "action_level": "vet_contact_recommended",
+          "headline": "Repeated grass-eating and vomiting, with reduced appetite and lower energy",
+          "bottom_line": "Four vomiting episodes in one week, combined with eating less and more tiredness, goes beyond an isolated stomach upset. Because he is also on Rimadyl, these changes are worth a prompt veterinary conversation."
+        },
+        "what_you_reported": [
+          "Grass-eating on every walk this week, followed by vomiting within an hour, four times in total",
+          "This pattern is new — no prior history of this behavior was noted",
+          "Eating less at meals over the same period",
+          "More tired than usual",
+          "Currently taking Rimadyl for joint pain",
+          "No recent diet changes reported"
+        ],
+        "what_could_explain_it": [
+          {
+            "possibility": "GI irritation or an underlying stomach issue prompting him to eat grass",
+            "why_it_could_fit": "Dogs sometimes seek out grass when their stomach is bothering them, and repeated vomiting with reduced appetite and lower energy points toward something affecting his digestive tract.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if the vomiting contains bile or appears to happen on an empty stomach",
+              "More plausible if he seems uncomfortable or restless before eating the grass",
+              "Less plausible if appetite and energy return to normal between episodes"
+            ]
+          },
+          {
+            "possibility": "GI side effect related to Rimadyl use",
+            "why_it_could_fit": "NSAIDs like Rimadyl can irritate the stomach lining in some dogs, and the combination of vomiting, reduced appetite, and lower energy are changes worth flagging to the vet who manages that medication.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if the symptoms started around a change in dosing schedule or if he takes Rimadyl on an empty stomach",
+              "More plausible if the vomit contains blood or dark material — contact your vet promptly if you see that",
+              "Less plausible if he has been on the same Rimadyl routine for a long time with no previous stomach issues"
+            ]
+          },
+          {
+            "possibility": "Something ingested on walks triggering the vomiting, with grass-eating as a separate behavior",
+            "why_it_could_fit": "It is also possible he is encountering something on walks — a plant, substance, or material — that is causing the vomiting, and the grass-eating is incidental.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if the route has changed recently or includes areas where he sniffs or mouths things beyond grass",
+              "More plausible if the vomiting happens even on days he eats less grass",
+              "Less plausible if restricting his access to grass during walks reduces the vomiting"
+            ]
+          }
+        ],
+        "what_to_watch": [
+          "Any blood or dark material in the vomit — that would make veterinary contact more urgent",
+          "Whether appetite continues to drop or he stops eating altogether",
+          "Whether the tiredness deepens — less willing to move, difficulty getting up",
+          "Whether vomiting is increasing in frequency or happening when he has not eaten grass",
+          "Any signs of abdominal discomfort such as hunching, reluctance to have his belly touched, or unusual posturing"
+        ],
+        "what_would_change_the_next_step": [
+          "Blood or dark coffee-ground-like material in the vomit — contact your vet the same day",
+          "Complete refusal to eat or drink",
+          "Obvious pain, collapse, or significant distress",
+          "Vomiting that continues even when grass access is limited on walks"
+        ],
+        "what_you_can_do_now": [
+          "Contact your vet to describe the full picture — four vomiting episodes, reduced appetite, lower energy, and current Rimadyl use — and let them advise on next steps",
+          "On walks, you can try limiting how much grass he eats to see whether that reduces vomiting; note whether it makes a difference",
+          "Keep a brief log of each episode: time, how much grass he ate, what the vomit looked like, and whether he had eaten a meal beforehand — this will help your vet assess the pattern",
+          "Do not adjust or stop the Rimadyl on your own; that decision belongs with the vet who prescribed it"
+        ],
+        "vet_prep": {
+          "show_only_when_useful": true,
+          "what_to_record": [
+            "Time of each vomiting episode and what the vomit looked like",
+            "How much he ate at each meal relative to normal",
+            "Whether grass access on a walk correlates with vomiting that day",
+            "His current Rimadyl dose, schedule, and whether he takes it with food"
+          ],
+          "questions_or_details_to_bring": [
+            "Could Rimadyl be contributing to the stomach upset, and should any precautions change?",
+            "Are the reduced appetite and lower energy connected to the vomiting, or do they need separate evaluation?",
+            "What signs should prompt me to bring him in sooner rather than waiting for a scheduled appointment?"
+          ]
+        }
+      }
+    },
+    {
+      "name": "followup-freetext",
+      "endpoint": "/api/pet-weirdness-decoder/followup",
+      "input": {
+        "question": "What if she also starts limping?",
+        "originalAnalysis": {
+          "assessment": {
+            "action_level": "watch_closely",
+            "headline": "Nighttime yowling and bursts of activity",
+            "bottom_line": "Worth tracking closely."
+          },
+          "what_would_change_the_next_step": [
+            "New symptoms appear"
+          ]
+        },
+        "petType": "Cat",
+        "breed": "Domestic shorthair",
+        "age": 4,
+        "behavior": "Nighttime yowling and running",
+        "userLanguage": "en"
+      },
+      "output": {
+        "answer": "Limping is a separate physical symptom from the nighttime yowling, so it would warrant a vet visit rather than continued watching at home — do not wait to see if it resolves on its own. A cat that is suddenly reluctant to bear weight on a limb could have a joint injury, a paw injury, a muscle problem, or something else entirely; there is no way to tell without an exam.\n\nIf the limp appears alongside the yowling and activity bursts, mention both to your vet — the combination gives them more to work with, even if the two things turn out to be unrelated.\n\nOne thing to check right away: look at the affected paw and leg for anything visible, like a cut, swelling, or something caught between the toes. If you see swelling, she cannot put any weight on it at all, or she seems to be in significant distress, treat that as urgent and contact a vet or emergency clinic the same day."
       }
     }
   ]
