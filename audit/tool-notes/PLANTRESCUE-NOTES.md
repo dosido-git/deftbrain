@@ -254,6 +254,35 @@ Fixed at two layers, deliberately not just one:
    plant's identity. New permanent golden case:
    `identify-does-not-use-prior-plant-history-as-visual-evidence`.
 
+## "My Plants" click-does-nothing + header layout (2026-09-06, same day)
+
+Two small but real UX bugs, both reported directly:
+
+1. **Clicking "My Plants" appeared to do nothing.** It did toggle
+   `showCollection` correctly — the bug was that the panel it reveals
+   renders far below the entire input form (photo, symptoms, duration,
+   changed-recently, details, light/watering/drainage/climate,
+   pets/children, submit), and nothing scrolled or moved focus there. From
+   the visitor's position at the top of the page, where they just clicked,
+   the screen did not visibly change. Fixed the same way `results` already
+   was: a `collectionRef` + a `useEffect` calling `revealSection()` when
+   `showCollection` becomes `true`.
+2. **Empty "My Plants" state was a dead end.** It said "No saved plants
+   yet" and stopped there. Per the explicit ask — "offer to add one" — it
+   now also shows a CTA button (`pr_add_first_plant`, new i18n key, 13
+   languages) that closes the panel and moves focus back to the top of the
+   form (a new `formTopRef` on the main input card) via `revealSection()`,
+   since there's no plant yet to jump to — the form itself, where a result
+   carries its own "Save to My Plants" button, is the closest "add one."
+3. **Header layout**: "My Plants" moved to sit directly beneath "Start
+   over" (previously side-by-side) — the right-hand button column changed
+   from `flex items-center` to `flex flex-col items-end`, and the row's
+   own `items-start` became `items-end` so the bottom of "My Plants" (or
+   whichever button ends up last in that column) lines up with the bottom
+   of "Try an example" on the left. Verified via `getBoundingClientRect()`
+   in both states (Start Over hidden vs. shown) — bottoms matched exactly
+   in both.
+
 ## DO NOT silently reverse
 
 - The three-schema-per-mode shape — no numeric confidence, no `is_saveable`
@@ -284,3 +313,9 @@ Fixed at two layers, deliberately not just one:
 - The IDENTIFY MODE PROVENANCE prompt section and its outputGuard category
   — the backstop layer for the same bug, needed independently of the
   frontend fix in case a future payload shape reintroduces the leak.
+- The `collectionRef`/`formTopRef` `revealSection()` calls on "My Plants"
+  open and its empty-state CTA — without them the button silently fails
+  to change what a visitor sees, exactly the bug that was reported.
+- "My Plants" staying beneath "Start over" (not restored to side-by-side)
+  and the header row's `items-end` — that's what keeps it bottom-aligned
+  with "Try an example," which was explicitly requested.

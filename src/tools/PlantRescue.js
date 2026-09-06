@@ -143,6 +143,8 @@ const PlantRescue = ({ tool }) => {
   const resultsRef       = useRef(null);
   const submitRef        = useRef(null);
   const canSubmitRef     = useRef(false);
+  const collectionRef    = useRef(null);
+  const formTopRef       = useRef(null);
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('plantrescue-result', null);
@@ -372,6 +374,16 @@ const PlantRescue = ({ tool }) => {
     setMode('rescue');
   };
 
+  // The empty "My Plants" state offers to add one rather than just saying
+  // there's nothing there — this closes the panel and sends the visitor back
+  // to the form, where a check's result carries its own "Save to My Plants"
+  // button. There's no plant to jump to yet, so the form itself is the
+  // closest useful "add one" target.
+  const handleGoAddPlant = () => {
+    setShowCollection(false);
+    setTimeout(() => revealSection(formTopRef.current), 50);
+  };
+
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -420,6 +432,16 @@ const PlantRescue = ({ tool }) => {
     return () => clearTimeout(timer);
   }, [results]);
 
+  // The My Plants panel renders below the entire input form — without this,
+  // opening it from the header button (top of the page) changes nothing a
+  // visitor can see without scrolling past everything else, which reads as
+  // "clicking did nothing."
+  useEffect(() => {
+    if (!showCollection || !collectionRef.current) return;
+    const timer = setTimeout(() => revealSection(collectionRef.current), 200);
+    return () => clearTimeout(timer);
+  }, [showCollection]);
+
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -439,26 +461,26 @@ const PlantRescue = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Main input card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
+      <div ref={formTopRef} className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-end justify-between gap-3">
               <div>
                 <p className={`text-base ${c.textSecondary}`}>
                   <span className="me-2 text-lg">{tool?.icon ?? '🪴'}</span>{tool?.tagline ?? t('pr_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button onClick={() => setShowCollection(!showCollection)}
-                  className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>
-                  🪴 {t('pr_my_plants')} ({plantCollection.length})
-                </button>
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 {(results || plantDescription.trim() || imagePreview) && (
                   <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
                     ↺ {t('start_over')}
                   </button>
                 )}
+                <button onClick={() => setShowCollection(!showCollection)}
+                  className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>
+                  🪴 {t('pr_my_plants')} ({plantCollection.length})
+                </button>
               </div>
             </div>
           </div>
@@ -698,7 +720,7 @@ const PlantRescue = ({ tool }) => {
 
       {/* ── Collection panel ── */}
       {showCollection && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div ref={collectionRef} className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-bold ${c.text}`}>🪴 {t('pr_my_plants')}</h3>
             {plantCollection.length >= 2 && (
@@ -728,7 +750,14 @@ const PlantRescue = ({ tool }) => {
                 </div>
               ))}
             </div>
-          ) : <p className={`text-sm ${c.textMuted}`}>{t('pr_no_saved')}</p>}
+          ) : (
+            <div className="text-center py-2">
+              <p className={`text-sm ${c.textMuted} mb-3`}>{t('pr_no_saved')}</p>
+              <button onClick={handleGoAddPlant} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold`}>
+                {t('pr_add_first_plant')}
+              </button>
+            </div>
+          )}
 
           {/* Companion results */}
           {companionResults && (
