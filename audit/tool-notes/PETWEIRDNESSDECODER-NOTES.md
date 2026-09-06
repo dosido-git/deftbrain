@@ -226,6 +226,59 @@ permanent regression guard reproducing the user's own worked example
 verbatim; the other 3 cases re-captured against the corrected prompt.
 `npm run check:golden pet-weirdness-decoder`: 4/4 PASS.
 
+## Client-side input-consistency check + demo-data fix (2026-09-06)
+
+The golden case above proved the backend's input-integrity pass works. But
+live-testing it surfaced that the tool's own "Try Example" data (`EXAMPLES` in
+`PetWeirdnessDecoder.js`) was ITSELF the same kind of contradiction — the dog
+example's free text ("It's happened 4 times this week") paired with
+`frequency: 'Multiple times daily'`, and `loadExample()` never set `duration`
+at all, so it silently kept whatever the form's default or last value was
+("Just started (today)" on a fresh load). Clicking "Try Example" reproduced
+the exact bug shape without a real visitor ever typing anything contradictory.
+**Per explicit instruction: fix the example data, do not touch the analysis
+prompt again for this.**
+
+Fixed both `EXAMPLES` entries to be internally consistent (`duration: 'About a
+week'`, dog's `frequency` changed from `'Multiple times daily'` to
+`'Occasionally'` — matching the cat example's existing bucket, since "4 times
+this week" doesn't fit any exact dropdown option but is closer to occasional
+than daily) and `loadExample()` now explicitly calls `setDuration(ex.duration)`
+— previously the only field it silently dropped.
+
+**New: a lightweight, client-side pre-submit consistency check**
+(`detectFieldConflict()` in `PetWeirdnessDecoder.js`), so a REAL visitor who
+types a genuinely contradictory description gets a same-page nudge before the
+request ever reaches the backend, rather than only finding out from the
+model's answer. Deliberately narrow by design — two high-confidence signals
+only:
+1. An explicit "N times today/this week/last week/this month" count phrase
+   whose implied rate is clearly incompatible with the selected Frequency
+   (e.g. "4 times this week" vs. "Multiple times daily").
+2. An explicit onset phrase ("just started") vs. an established-pattern
+   Duration, or the reverse ("for weeks/months/always") vs. "Just started
+   (today)."
+
+False negatives (a real conflict this misses) are fine — this is a nudge, not
+a parser, and the backend's own input-integrity pass is still the real
+backstop. False positives are not fine, so both signals require a literal,
+explicit phrase rather than an inference. **Never reconciles the conflict
+itself** — the banner shows the mismatch and offers exactly two actions, per
+spec: "Use what I wrote" (dismisses and resubmits as-is, `skipConflictCheck`
+passed as an explicit function argument, not tracked in state — a value set
+just before the call wouldn't be visible to that closure until the next
+render) or "Change the selections" (dismisses and focuses the Duration
+select). The warning also self-clears via a `useEffect` the moment any of the
+three compared fields changes, so it can never point at stale text.
+Live-verified end-to-end: the banner fires on the exact reported example, both
+buttons behave correctly, and after "Use what I wrote" the backend's own
+input-integrity pass still independently caught and reported the same
+conflict — the two layers reinforce rather than duplicate each other.
+
+**Also added:** a disclosure `Caret` (from `src/components/Caret.js`, per
+PF-34) plus `aria-expanded` on the "Add medications, diet, or recent health
+changes" toggle, which previously had no visual affordance that it expanded.
+
 ## DO NOT silently reverse
 
 - The schema replacement — no likelihood labels, no breed-predisposition list,
@@ -251,3 +304,12 @@ verbatim; the other 3 cases re-captured against the corrected prompt.
 - The empty-string `.filter()` guards on every result list render and in
   `buildFullText()` in `PetWeirdnessDecoder.js` — they protect against a real
   `outputGuard.js` repair-pass edge case, not defensive clutter to trim.
+- `EXAMPLES`' explicit `duration` field and `loadExample()` setting it — this
+  is the fix for a real bug (a silently-defaulted Duration contradicting the
+  example text), not incidental. Any new example added to `EXAMPLES` must
+  have a `duration` that actually agrees with its `behavior` and `frequency`.
+- The client-side `detectFieldConflict()` check and its "use what I wrote" /
+  "change the selections" banner — it does NOT replace the backend's
+  input-integrity pass, it catches the same failure earlier for a real
+  visitor. Do not make it try to auto-reconcile a conflict; that decision
+  belongs to the owner by explicit design.
