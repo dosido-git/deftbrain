@@ -23,7 +23,7 @@
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): The hard part isn't the cooking. It's deciding.
 - [Not So Fast!](https://deftbrain.com/NotSoFast): The overlooked options, key conversations, and escalation paths nobody ever explains
 - [Paperwork Path](https://deftbrain.com/PaperworkPath): The documents you need — and the order to handle them
-- [Pet Weirdness Decoder](https://deftbrain.com/PetWeirdnessDecoder): Is it quirky or concerning? Let's find out
+- [Pet Behavior Decoder](https://deftbrain.com/PetWeirdnessDecoder): Weird, normal, or worth a vet call?
 - [Plant Rescue](https://deftbrain.com/PlantRescue): Diagnose and rescue your struggling plants
 - [Procedure Probe](https://deftbrain.com/ProcedureProbe): Be an informed patient before you say yes.
 - [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): Your kitchen 911 — from crisis to confidence
@@ -54,7 +54,7 @@
 - [Giftology](https://deftbrain.com/Giftology): The perfect gift for the hardest person to shop for.
 - [Gratitude Debt Clearer](https://deftbrain.com/GratitudeDebtClearer): Turn what happened into the thank-you you've been meaning to send.
 - [Mend](https://deftbrain.com/Mend): Match your apology to the actual harm caused
-- [Money Diplomat](https://deftbrain.com/MoneyDiplomat): 💵 Clearer money decisions when other people are involved
+- [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
 - [Read the Room](https://deftbrain.com/ReadTheRoom): Read the room before you walk in
 - [Social Battery Advisor](https://deftbrain.com/SocialBatteryAdvisor): See where your energy actually goes — and restructure your week around it
 - [Toast Writer](https://deftbrain.com/ToastWriter): Toasts, speeches, and tributes that land.
@@ -114,7 +114,7 @@
 - [Mental Health Navigator](https://deftbrain.com/MentalHealthNavigator): Find the right support for what you're going through
 - [Name That Feeling](https://deftbrain.com/NameThatFeeling): There's a word for that. Let's find it.
 - [Nerve Check](https://deftbrain.com/NerveCheck): Real confidence for scary moments.
-- [PEP-Personal Energy Planner](https://deftbrain.com/PEP): Personal Energy Planner — understand your energy, plan around it
+- [PEP — Personal Energy Planner](https://deftbrain.com/PEP): Work with the energy you have.
 - [SleepArchitect](https://deftbrain.com/SleepArchitect): A personalized sleep improvement protocol built around your habits
 - [Spiral Stopper](https://deftbrain.com/SpiralStopper): Emergency intervention for spirals, freezes, and crashes
 - [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Turn that overwhelming mountain into micro-steps
@@ -153,7 +153,7 @@
 ## Me
 
 - [Brain Dump Buddy](https://deftbrain.com/BrainDumpBuddy): Everything in your head → one clear next step
-- [One Percenter](https://deftbrain.com/OnePercenter): The single 1% change with the largest compound effect on your year
+- [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): One small change that could make the rest easier.
 - [Truth Bomb](https://deftbrain.com/TruthBomb): The thing about yourself you don't reveal.
 - [What's My Vibe](https://deftbrain.com/WhatsMyVibe): Find out what you actually sound like.
 - [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): See the gap between where you think time went and where it actually went.

@@ -63,13 +63,13 @@ const EXAMPLE_BUCKETS = {
     },
     {
       id: 'PetWeirdnessDecoder',
-      title: 'Pet Weirdness Decoder',
+      title: 'Pet Behavior Decoder',
       icon: '🐾',
-      tagline: 'Is it quirky or concerning? Let\u2019s find out',
+      tagline: 'Weird, normal, or worth a vet call?',
       input:
         'My cat keeps knocking water glasses off the counter. Always full ones, never empty.',
       output:
-        'Probably not malice \u2014 it\u2019s the reflection. Full glasses catch light and motion in a way empty ones don\u2019t, and that\u2019s irresistible to a hunter brain. Swap to a heavy ceramic mug and the behavior usually stops. If it doesn\u2019t, she\u2019s telling you she wants more enrichment in her day.',
+        'A few things could explain this \u2014 the movement and reflection in a full glass may simply be more interesting to bat at than an empty one, though that\u2019s a guess, not something established here. Try a heavy ceramic mug on the next few refills and see if the pattern changes. If it doesn\u2019t, or new behavior shows up alongside it, that\u2019s worth watching.',
     },
     {
       id: 'BillRescue',

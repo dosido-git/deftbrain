@@ -4,9 +4,28 @@ Displays as **Pet Behavior Decoder**. **id/route/i18n prefix deliberately kept a
 `PetWeirdnessDecoder`/`pet-weirdness-decoder`/`pwd_`** — a display-name-only rename,
 following the Before the Crash precedent (memory: `deftbrain-before-the-crash`),
 not the full REWRITE-INSTALL-KIT §7 rename checklist. This avoids touching
-`TOOL_IDS`, `LEGACY_REDIRECTS`, `TOOL_ALIASES`, `tool-og-slugs.json`, the 552
-cross-ref links in `public/guides/**/*.html`, and `llms.txt` — none of which
-needed to change since the URL never moves.
+`TOOL_IDS`, `LEGACY_REDIRECTS`, `TOOL_ALIASES`, and `tool-og-slugs.json` (the id
+itself never moves, so none of those need to change).
+
+**2026-09-06: the display-text side of the rename was finished.** The initial
+display-only rename correctly left the URL/id alone, but it also left every
+STATIC place the old display name was baked into generated content:
+`toolName`/body-copy in 6 `guides/pets/*.js` source files (feeding
+`public/guides/**/*.html`'s cross-ref cards — regenerated via
+`node scripts/build-guides.js`, which fixed all 552 stale occurrences since
+they're derived, not hand-written), `src/components/DemoCards.js`'s landing-page
+demo card, and `public/llms.txt` (regenerated via `node scripts/generate-llms.js`,
+safe/local-only — do NOT run the full `npm run build` postbuild chain casually to
+fix a stale derived file; it ends in `indexnow.js`, which pings external search
+engines, a real outward action that needs the user's actual deploy intent, not a
+side effect of a text fix). `public/guides-manifest.json` is written only by
+`scripts/prerender.js`, which needs a full CRA production build first — left
+stale on purpose; it self-corrects on the next real deploy (Railway builds from
+git) now that its source (`guides/pets/*.js`) is fixed, the same
+build-derived-state-travels-with-content reasoning as the sitemap-lastmod gate.
+The DemoCards.js example `output` text was also rewritten in the same pass — it
+had a confident invented-motivation line ("it's the reflection... irresistible
+to a hunter brain") that no longer matches how the real V2 tool answers.
 
 Reasons about an observed pet behavior — plausible explanations grounded in what
 was reported, an action-level triage (never a diagnosis or probability), and a
@@ -279,6 +298,55 @@ conflict — the two layers reinforce rather than duplicate each other.
 PF-34) plus `aria-expanded` on the "Add medications, diet, or recent health
 changes" toggle, which previously had no visual affordance that it expanded.
 
+## FINAL OUTPUT CORRECTIONS pass (2026-09-06, same day, third pass)
+
+A live-judged read of real output against the input-integrity fix above found
+18 more specific wording failures — not architecture problems, phrasing ones.
+Added directly to `CORE_PROMPT`, still additive. Highlights:
+
+- **Conflict precedence, stated up front, not just explained after the fact.**
+  Order: (1) a specific free-text observation, (2) a deliberately changed
+  structured field, (3) a generic/default structured field.
+- **Two exact banned phrases**, needing a SECOND, more forceful pass after the
+  first wording failed live: "even if he seems fine between episodes" (an
+  invented reassuring negative the owner never reported) and "something feels
+  off in his gut" (a narrated internal sensation). The first attempt phrased
+  these as "do not add X, such as EXAMPLE" — the model reproduced the example
+  almost verbatim anyway. Fixed by switching to "BANNED, verbatim and in
+  substance: ..." framing. **This is the concrete lesson**: a rule that quotes
+  its own bad example as illustration can get read as permission if it isn't
+  phrased as a literal ban — re-verified clean across 2 fresh runs only after
+  the stronger phrasing.
+- No causal-chain language for a mere association (A/B co-occurring doesn't
+  establish A causes B, B causes A, or C causes both).
+- Consolidate overlapping possibilities to at most 3 truly distinct branches.
+- `what_to_watch` (descriptive) and `what_would_change_the_next_step`
+  (action-triggering) must stay non-overlapping.
+- State a vet-contact recommendation directly ("contacting your vet is
+  reasonable") instead of hedging behind "a low threshold for calling your
+  vet" once that IS the actual advice.
+- **`action_level` must match the actual recommendation** — the user's own
+  top-priority fix. If the answer's own text recommends contacting a vet, the
+  category must be `vet_contact_recommended`, not a softened `watch_closely`.
+  Reinforced at three separate points now: the earlier general rule, a new
+  dedicated rule, and the merged final self-check (10 items now, combining
+  the original 8 with 7 new ones from this pass, deduping overlap).
+- Preserve the owner's own descriptive word ("obsessively") as their
+  characterization rather than silently upgrading it to a clinical label
+  ("compulsive," "pica").
+- 5 new `outputGuard.prohibit` categories + 1 new `require` matching the most
+  guard-catchable of these (reassuring negatives, causal chains, embellished
+  scene detail, hedged vet-contact recommendations, descriptive-word-to-
+  clinical-label conversion, action-level/recommendation agreement) — though
+  note the guard's LLM-judge check only sees the tool's "promise" text and the
+  prohibit SLUG NAMES, not the full `CORE_PROMPT` rule text, so it did not
+  catch either of the two exact-phrase violations in testing; the generating
+  prompt's own wording strength is the real defense for phrase-level bans,
+  not the guard.
+
+Golden `contradictory-duration-frequency-vs-description` case re-captured
+against the corrected prompt (`_meta` updated, `check:golden`: 4/4 PASS).
+
 ## DO NOT silently reverse
 
 - The schema replacement — no likelihood labels, no breed-predisposition list,
@@ -313,3 +381,11 @@ changes" toggle, which previously had no visual affordance that it expanded.
   input-integrity pass, it catches the same failure earlier for a real
   visitor. Do not make it try to auto-reconcile a conflict; that decision
   belongs to the owner by explicit design.
+- The "BANNED, verbatim and in substance" phrasing on the reassuring-negative
+  and internal-state rules — a softer "don't do X, such as EXAMPLE" phrasing
+  was tried first and failed live (the model echoed the example almost
+  verbatim). Don't soften this back without re-testing.
+- `action_level` matching the actual recommendation stated in the answer —
+  reinforced in 3 places (general rule, dedicated rule, final self-check
+  item 8). This was the user's own top-priority fix; don't let a future edit
+  drop any of the three reinforcements.

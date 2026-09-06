@@ -450,48 +450,39 @@ Input: Moving out of state with two kids and starting a new job the same month.
 
 Output: A prioritized document checklist plus a 7-step order that starts with locking the new address (everything downstream depends on it) and slots the new-job I-9 and benefits enrollment into their real windows.
 
-### Pet Weirdness Decoder
+### Pet Behavior Decoder
 
 URL: https://deftbrain.com/PetWeirdnessDecoder
-Tagline: Is it quirky or concerning? Let's find out
+Tagline: Weird, normal, or worth a vet call?
 Categories: The Grind
 
-Is your pet's weird behavior quirky or concerning? Get AI analysis to distinguish between adorable quirks and symptoms that need a vet visit.
+Not sure what to make of something your pet is doing? Describe what you're seeing and Pet Behavior Decoder helps you understand plausible explanations, what to watch for, and when it's worth calling a vet.
 
-**What it does.** The Pet Weirdness Decoder helps anxious pet parents understand unusual pet behaviors. Using AI analysis of species-specific behaviors, breed tendencies, and age-related patterns, it distinguishes between normal quirks (enjoy them!), behaviors worth monitoring, and symptoms requiring veterinary attention. NOT a replacement for vet advice - designed to reduce anxiety while being responsible about health concerns.
+**What it does.** Pet Behavior Decoder reasons about a described behavior without pretending to diagnose your pet. It separates what you actually reported from what's merely possible, offers 1-3 plausible explanations with what would make each more or less likely, and gives an action level — likely low concern, watch closely, vet contact recommended, or emergency — never a percentage or a diagnosis. Breed and age are used only when they genuinely help interpret the specific situation, not as a stereotype table. Save an observation to build a light history you and Pet Behavior Decoder can both refer back to, and generate a factual vet summary when you're ready to bring this up at an appointment.
 
 **How to use it.**
 
-1. Select your pet type (Dog, Cat, Bird, Rabbit, or Other)
-2. Enter breed (optional but helps with breed-specific behaviors)
-3. Enter pet's age in years
-4. Describe the weird behavior in detail
-5. Select how long it's been happening and how often
-6. Check any other changes you've noticed (eating, energy, bathroom, sleep, mood)
-7. Click 'Decode This Weirdness' to get analysis
-8. Review urgency level: 😂 Normal Quirk, 🤔 Monitor, ⚠️ Vet Soon, or 🚨 Vet Now
-9. Read the most likely explanation and why they do it
-10. Check red flags to know when to worry
-11. Follow recommendations for monitoring or vet visit
+1. Select your pet type, and add breed and age
+2. Describe the behavior in detail, including duration and frequency
+3. Note anything else that changed (eating, energy, bathroom, sleep, mood, movement) with a short description of what changed
+4. Optionally describe what happens just before, during, or after the behavior
+5. Add medications, diet changes, or recent health visits if relevant — this is optional context, not required
+6. Review the action level and the plausible explanations, each with what would make it more or less likely
+7. Save the observation if you want to track it, and generate a vet summary before your appointment if a vet visit makes sense
 
 **Tips.**
 
-- Be detailed in behavior description - include what happens before, during, and after
-- Note any patterns (time of day, specific situations, triggers)
-- Check all 'other changes' boxes that apply - combinations matter
-- Don't downplay concerns - if you're worried enough to check, mention it
-- For quirky behaviors, enjoy the AI's humor and reassurance
-- For concerning behaviors, use the vet questions list at your appointment
-- Document with photos/video as suggested for vet visits
-- Remember: This tool helps identify patterns, not diagnose conditions
-- When in doubt, always call your vet - that's what they're there for!
-- Trust your pet parent instincts - you know your pet best
+- Be specific about what happens before, during, and after the behavior — that's often more useful than the behavior alone
+- "Anything else that changed?" is worth checking carefully — a combination of changes matters more than any one alone
+- Save an observation after each notable episode — a couple of saved entries let it compare on the details that actually matter, not just guess
+- The vet summary is meant to be handed to or emailed to your vet — it states only what you reported, never a suspected diagnosis
+- If you're worried enough to use this tool and something feels urgent, don't wait for an answer — use the emergency guidance at the top
 
 **Example.**
 
-Input: Your 3-year-old Golden Retriever has started spinning in circles 3-4 times before lying down in her bed. She's been doing it for a few weeks, multiple times daily. She's eating and acting normal otherwise.
+Input: Your 4-year-old cat has been yowling at 3am and running through the apartment for about a week. She's spayed, indoor-only, and nothing in her environment has changed.
 
-Output: Get analysis showing: 😂 Quirky & Normal - 'Pre-bedtime circling ritual. Ancestral behavior from wild dogs creating comfortable sleeping spots. Completely adorable and normal!' Plus enrichment suggestions and when to worry if behavior changes.
+Output: An action level (likely watch closely, given a new week-long pattern), a few plausible explanations — an activity burst, an external stimulus, or a medical cause not yet showing other signs — each with specific things to watch for that would make it more or less likely, and what would make a vet visit worth it.
 
 ### Plant Rescue
 
@@ -1292,10 +1283,10 @@ Output: Appropriate level: 1 (No apology needed). Analysis: Actual harm = none (
 ### Money Diplomat
 
 URL: https://deftbrain.com/MoneyDiplomat
-Tagline: 💵 Clearer money decisions when other people are involved
+Tagline: The right number for every money moment — tips, splits, gifts, salary
 Categories: Humans, Loot
 
-Money gets awkward when other people are involved. Money Diplomat helps you think through what’s fair, what you actually know, what you can afford, and what to say next—without pretending there’s one universal rule for tipping, lending, gifts, dating, family, or shared expenses.
+Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.
 
 **What it does.** Money Diplomat handles the social side of money — the conversations, calculations, and etiquette nobody teaches you. Pick from 18 situation types (tipping, splitting, lending, dating, gifts, salary, inheritance, and more) and get tailored scripts, amounts, and strategies. Use Quick Math for instant tip/split calculations without AI. Track who owes you with They Owe Me and generate tactful nudge messages. Practice high-stakes money conversations in the simulator. Set your profile once (budget, culture, relationship status) and every response adapts automatically.
 
@@ -2898,36 +2889,35 @@ Input: You have a panel interview at a company you really want. You bombed an in
 
 Output: Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description.
 
-### PEP-Personal Energy Planner
+### PEP — Personal Energy Planner
 
 URL: https://deftbrain.com/PEP
-Tagline: Personal Energy Planner — understand your energy, plan around it
+Tagline: Work with the energy you have.
 Categories: Energy, Me
 
-5-mode energy management system: build a personalized recharge menu with pattern tracking, map tasks against your available energy, forecast battery drain across your week, spot burnout early with 15-second daily check-ins, and get adapted routines when life disrupts your schedule.
+Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.
 
-**What it does.** The Dopamine Menu Builder is your complete energy management system. Recharge mode builds a personalized activity menu based on your current energy, mood, and environment. Budget mode maps your tasks against available energy to show what actually fits. Forecast mode predicts battery drain from your week's events. Radar mode tracks daily wellbeing signals to catch burnout patterns early. Disruption mode gives you an adapted structure when sick, traveling, or in an emergency.
+**What it does.** PEP treats your energy as something you report, not something it measures. Tell it your capacity, available time, mood, and location, and it suggests one manageable activity plus a couple of alternatives — never framed as guaranteed to help. Try something and rate how it actually went, and that becomes real evidence PEP can use the next time you're in a similar spot. Save activities you want it to remember for another low-energy moment.
 
 **How to use it.**
 
-1. Recharge: set your energy level (1-10), mood, environment, and available time — get a personalized menu with a top pick, quick hits, and deep resets
-2. Budget: list today's tasks with energy costs and priorities — see what you can actually do and get explicit permission to drop the rest
-3. Forecast: add upcoming events for the week, set your energy type (introvert/extrovert), and get a battery drain prediction with recovery windows
-4. Radar: log 4 daily signals (sleep, mood, productivity, social energy) for 30 seconds — patterns appear after a few days
-5. Disruption: select what's happening (sick day, travel, emergency), describe your normal routine, and get a simplified adapted structure
+1. Set your energy (1-10), how much time you have, and optionally your mood and location
+2. Add anything else worth knowing — what you've been doing, what sounds awful right now, what you need to be ready for next
+3. Get a top pick with a first step and a stopping point, plus up to two alternatives
+4. In a hurry? 'Just tell me what to do' skips the menu and gives one suggestion
+5. After trying something, tell PEP how helpful it was and your energy afterward — that's what personalizes future suggestions
 
 **Tips.**
 
-- The 'Been doing?' field is powerful — it prevents the AI from suggesting more screen time when you've been staring at screens all day
-- Rate activities after doing them to build a personalized menu that actually works for you
-- Use Radar mode consistently for a week — patterns become visible faster than you'd expect
-- The Budget mode 'permissions' section is the real value — explicit permission to drop or defer things
+- The open 'anything else PEP should know?' field is powerful — mention what you've been doing or what sounds awful right now and the suggestion adjusts
+- Rate activities after trying them — that's what makes future suggestions genuinely personal instead of generic
+- My Menu shows real numbers (times tried, typical rating) only once you've actually logged a few attempts at the same activity
 
 **Example.**
 
-Input: It's 3pm. You've been in back-to-back meetings. Energy is 3/10, you have 45 minutes, you're at the office and feeling drained.
+Input: It's the evening. Energy is 2/10, you have 15 minutes, you've been staring at screens all day.
 
-Output: Top pick: 10-minute walk outside. Quick hits: cold water splash, 5-minute breathing, close tabs and tidy desk. Avoid right now: social media doom-scroll, long creative tasks. First step: stand up and walk to the window.
+Output: Top pick: something low-demand and screen-free that fits the 15 minutes, with a first step, a duration, and a concrete stopping point — no promise about how it will make you feel.
 
 ### SleepArchitect
 
@@ -3797,36 +3787,35 @@ Input: Sunday night brain spiral: dentist, work email, mom's birthday, overwhelm
 
 Output: Overwhelm meter: 22 thoughts → 6 real tasks. Shrink the List: 'Does the whole kitchen need cleaning? Wipe the counters — 3 minutes, 80% of the stress gone.' Map to My Day: 20-minute evening schedule with breaks. Worry Excavator on 'worried about job offer': hidden task found — 'Write a pro/con list for 10 minutes.' Dump Diff shows 3 items from last week resolved without noticing.
 
-### One Percenter
+### Small Change, Big Difference
 
-URL: https://deftbrain.com/OnePercenter
-Tagline: The single 1% change with the largest compound effect on your year
+URL: https://deftbrain.com/SmallChangeBigDifference
+Tagline: One small change that could make the rest easier.
 Categories: Me, Veer
 
-Analyzes your daily routine as a system, finds the single bottleneck producing the most constraint, and delivers one specific 1% adjustment with the highest compound effect. Includes the full chain reaction, the actual math, why the tempting alternatives are second-order, and why you haven't done this already.
+Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.
 
-**What it does.** OnePercenter analyzes your routine the way an engineer analyzes a system — looking for the single chokepoint where a small change produces the most downstream relief. The discipline of this tool is identifying the right 1%, not a menu of 10 things to try.
+**What it does.** Small Change, Big Difference reasons only from the day you actually describe — it doesn't diagnose you or claim to have found the scientifically optimal bottleneck in your life. It looks for one small, concrete change that occurs at a useful point in your routine and may make later parts of the day easier, and commits to that one experiment instead of handing you a list.
 
 **How to use it.**
 
-1. Describe your daily routine in honest detail — include the bad habits
-2. Note what you're trying to improve and what you notice isn't working
-3. Read the system diagnosis — how your routine actually functions as a system
-4. Implement the one change exactly as specified
-5. Read 'A Year From Now' — it's the motivation to actually do it
+1. Walk through a typical day in honest detail — include the parts that aren't working especially well
+2. Optionally note what you'd like to make better, and where the day seems to go off track
+3. Read what the tool noticed in your routine and the one change it suggests trying
+4. Try the change and use 'What to Watch For' to judge whether it's actually helping
 
 **Tips.**
 
-- Be honest about the routine — the tool can only work with what you share
-- The 'why the alternatives are second-order' section explains why not to start elsewhere
-- Implement for 3 weeks before judging — compound effects are slow to start
-- Run this again in 3 months — the bottleneck shifts once you fix the first one
+- Be honest about the routine — the tool can only reason from what you share
+- There's no claim this is the mathematically optimal change — it's a sensible first experiment
+- 'What to Watch For' is the actual test — give the change a real try before judging it
+- If it doesn't help, that's useful information too — try the tool again with what you learned
 
 **Example.**
 
-Input: Productive some days, derailed others, never feel rested
+Input: Productive some days, derailed others, mornings feel rushed
 
-Output: The bottleneck: checking your phone in bed is corrupting your first 20 minutes and setting a reactive mode for the day. The 1% change: move charger to kitchen. Chain reaction: no phone in bed → first 20 minutes intentional → creative work before reactive work. The math: 20 min × 365 = 121 hours of recovered intentional time per year.
+Output: What I notice: mornings start with 20 minutes of phone-in-bed scrolling before anything else happens. The small change: charge the phone outside the bedroom. What it may change: removes the easiest way to start scrolling before getting up, which may make the morning feel less rushed. What to watch for: do you actually get out of bed sooner, and does the change create a new problem elsewhere?
 
 ### Truth Bomb
 

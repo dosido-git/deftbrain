@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '🐱',
     headline: "Get a personalized read on your cat's pattern",
-    body:     "This guide covers the five common causes. Pet Weirdness Decoder takes the specifics — your cat's breed, age, how often it's happening, what else is going on, what you've already tried — and gives you a personalized triage read: try this fix, monitor for these signs, or call the vet today.",
+    body:     "This guide covers the five common causes. Pet Behavior Decoder takes the specifics — your cat's breed, age, how often it's happening, what else is going on, what you've already tried — and gives you a personalized triage read: try this fix, monitor for these signs, or call the vet today.",
     features: [
       "A specific read on your cat's specific pattern",
       "Triage timing — today, this week, or watch-and-wait",
@@ -67,6 +67,6 @@ module.exports = {
       "What to track if you're watching and waiting",
     ],
     toolId:   'PetWeirdnessDecoder',
-    toolName: 'Pet Weirdness Decoder',
+    toolName: 'Pet Behavior Decoder',
   },
 };

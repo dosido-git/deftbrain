@@ -1,5 +1,5 @@
 // PetWeirdnessDecoder — pwd_* keys for all 13 languages. Self-contained data.
-// Tool/brand names (Pet Weirdness Decoder, Doctor Visit Translator, Plain Talk)
+// Tool/brand names (Pet Behavior Decoder, Doctor Visit Translator, Plain Talk)
 // stay identical across languages. No currency is used in this tool.
 export const petWeirdnessDecoder = {
   en: {

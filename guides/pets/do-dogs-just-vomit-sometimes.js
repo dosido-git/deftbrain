@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '🐶',
     headline: "Get a personalized triage read on your dog's vomiting",
-    body:     "This guide covers the general framework. Pet Weirdness Decoder takes the specifics — what came up, how many times, what else is happening, your dog's age and breed — and gives you a personalized triage read: reassure, watch and wait, or call the vet today.",
+    body:     "This guide covers the general framework. Pet Behavior Decoder takes the specifics — what came up, how many times, what else is happening, your dog's age and breed — and gives you a personalized triage read: reassure, watch and wait, or call the vet today.",
     features: [
       "A specific read on your dog's specific situation",
       "Triage timing — today, this week, or watch-and-wait",
@@ -67,6 +67,6 @@ module.exports = {
       "What to track if you're watching and waiting",
     ],
     toolId:   'PetWeirdnessDecoder',
-    toolName: 'Pet Weirdness Decoder',
+    toolName: 'Pet Behavior Decoder',
   },
 };

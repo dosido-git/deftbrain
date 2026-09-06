@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "Pet Behavior Decoder (id: PetWeirdnessDecoder — display name only, see notes)",
-    "generated": "2026-09-06",
+    "generated": "2026-09-06 (FINAL OUTPUT CORRECTIONS pass)",
     "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 2 routes",
     "baseline_commit": "petweirdnessdecoder-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05) replaced likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence, fabricated community anecdotes, and behavior-modification timelines with plausible explanations grounded only in what was reported. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06) added 20 general reasoning rules plus an INPUT INTEGRITY ledger-and-self-check, the most important being: contradictory input fields (a free-text description vs. a structured Duration/Frequency selection) must be surfaced as an unresolved conflict, never silently merged or averaged. See case 'contradictory-duration-frequency-vs-description' below — this is the tool's own permanent regression guard for that exact failure mode, reproducing the case the correction was written for almost verbatim. Also renamed the 1-5 slider from 'severity' to a 'how concerning did this seem to you?' concern rating throughout (never described as clinical severity or as 'progressing'), and 6 new outputGuard.prohibit/require categories were added matching the least mechanically-checkable of the new rules (arbitrary test periods, home-observation-as-proof-of-cause, breed-as-personality, checkbox-meaning-expansion, silently-merged contradictions, invented-new-problem-for-generic-advice). KNOWN NON-DETERMINISTIC EDGE CASE (observed, not fixed, tracked in tool-notes): when the v2 guard's repair pass removes a violation from one item of a string array (e.g. what_you_reported[5]=contradicted_supplied_fact), it can leave that array slot as an empty string rather than deleting the slot, since a repair can only rewrite a string leaf, not resize an array. The frontend now defensively filters empty/whitespace-only items out of every rendered list and copy-to-clipboard build (PetWeirdnessDecoder.js) so this never shows as a blank bullet — this is a permanent, correct-either-way defensive fix and does not depend on that guard behavior ever occurring."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05) replaced likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence, fabricated community anecdotes, and behavior-modification timelines with plausible explanations grounded only in what was reported. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06) added 20 general reasoning rules plus an INPUT INTEGRITY ledger-and-self-check, the most important being: contradictory input fields (a free-text description vs. a structured Duration/Frequency selection) must be surfaced as an unresolved conflict, never silently merged or averaged. See case 'contradictory-duration-frequency-vs-description' below — this is the tool's own permanent regression guard for that exact failure mode, reproducing the case the correction was written for almost verbatim. Also renamed the 1-5 slider from 'severity' to a 'how concerning did this seem to you?' concern rating throughout (never described as clinical severity or as 'progressing'), and 6 new outputGuard.prohibit/require categories were added matching the least mechanically-checkable of the new rules (arbitrary test periods, home-observation-as-proof-of-cause, breed-as-personality, checkbox-meaning-expansion, silently-merged contradictions, invented-new-problem-for-generic-advice). KNOWN NON-DETERMINISTIC EDGE CASE (observed, not fixed, tracked in tool-notes): when the v2 guard's repair pass removes a violation from one item of a string array (e.g. what_you_reported[5]=contradicted_supplied_fact), it can leave that array slot as an empty string rather than deleting the slot, since a repair can only rewrite a string leaf, not resize an array. The frontend now defensively filters empty/whitespace-only items out of every rendered list and copy-to-clipboard build (PetWeirdnessDecoder.js) so this never shows as a blank bullet — this is a permanent, correct-either-way defensive fix and does not depend on that guard behavior ever occurring. FINAL OUTPUT CORRECTIONS pass (2026-09-06, same day): 18 more specific wording rules added after a live-judged read of real output — conflict precedence stated up front (not just explained after the fact), banned two specific phrase patterns verbatim ('even if he seems fine between episodes' — an invented reassuring negative; 'something feels off in his gut' — a narrated internal sensation), banned causal-chain language for a mere association, required consolidating overlapping possibilities to at most 3 truly distinct ones, required 'what to watch' and 'what would change the next step' to stay non-overlapping, required the recommendation to be stated directly instead of hedged ('a low threshold for calling your vet') when vet contact is the actual advice, and required action_level to match that actual recommendation (not softened to watch_closely once the answer already recommends contacting a vet). The first two bans needed a second, more forceful pass (an explicit 'BANNED, verbatim and in substance' framing) after the softer 'do not add X, such as EXAMPLE' phrasing let the exact banned phrases straight through in a live test; re-verified clean across 2 fresh runs after sharpening."
   },
   "cases": [
     {
@@ -226,71 +226,75 @@
       "output": {
         "assessment": {
           "action_level": "watch_closely",
-          "headline": "Repeated grass-eating followed by vomiting",
-          "bottom_line": "Four vomiting episodes in a short period is worth monitoring closely. Watch for any worsening, changes in behavior between episodes, or signs that would prompt a vet call."
+          "headline": "Repeated grass eating followed by vomiting, four times this week",
+          "bottom_line": "Four vomiting episodes in one week is worth taking seriously even without other changes reported. Based on what you described, this doesn't point clearly to an emergency, but the frequency means it's worth watching closely and contacting your vet if the pattern continues or anything else changes."
         },
         "what_you_reported": [
-          "Your dog has eaten grass and vomited afterward four times this week.",
-          "The Duration field says 'Just started today,' but the description says four times this week — these don't fully agree. The four-episode description is used here as the more specific account.",
-          "No other changes were reported — no changes to eating, drinking, energy, or stool, and no medications or recent diet or health changes."
+          "Your 2-year-old Labrador mix has eaten grass and vomited afterward four times this week.",
+          "A note on timing: the Duration field says 'just started today,' but you also described four episodes this week — these can't both be literally true. The assessment is based on four episodes this week as the more specific detail; if the episodes all happened today, that increases urgency.",
+          "No other changes were reported: no medications, no recent diet or health changes, no selected associated changes.",
+          "No information was provided about what happens before, during, or after the episodes."
         ],
         "what_could_explain_it": [
           {
-            "possibility": "The grass-eating itself is provoking the vomiting",
-            "why_it_could_fit": "Grass may be irritating the stomach or triggering a gag response. The vomiting happens after he eats it, which makes a direct connection possible.",
+            "possibility": "Grass eating as a response to GI discomfort, with vomiting as a result",
+            "why_it_could_fit": "Dogs sometimes eat grass when something in the GI tract is off, and vomiting can follow. Four episodes in a week could suggest an ongoing GI issue rather than a one-time event.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if the vomiting only happens when he eats grass and not at other times.",
-              "Less clear if vomiting is also occurring when he hasn't eaten grass — that would suggest a separate issue.",
-              "Worth noting whether he seems to seek out grass eagerly before an episode, or whether eating it seems almost incidental."
+              "Whether he seems uncomfortable, unsettled, or is licking his lips before seeking grass",
+              "Whether vomiting also happens at times when grass isn't involved",
+              "Whether stool consistency or appetite has changed, even if not yet reported"
             ]
           },
           {
-            "possibility": "An underlying stomach or GI issue is prompting both the grass-eating and the vomiting",
-            "why_it_could_fit": "Some dogs with GI discomfort seek out grass. If something is already unsettled internally, the grass may be a response rather than the root cause — and the vomiting could follow from the underlying issue, not just the grass.",
+            "possibility": "Grass eating as a habit or self-directed behavior, with vomiting as an incidental outcome",
+            "why_it_could_fit": "Some dogs eat grass regularly without an obvious trigger, and vomiting sometimes follows without indicating an underlying problem. At 2 years old, this can occur without a medical cause.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if vomiting continues even when he hasn't eaten grass, or if it happens at times unrelated to outdoor time.",
-              "Also worth considering if the vomiting continues even when grass-eating is prevented.",
-              "Less likely to be the main factor if he seems completely normal between episodes and appetite is unchanged."
+              "Whether he seems completely normal in energy, appetite, and comfort between episodes",
+              "Whether the vomiting always follows grass eating specifically, or happens at other times too",
+              "Whether the episodes stop if grass access is limited on a few walks"
             ]
           },
           {
-            "possibility": "Something on or in the grass is contributing",
-            "why_it_could_fit": "Lawn treatments, fertilizers, or other substances on grass can cause GI irritation. If the grass he's accessing has been recently treated, that could be a factor.",
+            "possibility": "Something encountered outdoors contributing to the episodes",
+            "why_it_could_fit": "If the grass is in an area treated with a lawn chemical, fertilizer, or pesticide, or if he's ingesting something mixed in with the grass, that could be relevant to both the eating behavior and the vomiting.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if the grass is in an area that could have been recently treated with a lawn chemical or herbicide.",
-              "Less of a concern if the grass is in a familiar, untreated area he has eaten from before without issue."
+              "Whether the episodes happen in one specific outdoor area or across different locations",
+              "Whether the grass has been recently treated with any lawn product",
+              "Whether anything else — stool changes, lethargy, drooling, or repeated attempts to vomit — has appeared alongside the vomiting"
             ]
           }
         ],
         "what_to_watch": [
-          "Whether vomiting continues or increases, especially if it happens without grass-eating.",
-          "Any change in appetite, energy level, or normal behavior between episodes.",
-          "Whether he seems to be seeking out grass deliberately before each episode, or eating it incidentally.",
-          "Stool changes: diarrhea, blood, or not going at all.",
-          "What the vomit contains and looks like — whether it is mostly grass, undigested food, or something else."
+          "Whether vomiting happens more than once on a single day, or the total number of episodes increases",
+          "Any change in appetite, stool consistency, or energy level",
+          "Signs of discomfort between episodes: restlessness, repeated lip-licking, reluctance to move, or a hunched posture",
+          "Whether vomiting occurs at times when grass was not involved",
+          "Any blood in the vomit or stool, or repeated unproductive retching"
         ],
         "what_would_change_the_next_step": [
-          "Blood in the vomit, or vomit that looks very dark or coffee-ground-like — contact a vet promptly.",
-          "Vomiting that continues frequently without grass-eating, or that he cannot seem to stop.",
-          "He stops eating, seems lethargic, or shows signs of distress between episodes.",
-          "Vomiting that increases in frequency or severity, or that does not seem tied to grass-eating at all."
+          "Vomiting becomes more frequent, or multiple episodes occur within a single day",
+          "Blood appears in the vomit or stool",
+          "He shows signs of distress, significant lethargy, or stops eating",
+          "Repeated unproductive retching or an obviously distended or rigid abdomen — contact a vet urgently if this happens"
         ],
         "what_you_can_do_now": [
-          "On your next outdoor time, note when each episode happens, what he ate before it, and whether he actively seeks grass or eats it without seeming to seek it — this detail matters if you contact a vet.",
-          "Check whether the grass areas he's eating from could have been recently treated with any lawn chemical, and avoid those areas if there's any chance they were.",
-          "Note the timing of each episode: what he ate beforehand, when it happened relative to meals, and what the vomit looked like — this will be useful if you do contact your vet."
+          "Note whether the episodes are happening in one specific outdoor area, and whether that area may have been treated with any lawn product recently.",
+          "On the next few walks, limiting grass access where practical and noting whether vomiting still occurs is a reasonable observation — if the pattern changes, that's useful information for your vet.",
+          "Keep a brief log: date, time, whether grass was eaten, and what the vomit looked like. Four episodes already makes a vet conversation reasonable; a log makes it more useful.",
+          "Contact your vet now if the episodes are all happening today rather than spread across the week — same-day repeated vomiting warrants a prompt call."
         ],
         "vet_prep": {
           "show_only_when_useful": true,
           "what_to_record": [
-            "How many times vomiting occurs and whether grass-eating preceded each episode.",
-            "What the vomit looks like — color, whether it contains food or just liquid or bile.",
-            "Any change in appetite, stool, energy, or behavior between episodes.",
-            "Whether preventing grass access changes the vomiting pattern."
+            "Date and time of each episode",
+            "Whether grass was definitely eaten beforehand, and roughly how much if you could tell",
+            "What the vomit looked like — whether it contained grass, was yellow or foamy, or had any blood",
+            "Any changes in appetite, stool, or energy you notice between now and the appointment"
           ],
           "questions_or_details_to_bring": [
-            "Whether the frequency and pattern you've observed warrants any examination or testing.",
-            "Whether there is anything in his diet, environment, or routine that could be contributing."
+            "Whether the episodes are spread across several days or clustered on one or two days",
+            "Whether the outdoor areas involved could have been treated with lawn chemicals or fertilizers",
+            "Any recent diet, medication, or environmental changes, even ones that seemed minor"
           ]
         }
       }
