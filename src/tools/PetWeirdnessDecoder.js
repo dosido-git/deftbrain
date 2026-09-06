@@ -304,8 +304,8 @@ const PetWeirdnessDecoder = ({ tool }) => {
     if (!results) return '';
     const l = [`🐾 ${t('pwd_copy_header')}`, '═'.repeat(40), `${t('pwd_copy_pet')} ${petTypeLabel(petType)}${breed ? ` (${breed})` : ''} · ${age}y`, `${t('pwd_copy_behavior')} ${behavior}`, `${t('pwd_copy_duration')} ${durationLabel(duration)} · ${t('pwd_copy_freq')} ${frequencyLabel(frequency)}`, ''];
     if (results?.assessment) l.push(`${t('pwd_copy_action_level')} ${actionLabel(results?.assessment.action_level)}`, results?.assessment.bottom_line || '', '');
-    if (results?.what_could_explain_it?.length) { l.push(t('pwd_could_explain')); results?.what_could_explain_it.forEach((p) => l.push(`  • ${p.possibility}`)); l.push(''); }
-    if (results?.what_to_watch?.length) { l.push(t('pwd_watch_for')); results?.what_to_watch.forEach((w) => l.push(`  • ${w}`)); l.push(''); }
+    if (results?.what_could_explain_it?.length) { l.push(t('pwd_could_explain')); results?.what_could_explain_it.forEach((p) => { if (p.possibility?.trim()) l.push(`  • ${p.possibility}`); }); l.push(''); }
+    if (results?.what_to_watch?.length) { l.push(t('pwd_watch_for')); results?.what_to_watch.forEach((w) => { if (w?.trim()) l.push(`  • ${w}`); }); l.push(''); }
     if (followupHistory.length) { l.push(t('pwd_copy_followup')); followupHistory.forEach((f) => l.push(`  ${t('pwd_copy_q')} ${f.question}`, `  ${t('pwd_copy_a')} ${f.answer}`, '')); }
     l.push(BRAND);
     return l.join('\n');
@@ -507,7 +507,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
           {results?.what_you_reported?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>📋 {t('pwd_what_you_reported')}</h3>
-              <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.what_you_reported.map((r, i) => <li key={i}>• {r}</li>)}</ul>
+              <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.what_you_reported.filter((r) => r && r.trim()).map((r, i) => <li key={i}>• {r}</li>)}</ul>
             </div>
           )}
 
@@ -519,7 +519,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
                   <p className={`font-semibold ${c.text}`}>{p.possibility}</p>
                   {p.why_it_could_fit && <p className={`text-sm mt-1 ${c.textSecondary}`}>{p.why_it_could_fit}</p>}
                   {p.what_would_make_it_more_or_less_plausible?.length > 0 && (
-                    <div className="mt-2"><p className={`text-xs font-semibold uppercase ${c.textMuted}`}>{t('pwd_more_or_less_plausible')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{p.what_would_make_it_more_or_less_plausible.map((s, j) => <li key={j}>• {s}</li>)}</ul></div>
+                    <div className="mt-2"><p className={`text-xs font-semibold uppercase ${c.textMuted}`}>{t('pwd_more_or_less_plausible')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{p.what_would_make_it_more_or_less_plausible.filter((s) => s && s.trim()).map((s, j) => <li key={j}>• {s}</li>)}</ul></div>
                   )}
                 </div>
               ))}
@@ -529,29 +529,29 @@ const PetWeirdnessDecoder = ({ tool }) => {
           {results?.what_to_watch?.length > 0 && (
             <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>👀</span> {t('pwd_watch_for')}</h3>
-              <ul className="text-sm space-y-1.5">{results?.what_to_watch.map((w, i) => <li key={i} className="flex items-start gap-2"><span>•</span> {w}</li>)}</ul>
+              <ul className="text-sm space-y-1.5">{results?.what_to_watch.filter((w) => w && w.trim()).map((w, i) => <li key={i} className="flex items-start gap-2"><span>•</span> {w}</li>)}</ul>
             </div>
           )}
 
           {results?.what_would_change_the_next_step?.length > 0 && (
             <div className={`${c.danger} border-s-4 rounded-e-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> {t('pwd_change_next_step')}</h3>
-              <ul className="text-sm space-y-1.5 font-medium">{results?.what_would_change_the_next_step.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">→</span> {f}</li>)}</ul>
+              <ul className="text-sm space-y-1.5 font-medium">{results?.what_would_change_the_next_step.filter((f) => f && f.trim()).map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">→</span> {f}</li>)}</ul>
             </div>
           )}
 
           {results?.what_you_can_do_now?.length > 0 && (
             <div className={`${c.success} border rounded-lg p-5`}>
               <h3 className="font-bold mb-2">✅ {t('pwd_can_do_now')}</h3>
-              <ul className="text-sm space-y-1.5">{results?.what_you_can_do_now.map((s, i) => <li key={i}>• {s}</li>)}</ul>
+              <ul className="text-sm space-y-1.5">{results?.what_you_can_do_now.filter((s) => s && s.trim()).map((s, i) => <li key={i}>• {s}</li>)}</ul>
             </div>
           )}
 
           {results?.vet_prep?.show_only_when_useful && (results?.vet_prep.what_to_record?.length > 0 || results?.vet_prep.questions_or_details_to_bring?.length > 0) && (
             <div className={`${c.cardAlt} border rounded-xl p-5`}>
               <h3 className="font-bold mb-3 flex items-center gap-2"><span>🩺</span> {t('pwd_vet_prep')}</h3>
-              {results?.vet_prep.what_to_record?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 {t('pwd_what_to_record')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.what_to_record.map((r, i) => <li key={i}>• {r}</li>)}</ul></div>}
-              {results?.vet_prep.questions_or_details_to_bring?.length > 0 && <div><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ {t('pwd_questions_to_bring')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.questions_or_details_to_bring.map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
+              {results?.vet_prep.what_to_record?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 {t('pwd_what_to_record')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.what_to_record.filter((r) => r && r.trim()).map((r, i) => <li key={i}>• {r}</li>)}</ul></div>}
+              {results?.vet_prep.questions_or_details_to_bring?.length > 0 && <div><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ {t('pwd_questions_to_bring')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.questions_or_details_to_bring.filter((q) => q && q.trim()).map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
               {videoPreview && <div className="mt-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>🎥 {t('pwd_your_clip')}</p><video src={videoPreview} className="w-48 h-auto rounded border" controls /></div>}
             </div>
           )}
@@ -561,7 +561,11 @@ const PetWeirdnessDecoder = ({ tool }) => {
             <h3 className={`font-bold mb-3 ${c.text}`}>📋 {t('pwd_save_observation')}</h3>
             {!justSaved ? (
               <div className="space-y-3">
-                <div><div className="flex justify-between"><label className={`text-xs ${c.label}`}>{t('pwd_severity_optional')}</label><span className="text-xs font-bold">{saveSeverity}/5</span></div><input type="range" min="1" max="5" value={saveSeverity} onChange={(e) => setSaveSeverity(parseInt(e.target.value, 10))} className="w-full" /></div>
+                <div>
+                  <div className="flex justify-between"><label className={`text-xs ${c.label}`}>{t('pwd_concern_label')}</label><span className="text-xs font-bold">{saveSeverity}/5</span></div>
+                  <input type="range" min="1" max="5" value={saveSeverity} onChange={(e) => setSaveSeverity(parseInt(e.target.value, 10))} className="w-full" />
+                  <div className={`flex justify-between text-[11px] ${c.textMuted}`}><span>{t('pwd_concern_low')}</span><span>{t('pwd_concern_high')}</span></div>
+                </div>
                 <input type="text" value={saveNote} onChange={(e) => setSaveNote(e.target.value)} placeholder={t('pwd_observation_note_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} />
                 <button onClick={handleSaveObservation} className={`${c.btnPrimary} px-4 py-2 rounded text-sm font-bold`}>{t('pwd_save')}</button>
               </div>

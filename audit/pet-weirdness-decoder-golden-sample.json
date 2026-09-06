@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "Pet Behavior Decoder (id: PetWeirdnessDecoder — display name only, see notes)",
-    "generated": "2026-09-05",
+    "generated": "2026-09-06",
     "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 2 routes",
     "baseline_commit": "petweirdnessdecoder-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05): replaces likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence ('how common'), fabricated community anecdotes, and behavior-modification timelines ('improvement in 1-3 weeks') with plausible explanations grounded only in what was reported, what would make each more or less likely, and observable next-step triggers instead of a countdown. Old schema (behavior_analysis/breed_specific_info/life_stage_context/most_likely_explanation/how_common/other_possibilities with likelihood/when_to_worry/vet_visit_prep/if_its_just_quirky/behavioral_modification/similar_pet_stories) fully replaced by: assessment{action_level,headline,bottom_line} / what_you_reported[] / what_could_explain_it[]{possibility,why_it_could_fit,what_would_make_it_more_or_less_plausible[]} / what_to_watch[] / what_would_change_the_next_step[] / what_you_can_do_now[] / vet_prep{show_only_when_useful,what_to_record[],questions_or_details_to_bring[]}. action_level is one of likely_low_concern|watch_closely|vet_contact_recommended|emergency — never a percentage, never high/medium/low. Added router.outputStandard='v2' + router.outputGuard with runOutputGuard (LLM-judge check + repair), since the failure modes here are invented FACTS (a symptom, a trigger, a medication effect) that a regex can't reliably catch — matches the Party Architect precedent, not PEP's regex-only approach. Fixed a pre-existing anti-pattern in the /followup endpoint: raw anthropic.messages.create with a hand-rolled 3-try loop, now callClaudeWithRetry with a {\"answer\": \"...\"} JSON envelope (callClaudeWithRetry always JSON.parses — there is no free-text mode). Also fixed: an 'AI-assisted' mention in the vet summary footer, present in all 13 languages since the tool shipped, and a display-name rename (Pet Weirdness Decoder → Pet Behavior Decoder) that deliberately keeps id/route/i18n prefix unchanged (see tool-notes) — this golden file's tool name in the header reflects the NEW display name, but the endpoint path is unchanged. DO NOT reintroduce: likelihood labels on possibilities, breed/age as anything but situational context, invented prevalence, community anecdotes, or a behavior-mod timeline."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-05) replaced likelihood-scored differentials, breed genetic-predisposition lists, arbitrary age-bucket rules, invented prevalence, fabricated community anecdotes, and behavior-modification timelines with plausible explanations grounded only in what was reported. FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06) added 20 general reasoning rules plus an INPUT INTEGRITY ledger-and-self-check, the most important being: contradictory input fields (a free-text description vs. a structured Duration/Frequency selection) must be surfaced as an unresolved conflict, never silently merged or averaged. See case 'contradictory-duration-frequency-vs-description' below — this is the tool's own permanent regression guard for that exact failure mode, reproducing the case the correction was written for almost verbatim. Also renamed the 1-5 slider from 'severity' to a 'how concerning did this seem to you?' concern rating throughout (never described as clinical severity or as 'progressing'), and 6 new outputGuard.prohibit/require categories were added matching the least mechanically-checkable of the new rules (arbitrary test periods, home-observation-as-proof-of-cause, breed-as-personality, checkbox-meaning-expansion, silently-merged contradictions, invented-new-problem-for-generic-advice). KNOWN NON-DETERMINISTIC EDGE CASE (observed, not fixed, tracked in tool-notes): when the v2 guard's repair pass removes a violation from one item of a string array (e.g. what_you_reported[5]=contradicted_supplied_fact), it can leave that array slot as an empty string rather than deleting the slot, since a repair can only rewrite a string leaf, not resize an array. The frontend now defensively filters empty/whitespace-only items out of every rendered list and copy-to-clipboard build (PetWeirdnessDecoder.js) so this never shows as a blank bullet — this is a permanent, correct-either-way defensive fix and does not depend on that guard behavior ever occurring."
   },
   "cases": [
     {
@@ -30,67 +30,77 @@
       },
       "output": {
         "assessment": {
-          "action_level": "likely_low_concern",
-          "headline": "Nächtliches Schreien und Aktivitätsschübe um 3 Uhr",
-          "bottom_line": "Das Muster – kurze, wiederkehrende Aktivitätsschübe nachts ohne weitere Veränderungen – könnte mehrere Erklärungen haben. Da keine anderen Anzeichen gemeldet wurden, lohnt sich eine Beobachtung der nächsten ein bis zwei Wochen, um zu sehen, ob sich das Verhalten verändert oder sich ein klarer Auslöser abzeichnet."
+          "action_level": "watch_closely",
+          "headline": "Nächtliches Jaulen und Umherlaufen gegen 3 Uhr",
+          "bottom_line": "Auf Basis des Berichteten klingt dies nach einem erklärbaren nächtlichen Aktivitätsmuster, das bei Katzen vorkommen kann. Da es neu ist und regelmäßig auftritt, lohnt es sich, die Situation im Auge zu behalten – vor allem um sicherzustellen, dass keine körperliche Ursache dahintersteckt."
         },
         "what_you_reported": [
-          "Weibliche Katze, 4 Jahre alt, kastriert, Wohnungskatze",
-          "Seit einer Woche: lautes Schreien, Rennen und Gegenstände herunterschmeißen – hauptsächlich gegen 3 Uhr nachts",
-          "Die Episoden dauern jeweils etwa 15–20 Minuten, danach beruhigt sie sich wieder",
-          "Keine gemeldeten Veränderungen in Umgebung, Futter, Gesundheit oder Medikamenten",
-          "Keine früheren gespeicherten Beobachtungen zu diesem Verhalten"
+          "Weibliche, kastrierte, 4 Jahre alte Hauskatze, ausschließlich Wohnungskatze.",
+          "Seit etwa einer Woche: lautes Jaulen, Spurts durch die Wohnung und Dinge von Regalen stoßen – hauptsächlich gegen 3 Uhr nachts.",
+          "Die Episoden dauern jeweils 15–20 Minuten, danach beruhigt sie sich wieder.",
+          "Laut Angabe keine Veränderungen in der Umgebung, Ernährung, Medikation oder Gesundheit.",
+          "Keine früheren gespeicherten Beobachtungen dieses Verhaltens vorhanden.",
+          "Dauer wurde als 'Wochen' angegeben, die Beschreibung nennt jedoch 'die letzte Woche' – ein leichter Widerspruch, der nicht aufgelöst wurde."
         ],
         "what_could_explain_it": [
           {
-            "possibility": "Nächtliche Aktivitätsphasen als Teil des natürlichen Aktivitätsrhythmus",
-            "why_it_could_fit": "Katzen sind von Natur aus in der Dämmerung und nachts aktiv; auch kastrierte Wohnungskatzen können ausgeprägte Aktivitätsschübe zu bestimmten Nachtzeiten entwickeln.",
+            "possibility": "Gesteigerter nächtlicher Bewegungsdrang ohne erkennbaren äußeren Auslöser",
+            "why_it_could_fit": "Katzen haben natürlicherweise Phasen erhöhter Aktivität, insbesondere in den frühen Morgenstunden. Bei einer reinen Wohnungskatze können solche Aktivitätsausbrüche mit Vokalisierung auftreten.",
             "what_would_make_it_more_or_less_plausible": [
-              "Eher wahrscheinlich, wenn die Katze tagsüber viel schläft und abends wenig Beschäftigung hat",
-              "Weniger wahrscheinlich, wenn das Schreien anhaltend und intensiv klingt und nicht durch Rennen oder Spielen unterbrochen wird",
-              "Weniger wahrscheinlich, wenn das Schreien auch zu anderen Tageszeiten neu aufgetreten ist"
+              "Plausibler, wenn die Episoden sich auf Zeiten konzentrieren, in denen die Katze typischerweise aktiver ist.",
+              "Weniger naheliegend, wenn die Episoden intensiver werden, länger andauern oder von Anzeichen von Unruhe oder Schmerz begleitet sind.",
+              "Ein Versuch mit einer aktiven Spielsession am frühen Abend kann zeigen, ob sich das Muster dadurch verändert."
             ]
           },
           {
-            "possibility": "Reaktion auf etwas außerhalb der Wohnung, das du nicht wahrnimmst",
-            "why_it_could_fit": "Geräusche, Gerüche oder Bewegungen von anderen Tieren, Nachbarn oder draußen könnten zu dieser Uhrzeit für die Katze wahrnehmbar sein, ohne dass du etwas bemerkst.",
+            "possibility": "Reaktion auf etwas außerhalb der Wohnung, das die Katze wahrnimmt",
+            "why_it_could_fit": "Geräusche, Gerüche oder Bewegungen – etwa andere Tiere im Treppenhaus oder draußen – könnten die Katze zu dieser Uhrzeit aktivieren, auch wenn die Besitzerin nichts bemerkt.",
             "what_would_make_it_more_or_less_plausible": [
-              "Eher wahrscheinlich, wenn die Episoden immer in der Nähe von Fenstern oder Türen stattfinden",
-              "Eher wahrscheinlich, wenn sich die Katze bei den Episoden auf etwas außerhalb zu konzentrieren scheint",
-              "Weniger wahrscheinlich, wenn sie sich gleichmäßig durch alle Räume bewegt ohne erkennbaren Fokus"
+              "Plausibler, wenn die Episoden immer in der Nähe von Fenstern, Türen oder Wänden zu Nachbarwohnungen stattfinden.",
+              "Weniger naheliegend, wenn die Katze völlig wahllos durch alle Räume läuft ohne Richtungsbezug.",
+              "Beobachten, ob Zugluft, Lichtveränderungen oder saisonale Faktoren (z. B. Tiere im Innenhof) mit dem Beginn zusammenpassen."
             ]
           },
           {
-            "possibility": "Körperliches Unwohlsein oder eine beginnende gesundheitliche Veränderung",
-            "why_it_could_fit": "Vermehrtes Schreien kann gelegentlich mit körperlichem Unbehagen zusammenhängen, lässt sich aber nicht ohne weitere Anzeichen von anderen Erklärungen unterscheiden.",
+            "possibility": "Körperliche Ursache, die Unwohlsein oder veränderte Wahrnehmung auslöst",
+            "why_it_could_fit": "Neu auftretendes, regelmäßiges Jaulen kann in seltenen Fällen mit körperlichen Veränderungen zusammenhängen – ein Grund, dies mit der Tierärztin oder dem Tierarzt zu besprechen.",
             "what_would_make_it_more_or_less_plausible": [
-              "Eher bedenkenswert, wenn zusätzlich Veränderungen beim Fressen, Trinken, Katzenklo-Nutzung oder im Allgemeinzustand auftreten",
-              "Eher bedenkenswert, wenn das Schreien sich verändert – zum Beispiel klagender oder anhaltender wird",
-              "Weniger wahrscheinlich, wenn die Katze tagsüber völlig unauffällig ist und die Episoden klar mit Bewegung und Spielverhalten verknüpft sind"
+              "Erhärtet sich, wenn gleichzeitig Veränderungen in Fress-, Trink- oder Toilettenverhalten auftreten, das Fell schlechter wird oder die Katze tagsüber weniger aktiv oder schlechter ansprechbar ist.",
+              "Auch relevant, wenn die Episoden häufiger oder intensiver werden statt gleich zu bleiben.",
+              "Kein Änderungshinweis wurde bisher berichtet – das ist nützliche Information, schließt eine körperliche Ursache aber nicht aus."
             ]
           }
         ],
         "what_to_watch": [
-          "Veränderungen beim Fressen, Trinken oder der Nutzung der Katzentoilette",
-          "Ob das Schreien sich in Klang oder Intensität verändert – zum Beispiel anhaltender oder klagender wirkt",
-          "Ob Episoden auch tagsüber auftreten oder häufiger werden",
-          "Anzeichen von Unwohlsein: ungewöhnliches Sitzen, Verstecken, verändertes Fell oder Körperhaltung"
+          "Veränderungen beim Fressen, Trinken oder bei der Nutzung der Katzentoilette.",
+          "Ob die Episoden häufiger, länger oder intensiver werden.",
+          "Ob die Katze tagsüber weniger aktiv, weniger ansprechbar oder weniger an Spiel interessiert ist als sonst.",
+          "Ob sich die Qualität des Jaulens verändert – zum Beispiel ob es intensiver, häufiger oder anders strukturiert wird als bisher beobachtet.",
+          "Ob die Episoden beginnen, auch zu anderen Tageszeiten aufzutreten."
         ],
         "what_would_change_the_next_step": [
-          "Das Schreien wird deutlich häufiger, intensiver oder klingt klagend statt spielerisch",
-          "Neue Symptome treten auf: Veränderungen beim Fressen oder Trinken, auffälliges Toilettenverhalten, Erbrechen, Verstecken",
-          "Die Katze wirkt tagsüber teilnahmslos, weniger beweglich oder allgemein verändert",
-          "Die Episoden beginnen auch tagsüber oder weiten sich zeitlich aus"
+          "Gleichzeitige Veränderungen in Fress-, Trink- oder Ausscheidungsverhalten.",
+          "Das Jaulen klingt anhaltend, klagend oder anders als die kurzen Laute bei Spielaktivität.",
+          "Die Episoden werden in wenigen Tagen deutlich häufiger oder länger.",
+          "Die Katze wirkt tagsüber verändert – weniger reagierend, weniger aktiv oder körperlich anders."
         ],
         "what_you_can_do_now": [
-          "Beobachte, ob die Episoden immer zur selben Zeit stattfinden und ob sie mit bestimmten Orten in der Wohnung verknüpft sind – das hilft, mögliche äußere Auslöser einzugrenzen.",
-          "Falls die Katze abends wenig Beschäftigung hat, kannst du versuchsweise eine kurze interaktive Spieleinheit am frühen Abend einbauen und beobachten, ob sich das nächtliche Muster dadurch verändert – ohne Ergebnis zu erwarten.",
-          "Notiere kurz, wann die Episoden stattfinden und wie sie sich anhören, damit du bei Bedarf klare Informationen für den Tierarzt hast."
+          "Zeitpunkt, Dauer und Verlauf jeder Episode kurz notieren – das hilft, Muster zu erkennen und ist nützlich für ein mögliches Tierarztgespräch.",
+          "Falls die Episoden sich in den nächsten Tagen nicht verändern oder zunehmen, ist ein Gespräch mit der Tierärztin oder dem Tierarzt sinnvoll – um eine körperliche Ursache auszuschließen und Änderungen in Verhalten oder Gesundheit fachlich einzuordnen.",
+          "Prüfen, ob zur fraglichen Uhrzeit in der unmittelbaren Umgebung (Treppenhaus, Innenhof, Fenster) etwas vor sich geht, das die Katze aktivieren könnte."
         ],
         "vet_prep": {
-          "show_only_when_useful": false,
-          "what_to_record": [],
-          "questions_or_details_to_bring": []
+          "show_only_when_useful": true,
+          "what_to_record": [
+            "Datum und Uhrzeit jeder Episode, Dauer und ungefähre Intensität.",
+            "Ob und welche begleitenden Veränderungen im Fress-, Trink- oder Toilettenverhalten auftreten.",
+            "Ein kurzes Video einer Episode, falls möglich – hilfreich für die Tierärztin oder den Tierarzt."
+          ],
+          "questions_or_details_to_bring": [
+            "Seit wann genau das Verhalten aufgetreten ist und ob es sich verändert hat.",
+            "Ob es wirklich keine Umgebungsveränderungen gab – auch kleinere wie neue Möbel, andere Besuchsmuster oder Gerüche.",
+            "Wann die letzte allgemeine Untersuchung stattgefunden hat."
+          ]
         }
       }
     },
@@ -124,77 +134,163 @@
       "output": {
         "assessment": {
           "action_level": "vet_contact_recommended",
-          "headline": "Repeated grass-eating and vomiting, with reduced appetite and lower energy",
-          "bottom_line": "Four vomiting episodes in one week, combined with eating less and more tiredness, goes beyond an isolated stomach upset. Because he is also on Rimadyl, these changes are worth a prompt veterinary conversation."
+          "headline": "Repeated grass eating followed by vomiting, with reduced appetite and tiredness",
+          "bottom_line": "Four vomiting episodes in one week, combined with eating less and lower energy, is enough to warrant a veterinary conversation soon — particularly because these changes are happening in a 9-year-old dog already on a daily medication."
         },
         "what_you_reported": [
-          "Grass-eating on every walk this week, followed by vomiting within an hour, four times in total",
-          "This pattern is new — no prior history of this behavior was noted",
-          "Eating less at meals over the same period",
-          "More tired than usual",
-          "Currently taking Rimadyl for joint pain",
-          "No recent diet changes reported"
+          "Grass eating on every walk, followed by vomiting within an hour, four times this week.",
+          "The pattern has been going on for about a week and is happening multiple times daily.",
+          "He is eating less at meals than usual.",
+          "He seems more tired than usual.",
+          "He is a 9-year-old Labrador mix currently taking Rimadyl (carprofen) for joint pain.",
+          "No recent diet changes or vet visits were reported."
         ],
         "what_could_explain_it": [
           {
-            "possibility": "GI irritation or an underlying stomach issue prompting him to eat grass",
-            "why_it_could_fit": "Dogs sometimes seek out grass when their stomach is bothering them, and repeated vomiting with reduced appetite and lower energy points toward something affecting his digestive tract.",
+            "possibility": "An underlying GI issue prompting the grass eating and vomiting",
+            "why_it_could_fit": "Dogs sometimes eat grass when experiencing stomach discomfort, and a recurring GI problem could explain both the vomiting and the reduced appetite. The tiredness could accompany that discomfort.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if the vomiting contains bile or appears to happen on an empty stomach",
-              "More plausible if he seems uncomfortable or restless before eating the grass",
-              "Less plausible if appetite and energy return to normal between episodes"
+              "More plausible if the vomiting also happens on days when grass eating is prevented, or if his stool has changed in consistency, color, or frequency.",
+              "Worth noting either way: whether he seems uncomfortable or restless before or after vomiting, beyond just the grass eating itself."
             ]
           },
           {
-            "possibility": "GI side effect related to Rimadyl use",
-            "why_it_could_fit": "NSAIDs like Rimadyl can irritate the stomach lining in some dogs, and the combination of vomiting, reduced appetite, and lower energy are changes worth flagging to the vet who manages that medication.",
+            "possibility": "A Rimadyl-related GI effect",
+            "why_it_could_fit": "Carprofen can cause stomach upset, reduced appetite, and vomiting in some dogs, and these symptoms starting around the same time would be worth raising with the prescribing vet — not to stop the medication on your own, but to flag the timing.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if the symptoms started around a change in dosing schedule or if he takes Rimadyl on an empty stomach",
-              "More plausible if the vomit contains blood or dark material — contact your vet promptly if you see that",
-              "Less plausible if he has been on the same Rimadyl routine for a long time with no previous stomach issues"
+              "More worth exploring if the dosing schedule or anything about how it's given changed around the time this started.",
+              "The prescribing vet is better placed than this tool to weigh the medication's role, given they know his full history."
             ]
           },
           {
-            "possibility": "Something ingested on walks triggering the vomiting, with grass-eating as a separate behavior",
-            "why_it_could_fit": "It is also possible he is encountering something on walks — a plant, substance, or material — that is causing the vomiting, and the grass-eating is incidental.",
+            "possibility": "Something encountered on walks contributing to the pattern",
+            "why_it_could_fit": "If the grass he's eating has been treated with a lawn chemical, or if he's picking up something else alongside it, that could be causing the vomiting rather than the grass itself.",
             "what_would_make_it_more_or_less_plausible": [
-              "More plausible if the route has changed recently or includes areas where he sniffs or mouths things beyond grass",
-              "More plausible if the vomiting happens even on days he eats less grass",
-              "Less plausible if restricting his access to grass during walks reduces the vomiting"
+              "More plausible if the episodes are concentrated after walks in a specific area rather than all locations.",
+              "Worth checking whether the grass areas he favors could have been recently treated."
             ]
           }
         ],
         "what_to_watch": [
-          "Any blood or dark material in the vomit — that would make veterinary contact more urgent",
-          "Whether appetite continues to drop or he stops eating altogether",
-          "Whether the tiredness deepens — less willing to move, difficulty getting up",
-          "Whether vomiting is increasing in frequency or happening when he has not eaten grass",
-          "Any signs of abdominal discomfort such as hunching, reluctance to have his belly touched, or unusual posturing"
+          "Any vomiting that contains blood, or stool that is dark, tarry, or bloody — contact a vet promptly if this appears.",
+          "Whether the reduced appetite continues or he stops eating altogether.",
+          "Whether the tiredness increases or he becomes reluctant to move.",
+          "Whether vomiting occurs on a day when grass eating is prevented — this would be useful information for the vet."
         ],
         "what_would_change_the_next_step": [
-          "Blood or dark coffee-ground-like material in the vomit — contact your vet the same day",
-          "Complete refusal to eat or drink",
-          "Obvious pain, collapse, or significant distress",
-          "Vomiting that continues even when grass access is limited on walks"
+          "Blood in vomit or stool, or black/tarry stool — these warrant urgent veterinary contact, not a routine appointment.",
+          "Vomiting that becomes more frequent, more forceful, or persists beyond what you have already described.",
+          "He stops eating entirely or shows signs of significant distress such as restlessness, hunching, or a distended abdomen.",
+          "A noticeable further drop in energy beyond what you have already noticed."
         ],
         "what_you_can_do_now": [
-          "Contact your vet to describe the full picture — four vomiting episodes, reduced appetite, lower energy, and current Rimadyl use — and let them advise on next steps",
-          "On walks, you can try limiting how much grass he eats to see whether that reduces vomiting; note whether it makes a difference",
-          "Keep a brief log of each episode: time, how much grass he ate, what the vomit looked like, and whether he had eaten a meal beforehand — this will help your vet assess the pattern",
-          "Do not adjust or stop the Rimadyl on your own; that decision belongs with the vet who prescribed it"
+          "Contact the vet who prescribed Rimadyl and describe the full picture: the vomiting frequency, the reduced appetite, the tiredness, and how long it has been going on. Bring up the Rimadyl specifically so they can factor in the medication context.",
+          "On upcoming walks, note whether the grass eating and vomiting happen in the same locations each time, and whether preventing grass eating on one walk changes the pattern — this observation could help the vet.",
+          "Do not adjust or stop the Rimadyl on your own; that decision belongs with the prescribing vet given his joint condition."
         ],
         "vet_prep": {
           "show_only_when_useful": true,
           "what_to_record": [
-            "Time of each vomiting episode and what the vomit looked like",
-            "How much he ate at each meal relative to normal",
-            "Whether grass access on a walk correlates with vomiting that day",
-            "His current Rimadyl dose, schedule, and whether he takes it with food"
+            "The date and time of each vomiting episode and whether grass eating preceded it.",
+            "How much he is eating at meals relative to his usual amount.",
+            "Any change in his stool — consistency, color, frequency.",
+            "Whether the episodes happen on walks in specific locations or everywhere."
           ],
           "questions_or_details_to_bring": [
-            "Could Rimadyl be contributing to the stomach upset, and should any precautions change?",
-            "Are the reduced appetite and lower energy connected to the vomiting, or do they need separate evaluation?",
-            "What signs should prompt me to bring him in sooner rather than waiting for a scheduled appointment?"
+            "His current Rimadyl dose, how long he has been on it, and whether anything about when or how he takes it has changed recently.",
+            "Whether these GI signs could be related to the Rimadyl, and if so, what the options are.",
+            "Whether any exam or baseline bloodwork would be appropriate given his age and these new symptoms."
+          ]
+        }
+      }
+    },
+    {
+      "name": "contradictory-duration-frequency-vs-description",
+      "endpoint": "/api/pet-weirdness-decoder",
+      "why_this_case_exists": "Permanent regression guard for the FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06). The free-text description says the episode happened 'four times this week' while the structured Duration field says 'Just started today' and Frequency says 'Multiple times daily' — three fields that cannot all literally be true together. Before this pass the model silently merged them into one smoothed-over story. It must now surface the conflict plainly in what_you_reported, state which account it is relying on, and reason from that — never guess silently and never pretend all three fields agree.",
+      "input": {
+        "petType": "dog",
+        "breed": "Labrador mix",
+        "age": "2",
+        "behavior": "He keeps eating grass outside and then vomiting afterward. It has happened four times this week.",
+        "duration": "Just started today",
+        "frequency": "Multiple times daily",
+        "otherChanges": [],
+        "whenItHappens": "",
+        "currentMeds": "",
+        "recentDietChanges": "",
+        "recentHealthChanges": "",
+        "priorObservations": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "assessment": {
+          "action_level": "watch_closely",
+          "headline": "Repeated grass-eating followed by vomiting",
+          "bottom_line": "Four vomiting episodes in a short period is worth monitoring closely. Watch for any worsening, changes in behavior between episodes, or signs that would prompt a vet call."
+        },
+        "what_you_reported": [
+          "Your dog has eaten grass and vomited afterward four times this week.",
+          "The Duration field says 'Just started today,' but the description says four times this week — these don't fully agree. The four-episode description is used here as the more specific account.",
+          "No other changes were reported — no changes to eating, drinking, energy, or stool, and no medications or recent diet or health changes."
+        ],
+        "what_could_explain_it": [
+          {
+            "possibility": "The grass-eating itself is provoking the vomiting",
+            "why_it_could_fit": "Grass may be irritating the stomach or triggering a gag response. The vomiting happens after he eats it, which makes a direct connection possible.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if the vomiting only happens when he eats grass and not at other times.",
+              "Less clear if vomiting is also occurring when he hasn't eaten grass — that would suggest a separate issue.",
+              "Worth noting whether he seems to seek out grass eagerly before an episode, or whether eating it seems almost incidental."
+            ]
+          },
+          {
+            "possibility": "An underlying stomach or GI issue is prompting both the grass-eating and the vomiting",
+            "why_it_could_fit": "Some dogs with GI discomfort seek out grass. If something is already unsettled internally, the grass may be a response rather than the root cause — and the vomiting could follow from the underlying issue, not just the grass.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if vomiting continues even when he hasn't eaten grass, or if it happens at times unrelated to outdoor time.",
+              "Also worth considering if the vomiting continues even when grass-eating is prevented.",
+              "Less likely to be the main factor if he seems completely normal between episodes and appetite is unchanged."
+            ]
+          },
+          {
+            "possibility": "Something on or in the grass is contributing",
+            "why_it_could_fit": "Lawn treatments, fertilizers, or other substances on grass can cause GI irritation. If the grass he's accessing has been recently treated, that could be a factor.",
+            "what_would_make_it_more_or_less_plausible": [
+              "More plausible if the grass is in an area that could have been recently treated with a lawn chemical or herbicide.",
+              "Less of a concern if the grass is in a familiar, untreated area he has eaten from before without issue."
+            ]
+          }
+        ],
+        "what_to_watch": [
+          "Whether vomiting continues or increases, especially if it happens without grass-eating.",
+          "Any change in appetite, energy level, or normal behavior between episodes.",
+          "Whether he seems to be seeking out grass deliberately before each episode, or eating it incidentally.",
+          "Stool changes: diarrhea, blood, or not going at all.",
+          "What the vomit contains and looks like — whether it is mostly grass, undigested food, or something else."
+        ],
+        "what_would_change_the_next_step": [
+          "Blood in the vomit, or vomit that looks very dark or coffee-ground-like — contact a vet promptly.",
+          "Vomiting that continues frequently without grass-eating, or that he cannot seem to stop.",
+          "He stops eating, seems lethargic, or shows signs of distress between episodes.",
+          "Vomiting that increases in frequency or severity, or that does not seem tied to grass-eating at all."
+        ],
+        "what_you_can_do_now": [
+          "On your next outdoor time, note when each episode happens, what he ate before it, and whether he actively seeks grass or eats it without seeming to seek it — this detail matters if you contact a vet.",
+          "Check whether the grass areas he's eating from could have been recently treated with any lawn chemical, and avoid those areas if there's any chance they were.",
+          "Note the timing of each episode: what he ate beforehand, when it happened relative to meals, and what the vomit looked like — this will be useful if you do contact your vet."
+        ],
+        "vet_prep": {
+          "show_only_when_useful": true,
+          "what_to_record": [
+            "How many times vomiting occurs and whether grass-eating preceded each episode.",
+            "What the vomit looks like — color, whether it contains food or just liquid or bile.",
+            "Any change in appetite, stool, energy, or behavior between episodes.",
+            "Whether preventing grass access changes the vomiting pattern."
+          ],
+          "questions_or_details_to_bring": [
+            "Whether the frequency and pattern you've observed warrants any examination or testing.",
+            "Whether there is anything in his diet, environment, or routine that could be contributing."
           ]
         }
       }
@@ -203,7 +299,7 @@
       "name": "followup-freetext",
       "endpoint": "/api/pet-weirdness-decoder/followup",
       "input": {
-        "question": "What if she also starts limping?",
+        "question": "What if another symptom appears?",
         "originalAnalysis": {
           "assessment": {
             "action_level": "watch_closely",
@@ -221,7 +317,7 @@
         "userLanguage": "en"
       },
       "output": {
-        "answer": "Limping is a separate physical symptom from the nighttime yowling, so it would warrant a vet visit rather than continued watching at home — do not wait to see if it resolves on its own. A cat that is suddenly reluctant to bear weight on a limb could have a joint injury, a paw injury, a muscle problem, or something else entirely; there is no way to tell without an exam.\n\nIf the limp appears alongside the yowling and activity bursts, mention both to your vet — the combination gives them more to work with, even if the two things turn out to be unrelated.\n\nOne thing to check right away: look at the affected paw and leg for anything visible, like a cut, swelling, or something caught between the toes. If you see swelling, she cannot put any weight on it at all, or she seems to be in significant distress, treat that as urgent and contact a vet or emergency clinic the same day."
+        "answer": "The original analysis flagged 'new symptoms appear' as exactly the thing that would move you to the next step — so you're right to think about it. The key is noticing anything that feels different from the nighttime yowling and activity you've already been watching: things like changes in eating, drinking, litter box use, weight, coat condition, coordination, or any sign of pain or distress during the day.\n\nIf you notice something like that, the practical move is to write it down — what you saw, when, and how often — before contacting your vet. That record helps a lot more than memory alone.\n\nOne thing worth saying plainly: if you ever see something that looks urgent — collapse, labored breathing, inability to urinate, a seizure, or obvious pain — don't wait. That warrants a same-day or emergency call regardless of what came before. A new symptom doesn't automatically connect to the yowling, but it does deserve fresh attention on its own terms."
       }
     }
   ]

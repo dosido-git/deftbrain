@@ -126,6 +126,106 @@ condition is worsening," only "ratings were 2, 2, and 4."
 - Removed the seasonal hazard card entirely (no date-driven injection into the
   prompt or the UI).
 
+## FINAL GENERAL PROMPT CORRECTIONS pass (2026-09-06)
+
+Additive only — the user explicitly said "Keep the current V2 architecture. Do
+not rewrite the tool again." Added 20 general reasoning rules + a "FINAL
+INPUT-INTEGRITY PASS" ledger-and-self-check to `CORE_PROMPT`, inserted between
+the existing HISTORY and FOLLOW-UP QUESTIONS sections. The single most
+important rule, called out first by the user's own diagnosis of the tool's
+biggest remaining failure:
+
+**Contradictory inputs are unknowns to resolve, never facts to average
+together.** A free-text description ("it has happened four times this week")
+and a structured field (Duration: "Just started today," Frequency: "Multiple
+times daily") can conflict. Before, the model silently merged them into one
+smoothed story. Now it must build an internal ledger (PET FACTS / OBSERVED
+BEHAVIOR / ASSOCIATED CHANGES / HEALTH CONTEXT / MEDIA OBSERVATIONS /
+CONFLICTS / UNKNOWNS) before reasoning, and when fields disagree, say so
+plainly in `what_you_reported` and state which account it's relying on —
+never guess silently. **Live-verified** (not just prompted for) against the
+user's own exact example — see the new golden case
+`contradictory-duration-frequency-vs-description` — and reproduced
+consistently across two separate runs:
+> "The Duration field says 'Just started today,' but the description says
+> four times this week — these don't fully agree. The four-episode
+> description is used here as the more specific account."
+
+The other 19 rules, condensed: not-entered ≠ none; a checked category doesn't
+license inventing a specific meaning for it (checking "Eating" ≠ appetite
+change specifically); a physical symptom (vomiting, limping, etc.) never gets
+downgraded into a "just quirky" behavior story; no invented diagnostic
+discriminator manufactured to fill the schema when none genuinely exists;
+possibilities describe, never pathologize (no "compulsive/anxious/stress-
+driven" labels); breed never supplies personality or motive in body text
+(same rule the dedicated breed section already had, now generalized to all
+prose); a home observation experiment ("try preventing grass access") changes
+plausibility, it never proves cause; no arbitrary test periods ("for a day or
+two"); no inventing a new unreported problem (e.g. dehydration) to justify
+generic advice; normal-between-episode behavior is information, not grounds
+to rule something out; toxin/exposure reasoning stays tied to an actual
+reported exposure, never expands into a speculative story; "what to watch" is
+not a symptom encyclopedia (3-5 items, materially useful only); every "what
+would change the next step" item must actually change the next step or it
+belongs under "what to watch" instead; no false precision from repetition
+(four episodes ≠ a probability or trend); action level and bottom line must
+tell one coherent story (self-check before returning). Never infer sex/
+pronoun from species, breed, or name — added explicitly to both endpoints.
+
+**Severity → "concern" rename.** The existing HISTORY section's own GOOD
+example ("your severity rating rose from 2 to 4") directly contradicted the
+new rule that the 1-5 slider is the owner's own subjective impression, never
+a clinical severity or progression measure — rewritten to "rated how
+concerning it seemed as 2, then 4." Matching UI change: `pwd_severity_optional`
+removed; slider now labeled via `pwd_concern_label`/`pwd_concern_low`/
+`pwd_concern_high` across all 13 languages. `pwd_followup_ph` placeholder
+also changed from the gendered "What if she also starts limping?" to the
+pronoun-neutral "What if another symptom appears?" (no pet-sex field exists
+to infer a pronoun from — the spec explicitly forbids inferring one from
+species/breed/name).
+
+**`router.outputGuard` extended** with 6 new categories matching the least
+mechanically-obvious of the new rules (arbitrary test periods,
+home-observation-as-proof, breed-as-personality-in-body-text, checkbox-
+meaning-expansion, silently-merged contradictions, invented-new-problem-for-
+generic-advice) — same defense-in-depth reasoning as the original v2 guard
+list: these are invented-fact/reasoning failures, not fixed-vocabulary
+phrasing, so the LLM-judge check is what actually catches them; the guard
+categories just make sure the checker knows to look.
+
+**`/followup` reinforced directly** (it doesn't literally embed `CORE_PROMPT`,
+just says "apply the same rules") with explicit lines for the pathologizing-
+label ban, breed-as-personality ban, home-observation-isn't-proof, arbitrary-
+test-period ban, concern-rating-is-subjective, and the contradiction-surfacing
+rule, plus the sex/pronoun-inference ban. Live-tested with a "would stopping
+grass for a few days prove it's the cause?" question — correctly answered
+"it would give you useful information... but it would not prove grass is the
+cause," not a false-certainty yes.
+
+**Found and fixed along the way (not asked for): empty-bullet rendering bug.**
+The v2 guard's repair pass can only rewrite a string LEAF, not resize an
+array — so when it flags one item of a string array (e.g.
+`what_you_reported[5]=contradicted_supplied_fact`) and repairs it, the
+rewritten value can come back as an empty string rather than being removed
+from the array. Live-caught during golden re-recording (a German case's
+`what_you_reported` rendered a bare "•" bullet with no text). This is a
+`backend/lib/outputGuard.js` limitation shared by every v2-guarded tool in
+the codebase, out of scope to fix there for this pass — instead, every list
+render in `PetWeirdnessDecoder.js` (`what_you_reported`, `what_to_watch`,
+`what_would_change_the_next_step`, `what_you_can_do_now`, each possibility's
+plausibility sub-list, `vet_prep.what_to_record`,
+`vet_prep.questions_or_details_to_bring`) and the `buildFullText()`
+copy-to-clipboard builder now filter out empty/whitespace-only items before
+rendering — a correct-either-way defensive fix that doesn't depend on this
+guard behavior ever recurring. Worth a look at `outputGuard.js` itself if
+this recurs on another tool.
+
+**Golden sample re-recorded** (`audit/pet-weirdness-decoder-golden-sample.json`,
+now 4 cases) — added `contradictory-duration-frequency-vs-description` as a
+permanent regression guard reproducing the user's own worked example
+verbatim; the other 3 cases re-captured against the corrected prompt.
+`npm run check:golden pet-weirdness-decoder`: 4/4 PASS.
+
 ## DO NOT silently reverse
 
 - The schema replacement — no likelihood labels, no breed-predisposition list,
@@ -142,3 +242,12 @@ condition is worsening," only "ratings were 2, 2, and 4."
   collapse back to a flat `t()` string.
 - Pet Profiles / severity-tracker widget / multi-pet detection / seasonal
   hazard cards staying removed — they were cut for focus, not lost by accident.
+- The INPUT INTEGRITY / contradictory-inputs rule in `CORE_PROMPT` — this is
+  the fix for the tool's biggest identified failure mode. Do not let a future
+  edit quietly drop the "surface the conflict, don't average it" instruction.
+- The concern-rating language (never "severity," never "progressed") in both
+  the HISTORY section and the UI (`pwd_concern_*` keys) — a 1-5 slider is the
+  owner's own impression, not a clinical measure.
+- The empty-string `.filter()` guards on every result list render and in
+  `buildFullText()` in `PetWeirdnessDecoder.js` — they protect against a real
+  `outputGuard.js` repair-pass edge case, not defensive clutter to trim.
