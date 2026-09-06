@@ -319,3 +319,100 @@ Two small but real UX bugs, both reported directly:
 - "My Plants" staying beneath "Start over" (not restored to side-by-side)
   and the header row's `items-end` — that's what keeps it bottom-aligned
   with "Try an example," which was explicitly requested.
+
+## Mode state isolation + Care mode field redesign (2026-09-06, same day)
+
+**Mode state isolation.** Rescue, Care, and Identify are three separate
+tasks. Manually clicking a mode tab now runs `handleModeTabClick(newMode)`,
+which no-ops if `newMode === mode` (don't wipe an in-progress form just
+because the visitor re-clicked the tab they're already on), otherwise calls
+the existing `handleReset()` — clearing every mode's form fields, the
+generated result, `plantName`, and `activePlantId` — before setting `mode`.
+`handleReset()` is the single shared primitive; three call sites now build
+on it with different follow-up behavior:
+- `handleModeTabClick` — reset, then switch mode. Nothing carried forward.
+- `handleShowCareFromIdentify` — reset, then re-apply the current photo and
+  seed `careSpecies` from the Identify result's name, then switch to Care.
+  This is the one explicit handoff the spec calls out by name.
+- `handleCheckAgain` (My Plants) — reset, then restore `plantName` +
+  `activePlantId` from the saved plant record, forcing `mode: 'rescue'`.
+  Symptoms/watering/etc. from whatever was on screen before are NOT carried
+  — only the plant's own identity.
+
+Live-verified in-browser: filled Rescue's name field + a symptom checkbox,
+switched to Care — both cleared, Care rendered a clean form. Filled Care's
+`careSpecies`, switched to Identify — cleared, no `careSpecies` input even
+exists in that mode's DOM. Clicked My Plants → Check again — `plantName`
+populated, symptom checkboxes empty, mode forced to Rescue.
+
+**Care mode field redesign**, per the explicit spec: Care's inputs are now
+about a healthy plant's normal growing conditions, not symptoms. New state:
+`careSpecies` (required unless handed off), `careWhereIsIt`, `careLight`
+(6-option, deliberately its own scale — see below), `careHelpWith`. Care's
+JSX no longer shares Rescue's symptom checkboxes, duration select, or
+recent-changes select; it keeps sharing watering method/frequency,
+drainage, climate, and pets/children with Rescue since those are the same
+question in both modes. `pr_desc_care` copy updated to the specified
+"Tell us about a plant you want to keep healthy..." line, in all 13
+languages; 20 new i18n keys added (all 13 languages, cross-checked for
+exact key-count parity against actual `t()` call sites — 178/178, zero
+missing/extra/duplicate).
+
+Backend: `CARE_MODE_RULES` gained "CARE MODE IDENTIFICATION INPUT" (treat
+`careSpecies` — typed or handed off — as visitor-supplied identification
+per the general PLANT IDENTIFICATION rule; don't silently re-derive) and
+"CARE MODE FOCUS" (give `careHelpWith`'s area more attention without
+zeroing out the rest of `core_care`). Three new label maps
+(`CARE_LIGHT_LABEL`, `CARE_WHERE_LABEL`, `CARE_HELP_LABEL`) and four new
+`buildSupplied()` fields. Live-verified via direct API call
+(`careSpecies: "Pothos"`, `careLight: "bright_indirect"`,
+`careHelpWith: "repotting"`, etc.): response correctly reflected all four
+fields — bathroom-window humidity called out under temperature/humidity,
+`repot_when` populated per the requested focus, watering advice referenced
+the visitor's own check-the-soil practice by name rather than restating a
+generic interval, no numeric confidence, no invented schedule.
+
+**Bug found and fixed while live-testing Identify, unrelated to the above:**
+Identify mode would sometimes claim no photo/image was supplied when one
+plainly was — reproduced deterministically-enough (originally ~2 of 3
+repeated calls with an identical ambiguous test image) via direct API
+calls that bypassed the frontend entirely, ruling out a base64/upload
+transport bug (confirmed byte-for-byte: the exact base64 the backend
+received round-tripped perfectly through a raw, out-of-band SDK call with
+the same model). This is the model itself, under heavy anti-fabrication
+framing plus a genuinely ambiguous non-photographic test image (a flat
+icon/illustration, not a real photo), sometimes producing "no image was
+provided" instead of the correct "this doesn't look like a real photo, so
+identification isn't reliable." Fixed with a new GENERAL_RULES paragraph —
+"IF 'WHAT THE VISITOR SUPPLIED' SAYS A PHOTO WAS PROVIDED, ONE WAS" —
+telling the model explicitly that image content is present whenever the
+supplied-context line says so, and that an unclear/illustrated/non-plant
+image should be described as such rather than denied outright. Added
+`response_claims_no_photo_or_image_was_provided_despite_one_being_supplied`
+to `router.outputGuard.prohibit` as a backstop. Re-tested 6 more times
+post-fix: 5 of 6 correctly identified the test image as an illustration
+and asked for a real photo; 1 of 6 still produced the wrong "no image"
+framing despite the v2 guard firing FAIL on it (repair ran but didn't
+correct the underlying claim) — an accepted non-deterministic residual,
+same pattern as Pet Behavior Decoder's waiting-period-ban residual. A real
+user almost always uploads an actual photograph, where this specific
+"is this even a photo" confusion has no reason to trigger — the adversarial
+test case here was a stylized cartoon plant icon, deliberately picked to
+stress this exact edge.
+
+## DO NOT silently reverse (Phase 5 additions)
+
+- `handleModeTabClick`'s no-op guard when `newMode === mode` — without it,
+  re-clicking the active tab would wipe an in-progress form for no reason.
+- Care's `careSpecies`/`careWhereIsIt`/`careLight`/`careHelpWith` staying
+  separate state (and separate backend label maps) from Rescue's
+  `lightLevel`/`location` — the option sets genuinely differ (Care's light
+  scale has 6 buckets vs. Rescue's 3; Care's location has "both/moved
+  seasonally" vs. Rescue's "greenhouse") and merging them re-couples two
+  fields the redesign deliberately split apart.
+- `handleShowCareFromIdentify` seeding `careSpecies` (not `plantName`) —
+  `plantName` is now purely an optional nickname per the redesigned Care
+  intake; the identified species belongs in `careSpecies`.
+- The "IF 'WHAT THE VISITOR SUPPLIED' SAYS A PHOTO WAS PROVIDED, ONE WAS"
+  paragraph and its outputGuard category — removing it reopens the
+  false-no-image bug documented above.

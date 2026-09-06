@@ -51,6 +51,7 @@ router.outputGuard = {
     'contradictory_input_fields_silently_reconciled_instead_of_surfaced',
     'prior_possibility_treated_as_an_established_diagnosis_in_a_followup',
     'identification_evidence_drawn_from_non_visual_prior_context_instead_of_the_current_photo',
+    'response_claims_no_photo_or_image_was_provided_despite_one_being_supplied',
   ],
   require: [
     'attention_or_status_level_is_one_of_the_defined_categories_not_a_diagnosis',
@@ -97,6 +98,9 @@ Safety information deserves a higher evidence standard than ordinary care advice
 PHOTO REASONING
 Describe only features actually visible. Do not infer soil moisture below the surface, root condition, smell, pest absence, drainage, fertilizer history, light history, or disease cause from a whole-plant photograph. If an additional image would materially distinguish causes, ask for it — a close photo of the affected leaf, a photo of the soil surface and drainage setup, or (only if there is already another reason to inspect the roots) a root photo. Never suggest unpotting the plant solely to take a photo.
 
+IF "WHAT THE VISITOR SUPPLIED" SAYS A PHOTO WAS PROVIDED, ONE WAS
+When the supplied context states a photo was provided, image content is present in this message — you have it. Never respond as if no photo, image, or picture was supplied; that claim is false whenever the context says otherwise, and confuses the visitor into re-uploading something you already received. If the image is blurry, too dark, too distant, an icon/illustration/rendering rather than a real photograph, or otherwise does not clearly show a plant, say exactly that — describe what you can actually make out and why it falls short — rather than claiming no image exists at all.
+
 INPUT CONFLICTS
 Compare selected symptoms, free text, image, light/watering selections, location, ownership duration, climate, and any saved plant history. Do not silently reconcile contradictions — if a selection and the free text disagree in a way that affects the answer, surface it. Specific deliberate free text generally carries more evidentiary weight than a generic or default selection. Never average contradictory facts together.
 
@@ -132,10 +136,16 @@ Do not predict "stabilization within 2-3 weeks" or "healthy growth within 4-8 we
 PROPAGATION (only if genuinely relevant to this rescue)
 Mention propagation only when it would be useful as a backup because the parent plant may not recover and healthy material can plausibly be preserved — never as a default section. Never generate a success percentage, guaranteed rooting language, or an invented timeline; describe only the observable sign that a cutting is ready for its next step.`;
 
-const CARE_MODE_RULES = `CURRENT MODE: CARE — the visitor wants to know what a plant needs to stay healthy. Apply the sections below in addition to the general rules above; the RESCUE TRIAGE/ACTION PLAN and IDENTIFY MODE sections do not apply to this response.
+const CARE_MODE_RULES = `CURRENT MODE: CARE — the visitor has a basically healthy plant and wants to know how to look after it, not a symptom to explain. Apply the sections below in addition to the general rules above; the RESCUE TRIAGE/ACTION PLAN and IDENTIFY MODE sections do not apply to this response.
 
 CARE MODE
 Answer "What does this plant need to stay healthy?" Provide only light, water, soil/drainage, feeding, and temperature/humidity when materially relevant. Prefer condition-based care over rigid recurring chores unless the species genuinely requires them. This is not a license to generate an encyclopedia.
+
+CARE MODE IDENTIFICATION INPUT
+The visitor's own answer to "what plant is it" — typed directly, or carried forward from an established Identify result or a saved My Plants record — is the identification input for this mode. Treat it the same way the general PLANT IDENTIFICATION rule treats any visitor-supplied identification: preserve it unless a supplied photo strongly contradicts it, in which case say so rather than silently picking one. Do not re-derive an identification from scratch that quietly overrides what the visitor told you, and do not lower your stated confidence merely because the identification came from typed text rather than a photo.
+
+CARE MODE FOCUS
+If the visitor specified what they especially want help with (watering, light, repotting, feeding, or placement), give that area genuinely more detail and attention than the others — but do not drop the rest of core_care down to nothing merely because it wasn't the stated focus; a brief, accurate line for each remaining area is still expected.
 
 WHEN CONDITIONS CHANGE (replaces a seasonal calendar)
 Do not generate a January-through-December calendar — plant care depends on actual environment, hemisphere, indoor/outdoor conditions, temperature, light, and growth state, and calendar month is a poor proxy for those. Instead give a short list of "if this changes, adjust like this" statements relevant to THIS plant and its supplied environment — e.g. "if light drops, soil may dry more slowly, so check moisture rather than keeping the same watering interval," "if active growth increases, water demand may change," "if temperature falls, protect species sensitive to cold." Only include adjustments that are actually relevant here.
@@ -204,6 +214,18 @@ const IDENTIFY_SCHEMA = `{
 // ── Input helpers ──
 const LIGHT_LABEL = { 'full-sun': 'Full sun (6+h)', 'partial-shade': 'Partial (3-6h)', 'low-light': 'Low light' };
 const LOCATION_LABEL = { indoor: 'Indoor', outdoor: 'Outdoor', greenhouse: 'Greenhouse' };
+// Care mode's own, more granular light scale — deliberately separate from
+// LIGHT_LABEL above (Rescue's 3-bucket scale) rather than merged, so
+// changing one never silently changes the other.
+const CARE_LIGHT_LABEL = {
+  low: 'Low light', medium: 'Medium light', bright_indirect: 'Bright indirect light',
+  some_direct: 'Some direct sun', lots_direct: 'Lots of direct sun', not_sure: 'Not sure',
+};
+const CARE_WHERE_LABEL = { indoor: 'Indoor', outdoor: 'Outdoor', both: 'Both indoor and outdoor / moved seasonally' };
+const CARE_HELP_LABEL = {
+  watering: 'Watering', light: 'Light', repotting: 'Repotting',
+  feeding: 'Feeding', placement: 'Placement', general: 'General care',
+};
 const CLIMATE_LABEL = { tropical: 'Tropical', subtropical: 'Subtropical', temperate: 'Temperate', cold: 'Cold', arid: 'Arid' };
 const SYMPTOM_LABEL = {
   yellow_leaves: 'Yellowing leaves', brown_tips: 'Brown tips', drooping: 'Drooping/wilting',
@@ -231,10 +253,12 @@ function buildSupplied(body) {
     plantName, plantDescription, symptoms, symptomDuration, recentChanges,
     lightLevel, wateringMethod, wateringFreqText, hasDrainage, location,
     climateZone, userLocation, hasPets, hasChildren, extraPhotos, imageBase64,
+    careSpecies, careWhereIsIt, careLight, careHelpWith,
   } = body;
 
   const lines = [];
-  if (plantName) lines.push(`PLANT NAME (visitor-supplied): ${plantName}`);
+  if (plantName) lines.push(`PLANT NICKNAME (visitor-supplied): ${plantName}`);
+  if (careSpecies) lines.push(`WHAT THE VISITOR SAYS THIS PLANT IS: ${careSpecies}`);
   lines.push(imageBase64 ? 'PHOTO PROVIDED — analyze visually.' : 'No photo provided.');
   if (extraPhotos?.length) lines.push(`${extraPhotos.length} additional photo(s) provided (close-up and/or soil/roots).`);
   if (plantDescription) lines.push(`FREE-TEXT DESCRIPTION: ${plantDescription}`);
@@ -242,13 +266,16 @@ function buildSupplied(body) {
   if (symptomDuration) lines.push(`HOW LONG THIS HAS BEEN HAPPENING: ${SYMPTOM_DURATION_LABEL[symptomDuration] || symptomDuration}`);
   if (recentChanges?.length) lines.push(`CHANGED RECENTLY: ${recentChanges.map((c) => RECENT_CHANGE_LABEL[c] || c).join(', ')}`);
   if (lightLevel) lines.push(`LIGHT (visitor-selected category): ${LIGHT_LABEL[lightLevel] || lightLevel}`);
+  if (careLight) lines.push(`LIGHT (visitor-selected category): ${CARE_LIGHT_LABEL[careLight] || careLight}`);
   if (wateringMethod) lines.push(`HOW THE VISITOR DECIDES WHEN TO WATER: ${WATERING_METHOD_LABEL[wateringMethod] || wateringMethod}`);
   if (wateringFreqText) lines.push(`ABOUT HOW OFTEN LATELY (visitor's own words): ${wateringFreqText}`);
   if (hasDrainage) lines.push(`POT HAS DRAINAGE: ${DRAINAGE_LABEL[hasDrainage] || hasDrainage}`);
   if (location) lines.push(`LOCATION: ${LOCATION_LABEL[location] || location}`);
+  if (careWhereIsIt) lines.push(`LOCATION: ${CARE_WHERE_LABEL[careWhereIsIt] || careWhereIsIt}`);
   if (climateZone || userLocation) lines.push(`CLIMATE: ${CLIMATE_LABEL[climateZone] || climateZone || ''} ${userLocation || ''}`.trim());
   if (hasPets) lines.push('HOUSEHOLD HAS PETS.');
   if (hasChildren) lines.push('HOUSEHOLD HAS CHILDREN.');
+  if (careHelpWith) lines.push(`VISITOR SPECIFICALLY WANTS HELP WITH: ${CARE_HELP_LABEL[careHelpWith] || careHelpWith}`);
   return lines.join('\n');
 }
 

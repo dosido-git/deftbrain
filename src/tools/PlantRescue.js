@@ -136,6 +136,15 @@ const PlantRescue = ({ tool }) => {
   const [extraPhotos, setExtraPhotos]           = useState([null, null]);
   const [extraPreviews, setExtraPreviews]       = useState([null, null]);
 
+  // Care mode's own fields — deliberately separate from Rescue's (lightLevel,
+  // location) rather than shared, so Care's more granular light scale and
+  // "what plant is it" question never leak into or get overwritten by
+  // Rescue's simpler versions of the same idea.
+  const [careSpecies, setCareSpecies]           = useState('');
+  const [careWhereIsIt, setCareWhereIsIt]       = useState('');
+  const [careLight, setCareLight]               = useState('');
+  const [careHelpWith, setCareHelpWith]         = useState('');
+
   // ── Refs ──
   const fileInputRef     = useRef(null);
   const extraPhotoRef0   = useRef(null);
@@ -151,7 +160,15 @@ const PlantRescue = ({ tool }) => {
 
   const extraPhotoRefs = [extraPhotoRef0, extraPhotoRef1];
 
-  canSubmitRef.current = !loading && !uploading && (mode === 'identify' ? !!imageBase64 : !!(imageBase64 || plantDescription.trim() || selectedSymptoms.length > 0));
+  // Care mode needs to know what plant it's caring for — a photo alone
+  // ("mainly to confirm identity if uncertain") doesn't substitute for that,
+  // per the explicit spec. It's satisfied for free once careSpecies arrives
+  // pre-filled from an Identify handoff or a My Plants "Check again."
+  canSubmitRef.current = !loading && !uploading && (
+    mode === 'identify' ? !!imageBase64 :
+    mode === 'care' ? !!careSpecies.trim() :
+    !!(imageBase64 || plantDescription.trim() || selectedSymptoms.length > 0)
+  );
 
   // ── Image handling ──
   const processImage = async (file) => {
@@ -251,34 +268,44 @@ const PlantRescue = ({ tool }) => {
   const priorObservationsForCurrent = plantCollection.find((p) => p.id === activePlantId)?.checks || [];
 
   const handleAnalyze = useCallback(async () => {
-    if (!imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0) { setError(t('pr_err_provide')); return; }
+    if (mode === 'care' && !careSpecies.trim()) { setError(t('pr_err_care_species')); return; }
+    if (mode !== 'care' && !imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0) { setError(t('pr_err_provide')); return; }
     setError(''); setResults(null); setFollowUpAnswer(''); setFollowUpQuestion(''); setCompanionResults(null);
     try {
-      // Identify mode gets ONLY the current photo (+ locale/name) — never
-      // Rescue/Care fields left over in state from switching tabs without
-      // resetting. Sending them at all would let a fiddle-leaf-fig
-      // description or symptom history sit in the request for an Identify
-      // call about a completely different photo; the backend's provenance
-      // rule guards against a model that receives it anyway, but not
-      // sending it in the first place is the real fix.
-      const payload = mode === 'identify'
-        ? { imageBase64, mode, plantName: plantName.trim() || null, userLocale, userCurrency, userRegion }
-        : {
-            imageBase64, extraPhotos: extraPhotos.filter(Boolean),
-            plantDescription: plantDescription.trim(), symptoms: selectedSymptoms,
-            symptomDuration, recentChanges,
-            lightLevel, wateringMethod, wateringFreqText: wateringFreqText.trim(), hasDrainage,
-            location, climateZone, userLocation: userLocation.trim(),
-            hasPets, hasChildren, mode, plantName: plantName.trim() || null,
-            priorObservations: priorObservationsForCurrent,
-            userLocale, userCurrency, userRegion
-          };
+      // Each mode sends ONLY its own fields — never whatever another mode's
+      // form happened to leave in state. Rescue and Care share a look but
+      // are genuinely separate questions (symptom triage vs. routine care),
+      // and Identify is separate again (see the provenance fix above it).
+      const shared = { mode, plantName: plantName.trim() || null, userLocale, userCurrency, userRegion };
+      let payload;
+      if (mode === 'identify') {
+        payload = { ...shared, imageBase64 };
+      } else if (mode === 'care') {
+        payload = {
+          ...shared, imageBase64,
+          careSpecies: careSpecies.trim(), careWhereIsIt, careLight, careHelpWith,
+          plantDescription: plantDescription.trim(),
+          wateringMethod, wateringFreqText: wateringFreqText.trim(), hasDrainage,
+          climateZone, userLocation: userLocation.trim(), hasPets, hasChildren,
+          priorObservations: priorObservationsForCurrent,
+        };
+      } else {
+        payload = {
+          ...shared, imageBase64, extraPhotos: extraPhotos.filter(Boolean),
+          plantDescription: plantDescription.trim(), symptoms: selectedSymptoms,
+          symptomDuration, recentChanges,
+          lightLevel, wateringMethod, wateringFreqText: wateringFreqText.trim(), hasDrainage,
+          location, climateZone, userLocation: userLocation.trim(), hasPets, hasChildren,
+          priorObservations: priorObservationsForCurrent,
+        };
+      }
       const data = await callToolEndpoint('plant-rescue', payload);
       setResults(data);
     } catch (err) { setError(err.message || t('pr_err_analysis')); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageBase64, extraPhotos, plantDescription, selectedSymptoms, symptomDuration, recentChanges, lightLevel,
       wateringMethod, wateringFreqText, hasDrainage, location, climateZone, userLocation, hasPets, hasChildren,
+      careSpecies, careWhereIsIt, careLight, careHelpWith,
       mode, plantName, callToolEndpoint, userLocale, userCurrency, userRegion, priorObservationsForCurrent, t]);
 
   const loadExample = useCallback(() => {
@@ -332,7 +359,24 @@ const PlantRescue = ({ tool }) => {
     setHasChildren(false); setClimateZone(''); setUserLocation(''); setResults(null);
     setError(''); setFollowUpQuestion(''); setFollowUpAnswer(''); setSelectedSymptoms([]);
     setExtraPhotos([null, null]); setExtraPreviews([null, null]); setCompanionResults(null);
+    setCareSpecies(''); setCareWhereIsIt(''); setCareLight(''); setCareHelpWith('');
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // TAB SWITCH = NEW TASK. Rescue, Care, and Identify are separate questions
+  // about (possibly) separate plants — clicking a different mode tab starts
+  // that mode's form clean rather than carrying over whatever the previous
+  // mode's form happened to hold. This does NOT touch My Plants / saved
+  // history, only the transient form + result for the mode being left.
+  // Contrast with the explicit handoffs below (handleShowCareFromIdentify,
+  // handleCheckAgain), which deliberately DO carry specific information
+  // forward because the visitor asked for that continuity.
+  const handleModeTabClick = (newMode) => {
+    if (newMode === mode) return;
+    handleReset();
+    setPlantName('');
+    setActivePlantId(null);
+    setMode(newMode);
   };
 
   // "My Plants" keeps WHAT WAS REPORTED and WHAT WAS SUGGESTED, never a
@@ -368,10 +412,35 @@ const PlantRescue = ({ tool }) => {
     });
   };
   const handleDeletePlant = (id) => { setPlantCollection(p => p.filter(pl => pl.id !== id)); if (activePlantId === id) setActivePlantId(null); };
+  // An explicit handoff, not a tab switch: preload the stable information
+  // belonging to THIS saved plant (its name), and clear everything else —
+  // stale symptoms/photo/conditions from whatever was on screen before
+  // clicking "Check again" must not silently become evidence about this
+  // plant.
   const handleCheckAgain = (plant) => {
-    setPlantName(plant.name); setActivePlantId(plant.id); setResults(null);
-    setPlantDescription(''); setSelectedSymptoms([]); setShowCollection(false);
+    handleReset();
+    setPlantName(plant.name);
+    setActivePlantId(plant.id);
+    setShowCollection(false);
     setMode('rescue');
+  };
+
+  // Another explicit handoff: Identify already established what this plant
+  // is, and the photo on screen is still of it — carry exactly those two
+  // things into Care and nothing else (no Rescue symptom state could be
+  // present anyway, since reaching Identify always goes through the
+  // clean-form tab switch above, but this stays independent of that so it's
+  // correct even if Identify is ever reached a different way).
+  const handleShowCareFromIdentify = () => {
+    if (!results?.best_match) return;
+    const identifiedName = results.best_match.common_name || results.best_match.scientific_name || '';
+    const keepImage = imageBase64;
+    const keepPreview = imagePreview;
+    handleReset();
+    setImageBase64(keepImage);
+    setImagePreview(keepPreview);
+    setCareSpecies(identifiedName);
+    setMode('care');
   };
 
   // The empty "My Plants" state offers to add one rather than just saying
@@ -494,7 +563,7 @@ const PlantRescue = ({ tool }) => {
               { key: 'care',     label: `🌱 ${t('pr_mode_care')}` },
               { key: 'identify', label: `🔍 ${t('pr_mode_identify')}` },
             ].map(m => (
-              <button key={m.key} onClick={() => { setMode(m.key); setError(''); }}
+              <button key={m.key} onClick={() => handleModeTabClick(m.key)}
                 className={`flex-1 py-2.5 rounded-lg font-medium text-sm border transition-colors ${mode === m.key ? c.pillActive : c.pillInactive}`}>
                 {m.label}
               </button>
@@ -519,13 +588,26 @@ const PlantRescue = ({ tool }) => {
             </div>
           )}
 
+          {/* What plant is it — Care mode's own identification input. Required
+              unless it arrived already filled in from an Identify handoff or
+              a My Plants "Check again" — the field being non-empty already
+              satisfies that, no separate flag needed. */}
+          {mode === 'care' && (
+            <div>
+              <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_species_label')} <span className={c.required}>*</span></label>
+              <input type="text" value={careSpecies} onChange={e => setCareSpecies(e.target.value)}
+                placeholder={t('pr_care_species_ph')}
+                className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`} />
+            </div>
+          )}
+
           {/* Main photo */}
           <div>
             <label className={`block text-sm font-medium ${c.label} mb-2`}>
               {mode === 'rescue' ? t('pr_photo_rescue') : t('pr_photo_generic')}
               {mode === 'identify'
                 ? <> <span className={c.required}>*</span></>
-                : <> <span className={`font-normal ${c.textMuted}`}>{t('pr_photo_hint_describe')}</span></>}
+                : <> <span className={`font-normal ${c.textMuted}`}>{mode === 'care' ? t('pr_photo_hint_care') : t('pr_photo_hint_describe')}</span></>}
             </label>
             {!imagePreview ? (
               <div onDragOver={handleDragOver} onDrop={handleDrop} onPaste={handlePaste}
@@ -613,7 +695,11 @@ const PlantRescue = ({ tool }) => {
             </div>
           )}
 
-          {mode !== 'identify' && (
+          {/* "Tell us a little more" — Rescue-only in this position; Care's
+              equivalent ("anything else that matters?") sits after the
+              conditions fields below, matching the user's Plant identity →
+              Current conditions → Optional context ordering. */}
+          {mode === 'rescue' && (
             <div>
               <div className="flex justify-between mb-1">
                 <label className={`text-sm font-medium ${c.label}`}>{t('pr_details_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
@@ -624,29 +710,61 @@ const PlantRescue = ({ tool }) => {
             </div>
           )}
 
+          {/* Where / Light — Rescue and Care ask this the same conceptual
+              question but with deliberately different option sets (Care's
+              light scale is more granular, per the explicit Care redesign),
+              so these are two separate field pairs, not a shared one. */}
+          {mode === 'rescue' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
+                <select value={lightLevel} onChange={e => setLightLevel(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <option value="">{t('pr_select')}</option>
+                  <option value="full-sun">{t('pr_light_full')}</option>
+                  <option value="partial-shade">{t('pr_light_partial')}</option>
+                  <option value="low-light">{t('pr_light_low')}</option>
+                </select>
+              </div>
+              <div>
+                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_location')}</label>
+                <select value={location} onChange={e => setLocation(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <option value="">{t('pr_select')}</option>
+                  <option value="indoor">{t('pr_loc_indoor')}</option>
+                  <option value="outdoor">{t('pr_loc_outdoor')}</option>
+                  <option value="greenhouse">{t('pr_loc_greenhouse')}</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {mode === 'care' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_where_label')}</label>
+                <select value={careWhereIsIt} onChange={e => setCareWhereIsIt(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <option value="">{t('pr_select')}</option>
+                  <option value="indoor">{t('pr_loc_indoor')}</option>
+                  <option value="outdoor">{t('pr_loc_outdoor')}</option>
+                  <option value="both">{t('pr_care_where_both')}</option>
+                </select>
+              </div>
+              <div>
+                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
+                <select value={careLight} onChange={e => setCareLight(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <option value="">{t('pr_select')}</option>
+                  <option value="low">{t('pr_care_light_low')}</option>
+                  <option value="medium">{t('pr_care_light_medium')}</option>
+                  <option value="bright_indirect">{t('pr_care_light_bright_indirect')}</option>
+                  <option value="some_direct">{t('pr_care_light_some_direct')}</option>
+                  <option value="lots_direct">{t('pr_care_light_lots_direct')}</option>
+                  <option value="not_sure">{t('pr_not_sure')}</option>
+                </select>
+              </div>
+            </div>
+          )}
+
           {mode !== 'identify' && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
-                  <select value={lightLevel} onChange={e => setLightLevel(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
-                    <option value="">{t('pr_select')}</option>
-                    <option value="full-sun">{t('pr_light_full')}</option>
-                    <option value="partial-shade">{t('pr_light_partial')}</option>
-                    <option value="low-light">{t('pr_light_low')}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_location')}</label>
-                  <select value={location} onChange={e => setLocation(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
-                    <option value="">{t('pr_select')}</option>
-                    <option value="indoor">{t('pr_loc_indoor')}</option>
-                    <option value="outdoor">{t('pr_loc_outdoor')}</option>
-                    <option value="greenhouse">{t('pr_loc_greenhouse')}</option>
-                  </select>
-                </div>
-              </div>
-
               <div>
                 <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_watermethod_label')}</label>
                 <select value={wateringMethod} onChange={(e) => setWateringMethod(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input} mb-2`}>
@@ -688,6 +806,31 @@ const PlantRescue = ({ tool }) => {
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input type="checkbox" checked={hasChildren} onChange={e => setHasChildren(e.target.checked)} className="w-4 h-4" /> {t('pr_children')}
                 </label>
+              </div>
+            </>
+          )}
+
+          {/* Care's "optional context" — deliberately last, after the
+              conditions fields, matching the requested field ordering. */}
+          {mode === 'care' && (
+            <>
+              <div>
+                <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_notes_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
+                <textarea value={plantDescription} onChange={e => setPlantDescription(e.target.value)}
+                  placeholder={t('pr_care_notes_ph')}
+                  className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 resize-y`} rows={2} />
+              </div>
+              <div>
+                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_help_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
+                <select value={careHelpWith} onChange={e => setCareHelpWith(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <option value="">{t('pr_select')}</option>
+                  <option value="watering">{t('pr_care_help_watering')}</option>
+                  <option value="light">{t('pr_care_help_light')}</option>
+                  <option value="repotting">{t('pr_care_help_repotting')}</option>
+                  <option value="feeding">{t('pr_care_help_feeding')}</option>
+                  <option value="placement">{t('pr_care_help_placement')}</option>
+                  <option value="general">{t('pr_care_help_general')}</option>
+                </select>
               </div>
             </>
           )}
@@ -1009,7 +1152,7 @@ const PlantRescue = ({ tool }) => {
               )}
 
               <div className="flex justify-center">
-                <button onClick={() => setMode('care')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold`}>{t('pr_show_care')} →</button>
+                <button onClick={handleShowCareFromIdentify} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold`}>{t('pr_show_care')} →</button>
               </div>
             </>
           )}
