@@ -4,7 +4,7 @@
     "generated": "2026-09-05",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 3 action-dispatch",
     "baseline_commit": "pep-focused-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. FOCUSED REBUILD (2026-09-05): installed from an owner-supplied rewrite (audit/tool-notes/PEP-NOTES.md) that reduces the prior FULL V2 REWRITE's five modes (Right Now/Prioritize/Week/Patterns/Adapt, 17 actions) down to ONE loop across 3 actions: generate (Right Now menu), just-do-this (single suggestion, no menu), reflect (log what happened). Prioritize/Week/Patterns/Adapt/Shared menu/Match/build-a-plan are GONE, not renamed — do not resurrect their schema keys chasing a 'completeness' instinct. New schema: generate={read,top_pick:{activity,why_it_fits,first_step,duration,done_when},alternatives:[{activity,why_it_fits,duration}],history_note}; just-do-this={activity,why_it_fits,first_step,duration,done_when,history_note}; reflect={reflection,history_observation}. LIVE-CAUGHT BUG, fixed same day: the SYSTEM prompt's own 'avoid absolutes about effort' rule listed the banned phrases ('zero effort, no attention, no decisions, completely passive') as a literal example list, and the model echoed them back near-verbatim on the FIRST test call ('This requires zero setup, zero decisions, and zero physical effort') — the model was handed a copyable bad-phrase template and copied it. Fixed by describing the constraint without listing the banned words as an example set. The validateResult() regex backstop ALSO missed this on the first pass — its 260-char/2-sentence cap (meant to spare a long paragraph from being nuked over one incidental match) let a 3-sentence field with a genuine, repeated 'zero X' violation straight through; raised to 400 chars/3 sentences. Both fixes verified together: re-ran the exact failing input, output came back clean ('asks very little... no setup, no goal, no output' — describing fit, not claiming zero demand). The generate-low-energy-evening-screens case captured here IS that exact regression input — re-running it and finding a 'zero setup/effort/decisions/attention' phrase anywhere in the output is the bug back. DO NOT reintroduce: any of the removed modes' schema keys; a prompt rule that lists banned phrases as a literal copyable example set (describe the constraint, don't hand over the phrase); the tight 260/2 validateResult cap (400/3 is the corrected value). SECOND live-caught bug, same day: a visitor screenshot showed the top_pick activity title rendered one word per line in a collapsed column — root cause was 'duration' holding a full clause ('20 minutes lying still, leaving 10 minutes to sit up, reorient, and prepare for your call.') instead of a short time span; the flex row's whitespace-nowrap duration span demanded its full single-line width and starved the title's share of the row. Fixed at three layers: (1) prompt now explicitly caps duration at ~4 words with an example; (2) a shortenDuration() backstop in validateResult() extracts the leading time span or cuts at the first clause break, deterministically, regardless of prompt compliance; (3) the frontend Activity card gives the title flex-1 min-w-0 and caps the duration span at max-w-[40%] instead of an unbounded whitespace-nowrap sibling, so even an unexpectedly long duration can no longer collapse the title. All three cases here were re-captured after the fix — every duration value is now a short span (e.g. '10–15 minutes'). DO NOT reintroduce whitespace-nowrap on that duration span, and do not let 'duration' drift back into a descriptive clause. FINAL FOCUSED TOOL CORRECTIONS pass, same day: just-do-this's schema DROPPED why_it_fits entirely — 'Just tell me what to do' must feel noticeably simpler than the full menu (one activity, one first step, one stopping point, no analysis paragraph, no alternatives). The just-do-this-no-menu-wanted case here has no why_it_fits key at all; do not add it back. Also this pass: history now speaks at the activity level first ('you rated these two lying-down activities 7/10 each') rather than inventing abstract categories ('stillness is your recharge pattern') from 1-2 data points; a before/after rating change is described as N-points-higher, never as what the activity 'gave' or 'raised'; history_note/history_observation are genuinely optional now — populated only when history changed the answer, empty otherwise (both recorded cases show this: empty when nothing relevant, non-empty in live tests when it materially mattered); 'show me different' explicitly excludes the avoid list rather than paraphrasing it; My Menu and What I've Tried stay structurally distinct on the frontend — rating an activity no longer auto-adds it to My Menu (see src/tools/PEP.js submitReflection). Two new validateResult() regex categories added (observed-rating-change-as-caused-effect, unsupported-pattern-generalization-from-sparse-history), and the effort-absolutes category widened after a live catch of 'asks nothing of you' — a phrasing not covered by the original zero/no-paired-with-setup pattern. TIME_META's 'All evening' (daypart) replaced with 'open-ended' (duration) — a daypart mixed into a duration row broke the mental model."
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pep). Diff for QUALITY not exact match: HTTP 200, no truncation. FOCUSED REBUILD (2026-09-05): installed from an owner-supplied rewrite (audit/tool-notes/PEP-NOTES.md) that reduces the prior FULL V2 REWRITE's five modes (Right Now/Prioritize/Week/Patterns/Adapt, 17 actions) down to ONE loop across 3 actions: generate (Right Now menu), just-do-this (single suggestion, no menu), reflect (log what happened). Prioritize/Week/Patterns/Adapt/Shared menu/Match/build-a-plan are GONE, not renamed — do not resurrect their schema keys chasing a 'completeness' instinct. New schema: generate={read,top_pick:{activity,why_it_fits,first_step,duration,done_when},alternatives:[{activity,why_it_fits,duration}],history_note}; just-do-this={activity,why_it_fits,first_step,duration,done_when,history_note}; reflect={reflection,history_observation}. LIVE-CAUGHT BUG, fixed same day: the SYSTEM prompt's own 'avoid absolutes about effort' rule listed the banned phrases ('zero effort, no attention, no decisions, completely passive') as a literal example list, and the model echoed them back near-verbatim on the FIRST test call ('This requires zero setup, zero decisions, and zero physical effort') — the model was handed a copyable bad-phrase template and copied it. Fixed by describing the constraint without listing the banned words as an example set. The validateResult() regex backstop ALSO missed this on the first pass — its 260-char/2-sentence cap (meant to spare a long paragraph from being nuked over one incidental match) let a 3-sentence field with a genuine, repeated 'zero X' violation straight through; raised to 400 chars/3 sentences. Both fixes verified together: re-ran the exact failing input, output came back clean ('asks very little... no setup, no goal, no output' — describing fit, not claiming zero demand). The generate-low-energy-evening-screens case captured here IS that exact regression input — re-running it and finding a 'zero setup/effort/decisions/attention' phrase anywhere in the output is the bug back. DO NOT reintroduce: any of the removed modes' schema keys; a prompt rule that lists banned phrases as a literal copyable example set (describe the constraint, don't hand over the phrase); the tight 260/2 validateResult cap (400/3 is the corrected value). SECOND live-caught bug, same day: a visitor screenshot showed the top_pick activity title rendered one word per line in a collapsed column — root cause was 'duration' holding a full clause ('20 minutes lying still, leaving 10 minutes to sit up, reorient, and prepare for your call.') instead of a short time span; the flex row's whitespace-nowrap duration span demanded its full single-line width and starved the title's share of the row. Fixed at three layers: (1) prompt now explicitly caps duration at ~4 words with an example; (2) a shortenDuration() backstop in validateResult() extracts the leading time span or cuts at the first clause break, deterministically, regardless of prompt compliance; (3) the frontend Activity card gives the title flex-1 min-w-0 and caps the duration span at max-w-[40%] instead of an unbounded whitespace-nowrap sibling, so even an unexpectedly long duration can no longer collapse the title. All three cases here were re-captured after the fix — every duration value is now a short span (e.g. '10–15 minutes'). DO NOT reintroduce whitespace-nowrap on that duration span, and do not let 'duration' drift back into a descriptive clause. FINAL FOCUSED TOOL CORRECTIONS pass, same day: just-do-this's schema DROPPED why_it_fits entirely — 'Just tell me what to do' must feel noticeably simpler than the full menu (one activity, one first step, one stopping point, no analysis paragraph, no alternatives). The just-do-this-no-menu-wanted case here has no why_it_fits key at all; do not add it back. Also this pass: history now speaks at the activity level first ('you rated these two lying-down activities 7/10 each') rather than inventing abstract categories ('stillness is your recharge pattern') from 1-2 data points; a before/after rating change is described as N-points-higher, never as what the activity 'gave' or 'raised'; history_note/history_observation are genuinely optional now — populated only when history changed the answer, empty otherwise (both recorded cases show this: empty when nothing relevant, non-empty in live tests when it materially mattered); 'show me different' explicitly excludes the avoid list rather than paraphrasing it; My Menu and What I've Tried stay structurally distinct on the frontend — rating an activity no longer auto-adds it to My Menu (see src/tools/PEP.js submitReflection). Two new validateResult() regex categories added (observed-rating-change-as-caused-effect, unsupported-pattern-generalization-from-sparse-history), and the effort-absolutes category widened after a live catch of 'asks nothing of you' — a phrasing not covered by the original zero/no-paired-with-setup pattern. TIME_META's 'All evening' (daypart) replaced with 'open-ended' (duration) — a daypart mixed into a duration row broke the mental model. ADDITIONAL RIGHT-NOW RULES pass, same day: the 1-10 capacity score is now explicitly treated as context, not a single internal-state summary — a specific stated constraint (\"I can't do anything that requires thinking\") controls for the dimension it names even when the general score is high, and the two facts are preserved side by side rather than reconciled into an invented body/mind split (\"your body is fine but your mind is exhausted\" — banned). Also: activities described via observable characteristics (setup/cognitive/physical/social/sensory demand) rather than internal-effect adjectives (\"more present,\" \"activating,\" \"grounding,\" \"a step up\" — all banned unless the visitor asked for that quality or history supports it for that specific activity); an audio-led suggestion must be genuinely usable without watching, never visually-oriented media passed off as audio-only. Two new validateResult() regex categories for the internal-effect-adjective and invented-hidden-explanation failure modes. New case 'generate-high-capacity-explicit-cognitive-limit' is the exact worked example from the spec (capacity 7/10 + explicit no-thinking constraint + 4hrs screen fatigue) — its 'read' field is the calibration anchor: 'You rated your overall capacity 7/10 and also said you cannot do anything that requires thinking...' preserving both facts, never collapsing them into one label. NOTE: this case's top_pick.why_it_fits is legitimately empty in the captured run — the model reached for 'no decisions to track' and the backstop correctly blanked it; check-golden does not assert non-empty on scalar string fields, only on arrays, so this is not a structural regression signal either way."
   },
   "cases": [
     {
@@ -20,19 +20,19 @@
         "userLanguage": "en"
       },
       "output": {
-        "read": "You've been on screens all day with doom-scrolling on top of meetings, and you have almost nothing left. The pick below asks very little of you.",
+        "read": "Capacity 2/10, numb, 15 minutes at home, after a day of screens and doom-scrolling between meetings. Nothing physically demanding, nothing visually stimulating, very low setup and decision-making needed.",
         "top_pick": {
-          "activity": "Lie down with your eyes closed — no phone, no audio",
-          "why_it_fits": "You're at home, have 15 minutes, and a 2/10 with a numb mood points toward something that needs barely any setup or decision-making. This one asks only that you find a surface to lie on and set a timer. No screen, no input, no choices after that.",
-          "first_step": "Put your phone face-down, set a 15-minute timer, then lie down wherever is closest — bed, couch, floor.",
+          "activity": "Lie down in a quiet room with no screen",
+          "why_it_fits": "You have been on screens all day with meetings running through. Lying down with no screen asks very little — no setup, barely any decisions, and no visual input at all. It fits 15 minutes exactly and works anywhere you can get horizontal at home.",
+          "first_step": "Put your phone face-down or in another room, find somewhere to lie flat, and close your eyes or look at the ceiling.",
           "duration": "15 minutes",
-          "done_when": "The timer goes off."
+          "done_when": "When 15 minutes have passed — set a single timer before you lie down so you do not have to track it yourself."
         },
         "alternatives": [
           {
-            "activity": "Sit somewhere away from your screens with a warm drink",
-            "why_it_fits": "If lying down flat doesn't appeal, this gets you off screens with very little effort — just move to a different chair or spot, make or grab something warm, and sit with it until it's gone.",
-            "duration": "10–15 minutes"
+            "activity": "Listen to something audio-only with your eyes closed",
+            "why_it_fits": "A podcast, music, or an audiobook you already know gives your eyes a break from screens entirely and asks very little of you — pick something already on your phone before you start so there is no browsing involved, then just listen.",
+            "duration": "15 minutes"
           }
         ],
         "history_note": ""
@@ -51,10 +51,10 @@
         "userLanguage": "en"
       },
       "output": {
-        "activity": "Sit still and look out a window or at a blank wall",
-        "first_step": "Put your hands in your lap and let your eyes settle on something that isn't a screen",
-        "duration": "5–8 minutes",
-        "done_when": "When the meeting starts — you have a hard stop already built in",
+        "activity": "Sit back, close your eyes, and do nothing",
+        "first_step": "Push your chair back slightly, put your hands in your lap, and close your eyes",
+        "duration": "10 minutes",
+        "done_when": "When your meeting starts — you are already at your desk and ready to go in",
         "history_note": ""
       }
     },
@@ -72,8 +72,54 @@
         "userLanguage": "en"
       },
       "output": {
-        "reflection": "You rated this 8/10 for helpfulness, and your energy went from 3 to 6 — a 3-point rise. You noted feeling better once you were outside.",
+        "reflection": "You rated this a 8/10 for helpfulness, and your energy went from 3 to 6 — a 3-point rise. You noted feeling better once you were outside.",
         "history_observation": ""
+      }
+    },
+    {
+      "name": "generate-high-capacity-explicit-cognitive-limit",
+      "endpoint": "/api/pep",
+      "input": {
+        "action": "generate",
+        "energy": 7,
+        "time_available": "open-ended",
+        "mood": "",
+        "environment": "home",
+        "context": "I can't do anything that requires thinking. I've been on screens for four hours.",
+        "history": [
+          {
+            "activity": "Lying down in a dark room",
+            "rating": 8,
+            "energy_before": 3,
+            "energy_after": 5,
+            "date": "2026-08-20T10:00:00Z"
+          }
+        ],
+        "avoid": [],
+        "userLanguage": "en"
+      },
+      "output": {
+        "read": "You rated your overall capacity 7/10 and also said you cannot do anything that requires thinking, with four hours of screen time already behind you. Physical and time capacity are relatively open; cognitive and screen demand must stay low.",
+        "top_pick": {
+          "activity": "Go outside and walk without a destination or device",
+          "why_it_fits": "",
+          "first_step": "Put on shoes and step out the door. Leave your phone behind or keep it in your pocket on silent.",
+          "duration": "20–40 minutes",
+          "done_when": "When you feel like turning back, or when you have been out long enough that a return walk feels right."
+        },
+        "alternatives": [
+          {
+            "activity": "Lie down and listen to music or a podcast — audio only, screen off",
+            "why_it_fits": "If going outside does not appeal right now, this keeps screen demand at zero and cognitive demand very low. Pick something familiar or low-stakes so there is barely any decision-making involved. Your past lying-down session fits this same shape.",
+            "duration": "20–30 minutes"
+          },
+          {
+            "activity": "Do a simple, familiar household task with your hands",
+            "why_it_fits": "Something like washing dishes, folding laundry, or tidying one surface uses physical capacity and keeps hands occupied without requiring thinking. No screen involved, no planning required beyond choosing one task.",
+            "duration": "15–25 minutes"
+          }
+        ],
+        "history_note": "Your one logged attempt — lying down in a dark room — shares the same screen-free, low-cognitive shape as the first alternative, so that option is listed rather than a less familiar format."
       }
     }
   ]

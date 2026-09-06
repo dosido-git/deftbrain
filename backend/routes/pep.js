@@ -35,7 +35,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'Only 3 actions on this route (generate, just-do-this, reflect) — a regex-walk validateResult() over the parsed JSON before it returns, same pattern as the fuller PEP rewrite this replaces. Categories carried forward because they target failure modes the SYSTEM prompt already argues against in prose (burnout terminology, battery/energy-cost arithmetic, nervous-system/deep-rest claims, forced encouragement, the restorative-vs-numbing binary, invented causal mechanisms / the ordinal-rating-as-quantity error, generic medical instruction) plus the three added in the RIGHT NOW FINAL CORRECTIONS pass (unsupported absolutes about effort, internal-effect claims standing in for a fit explanation, saved-menu status oversold as proven effectiveness) plus two added in the FINAL FOCUSED TOOL CORRECTIONS pass: an observed before/after rating change converted into a caused or measured effect ("gave you 3 points," "raises your energy" — the visitor\'s rating changed, the activity did not measurably do anything), and an unsupported behavioral-pattern generalization from sparse history ("low stimulation works for you," "stillness is your best recharge pattern"). Dropped: the introvert/extrovert energy-stereotype category — it targeted the Week/Forecast mode, which no longer exists in this rebuild.',
+  note: 'Only 3 actions on this route (generate, just-do-this, reflect) — a regex-walk validateResult() over the parsed JSON before it returns, same pattern as the fuller PEP rewrite this replaces. Categories carried forward because they target failure modes the SYSTEM prompt already argues against in prose (burnout terminology, battery/energy-cost arithmetic, nervous-system/deep-rest claims, forced encouragement, the restorative-vs-numbing binary, invented causal mechanisms / the ordinal-rating-as-quantity error, generic medical instruction) plus the three added in the RIGHT NOW FINAL CORRECTIONS pass (unsupported absolutes about effort, internal-effect claims standing in for a fit explanation, saved-menu status oversold as proven effectiveness), two from the FINAL FOCUSED TOOL CORRECTIONS pass (observed rating change converted into a caused effect, unsupported behavioral-pattern generalization from sparse history), and two from the ADDITIONAL RIGHT-NOW RULES pass: an activity described by an unearned internal-effect adjective instead of an observable characteristic ("more present," "activating," "grounding," "a step up" — the ACTIVITY CHARACTERISTICS rule asks for setup/cognitive/physical/social/sensory demand instead), and an invented hidden explanation splitting body and mind into separate diagnosed states when a general capacity score and a specific stated constraint appear to conflict ("your body is fine but your mind is exhausted" — both facts should be stated plainly, never reconciled with an invented theory). Dropped: the introvert/extrovert energy-stereotype category — it targeted the Week/Forecast mode, which no longer exists in this rebuild.',
 };
 
 const RULES = [
@@ -63,6 +63,10 @@ const RULES = [
     /\bgave you \d+ points?\b|\braises? your energy\b|\brestores? \d+ points?\b|\bproduces? a reliable lift\b/i],
   ['unsupported behavioral-pattern generalization from sparse history',
     /\blow stimulation works for you\b|\bstillness is your (?:best|preferred) recharge pattern\b|\bpassive activities are (?:consistently )?effective\b/i],
+  ['activity described by an unearned internal-effect or state adjective instead of an observable characteristic',
+    /\bmore present\b|\bactivating\b|\bregulating\b|\bgrounding\b|\ba step up\b/i],
+  ['invented hidden explanation splitting body and mind into separate diagnosed states',
+    /\byour body is fine,? but your mind\b|\byou have energy,? but your brain\b|\bphysically capable,? but cognitively\b/i],
 ];
 
 // Same shape as the prior PEP rewrite's validateResult / one-percenter.js:
@@ -240,6 +244,25 @@ SELECTION RULES
   Anything beyond the plain time span (when to stop, how to use the time)
   belongs in "why_it_fits" or "done_when" instead.
 - A concrete stopping point is required.
+
+AUDIO/SCREEN RULE
+If you recommend something audio-led specifically because the visitor wants less visual or screen demand, it must be genuinely usable without watching. Do not suggest visually oriented media — a show, a video, most streaming content — as though it were audio-only just because it happens to play sound.
+
+ACTIVITY CHARACTERISTICS
+Explain a recommendation through its observable characteristics: setup required, cognitive demand, physical demand, social demand, sensory demand, decision-making required, location compatibility, time flexibility. Do not describe the activity itself as more present, higher energy, activating, restorative, regulating, grounding, or a step up, unless the visitor explicitly asked for that quality or their own history supports that narrower description for that specific activity. Be confident about WHY an activity fits the constraints supplied. Be careful about claiming WHAT the activity will do to the person.
+
+CONSTRAINT DIMENSIONS — the capacity score is context, not the whole picture
+A visitor's overall 1-10 capacity score does not summarize every kind of capacity. Someone can report high overall capacity while separately having low tolerance for thinking, for social contact, for sensory input, for physical effort, or for making decisions — treat these as separate dimensions (cognitive, physical, social, sensory, decision-making, setup, mobility, location, time), not one number. Extract only what the visitor actually supplied for each; do not infer a dimension they never mentioned.
+
+When a specific statement conflicts with the general score, the specific statement controls FOR THE DIMENSION IT NAMES — it does not override the rest of the score, and the rest of the score does not erase it either. Example: capacity 7/10, and the visitor says "I can't do anything that requires thinking" — overall capacity stays relatively high, but cognitive demand must stay low for this recommendation specifically. Do not average the two, do not let the higher number push a cognitively demanding activity through anyway, and do not invent a reason the two facts coexist (a bad answer invents a hidden split like "your body is fine, but your mind is exhausted" — a good answer just states both facts as given: "You rated your overall capacity 7/10 and also said you don't want anything that requires thinking"). Do not collapse the visitor into a single internal-state label ("high energy," "drained," "your head is full") unless they used that language themselves.
+
+Match candidate activities against every constraint actually supplied, not just the overall score — a high capacity score alone does not establish physical, cognitive, social, or sensory tolerance; each needs its own supporting evidence from what the visitor said. When using history, compare on the dimension that matters today: a past low-capacity, lying-down session rated positively is evidence that lying-down activities work for this visitor, not evidence that a higher score today means a more demanding activity is warranted.
+
+If two supplied constraints genuinely cannot both be satisfied, say so rather than silently picking one — name the conflict, offer the closest fit if one exists, and state plainly which constraint it doesn't fully meet.
+
+Resolve conflicts in this order; a lower item may not override a higher one: (1) hard constraints — explicit "can't/must not," physical limitations, safety, an unavailable location or resource; (2) explicit preferences or exclusions the visitor stated; (3) a specific named domain limit ("nothing that requires thinking"); (4) time and location; (5) relevant visitor history; (6) the general capacity score; (7) generic activity ideas.
+
+"read" should summarize the constraint profile the visitor actually supplied, not manufacture an interpretation of it — preserve their information rather than theorizing about them.
 
 ${oneOnly ? `Return ONLY valid JSON:
 {

@@ -306,3 +306,75 @@ env var isn't set; safe to leave in.
   effect, unsupported-pattern-generalization) and the widened effort-
   absolutes pattern (`asks nothing of you` / `requires nothing`).
 - `PEP_DEBUG=1` diagnostic logging in `validateResult()` — cheap, keep it.
+
+## ADDITIONAL RIGHT-NOW RULES pass (2026-09-05, same day)
+
+Backend-prompt-only — no schema or UI change. Added to the `generate`/
+`just-do-this` SELECTION RULES (shared by both actions):
+
+1. **AUDIO/SCREEN RULE.** An audio-led suggestion recommended specifically
+   because the visitor wants less screen demand must be genuinely usable
+   without watching — never visually-oriented media passed off as
+   audio-only.
+2. **ACTIVITY CHARACTERISTICS.** Explain a recommendation through observable
+   characteristics (setup, cognitive/physical/social/sensory demand,
+   decision-making, location compatibility, time flexibility), never
+   internal-effect adjectives ("more present," "activating," "grounding,"
+   "a step up," "regulating") unless the visitor explicitly asked for that
+   quality or their own history supports it for that specific activity.
+   Be confident about WHY it fits; careful about WHAT it will do.
+3. **CONSTRAINT DIMENSIONS — the big one.** The 1-10 capacity score is
+   context, not a single internal state governing every kind of demand.
+   Cognitive, physical, social, sensory, decision-making, setup, mobility,
+   location, and time are separate dimensions. A specific stated
+   constraint controls FOR ITS OWN DIMENSION even when the general score
+   is high — it does not average with the score, and the score does not
+   override it. Critically: **do not invent a hidden explanation to
+   reconcile the two** ("your body is fine, but your mind is exhausted" —
+   banned; "You rated your overall capacity 7/10 and also said you don't
+   want anything that requires thinking" — required). History comparisons
+   must match on the dimension that matters today, not just the capacity
+   number. A documented conflict-resolution order: hard constraints →
+   explicit preferences/exclusions → a named domain limit → time/location
+   → relevant history → the general score → generic ideas — a lower item
+   never overrides a higher one. If two constraints genuinely can't both
+   be satisfied, say so rather than silently picking one.
+
+Two new `validateResult()` regex categories (defense-in-depth for #2 and
+#3): an unearned internal-effect adjective, and the invented body/mind
+split. Both verified in both directions before shipping (catches the
+banned form, spares legitimate "very little demand" phrasing).
+
+**Live-verified against the spec's own worked example** (capacity 7/10 +
+"I can't do anything that requires thinking" + 4 hours of screens): the
+`read` field came back nearly verbatim to the spec's own GOOD example —
+"You rated your overall capacity 7/10 and also said you cannot do
+anything that requires thinking..." — and the top pick correctly chose a
+cognitively-empty, physically-open activity (a directionless walk) rather
+than assuming the high score licensed more demand generally. New golden
+case `generate-high-capacity-explicit-cognitive-limit` captures this
+exact scenario as a permanent regression guard.
+
+**Recurring backstop activity worth knowing about:** across this pass's
+live testing, the "no decisions to track" / "no decisions once it starts"
+phrasing came up repeatedly despite the existing effort-absolutes rule
+already naming "decisions" explicitly — `PEP_DEBUG=1` confirmed each
+instance was a genuine catch (blanking `why_it_fits`, never the whole
+response). This is the accepted, working tradeoff for this tool: the
+prompt reduces frequency, the regex backstop is the actual guarantee. A
+field arriving empty is expected behavior, not a bug — do not chase this
+by trying to enumerate every possible phrasing of "no decisions" in the
+prompt text (risks the model echoing a longer banned-phrase list, per the
+RIGHT NOW FINAL CORRECTIONS pass's own lesson).
+
+## DO NOT silently reverse (cont'd, ADDITIONAL RIGHT-NOW RULES pass)
+
+- The CONSTRAINT DIMENSIONS framework — never let a high general capacity
+  score justify increasing cognitive, social, sensory, or physical demand
+  the visitor didn't confirm tolerance for.
+- The ban on inventing a body/mind (or any other) split to explain
+  conflicting inputs — state both facts plainly instead.
+- The conflict-resolution order (hard constraints highest, generic ideas
+  lowest) — a lower-priority signal must never override a higher one.
+- The two new regex categories (internal-effect adjective, invented hidden
+  explanation) and their verified-both-directions test cases.
