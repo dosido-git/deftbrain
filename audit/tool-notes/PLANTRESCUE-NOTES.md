@@ -214,6 +214,46 @@ from `plantCollection`'s `checks` for the active plant.
    observation history now, it just doesn't match this rule's naming/shape
    patterns.
 
+## IDENTIFY MODE PROVENANCE fix (2026-09-06, same day)
+
+The user flagged a real gap: nothing stopped a Rescue-mode symptom
+description, Care-mode info, or saved-plant history from being used as
+*evidence for botanical identity* in an Identify-mode answer. Worked
+example given: prior context says "fiddle leaf fig," the current photo
+looks like a Rhododendron — the wrong answer confidently identifies the
+Rhododendron and then reasons using the fiddle-leaf-fig's leaf-drop/
+moving-stress/watering history anyway, blending two different plants into
+one answer instead of surfacing the conflict.
+
+Fixed at two layers, deliberately not just one:
+
+1. **Frontend (the real fix).** `handleAnalyze()` in `PlantRescue.js` now
+   builds a completely different payload for `mode === 'identify'` —
+   `{ imageBase64, mode, plantName, userLocale, userCurrency, userRegion }`
+   only. Every Rescue/Care field (`plantDescription`, `symptoms`,
+   `symptomDuration`, `recentChanges`, `wateringMethod`, `hasDrainage`,
+   `priorObservations`, etc.) is simply never sent for an Identify call.
+   Before this, switching from the Rescue tab to the Identify tab without
+   resetting left all of that in component state, and the OLD payload
+   construction sent everything regardless of mode — the backend would
+   receive a full Rescue-shaped `supplied` block on an Identify request.
+   Not sending the data in the first place beats trusting a prompt rule to
+   ignore data it shouldn't have received.
+2. **Backend prompt (the backstop).** A new IDENTIFY MODE PROVENANCE
+   section in `IDENTIFY_MODE_RULES`: every `why_it_fits` statement must
+   answer "what can I actually see in the CURRENT photo that supports
+   this?"; prior context may be held in mind but never presented as visual
+   evidence; a conflict between the current photo and prior context must
+   be surfaced, not blended. Plus a new `outputGuard.prohibit` category
+   (`identification_evidence_drawn_from_non_visual_prior_context_instead_
+   of_the_current_photo`). Verified by hitting the API directly with
+   `priorObservations` describing a different plant's Rescue history
+   alongside an unusable photo (bypassing the frontend fix on purpose, to
+   prove this layer holds independently) — the model correctly said the
+   image lacked enough detail rather than falling back to the prior
+   plant's identity. New permanent golden case:
+   `identify-does-not-use-prior-plant-history-as-visual-evidence`.
+
 ## DO NOT silently reverse
 
 - The three-schema-per-mode shape — no numeric confidence, no `is_saveable`
@@ -237,3 +277,10 @@ from `plantCollection`'s `checks` for the active plant.
   Rescue mode.
 - `PlantRescue` in `audit/audit_v2-3-2.py`'s `_NO_HISTORY_TOOLS` — the
   observation history is real, it just lives per-plant in `checks[]` now.
+- The Identify-mode-only payload in `handleAnalyze()` — do not go back to
+  sending the full Rescue/Care field set regardless of mode. This is the
+  actual fix for the identification-provenance bug, not a stylistic
+  simplification to "clean up."
+- The IDENTIFY MODE PROVENANCE prompt section and its outputGuard category
+  — the backstop layer for the same bug, needed independently of the
+  frontend fix in case a future payload shape reintroduces the leak.

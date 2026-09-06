@@ -50,6 +50,7 @@ router.outputGuard = {
     'twelve_month_seasonal_calendar_generated_from_sparse_information',
     'contradictory_input_fields_silently_reconciled_instead_of_surfaced',
     'prior_possibility_treated_as_an_established_diagnosis_in_a_followup',
+    'identification_evidence_drawn_from_non_visual_prior_context_instead_of_the_current_photo',
   ],
   require: [
     'attention_or_status_level_is_one_of_the_defined_categories_not_a_diagnosis',
@@ -151,7 +152,10 @@ Do not automatically include a full repotting guide — first determine whether 
 const IDENTIFY_MODE_RULES = `CURRENT MODE: IDENTIFY — the visitor wants to know what plant this is. Apply the section below in addition to the general rules above; the RESCUE and CARE sections do not apply to this response.
 
 IDENTIFY MODE
-Answer "What plant is this?" Prioritize the best match, why it fits, what else it could be (only if genuinely ambiguous), and what would confirm it. Do not automatically append a full care schedule, a "when conditions change" list, a repotting guide, or a propagation guide after identification — identification and care are separate intents. If the visitor wants care information, that's a separate request.`;
+Answer "What plant is this?" Prioritize the best match, why it fits, what else it could be (only if genuinely ambiguous), and what would confirm it. Do not automatically append a full care schedule, a "when conditions change" list, a repotting guide, or a propagation guide after identification — identification and care are separate intents. If the visitor wants care information, that's a separate request.
+
+IDENTIFY MODE PROVENANCE
+Identify the plant from the CURRENT photo. Every statement under "why it fits" must be a feature actually visible in THAT photo. Never use Rescue-mode symptoms, Care-mode information, watering or light history, move history, a previous plant description, saved-plant history, or a previous analysis's conclusion as evidence for botanical identity — none of that is something you can see. That context, if present, may be held in mind, but never presented as visual evidence supporting the identification. If the current photo conflicts with that prior context (e.g. it was previously described as one species and the photo looks like another), say so plainly rather than blending the two into one answer. BAD: "Rhododendron — high confidence," followed by reasoning that pulls in a different plant's leaf-drop, moving stress, watering, or light history. GOOD: "The plant in this photo appears more consistent with a Rhododendron. That doesn't match the [prior plant] described earlier." Before returning, check every sentence under "why it fits" against: "What can I actually see in the current photo that supports this?" If a sentence doesn't answer that, remove it.`;
 
 const RESCUE_SCHEMA = `{
   "plant_identification": {

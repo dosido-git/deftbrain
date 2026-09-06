@@ -252,16 +252,26 @@ const PlantRescue = ({ tool }) => {
     if (!imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0) { setError(t('pr_err_provide')); return; }
     setError(''); setResults(null); setFollowUpAnswer(''); setFollowUpQuestion(''); setCompanionResults(null);
     try {
-      const data = await callToolEndpoint('plant-rescue', {
-        imageBase64, extraPhotos: extraPhotos.filter(Boolean),
-        plantDescription: plantDescription.trim(), symptoms: selectedSymptoms,
-        symptomDuration, recentChanges,
-        lightLevel, wateringMethod, wateringFreqText: wateringFreqText.trim(), hasDrainage,
-        location, climateZone, userLocation: userLocation.trim(),
-        hasPets, hasChildren, mode, plantName: plantName.trim() || null,
-        priorObservations: priorObservationsForCurrent,
-        userLocale, userCurrency, userRegion
-      });
+      // Identify mode gets ONLY the current photo (+ locale/name) — never
+      // Rescue/Care fields left over in state from switching tabs without
+      // resetting. Sending them at all would let a fiddle-leaf-fig
+      // description or symptom history sit in the request for an Identify
+      // call about a completely different photo; the backend's provenance
+      // rule guards against a model that receives it anyway, but not
+      // sending it in the first place is the real fix.
+      const payload = mode === 'identify'
+        ? { imageBase64, mode, plantName: plantName.trim() || null, userLocale, userCurrency, userRegion }
+        : {
+            imageBase64, extraPhotos: extraPhotos.filter(Boolean),
+            plantDescription: plantDescription.trim(), symptoms: selectedSymptoms,
+            symptomDuration, recentChanges,
+            lightLevel, wateringMethod, wateringFreqText: wateringFreqText.trim(), hasDrainage,
+            location, climateZone, userLocation: userLocation.trim(),
+            hasPets, hasChildren, mode, plantName: plantName.trim() || null,
+            priorObservations: priorObservationsForCurrent,
+            userLocale, userCurrency, userRegion
+          };
+      const data = await callToolEndpoint('plant-rescue', payload);
       setResults(data);
     } catch (err) { setError(err.message || t('pr_err_analysis')); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
