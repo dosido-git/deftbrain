@@ -1,30 +1,239 @@
-# PlantRescue — architecture & lock notes (`plantrescue-v1`)
+# Plant Rescue — architecture & lock notes (`plantrescue-v2`)
 
-Plant diagnosis / care / identify (vision — multi-photo) + follow-up Q&A + companion-planting advisor.
-**Frontend:** `src/tools/PlantRescue.js`. **Backend:** `backend/routes/plant-rescue.js` (3 endpoints,
-`MODELS.SMART`). **Golden:** `audit/plant-rescue-golden-sample.json`. Verify: `npm run check:golden plant-rescue`.
+Reasons about a struggling or unfamiliar plant — plausible explanations
+grounded in what was reported/visible, a discriminating check before any
+conditional treatment, and a practical next step. Never a diagnosis, never a
+percentage, never an invented recovery timeline. Vision-capable (photo +
+2 extra close-up/soil photos in Rescue mode). Three modes (Rescue/Care/
+Identify) dispatched off one endpoint, plus follow-up Q&A and a companion
+(care-compatibility) grouping advisor.
 
-## Endpoints
-`/plant-rescue` (main, **5500**, `callClaudeWithRetry`, guard `isRescue && (!diagnosis || !action_plan)`),
-`/plant-rescue/followup` (**1500**, FREE TEXT, raw create + local loop), `/plant-rescue/companions`
-(4000, `callClaudeWithRetry`).
+**Frontend:** `src/tools/PlantRescue.js`. **Backend:**
+`backend/routes/plant-rescue.js` (3 endpoints, `MODELS.SMART`, v2 guard).
+**Golden:** `audit/plant-rescue-golden-sample.json` (5 cases: rescue, care,
+identify, companions, followup). Verify: `npm run check:golden plant-rescue`.
 
-## Audit fixes locked here (2026-07-14)
-1. **🐛 Two latent German-500 paths on main.** It used raw `anthropic.messages.create` + a
-   trailing-comma-only repair that can't fix a mid-string cutoff, and the schema has a **mandatory
-   12-month seasonal_calendar** (always-on) → German truncation → 500; plus unescaped quotes had no
-   shared repair. **Fix:** route main + companions through `callClaudeWithRetry` (shared repair +
-   fail-fast), `max_tokens 4000→5500`, cap the arrays (action_plan ≤5, secondary ≤4, prevention ≤5,
-   alt_species ≤3, regional ≤3, ≤3 tasks/month), add the no-inner-double-quote rule.
-2. **🐛 format-strict enums breaking the hero badge.** `confidence` (`high/medium/low (number)`),
-   `severity` (`critical/concerning/minor — 2-4 words`), toxicity `level` — the frontend switches on
-   these; a leaked annotation → switch falls to default → "healthy" label on a dying plant. **Fix:**
-   bare pipe enums. Verified DE rescue: severity='critical', confidence='high', tox='toxic'.
-3. **⚠️ followup free-text clip.** `max_tokens 800→1500` + "2-3 short paragraphs".
-4. **⚠️→cleaned:** ~40 annotation leaks (incl `(number)` + `— one sentence` on calendar months);
-   PF-2 `c.label` alias normalized. Removed the now-unused `cleanJsonResponse` import.
+## V2 REWRITE (2026-09-06)
+
+The v1 prompt asked the model to diagnose from ambiguous symptoms: a single
+`primary_problem`, a numeric `confidence_score`, an `is_saveable` boolean, a
+`recovery_timeline`, a **mandatory 12-month `seasonal_calendar`** (always on,
+regardless of what was actually asked or known), and an unconditional
+`propagation_guide` with an invented `success_rate`. None of that is
+something a photo plus a few environmental facts can actually support — the
+schema was commissioning fabrication by its own shape, the same lesson as
+the Pet Behavior Decoder rewrite. The rewrite keeps the tool to what it can
+back up: a small evidence ledger (REPORTED/VISIBLE/IDENTIFIED/INFERRED/
+UNKNOWN, internal to the prompt), up to 3 plausible explanations each paired
+with a distinguishing check, and one most-useful check **before** any
+conditional treatment — "possibility → discriminating check → conditional
+action," deliberately reversing the old order (the old output declared
+"overwatering/root congestion — most likely cause" and only later admitted
+the roots hadn't been inspected).
+
+### Old schema → new schema (do not resurrect the old keys)
+
+Three schemas now, one per mode, dispatched by `mode` inside a single
+`/plant-rescue` handler (`RESCUE_SCHEMA`/`CARE_SCHEMA`/`IDENTIFY_SCHEMA` in
+the route file):
+
+| Old (single schema, all modes) | New |
+| --- | --- |
+| `plant_identification.confidence_score` (0-100) | `confidence: high\|moderate\|low` — never a percentage; a number implies calibration the model doesn't have |
+| `diagnosis.primary_problem` (single answer) | `possible_explanations[]` (≤3, each with `why_it_could_fit` + `check`) — no possibility is "most likely" without evidence that distinguishes it |
+| `diagnosis.severity` (critical/concerning/minor) + `is_saveable` boolean | `bottom_line.attention_level` (`likely_minor\|watch_and_check\|needs_attention\|serious_damage_possible`) — a condition label, never a survival prediction |
+| `recovery_timeline` (invented) | `what_improvement_looks_like[]` — observable milestones, never a countdown |
+| `seasonal_calendar` (mandatory 12-month) | `when_conditions_change[]` (Care mode only) — "if this changes, adjust like this," relevant to the actual reported environment, not calendar month |
+| `repotting_guide` / `propagation_guide` (unconditional, always generated) | `repot_when[]` (Care mode, descriptive) / propagation removed from the schema entirely — mentioned only in prompt rules for follow-up, shown only if asked |
+| `action_plan[]` with `priority: 1-3` (P1/P2/P3 framing) | `what_to_do_now[]` — lightest useful intervention first, no artificial urgency tiers unless priorities genuinely differ |
+| `toxicity_warning.alternative_plants` (always included if toxic+pets/children) | `safety.guidance` only — a "safe alternative plants" shopping list is generated only if the visitor actually asks |
+
+New shapes: **Rescue** — `plant_identification{best_match,scientific_name,
+confidence,why_it_fits,alternatives,what_would_confirm}` /
+`bottom_line{attention_level,summary}` / `what_you_reported[]` /
+`possible_explanations[]` / `check_first[]{check,what_to_look_for,if_yes,
+if_no}` / `what_to_do_now[]{action,why,condition}` /
+`what_improvement_looks_like[]` / `safety{show,who_or_what,guidance}` /
+`useful_next_photo`. **Care** — `plant{name,scientific_name,confidence}` /
+`core_care{light,watering,soil_and_drainage,feeding,temperature_and_humidity}`
+/ `repot_when[]` / `when_conditions_change[]` / `watch_for[]` /
+`pet_child_safety{show,guidance}`. **Identify** — `best_match{common_name,
+scientific_name,confidence,why_it_fits[]}` / `alternatives[]{name,
+why_possible,how_to_distinguish}` / `what_would_help_confirm[]` /
+`safety_note{show,guidance}`.
+
+### Architecture simplification: no more parallel-split
+
+The old route ran two parallel `callClaudeWithRetry` calls (diagnose + care)
+specifically because the mandatory 12-month calendar made the combined
+response too large/slow (~150s single-call). With the calendar and the
+unconditional repotting/propagation guides gone, each mode's schema is small
+enough for **one call, one schema, per mode** — the split was removed as a
+direct consequence of the schema shrinkage the rewrite required, not a
+separate optimization decision.
+
+### Guard mechanism: `runOutputGuard`, not a regex `validateResult()`
+
+Same reasoning as Pet Behavior Decoder: this tool's failure modes are
+**invented facts** (a cause, a schedule, a recovery timeline, a chemical
+treatment) with no fixed vocabulary a regex could catch. Added
+`router.outputStandard='v2'` + `router.outputGuard.prohibit` (22 categories,
+e.g. `symptom_mapped_directly_to_a_cause_without_supporting_evidence`,
+`invented_recovery_timeline_or_stabilization_schedule`,
+`unjustified_chemical_or_quasi_chemical_treatment_recommended`) +
+`router.outputGuard.require` (3 categories) + `runOutputGuard()` calls after
+generation for all three modes, with mode-specific `fields` arrays (Rescue:
+`bottom_line.summary`, `what_you_reported[]`, `possible_explanations[].
+why_it_could_fit`/`.check`, `check_first[].if_yes`/`.if_no`,
+`what_to_do_now[].why`/`.condition`; Care: `core_care.watering`/`.feeding`,
+`when_conditions_change[].adjustment`; Identify: `best_match.why_it_fits[]`
+expanded per-index, `alternatives[].why_possible`/`.how_to_distinguish`).
+
+**Bug found and fixed during install**: the Identify-mode guard call
+initially pushed `best_match.why_it_fits` as a single joined-string field —
+but that path in the actual parsed draft is an ARRAY (`why_it_fits: [""]`
+per schema), so `getByPath` returned an array and `outputGuard.js`'s
+container-hit safety check correctly refused to repair it (a repair can only
+rewrite a string leaf, not a whole array) and silently dropped the
+violation — confirmed live via the guard log (`dropped 2 violation(s) naming
+a non-string field`). Fixed by expanding it into indexed `why_it_fits[i]`
+fields, matching the pattern already used for every other array field.
+
+### Follow-up: structured context, not a flattened "Diagnosis: [claim]"
+
+The old `/followup` built its context as `Diagnosis: ${primary_problem}
+(${severity})` — literally turning an uncertain model guess into a labeled
+fact for the next call to build on. The new follow-up passes forward
+REPORTED/POSSIBILITIES/CHECKS as plain sentences (mode-aware — Rescue vs.
+Care vs. Identify each have differently-shaped `originalDiagnosis`), applies
+`GENERAL_RULES` again, and is explicitly told a prior possibility "remains a
+possibility until new evidence establishes it" and it "is allowed to revise
+the earlier interpretation." Live-verified: asked "should I repot it now
+just in case?" against a watch-and-check pothos result — correctly answered
+that repotting first would add stress without evidence it would help, and
+pointed back to the soil-moisture check instead of agreeing because the
+question sounded cautious.
+
+### Companion planting: care compatibility, not plant benefits
+
+The old prompt opened with "You are an indoor plant placement expert" and
+invited air-purifying claims, room/window inventions, and always suggested
+buying 1-2 more plants. Rewritten to group by light/water/temperature/
+humidity **compatibility** only — explicitly told not to invent room
+availability, window direction, household humidity, or biological
+companion-plant benefits, and not to automatically upsell more plants.
+Schema changed: `groupings[]/conflicts[]/suggestions[]` →
+`good_to_group[]/better_kept_apart[]/placement_principle`.
+
+### Input form changes
+
+- "What do you see?" → "🩺 What's happening?" (symptom section header).
+- The `root_rot` symptom's label changed from "Bad smell/possible root rot"
+  to plain "Bad smell" — the old label pre-supposed a diagnosis inside a
+  checkbox, which is exactly the "symptoms are not diagnoses" rule the
+  rewrite exists to enforce. The internal id (`root_rot`) is unchanged —
+  it's a JS object key never shown to the model or the visitor.
+- **`ageOfOwnership` free-text field removed**, replaced by a
+  `symptomDuration` dropdown ("How long has this been happening?" — just
+  noticed / a few days / a week or two / several weeks / a few months /
+  longer / not sure). The old field conflated "how long you've owned the
+  plant" with "how long the symptom has been present" — exactly the
+  confusion the PLANT AGE/OWNERSHIP prompt rule warns against. Ownership
+  duration, if a visitor wants to share it, still reaches the model via the
+  free-text "Tell us a little more" field, which the prompt rule still
+  covers.
+- New "Has anything changed recently?" checklist (moved / repotted /
+  watering changed / light changed / fertilizer changed / temperature
+  changed / pest treatment / something else / nothing I can think of) —
+  feeds `recentChanges` to the backend, included as REPORTED evidence.
+- "Additional details * (if no photo)" → "Tell us a little more (optional)"
+  — the required asterisk is gone; it was always effectively optional
+  (photo OR text OR symptoms satisfies submission), the old asterisk
+  overstated the requirement.
+- **`wateringFreq` (daily/few-days/weekly/rarely bucket) replaced** by a
+  `wateringMethod` practice question ("How do you decide when to water?" —
+  checks soil first / on a schedule / when it looks thirsty / varies) plus
+  an optional free-text `wateringFreqText` ("about how often lately?"). A
+  calendar interval alone can't establish over- or under-watering per the
+  WATERING prompt rule; the owner's actual practice is the more useful
+  signal, and the free text lets them add a rough frequency without forcing
+  it into a bucket.
+- New optional `hasDrainage` (yes/no/not sure) — often more actionable than
+  forcing the model to infer drainage from a photo.
+- The existing compact symptom checklist, light/location/climate selects,
+  and pets/children checkboxes were kept as-is — the spec was explicit that
+  this form didn't need a wholesale redesign, only these targeted changes.
+
+### Feature removals (schema-driven, not incidental)
+
+The watering-tracker widget (`getWaterStatus`/`handleMarkWatered`) and the
+progress-photos diary strip are **gone**, not hidden. Both depended on the
+old schema: the tracker parsed `care_schedule.watering` with a regex
+expecting an "every N-M days" string, which the new prompt deliberately
+avoids producing (WATERING and NO ARBITRARY PRECISION rules) — so the old
+regex would mostly return null against v2 output. Neither was on the KEEP or
+ADD list in the rewrite spec, and both are removed for the same reason the
+Pet Behavior Decoder rewrite dropped its severity-tracker widget: a feature
+built on a schema shape the rewrite deliberately eliminated.
+
+"Past Diagnoses" is also gone, folded into **My Plants**: each saved plant
+in `plantCollection` now carries a `checks[]` array (`reported` /
+`suggestedChecks` / `attentionLevel` per visit) instead of a flat session
+history with a raw AI conclusion attached. "Check Again" preloads the
+plant's identity and clears the results/description so the next check
+starts fresh, and the current backend already accepts `priorObservations`
+in the request body (compared descriptively, per the MY PLANTS / PAST
+DIAGNOSES prompt rules — "history is observation, not diagnosis") — wired
+from `plantCollection`'s `checks` for the active plant.
+
+### Bugs found and fixed during install (not asked for explicitly)
+
+1. **Stale cross-mode state leaking into a saved observation.** `selectedSymptoms`
+   isn't cleared when switching away from Rescue mode (by design — mode
+   switches don't reset the form). But `handleSavePlant`'s `reported` text
+   unconditionally included `selectedSymptoms`, so saving a Care or Identify
+   result could silently claim symptoms were reported that were never shown
+   in that mode's UI, left over from an earlier Rescue session. Fixed:
+   `reported` only includes symptoms when `mode === 'rescue'`.
+2. **PF-15 false flag on a ternary either/or.** The submit button's
+   `disabled`/`className` duplicated the same photo-or-text-or-symptoms
+   ternary inline instead of referencing `canSubmitRef.current` (already
+   computed once above) — the audit's either/or carve-out didn't recognize
+   the field as optional once the asterisk was removed, since the shape
+   didn't match its extraction regex. Fixed by referencing
+   `!canSubmitRef.current` directly in both places, which is also just
+   cleaner than the old duplicated inline condition.
+3. **S1.5 history-shape false flag.** Same root cause as PF-15's history
+   check would expect: the flat `plantrescue-history` list (a
+   `usePersistentState` array with a `preview:` field, rendered as a "Past
+   Diagnoses" panel) was removed on purpose per the explicit instruction to
+   integrate it into My Plants instead. `PlantRescue` added to
+   `audit/audit_v2-3-2.py`'s `_NO_HISTORY_TOOLS` exemption set, with a
+   comment explaining the integration (matching the LaundroMat/
+   JustifyMyMeeting precedent) — the per-plant `checks[]` array is the real
+   observation history now, it just doesn't match this rule's naming/shape
+   patterns.
 
 ## DO NOT silently reverse
-- `callClaudeWithRetry` on main + companions; main `5500` + array caps; bare pipe enums
-  (confidence/severity/toxicity level); the no-inner-double-quote rule; followup `1500`;
-  no annotation suffixes.
+
+- The three-schema-per-mode shape — no numeric confidence, no `is_saveable`
+  prediction, no mandatory 12-month calendar, no unconditional
+  repotting/propagation guide, no automatic safe-alternative-plants list.
+- `runOutputGuard` (not a regex-only backstop) — invented facts, not
+  fixed-vocabulary phrasing, is the failure mode here.
+- The single-call-per-mode architecture — do not reintroduce the
+  parallel-split unless a schema grows large enough to need it again.
+- Follow-up's structured REPORTED/POSSIBILITIES/CHECKS context — never
+  flatten a possibility back into a labeled "Diagnosis:" string.
+- Companion planting's care-compatibility framing — no room/window/humidity
+  invention, no automatic "buy more plants" suggestion.
+- `ageOfOwnership` staying removed in favor of `symptomDuration` — these are
+  two different facts (how long owned vs. how long the symptom has been
+  present) and conflating them was the original bug.
+- `wateringFreq` staying removed in favor of `wateringMethod` +
+  `wateringFreqText` — a calendar interval alone doesn't establish over- or
+  under-watering.
+- The `reported` field in `handleSavePlant` only including symptoms in
+  Rescue mode.
+- `PlantRescue` in `audit/audit_v2-3-2.py`'s `_NO_HISTORY_TOOLS` — the
+  observation history is real, it just lives per-plant in `checks[]` now.

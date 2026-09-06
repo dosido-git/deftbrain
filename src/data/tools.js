@@ -4285,56 +4285,63 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-06",
   id: "PlantRescue",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
+  // V2 REWRITE, 2026-09-06: replaced a forced diagnosis (single primary_problem,
+  // numeric identification confidence, is_saveable boolean, a recovery_timeline,
+  // a 12-month seasonal calendar, an unconditional propagation guide with a
+  // success rate) with an evidence-first structure — a small set of plausible
+  // explanations, each paired with a check that would distinguish it, and a
+  // single most-useful check before any conditional treatment. Name unchanged;
+  // see audit/tool-notes/PLANTRESCUE-NOTES.md.
   primer: {
-    when: "The plant is dying and you don't know why.",
-    give: "A photo of the affected parts, plus light, watering and location.",
-    get: "The species, the diagnosis, and a rescue plan in priority order.",
+    when: "Something's off with a plant and you're not sure why.",
+    give: "A photo or description, plus light, watering, and what's changed recently.",
+    get: "A few plausible explanations, what to check first, and what to do next.",
+    edge: "It won't diagnose your plant with certainty or promise a recovery timeline — only what the evidence you gave it does and doesn't support.",
   },
-  seoDescription: "Snap a photo or describe symptoms and get an instant diagnosis plus a step-by-step rescue plan for your dying plant. Free plant doctor, no signup.",
-  seoTitle: "Plant Problem Diagnoser & Care Rescue Plan",
+  seoDescription: "Upload a photo or describe what you're seeing and get plausible explanations, the one thing worth checking first, and a practical next step for your plant. Free, no signup.",
+  seoTitle: "Plant Rescue: What's Wrong, What to Check, What to Do",
   title: 'Plant Rescue',
-  tagline: 'Diagnose and rescue your struggling plants',
+  tagline: "Figure out what's wrong—and what to do next",
   tags: ['plant', 'garden', 'water', 'dying', 'care', 'houseplant'],
   icon: '🪴',
   categories: ['The Grind'],
   headerColor: "#1e2a3a",
-  description: "Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.",
+  description: "Something wrong with your plant? Upload a photo or describe what you're seeing and Plant Rescue helps you narrow down what may be happening, decide what to check next, and make a practical rescue plan.",
   guide: {
-    overview: "Your plant is dying and you don't know why. This tool uses AI image analysis to identify your plant species, diagnose problems (overwatering, pests, nutrient deficiency), and provide a prioritized rescue plan. Upload a photo of the affected leaves/stems or describe symptoms, and get expert advice within seconds.",
-    
+    overview: "A plant symptom rarely has one cause — yellow leaves, brown tips, and drooping can each mean several different things. Plant Rescue lays out the plausible explanations for what you're seeing, tells you the one thing most worth checking before you change anything, and gives you a next step that depends on what you find, instead of a confident-sounding guess.",
+
     howToUse: [
-      "Upload a clear photo of your plant (focus on affected areas) OR describe symptoms",
-      "Add environmental details: light level, watering frequency, location",
-      "Optional: How long you've had the plant",
-      "Get instant diagnosis with severity rating",
-      "Follow prioritized action plan (Priority 1 = do immediately)"
+      "Upload a clear photo OR describe what you're seeing OR select the symptoms that apply",
+      "Add how long it's been happening and anything that changed recently",
+      "Add light, how you water, drainage, and location if you have them",
+      "Get plausible explanations, the check that would distinguish them, and what to do first",
+      "Save the plant to compare a later check against what you reported this time"
     ],
-    
+
     example: {
-      scenario: "Your fiddle leaf fig has yellowing lower leaves with brown spots. You water it every 3 days and it's in a bright corner indoors.",
-      action: "Upload photo of affected leaves. Select 'Partial shade' for light, 'Every few days' for watering, 'Indoor' for location.",
-      result: "Diagnosis: CONCERNING - Overwatering with early root rot. Primary problem: Too-frequent watering for indoor conditions. Action Plan: Priority 1 (NOW): Stop watering for 7-10 days, check soil moisture before next watering. Priority 2 (Today): Move to brighter location with more air circulation. Priority 3 (This week): Check drainage - pot should have holes, soil should dry between waterings. Environmental adjustments: Water: Only when top 2 inches of soil are dry (test with finger). Light: Move closer to window for 4-6 hours indirect sun. Recovery timeline: 3-4 weeks if root rot hasn't spread. Is saveable: Yes, if acted on quickly."
+      scenario: "A pothos in a 6-inch pot has lower leaves yellowing over the past two weeks, a few brown tips, and new growth that's smaller than before. Watered on a fixed weekly schedule.",
+      action: "Describe what you're seeing, select 'Yellowing leaves' and 'Brown tips', set duration to 'A week or two', and note the watering schedule and light level.",
+      result: "Bottom line: watch and check — new growth continuing is a good sign, but it's worth a closer look. Possible explanations: the mix may still be wet when watered on a fixed schedule, this could be normal lower-leaf turnover, or light may be on the low end. Check first: whether the soil is still damp an inch or two down at watering time. What to do now: switch from a schedule to checking the soil, and remove leaves that are already fully yellow."
     },
-    
+
     tips: [
-      "Take photos in good lighting - show both the whole plant and close-ups of problem areas",
-      "Be honest about watering frequency - overwatering is the #1 killer",
-      "Follow the priority order - Priority 1 actions are urgent",
-      "The tool identifies common issues: overwatering, underwatering, light problems, pests, disease",
-      "If diagnosis says 'critical', act within 24 hours",
-      "Prevention tips help avoid the same problem recurring"
+      "A photo of the affected leaf and one of the soil surface help more than a single whole-plant shot",
+      "How you decide to water (checking the soil vs. a fixed schedule) matters more than how often",
+      "The single suggested check usually matters more than jumping straight to a fix",
+      "Selecting more symptoms doesn't make the read more certain — describing what changed recently often does",
+      "Save a plant to build a short observation history instead of starting over each time"
     ],
-    
+
     pitfalls: [
-      "Photos need to be clear - blurry images make diagnosis difficult",
-      "Don't skip environmental questions - they're crucial for accurate diagnosis",
-      "If plant is already dead (crispy, black, mushy throughout), may be too late",
-      "Tool gives general advice - for rare plants or persistent issues, consult a local nursery",
-      "Some problems take weeks to show improvement - be patient with recovery timeline"
+      "A blurry or dark photo makes the plausible explanations less useful, not more certain",
+      "This tool won't give you a confident 'saveable' or 'not saveable' verdict — recovery depends on what you find, not a prediction",
+      "It won't hand you an exact watering interval or soil recipe out of thin air — it favors conditions to check over invented numbers",
+      "For toxicity around pets or children, an uncertain identification means the safety guidance is uncertain too",
+      "For a rare or unusual species, or a plant that keeps declining after the suggested checks, a local nursery can look at the actual plant"
     ]
   }
 },

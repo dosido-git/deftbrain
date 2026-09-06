@@ -893,7 +893,23 @@ for name, fpath in tools:
                          # tried to get out of, with the verdict attached,
                          # sitting in the browser of a work machine. That is
                          # not a thing to keep by default.
-                         'JustifyMyMeeting'}
+                         'JustifyMyMeeting',
+                         # PlantRescue joined on 2026-09-06 with the V2
+                         # rewrite. The flat plantrescue-history list (a
+                         # usePersistentState array with a `preview:` field,
+                         # rendered as a "Past Diagnoses" panel) was removed
+                         # on purpose, per the explicit instruction to rename
+                         # "Past Diagnoses" to "Recent Plant Checks" OR
+                         # integrate it into My Plants — this rewrite chose
+                         # integration: each saved plant in `plantCollection`
+                         # now carries its own `checks` array (reported /
+                         # suggestedChecks / attentionLevel per visit), so the
+                         # observation history is per-plant, not a single
+                         # flat session log. It still exists and still
+                         # renders; it just doesn't match this rule's naming
+                         # or shape patterns (no top-level *History
+                         # usePersistentState, no literal `preview:` field).
+                         'PlantRescue'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

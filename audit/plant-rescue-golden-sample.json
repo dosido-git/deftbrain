@@ -1,265 +1,287 @@
 {
   "_meta": {
-    "tool": "PlantRescue",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints, vision",
-    "baseline_commit": "plantrescue-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden plant-rescue). Diff for QUALITY not exact match: HTTP 200 (rescue+pets, the max/latent-500 case), no truncation, enums clean. GUARDS: (1) main + companions now route through callClaudeWithRetry (shared JSON repair + fail-fast on max_tokens) — they used raw anthropic.messages.create + a trailing-comma-only repair that could NOT fix a German mid-string cutoff → 500. (2) main max_tokens 4000→5500 + arrays capped (action_plan<=5, secondary<=4, prevention<=5, alt_species<=3, regional<=3, <=3 tasks/month) — the mandatory 12-month seasonal_calendar made this the German truncation risk. (3) format-strict enums MUST be bare: plant_identification.confidence (high|medium|low), diagnosis.severity (critical|concerning|minor), toxicity_warning.level (highly-toxic|...) — the frontend switches on these for the hero severity/confidence badge; a leaked '(number)'/'— 2-4 words' made the badge show 'healthy' on a dying plant. (4) no-inner-double-quote rule on main + companions. (5) followup returns FREE TEXT — max_tokens 800→1500 (was clipping German paragraphs). (6) main guard `isRescue && (!diagnosis || !action_plan)` correct. DO NOT reverse: callClaudeWithRetry on main+companions; main 5500 + caps; bare enums; the no-inner-quote rule; followup 1500; no annotation suffixes."
+    "tool": "Plant Rescue (id: PlantRescue)",
+    "generated": "2026-09-06",
+    "model": "claude-sonnet-4-6 (MODELS.SMART) + MODELS.FAST v2 guard, 3 routes",
+    "baseline_commit": "plantrescue-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden plant-rescue). Diff for QUALITY not exact match: HTTP 200, no truncation. V2 REWRITE (2026-09-06): replaced a forced diagnosis (single primary_problem, numeric identification confidence_score, is_saveable boolean, a recovery_timeline, a 12-month seasonal calendar, an unconditional propagation_guide with a success_rate) with an evidence-first structure grounded only in what was reported/visible. One endpoint (/api/plant-rescue) now dispatches on mode (rescue|care|identify) to three distinct schemas instead of the old parallel-split diagnose+care calls — the new schemas are lean enough (no calendar, no forced repotting/propagation) that a single call per mode is fast without needing the split. Rescue: plant_identification{best_match,scientific_name,confidence,why_it_fits,alternatives,what_would_confirm} / bottom_line{attention_level,summary} / what_you_reported[] / possible_explanations[]{possibility,why_it_could_fit,check} / check_first[]{check,what_to_look_for,if_yes,if_no} / what_to_do_now[]{action,why,condition} / what_improvement_looks_like[] / safety{show,who_or_what,guidance} / useful_next_photo. Care: plant{name,scientific_name,confidence} / core_care{light,watering,soil_and_drainage,feeding,temperature_and_humidity} / repot_when[] / when_conditions_change[]{condition,adjustment} / watch_for[] / pet_child_safety{show,guidance}. Identify: best_match{common_name,scientific_name,confidence,why_it_fits[]} / alternatives[]{name,why_possible,how_to_distinguish} / what_would_help_confirm[] / safety_note{show,guidance}. attention_level is one of likely_minor|watch_and_check|needs_attention|serious_damage_possible — never a percentage, never saveable/not-saveable. confidence is high|moderate|low — never a numeric percentage. router.outputStandard='v2' + router.outputGuard with runOutputGuard (LLM-judge check + repair) — same mechanism as Pet Behavior Decoder, since the failure mode here is invented facts (a cause, a schedule, a recovery timeline), not fixed-vocabulary phrasing. Follow-up now passes forward REPORTED/POSSIBILITIES/CHECKS structured context instead of a flattened 'Diagnosis: [claim]' string, and is explicitly allowed to revise the earlier interpretation. Companion planting reframed from an 'indoor plant placement expert' inventing rooms/windows/air-purifying claims to CARE COMPATIBILITY grouping only (good_to_group/better_kept_apart/placement_principle), no automatic upsell to buy more plants. Input form changes: 'What do you see?' -> 'What's happening?'; 'Bad smell/possible root rot' symptom relabeled to plain 'Bad smell' (no pre-supposed diagnosis in a checkbox label); the old ageOfOwnership free-text field replaced by a symptomDuration dropdown (owner reports ownership duration, if relevant, in free text instead — the PLANT AGE/OWNERSHIP prompt rule explicitly warns against converting either into horticultural history); new 'Has anything changed recently?' checklist; old flat wateringFreq bucket (daily/few-days/weekly/rarely) replaced by a wateringMethod practice question (checks soil first / fixed schedule / waits for thirsty signs / varies) plus an optional free-text frequency, since a calendar interval alone can't establish over- or under-watering; new optional hasDrainage yes/no/not-sure. A client-side detectFieldConflict()-style check was NOT added here (unlike Pet Behavior Decoder) since no equivalent hard numeric contradiction exists in this input set — the model's own INPUT CONFLICTS rule handles the softer cases (a symptom selection vs. free text) that can arise."
   },
   "cases": [
     {
-      "name": "de-rescue-with-pets-max-schema",
+      "name": "rescue-pothos-bottom-up-yellowing-watch-and-check",
       "endpoint": "/api/plant-rescue",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
         "mode": "rescue",
-        "plantName": "Monstera",
-        "plantDescription": "Meine Monstera hat gelbe Blätter mit braunen Rändern, der Stamm fühlt sich unten weich an, und die Erde riecht muffig. Sie steht in einer dunklen Ecke.",
+        "plantDescription": "Pothos in a 6-inch pot. Leaves yellowing from the bottom up over the past two weeks. A few have brown tips. New growth still green but smaller than before.",
         "symptoms": [
           "yellow_leaves",
-          "brown_tips",
-          "mushy_stem",
-          "root_rot"
+          "brown_tips"
         ],
-        "lightLevel": "low-light",
-        "wateringFreq": "daily",
-        "location": "Wohnzimmerecke",
-        "ageOfOwnership": "1 Jahr",
+        "symptomDuration": "week_or_two",
+        "recentChanges": [],
+        "lightLevel": "partial-shade",
+        "wateringMethod": "schedule",
+        "wateringFreqText": "weekly",
+        "hasDrainage": "yes",
+        "location": "indoor",
+        "climateZone": "",
         "hasPets": true,
         "hasChildren": false,
-        "climateZone": "gemäßigt",
-        "userLocation": "Deutschland"
+        "userLanguage": "en"
       },
       "output": {
         "plant_identification": {
-          "species": "Monstera deliciosa",
-          "common_name": "Fensterblatt",
+          "best_match": "Pothos",
+          "scientific_name": "Epipremnum aureum",
           "confidence": "high",
-          "confidence_score": 92,
-          "alternative_species": []
+          "why_it_fits": "You identified the plant directly, and no contradictory evidence was supplied.",
+          "alternatives": [],
+          "what_would_confirm": "Identity is already supplied by you; no further confirmation needed."
         },
-        "toxicity_warning": {
-          "is_toxic": true,
-          "level": "toxic",
-          "dangerous_for": [
-            "pets",
-            "children"
-          ],
-          "symptoms": "Beim Verschlucken von Blättern oder Stielen: starkes Brennen im Maul, übermäßiger Speichelfluss, Erbrechen und Schwellungen der Mundschleimhaut durch Calciumoxalatkristalle.",
-          "safety_measures": "Pflanze außerhalb der Reichweite von Tieren und Kleinkindern stellen. Nach dem Umtopfen oder Beschneiden Hände gründlich waschen. Im Notfall Tierarzt (Tierärztlicher Notdienst) oder Giftinformationszentrale (BfR: 030 19240) anrufen.",
-          "alternative_plants": "Kentia-Palme (Howea forsteriana), Calathea orbifolia oder Hoya carnosa sind ungiftig und haustiersicher."
+        "bottom_line": {
+          "attention_level": "watch_and_check",
+          "summary": "Yellowing from the bottom up with still-green new growth is a recognizable pattern in pothos, and a few explanations fit. The plant is not in crisis — new growth continuing is a meaningful positive sign — but the smaller new leaves suggest something in its conditions deserves a closer look before it progresses further."
         },
-        "diagnosis": {
-          "primary_problem": "Wurzelfäule durch tägliches Gießen in Kombination mit Staunässe und zu wenig Licht – der weiche Stamm und der muffige Geruch sind eindeutige Warnsignale für fortgeschrittene Fäulnis.",
-          "secondary_issues": [
-            "Extremer Lichtmangel hemmt die Photosynthese und schwächt die Pflanze zusätzlich",
-            "Gelbe Blätter durch Nährstoffmangel infolge geschädigter Wurzeln",
-            "Braune Blattränder durch Stress und möglicherweise schlechte Luftqualität in der Ecke"
-          ],
-          "severity": "critical",
-          "uncertainty_note": "Falls der gesamte untere Stamm weich ist und keine festen grünen Wurzeln gefunden werden, ist die Pflanze möglicherweise nicht mehr rettbar – dann ist Stecklinge-Vermehrung der einzige Weg."
-        },
-        "action_plan": [
+        "what_you_reported": [
+          "Pothos in a 6-inch pot, indoors",
+          "Leaves yellowing from the bottom up over the past two weeks",
+          "A few leaves have brown tips",
+          "New growth is still green but smaller than before",
+          "Waters on a fixed weekly schedule",
+          "Pot has drainage holes",
+          "Household has pets",
+          "Partial light, roughly 3-6 hours"
+        ],
+        "possible_explanations": [
           {
-            "priority": 1,
-            "action": "Pflanze sofort aus dem Topf nehmen und Wurzeln untersuchen",
-            "timing": "Heute noch, ohne Verzögerung",
-            "why": "Jede Stunde in feuchter, fauliger Erde verschlimmert die Wurzelfäule und tötet mehr gesundes Gewebe ab.",
-            "how": "Topf seitlich kippen, Erde vorsichtig abschütteln, alle schwarzen, braunen oder matschigen Wurzeln mit einer desinfizierten Schere (Alkohol oder Feuerzeug) bis ins gesunde weiße Gewebe zurückschneiden, Schnittflächen mit Aktivkohle oder Zimtpulver bestäuben."
+            "possibility": "Overwatering or inconsistent drainage",
+            "why_it_could_fit": "A fixed weekly schedule does not account for how quickly the mix actually dries out, which varies with season, temperature, and root mass. If the soil is still wet at watering time, lower leaves — which are older and more vulnerable — tend to yellow first. Brown tips can also accompany waterlogged roots.",
+            "check": "Push a finger an inch or two into the potting mix. If it still feels wet or cool rather than barely moist, watering is likely happening before the plant needs it."
           },
           {
-            "priority": 2,
-            "action": "Faulen Stammbereich entfernen und gesunde Abschnitte für Stecklinge sichern",
-            "timing": "Direkt nach Schritt 1",
-            "why": "Weiches Stammgewebe enthält Fäulnisbakterien, die sich auf gesunde Teile ausbreiten.",
-            "how": "Mit desinfizierten Schneidewerkzeugen alle weichen Stammteile entfernen. Jeden Abschnitt mit mindestens einem Blatt und einem Knoten als Steckling aufbewahren (siehe Vermehrungsanleitung)."
+            "possibility": "Natural lower-leaf senescence, possibly accelerated by a care or environment change",
+            "why_it_could_fit": "Pothos regularly shed older lower leaves as a normal process, especially if light is limited or conditions recently shifted — a season change, a move, or a change in routine. This pattern looks similar to overwatering, so the two need to be distinguished.",
+            "check": "Look at how many leaves are affected and whether yellowing is actively spreading. If only a small number of the oldest, lowest leaves have yellowed and new growth continues, this is more consistent with normal turnover than a problem taking hold."
           },
           {
-            "priority": 3,
-            "action": "Pflanze in frische, gut durchlässige Erde umtopfen oder alternativ nur Stecklinge weiterkultivieren",
-            "timing": "Unmittelbar nach der Wurzelbehandlung",
-            "why": "Alte, muffige Erde enthält Fäulniserreger und muss vollständig ersetzt werden.",
-            "how": "Neues Substrat aus Kokoserde, Perlite und etwas Orchideenrinde mischen (Rezept im Repotting-Guide), Topf mit Abflusslöchern verwenden, Pflanze einsetzen und NICHT gießen – erst nach 3-4 Tagen leicht befeuchten."
-          },
-          {
-            "priority": 4,
-            "action": "Standort wechseln: helles, indirektes Licht ist essenziell",
-            "timing": "Sofort nach dem Umtopfen",
-            "why": "Ohne ausreichend Licht kann die Monstera keine Energie zur Genesung produzieren, und die Erde trocknet nicht ab.",
-            "how": "Pflanze neben ein nach Osten oder Westen ausgerichtetes Fenster stellen, idealerweise 1-2 m entfernt. Kein direktes Mittagssonnenlicht. Notfalls Pflanzenlampe (Full-Spectrum LED) verwenden."
-          },
-          {
-            "priority": 5,
-            "action": "Gießrhythmus radikal ändern: täglich gießen einstellen",
-            "timing": "Ab sofort dauerhaft",
-            "why": "Tägliches Gießen ist die Hauptursache der Wurzelfäule – Monstera braucht trockene Phasen zwischen den Wassergaben.",
-            "how": "Nur gießen, wenn die oberen 3-4 cm Erde trocken sind (Fingertest). Im Sommer ca. alle 7-10 Tage, im Winter alle 14-21 Tage. Überschusswasser aus dem Untersetzer nach 30 Minuten wegschütten."
+            "possibility": "Light on the low end for sustained healthy growth",
+            "why_it_could_fit": "Pothos tolerates low light but can show reduced leaf size and gradual lower-leaf loss when light is consistently limited. Smaller new leaves alongside older yellowing leaves could suggest the plant is getting less usable light than it needs to sustain its current size.",
+            "check": "Note whether the new growth is reaching or leaning toward the light source, and how far the plant sits from the nearest window. If it is more than a few feet from a window or the window faces away from the sun, light may be a contributing factor."
           }
         ],
-        "is_saveable": true,
-        "recovery_timeline": "Wenn noch gesunde Wurzeln vorhanden sind: erste Stabilisierung in 2-4 Wochen, neue Blätter in 6-10 Wochen. Bei stark beschädigten Wurzeln und Vermehrung per Steckling: erste Wurzeln in 3-5 Wochen, eigenständige Pflanze in 3-6 Monaten.",
-        "care_schedule": {
-          "watering": "Alle 7-10 Tage im Sommer, alle 14-21 Tage im Winter. Fingertest: obere 3-4 cm Erde müssen trocken sein. Dann gründlich gießen bis Wasser aus dem Abzugsloch läuft, Untersetzer nach 30 Minuten leeren.",
-          "fertilizing": "Flüssigdünger für Grünpflanzen (NPK 10-10-10 oder ähnlich) alle 14 Tage von März bis September, ca. 5 ml pro Liter Wasser. Von Oktober bis Februar komplett pausieren.",
-          "misting": "Alle 2-3 Tage die Blätter leicht einsprühen, wenn die Luftfeuchtigkeit unter 50% liegt – im deutschen Winter bei Heizungsluft besonders wichtig.",
-          "rotation": "Viertelumdrehung alle 2 Wochen, damit alle Seiten gleichmäßig Licht bekommen und die Pflanze gerade wächst.",
-          "pruning": "Gelbe oder braune Blätter sofort an der Basis entfernen. Formschnitt im Frühjahr (März/April). Werkzeug vorher desinfizieren.",
-          "repot_timing": "Alle 1-2 Jahre im Frühjahr (März-April), wenn Wurzeln aus dem Abzugsloch ragen oder das Wachstum stoppt.",
-          "seasonal_adjustments": "Frühling/Sommer: mehr gießen, alle 14 Tage düngen, heller Standort. Herbst: Gießen reduzieren, Dünger einstellen. Winter: minimales Gießen, kein Dünger, weg von Heizungen und Zugluft."
-        },
-        "seasonal_calendar": [
+        "check_first": [
           {
-            "month": "January",
-            "tasks": [
-              "Alle 18-21 Tage minimal gießen",
-              "Nicht düngen",
-              "Standort weg von Heizungsluft halten"
-            ]
+            "check": "Soil moisture at watering time",
+            "what_to_look_for": "Is the potting mix still damp an inch or two down when you water each week?",
+            "if_yes": "Hold off watering and let the mix dry further before the next watering. Shift from a fixed schedule to checking the soil each time.",
+            "if_no": "Watering frequency is likely fine. Focus attention on light and whether the yellowing is spreading."
           },
           {
-            "month": "February",
-            "tasks": [
-              "Auf erste Neuaustriebe achten",
-              "Umtopfen im Auge behalten",
-              "Blätter gelegentlich abwischen"
-            ]
+            "check": "Scope of yellowing",
+            "what_to_look_for": "Count roughly how many leaves are affected and whether new ones are yellowing now or the problem seems contained to a few old lower leaves.",
+            "if_yes": "If it is spreading to newer leaves, that points away from normal senescence and toward a care issue worth correcting.",
+            "if_no": "If only the oldest leaves at the base are affected and it seems to have slowed, normal leaf turnover is plausible."
           },
           {
-            "month": "March",
-            "tasks": [
-              "Düngen wieder aufnehmen alle 14 Tage",
-              "Gießhäufigkeit leicht erhöhen",
-              "Bei Bedarf in größeren Topf umtopfen"
-            ]
-          },
-          {
-            "month": "April",
-            "tasks": [
-              "Näher ans Fenster stellen",
-              "Regelmäßig auf Schädlinge kontrollieren",
-              "Stecklinge vermehren bei Bedarf"
-            ]
-          },
-          {
-            "month": "May",
-            "tasks": [
-              "Hauptwachstumsphase: alle 7-10 Tage gießen",
-              "Wöchentlich auf Spinnmilben und Schädlinge prüfen",
-              "Stütze oder Moosstab anpassen"
-            ]
-          },
-          {
-            "month": "June",
-            "tasks": [
-              "Gießbedarf täglich per Fingertest prüfen",
-              "Vor direktem Mittagssonnenlicht schützen",
-              "Luftfeuchtigkeit erhöhen durch Besprühen"
-            ]
-          },
-          {
-            "month": "July",
-            "tasks": [
-              "Erde gleichmäßig feucht halten ohne Staunässe",
-              "Bei Hitze öfter besprühen",
-              "Auf Wurzeln im Abzugsloch achten"
-            ]
-          },
-          {
-            "month": "August",
-            "tasks": [
-              "Weiter regelmäßig düngen bis Monatsende",
-              "Stecklinge schneiden für Herbstvermehrung",
-              "Gießbedarf durch Hitze höher – Fingertest täglich"
-            ]
-          },
-          {
-            "month": "September",
-            "tasks": [
-              "Düngergabe auf alle 3-4 Wochen reduzieren",
-              "Gießmenge langsam verringern",
-              "Pflanze vor Temperaturen unter 15 Grad schützen"
-            ]
-          },
-          {
-            "month": "October",
-            "tasks": [
-              "Düngen einstellen",
-              "Gießen auf alle 14 Tage reduzieren",
-              "Nicht mehr ins Freie stellen"
-            ]
-          },
-          {
-            "month": "November",
-            "tasks": [
-              "Gießen auf alle 18-21 Tage reduzieren",
-              "Blätter auf Schädlinge überprüfen",
-              "Zugluft durch Fenster vermeiden"
-            ]
-          },
-          {
-            "month": "December",
-            "tasks": [
-              "Minimales Gießen alle 21 Tage",
-              "Kein Dünger",
-              "Abstand zu Heizkörpern mindestens 50 cm einhalten"
-            ]
+            "check": "Light and position",
+            "what_to_look_for": "How far is the plant from the window, and is the new growth noticeably smaller than growth you have seen before in this spot?",
+            "if_yes": "If the plant is far from the window or in a corner, moving it closer to a bright indirect light source is worth trying.",
+            "if_no": "If position has not changed and growth was normal before the past two weeks, light is less likely to be the primary trigger."
           }
         ],
-        "repotting_guide": {
-          "needs_repotting": true,
-          "when": "Sofort wegen Wurzelfäule – danach planmäßig jeden Frühling (März/April)",
-          "soil_mix": "50% Kokoserde + 30% Perlite + 20% grobe Orchideenrinde. Alternativ: fertige Monstera-Erde (z.B. Lechuza Pon oder Compo Sana Kakteen- und Kräutererde) mit 30% Perlite mischen.",
-          "pot_size": "Nur 2-3 cm größer als der Wurzelballen. Nach Wurzelfäule: gleiche Größe oder sogar kleiner verwenden, damit die Erde nicht zu lange nass bleibt.",
-          "pot_material": "Terrakotta empfohlen: saugfähiges Material lässt Feuchtigkeit verdunsten und verhindert Staunässe. Alternativ Kunststofftopf mit mehreren Abzugslöchern.",
-          "drainage": "Zwingend erforderlich: mindestens ein großes Abzugsloch, Untersetzer NICHT dauerhaft mit Wasser gefüllt lassen. Optional: 2-3 cm Blähton am Topfboden als Drainageschicht.",
-          "steps": [
-            "Alten Topf und Werkzeug mit Alkohol oder heißem Wasser desinfizieren",
-            "Pflanze vorsichtig aus dem alten Topf heben und gesamte alte Erde abschütteln",
-            "Alle schwarzen, weichen oder faulen Wurzeln bis ins gesunde Gewebe abschneiden",
-            "Schnittflächen mit Aktivkohle oder Zimtpulver bestäuben und 30 Minuten an der Luft antrocknen lassen",
-            "Drainage-Schicht (Blähton) in neuen Topf geben, frisches Substrat einfüllen",
-            "Pflanze einsetzen, Wurzeln ausbreiten, mit Substrat auffüllen und leicht andrücken",
-            "Ersten 3-4 Tage NICHT gießen, dann sehr sparsam beginnen"
-          ]
-        },
-        "propagation_guide": {
-          "method": "Stammsteckling mit Knoten (Nodensteckling)",
-          "best_season": "Frühjahr und Sommer (März bis August) – auch jetzt im Juli ideal",
-          "steps": [
-            "Einen gesunden Stammabschnitt mit mindestens einem Blatt und einem Knoten (die Verdickung am Stiel) mit desinfizierten Händen und scharfer Schere abschneiden",
-            "Steckling 2-4 Stunden an der Luft antrocknen lassen, damit die Schnittstelle verkorkt",
-            "Steckling in ein Glas mit lauwarmem Wasser stellen – nur der Knoten soll im Wasser sein, das Blatt nicht",
-            "Glas an einen hellen, warmen Platz ohne direkte Sonne stellen (mind. 20 Grad)",
-            "Wasser alle 3-4 Tage wechseln, um Bakterien zu vermeiden",
-            "Nach 3-6 Wochen sind Wurzeln von 3-5 cm Länge sichtbar – dann in leicht feuchtes Substrat (Kokoserde + Perlite) umtopfen",
-            "Für die ersten 2 Wochen nach dem Topfen leicht feucht halten und an einen hellen Platz stellen"
-          ],
-          "success_rate": "Hoch (75-85%) bei gesunden Stecklingen mit sichtbarem Knoten",
-          "timeline": "Erste Wurzeln in 3-6 Wochen, eigenständige Pflanze nach ca. 3-6 Monaten"
-        },
-        "environmental_adjustments": {
-          "light": "Helles, indirektes Licht direkt neben einem Ost- oder Westfenster (1-2 m Abstand). Dunkle Ecke ist ungeeignet – Monstera braucht mind. 6-8 Stunden indirektes Licht täglich.",
-          "water": "Ab sofort nur noch gießen, wenn obere 3-4 cm Erde trocken sind. Fingertest vor jedem Gießen, niemals tägliches Gießen.",
-          "location": "Vom aktuellen dunklen Standort wegziehen. Ideal: neben einem hellen Fenster, weg von Zugluft und Heizkörpern, Temperatur konstant zwischen 18-24 Grad."
-        },
-        "prevention_tips": [
-          "Vor dem Gießen immer den Fingertest machen: erst gießen, wenn die oberen 3-4 cm Erde trocken sind",
-          "Untersetzer nach 30 Minuten immer leeren – Staunässe ist der häufigste Fehler bei Monstera",
-          "Pflanze mindestens einmal monatlich auf Schädlinge und Wurzeln kontrollieren",
-          "Topf mit Abzugsloch und durchlässiges Substrat verwenden – nie reine Blumenerde ohne Zusätze",
-          "Neue Pflanzen immer 2-4 Wochen von anderen Pflanzen isolieren, um Schädlinge nicht zu übertragen"
+        "what_to_do_now": [
+          {
+            "action": "Switch from a fixed watering schedule to checking soil moisture before each watering",
+            "why": "A weekly interval may be landing before the mix has dried enough, which is the most common driver of this symptom pattern in pothos. Watering only when the top inch or two of mix has dried out removes the guesswork.",
+            "condition": "Do this regardless of which explanation turns out to be correct — it is a safe adjustment and rules out the most actionable cause."
+          },
+          {
+            "action": "Remove fully yellowed leaves cleanly at the stem",
+            "why": "They will not recover, and removing them keeps you from mistaking old damage for new spreading.",
+            "condition": "Only leaves that are fully yellow — leave any that still have green, as they may stabilize."
+          },
+          {
+            "action": "Move closer to a brighter indirect light source if the plant is currently far from a window",
+            "why": "Smaller new leaves alongside lower-leaf yellowing can indicate the plant is working with less light than it would prefer. A modest improvement in light position is low-risk for a pothos.",
+            "condition": "Only if the check suggests light is limited — avoid direct harsh sun, which can scorch pothos leaves."
+          }
         ],
-        "climate_recommendations": {
-          "seasonal_note": "Aktuell ist Juli in Deutschland – die Wachstumssaison ist auf dem Höhepunkt. Jetzt ist die beste Zeit für Stecklinge und Umtopfen. Temperaturen innen vermutlich 22-27 Grad, was der Monstera zugutekommt. Achtung: Sommerhitze und Heizungsluft können die Luftfeuchtigkeit stark senken.",
-          "regional_tips": [
-            "Im deutschen Winter (November bis Februar) Heizungsluft kompensieren: Luftbefeuchter aufstellen oder Pflanze auf Kieselstein-Tablett mit Wasser stellen",
-            "In der Wachstumssaison (April bis September) kann die Monstera von einem Platz auf dem Balkon oder der Terrasse profitieren – aber vor direkter Mittagssonne schützen",
-            "Bei Temperaturen unter 12 Grad im Herbst sofort hereinholen – Monstera ist nicht winterhart"
-          ]
+        "what_improvement_looks_like": [
+          "Yellowing stops spreading to newer leaves",
+          "New leaves emerge at a similar or larger size than previous growth",
+          "No new brown tips appearing on healthy green leaves",
+          "Soil is drying to the expected depth between waterings, confirming the new schedule is calibrated"
+        ],
+        "safety": {
+          "show": true,
+          "who_or_what": "Pets in the household",
+          "guidance": "Pothos (Epipremnum aureum) is considered toxic to cats and dogs if ingested, primarily due to insoluble calcium oxalates. If a pet chews or eats any part of the plant, contact your vet or an animal poison-information service. Keep the plant out of reach as a precaution."
+        },
+        "useful_next_photo": "A close photo of one of the yellowing leaves — showing whether the yellowing is uniform across the leaf or patterned (veins staying green, edges affected first, etc.) — would help narrow the cause if the soil-moisture check does not resolve things."
+      }
+    },
+    {
+      "name": "care-pothos-thriving",
+      "endpoint": "/api/plant-rescue",
+      "input": {
+        "mode": "care",
+        "plantName": "Pothos",
+        "plantDescription": "Healthy pothos, want to know how to keep it thriving.",
+        "symptoms": [],
+        "lightLevel": "partial-shade",
+        "wateringMethod": "check_soil",
+        "location": "indoor",
+        "hasDrainage": "yes",
+        "climateZone": "temperate",
+        "hasPets": false,
+        "hasChildren": true,
+        "userLanguage": "en"
+      },
+      "output": {
+        "plant": {
+          "name": "Pothos",
+          "scientific_name": "Epipremnum aureum",
+          "confidence": "high"
+        },
+        "core_care": {
+          "light": "Pothos tolerates a wide range, but 3-6 hours of bright indirect light keeps growth vigorous and variegation vivid. It will survive lower light but may grow more slowly and lose color contrast.",
+          "watering": "You are already doing the right thing by checking the soil first. Pothos tolerates partial light well and does not need frequent watering — most problems come from too much water rather than too little. The drainage and your habit of checking before watering is what keeps it thriving. Watch for changes: if the plant moves to darker conditions, soil stays wet longer and you will water less often. If it moves closer to light, the soil will dry faster and you may need to check more frequently.",
+          "soil_and_drainage": "A well-draining all-purpose potting mix works well. The drainage hole you have is important — keep it clear.",
+          "feeding": "Pothos does not require feeding to stay healthy. If you notice new growth slowing or leaves losing color over several weeks, that is the time to consider whether the soil needs nutrient replenishment. Most pothos in indoor homes stay thriving without supplemental feeding for years.",
+          "temperature_and_humidity": "Pothos does well in typical indoor temperate conditions. Keep it away from cold drafts, air conditioning vents, and heating sources. It tolerates average household humidity without any special intervention."
+        },
+        "repot_when": [
+          "Roots are circling the bottom of the pot or pushing out of the drainage hole and growth has noticeably stalled.",
+          "The potting mix dries out extremely fast — within a day of watering — because roots have displaced most of the soil.",
+          "The plant is visibly top-heavy or unstable in its current pot."
+        ],
+        "when_conditions_change": [
+          {
+            "condition": "Light drops — shorter days, moved to a darker spot, or window blocked seasonally",
+            "adjustment": "Soil will dry more slowly. Check moisture before watering rather than keeping any set interval, and expect to water less often."
+          },
+          {
+            "condition": "The plant is near a heat source in winter or in a warm dry room",
+            "adjustment": "Soil may dry faster than usual — check it more frequently."
+          },
+          {
+            "condition": "You notice a burst of new growth",
+            "adjustment": "Water demand may increase slightly. Keep checking the soil rather than adjusting to a fixed schedule."
+          }
+        ],
+        "watch_for": [
+          "Yellow leaves — can signal overwatering if soil stays wet for extended periods, or occasionally underwatering if the plant has been very dry.",
+          "Brown, crispy leaf tips — often a sign of dry air, inconsistent watering, or the plant sitting in a draft.",
+          "Leggy, stretched stems with wide gaps between leaves — usually means it wants more light.",
+          "Wilting that does not recover after watering — worth checking that the drainage hole is not blocked.",
+          "Small dark or mushy patches on stems near the soil — inspect the base and reduce watering if found."
+        ],
+        "pet_child_safety": {
+          "show": true,
+          "guidance": "Pothos is toxic to humans if ingested, including children. The plant contains calcium oxalate crystals, which can cause mouth irritation, swelling, and stomach upset. Keep it out of reach of young children who might chew on leaves or stems. If ingestion occurs, contact Poison Control (in the US: 1-800-222-1222) for guidance."
         }
+      }
+    },
+    {
+      "name": "identify-no-plant-visible",
+      "endpoint": "/api/plant-rescue",
+      "why_this_case_exists": "A solid-color image with no visible plant features must not produce a hallucinated identification — this is the permanent regression guard against inventing a plant identity from an unusable photo.",
+      "input": {
+        "mode": "identify",
+        "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlqKKK8c8IKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9k=",
+        "userLanguage": "en"
+      },
+      "output": {
+        "best_match": {
+          "common_name": "",
+          "scientific_name": "",
+          "confidence": "low",
+          "why_it_fits": [
+            "The image is a solid green rectangle with no visible plant features — no leaves, stems, texture, or form are present to analyze."
+          ]
+        },
+        "alternatives": [],
+        "what_would_help_confirm": [
+          "A photo showing the actual plant — ideally including leaves, stems, and overall shape",
+          "A close-up of the leaf surface and edges if the plant is small or the detail is subtle",
+          "Any visible flowers, fruit, or soil context would also help"
+        ],
+        "safety_note": {
+          "show": false,
+          "guidance": ""
+        }
+      }
+    },
+    {
+      "name": "companions-pothos-and-cactus-incompatible",
+      "endpoint": "/api/plant-rescue/companions",
+      "input": {
+        "plants": [
+          {
+            "name": "Pothos",
+            "species": "Epipremnum aureum",
+            "lightNeeds": "Bright indirect",
+            "waterNeeds": "Weekly, check soil"
+          },
+          {
+            "name": "Cactus",
+            "species": "Echinocactus grusonii",
+            "lightNeeds": "Full sun",
+            "waterNeeds": "Rare, dry between waterings"
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "good_to_group": [],
+        "better_kept_apart": [
+          {
+            "plants": [
+              "Pothos",
+              "Cactus"
+            ],
+            "why": "Pothos wants bright indirect light and weekly watering, while the cactus needs full sun and very infrequent watering — a location that suits one will stress the other."
+          }
+        ],
+        "placement_principle": "Put the cactus in your sunniest spot (a south- or west-facing window with direct sun) and the pothos somewhere with bright but filtered light, watering each on its own schedule."
+      }
+    },
+    {
+      "name": "followup-repot-just-in-case",
+      "endpoint": "/api/plant-rescue/followup",
+      "why_this_case_exists": "A follow-up asking to repot 'just in case' must not agree merely because it sounds cautious — CHECK BEFORE YOU TREAT and REPOTTING both say not to repot without evidence it would help.",
+      "input": {
+        "question": "Should I repot it now just in case?",
+        "mode": "rescue",
+        "originalDiagnosis": {
+          "plant_identification": {
+            "best_match": "Pothos",
+            "confidence": "high"
+          },
+          "bottom_line": {
+            "attention_level": "watch_and_check",
+            "summary": "Bottom-up yellowing, watch and check."
+          },
+          "what_you_reported": [
+            "Yellowing from the bottom up",
+            "weekly watering on a schedule"
+          ],
+          "possible_explanations": [
+            {
+              "possibility": "Overwatering or wet soil"
+            }
+          ],
+          "check_first": [
+            {
+              "check": "Check soil moisture before next watering"
+            }
+          ]
+        },
+        "plantDescription": "Pothos, yellowing from bottom up",
+        "userLanguage": "en"
+      },
+      "output": {
+        "answer": "Repotting isn't something I'd do just in case — it adds stress to the plant and doesn't address the most likely issue here. The original concern was whether the soil is staying too wet between waterings, and repotting doesn't answer that question.\n\nBefore anything else, check the soil moisture now: push a finger about two inches in, or lift the pot to feel its weight. If the soil feels wet or heavy, that's meaningful. If it's dry, that points somewhere else.\n\nRepotting would make sense if you find the roots are circling the pot heavily or pushing out of the drainage holes — that's a reason to consider it. But without checking first, you'd be solving a problem you haven't confirmed exists yet."
       }
     }
   ]
