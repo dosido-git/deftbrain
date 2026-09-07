@@ -2046,7 +2046,7 @@ export const tools = [
   icon: "🕳️",
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
-  description: "Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up — and separates genuine holes from things the story actually explains. Each finding gets a type (real contradiction, unexplained gap, plot convenience, questionable decision, and more), the case against it, the best defense, and a verdict. A playful Swiss Cheese Rating summarizes overall plot integrity without pretending to be a precise score. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
+  description: "Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up—and separates genuine holes from things the story actually explains.",
   guide: {
     overview: "Plot Hole Finder is a narrative logic analyst that sorts a genuine contradiction from an unexplained gap, a debatable character decision, or a convenience — then adjudicates only the findings that survive scrutiny. A shorter list of real holes beats a longer list padded to look impressive.",
     howToUse: [
