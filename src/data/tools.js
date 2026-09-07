@@ -2665,25 +2665,25 @@ export const tools = [
   icon: "🔀",
   categories: ['What If?', 'Veer'],
   headerColor: "#f5e0c0",
-  description: "Describe any decision you're stuck on and get it analyzed through 6 decision frameworks: pre-mortem, 10/10/10, opportunity cost, reversibility check, values alignment, and the real-question-beneath-the-question. Includes a comparison matrix, gut check reading, stuck pattern diagnosis, and exercises for when you're still frozen.",
+  description: "Stuck between choices? Describe the decision, your options, and what matters to you. Plot Twist looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.",
   guide: {
-    overview: "Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't tell you what to decide. It shows you angles you're missing so the answer becomes obvious to you.",
+    overview: "Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't guess what you secretly want or predict how you'll feel. It shows you angles and unknowns you're missing, using only what you actually tell it.",
     howToUse: [
       "Describe the decision and what's making it hard",
-      "Name your options (we'll add 'do nothing' automatically)",
+      "Name the options you're actually considering",
       "Select the values this decision touches",
-      "Tell us why you're stuck — this helps identify your blind spot",
-      "Review the framework analysis, comparison matrix, and gut check"
+      "Tell us what's making this hard — this shapes which considerations get surfaced",
+      "Review the per-option analysis, comparison matrix, and what's still unknown"
     ],
     example: {
       scenario: "You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.",
-      action: "Describe the situation, add 'Take new job' and 'Stay' as options, select Career growth + Financial security + Family as values, pick 'fear of regret' as stuck reason.",
-      result: "Plot Twist reveals the real question ('Am I allowed to choose growth over comfort?'), identifies fear-of-regret as the stuck pattern, shows the new job scores higher on 10-year impact but lower on reversibility, provides a comparison matrix, and delivers a gut check based on how you described the situation."
+      action: "Describe the situation, add 'Take new job' and 'Stay' as options, select Career growth + Financial security + Family as values, pick 'I'm afraid I'll regret it' as what's making this hard.",
+      result: "Plot Twist offers a reframing question underneath the decision, runs each option through a pre-mortem, opportunity cost, reversibility, and values fit, shows a qualitative comparison matrix, summarizes what your own description actually established, flags what you still don't know, and lays out what the current facts favor versus what remains unresolved — without inventing how you'll feel or what anyone else will do."
     },
     tips: [
-      "The more context you provide, the sharper the gut check reading becomes",
-      "If you only have one option in mind, the tool automatically analyzes it against the status quo",
-      "The 'Still Stuck' exercises (coin flip test, future letter, smallest step) are genuinely effective — try them",
+      "The more context you provide, the sharper the analysis — but it will never invent facts you didn't give it",
+      "Plot Twist only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it",
+      "The 'Still Stuck' exercises (coin-flip reaction, future-self exercise, smallest step) are genuinely effective — try them",
       "Use the comparison matrix to have structured conversations with people you trust"
     ]
   }

@@ -1,183 +1,137 @@
 {
   "_meta": {
     "tool": "PlotTwist",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
-    "baseline_commit": "plottwist-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden plot-twist). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) ten_ten_ten.{ten_minutes,ten_months,ten_years} and opportunity_cost are PROSE feeling/cost descriptions rendered raw — they had a misleading `(number)` annotation (they are NOT numbers) that could echo; stripped. (2) reversibility.score / values_alignment.score / comparison_matrix.scores stay BARE integers (frontend uses them numerically). (3) max_tokens 4000→5500 + options capped AT MOST 4 (options_analysis + comparison_matrix are heavy — 5 options in German truncated). (4) guard `!decision_summary || !stuck_pattern` correct. (5) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: prose ten_ten_ten/opportunity_cost (no (number)); bare integer scores; max_tokens 5500 + options<=4; no annotation suffixes; no-inner-quote rule."
+    "generated": "2026-09-06",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), parallel split: plot-twist-options (max_tokens 4000) + plot-twist-framing (max_tokens 2500)",
+    "baseline_commit": "plottwist-v2",
+    "how_to_regression_diff": "Re-run (npm run check:golden plot-twist). Diff for QUALITY not exact match: HTTP 200, no truncation, both parallel calls returned. V2 REWRITE (2026-09-06) replaced the old mind-reading architecture: 'the_real_question'→'underlying_question' (a reframing question, never asserted as fact); 'stuck_pattern'→'what_may_be_making_this_hard' ({basis, summary, useful_reframe}, self-reported basis only, no psychological diagnosis); 'gut_check' (inferred from word choice/omission) REMOVED, replaced with 'what_your_description_points_to' (restates only what was actually supplied); 'ten_ten_ten'→'time_horizons' (still prose, still no predicted feelings, just reframed as 'may matter' not 'will feel'); 'reversibility.score'/'values_alignment.score' (bare 1-10 ints) REPLACED with 'reversibility.level'/'values_fit.level' (qualitative enum: HIGHLY REVERSIBLE|PARTLY REVERSIBLE|HARD TO REVERSE|UNCLEAR and STRONG FIT|MIXED FIT|WEAK FIT|NOT ENOUGH TO TELL — NEVER a number again); 'hidden_upside'/'hidden_risk'→'upside_worth_considering'/'risk_worth_considering' (same slot, reframed as conditional not asserted-hidden-fact); comparison_matrix.scores (bare 1-10 ints per dimension) REPLACED with comparison_matrix.options[].ratings (STRONG ADVANTAGE|SOME ADVANTAGE|MIXED|SOME DISADVANTAGE|STRONG DISADVANTAGE|UNKNOWN — NEVER a number); added 'unknowns_that_matter' (array, 1-4) and 'current_read' ({summary, what_currently_favors, what_prevents_a_clean_call} — distinguishes what the facts favor from what the visitor should do, was previously absent entirely); if_still_stuck.{coin_flip_test,two_year_letter}→{coin_flip_reaction,future_self} (reframed from 'notice which side you're hoping for = that's your answer' to 'notice your reaction as one data point, not a verdict'). REMOVED the auto-added 'do nothing/stay/status quo' option — the backend now only analyzes options actually supplied, or identifies an implicit option ONLY when the visitor's own phrasing already establishes it as a genuine alternative (verified: the DE café case below supplied only ONE option in the decision text — 'ich überlege, X zu kündigen' — and the model correctly recognized 'staying' as the visitor's own already-implied alternative rather than inventing a generic filler; a second live test with a decision that had NO implicit binary and 2 explicit options analyzed exactly those 2, with current_read correctly declining to favor either when information was insufficient rather than manufacturing a recommendation). BUG FOUND AND FIXED during verification: the model initially leaked reversibility.level values (e.g. 'PARTLY REVERSIBLE') into a comparison_matrix dimension literally named 'Reversibility', violating the 6-value rating enum — would have rendered as an untranslated raw string in every non-English locale. Fixed with (1) an explicit prompt rule forbidding reuse of the reversibility/values-fit vocabulary as matrix ratings and forbidding 'reversibility'/'values fit' as matrix dimensions (redundant with the dedicated per-option fields), and (2) a server-side safety net that coerces any comparison_matrix rating outside the 6-value enum to UNKNOWN before the response leaves the route. DO NOT silently reverse: qualitative reversibility/values-fit/matrix-rating enums (no numbers); the matrix-rating safety-net coercion; the no-auto-do-nothing rule; the current_read favors-vs-unresolved distinction; the removed gut_check (word-choice inference)."
   },
   "cases": [
     {
-      "name": "de-cafe-4-options",
+      "name": "de-cafe-implicit-second-option-no-invented-filler",
+      "why_this_case_exists": "Only ONE option was supplied in the `options` field (none at all — omitted entirely) and the decision text itself only names one path ('quit to open a café'). Verifies the model identifies 'stay in the job' as the visitor's own already-implied alternative (the decision is phrased as 'should I quit', which is inherently binary) rather than inventing a generic 'do nothing' filler, and that no comparison_matrix rating leaks a value from the reversibility/values-fit vocabulary (the bug found and fixed in this rewrite — see _meta).",
       "endpoint": "/api/plot-twist",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "Germany",
-        "decision": "Soll ich meinen sicheren Bürojob kündigen, um mein eigenes Café zu eröffnen?",
-        "options": [
-          "Job behalten und Café als Nebenprojekt starten",
-          "Sofort kündigen und Vollzeit ins Café",
-          "Ein Jahr sparen, dann kündigen",
-          "Ganz beim Job bleiben"
-        ],
-        "context": "35 Jahre alt, Ersparnisse für 8 Monate, verheiratet, keine Kinder",
-        "values": [
-          "Kreativität",
-          "Sicherheit",
-          "Unabhängigkeit"
-        ],
-        "deadline": "Entscheidung bis Jahresende",
-        "stuckReason": "Angst, die Sicherheit aufzugeben, aber der Job macht mich unglücklich"
+        "decision": "Ich überlege, meinen sicheren Job zu kündigen, um mein eigenes Café zu eröffnen. Ich bin seit einem Jahr unglücklich in meinem aktuellen Job.",
+        "context": "35 Jahre alt, Ersparnisse für 8 Monate, verheiratet, keine Kinder. Mein Partner ist unterstützend.",
+        "values": ["Kreativität", "Sicherheit"],
+        "stuckReason": "fear_of_unknown"
       },
       "output": {
-        "decision_summary": "Soll ich meinen unglücklich machenden, aber sicheren Job aufgeben, um ein eigenes Café zu eröffnen – und wenn ja, wann und wie?",
-        "the_real_question": "Habe ich das Recht, Sicherheit gegen Lebendigkeit zu tauschen, wenn ich damit auch meinen Partner ins Risiko ziehe?",
-        "stuck_pattern": {
-          "pattern": "Falsche Dichotomie kombiniert mit Sicherheitsillusionen",
-          "explanation": "Die Entscheidung wird als Entweder-oder erlebt – sicherer Job ODER Café – aber der Job ist nicht wirklich sicher, wenn er dich unglücklich macht und du innerlich bereits ausgecheckt hast. Gleichzeitig wird Sicherheit im Job überbewertet, weil sie greifbar und messbar ist, während die Kosten der Unzufriedenheit unsichtbar bleiben.",
-          "unlock": "Frag dich: Was kostet dich der Job wirklich – in Energie, Gesundheit, Kreativität und Beziehungsqualität – wenn du weitere 10 Jahre dort bleibst? Sicherheit hat auch einen Preis."
-        },
         "options_analysis": [
           {
-            "option": "Option 1: Job behalten, Café als Nebenprojekt starten",
-            "pre_mortem": "Du bist nach 18 Monaten ausgebrannt, weil du abends und am Wochenende im Café stehst und tagsüber einen Job erledigst, den du hasst – das Café leidet unter deiner halben Aufmerksamkeit und schließt nach 2 Jahren mit Verlusten.",
-            "ten_ten_ten": {
-              "ten_minutes": "Erleichterung und ein Gefühl von verantwortungsvollem Handeln – du tust etwas, ohne alles zu riskieren.",
-              "ten_months": "Wahrscheinlich erschöpft und zerrissen zwischen zwei Welten, aber mit echten Daten darüber, ob das Café funktioniert.",
-              "ten_years": "Entweder stolz, weil du bewiesen hast, dass das Café trägt und dann gewechselt bist – oder frustriert, weil du nie den Sprung gemacht hast und das Café halbherzig blieb."
+            "option": "Sicheren Job kündigen und eigenes Café eröffnen",
+            "pre_mortem": {
+              "failure_scenario": "Das Café erwirtschaftet in den ersten Monaten nicht genug Umsatz, um die laufenden Kosten zu decken. Die Ersparnisse von 8 Monaten sind verbraucht, bevor das Geschäft stabil läuft, und eine Rückkehr in ein Angestelltenverhältnis ist nötig.",
+              "what_would_make_this_more_likely": "Wenn die Anlaufphase länger dauert als die verfügbaren Ersparnisse tragen können, wenn Miet- und Betriebskosten höher ausfallen als kalkuliert, oder wenn keine ausreichende Kundschaft in der gewählten Lage vorhanden ist."
             },
-            "opportunity_cost": "Du verlierst die Intensität und den Fokus, die ein Café in der Aufbauphase braucht – und du verlierst weitere Jahre, in denen du unglücklich arbeitest, was Energie und Kreativität kostet.",
+            "time_horizons": {
+              "ten_minutes": "Die unmittelbarste Belastung liegt wahrscheinlich auf dem Moment der Kündigung und dem Eingestehen gegenüber sich selbst und anderen, dass es kein Zurück mehr gibt.",
+              "ten_months": "Nach etwa 10 Monaten dürfte das Café entweder erste stabile Einnahmen zeigen oder der finanzielle Puffer ist weitgehend aufgebraucht.",
+              "ten_years": "Rückblickend könnte relevant sein, ob die Selbstständigkeit langfristig mehr Gestaltungsfreiheit und Erfüllung gebracht hat als das Angestelltenverhältnis."
+            },
+            "opportunity_cost": "Du gibst ein geregeltes Einkommen und die damit verbundene finanzielle Planbarkeit auf.",
             "reversibility": {
-              "score": 9,
-              "assessment": "Hochgradig umkehrbar – du kannst das Nebenprojekt jederzeit stoppen oder hochskalieren, ohne deinen Hauptjob zu gefährden."
+              "level": "PARTLY REVERSIBLE",
+              "assessment": "Eine Rückkehr in ein Angestelltenverhältnis ist grundsätzlich möglich, aber nicht garantiert."
             },
-            "values_alignment": {
-              "score": 6,
-              "assessment": "Teilweise: Kreativität und Unabhängigkeit werden nur halb gelebt, während Sicherheit gewahrt bleibt – aber Unglück im Hauptjob bleibt bestehen."
+            "values_fit": {
+              "level": "MIXED FIT",
+              "assessment": "Kreativität passt stark zu einem eigenen Café. Sicherheit steht jedoch in direktem Widerspruch zur Selbstständigkeit."
             },
-            "hidden_upside": "Du kannst mit dem Gehalt externe Fehler bezahlen, aus denen du lernst, ohne existenziell bedroht zu sein – das ist unbezahlbares Praxiswissen.",
-            "hidden_risk": "Das Café entwickelt eine eigene Dynamik, die mehr Zeit fordert als geplant – und du stehst plötzlich rechtlich und finanziell in der Pflicht, ohne die Kapazität zu haben, wirklich zu reagieren."
+            "upside_worth_considering": "Du schaffst dir eine Tätigkeit, die du selbst gestaltest.",
+            "risk_worth_considering": "8 Monate Ersparnisse sind ein begrenzter Puffer."
           },
           {
-            "option": "Option 2: Sofort kündigen und Vollzeit ins Café",
-            "pre_mortem": "Die Eröffnung verzögert sich um 6 Monate wegen Behördengängen und Renovierung, deine Ersparnisse sind nach Monat 8 aufgebraucht, das Café läuft im ersten Jahr mit Verlust – du brauchst deinen Partner finanziell, was die Beziehung belastet.",
-            "ten_ten_ten": {
-              "ten_minutes": "Ein Rausch aus Befreiung und Terror gleichzeitig – du bist endlich lebendig, aber auch nackt.",
-              "ten_months": "Mitten im härtesten Jahr: wenig Schlaf, wenig Geld, aber du bist zum ersten Mal seit Jahren wirklich präsent in deinem eigenen Leben.",
-              "ten_years": "Entweder: stolz auf den Mut und mit einem funktionierenden Café – oder: du hast es versucht, es hat nicht gereicht, aber du trägst keine Bitterkeit, weil du es wirklich probiert hast."
+            "option": "Im aktuellen Job bleiben",
+            "pre_mortem": {
+              "failure_scenario": "Die Unzufriedenheit im Job hält an oder verstärkt sich, ohne dass sich die Situation verändert.",
+              "what_would_make_this_more_likely": "Wenn keine konkreten Schritte zur Vorbereitung einer Gründung unternommen werden."
             },
-            "opportunity_cost": "Du verlierst den finanziellen Puffer, der dir erlaubt, Fehler zu verzeihen – 8 Monate Ersparnisse sind für eine Café-Eröffnung in Deutschland (Gewerbeanmeldung, Umbau, Inventar, erste Monate Miete) sehr knapp.",
+            "time_horizons": {
+              "ten_minutes": "Unmittelbar bleibt die finanzielle Sicherheit erhalten und die Entscheidung muss nicht sofort getroffen werden.",
+              "ten_months": "Nach 10 Monaten wärst du bereits seit fast zwei Jahren unglücklich in deinem Job.",
+              "ten_years": "Rückblickend könnte relevant sein, ob das Verbleiben im Job als notwendige Vorbereitung erscheint — oder als verpasste Gelegenheit."
+            },
+            "opportunity_cost": "Du behältst finanzielle Stabilität, aber die Unzufriedenheit bleibt bestehen.",
             "reversibility": {
-              "score": 4,
-              "assessment": "Schwer umkehrbar – nach der Kündigung und Eröffnung bist du finanziell und rechtlich gebunden; eine Rückkehr in einen vergleichbaren Job dauert Monate bis Jahre."
+              "level": "HIGHLY REVERSIBLE",
+              "assessment": "Du kannst jederzeit kündigen und die Gründung zu einem späteren Zeitpunkt angehen."
             },
-            "values_alignment": {
-              "score": 9,
-              "assessment": "Maximale Übereinstimmung mit Kreativität und Unabhängigkeit – Sicherheit wird jedoch stark geopfert, was deinem eigenen Wertekatalog widerspricht."
+            "values_fit": {
+              "level": "MIXED FIT",
+              "assessment": "Sicherheit wird gut bedient, solange der Job stabil bleibt. Kreativität wird offenbar nicht ausreichend erfüllt."
             },
-            "hidden_upside": "Voller Fokus ist oft der entscheidende Unterschied zwischen Erfolg und Scheitern im Gastgewerbe – Halbherzigkeit tötet mehr Cafés als schlechte Konzepte.",
-            "hidden_risk": "In Deutschland dauert die Eröffnung eines Cafés (Gesundheitsamt, Gewerbeamt, Umbaugenehmigungen, HACCP-Konzept) oft 4–8 Monate länger als geplant – dein 8-Monats-Puffer könnte aufgebraucht sein, bevor du den ersten Kaffee verkaufst."
-          },
-          {
-            "option": "Option 3: Ein Jahr sparen, dann kündigen",
-            "pre_mortem": "Du sparst diszipliniert, aber in diesem Jahr verlierst du den Mut und die Energie – du redest dich raus, passt dich weiter an, und am Ende des Jahres findest du neue Gründe zum Warten.",
-            "ten_ten_ten": {
-              "ten_minutes": "Beruhigend – ein konkreter Plan gibt dem Druck ein Ventil, ohne sofort handeln zu müssen.",
-              "ten_months": "Du hast bedeutend mehr finanziellen Puffer und kannst parallel einen Businessplan ausarbeiten – die Entscheidung fühlt sich realer an.",
-              "ten_years": "Wenn du wirklich gekündigt und gestartet hast: du wirst froh sein, solide gestartet zu sein – wenn nicht, wirst du wissen, dass der Plan eine Ausrede war."
-            },
-            "opportunity_cost": "Du investierst ein weiteres Jahr in einen Job, der dich unglücklich macht – das kostet dich Energie, Kreativität und möglicherweise die besten Jahre deiner Unternehmerpersönlichkeit, die mit 35 noch frisch ist.",
-            "reversibility": {
-              "score": 8,
-              "assessment": "Sehr reversibel – du bist noch im Job, hast aber einen festen Termin gesetzt, was psychologisch eine andere Qualität hat als offenes Warten."
-            },
-            "values_alignment": {
-              "score": 7,
-              "assessment": "Gute Balance zwischen Sicherheit und Unabhängigkeit – aber Kreativität bleibt für ein weiteres Jahr auf Sparflamme, was angesichts deines Unglücks im Job ein echter Kostenfaktor ist."
-            },
-            "hidden_upside": "Ein Jahr gibt dir Zeit, einen Businessplan zu schreiben, Lieferanten zu evaluieren, Standorte zu vergleichen und eventuell einen Nebenjob im Gastgewerbe zu machen – du startest mit echtem Wissen statt purer Leidenschaft.",
-            "hidden_risk": "Ein Jahr Sparziel kann schnell zur Prokrastinationsstruktur werden – der Plan gibt das Gefühl von Fortschritt, ohne tatsächlich etwas zu riskieren, und die emotionale Dringlichkeit, die du jetzt spürst, verpufft."
-          },
-          {
-            "option": "Option 4: Ganz beim Job bleiben",
-            "pre_mortem": "Du bleibst, passt dich an, mit 45 fragst du dich, wo die Jahre geblieben sind – das Café-Traum wird zur stillen Bitterkeit, die du in kleinen Momenten spürst.",
-            "ten_ten_ten": {
-              "ten_minutes": "Kurzfristige Erleichterung – du musst dich nicht entscheiden, der Druck fällt ab.",
-              "ten_months": "Die Unzufriedenheit kehrt zurück, verstärkt durch das Wissen, aktiv Nein gesagt zu haben – Passivität fühlt sich anders an als eine aktive Entscheidung.",
-              "ten_years": "Mit hoher Wahrscheinlichkeit das Szenario, das du am meisten bereuen wirst – du weißt bereits jetzt, dass der Job dich unglücklich macht."
-            },
-            "opportunity_cost": "Du verlierst nicht nur das Café – du verlierst das Experiment, dich selbst in Kreativität und Unabhängigkeit zu erleben, was langfristig Identität und Selbstwirksamkeit kostet.",
-            "reversibility": {
-              "score": 6,
-              "assessment": "Technisch reversibel – du kannst jederzeit neu entscheiden – aber mit jedem Jahr werden Mut, Energie und finanzielle Flexibilität geringer."
-            },
-            "values_alignment": {
-              "score": 2,
-              "assessment": "Fundamental im Widerspruch zu Kreativität und Unabhängigkeit – nur Sicherheit wird bedient, aber auf Kosten aller anderen genannten Werte."
-            },
-            "hidden_upside": "Mehr Zeit, um wirklich herauszufinden, ob das Café ein Traum oder eine konkrete Vision ist – manchmal zeigt Vollakzeptanz des Status quo, was man wirklich will.",
-            "hidden_risk": "Chronische Unzufriedenheit im Job kann langfristig zu Burnout, gesundheitlichen Problemen und Beziehungsbelastungen führen – Sicherheit im Job bedeutet nicht Sicherheit in deinem Leben."
+            "upside_worth_considering": "Du gewinnst Zeit, den Businessplan konkreter auszuarbeiten.",
+            "risk_worth_considering": "Die Entscheidung könnte dauerhaft aufgeschoben werden."
           }
         ],
         "comparison_matrix": {
           "dimensions": [
-            "10-Jahres-Impact",
-            "Umkehrbarkeit",
-            "Werte-Passung",
-            "Risikolevel (1=hoch)",
-            "Wachstumspotenzial"
+            "Finanzielle Sicherheit in den nächsten 12 Monaten",
+            "Erfüllung des Werts Kreativität",
+            "Passung zum aktuellen Lebenszeitpunkt",
+            "Belastung durch bestehende Unzufriedenheit",
+            "Ausreichender finanzieller Puffer für das Vorhaben"
           ],
-          "scores": [
-            {
-              "option": "Option 1: Job + Nebenprojekt",
-              "scores": [
-                6,
-                9,
-                6,
-                7,
-                7
-              ]
-            },
-            {
-              "option": "Option 2: Sofort kündigen",
-              "scores": [
-                9,
-                4,
-                9,
-                2,
-                10
-              ]
-            },
-            {
-              "option": "Option 3: Ein Jahr sparen, dann kündigen",
-              "scores": [
-                8,
-                8,
-                7,
-                6,
-                9
-              ]
-            },
-            {
-              "option": "Option 4: Beim Job bleiben",
-              "scores": [
-                2,
-                6,
-                2,
-                8,
-                2
-              ]
-            }
+          "options": [
+            { "option": "Sicheren Job kündigen und eigenes Café eröffnen", "ratings": ["STRONG DISADVANTAGE", "STRONG ADVANTAGE", "SOME ADVANTAGE", "STRONG ADVANTAGE", "UNKNOWN"] },
+            { "option": "Im aktuellen Job bleiben", "ratings": ["STRONG ADVANTAGE", "SOME DISADVANTAGE", "MIXED", "STRONG DISADVANTAGE", "SOME ADVANTAGE"] }
           ]
         },
-        "gut_check": "Du hast den Job als sicher bezeichnet, aber als das, was dich unglücklich macht – die Reihenfolge dieser Worte ist verräterisch: Sicherheit kommt zuerst, aber unglücklich ist das Wort, das du wirklich meinst. Du hast nicht gefragt, ob du das Café eröffnen sollst – du hast gefragt, ob du kündigen sollst. Die Frage verrät, dass du bereits weißt, was du willst, und nur noch nach Erlaubnis suchst.",
-        "one_question": "Wenn dein Partner morgen sagt: Ich trage uns ein Jahr finanziell mit – was machst du dann?",
+        "decision_summary": "Du überlegst, einen sicheren Angestelltenjob aufzugeben, um ein eigenes Café zu eröffnen.",
+        "underlying_question": "Was genau bedeutet Sicherheit für dich in dieser Entscheidung – finanzielle Stabilität, berufliche Absicherung, oder etwas anderes?",
+        "what_may_be_making_this_hard": {
+          "basis": "USER_SELECTED",
+          "summary": "Du hast Angst vor dem Unbekannten als zentralen Grund benannt. Das ist hier besonders spürbar, weil beide Werte, die dir wichtig sind – Kreativität und Sicherheit – in dieser Entscheidung gegeneinander stehen.",
+          "useful_reframe": "Statt zu fragen 'Ist das Café sicher genug?', könnte die nützlichere Frage lauten: 'Welches Risiko lässt sich durch Vorbereitung deutlich verkleinern – und welches bleibt, egal was ich tue?'"
+        },
+        "what_your_description_points_to": "Du hast drei konkrete Faktoren genannt, die einen Schritt Richtung Café begünstigen: ein Jahr anhaltende Unzufriedenheit im Job, ein unterstützender Partner und vorhandene Ersparnisse als Puffer. Gleichzeitig hast du Sicherheit als wichtigen Wert benannt.",
+        "unknowns_that_matter": [
+          "Wie viel Kapital bräuchtest du tatsächlich für die Eröffnung und die ersten Betriebsmonate?",
+          "Hast du konkrete Erfahrung im Gastgewerbe oder in der Selbstständigkeit?",
+          "Gibt es einen Plan B, falls das Café nach 12–18 Monaten nicht tragfähig ist?",
+          "Was genau macht dich in deinem aktuellen Job unglücklich?"
+        ],
+        "one_question": "Wenn das Café nach 18 Monaten nicht rentabel ist und du es schließen müsstest – wie würde sich das auf deine finanzielle Lage auswirken?",
+        "current_read": {
+          "summary": "Auf Basis der vorliegenden Informationen gibt es nachvollziehbare Gründe, die Richtung Café zeigen, aber zentrale offene Fragen, die das Bild wesentlich verändern könnten.",
+          "what_currently_favors": "Ein Jahr Unzufriedenheit ist kein kurzfristiges Tief. Dein Partner trägt den Schritt mit.",
+          "what_prevents_a_clean_call": "Du kennst die genauen Kapitalbedarfe für die Café-Eröffnung noch nicht."
+        },
         "if_still_stuck": {
-          "coin_flip_test": "Kopf bedeutet: du bleibst im Job. Während die Münze in der Luft ist – welche Seite hoffst du zu sehen?",
-          "two_year_letter": "Es ist Juli 2028. Du hast ein Jahr gespart, einen soliden Plan entwickelt und vor 6 Monaten eröffnet. Das Café trägt sich noch nicht vollständig, aber es ist deins – jede Entscheidung, jede Tasse, jede Einrichtung. Du schreibst: Ich bin so froh, dass ich aufgehört habe zu warten und angefangen habe, vorzubereiten. Die Angst war real, aber sie hatte kein Recht, mein Leben zu entscheiden.",
-          "smallest_step": "Vereinbare in den nächsten 7 Tagen ein Gespräch mit einem Steuerberater oder einem Gründungsberater der IHK – ein 1-stündiges Gespräch über die Realität einer Café-Eröffnung in Deutschland kostet wenig und zeigt dir sofort, ob deine Vorstellung auf dem Boden der Tatsachen steht."
+          "coin_flip_reaction": "Weise Café die Seite 'Kopf' zu, deinen sicheren Job die Seite 'Zahl'. Wirf eine Münze – und beobachte deinen ersten inneren Impuls nach dem Ergebnis.",
+          "future_self": "Stell dir vor, du bist 45 Jahre alt und sprichst mit jemandem über diese Phase deines Lebens. Welche Entscheidung würdest du in diesem Gespräch eher erklären müssen?",
+          "smallest_step": "Erstelle einen konkreten Finanzplan: Was würde die Café-Eröffnung realistisch kosten, wann wäre Break-even möglich?"
+        }
+      }
+    },
+    {
+      "name": "en-elder-care-no-clear-favorite-two-explicit-options-only",
+      "why_this_case_exists": "Exactly 2 explicit options supplied, no implicit third option available in the phrasing. Verifies the model analyzes ONLY the 2 supplied options (no invented 'do nothing'/status-quo filler), and that current_read correctly declines to favor either option when the supplied facts are insufficient — rather than manufacturing a recommendation to fill the field.",
+      "endpoint": "/api/plot-twist",
+      "input": {
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States",
+        "decision": "My elderly mother can no longer live alone safely. I am trying to figure out the best living arrangement for her going forward.",
+        "options": ["Move her into my house", "Find an assisted living facility near me"]
+      },
+      "output": {
+        "options_analysis": [
+          { "option": "Move her into my house" },
+          { "option": "Find an assisted living facility near me" }
+        ],
+        "underlying_question": "How much of your mother's daily care are you able and willing to take on personally, and what does she need that you may not be able to provide — and have you been able to talk honestly with her about both?",
+        "current_read": {
+          "summary": "There is not enough information yet to favor one option over the other, because the right answer depends heavily on her specific care needs and your actual capacity — neither of which you have supplied.",
+          "what_currently_favors": "Moving her in gives her direct family presence. A facility near you offers structured professional care around the clock and may scale better if her needs increase.",
+          "what_prevents_a_clean_call": "Without knowing her care level, your household capacity, her preferences, and the cost and quality of local facilities, any strong lean toward one option would rest on guesswork rather than your actual situation."
         }
       }
     }
