@@ -299,7 +299,7 @@ export const toolFinderMetadata = {
     handoffs: [
       { when: "the user wants a cryptic message, joke, or reference decoded rather than a spoiler-safe recap", toolId: "DecoderRing" },
       { when: "the user’s main question is whether to keep watching or quit rather than what they have forgotten", toolId: "PlotTwist" },
-      { when: "the user wants to explore a plot hole after catching up rather than resume from a stopping point", toolId: "PlotHole" },
+      { when: "the user wants to explore a plot hole after catching up rather than resume from a stopping point", toolId: "PlotHoleFinder" },
       { when: "the user wants to develop or explore a fan theory rather than receive a recap", toolId: "FanTheory" },
     ],
     primaryIntent: "restore the context needed to resume a story or season while strictly avoiding anything beyond the user’s stopping point",
@@ -1037,7 +1037,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user wants a real-world claim or belief pressure-tested rather than a fictional fan theory", toolId: "BeliefStressTest" },
-      { when: "the user wants to find or examine a possible inconsistency in the story rather than construct a theory", toolId: "PlotHole" },
+      { when: "the user wants to find or examine a possible inconsistency in the story rather than construct a theory", toolId: "PlotHoleFinder" },
       { when: "the user wants to save a detail, clue, quotation, or moment for later rather than theorize about it", toolId: "Bookmark" },
     ],
     primaryIntent: "generate or grade a deliberately wild but internally defensible theory about a fictional work using story details as evidence",

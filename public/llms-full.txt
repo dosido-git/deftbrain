@@ -3593,35 +3593,35 @@ Input: Should I quit my stable job to take a risky startup role?
 
 Output: Five voices: the Pragmatist warns about runway, the Risk-Taker calculates asymmetric upside, the Did-It-and-Regretted-It voice warns about the culture fit you're ignoring, the Didn't-and-Regretted-It voice names the window that closes, and the Contrarian asks whether the real fear is failure or success.
 
-### Plot Hole
+### Plot Hole Finder
 
-URL: https://deftbrain.com/PlotHole
-Tagline: Find where the logic breaks in any movie, show, book, or game
+URL: https://deftbrain.com/PlotHoleFinder
+Tagline: Find where the story stops adding up
 Categories: Diversions
 
-Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).
+Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up — and separates genuine holes from things the story actually explains. Each finding gets a type (real contradiction, unexplained gap, plot convenience, questionable decision, and more), the case against it, the best defense, and a verdict. A playful Swiss Cheese Rating summarizes overall plot integrity without pretending to be a precise score. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).
 
-**What it does.** PlotHole is a narrative logic analyst that finds exactly where stories break. Not vague complaints — specific scenes, character knowledge problems, and 'wait actually...' moments, each rated by how badly they damage the story.
+**What it does.** Plot Hole Finder is a narrative logic analyst that sorts a genuine contradiction from an unexplained gap, a debatable character decision, or a convenience — then adjudicates only the findings that survive scrutiny. A shorter list of real holes beats a longer list padded to look impressive.
 
 **How to use it.**
 
 1. Pick media type (Movie, TV Show, Book, Game) and enter the title
-2. Optionally add context like a specific season or scene
-3. Hit 'Find Plot Holes' to get a full analysis with Swiss Cheese Rating
-4. Click 'Defend this hole' on any result to switch to courtroom-style defense mode
+2. Optionally point to a specific scene, rule, timeline issue, or decision that never made sense
+3. Hit 'Find the Plot Holes' to get each finding's type, case, best defense, and verdict, plus a Swiss Cheese Rating
+4. Click 'Defend this hole' on any finding to switch to courtroom-style defense mode
 5. In Defend mode, describe any plot hole and get the strongest possible counter-arguments
 
 **Tips.**
 
 - The 'Defend a Hole' mode is great for settling arguments with friends
-- Try it on movies you love — the 'Actually Clever' section highlights what the story does RIGHT
-- The Reddit one-liners are designed to be shareable
+- Ask about a specific scene or decision for a focused answer instead of a scan of the whole work
+- Not every 'why didn't they just...?' question is a plot hole — the tool is built to tell the difference
 
 **Example.**
 
-Input: You enter 'The Dark Knight' as a movie.
+Input: You enter 'The Dark Knight Rises' and ask how Bruce gets back into sealed Gotham from a foreign prison pit.
 
-Output: Swiss Cheese Rating: 4/10. Holes include 'The Hospital Escape' (how did the Joker wire an entire hospital with explosives without anyone noticing — MAJOR), 'The Bus Getaway' (a school bus merges into traffic from a bank wall and nobody reports it — MINOR), and the ferry dilemma timing. Each comes with fan defenses and Reddit one-liners.
+Output: Your question gets answered directly first — MAYBE, the story leaves a gap rather than a hard contradiction, since it never establishes that his return is impossible, just unshown. A couple of other findings follow if they hold up, each with its own case, defense, and verdict — plus a Swiss Cheese Rating for the film overall.
 
 ### Roast Me
 

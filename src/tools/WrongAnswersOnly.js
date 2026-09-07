@@ -341,7 +341,7 @@ const WrongAnswersOnly = ({ tool }) => {
               {/* Kept in Diversions. Which Life? sat here and is a reflective
                   tool about a real decision — a strange place to land from a
                   page whose entire promise is that nothing on it is true. */}
-              <a href="/PlotHole" className={`text-xs ${linkStyle}`}>🕳️ {t('wao_plothole')}</a>
+              <a href="/PlotHoleFinder" className={`text-xs ${linkStyle}`}>🕳️ {t('wao_plothole')}</a>
             </div>
           </div>
         </div>

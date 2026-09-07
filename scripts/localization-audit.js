@@ -112,7 +112,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/HobbyMatch.js',
   'src/tools/TheWholeStory.js',
   'src/tools/UpsellShield.js',
-  'src/tools/PlotHole.js',
+  'src/tools/PlotHoleFinder.js',
   'src/tools/AnalogyEngine.js',
   'src/tools/ColdOpenCraft.js',
   'src/tools/PartyArchitect.js',

@@ -2018,43 +2018,53 @@ export const tools = [
 
 
 {
-  modified: "",
-  id: "PlotHole",
+  // FULL RENAME, 2026-09-06: PlotHole -> PlotHoleFinder (id/URL/catalog
+  // fields only — the backend route stays backend/routes/plot-hole.js,
+  // the i18n prefix stays plh_*, and localStorage keys stay
+  // plothole-result/plothole-history. See audit/tool-notes/PLOTHOLE-NOTES.md
+  // and audit/REWRITE-INSTALL-KIT.md §7 for the full checklist this
+  // followed. Also a V2 REWRITE of the tool itself: the old version forced
+  // 4-7 "holes" and a mix of severities regardless of what the evidence
+  // supported; this version sorts a genuine contradiction from an
+  // unexplained gap, a debatable character decision, or a convenience
+  // BEFORE deciding whether the story actually broke its own logic.
+  modified: "2026-09-06",
+  id: "PlotHoleFinder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Something in the plot bothered you and you can't articulate what.",
-    give: "The title and media type. A specific season or scene helps.",
-    get: "The exact scenes where the logic breaks, rated by how much damage each does.",
-    edge: "It cites specific scenes and character knowledge, not vague complaints.",
+    give: "The title and media type. A specific scene, rule, or decision helps.",
+    get: "Which of those are genuine contradictions, which are just gaps or debatable choices, and why.",
+    edge: "It's more likely to tell you something isn't actually a plot hole than to pad the list to look impressive.",
   },
-  seoDescription: "Name any movie, show, book, or game and see the plot holes — timeline slips, 'why didn't they just' moments, and logic breaks, each rated by severity. Free.",
+  seoDescription: "Name any movie, show, book, or game and see where its own logic actually breaks — sorted from genuine contradictions to gaps, conveniences, and debatable decisions. Free.",
   seoTitle: "Plot Hole Finder for Movies, Shows & Books",
-  title: "Plot Hole",
-  tagline: "Find where the logic breaks in any movie, show, book, or game",
-  tags: ['plot', 'hole', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'fun'],
+  title: "Plot Hole Finder",
+  tagline: "Find where the story stops adding up",
+  tags: ['plot hole', 'plot holes', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'plot hole finder', 'story logic', 'timeline contradiction', 'fun'],
   icon: "🕳️",
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
-  description: "Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
+  description: "Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up — and separates genuine holes from things the story actually explains. Each finding gets a type (real contradiction, unexplained gap, plot convenience, questionable decision, and more), the case against it, the best defense, and a verdict. A playful Swiss Cheese Rating summarizes overall plot integrity without pretending to be a precise score. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
   guide: {
-    overview: "PlotHole is a narrative logic analyst that finds exactly where stories break. Not vague complaints — specific scenes, character knowledge problems, and 'wait actually...' moments, each rated by how badly they damage the story.",
+    overview: "Plot Hole Finder is a narrative logic analyst that sorts a genuine contradiction from an unexplained gap, a debatable character decision, or a convenience — then adjudicates only the findings that survive scrutiny. A shorter list of real holes beats a longer list padded to look impressive.",
     howToUse: [
       "Pick media type (Movie, TV Show, Book, Game) and enter the title",
-      "Optionally add context like a specific season or scene",
-      "Hit 'Find Plot Holes' to get a full analysis with Swiss Cheese Rating",
-      "Click 'Defend this hole' on any result to switch to courtroom-style defense mode",
+      "Optionally point to a specific scene, rule, timeline issue, or decision that never made sense",
+      "Hit 'Find the Plot Holes' to get each finding's type, case, best defense, and verdict, plus a Swiss Cheese Rating",
+      "Click 'Defend this hole' on any finding to switch to courtroom-style defense mode",
       "In Defend mode, describe any plot hole and get the strongest possible counter-arguments"
     ],
     example: {
-      scenario: "You enter 'The Dark Knight' as a movie.",
-      action: "Hit Find Plot Holes.",
-      result: "Swiss Cheese Rating: 4/10. Holes include 'The Hospital Escape' (how did the Joker wire an entire hospital with explosives without anyone noticing — MAJOR), 'The Bus Getaway' (a school bus merges into traffic from a bank wall and nobody reports it — MINOR), and the ferry dilemma timing. Each comes with fan defenses and Reddit one-liners."
+      scenario: "You enter 'The Dark Knight Rises' and ask how Bruce gets back into sealed Gotham from a foreign prison pit.",
+      action: "Hit Find the Plot Holes.",
+      result: "Your question gets answered directly first — MAYBE, the story leaves a gap rather than a hard contradiction, since it never establishes that his return is impossible, just unshown. A couple of other findings follow if they hold up, each with its own case, defense, and verdict — plus a Swiss Cheese Rating for the film overall."
     },
     tips: [
       "The 'Defend a Hole' mode is great for settling arguments with friends",
-      "Try it on movies you love — the 'Actually Clever' section highlights what the story does RIGHT",
-      "The Reddit one-liners are designed to be shareable"
+      "Ask about a specific scene or decision for a focused answer instead of a scan of the whole work",
+      "Not every 'why didn't they just...?' question is a plot hole — the tool is built to tell the difference"
     ]
   }
 },

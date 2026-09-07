@@ -144,7 +144,7 @@
 - [Bookmark](https://deftbrain.com/Bookmark): Pick up where you left off — without spoilers
 - [Brain Roulette](https://deftbrain.com/BrainRoulette): Follow your curiosity somewhere unexpected.
 - [Crowd Wisdom](https://deftbrain.com/CrowdWisdom): Five different ways to look at the choice you can't stop thinking about
-- [Plot Hole](https://deftbrain.com/PlotHole): Find where the logic breaks in any movie, show, book, or game
+- [Plot Hole Finder](https://deftbrain.com/PlotHoleFinder): Find where the story stops adding up
 - [Roast Me](https://deftbrain.com/RoastMe): Find the clichés, buzzwords, humblebrags, and cringeworthy phrases you stopped noticing long ago.
 - [Six Degrees of Me](https://deftbrain.com/SixDegreesOfMe): Discover the surprising threads that connect your experiences
 - [Time Warp](https://deftbrain.com/TimeWarp): Collide anything modern with any historical period

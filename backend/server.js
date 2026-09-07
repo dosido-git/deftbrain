@@ -244,7 +244,7 @@ const TOOL_IDS = [
   'JustifyMyMeeting','MeetingHijackStopper','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
-  'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
+  'PlantRescue','PlotHoleFinder','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
@@ -274,6 +274,9 @@ RETIRED_SLUGS.forEach(slug => {
 
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
+  '/PlotHole':                 '/PlotHoleFinder',  // renamed 2026-09-06
+  '/plothole':                 '/PlotHoleFinder',
+  '/plot-hole':                '/PlotHoleFinder',
   '/PetWeirdnessDecoder':      '/PetBehaviorDecoder',  // renamed 2026-09-06
   '/petweirdnessdecoder':      '/PetBehaviorDecoder',
   '/pet-weirdness-decoder':    '/PetBehaviorDecoder',
