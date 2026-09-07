@@ -2,9 +2,9 @@
   "_meta": {
     "tool": "quote-check",
     "generated": "2026-09-07",
-    "baseline": "quotecheck-v2",
+    "baseline": "quotecheck-v2.1",
     "model": "claude-sonnet (MODELS.SMART), 1 endpoint, v2 output-guard enabled",
-    "note": "V2 (2026-09-07): replaced the invented 'typical price range' / fairness verdict (likely_fair|somewhat_high|overpriced|cant_tell) with an audit of the quote actually supplied — new verdict enum (LOOKS_STRAIGHTFORWARD|NEEDS_CLARIFICATION|HARD_TO_COMPARE|SPECIFIC_CONCERNS_FOUND|NOT_ENOUGH_INFORMATION), quote_summary (extracted, not assumed), document_discrepancies (typed vs. uploaded document), arithmetic_check (only when actually calculable), specific_concerns (grounded only — missing info is NOT a red flag, it goes to unknowns_that_matter), second_quote.scope_comparable (a price alone isn't comparable), repair_vs_replace (no universal 50% rule, no age-only lifespan inference), what_to_say (not automatically a negotiation script), safety_note. Model changed from MODELS.SMART with an ad-hoc prompt to MODELS.SMART + router.outputGuard (v2 output standard) — this domain (reasoning about the visitor's own supplied situation) fits the generic v2 guard well, unlike PronounceItRight's specialist-knowledge domain. Verified live: all 5 cases pass, including both file-upload cases (image price discrepancy still caught; PDF pressure-tactic still surfaced as a grounded specific_concern with a genuine safety_note, not a remote diagnosis)."
+    "note": "V2.1 (2026-09-07, owner correction pass): a real quote (UK MOT scenario) exposed three residual reasoning leaks and one bug. (1) General repair knowledge (shocks sometimes replaced in pairs) was silently becoming a case-specific specific_concern, including a predicted future consequence ('could mean a second bill within months') nobody established. (2) Missing documentation of a diagnostic step was still implying the step wasn't performed, and additional findings during inspection were framed as 'opportunistic'. (3) 'OEM vs aftermarket' was framed as inherently a quality claim rather than a comparison variable. Fixed: specific_concerns now requires an explicit 'what positive evidence makes this a concern?' test (added to both the system prompt and the final self-check) - general knowledge, undocumented steps, and additional findings all route to unknowns_that_matter/questions_to_ask instead; future-consequence predictions banned outright; part-type framed as a comparison variable, never a quality hierarchy; second_opinion barred from implying poor foundation via 'undocumented = unfounded'. Also fixed a genuine bug: the model would write '$1,290' in some fields and '£1,290' in others when the free-text repair description used British terms (MOT, tyres) despite the visitor's actual currency being USD - added an explicit CURRENCY rule (use ONLY the given currency for every figure, regional vocabulary in the description is not a currency signal, always attach the symbol) plus a currency reminder at the top of the user prompt and an inconsistent_currency guard prohibition. Verified live on the reported scenario across 3 consecutive calls: specific_concerns went from a false positive (2 concerns) to correctly empty (3/3 runs), currency consistent throughout in all 3 runs, and the model surfaced a genuinely useful NEW catch on its own ('the MOT failure was on one disc but the quote covers all four corners') as an unknown, not an invented diagnosis."
   },
   "cases": [
     {
@@ -23,13 +23,13 @@
         "userRegion": "US"
       },
       "output": {
-        "understanding": "Your 6-year-old Whirlpool refrigerator is cooling poorly on the fridge side while the freezer works fine, and a technician has diagnosed a failing compressor and quoted $450 for the replacement. No written breakdown of that $450 was provided.",
+        "understanding": "Your 6-year-old Whirlpool refrigerator is cooling normally in the freezer but not on the fridge side, and a technician has diagnosed a failing compressor and quoted $450 for full compressor replacement. No itemized document was attached, so the breakdown behind that $450 is unknown.",
         "verdict": "NEEDS_CLARIFICATION",
-        "verdict_explanation": "The $450 figure is a single number with no visible breakdown into parts, labor, fees, or warranty terms. The diagnosis — a failing compressor — is a significant and specific claim for a symptom that can have more than one cause, so it is worth understanding what testing led there before approving a major repair. Without itemization, you also cannot tell what is and is not included in the price.",
+        "verdict_explanation": "The $450 figure is a single total with no breakdown of parts, labor, or fees supplied, so it cannot be meaningfully audited. More importantly, the symptom you described — freezer working, fridge side warm — can have more than one cause, and before approving a major repair like compressor replacement it is worth understanding what testing led to that specific diagnosis. Without knowing what the $450 covers or how the diagnosis was reached, evaluation is limited.",
         "quote_summary": {
           "quoted_total": 450,
           "stated_diagnosis": "Compressor is failing and needs full replacement",
-          "proposed_work": "Compressor replacement",
+          "proposed_work": "Full compressor replacement",
           "parts": [],
           "labor": "",
           "fees": [],
@@ -44,17 +44,12 @@
           "difference": null,
           "assessment": ""
         },
-        "specific_concerns": [
-          {
-            "concern": "The $450 quote is a lump sum with no written itemization of parts, labor, fees, or warranty — nothing in what was provided shows how the number is composed.",
-            "why_it_matters": "Without a breakdown you cannot verify what is included, compare meaningfully with another quote, or hold the provider to a specific scope if something goes wrong."
-          }
-        ],
+        "specific_concerns": [],
         "unknowns_that_matter": [
-          "What diagnostic steps or tests were performed to confirm the compressor is the cause.",
-          "Whether the $450 covers parts, labor, and any fees together, or whether additional charges could be added later.",
-          "What warranty, if any, applies to the replacement compressor and to the labor.",
-          "Whether the replacement part would be OEM or aftermarket, which can affect longevity and any warranty."
+          "What diagnostic test or measurement led to the compressor diagnosis — the symptom of a warm fridge with a working freezer can have more than one cause, and knowing what was tested helps you evaluate whether compressor replacement is the right scope.",
+          "How the $450 breaks down between parts and labor — without this you cannot compare against another quote or assess whether the total is reasonable for the work described.",
+          "Whether a warranty is included on parts, labor, or both, and for how long — this matters significantly for a repair of this cost on a 6-year-old appliance.",
+          "Whether the diagnostic or service call fee, if one was charged, is credited toward the repair total or billed separately on top of $450."
         ],
         "second_quote": {
           "provided": false,
@@ -64,23 +59,24 @@
         },
         "repair_vs_replace": {
           "applies": true,
-          "assessment": "Whether to repair or replace depends on information not yet available — specifically the compressor replacement cost itemized separately from labor, and what a comparable replacement refrigerator would cost if you chose to buy new.",
+          "assessment": "At 6 years old, whether to repair or replace depends on the replacement cost in your market, the overall condition of this unit, and what warranty comes with the repaired compressor — none of which are known yet.",
           "missing_information": [
-            "",
-            "",
-            "Whether any warranty would apply to the repaired unit"
+            "Current replacement cost for a comparable refrigerator in your market",
+            "Overall condition and reliability history of this unit",
+            "What warranty, if any, comes with the repaired compressor",
+            "Whether any other components are showing wear that could lead to further repairs"
           ]
         },
         "questions_to_ask": [
-          "Can you provide a written breakdown showing the cost of the compressor part separately from labor and any other fees?",
-          "What specific test or observation confirmed the compressor is the cause — I want to understand what was ruled out?",
-          "What warranty comes with the replacement compressor and with the labor?",
-          "Is the replacement compressor OEM or aftermarket?"
+          "What testing or measurement led to the compressor diagnosis — was anything else checked, like the evaporator fan or defrost system?",
+          "Can you break down the $450 into parts and labor so I can understand what I am paying for?",
+          "What warranty comes with the replacement compressor and the labor?",
+          "Is the diagnostic or service call fee already included in the $450, or is it billed separately?"
         ],
-        "what_to_say": "Before I approve the work, I would like a written breakdown of the $450 — parts, labor, and any fees listed separately. I would also like to understand what diagnostic test confirmed the compressor is the problem, since I want to make sure I am approving the right repair. Can you provide those details?",
+        "what_to_say": "Before I approve the repair, I have a few questions. Can you walk me through what you tested or measured that points specifically to the compressor, rather than something like the evaporator fan or defrost system? And can you give me a breakdown of the $450 into parts and labor, along with what warranty would be included? I want to make sure I understand what I am approving before I commit.",
         "second_opinion": {
           "assessment": "WORTH_CONSIDERING",
-          "reason": "A compressor replacement is one of the more involved and costly refrigerator repairs, the diagnosis is a specific claim that rests on testing you have not yet seen documented, and you have no itemized quote to compare — a second opinion would let you verify both the diagnosis and the scope."
+          "reason": "Compressor replacement is among the more consequential and costly appliance repairs. A second opinion would confirm the diagnosis and the scope of work before you approve the repair."
         },
         "safety_note": ""
       }
@@ -100,17 +96,17 @@
         "userRegion": "US"
       },
       "output": {
-        "understanding": "You have a 2018 Honda Civic with 85,000 miles making a grinding noise when braking, and a shop has quoted you $1,800 to replace brake pads, rotors, and calipers on all four wheels. No written document was attached, so the only information available is what you typed.",
+        "understanding": "You have a 2018 Honda Civic with 85,000 miles making a grinding noise when braking, and a shop has quoted you $1,800 to replace brake pads, rotors, and calipers on all four wheels. No written document was attached, so the evaluation is based entirely on what you typed.",
         "verdict": "NEEDS_CLARIFICATION",
-        "verdict_explanation": "The $1,800 quote covers a significant amount of work, but it was given as a single number with no breakdown of parts, labor, fees, or warranty. Without knowing how much of that $1,800 is parts versus labor, whether all four calipers are truly included or just some, and what diagnostic steps led to recommending caliper replacement specifically, there is not enough to evaluate whether this quote is reasonable or complete.",
+        "verdict_explanation": "The $1,800 total covers a significant scope — pads, rotors, and calipers on all four wheels — but you have no itemization showing what portion is parts versus labor, no information on part quality or warranty, and no documented basis for why all four calipers need replacement rather than just pads and rotors. Without that breakdown, it is not possible to assess whether the price is reasonable or whether the full scope is warranted.",
         "quote_summary": {
           "quoted_total": 1800,
-          "stated_diagnosis": "Grinding noise when braking",
-          "proposed_work": "New brake pads, rotors, and calipers on all four wheels",
+          "stated_diagnosis": "Brake pads, rotors, and calipers needed on all four wheels",
+          "proposed_work": "Replace brake pads, rotors, and calipers on all four wheels",
           "parts": [
-            "brake pads",
-            "rotors",
-            "calipers"
+            "brake pads (all four wheels)",
+            "rotors (all four wheels)",
+            "calipers (all four wheels)"
           ],
           "labor": "",
           "fees": [],
@@ -125,18 +121,12 @@
           "difference": null,
           "assessment": ""
         },
-        "specific_concerns": [
-          {
-            "concern": "All four calipers are included in the recommendation. No diagnostic basis for this was described.",
-            "why_it_matters": "Replacing all four calipers adds meaningful cost to the job. You have no way to evaluate whether each replacement is warranted without knowing what was found during inspection."
-          }
-        ],
+        "specific_concerns": [],
         "unknowns_that_matter": [
-          "No itemization exists: the split between parts cost and labor cost within the $1,800 is unknown, making it impossible to assess either component.",
-          "What diagnostic steps or inspection findings led to recommending caliper replacement on all four wheels rather than just pads and rotors is not stated.",
-          "Whether the quote includes OEM or aftermarket parts is not stated, and this can affect both cost and quality.",
-          "No warranty terms were mentioned, for either parts or labor.",
-          "Whether any fees such as shop supplies, disposal, or taxes are included in the $1,800 or would be added on top is unknown."
+          "Why all four calipers are being replaced is not explained — calipers are a more significant component than pads and rotors, and the quote does not say whether they are leaking, seized, or damaged, or whether replacement is necessary or preventive.",
+          "No itemization exists between parts and labor, so there is no way to assess where the $1,800 is going or to compare it against another quote on equal terms.",
+          "Part quality is unknown — no information on whether parts are OEM, aftermarket, or remanufactured, and no warranty terms were stated.",
+          "Whether the diagnostic fee, if any was charged, is included in the $1,800 or would be added on top is unknown."
         ],
         "second_quote": {
           "provided": false,
@@ -150,17 +140,17 @@
           "missing_information": []
         },
         "questions_to_ask": [
-          "Can you break down the $1,800 into parts and labor separately, and list the cost for each component — pads, rotors, and calipers per axle or per wheel?",
-          "What specifically did you find on each caliper that leads you to recommend replacing all four?",
-          "Are the parts OEM, OEM-equivalent, or aftermarket, and what warranty comes with the parts and the labor?",
-          "Are there any additional fees — shop supplies, disposal, taxes — on top of the $1,800?"
+          "Can you break the $1,800 into parts and labor separately, and list the parts by brand or part number?",
+          "What did you find on inspection that shows all four calipers need to be replaced — were they seized, leaking, or something else?",
+          "What warranty comes with the parts and the labor?",
+          "Is there a diagnostic fee, and if so, is it included in this $1,800 or separate?"
         ],
-        "what_to_say": "Before I approve this, I would like to see the quote broken down by parts and labor so I understand what each component costs. I also want to understand what you found on the calipers specifically, since replacing all four is a significant part of the total. Can you walk me through what the inspection showed and put the itemized breakdown in writing?",
+        "what_to_say": "Before I approve this, I would like a written breakdown separating parts from labor, with the brand or part number for the calipers, pads, and rotors. What specific condition of the calipers led to the replacement recommendation — are they leaking, stuck, or damaged? And what warranty covers the parts and the work?",
         "second_opinion": {
           "assessment": "WORTH_CONSIDERING",
-          "reason": "The recommendation includes replacing all four calipers. Understanding what the shop found that supports this step will help you decide whether to proceed or get another look at the brakes."
+          "reason": "Replacing all four calipers is a substantial recommendation on top of pads and rotors. You have no itemization showing how the $1,800 breaks down, and no explanation of why all four calipers need replacement. An independent inspection would let you confirm the diagnosis and scope before committing."
         },
-        "safety_note": "A grinding noise when braking can indicate brake wear severe enough to reduce stopping ability. Until the cause is confirmed and addressed, drive with extra following distance and avoid situations requiring hard braking if possible."
+        "safety_note": "A grinding noise when braking can indicate significantly worn brake components. Until the brakes are inspected and repaired, avoid high-speed driving and leave extra stopping distance, and if the grinding worsens, braking feels spongy, or the pedal sinks toward the floor, stop driving the vehicle and have it inspected immediately."
       }
     },
     {
@@ -180,13 +170,13 @@
         "userRegion": "DE"
       },
       "output": {
-        "understanding": "Ihr etwa 4 Jahre alter Bosch Geschirrspüler reinigt nicht richtig, und ein Techniker hat die Umwälzpumpe als Ursache diagnostiziert und deren vollständigen Ersatz für 280 EUR angeboten. Über die genaue Aufschlüsselung dieses Betrags ist nichts bekannt.",
+        "understanding": "Ihr Bosch-Geschirrspüler (ca. 4 Jahre alt) reinigt nicht mehr richtig, und der Techniker hat eine defekte Umwälzpumpe diagnostiziert sowie deren Austausch für insgesamt €280 angeboten. Es liegt kein Dokument vor, und der genaue Aufschluss von Teile- und Arbeitskosten ist nicht bekannt.",
         "verdict": "NEEDS_CLARIFICATION",
-        "verdict_explanation": "Die 280 EUR sind eine Pauschalsumme ohne erkennbare Aufschlüsselung in Teilekosten, Arbeitszeit, Anfahrtsgebühr oder Diagnosekosten. Ohne diese Aufteilung lässt sich nicht beurteilen, was genau im Preis enthalten ist und ob etwaige Zusatzkosten noch hinzukommen. Außerdem ist nicht dokumentiert, welche Diagnose zur Entscheidung Umwälzpumpe geführt hat.",
+        "verdict_explanation": "Der Gesamtpreis von €280 ist genannt, aber es ist nicht klar, wie sich dieser Betrag auf Ersatzteil und Arbeitszeit aufteilt. Ebenso fehlen Angaben dazu, auf welchem Befund die Diagnose basiert und ob eine Garantie auf die Reparatur gegeben wird. Ohne diese Informationen lässt sich das Angebot nur schwer einschätzen oder mit einem Vergleichsangebot abwägen.",
         "quote_summary": {
           "quoted_total": 280,
-          "stated_diagnosis": "Umwälzpumpe defekt",
-          "proposed_work": "Vollständiger Ersatz der Umwälzpumpe",
+          "stated_diagnosis": "Umwälzpumpe ist defekt",
+          "proposed_work": "Kompletter Austausch der Umwälzpumpe",
           "parts": [
             "Umwälzpumpe"
           ],
@@ -205,10 +195,10 @@
         },
         "specific_concerns": [],
         "unknowns_that_matter": [
-          "Wie setzt sich der Betrag von 280 EUR zusammen: Teilepreis, Arbeitszeit, Anfahrt, Diagnosegebühr?",
-          "Welche konkreten Tests oder Beobachtungen haben zur Diagnose der Umwälzpumpe geführt?",
-          "Gibt es eine Gewährleistung auf die Reparatur, und wenn ja, für wie lange und auf was genau?",
-          "Ist die Diagnosegebühr im Angebotspreis enthalten oder wird sie zusätzlich fällig, falls Sie die Reparatur ablehnen?"
+          "Aufschluss des Preises: Wie viel entfällt auf das Ersatzteil (Umwälzpumpe) und wie viel auf die Arbeitszeit? Das ist nötig, um das Angebot sinnvoll einzuschätzen oder zu vergleichen.",
+          "Grundlage der Diagnose: Das Angebot nennt keinen Befund oder Messvorgang, der zur Diagnose geführt hat. Es ist nicht bekannt, welche Prüfung durchgeführt wurde.",
+          "Garantie auf Reparatur und Ersatzteil: Es ist nicht bekannt, ob und wie lange auf die Reparatur oder das eingebaute Teil Garantie gewährt wird.",
+          "Teileangabe: OEM-Teil oder Nachbauteil? Neue oder aufbereitete Pumpe? Das beeinflusst die Vergleichbarkeit mit einem Zweitangebot."
         ],
         "second_quote": {
           "provided": false,
@@ -218,23 +208,23 @@
         },
         "repair_vs_replace": {
           "applies": true,
-          "assessment": "Ohne den aktuellen Neupreis eines vergleichbaren Geräts und ohne Kenntnisse über den Allgemeinzustand des Geräts lässt sich nicht sinnvoll beantworten, ob Reparatur oder Neukauf die bessere Wahl ist.",
+          "assessment": "Ohne den aktuellen Kaufpreis eines vergleichbaren Bosch-Geschirrspülers und eine Einschätzung des Gesamtzustands des Geräts lässt sich eine fundierte Abwägung zwischen Reparatur und Neukauf hier nicht treffen.",
           "missing_information": [
-            "Aktueller Neupreis eines vergleichbaren Bosch Geschirrspülers",
-            "Allgemeiner Zustand und Reparaturhistorie des Geräts",
-            "Ob eine Herstellergewährleistung oder Händlergarantie noch läuft"
+            "Aktueller Kaufpreis eines vergleichbaren Bosch-Geschirrspülers",
+            "Gesamtzustand und bisherige Zuverlässigkeit des Geräts",
+            "Ob das Gerät noch unter gesetzlicher Gewährleistung steht (2 Jahre ab Kauf)"
           ]
         },
         "questions_to_ask": [
-          "Können Sie mir die 280 EUR aufschlüsseln: Was entfällt auf das Ersatzteil, was auf die Arbeitszeit, und sind Anfahrt und Diagnose bereits enthalten?",
-          "Wie haben Sie festgestellt, dass die Umwälzpumpe defekt ist und nicht zum Beispiel ein verstopfter Filter oder ein Problem mit den Sprüharmen?",
-          "Welche Gewährleistung gilt auf die ausgetauschte Pumpe und auf die Arbeitsleistung, und in welcher Form ist das schriftlich festgehalten?",
-          "Falls ich die Reparatur nicht beauftrage: Wird eine separate Diagnosegebühr fällig?"
+          "Können Sie mir den Preis aufschlüsseln: Was kostet das Ersatzteil, was die Arbeitszeit?",
+          "Worauf basiert die Diagnose, dass die Umwälzpumpe defekt ist? Wurde eine Messung oder ein konkreter Befund festgestellt?",
+          "Handelt es sich um ein Original-Bosch-Ersatzteil oder ein Nachbauteil, und ist es neu oder aufbereitet?",
+          "Gibt es eine Garantie auf die Reparatur und das eingebaute Teil, und wenn ja, für wie lange?"
         ],
-        "what_to_say": "Vielen Dank für das Angebot. Bevor ich zustimme, hätte ich noch ein paar Fragen: Können Sie mir zeigen, wie sich die 280 EUR auf Teile, Arbeitszeit und eventuelle Anfahrtskosten aufteilen? Außerdem würde ich gerne verstehen, auf welcher Grundlage die Umwälzpumpe als Ursache identifiziert wurde. Und welche schriftliche Gewährleistung gilt auf die Reparatur?",
+        "what_to_say": "Vielen Dank für das Angebot. Bevor ich zustimme, hätte ich noch ein paar Fragen: Können Sie mir den Betrag von €280 aufschlüsseln, also Ersatzteil und Arbeitszeit separat ausweisen? Außerdem würde ich gern wissen, wie die Diagnose gestellt wurde und ob auf die Reparatur eine Garantie gegeben wird.",
         "second_opinion": {
           "assessment": "WORTH_CONSIDERING",
-          "reason": "Der Betrag ist eine Pauschale ohne Aufschlüsselung und ohne dokumentierte Diagnoseverfahren. Eine zweite Einschätzung hilft Ihnen, die Diagnose zu überprüfen und die Kostenaufschlüsselung zu verstehen."
+          "reason": "Da keine Aufschlüsselung des Preises und keine dokumentierte Diagnosegrundlage vorliegen, kann ein zweites Angebot helfen, den Preis einzuordnen und die Diagnose zu überprüfen."
         },
         "safety_note": ""
       }
@@ -256,9 +246,9 @@
         "userRegion": "US"
       },
       "output": {
-        "understanding": "You have a 6-year-old Whirlpool refrigerator that isn't cooling properly, and ABC Appliance Repair has diagnosed a failed compressor and quoted you for a replacement. The document you uploaded shows more detail than the price you typed.",
+        "understanding": "You have a 6-year-old Whirlpool refrigerator that isn't cooling properly, and ABC Appliance Repair has diagnosed a failed compressor and quoted a total to replace it. There is a discrepancy between the price you typed and what the invoice actually shows.",
         "verdict": "SPECIFIC_CONCERNS_FOUND",
-        "verdict_explanation": "The document shows a total of $497.50, but you typed $450 — a $47.50 discrepancy that needs to be resolved before you approve anything. The itemization itself is reasonably clear (parts, labor hours, and a waived service call fee are all shown), so the main issue is confirming which total is actually being requested and understanding what diagnostic steps led to the compressor diagnosis.",
+        "verdict_explanation": "The document clearly shows a total of $497.50, but you typed $450 as the quoted price — a $47.50 difference that needs to be reconciled before you approve anything. The itemization on the invoice is otherwise readable and the line items do add up correctly to the document total. The invoice does not mention any warranty on parts or labor, which is a meaningful gap for a repair of this size.",
         "quote_summary": {
           "quoted_total": 497.5,
           "stated_diagnosis": "Compressor replacement needed",
@@ -266,7 +256,7 @@
           "parts": [
             "Compressor: $310.00"
           ],
-          "labor": "2.5 hours at an unstated rate, totaling $187.50",
+          "labor": "2.5 hours at an unstated hourly rate, totaling $187.50",
           "fees": [
             "Service call fee: $0.00 (waived if approved)"
           ],
@@ -275,8 +265,8 @@
         },
         "document_discrepancies": [
           {
-            "user_said": "450 USD",
-            "document_says": "TOTAL DUE: $497.50"
+            "user_said": "$450",
+            "document_says": "$497.50 — the invoice total is $47.50 higher than the price you typed"
           }
         ],
         "arithmetic_check": {
@@ -284,19 +274,23 @@
           "calculated_total": 497.5,
           "quoted_total": 497.5,
           "difference": 0,
-          "assessment": "The three line items on the document ($310.00 + $187.50 + $0.00) add up exactly to the $497.50 total shown on the document."
+          "assessment": "The three line items on the invoice ($310.00 parts + $187.50 labor + $0.00 service fee) add up exactly to the document total of $497.50."
         },
         "specific_concerns": [
           {
-            "concern": "The total you typed ($450) does not match the document total ($497.50).",
-            "why_it_matters": "You may have been given a different verbal quote, or there may be a misunderstanding about what is included — this needs to be clarified in writing before you approve the work."
+            "concern": "The total you typed ($450) does not match the invoice total ($497.50).",
+            "why_it_matters": "If you were verbally quoted $450 and the written invoice says $497.50, you need to know which figure you will actually be charged before approving the work."
+          },
+          {
+            "concern": "The invoice states no warranty on parts or labor.",
+            "why_it_matters": "A compressor replacement is a significant repair; knowing whether the part or the workmanship carries any guarantee tells you what recourse you have if something goes wrong after the repair."
           }
         ],
         "unknowns_that_matter": [
-          "No warranty is stated anywhere on the document — neither on parts nor labor.",
-          "The labor rate per hour is not shown (only the total labor charge), so you cannot verify whether 2.5 hours at that rate is consistent with what was discussed.",
-          "No diagnostic steps are documented — it is worth understanding what testing or inspection led to the compressor diagnosis before authorizing a major component replacement.",
-          "Whether the compressor part is OEM or aftermarket is not stated, which can affect quality and any manufacturer warranty on the part itself."
+          "Whether the $450 you were told verbally is the actual agreed price, or whether $497.50 is what you will be charged",
+          "What testing or inspection led to the compressor diagnosis — the invoice does not document this",
+          "Whether the listed compressor is OEM, aftermarket, or remanufactured, which affects how you compare this quote to others",
+          "Whether any warranty applies to the part or labor, and if so for how long"
         ],
         "second_quote": {
           "provided": false,
@@ -306,23 +300,23 @@
         },
         "repair_vs_replace": {
           "applies": true,
-          "assessment": "You don't have enough information yet to decide whether repair or replacement makes sense. To evaluate this, you would need to know the current cost of a comparable Whirlpool refrigerator and whether this unit has had prior repairs or reliability issues.",
+          "assessment": "At $497.50 for the repair, you would need to know the current replacement cost for a comparable Whirlpool refrigerator to decide whether repair or replacement makes better financial sense. That figure was not supplied.",
           "missing_information": [
             "Current replacement cost for a comparable Whirlpool refrigerator",
-            "Reliability history of this unit (any prior repairs or recurring issues)",
-            "Whether any other components are showing wear that might require additional repairs soon"
+            "Overall condition and reliability history of this unit",
+            "Whether any warranty would come with the repaired unit"
           ]
         },
         "questions_to_ask": [
-          "The invoice shows $497.50 but I have $450 noted from our conversation — can you confirm which total applies and send me the correct written quote?",
-          "What testing or inspection confirmed the compressor is the cause, as opposed to another component?",
-          "Is the compressor part OEM or aftermarket, and does it carry any parts warranty?",
-          "Is there a labor warranty, and if so, for how long?"
+          "The invoice shows $497.50 but I was given a figure of $450 — which total applies to my repair?",
+          "What testing or measurement led you to conclude the compressor needs replacing rather than another component?",
+          "Is the compressor OEM, aftermarket, or remanufactured, and what is the part number?",
+          "Does this repair carry any warranty on the part or the labor, and if so for how long?"
         ],
-        "what_to_say": "I want to move forward but I need to sort out a discrepancy first — the invoice shows $497.50 and I have $450 from our earlier conversation, so can you confirm the correct total in writing? I also want to understand what diagnostic steps confirmed the compressor is the issue before I approve the replacement, and whether there is any warranty on the parts and labor.",
+        "what_to_say": "I want to move forward, but I need to sort out two things before I approve. First, I was given a price of $450 but the invoice shows $497.50 — can you clarify which total is correct? Second, the invoice does not mention a warranty on the part or the work, so I would like to know what coverage comes with this repair before I sign off.",
         "second_opinion": {
           "assessment": "WORTH_CONSIDERING",
-          "reason": "The quote does not document what diagnostic steps were used to reach the compressor diagnosis. A second opinion would let you confirm whether that diagnosis is correct before committing to a major component replacement."
+          "reason": "A compressor is one of the most expensive components in a refrigerator. Getting a second shop to confirm the diagnosis before committing to a $497.50 repair is reasonable."
         },
         "safety_note": ""
       }
@@ -343,20 +337,20 @@
         "userRegion": "US"
       },
       "output": {
-        "understanding": "You have an estimate for a 2018 Honda Civic with a grinding noise when braking. The quote totals $1,708 and includes replacement of brake pads and rotors on all four corners, plus all four calipers and 4.5 hours of labor.",
+        "understanding": "You have a written estimate from Metro Auto Repair for a 2018 Honda Civic with a grinding noise when braking. The estimate totals $1,708.00 and proposes replacing all four brake pads, all four rotors, and all four calipers.",
         "verdict": "SPECIFIC_CONCERNS_FOUND",
-        "verdict_explanation": "The arithmetic checks out: the seven line items sum to exactly $1,708.00. Two concrete concerns are present. First, the quote recommends replacing all four calipers at $660 total with no documented inspection finding in the written estimate to explain why — calipers are not routine in a standard brake service. Second, the estimate includes a 24-hour approval deadline, which limits your time to ask follow-up questions or get a second opinion. The written estimate also contains no warranty language covering parts or labor.",
+        "verdict_explanation": "The arithmetic on the quote does not add up: the seven line items sum to $1,708.00, which matches the stated total, so no arithmetic error there. However, the 24-hour approval deadline is a concrete pressure tactic written into the quote itself, and the quote contains no warranty terms, no documentation of what inspection or measurement led to recommending four new calipers, and no tax or fees line — all of which are material gaps on a $1,708.00 brake job that includes the most expensive components on this estimate.",
         "quote_summary": {
           "quoted_total": 1708,
-          "stated_diagnosis": "Grinding noise when braking — no further diagnostic finding stated in the document",
-          "proposed_work": "Replace front brake pads, front brake rotors (2), rear brake pads, rear brake rotors (2), front calipers (2), and rear calipers (2); labor 4.5 hours",
+          "stated_diagnosis": "Grinding noise when braking — no specific diagnostic finding documented",
+          "proposed_work": "Replace front and rear brake pads, front and rear rotors (2 each), front and rear calipers (2 each)",
           "parts": [
-            "Front brake pads",
-            "Front brake rotors (2)",
-            "Rear brake pads",
-            "Rear brake rotors (2)",
-            "Front calipers (2)",
-            "Rear calipers (2)"
+            "Front brake pads: $89.00",
+            "Front brake rotors (2): $180.00",
+            "Rear brake pads: $79.00",
+            "Rear brake rotors (2): $160.00",
+            "Front calipers (2): $340.00",
+            "Rear calipers (2): $320.00"
           ],
           "labor": "4.5 hours at $120/hr = $540.00",
           "fees": [],
@@ -369,27 +363,23 @@
           "calculated_total": 1708,
           "quoted_total": 1708,
           "difference": 0,
-          "assessment": "The seven line items ($89 + $180 + $79 + $160 + $340 + $320 + $540) sum to exactly $1,708.00, matching the stated total."
+          "assessment": "The seven line items sum to exactly $1,708.00, matching the stated total — no arithmetic discrepancy."
         },
         "specific_concerns": [
           {
-            "concern": "All four calipers are included in the quote with no documented reason. The written estimate states only a grinding noise — it does not describe any caliper-specific finding (seized piston, uneven wear, fluid leak, etc.) that would support replacing $660 worth of calipers.",
-            "why_it_matters": "Calipers are not a routine part of a brake job; recommending all four without a documented reason is worth understanding before you approve, since it is the single largest parts line on the quote."
+            "concern": "The quote includes a written 24-hour deadline to approve: 'Please approve within 24 hours to lock in this price.'",
+            "why_it_matters": "A written time-pressure clause on a brake repair of this scope limits your ability to get a second opinion or ask follow-up questions — and brakes are a category where getting things right matters for your safety."
           },
           {
-            "concern": "The estimate includes a 24-hour approval deadline to lock in the price.",
-            "why_it_matters": "A tight deadline limits your ability to ask follow-up questions, get a second opinion, or simply think it over — which matters more when the quote includes components beyond a standard brake service."
-          },
-          {
-            "concern": "No warranty of any kind is stated on the written estimate.",
-            "why_it_matters": "With $1,708 in work and six new components, having nothing in writing about parts or labor coverage leaves you unprotected if something fails shortly after the repair."
+            "concern": "The quote does not include warranty terms for the parts or labor.",
+            "why_it_matters": "On a $1,708.00 job replacing six major brake components, you have nothing in writing about what happens if a part fails or the work needs to be redone."
           }
         ],
         "unknowns_that_matter": [
-          "What specific inspection finding led to recommending all four calipers — no diagnostic note appears in the written estimate.",
-          "Whether the parts are OEM, OEM-equivalent, or aftermarket — this affects quality and price comparisons.",
-          "Whether a diagnostic fee was charged and whether it is included in or separate from the quoted total.",
-          "Whether there is any warranty on parts or labor, and if so, what it covers and for how long."
+          "What inspection or measurement led to recommending all four calipers? Calipers are the most expensive items on this estimate ($660.00 combined). The quote does not document the finding, so you cannot yet judge whether the recommendation fits what was actually observed.",
+          "Are the parts OEM, aftermarket, or remanufactured? This affects what you can compare if you get another quote.",
+          "No tax is shown. Depending on your location, tax on parts could add meaningfully to the final bill — worth confirming whether the $1,708.00 is truly all-in.",
+          "Is there a diagnostic fee, and if so, is it included in the $540.00 labor charge or would it be added separately?"
         ],
         "second_quote": {
           "provided": false,
@@ -403,17 +393,17 @@
           "missing_information": []
         },
         "questions_to_ask": [
-          "What specific condition did you find on the calipers that makes replacing all four necessary — can you show me or describe what you saw?",
-          "Are the parts OEM, OEM-equivalent, or aftermarket?",
-          "What warranty do you provide on parts and labor for this repair, and can you put that in writing on the estimate?",
-          "Is the 24-hour deadline firm, or can I have until tomorrow afternoon — I want to make sure I understand the scope before I approve?"
+          "What did the inspection show on the calipers specifically — what condition or measurement led to recommending all four be replaced?",
+          "What warranty do you provide on the parts and labor for this job?",
+          "Are the parts OEM, aftermarket, or remanufactured?",
+          "Is the $1,708.00 the final amount I would pay, or does tax get added on top?"
         ],
-        "what_to_say": "I want to approve this, but I have a few questions before I do. The caliper replacement is the part I am least clear on — can you walk me through what you found that makes replacing all four necessary? I would also like to know what warranty comes with the work, and whether you can add that to the written estimate. Once I have those answers I can move quickly.",
+        "what_to_say": "I want to understand the caliper recommendation before I approve this. Can you tell me what you found on inspection that showed all four calipers need replacing? I also did not see any warranty terms on the estimate — can you put that in writing before I sign off? And I need a bit more time than 24 hours to look this over, so I will get back to you.",
         "second_opinion": {
           "assessment": "WORTH_CONSIDERING",
-          "reason": "The caliper recommendation adds $660 to what would otherwise be a straightforward brake job, and the written estimate provides no documented finding to support it — a second shop can tell you whether their inspection agrees with that diagnosis."
+          "reason": "The estimate includes a pressure deadline, the caliper recommendation lacks documented findings to evaluate, and the caliper line items account for $660.00 of the total — enough that an independent inspection of the brake system would let you compare the findings and recommendations against what Metro is proposing."
         },
-        "safety_note": "A grinding noise when braking warrants prompt inspection and diagnosis. Until you have had the brakes evaluated and repaired, avoid highway speeds and situations requiring hard stops."
+        "safety_note": "Until the repair is done or inspected by a qualified technician, pay attention to how the brakes feel and respond. If the grinding worsens, the pedal becomes soft or spongy, or braking feels significantly reduced, do not drive the vehicle and have it inspected immediately."
       }
     }
   ]

@@ -89,6 +89,54 @@ test calls flagged down to occasional (1-2 fields, mixed real/false-positive), a
 unlike PronounceItRight's hedged-into-uselessness failure. Kept the guard; this is a real
 enforcement layer here, not a cosmetic declaration.
 
+## V2.1 (2026-09-07, same day) — a real quote exposed three residual leaks + a currency bug
+
+The owner ran a genuine UK MOT quote through the tool. The audit of what the quote said was
+solid, but three reasoning leaks survived the V2 rewrite, all of the same shape: general
+knowledge quietly becoming case-specific analysis.
+
+1. **General repair knowledge → case-specific concern.** The quote listed one rear shock
+   absorber; the output elevated that to a `specific_concern` because "the quote doesn't
+   explain the other side," and the rendered page went further and predicted a future outcome
+   nobody established: "if both are worn, doing only one now could mean a second repair visit
+   and bill within months." The visitor supplied no evidence the other shock is worn, that
+   shocks must be replaced in pairs, or that another repair would happen "within months." Fixed:
+   `specific_concerns` now requires passing an explicit test — "what positive evidence supplied
+   by the visitor or the quote makes this a concern?" — and future-outcome predictions are
+   banned outright regardless of how plausible the mechanical relationship is.
+2. **Absence still read as suspicion.** The verdict said additional items were found
+   "opportunistically" and that it's hard to know if each is "equally well-founded" without
+   documented diagnostic checks — implying a step wasn't performed because the quote doesn't
+   mention it, and implying finding more problems during an inspection is itself concerning.
+   Both are the same "absence ≠ evidence" error the V2 rewrite thought it had already fixed for
+   `specific_concerns`, just recurring in `verdict_explanation` and `second_opinion.reason`.
+   Fixed with two new explicit prompt rules (a quote is a summary, not a transcript; finding more
+   during an inspection is neutral by default) plus matching guard prohibitions
+   (`absence_implies_step_was_skipped`, `additional_finding_called_suspicious`).
+3. **OEM vs. aftermarket framed as a quality claim.** The prompt asked about part type and said
+   it affects "quality comparison" — implying a hierarchy neither category actually has by
+   default. Fixed: part type is now framed strictly as a comparison variable ("knowing what
+   parts each quote uses helps you compare equivalent work"), never a quality verdict.
+4. **Currency bug (not an LLM problem, a consistency one)**: the frontend always renders numbers
+   in the visitor's actual currency (`sym`, computed once from `userCurrency`), but the model's
+   own prose had no comparably strict instruction — it would pick up British vocabulary in the
+   free-text description (MOT, tyres) and write `£1,290` in some sentences while the rest of the
+   response (and the frontend) used `$1,290`. Not a frontend bug (the frontend was already
+   architecturally consistent, one `sym` used everywhere) — fixed at the source: an explicit
+   `CURRENCY` prompt rule (use only the given currency for every figure; regional vocabulary in
+   the description is not a currency signal; always attach the symbol, never a bare number) plus
+   a reminder at the very top of the user prompt and an `inconsistent_currency` guard
+   prohibition.
+
+**Verified live on the reported scenario, 3 consecutive calls**: `specific_concerns` went from
+a false positive (2 invented concerns) to correctly empty every time; currency stayed `$`
+throughout every field on every run; the guard's flag rate dropped from FAIL(3)/FAIL(5) on the
+first two calls (still landing on a good repaired output both times) to a clean PASS(0) on the
+third once the prompt fully absorbed the new rules. The model also surfaced a genuinely useful
+NEW catch entirely on its own, without being asked for it: "the MOT failure was on one disc but
+the quote covers all four corners" — filed correctly as an unknown worth asking about, not
+promoted into an invented diagnosis.
+
 ## DO NOT silently reverse
 
 1. The verdict enum and its definitions — `LOOKS_STRAIGHTFORWARD` must never be treated as "fair
@@ -105,6 +153,14 @@ enforcement layer here, not a cosmetic declaration.
    violation" exemptions without re-testing for the false-positive regression they fixed.
 7. `itemAge` shown for all repair types now, not just appliance — `repair_vs_replace.applies` is
    a model decision, not a hardcoded category gate.
+8. The `specific_concerns` "positive evidence" test (V2.1) — a missing detail, an undocumented
+   step, an additional finding, or general repair knowledge about how a component is typically
+   handled are NEVER by themselves a concern; they route to `unknowns_that_matter`/
+   `questions_to_ask`.
+9. The ban on predicting future repair consequences (V2.1) — no "could mean a second bill,"
+   no timeframe for deterioration, regardless of how plausible the mechanical link is.
+10. The CURRENCY rule (V2.1) — every monetary figure in every field uses the one given currency,
+    with its symbol attached, regardless of regional vocabulary in the free-text description.
 
 ## Known / verified
 
