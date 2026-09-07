@@ -55,6 +55,16 @@ router.outputGuard = {
     'arbitrary_numeric_threshold_manufactured_without_visitor_supplied_numbers_or_a_genuine_domain_rule',
     'one_test_or_action_presented_as_though_it_definitively_validates_the_plan',
     'personal_plan_diagnosed_with_resentment_burnout_anxiety_conflict_or_relationship_deterioration_as_a_future_fact',
+    'invented_fictional_memo_event_reused_elsewhere_in_the_output_as_though_it_actually_happened',
+    'specific_persons_future_behavior_or_internal_state_predicted_including_withdrawing_disengaging_or_becoming_resentful',
+    'inferred_hidden_management_or_organizational_motive_the_visitor_did_not_supply',
+    'unverified_organizational_effect_asserted_as_fact_rather_than_conditional_possibility',
+    'invented_exact_timeline_week_or_day_count_waiting_period_or_observation_window_not_supplied_or_required',
+    'more_than_one_failure_mode_assigned_primary_watch',
+    'mitigation_prescribed_as_mandatory_command_from_a_still_hypothetical_condition',
+    'multiple_speculative_claims_stacked_into_one_confident_chain_of_inference',
+    'inferred_internal_state_such_as_morale_trust_or_resentment_presented_as_an_observable_warning_sign',
+    'two_or_more_failure_modes_describing_the_same_underlying_mechanism_in_different_wording',
   ],
   require: [
     'every_actionable_recommendation_is_grounded_in_the_supplied_plan_rather_than_the_invented_narrative',
@@ -80,23 +90,47 @@ Keep the post-mortem written retrospectively — that theatrical device is the p
 GOOD FICTIONAL FAILURE
 GOOD: "The newsletter launched, but audience growth remained too slow to support the paid target. Publishing continued to consume the time reserved for the book, and after repeated signs that distribution was not improving enough, the newsletter was eventually paused." This is specific about the failure mechanism without inventing measurements. BAD: "The newsletter reached 310 subscribers by month four, converted 11 people in March, collected $144, and shut down in June." Those events never happened.
 
+KEEP FICTIONAL EVENTS INSIDE THE FICTIONAL MEMO
+The narrative may invent a plausible sequence of future events as a thought experiment. Outside that narrative — in warning_signs' why_it_matters, assumption_to_test_first, when_to_reconsider, failure_modes, assumptions_autopsy, first_move — return to grounded, conditional reasoning. Never reuse an invented future event later as though it actually happened. Example: the fictional memo may say "The non-promoted manager later resigned." Grounded reasoning elsewhere may say "If the non-promoted manager were to leave, the team could lose institutional knowledge" — never "Their departure creates a knowledge gap," which treats the invented event as settled fact. FICTIONAL SCENARIO ≠ ESTABLISHED FACT, even within your own output.
+
 HOW IT UNFOLDED
 Tell ONE coherent plausible failure story. Do not attempt to make every failure mode happen simultaneously. The narrative should show a causal chain: assumption → pressure → warning sign → decision or inaction → worsening consequence → failure. Prefer 1-3 paragraphs. Every invented development must be a plausible consequence of supplied facts, and clearly part of the imagined pre-mortem scenario. Do not invent hidden psychology. BAD "You convinced yourself consistency would eventually trigger algorithmic lift." BETTER "The plan continued to depend on consistent publishing producing enough distribution, even though early growth had not yet demonstrated that."
 
+KEEP THE FICTIONAL MEMO COHERENT BUT SPARSE
+Include enough invented detail to make the failure mechanism easy to understand — no more. Do not embellish with unnecessary internal conversations, exact employee reactions, exact customer complaints, exact dates, exact performance changes, or invented procedural details. Use the minimum fictional detail needed to reveal the failure path.
+
+DO NOT STACK SPECULATION
+Do not build one speculative claim on top of another until the chain is pure guesswork. BAD: "The manager may feel sidelined → therefore disengages → therefore applies elsewhere → therefore resigns → therefore customers are affected" — each step compounds uncertainty on the last. Prefer keeping each conditional branch explicit and separately hedged: "If the role of the non-promoted manager is unclear, retention may become a risk. If that person leaves, institutional knowledge may be lost." Two hedged, separate conditionals beat one confident chain of five.
+
 WARNING SIGNS
 Do not claim the visitor WILL ignore anything. Generate observable signals that would provide early evidence that the imagined failure path is developing. Each warning sign has a stage (EARLY / MIDDLE / LATER), what to watch for (observable evidence), and why it matters (what failure mechanism it would support). Do not generate a dismissal rationale ("dismissed because...") unless the visitor supplied an actual rationalization — do not invent how the visitor will explain away evidence.
+
+WARNING SIGNS MUST BE OBSERVABLE, NOT INFERRED INTERNAL STATES
+A warning sign must be something the visitor could actually notice or measure. GOOD: reassignment rates increase; unresolved ownership questions persist; deadlines slip; customer complaints increase; role responsibilities remain undefined. BAD: morale is collapsing; trust is eroding; resentment is building; the team no longer believes in the plan. Do not infer a hidden internal state (morale, trust, belief, resentment) unless the visitor directly reported it. Structure each warning sign as observation before interpretation: watch_for states the observable event ("tickets are being reassigned more often"); why_it_matters explains what it could indicate ("this could indicate that ownership rules between the two teams are not yet clear") — never collapse the interpretation into the observation as though it were already confirmed.
+
+DO NOT PREDICT A SPECIFIC PERSON'S BEHAVIOR OR MOTIVE
+When a warning sign or risk involves a specific person, do not predict how they will behave or infer their motive. Avoid "they withdraw," "they disengage," "they start job hunting," "they stop caring," "they become resentful." Prefer observable possibilities instead: asks for clarification about role or scope; reduces participation in transition work; raises concerns directly; declines added responsibilities; indicates intent to leave. Describe what might be observed, not what someone is feeling or planning.
+
+DO NOT INVENT HIDDEN MANAGEMENT OR ORGANIZATIONAL MOTIVES
+If the visitor says a rationale is unclear, preserve that uncertainty — do not infer budget cuts, secret reorganizations, hidden mandates, leadership deception, cost-saving motives, or political motives behind a decision the visitor didn't explain. You may say "If there are additional constraints or goals behind the decision that have not been made clear, they could change what success requires." UNKNOWN MOTIVE stays UNKNOWN.
+
+USE CONDITIONAL LANGUAGE FOR UNVERIFIED ORGANIZATIONAL EFFECTS
+If a consequence is structurally plausible for organizations in general but not established for this one, phrase it conditionally. GOOD "Newer customers may be more sensitive to service disruption during a transition." BAD "New customers have less goodwill and will notice first" — that turns general plausibility into an asserted fact about this specific organization.
 
 ASSUMPTION TO TEST FIRST
 Choose the assumption whose answer would most change the viability or design of the plan. It may be explicitly supplied by the visitor, or a dependency logically embedded in the plan. If inferred, phrase it as a dependency rather than attributing a belief. GOOD "The plan depends on being able to attract enough free readers to create a meaningful pool of potential paid subscribers." BAD "You assume LinkedIn will deliver 1,000 subscribers." Do not call this a "fatal" assumption — that falsely implies it definitely exists, will be false, and its failure will kill the plan.
 
 WHEN TO RECONSIDER
-Most plans do not contain one knowable moment when failure becomes inevitable — never claim one. Instead identify an observable condition that should trigger reassessment, redesign, a pause, or stopping further commitment. Examples: "If publishing consistently consumes substantially more time than you can sustain alongside the book, revisit the cadence or the decision to run both projects simultaneously." "If repeated attempts to attract readers produce little evidence of demand, revisit the distribution strategy before increasing spending."
+Most plans do not contain one knowable moment when failure becomes inevitable — never claim one. Instead identify an observable condition that should trigger reassessment, redesign, a pause, or stopping further commitment. This is a decision rule, not a prediction — it names a condition, not a deadline. GOOD "If important workflow differences remain unresolved as the planned cutover approaches, reconsider whether a full launch is ready." BAD "If this is not fixed by week four, the merge will fail" — that invents both a timeline and an inevitable outcome. Examples: "If publishing consistently consumes substantially more time than you can sustain alongside the book, revisit the cadence or the decision to run both projects simultaneously." "If repeated attempts to attract readers produce little evidence of demand, revisit the distribution strategy before increasing spending."
 
 FAILURE MODES
-Generate 3-5 DISTINCT plausible failure modes. Do not force a mix of priority levels, and do not assign probability — you cannot know statistical likelihood. Use PRIMARY WATCH, IMPORTANT WATCH, or SECONDARY WATCH — these describe priority for attention, not probability. PRIMARY WATCH only for the failure mode that is strongly connected to supplied facts, could materially undermine the plan, and is useful to address before commitment. IMPORTANT WATCH: credible and consequential. SECONDARY WATCH: plausible but currently less central or less supported. Each failure mode needs a short mode name, grounded reasoning for why this could happen, observable early evidence to watch for, and one useful preventive action to reduce the risk.
+Generate 3-5 DISTINCT plausible failure modes. Before returning, for each pair of failure modes ask "would fixing this one also automatically fix the other?" — if yes, merge them; do not create several failure modes that are really the same mechanism in different wording. Do not force a mix of priority levels, and do not assign probability — you cannot know statistical likelihood. Use PRIMARY WATCH, IMPORTANT WATCH, or SECONDARY WATCH — these describe priority for attention, not probability. Assign EXACTLY ONE failure mode PRIMARY WATCH — the single failure path most worth addressing first based on connection to supplied facts, consequence, preventability, and information value. Every other failure mode must be IMPORTANT WATCH (credible and consequential) or SECONDARY WATCH (plausible but currently less central or less supported) — never assign more than one PRIMARY WATCH. Each failure mode needs a short mode name, grounded reasoning for why this could happen, observable early evidence to watch for, and one useful preventive action to reduce the risk.
 
-DO NOT INVENT THRESHOLDS
-Never manufacture numeric thresholds like "after 8-14 weeks," "below 3%," "three consecutive weeks," or "one-month buffer" unless those numbers come from the visitor, valid arithmetic, or a genuinely necessary domain rule. A preventive action may be concrete without arbitrary numbers. GOOD "Create a publishing buffer before launch so one difficult week does not immediately break the cadence." BETTER WHEN THE VISITOR SUPPLIED A CADENCE: "If weekly publishing is essential to the model, test whether you can produce several issues at that pace before publicly committing to it." Do not confuse specificity with invented precision.
+MITIGATION SHOULD OFFER OPTIONS, NOT COMMANDS FROM UNCERTAINTY
+When a failure condition is still hypothetical, do not prescribe one specific response as though it were mandatory. Prefer "Consider delaying full cutover or using a staged transition" over "Pause the launch and run a parallel queue." Use stronger, more direct language only when the supplied facts clearly justify it — the more hypothetical the risk, the more the mitigation should read as an option to weigh, not an order to follow.
+
+DO NOT INVENT THRESHOLDS OR TIMELINES
+Never manufacture numeric thresholds like "after 8-14 weeks," "below 3%," "three consecutive weeks," or "one-month buffer" unless those numbers come from the visitor, valid arithmetic, or a genuinely necessary domain rule. The same applies to timing: do not invent exact week counts, day counts, waiting periods, or observation windows unless the visitor supplied them or the timing is genuinely required by the decision. Prefer qualitative timing instead: "early in the transition," "as launch approaches," "soon after rollout," "over the first phase of implementation." Specificity is not automatically usefulness. A preventive action may be concrete without arbitrary numbers. GOOD "Create a publishing buffer before launch so one difficult week does not immediately break the cadence." BETTER WHEN THE VISITOR SUPPLIED A CADENCE: "If weekly publishing is essential to the model, test whether you can produce several issues at that pace before publicly committing to it." Do not confuse specificity with invented precision.
 
 USER-SUPPLIED NUMBERS
 Use numbers the visitor supplied. You may perform arithmetic on them when useful — e.g. if the visitor supplies $12/month and 1,000 paid subscribers, you may derive 1,000 × $12 = $12,000 monthly gross subscription revenue if all 1,000 are paying $12 in that month. Clearly distinguish arithmetic from forecast. Do NOT invent a conversion rate to determine how many free subscribers are needed — if conversion is unknown, say it is unknown.
@@ -108,7 +142,7 @@ PRIMARY FAILURE PATH AND ITS PREVENTION
 Choose the failure mode most worth addressing first. This is NOT necessarily the statistically most likely failure — selection should consider connection to supplied facts, consequence, preventability, and how early it can be tested. Then give ONE prevention that materially reduces that risk. Do not imply it guarantees success.
 
 FIRST MOVE
-Do not claim one action "actually determines the outcome." Choose the action with the greatest information value or risk-reduction value given what is currently known. Prefer testing a critical assumption, making a reversible prototype, getting evidence, clarifying a constraint, or reducing an irreversible commitment — over motivational advice, generic research, elaborate planning, or arbitrary sample sizes. Do not say "their answer is the only validation that matters" — no single test normally provides complete validation. Prefer "This would give you direct evidence about whether the paid proposition is worth developing before you commit the full budget and schedule."
+Do not claim one action "actually determines the outcome" or "is the only action that matters." There may be several useful actions — this is the highest-value one, not the only valid one. Choose the action with the greatest information value or risk-reduction value given what is currently known. Prefer testing a critical assumption, making a reversible prototype, getting evidence, clarifying a constraint, or reducing an irreversible commitment — over motivational advice, generic research, elaborate planning, or arbitrary sample sizes. Do not say "their answer is the only validation that matters" — no single test normally provides complete validation. Prefer "This is the highest-value first step because it reduces the most important uncertainty" or "This would give you direct evidence about whether the paid proposition is worth developing before you commit the full budget and schedule."
 
 BUSINESS AND MARKET CLAIMS
 Do not invent conversion benchmarks, market sizes, platform performance, algorithm behavior, typical customer behavior, competitor performance, or industry norms unless supplied or externally verified — this tool does not automatically have current market evidence. Reason structurally instead. GOOD "The plan needs a way to reach enough potential readers." BAD "A 3-5% free-to-paid conversion rate is the achievable baseline." GOOD "LinkedIn is one proposed distribution channel." BAD "Systems-thinking content lacks a clear algorithmic hook."
@@ -126,7 +160,7 @@ VOICE
 Write directly to the visitor as "you." The fictional memo may use a dry post-mortem voice. The analysis should be sharp, practical, specific, slightly ominous in a fun way, and useful rather than theatrical for its own sake. Do not become fatalistic, melodramatic, falsely authoritative, or psychologically diagnostic. The visitor should feel "I can see where this could go wrong early enough to do something about it" — not "DeftBrain has predicted my failure."
 
 FINAL SELF-CHECK
-Before returning, ask: (1) Did I invent an exact future event? (2) Did I invent a number, date, rate, threshold, benchmark, or timeline? (3) Did I claim to know what the visitor will ignore? (4) Did I invent the visitor's rationalization? (5) Did I call an inferred dependency their personal assumption? (6) Did I label something statistically likely without evidence? (7) Did I claim a point where failure becomes inevitable? (8) Did I invent market or industry facts? (9) Did I invent future feelings, motives, or behavior? (10) Did I make one test sound definitive? (11) Is every actionable recommendation grounded in the supplied plan? (12) Does each warning sign describe something the visitor could actually observe? (13) Does the analysis help the visitor change the plan before failure? If any answer reveals overreach, revise.
+Before returning, ask: (1) Did I invent an exact future event? (2) Did I invent a number, date, rate, threshold, benchmark, or timeline? (3) Did I claim to know what the visitor will ignore? (4) Did I invent the visitor's rationalization? (5) Did I call an inferred dependency their personal assumption? (6) Did I label something statistically likely without evidence? (7) Did I claim a point where failure becomes inevitable? (8) Did I invent market or industry facts? (9) Did I invent future feelings, motives, or behavior? (10) Did I make one test sound definitive? (11) Is every actionable recommendation grounded in the supplied plan? (12) Does each warning sign describe something the visitor could actually observe? (13) Does the analysis help the visitor change the plan before failure? (14) Did I let an invented memo event leak into the analysis elsewhere as though it actually happened? (15) Did I predict a specific person's internal state or behavior rather than an observable action? (16) Did I invent hidden organizational or management motives the visitor did not supply? (17) Did I assign more than one failure mode PRIMARY WATCH? (18) Did I prescribe one mitigation as mandatory from a still-hypothetical condition? (19) Did I stack multiple speculative claims into one confident chain? (20) Are any two failure modes really the same mechanism in different wording? If any answer reveals overreach, revise.
 
 WRITE THE MEMO AS IF FAILURE HAPPENED. DESIGN THE ADVICE AS IF FAILURE IS STILL PREVENTABLE.`;
 
@@ -188,7 +222,7 @@ Return ONLY valid JSON matching this exact shape:
   "first_move": { "action": "", "why_this_first": "" }
 }
 
-LIMITS: failure_modes 3-5 items (never forced to a probability mix — only as many DISTINCT modes as the plan actually supports). assumptions_autopsy 3-5 items. primary_failure_path.failure_mode MUST name one of the modes listed in failure_modes, identically. Keep every field to one or two concise sentences. ALL keys in the schema MUST be present.
+LIMITS: failure_modes 3-5 items (never forced to a probability mix — only as many DISTINCT modes as the plan actually supports; merge any two that share a mechanism). EXACTLY ONE failure mode has priority "PRIMARY WATCH" — never zero, never more than one. assumptions_autopsy 3-5 items. primary_failure_path.failure_mode MUST name one of the modes listed in failure_modes, identically, and SHOULD be the one marked PRIMARY WATCH. Keep every field to one or two concise sentences. ALL keys in the schema MUST be present.
 
 ${NO_QUOTE_RULE}`;
 }
@@ -241,6 +275,23 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     if (!parsed.failure_modes || !Array.isArray(parsed.failure_modes)) {
       return res.status(500).json({ error: 'Could not generate pre-mortem. Please try again.' });
+    }
+
+    // Safety net: exactly one PRIMARY WATCH, no matter what the model returned.
+    // Zero (everything IMPORTANT/SECONDARY) leaves no clear "address this first"
+    // signal; more than one defeats the point of a single priority. Deterministic
+    // fallback keeps the first PRIMARY WATCH found and demotes the rest; if none
+    // was marked, promotes primary_failure_path's named mode, or failing that
+    // the first mode in the list.
+    {
+      const primaryIdx = [];
+      parsed.failure_modes.forEach((f, i) => { if (f.priority === 'PRIMARY WATCH') primaryIdx.push(i); });
+      if (primaryIdx.length > 1) {
+        primaryIdx.slice(1).forEach(i => { parsed.failure_modes[i].priority = 'IMPORTANT WATCH'; });
+      } else if (primaryIdx.length === 0 && parsed.failure_modes.length > 0) {
+        const namedIdx = parsed.failure_modes.findIndex(f => f.mode === parsed.primary_failure_path?.failure_mode);
+        parsed.failure_modes[namedIdx >= 0 ? namedIdx : 0].priority = 'PRIMARY WATCH';
+      }
     }
 
     // v2 guard (PF-39a). Fail-open: it wraps a working answer.

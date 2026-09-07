@@ -11,7 +11,7 @@ fetch-abandon ceiling — hence the split (see the 2026-08-08 parallel-split-pat
 This split is also load-bearing for a second reason: the prevention half never sees the memo
 half's invented fictional narrative, so an invented competitor or date from the story cannot
 leak into an actionable step — structural enforcement, not just an instruction. **Golden:**
-`audit/pre-mortem-golden-sample.json` (2 cases, both real verified live runs). Verify:
+`audit/pre-mortem-golden-sample.json` (3 cases, all real verified live runs). Verify:
 `npm run check:golden pre-mortem`.
 
 ## V2 rewrite (2026-09-07) — from fabricated evidence to disciplined fiction
@@ -83,14 +83,60 @@ USER-SUPPLIED NUMBERS rule working as intended, not a regression of the false-pr
 not mistake a visitor-supplied-number derivation for invented precision when eyeballing future
 runs.
 
+## Second correction pass (2026-09-07) — general LLM discipline, 9 more overreach patterns
+
+A live org-merge test (two support teams merging; one manager not selected to lead) surfaced 9
+more overreach patterns beyond the initial rewrite, all fixed and re-verified live (golden case 3):
+
+1. **Fictional-event leakage.** The memo may invent "the non-promoted manager later resigned" —
+   but nothing outside the memo (`warning_signs.why_it_matters`, `assumption_to_test_first`,
+   `when_to_reconsider`, `failure_modes`, `assumptions_autopsy`, `first_move`) may treat that
+   invented event as settled fact. Fixed with an explicit containment rule + worked example.
+2. **Predicted personal behavior/internal state.** Banned "they withdraw," "they disengage,"
+   "they become resentful" as asserted fact — replaced with observable possibilities ("reduces
+   participation," "raises concerns directly," "indicates intent to leave").
+3. **Unverified organizational effects stated as fact** (not just personal-plan psychology) —
+   "newer customers may be more sensitive" not "new customers have less goodwill and will notice
+   first."
+4. **Invented exact timelines** (week/day counts, observation windows) — extended the existing
+   "DO NOT INVENT THRESHOLDS" rule to timing generally; prefer "early in the transition," "as
+   launch approaches" over "by week four."
+5. **More than one PRIMARY WATCH.** Added both a prompt rule (exactly one) AND a **code-side
+   safety net** in the route handler: if the model returns zero or multiple PRIMARY WATCH
+   entries, deterministically demotes extras or promotes `primary_failure_path`'s named mode (or
+   the first mode) to PRIMARY WATCH. Same defense-in-depth pattern as the Decision Prism
+   matrix-rating coercion — see [[deftbrain-plottwist-architecture]].
+6. **Mandatory-sounding mitigation from a hypothetical condition.** "Pause the launch and run a
+   parallel queue" → "Consider delaying full cutover or using a staged transition" when the
+   triggering condition is still hypothetical; stronger direction reserved for conditions the
+   supplied facts already confirm.
+7. **Inferred hidden management/organizational motives** (budget cuts, secret reorgs, leadership
+   deception) never supplied by the visitor — UNKNOWN MOTIVE stays UNKNOWN.
+8. **`first_move` overclaiming exclusivity.** No more "the only action that matters" — reframed
+   as the highest-value step, not the only valid one.
+9. **Failure-mode distinctness + observation-before-interpretation.** Added a merge-test
+   ("would fixing this one also fix the other?") for failure modes, and required warning signs
+   to state the observable event before the interpretation, never collapsing morale/trust/
+   resentment-style inferred states into something "observed."
+
+`FINAL SELF-CHECK` extended to 20 items, `outputGuard.prohibit` gained 8 matching entries.
+
 ## DO NOT silently reverse
 - `failure_modes[].priority` stays qualitative (`PRIMARY WATCH|IMPORTANT WATCH|SECONDARY
   WATCH`) — never reintroduce a probability enum or numeric likelihood.
-- `warning_signs` never claims the visitor WILL ignore something, and never invents a dismissal
-  rationale the visitor didn't supply.
+- Exactly one `PRIMARY WATCH` — both the prompt rule and the code-side safety net that corrects
+  zero or multiple PRIMARY WATCH entries after parsing.
+- `warning_signs` never claims the visitor WILL ignore something, never invents a dismissal
+  rationale the visitor didn't supply, and states the observable event before the interpretation
+  (never an inferred internal state like morale/trust/resentment presented as observed).
 - Dependency phrasing: "the plan depends on X," never "you assume X," for anything inferred
   rather than explicitly stated (`assumption_to_test_first`, `assumptions_autopsy`).
-- `when_to_reconsider` never claims a specific point where failure becomes inevitable.
+- `when_to_reconsider` never claims a specific point where failure becomes inevitable, and never
+  invents an exact timeline (week/day count) for the trigger condition.
+- No predicted personal behavior/internal state for a specific person, and no inferred hidden
+  organizational/management motive the visitor didn't supply.
+- An invented fictional-memo event never reappears elsewhere in the output as settled fact.
+- Mitigations for a still-hypothetical condition read as options ("consider"), not commands.
 - The parallel-split real-world-boundary architecture — the prevention half must never see the
   memo half's invented narrative.
 - False precision (exact counts, dates, rates, named entities) stays prohibited everywhere

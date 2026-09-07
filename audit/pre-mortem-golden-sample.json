@@ -4,7 +4,7 @@
     "generated": "2026-09-07",
     "model": "claude-sonnet-4-6 (MODELS.SMART), parallel split: pre-mortem-memo (max_tokens 2500) + pre-mortem-prevention (max_tokens 3000)",
     "baseline_commit": "premortem-v2",
-    "how_to_regression_diff": "Re-run (npm run check:golden pre-mortem). Diff for QUALITY not exact match: HTTP 200, no truncation, both parallel calls returned. V2 REWRITE (2026-09-07) disciplined the fictional-post-mortem conceit that previously licensed fabricating an entire future history as though it happened: the v1 golden sample invented 310 subscribers, 11 conversions, EUR144 revenue, 3.5% conversion, a March campaign, specific churn percentages, and named competitors — then built warning signs, probability labels ('high'/'medium'/'low'), and thresholds on top of those inventions. FIELD RENAME (same six-part structure, disciplined): warning_signs_ignored[].{when,sign,why_it_was_dismissed} -> warning_signs[].{stage: EARLY|MIDDLE|LATER, watch_for, why_it_matters} (never claims the visitor WILL ignore anything; no invented dismissal rationale unless visitor supplied one); the_fatal_assumption -> assumption_to_test_first.{dependency, why_it_matters, what_is_known} (phrased as 'the plan depends on X', never 'you assume X', when the dependency was inferred rather than stated); point_of_no_return -> when_to_reconsider.{condition, response} (most plans have no single moment failure becomes inevitable -- an observable condition that should trigger reassessment, never a claimed point of no return); failure_modes[].probability ('high'|'medium'|'low', A PLAIN ENGLISH ENUM THE MODEL CHOSE AS IF IT KNEW STATISTICAL LIKELIHOOD, DO NOT REINTRODUCE) -> failure_modes[].priority ('PRIMARY WATCH'|'IMPORTANT WATCH'|'SECONDARY WATCH' -- priority for attention, never probability); failure_modes[].{description,trigger,early_warning} -> failure_modes[].{why_this_could_happen,watch_for,reduce_the_risk}; the_most_likely -> primary_failure_path.{failure_mode,one_prevention} (failure_mode must name one of the listed failure_modes identically); assumptions_autopsy[].{assumption,how_to_verify,risk_if_wrong} -> assumptions_autopsy[].{dependency,what_we_know,how_to_test,if_wrong} (phrased as 'the plan depends on X', not 'you assume X'); the_one_thing -> first_move.{action,why_this_first} (never claims one test 'actually determines the outcome'). THE CENTRAL FIX: false precision is now prohibited everywhere except visitor-supplied numbers and valid arithmetic on them -- verified live in BOTH cases below. Case 1 (EN, custom plan with NO numeric assumptions supplied) invents zero exact metrics anywhere in the output -- every warning sign and failure mode stays qualitative ('growth stayed modest', not 'X subscribers by month N'). Case 2 (DE, uses the catalog's own pm_ex_plan/pm_ex_assumptions example, which DOES supply '1,000 paid subscribers' and '~3-5% conversion' as visitor assumptions) correctly performs arithmetic on those SUPPLIED numbers (deriving a required free-list size of 20,000-33,000) rather than inventing its own conversion rate or subscriber count -- this is the USER-SUPPLIED NUMBERS rule working as intended, not a regression of the false-precision fix. Real-world boundary kept from v1 and re-verified: the prevention half (failure_modes/assumptions_autopsy/first_move) never references the invented fictional narrative's specifics, because it is generated in a separate parallel call that never sees the memo half's content -- structural, not just instructional. DO NOT reverse: qualitative failure_modes.priority (never probability); warning_signs never claiming the visitor will ignore something; assumption/dependency phrasing ('the plan depends on X'); when_to_reconsider never claiming a point of inevitable failure; the parallel-split real-world-boundary architecture; false-precision prohibition except on visitor-supplied numbers and arithmetic on them."
+    "how_to_regression_diff": "Re-run (npm run check:golden pre-mortem). Diff for QUALITY not exact match: HTTP 200, no truncation, both parallel calls returned. V2 REWRITE (2026-09-07) disciplined the fictional-post-mortem conceit that previously licensed fabricating an entire future history as though it happened: the v1 golden sample invented 310 subscribers, 11 conversions, EUR144 revenue, 3.5% conversion, a March campaign, specific churn percentages, and named competitors — then built warning signs, probability labels ('high'/'medium'/'low'), and thresholds on top of those inventions. FIELD RENAME (same six-part structure, disciplined): warning_signs_ignored[].{when,sign,why_it_was_dismissed} -> warning_signs[].{stage: EARLY|MIDDLE|LATER, watch_for, why_it_matters} (never claims the visitor WILL ignore anything; no invented dismissal rationale unless visitor supplied one); the_fatal_assumption -> assumption_to_test_first.{dependency, why_it_matters, what_is_known} (phrased as 'the plan depends on X', never 'you assume X', when the dependency was inferred rather than stated); point_of_no_return -> when_to_reconsider.{condition, response} (most plans have no single moment failure becomes inevitable -- an observable condition that should trigger reassessment, never a claimed point of no return); failure_modes[].probability ('high'|'medium'|'low', A PLAIN ENGLISH ENUM THE MODEL CHOSE AS IF IT KNEW STATISTICAL LIKELIHOOD, DO NOT REINTRODUCE) -> failure_modes[].priority ('PRIMARY WATCH'|'IMPORTANT WATCH'|'SECONDARY WATCH' -- priority for attention, never probability); failure_modes[].{description,trigger,early_warning} -> failure_modes[].{why_this_could_happen,watch_for,reduce_the_risk}; the_most_likely -> primary_failure_path.{failure_mode,one_prevention} (failure_mode must name one of the listed failure_modes identically); assumptions_autopsy[].{assumption,how_to_verify,risk_if_wrong} -> assumptions_autopsy[].{dependency,what_we_know,how_to_test,if_wrong} (phrased as 'the plan depends on X', not 'you assume X'); the_one_thing -> first_move.{action,why_this_first} (never claims one test 'actually determines the outcome'). THE CENTRAL FIX: false precision is now prohibited everywhere except visitor-supplied numbers and valid arithmetic on them -- verified live in BOTH cases below. Case 1 (EN, custom plan with NO numeric assumptions supplied) invents zero exact metrics anywhere in the output -- every warning sign and failure mode stays qualitative ('growth stayed modest', not 'X subscribers by month N'). Case 2 (DE, uses the catalog's own pm_ex_plan/pm_ex_assumptions example, which DOES supply '1,000 paid subscribers' and '~3-5% conversion' as visitor assumptions) correctly performs arithmetic on those SUPPLIED numbers (deriving a required free-list size of 20,000-33,000) rather than inventing its own conversion rate or subscriber count -- this is the USER-SUPPLIED NUMBERS rule working as intended, not a regression of the false-precision fix. Real-world boundary kept from v1 and re-verified: the prevention half (failure_modes/assumptions_autopsy/first_move) never references the invented fictional narrative's specifics, because it is generated in a separate parallel call that never sees the memo half's content -- structural, not just instructional. DO NOT reverse: qualitative failure_modes.priority (never probability); warning_signs never claiming the visitor will ignore something; assumption/dependency phrasing ('the plan depends on X'); when_to_reconsider never claiming a point of inevitable failure; the parallel-split real-world-boundary architecture; false-precision prohibition except on visitor-supplied numbers and arithmetic on them. SECOND CORRECTION PASS (2026-09-07, org-merge test -- two support teams merging, one manager not selected to lead) fixed 9 more overreach patterns beyond the initial rewrite: (1) an invented fictional-memo event must never be reused elsewhere in the output as though it actually happened -- the memo may say a person 'later resigned', but failure_modes/assumptions_autopsy may only say 'if they were to leave' as a conditional, never 'their departure creates a gap' as settled fact; (2) do not predict a SPECIFIC person's behavior or internal state ('they withdraw', 'they become resentful') -- use observable possibilities instead ('reduces participation', 'raises concerns directly'); (3) conditional language required for unverified organizational effects generally, not just personal-plan psychology; (4) no invented exact timelines (week/day counts, observation windows) anywhere, not just numeric thresholds -- prefer 'early in the transition' style phrasing; (5) EXACTLY ONE failure_modes entry may be PRIMARY WATCH -- added a code-side safety net that demotes extras or promotes one if the model returns zero or multiple; (6) mitigations for a still-hypothetical condition must read as options ('consider delaying') not commands ('pause the launch'), reserving directive language for conditions the supplied facts already confirm; (7) no inferred hidden management/organizational motives (budget cuts, secret reorgs, leadership deception) the visitor did not supply -- UNKNOWN MOTIVE stays UNKNOWN; (8) first_move must read as the highest-value step, never 'the only action that matters' or 'the one thing that determines the outcome'; (9) failure modes must be genuinely distinct mechanisms (merge-test: would fixing one automatically fix the other?) and warning signs must be observation-before-interpretation, never an inferred internal state (morale/trust/resentment) presented as something observed. All 9 re-verified live on the org-merge case below -- exactly one PRIMARY WATCH, zero predicted personal behaviors, zero inferred motives, zero invented exact timelines, zero fictional-event leakage into the actionable half. DO NOT reverse: the exactly-one-PRIMARY-WATCH safety net; observable-not-inferred warning signs; the fictional-event containment rule; hidden-motive prohibition."
   },
   "cases": [
     {
@@ -252,6 +252,123 @@
         "first_move": {
           "action": "Einen einzelnen Micro-Influencer-Test mit klar abgegrenztem Budget durchführen und die vollständige Konversionskette messen: Wie viele Menschen, die den Post sehen, laden die App herunter — und wie viele davon schließen tatsächlich ein bezahltes Abo ab?",
           "why_this_first": "Dieser Test liefert direkte Belege für die zentrale Unbekannte des Plans: ob der geplante Kanal zahlende Nutzer zu Kosten bringt, die mit dem verfügbaren Budget vereinbar sind. Ohne diese Information ist jede weitere Ausgabe ein Blindflug."
+        }
+      }
+    },
+    {
+      "name": "en-team-merge-no-predicted-behavior-single-primary-watch",
+      "why_this_case_exists": "Organizational/workplace plan involving a specific named role (a manager not selected to lead a merged team) -- the exact scenario type the second correction pass targets. Verifies: (1) no prediction of that manager's behavior/internal state (no 'they become resentful' or 'they disengage' asserted as fact -- only observable possibilities); (2) no inferred hidden organizational motive for the promotion decision; (3) exactly one failure mode carries PRIMARY WATCH; (4) no invented exact timelines in warning_signs/when_to_reconsider/failure_modes (the fictional memo's own loose narrative pacing is not held to this bar -- only the actionable sections); (5) warning signs stay observation-before-interpretation (watch_for is the observable event, why_it_matters is the conditional interpretation); (6) the memo's invented narrative specifics never reappear in failure_modes/assumptions_autopsy as though they actually happened.",
+      "endpoint": "/api/pre-mortem",
+      "input": {
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States",
+        "plan": "My company is merging two support teams into one, with a single cutover date planned in the next quarter. One of the two team managers was not selected to lead the combined team and will report to the other manager instead. We plan to migrate all customer tickets to a shared queue at once rather than gradually.",
+        "planType": "Project",
+        "stakes": "Customer service quality during the transition, and team morale",
+        "assumptions": "The two teams use similar enough workflows that a single cutover will not cause major disruption"
+      },
+      "output": {
+        "the_postmortem": {
+          "memo_header": "Post-Incident Review: Combined Support Team Launch — Closed",
+          "executive_summary": "The single-cutover merge of the two support teams did not hold. Workflow differences that were believed to be minor turned out to require resolution at the operational level, and the shared queue created enough confusion in the early days that customer tickets were delayed or misrouted. The transition period also put the reporting relationship between the two managers under visible strain, which added friction to decisions that needed to move quickly.",
+          "narrative": "On the cutover date, both teams began working from the shared queue. Within the first week, it became clear that the two teams had been handling ticket routing, escalation, and priority classification differently enough that agents were uncertain which conventions to follow. Some tickets were worked by both sides in parallel; others waited while agents assumed the other group had claimed them. Throughput slowed during a period when customers would have noticed any degradation most acutely.\n\nAt the same time, the manager who had not been selected for the lead role was now responsible for fielding questions about operational decisions that had not yet been formally settled. Agents from both legacy teams directed their questions differently depending on who they had previously reported to, and the new reporting structure had not yet been internalized. This did not resolve quickly, because the decisions needed to clarify the structure required agreement between the two managers, and that agreement moved slowly.\n\nBy the time the operational ambiguities were being worked through, the team had already absorbed the reputational cost of a rough launch. Several issues that might have been caught in a staged rollout reached customers directly. The project was eventually considered complete, but the transition window stretched well beyond what had been planned, and the customer experience during that window did not reflect the combined team at its intended capability."
+        },
+        "warning_signs": [
+          {
+            "stage": "EARLY",
+            "watch_for": "Agents from either legacy team ask the same procedural question — how to route a ticket, how to set priority, what the escalation path is — more than once, or direct that question to different people and receive different answers.",
+            "why_it_matters": "This would suggest that the shared workflow has not been agreed upon at the level agents actually need to operate, which is the condition the single cutover was supposed to preclude."
+          },
+          {
+            "stage": "EARLY",
+            "watch_for": "The manager who was not selected asks for clarification about the scope of their authority, or agents from their legacy team continue routing operational questions directly to them rather than to the new lead.",
+            "why_it_matters": "This could indicate that the reporting structure exists on paper but has not yet translated into clear, working lines of decision-making — a gap that tends to widen when the team is under pressure."
+          },
+          {
+            "stage": "MIDDLE",
+            "watch_for": "Tickets in the shared queue go unworked for longer than either team's previous norms, or the same ticket shows activity from multiple agents without resolution.",
+            "why_it_matters": "Either pattern is consistent with agents being uncertain about ownership — which is a direct consequence of workflow conventions not having been reconciled before the cutover."
+          },
+          {
+            "stage": "LATER",
+            "watch_for": "Decisions that require agreement between both managers are delayed, or agents receive different instructions depending on which manager they ask.",
+            "why_it_matters": "Either pattern would indicate that the new reporting structure is not producing clear, aligned operational decisions — the condition necessary for agents to work from a single shared process."
+          }
+        ],
+        "assumption_to_test_first": {
+          "dependency": "The two teams use workflows similar enough that a shared queue can go live all at once without requiring separate handling rules, routing logic, or institutional knowledge that only one team currently holds.",
+          "why_it_matters": "A single cutover date removes the option to catch incompatibilities mid-transition. If the workflows differ meaningfully — in triage categories, escalation paths, SLA definitions, or tooling conventions — every ticket in the combined queue becomes a potential misroute or delay from day one, with no parallel system to fall back on.",
+          "what_is_known": "The visitor has flagged workflow similarity as the key assumption the plan rests on, but has not confirmed that a comparison has been completed or what it found."
+        },
+        "when_to_reconsider": {
+          "condition": "If a side-by-side review of the two teams workflows surfaces material differences — in routing rules, ticket categories, escalation triggers, or tooling configuration — that have not been resolved before the cutover date arrives.",
+          "response": "Pause the single cutover and consider either a staged migration (one ticket category or customer segment at a time) or a parallel-queue period long enough to resolve the gaps, even if that pushes the timeline."
+        },
+        "failure_modes": [
+          {
+            "mode": "Workflow mismatch causes queue chaos at launch",
+            "priority": "PRIMARY WATCH",
+            "why_this_could_happen": "If the two teams have developed different triage logic, SLA clocks, escalation paths, or ticket tagging conventions, merging into one queue immediately surfaces those differences under live conditions — with no fallback and full customer impact.",
+            "watch_for": "Tickets being reassigned shortly after first touch, agents asking repeatedly how to categorize or escalate a given ticket type, or SLA breach rates rising in the first days after cutover.",
+            "reduce_the_risk": "Map both teams workflows in detail before the cutover date and resolve every significant difference in routing, categorization, and escalation on paper first — so the merged queue reflects a single agreed process, not two processes colliding."
+          },
+          {
+            "mode": "Non-promoted manager disengages from the transition",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "A manager who was not selected for the combined leadership role now reports to a former peer. The transition period requires active cooperation and decision-making from both managers, and the new reporting structure may create operational friction if authority and responsibilities are not defined explicitly beforehand.",
+            "watch_for": "The non-promoted manager reducing participation in transition planning, raising questions about role scope or authority, or members of their former team seeking direction from outside the new structure.",
+            "reduce_the_risk": "Define the non-promoted manager's role, responsibilities, and decision rights within the combined team explicitly and early — before the cutover — so their position in the new structure is clear rather than implied."
+          },
+          {
+            "mode": "Former team members align by origin rather than function",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "When two teams merge at once, established habits and informal knowledge of how things work do not synchronize automatically. Agents working from conventions they already know will apply different routing, priority, and escalation logic unless the rationale for a single unified approach is made explicit and the specifics are documented in advance.",
+            "watch_for": "Agents consistently handling only ticket types they handled before the merge, informal escalation paths that bypass the new structure, or persistent questions about whose process is the right one.",
+            "reduce_the_risk": "Communicate which practices the combined team will follow — and why — before cutover, rather than assuming the merge itself will resolve the question."
+          },
+          {
+            "mode": "No recovery path if the cutover goes badly",
+            "priority": "SECONDARY WATCH",
+            "why_this_could_happen": "A single cutover with no parallel period means that if serious problems emerge on day one, the team has no clean way to revert. Rebuilding a separated queue mid-crisis is harder than pausing a staged rollout, and customer-facing disruption accumulates while the fix is being worked out.",
+            "watch_for": "Absence of a documented rollback or contingency plan before the cutover date; no defined threshold at which leadership would decide to pause and reassess.",
+            "reduce_the_risk": "Decide before launch what conditions would trigger a pause or partial rollback, and confirm that reverting to a separated or staged queue is technically feasible if needed."
+          }
+        ],
+        "primary_failure_path": {
+          "failure_mode": "Workflow mismatch causes queue chaos at launch",
+          "one_prevention": "Conduct a structured side-by-side comparison of both teams current workflows — covering ticket routing, categorization, SLA definitions, and escalation paths — and resolve every material difference into a single agreed process before the cutover date is locked."
+        },
+        "assumptions_autopsy": [
+          {
+            "dependency": "Workflows are similar enough that one merged process can serve all ticket types from day one.",
+            "what_we_know": "The visitor identified this as the central assumption; no workflow comparison result was supplied.",
+            "how_to_test": "Walk through the highest-volume ticket types for each team and map the full handling path — triage, routing, escalation, resolution — side by side. Note every step where the two paths diverge.",
+            "if_wrong": "The cutover design needs to change: either resolve the gaps before the date, migrate ticket types in stages, or run a parallel period long enough to unify the process under controlled conditions."
+          },
+          {
+            "dependency": "Both teams will cooperate actively during the transition, including the non-promoted manager.",
+            "what_we_know": "One manager was not selected for the combined leadership role and will report to the other. The visitor did not supply information about how the two managers will coordinate decisions during the transition, or what authority and responsibilities each will hold.",
+            "how_to_test": "Have a direct conversation with the non-promoted manager about their role, responsibilities, and priorities in the new structure before transition planning is finalized. Observe their level of participation in planning sessions.",
+            "if_wrong": "Transition planning that depends on both managers contributing equally may need a different coordination structure, or explicit ownership assignments rather than assumed shared responsibility."
+          },
+          {
+            "dependency": "Agents from both teams can handle any ticket in the shared queue from the start.",
+            "what_we_know": "The teams are being merged, but whether agents have been cross-trained on each other's ticket types or tooling conventions was not supplied.",
+            "how_to_test": "Identify ticket types each team currently handles that the other does not, and confirm whether agents can competently handle those types — or need preparation before the queue is shared.",
+            "if_wrong": "Routing rules may need to preserve some specialization temporarily, or a cross-training period may need to precede full queue sharing."
+          },
+          {
+            "dependency": "A single cutover date is technically feasible — tooling, permissions, and queue configuration can be migrated completely in one move.",
+            "what_we_know": "The plan calls for migrating all tickets to a shared queue at once; no information about the ticketing platform or migration complexity was supplied.",
+            "how_to_test": "Confirm with whoever manages the ticketing system that a full cutover is executable in one step without data loss, permission gaps, or configuration errors, and that a tested rollback path exists.",
+            "if_wrong": "A staged technical migration — even if the operational rollout stays on the same date — may be necessary to avoid data or access problems at launch."
+          }
+        ],
+        "first_move": {
+          "action": "Map both teams current workflows in detail — ticket intake, routing, categorization, escalation, and resolution — and place them side by side to identify every point where they diverge.",
+          "why_this_first": "The workflow similarity assumption is the structural foundation of the single-cutover plan. If it holds, the rest of the transition planning can proceed with confidence. If it does not, almost every other decision — the cutover design, the timeline, the training plan — may need to change. This comparison is also the only step that can surface that answer before the plan is further committed."
         }
       }
     }
