@@ -90,6 +90,41 @@ its own.
 reliable under locale pressure — put format-breaking constraints in the user prompt, next to
 the schema they protect, not just in the system prompt.**
 
+## Output standard: stayed on FROZEN_V1, did not declare v2
+
+Touching this route triggered `output-standard-audit`, which requires either a v2 declaration
+(with a real `runOutputGuard` enforcement profile) or membership in `FROZEN_V1`. Tried v2 first
+— wired `runOutputGuard` in with a tool-specific `outputGuard.prohibit`/`require` list and an
+explicit "what NOT to flag" instruction (twice, tightening it the second time). Live-tested
+against the real endpoint both times:
+
+- It flagged genuine phonetic description — a sound comparison, an articulation instruction —
+  as `invented_fact` on most calls, even after the second, much more explicit "this is domain
+  expertise, not a claim about the visitor" instruction.
+- Its repair pass then hedged real guidance into uselessness: a `sounds_like` field that
+  actually said "the ny in canyon, followed by..." came back as "how this is pronounced cannot
+  be determined from the spelling alone" — the opposite of the tool's job.
+- One repair run corrupted `reading_status` into `"NEEDS_CONTEXT"`, a value that only exists in
+  the *batch* schema's enum, not the single endpoint's five values — and flipped
+  `audio.reading_is_constrained` to `true` on a word with two established readings, which is
+  exactly the audio/written-guide disagreement this whole rewrite exists to prevent.
+
+**Conclusion: this is a reference/knowledge-lookup tool (same category as `decoder-ring`,
+`markup-detective`, `tip-of-tongue` — all already in `FROZEN_V1`), not a tool reasoning about
+the visitor's own situation. The generic v2 checker can only ask a Haiku-tier model "is this
+phonetic/etymological claim invented?" — a question it cannot answer any more reliably than the
+model that generated the claim — so its verdict is closer to noise than signal here, and
+blindly trusting a FAIL verdict actively degrades the answer.** Added `pronounce-it-right` to
+`FROZEN_V1` in `backend/lib/outputStandard.js` instead, with the reasoning recorded there. This
+tool's honesty is enforced the way it already is — `reading_status`/`needs_context`/`variants`
+in the prompt itself — verified live against the real endpoint, not by a generic post-hoc
+checker.
+
+**If revisiting this later:** a tool-specific deterministic check (regex/structural, not another
+model call) — e.g. flagging IPA fields that look like a respelling, or `context_info.background`
+non-empty on a `PERSON_SPECIFIC` name — would fit this domain better than the generic
+fact-invention guard. That is real future work, not an excuse; it just is not what shipped here.
+
 ## DO NOT silently reverse
 - The V2 schema and its honesty rules (reading_status, needs_context, audio gating) —
   reverting to always-confident output reintroduces the exact problem this rewrite fixed.

@@ -200,6 +200,20 @@ describe these checks in the output.
 // apology-calibrator, Not So Fast! is rulebook-breaker, Missing Link is
 // the-gap, The Whole Story is the-alibi, Argue Smarter is argue-better,
 // Which Life? is contrast-report.
+// 'pronounce-it-right' reviewed 2026-09-07 and deliberately KEPT here rather
+// than converted, same call already made for decoder-ring / markup-detective
+// / tip-of-tongue: it is a reference/knowledge lookup, not a tool reasoning
+// about the visitor's own situation, and the generic v2 guard (lib/
+// outputGuard.js) cannot tell a real phonetic claim from an invented one any
+// better than the model that wrote it — it can only ask a checker model the
+// same unanswerable question. Live-tested: wiring runOutputGuard in flagged
+// genuine sound comparisons and articulation instructions as "invented_fact"
+// on most calls, and its repair pass hedged real guidance into uselessness
+// ("this cannot be determined from spelling alone") and once corrupted
+// reading_status into a value outside its own enum. This tool's honesty is
+// enforced by its own prompt discipline (reading_status/needs_context/
+// variants), verified live against the real endpoint — see
+// audit/tool-notes/PRONOUNCEITRIGHT-NOTES.md.
 const FROZEN_V1 = new Set([
   'alternate-path', 'analogy-engine', 'apology-calibrator', 'argue-better',
   'awkward-silence-filler', 'batch-flow', 'belief-stress-test', 'bike-medic',
@@ -210,10 +224,10 @@ const FROZEN_V1 = new Set([
   'doctor-visit-translator', 'fake-review-detective', 'final-wish',
   'ghost-writer', 'history-today', 'layover-maximizer', 'lease-trap-detector',
   'markup-detective', 'mental-health-navigator', 'mise-en-place', 'name-storm',
-  'plain-talk', 'procedure-probe', 'renters-deposit-saver', 'roast-me',
-  'rulebook-breaker', 'six-degrees-of-me', 'the-alibi', 'the-debrief',
-  'the-gap', 'tip-of-tongue', 'tool-finder', 'virtual-body-double',
-  'waiting-mode-liberator', 'wrong-answers-only',
+  'plain-talk', 'procedure-probe', 'pronounce-it-right', 'renters-deposit-saver',
+  'roast-me', 'rulebook-breaker', 'six-degrees-of-me', 'the-alibi',
+  'the-debrief', 'the-gap', 'tip-of-tongue', 'tool-finder',
+  'virtual-body-double', 'waiting-mode-liberator', 'wrong-answers-only',
 ]);
 
 // Which standard the currently-executing request's route declared.

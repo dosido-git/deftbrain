@@ -235,13 +235,18 @@ Never place a double-quote (") character inside any string value — it breaks t
   }
 });
 
-// Reviewed against backend/lib/outputStandard.js as part of the 2026-09-07 V2
-// rewrite: the tool already leads with the answer (pronunciation before any
-// background), makes progress under uncertainty instead of manufacturing
-// certainty (reading_status/needs_context), respects the visitor's agency on
-// a name they can't know for sure (confirmation_script instead of asserting),
-// and is instructed to give the smallest complete guide rather than pad every
-// field. Declaring v2 for both endpoints in this file.
-router.outputStandard = 'v2';
+// Output standard: reviewed 2026-09-07, staying on FROZEN_V1 rather than
+// declaring v2 — see backend/lib/outputStandard.js FROZEN_V1 comment for why.
+// In short: this tool's content IS domain expertise about how a word sounds,
+// and the generic v2 post-generation guard cannot distinguish that from
+// invented fact. Live-tested wiring it in anyway: it flagged genuine phonetic
+// description (a sound comparison, an articulation instruction) as
+// "invented_fact" on most calls, and its repair pass hedged real guidance
+// into uselessness ("this cannot be determined from spelling alone") and once
+// corrupted reading_status into a value outside its own enum. This tool's
+// honesty is instead enforced the way it already was before this file existed
+// — reading_status/needs_context/variants in the prompt itself, verified live
+// against the real endpoint rather than by a generic checker that cannot
+// verify a phonetic claim any better than the model that wrote it.
 
 module.exports = router;
