@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "PronounceItRight",
-    "generated": "2026-07-14",
+    "generated": "2026-09-07",
     "model": "claude-haiku (MODELS.FAST), 2 LLM endpoints + 1 ElevenLabs TTS route",
-    "baseline_commit": "pronounceitright-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) the BATCH endpoint schema emits only top-level `guides` — its guard MUST key `!parsed.guides?.length` (was a copy-paste of the single-word guard `!parsed.pronunciation && !parsed.phonetic` → 500 on EVERY batch call). (2) single endpoint max_tokens 3500 (was 2500), batch validWords capped at 8; both prompts carry the no-inner-double-quote rule + a brevity line. (3) no annotation suffixes. (4) the pre-result PlainTalk cross-ref lives in the MAIN render tree (audit S5.5 requires it there — do NOT move it inside renderInput). DO NOT reverse: batch guard !parsed.guides?.length; single 3500 + batch 8; no-inner-quote rule; no annotation suffixes; cross-ref location."
+    "baseline_commit": "pronounceitright-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. SCHEMA (V2): word/reading_status/language/pronunciation{phonetic,ipa,syllables,prosody_label,prosody,sounds_like,mouth_guide}/variants[]/watch_out_for[]/context_info{what_it_is,useful_in_context,background}/confirmation_script/needs_context{needed,reason,helpful_context}/audio{safe_to_offer,language_or_locale,reading_is_constrained} for the single endpoint; guides[]{word,reading_status,phonetic,prosody,sound_note,watch_out_for,context_needed} for batch (no ipa/syllables/what_it_is/fun_fact by design). GUARDS: (1) single endpoint guards on the top-level `pronunciation` key being present (never a nested/nullable field). (2) batch guards on `guides` being a non-empty array. (3) single max_tokens 3500, batch max_tokens 3000, batch validWords capped at 8. (4) KNOWN BUG CLASS, FIXED HERE: a German-locale call to the single endpoint could return a confidently-worded quoted phrase (confirmation_script/useful_in_context/watch_out_for) with a literal ASCII double-quote character inside the JSON string value, which the shared repairJsonStrings() cannot distinguish from a real string terminator -> a JSON parse error ('Expected comma or closing brace after a property value') -> 500 on that call. Batch was unaffected because its user prompt already carried the no-double-quote rule; the single endpoint only had that rule in the system prompt, which the model did not reliably obey under locale pressure. Fix: added an explicit 'use single quotes, never a double-quote, inside any string value' rule directly in the single endpoint's USER prompt (next to the schema), matching the working batch prompt. Verified: 4 consecutive live German calls (1 ambiguous-reading food case, 1 name case x3) all returned HTTP 200 valid JSON after the fix. DO NOT reverse: the no-double-quote rule in the USER prompt (not just system prompt) on the single endpoint; single max_tokens 3500 + batch cap 8; the V2 schema and its reading_status/needs_context/audio-gating honesty rules; the PlainTalk cross-ref staying in the main render tree (S5.5)."
   },
   "cases": [
     {
@@ -21,61 +21,62 @@
       },
       "output": {
         "word": "Gnocchi",
-        "category_detected": "food",
-        "language_of_origin": "Italienisch (vom lombardischen nyocca, verwandt mit dem Wort für Knoten)",
+        "reading_status": "MULTIPLE_ESTABLISHED_READINGS",
+        "language": "Italienisch",
         "pronunciation": {
-          "phonetic": "NYOK-kee",
-          "ipa": "ˈɲɔkːi",
+          "phonetic": "NJOK-ki",
+          "ipa": "[ˈɲɔkki]",
           "syllables": [
-            "NYOK",
-            "kee"
+            "Njok",
+            "ki"
           ],
-          "stress": "Die erste Silbe wird betont — NYOK-kee, nicht nyok-KEE",
-          "sounds_like": "Das erste Wort klingt wie deutsches 'Knödel' aber mit einem weicheren Anfang — ähnlich wie das italienische gn in 'gnomo'. Das zweite ist wie das englische 'key', aber kürzer",
-          "mouth_guide": "Das 'ny' entsteht, wenn die Zunge am Gaumen liegt (wie beim ch in 'ich') und gleichzeitig der Laut 'j' fließt — probier, 'gn' zu sagen wie in 'Gnade', aber weicher und schneller. Die Lippen sind leicht gerundet für den 'o'-Laut"
+          "prosody_label": "STRESS",
+          "prosody": "Das Wort trägt Betonung auf der ersten Silbe: NJOK-ki.",
+          "sounds_like": "Das 'nj' am Anfang funktioniert wie das 'gn' in 'Gnade', nur weicher und schneller; das Ganze klingt ähnlich wie 'Njöck' im Deutschen.",
+          "mouth_guide": "Das 'nj' entsteht, wenn du die Zunge gegen den harten Gaumen legst (wie bei 'n') und gleichzeitig ein weiches 'j' (wie in 'ja') davorlegst — beides fließt ineinander. Die beiden 'k' am Ende sind hart und kurz."
         },
-        "common_mistakes": [
+        "variants": [
           {
-            "wrong": "NOCK-ee oder GOCK-ee",
-            "why": "Deutsche Sprecher ignorieren das italienische 'gn' und sprechen das 'g' hart aus — oder verlieren den nasalen ny-Laut ganz",
-            "fix": "Das 'g' vor 'n' ist stumm. Denk an 'Gnus' auf Deutsch — das 'g' ist sehr leise. Sag NYOK-kee, nicht GOCK-ee"
+            "label": "Anglisierte Aussprache",
+            "phonetic": "NOH-kee",
+            "ipa": "[ˈnoʊki]",
+            "when_used": "Diese Variante hörst du häufig in englischsprachigen Ländern und manchmal auch in deutschsprachigen Restaurants, wo der italienische Laut vereinfacht wird."
+          }
+        ],
+        "watch_out_for": [
+          {
+            "trap": "Das 'gn' am Anfang wie ein deutsches 'g' auszusprechen ('Gnocchi' wie 'Gott')",
+            "fix": "Das italienische 'gn' vor Vokalen klingt wie das weiche 'nj' in 'Njöck' — das 'g' ist stumm und fließt in den Nasallaut über."
           },
           {
-            "wrong": "Gno-kee oder Gna-kee",
-            "why": "Der Vokal wird verwechselt — manche sagen 'a' statt 'o'",
-            "fix": "Der erste Vokal ist ein kurzes, offenes 'o' wie in 'Gott', nicht 'a' wie in 'Gast'"
-          },
-          {
-            "wrong": "Nyoke (ohne das zweite 'kee')",
-            "why": "Es wird vergessen, dass der Wort zwei Silben hat und die zweite Silbe '-kee' ist",
-            "fix": "Immer NYOK-kee sagen, mit Betonung auf der ersten Silbe und ein deutliches 'kee' am Ende"
+            "trap": "Die beiden 'k' am Ende zu trennen oder zu dehnen",
+            "fix": "Beide 'k' verschmelzen zu einem kurzen, harten Laut, gefolgt von einem kurzen 'i': -kki, nicht -keh oder -kay."
           }
         ],
         "context_info": {
-          "what_it_is": "Gnocchi sind kleine, kartoffel- oder grießbasierte Nocken aus Italien, die wie Knödel aussehen, aber leichter und zarteren sind — sie werden gekocht und meist mit Soße serviert",
-          "origin_story": "Das Wort stammt vom lombardischen 'nyocca' (Knoten) ab und Gnocchi sind ein traditionelles italienisches Arme-Leute-Essen aus der Norditalien, perfekt für Deutsche, die Kartoffelgerichte lieben",
-          "use_in_sentence": "Ich hätte gerne die Gnocchi alla Parmigiana, bitte — da sind Gnocchi mit Tomatensoße und Käse",
-          "pro_tip": "Im Restaurant sagen viele Deutsche 'Gnocchis' (Plural), aber in Italien bleibt es einfach 'Gnocchi' — der Plural ist gleich dem Singular, genau wie 'Risotto'"
+          "what_it_is": "Italienische Kartoffel- oder Grießklöße, gekocht wie Pasta.",
+          "useful_in_context": "",
+          "background": ""
         },
-        "confidence_script": "Falls du unsicher bist, sag einfach: Ich hätte gerne diese kleinen kartoffelhaltigen Nocken da — Ihnen Sie verstehen sicher, was ich meine. Im Restaurant kennen alle Gnocchi, also brauchst du keine Angst vor falscher Aussprache zu haben.",
-        "dont_confuse_with": [
-          {
-            "word": "Gnocchi vs. Pasta",
-            "difference": "Gnocchi sind gekochte Kartoffel-/Grießteigstücke, keine Nudeln — sie sind dichter und sinken schneller ins Wasser"
-          }
-        ],
-        "regional_variants": [
-          {
-            "region": "Süditalien (Kampanien, Sizilien)",
-            "pronunciation": "Nyoc-KA oder Nyoc-co — mit betonter zweiter Silbe",
-            "note": "In Norditalien (Lombardei, Piemont) ist NYOK-kee Standard; verwende das überall, um sicher zu sein"
-          }
-        ],
-        "fun_fact": "Das Wort 'Gnocchi' und das deutsche 'Knödel' haben denselben tieferen sprachlichen Ursprung — beide beschreiben kleine Knoten aus Teig, was zeigt, wie nah sich italienische und deutsche Kochtraditionen sind"
-      }
+        "confirmation_script": "Falls du unsicher bist, kannst du sagen: 'Sprichst du das NJOK-ki oder eher NOH-kee aus?'",
+        "needs_context": {
+          "needed": false,
+          "reason": "",
+          "helpful_context": ""
+        },
+        "audio": {
+          "safe_to_offer": false,
+          "language_or_locale": "it-IT",
+          "reading_is_constrained": false
+        }
+      },
+      "optionalSections": [
+        "variants",
+        "watch_out_for"
+      ]
     },
     {
-      "name": "de-batch-was-DOWN",
+      "name": "de-batch-five-foods",
       "endpoint": "/api/pronounce-it-right/batch",
       "input": {
         "userLanguage": "de",
@@ -96,73 +97,48 @@
         "guides": [
           {
             "word": "Gnocchi",
-            "phonetic": "NYOK-ki",
-            "ipa": "/ˈɲɔk.ki/",
-            "syllables": [
-              "nyo",
-              "kki"
-            ],
-            "sounds_like": "wie deutsches 'Nock' + kurzes 'i'",
-            "top_mistake": "Sprecher sagen oft 'G-nocchi' mit hartem G; das 'G' ist silent, sprechen Sie /ɲ/ wie in 'Genie'",
-            "what_it_is": "italienische Kartoffel- oder Mehlklößchen",
-            "fun_fact": "Das doppelte 'kk' macht den Konsonanten kurz und prägnant"
+            "reading_status": "CLEAR",
+            "phonetic": "NYO-kki",
+            "prosody": "Betonung auf der ersten Silbe, kurz und prägnant",
+            "sound_note": "Das NY wie in Deutsch 'Nylon', dann doppeltes k wie in 'Klick'",
+            "watch_out_for": "Nicht Gno-TSCH-i sprechen — das erste O ist kurz und unbetont",
+            "context_needed": ""
           },
           {
             "word": "Bruschetta",
-            "phonetic": "bru-SKET-ta",
-            "ipa": "/bruˈʃɛt.ta/",
-            "syllables": [
-              "bru",
-              "shet",
-              "ta"
-            ],
-            "sounds_like": "wie 'Brush' aber italienisch mit sch-Laut",
-            "top_mistake": "Deutsche tendieren zu 'broo-SHET-a'; das 'u' ist kurz und das 'a' am Ende klar gesprochen",
-            "what_it_is": "getoastete Brotkante mit Belag, typisch italienisch",
-            "fun_fact": "Das italienische 'sc' vor 'h' klingt wie deutsches 'sch'"
+            "reading_status": "CLEAR",
+            "phonetic": "broo-SKET-ta",
+            "prosody": "Betonung auf der zweiten Silbe, drei deutliche Silben",
+            "sound_note": "Wie im Italienischen: broo (wie in 'Bruder'), dann SKET (wie 'Skelett' ohne l), ta am Ende kurz",
+            "watch_out_for": "Nicht Broo-SHET-ta — das sch-Geräusch ist deutsch, aber hier bleibt es sk",
+            "context_needed": ""
           },
           {
             "word": "Charcuterie",
-            "phonetic": "schar-kü-tuh-REE",
-            "ipa": "/ʃaʁ.ky.tə.ˈʁi/",
-            "syllables": [
-              "char",
-              "cu",
-              "te",
-              "rie"
-            ],
-            "sounds_like": "französisch, beginnt wie deutsches 'Scharf' aber fließender",
-            "top_mistake": "Sprecher betonen 'CHAR'; die Betonung liegt auf dem letzten 'rie' und das 'u' ist ein 'ü'-Laut",
-            "what_it_is": "französische Kunst der Fleisch- und Wurstverarbeitung",
-            "fun_fact": "Wort kommt von 'char' (Fleisch) + 'cuit' (gekocht) im Französischen"
+            "reading_status": "CLEAR",
+            "phonetic": "schar-koo-tuh-REE",
+            "prosody": "Betonung auf der letzten Silbe, vier Silben fließend",
+            "sound_note": "Französisches Wort: schar wie deutsches 'Schar', dann koo wie in 'Kuh', REE wie in 'Ree-gal' aber länger",
+            "watch_out_for": "Nicht TSCH-Laut in der Mitte — es bleibt t-u, nicht tsch",
+            "context_needed": ""
           },
           {
             "word": "Quinoa",
-            "phonetic": "KI-no-a",
-            "ipa": "/ˈki.no.a/",
-            "syllables": [
-              "ki",
-              "no",
-              "a"
-            ],
-            "sounds_like": "drei klare Silben, jede Vokal betont wie im Spanischen",
-            "top_mistake": "Englischsprachige sagen 'kee-NO-ah'; Deutsche sollten alle drei Vokale gleichmäßig sprechen",
-            "what_it_is": "südamerikanisches Pseudo-Getreide aus den Anden",
-            "fun_fact": "Inkas nannten es 'Mutter aller Körner' – sehr eiweißreich"
+            "reading_status": "CLEAR",
+            "phonetic": "KWIN-wah",
+            "prosody": "Betonung auf der ersten Silbe, zwei Silben",
+            "sound_note": "KWIN wie in 'Quintessenz', dann wah wie in 'Wasser' ohne das -ser",
+            "watch_out_for": "Nicht Kwi-NO-a — das Wort ist kein Wort mit drei Silben, sondern zwei",
+            "context_needed": ""
           },
           {
             "word": "Açaí",
-            "phonetic": "a-sa-EE",
-            "ipa": "/a.sa.ˈi/",
-            "syllables": [
-              "a",
-              "sa",
-              "i"
-            ],
-            "sounds_like": "wie portugiesisch 'Aßai', das Cedilla zeigt weiches 's'",
-            "top_mistake": "Viele sagen 'ah-KAI'; richtig ist ein weiches 's' + ausgesprochenes langes 'i' am Ende",
-            "what_it_is": "dunkle brasilianische Palmfrucht, oft zu Bowls verarbeitet",
-            "fun_fact": "Die Cedilla (¸) unter dem 'c' zeigt, dass es weich wie 's' vor 'e' oder 'i' gesprochen wird"
+            "reading_status": "CLEAR",
+            "phonetic": "ah-sah-EE",
+            "prosody": "Betonung auf der letzten Silbe, drei Silben gleichmäßig",
+            "sound_note": "Portugiesisches Wort: ah wie in 'Asche', sah wie in 'Sache', EE lang wie in 'Fee'",
+            "watch_out_for": "Das Cedille (ç) unter dem c verschwindet in der Aussprache — es ist reines s, nicht ç-Laut",
+            "context_needed": ""
           }
         ]
       }

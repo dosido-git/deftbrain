@@ -4,15 +4,31 @@ const https = require('https');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
-// AUDIO — Generate spoken pronunciation via ElevenLabs
+// AUDIO CONTRACT (V2, 2026-09-07) — Generate spoken pronunciation via
+// ElevenLabs, ONLY for readings the frontend has already judged safe.
 //
 // POST /api/pronounce-it-right-audio
-// Body: { word: string, languageOfOrigin?: string }
+// Body: { source_text: string, target_language_or_locale?: string, selected_reading?: string }
+// (word / languageOfOrigin accepted as aliases for source_text /
+// target_language_or_locale — kept for callers on the pre-V2 contract.)
 // Returns: audio/mpeg binary
 //
-// Uses eleven_multilingual_v2 — handles 29 languages natively.
-// Sends the original word (not the phonetic string) so the model
-// applies correct phonology for the language of origin.
+// Audio is a convenience, not evidence. The pronunciation-analysis endpoint
+// (`/api/pronounce-it-right`) decides whether a reading is safe to voice at
+// all — it sets `audio.safe_to_offer` and `audio.reading_is_constrained`, and
+// the frontend must NOT render the "Hear it" control unless both are true
+// (names, brands, places, acronyms, homographs, and anything with more than
+// one established reading default to unavailable). This route does not
+// re-derive that judgment — it trusts the caller already gated on it.
+//
+// HONEST LIMITATION: eleven_multilingual_v2 has no reading/locale override —
+// it auto-detects pronunciation language from the text itself, so
+// `target_language_or_locale` and `selected_reading` are accepted and logged
+// for the day this (or a future TTS backend) supports constraining playback,
+// but are NOT currently able to force a specific reading. That is exactly
+// why the frontend gate above — not this route — is what keeps written guide
+// and audio from disagreeing: when we can't be sure the two would agree, we
+// don't call this endpoint at all.
 //
 // Cost: ~$0.003–$0.006 per request (ElevenLabs charges per character).
 // ═══════════════════════════════════════════════════════════════
@@ -21,9 +37,9 @@ const { rateLimit } = require('../lib/rateLimiter');
 const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL';
 
 router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
-  const { word } = req.body;
+  const sourceText = req.body.source_text ?? req.body.word;
 
-  if (!word?.trim()) {
+  if (!sourceText?.trim()) {
     return res.status(400).json({ error: 'Word is required' });
   }
 
@@ -33,7 +49,7 @@ router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
   }
 
   const payload = JSON.stringify({
-    text: word.trim(),
+    text: sourceText.trim(),
     model_id: 'eleven_multilingual_v2',
     voice_settings: {
       stability: 0.5,

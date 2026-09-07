@@ -19,7 +19,7 @@ const CATEGORIES = [
   { value: 'name',      emoji: '👤', labelKey: 'pir_cat_name',      placeholderKey: 'pir_ph_name' },
   { value: 'food',      emoji: '🍝', labelKey: 'pir_cat_food',      placeholderKey: 'pir_ph_food' },
   { value: 'place',     emoji: '📍', labelKey: 'pir_cat_place',     placeholderKey: 'pir_ph_place' },
-  { value: 'brand',     emoji: '👗', labelKey: 'pir_cat_brand',     placeholderKey: 'pir_ph_brand' },
+  { value: 'brand',     emoji: '👜', labelKey: 'pir_cat_brand',     placeholderKey: 'pir_ph_brand' },
   { value: 'music_art', emoji: '🎵', labelKey: 'pir_cat_music_art', placeholderKey: 'pir_ph_music_art' },
   { value: 'science',   emoji: '🔬', labelKey: 'pir_cat_science',   placeholderKey: 'pir_ph_science' },
   { value: 'phrase',    emoji: '💬', labelKey: 'pir_cat_phrase',    placeholderKey: 'pir_ph_phrase' },
@@ -47,6 +47,26 @@ const LANGUAGES = [
   { value: 'Polish',             labelKey: 'pir_lang_pl' },
   { value: 'Other',              labelKey: 'pir_lang_other' },
 ];
+
+const CONTEXT_EXAMPLE_KEYS = ['pir_context_ex_1', 'pir_context_ex_2', 'pir_context_ex_3', 'pir_context_ex_4'];
+
+// Whichever prosody feature actually organizes a word's pronunciation —
+// not every language uses stress. See backend prosody_label.
+const PROSODY_LABEL_KEYS = {
+  STRESS: 'pir_prosody_stress',
+  TONE: 'pir_prosody_tone',
+  RHYTHM: 'pir_prosody_rhythm',
+  VOWEL_LENGTH: 'pir_prosody_vowel_length',
+};
+
+// A spelling doesn't always settle a reading — these map the backend's
+// honest uncertainty into a short, calm badge instead of hiding it.
+const STATUS_LABEL_KEYS = {
+  MULTIPLE_ESTABLISHED_READINGS: 'pir_status_multiple',
+  PERSON_SPECIFIC: 'pir_status_person_specific',
+  CONTEXT_DEPENDENT: 'pir_status_context_dependent',
+  UNCERTAIN: 'pir_status_uncertain',
+};
 
 const EXAMPLES = [
   { word: 'Gnocchi', category: 'food' },
@@ -110,7 +130,6 @@ const PronounceItRight = ({ tool }) => {
     tipText:       isDark ? 'text-amber-300' : 'text-amber-700',
     phonBg:        isDark ? 'bg-sky-900/20 border-sky-700/40' : 'bg-sky-50 border-sky-200',
     inset:         isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
-    ipaBg:         isDark ? 'bg-zinc-700' : 'bg-slate-100',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -145,7 +164,7 @@ const PronounceItRight = ({ tool }) => {
 
   // Persistent
   const [sessionHistory, setSessionHistory] = usePersistentState('pronounce-it-right-history', []);
-  const [results, setResults] = usePersistentState('pronounce-it-right-results', null);
+  const [results, setResults] = usePersistentState('pronounce-it-right-results-v2', null);
 
   useEffect(() => {
     if (!(results || batchResults) || !resultsRef.current) return;
@@ -191,15 +210,21 @@ const PronounceItRight = ({ tool }) => {
     setResults(null); setBatchResults(null); setError(''); setBatchMode(false); setAudioUrl(null);
   }, []);
 
+  const audioSafe = !!(results?.audio?.safe_to_offer && results?.audio?.reading_is_constrained);
+
   const fetchAudio = useCallback(async () => {
-    if (!results?.word) return;
+    if (!results?.word || !audioSafe) return;
     setAudioLoading(true); setAudioUrl(null); setError('');
     try {
       const base = process.env.REACT_APP_API_URL || 'http://localhost:3001';
       const res = await fetch(`${base}/api/pronounce-it-right-audio`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word: results.word, languageOfOrigin: results.language_of_origin || null }),
+        body: JSON.stringify({
+          source_text: results.word,
+          target_language_or_locale: results.audio?.language_or_locale || results.language || null,
+          selected_reading: results.pronunciation?.phonetic || null,
+        }),
       });
       if (!res.ok) throw new Error('Audio unavailable');
       const blob = await res.blob();
@@ -207,22 +232,23 @@ const PronounceItRight = ({ tool }) => {
     } catch {
       setError(t('pir_err_audio'));
     } finally { setAudioLoading(false); }
-  }, [results, t]);
+  }, [results, audioSafe, t]);
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
     const p = results.pronunciation;
+    const prosodyLabelKey = PROSODY_LABEL_KEYS[p?.prosody_label];
     const lines = [
       `🗣️ ${t('pir_title')} — ${results.word}`,
       '',
-      `${t('pir_copy_pronunciation')} ${p?.phonetic || ''}`,
+      p?.phonetic ? `${t('pir_copy_pronunciation')} ${p.phonetic}` : '',
       p?.ipa ? `${t('pir_copy_ipa')} ${p.ipa}` : '',
       p?.syllables?.length ? `${t('pir_copy_syllables')} ${p.syllables.join(' · ')}` : '',
-      p?.stress ? `${t('pir_copy_stress')} ${p.stress}` : '',
+      (p?.prosody && prosodyLabelKey) ? `${t(prosodyLabelKey)}: ${p.prosody}` : '',
       p?.sounds_like ? `${t('pir_copy_sounds_like')} ${p.sounds_like}` : '',
       '',
       results.context_info?.what_it_is ? `${t('pir_copy_what_it_is')} ${results.context_info.what_it_is}` : '',
-      results.fun_fact ? `${t('pir_copy_fun_fact')} ${results.fun_fact}` : '',
+      results.watch_out_for?.[0]?.trap ? `${t('pir_copy_watch_out')} ${results.watch_out_for[0].trap}` : '',
       '',
       BRAND,
     ].filter(Boolean);
@@ -275,23 +301,11 @@ const PronounceItRight = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderInput = () => (
     <div className="space-y-4">
-      {/* Category picker */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
-        {CATEGORIES.map(cat => (
-          <button key={cat.value} onClick={() => setCategory(cat.value)}
-            className={'flex items-center gap-1.5 px-3 py-2.5 rounded-xl border-2 transition-all flex-shrink-0 ' +
-              (category === cat.value ? c.pillActive + ' border-2' : c.pillInactive)}>
-            <span className="text-base">{cat.emoji}</span>
-            <span className={'text-xs font-bold ' + (category === cat.value ? '' : c.textMuted)}>{t(cat.labelKey)}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Word input */}
+      {/* What do you want to pronounce? */}
       <div className={c.card + ' border rounded-xl p-5'}>
         <div className="flex items-center justify-between mb-2">
           <label className={'text-base font-bold ' + c.text}>
-            {activeCat.emoji} {batchMode ? t('pir_enter_multiple') : t('pir_what_say_right')}
+            {activeCat.emoji} {batchMode ? t('pir_enter_multiple') : t('pir_what_say_right')} <span className={c.required}>*</span>
           </label>
           <button onClick={() => { setBatchMode(!batchMode); setResults(null); setBatchResults(null); }}
             className={'text-[10px] font-bold px-2.5 py-1 rounded-lg border ' + (batchMode ? c.pillActive : c.pillInactive)}>
@@ -309,7 +323,6 @@ const PronounceItRight = ({ tool }) => {
           </>
         ) : (
           <>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('pir_word_label')} <span className={c.required}>*</span></label>
             <p className={'text-xs ' + c.textMuted + ' mb-3'}>{t('pir_word_hint')}</p>
             <input type="text" value={word} onChange={e => setWord(e.target.value)}
               placeholder={t(activeCat.placeholderKey)}
@@ -319,10 +332,28 @@ const PronounceItRight = ({ tool }) => {
         )}
       </div>
 
-      {/* Options */}
-      <div className={c.card + ' border rounded-xl p-5 space-y-3'}>
+      {/* What kind of thing is it? (optional) */}
+      <div className={c.card + ' border rounded-xl p-5'}>
+        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>{t('pir_category_label')}</label>
+        <div className="flex gap-1.5 overflow-x-auto pb-1">
+          {CATEGORIES.map(cat => (
+            <button key={cat.value} onClick={() => setCategory(cat.value)}
+              className={'flex items-center gap-1.5 px-3 py-2.5 rounded-xl border-2 transition-all flex-shrink-0 ' +
+                (category === cat.value ? c.pillActive + ' border-2' : c.pillInactive)}>
+              <span className="text-base">{cat.emoji}</span>
+              <span className={'text-xs font-bold ' + (category === cat.value ? '' : c.textMuted)}>{t(cat.labelKey)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* What language do you speak? (required) + extra context (optional) */}
+      <div className={c.card + ' border rounded-xl p-5 space-y-4'}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>🗣️ {t('pir_native_lang')}</label>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
+            🗣️ {t('pir_native_lang')} <span className={c.required}>*</span>
+          </label>
+          <p className={'text-xs ' + c.textMuted + ' mb-2'}>{t('pir_native_lang_hint')}</p>
           <div className="flex flex-wrap gap-1.5">
             {LANGUAGES.slice(0, 8).map(lang => (
               <Pill key={lang.value} active={nativeLang === lang.value} onClick={() => setNativeLang(lang.value)}>{t(lang.labelKey)}</Pill>
@@ -336,16 +367,20 @@ const PronounceItRight = ({ tool }) => {
           </div>
         </div>
         {!batchMode && (
-          <div>
+          <div className={'pt-3 border-t ' + c.border}>
             <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📝 {t('pir_extra_context')}</label>
+            <p className={'text-xs ' + c.textMuted + ' mb-2'}>{t('pir_context_hint')}</p>
             <input type="text" value={context} onChange={e => setContext(e.target.value)}
               placeholder={t('pir_context_ph')}
-              className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+              className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none mb-2'} />
+            <div className="space-y-0.5">
+              {CONTEXT_EXAMPLE_KEYS.map(key => (
+                <p key={key} className={'text-[11px] italic ' + c.textMuted}>{t(key)}</p>
+              ))}
+            </div>
           </div>
         )}
       </div>
-
-      {/* Examples */}
 
       <button title={t('cmd_enter')} onClick={submit} disabled={loading || (!batchMode && !word.trim()) || (batchMode && !batchWords.trim())}
         className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' +
@@ -367,62 +402,82 @@ const PronounceItRight = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderResult = () => {
     if (!results) return null;
-    const p = results.pronunciation;
+    const p = results.pronunciation || {};
     const ctx = results.context_info;
+    const statusKey = STATUS_LABEL_KEYS[results.reading_status];
+    const prosodyLabelKey = PROSODY_LABEL_KEYS[p.prosody_label];
+    const hasHero = !!p.phonetic;
+    const needsContext = results.needs_context?.needed;
+    const hasContextInfo = ctx && (ctx.what_it_is || ctx.background || ctx.useful_in_context);
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
-        {/* Hero pronunciation */}
-        <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
-          <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{results.language_of_origin || t('pir_pronunciation')}</p>
-          <p className={'text-3xl font-black tracking-wide ' + c.text + ' mb-2'}>{results.word}</p>
-          <p className={'text-xl font-bold ' + c.tipText + ' mb-3'}>{p?.phonetic}</p>
+        {/* Hero pronunciation, or an honest "not enough to go on" state */}
+        {hasHero ? (
+          <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
+            {statusKey && <p className={'text-[11px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{results.language || t('pir_pronunciation')}</p>
+            <p className={'text-3xl font-black tracking-wide ' + c.text + ' mb-2'}>{results.word}</p>
+            <p className={'text-xl font-bold ' + c.tipText + ' mb-3'}>{p.phonetic}</p>
 
-          {/* Hear it */}
-          <div className="flex flex-col items-center gap-2">
-            {!audioUrl ? (
-              <button onClick={fetchAudio} disabled={audioLoading}
-                className={'text-sm font-bold px-4 py-2 rounded-xl border disabled:opacity-40 ' + c.btnSecondary}>
-                {audioLoading
-                  ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
-                  : <>🔊 {t('pir_hear_it')}</>}
-              </button>
-            ) : (
-              <div className="flex flex-col items-center gap-1.5">
-                <audio controls autoPlay src={audioUrl} className="h-8 w-48"
-                  onEnded={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }} />
-                <button onClick={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }}
-                  className={'text-[10px] ' + c.textMuted}>✕ {t('pir_close')}</button>
+            {audioSafe && (
+              <div className="flex flex-col items-center gap-2">
+                {!audioUrl ? (
+                  <button onClick={fetchAudio} disabled={audioLoading}
+                    className={'text-sm font-bold px-4 py-2 rounded-xl border disabled:opacity-40 ' + c.btnSecondary}>
+                    {audioLoading
+                      ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
+                      : <>🔊 {t('pir_hear_it')}</>}
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-center gap-1.5">
+                    <audio controls autoPlay src={audioUrl} className="h-8 w-48"
+                      onEnded={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }} />
+                    <button onClick={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }}
+                      className={'text-[10px] ' + c.textMuted}>✕ {t('pir_close')}</button>
+                  </div>
+                )}
+                <p className={'text-[10px] ' + c.textMuted}>{t('pir_audio_note')}</p>
               </div>
             )}
-            <p className={'text-[10px] ' + c.textMuted}>{t('pir_audio_note')}</p>
+
+            {p.ipa && (
+              <button onClick={() => setShowIPA(!showIPA)} className={'text-xs mt-3 block mx-auto ' + linkStyle}>
+                {showIPA ? `${t('pir_copy_ipa')} ${p.ipa}` : t('pir_show_ipa')}
+              </button>
+            )}
           </div>
+        ) : (
+          <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
+            {statusKey && <p className={'text-[11px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
+            <p className={'text-3xl font-black tracking-wide ' + c.text}>{results.word}</p>
+          </div>
+        )}
 
-          {p?.ipa && (
-            <button onClick={() => setShowIPA(!showIPA)} className={'text-xs mt-3 block mx-auto ' + linkStyle}>
-              {showIPA ? `${t('pir_copy_ipa')} ${p.ipa}` : t('pir_show_ipa')}
-            </button>
-          )}
-        </div>
+        {/* This needs more context to answer well */}
+        {needsContext && (results.needs_context?.reason || results.needs_context?.helpful_context) && (
+          <div className={'p-4 rounded-xl border ' + c.infoBox}>
+            {results.needs_context.reason && <p className="text-sm">{results.needs_context.reason}</p>}
+            {results.needs_context.helpful_context && (
+              <p className="text-xs mt-1"><span className="font-bold">{t('pir_needs_context_helper_label')}</span> {results.needs_context.helpful_context}</p>
+            )}
+          </div>
+        )}
 
-        {/* Syllables & stress */}
-        {p?.syllables?.length > 0 && (
-          <div className={'p-4 rounded-xl ' + c.inset + ' flex items-center justify-center gap-1'}>
+        {/* Syllables */}
+        {p.syllables?.length > 0 && (
+          <div className={'p-4 rounded-xl ' + c.inset + ' flex items-center justify-center gap-1 flex-wrap'}>
             {p.syllables.map((syl, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <span className={'text-lg font-light ' + c.textMuted}>·</span>}
-                <span className={'text-lg font-bold px-2 py-1 rounded-lg ' +
-                  (p.stress?.toLowerCase().includes(syl.toLowerCase()) || p.phonetic?.includes(syl.toUpperCase())
-                    ? c.tipBg + ' ' + c.tipText : c.text)}>
-                  {syl}
-                </span>
+                <span className={'text-lg font-bold px-2 py-1 rounded-lg ' + c.text}>{syl}</span>
               </React.Fragment>
             ))}
           </div>
         )}
 
-        {/* Sounds like + Mouth guide */}
-        {(p?.sounds_like || p?.mouth_guide) && (
+        {/* Sounds like + mouth guide + prosody */}
+        {(p.sounds_like || p.mouth_guide || (p.prosody && prosodyLabelKey)) && (
           <div className={c.card + ' border rounded-xl p-4 space-y-3'}>
             {p.sounds_like && (
               <div>
@@ -436,27 +491,41 @@ const PronounceItRight = ({ tool }) => {
                 <p className={'text-sm ' + c.text}>{p.mouth_guide}</p>
               </div>
             )}
-            {p.stress && (
+            {p.prosody && prosodyLabelKey && (
               <div>
-                <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>💪 {t('pir_stress')}</p>
-                <p className={'text-xs ' + c.textSecondary}>{p.stress}</p>
+                <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>💪 {t(prosodyLabelKey)}</p>
+                <p className={'text-xs ' + c.textSecondary}>{p.prosody}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Common mistakes */}
-        {results.common_mistakes?.length > 0 && (
-          <Section title={t('pir_common_mistakes')} emoji="❌" sKey="mistakes" defaultOpen>
+        {/* Watch out for */}
+        {results.watch_out_for?.length > 0 && (
+          <Section title={t('pir_watch_out_for')} emoji="⚠️" sKey="watch" defaultOpen>
             <div className="space-y-2 mt-3">
-              {results.common_mistakes.map((m, i) => (
+              {results.watch_out_for.map((w, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.warning}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={'text-xs font-bold line-through ' + c.warningTxt}>{m.wrong}</span>
-                    <span className={'text-xs ' + c.textMuted}>→</span>
-                    <span className={'text-xs font-bold ' + c.successTxt}>{m.fix}</span>
+                  <p className={'text-xs ' + c.warningTxt}>{w.trap}</p>
+                  {w.fix && <p className={'text-[10px] font-semibold ' + c.successTxt + ' mt-1'}>→ {w.fix}</p>}
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Another established pronunciation */}
+        {results.variants?.length > 0 && (
+          <Section title={t('pir_variants_title')} emoji="🔀" sKey="variants">
+            <div className="space-y-2 mt-3">
+              {results.variants.map((v, i) => (
+                <div key={i} className={'p-3 rounded-lg ' + c.inset}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {v.label && <span className={'text-xs font-bold ' + c.text}>{v.label}</span>}
+                    {v.phonetic && <span className={'text-xs ' + c.tipText}>{v.phonetic}</span>}
+                    {v.ipa && <span className={'text-[10px] font-mono ' + c.textMuted}>{v.ipa}</span>}
                   </div>
-                  <p className={'text-[10px] ' + c.textSecondary}>{m.why}</p>
+                  {v.when_used && <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{v.when_used}</p>}
                 </div>
               ))}
             </div>
@@ -464,7 +533,7 @@ const PronounceItRight = ({ tool }) => {
         )}
 
         {/* Context info */}
-        {ctx && (
+        {hasContextInfo && (
           <div className={c.card + ' border rounded-xl p-4 space-y-3'}>
             {ctx.what_it_is && (
               <div>
@@ -472,69 +541,26 @@ const PronounceItRight = ({ tool }) => {
                 <p className={'text-sm ' + c.text}>{ctx.what_it_is}</p>
               </div>
             )}
-            {ctx.origin_story && (
+            {ctx.background && (
               <div>
-                <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>📖 {t('pir_origin')}</p>
-                <p className={'text-xs ' + c.textSecondary}>{ctx.origin_story}</p>
+                <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>📖 {t('pir_background')}</p>
+                <p className={'text-xs ' + c.textSecondary}>{ctx.background}</p>
               </div>
             )}
-            {ctx.use_in_sentence && (
-              <div className={'p-3 rounded-lg ' + c.inset}>
-                <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>💬 {t('pir_use_in_sentence')}</p>
-                <p className={'text-sm italic ' + c.text}>"{ctx.use_in_sentence}"</p>
-              </div>
-            )}
-            {ctx.pro_tip && (
+            {ctx.useful_in_context && (
               <div className={'p-3 rounded-lg ' + c.tipBg}>
-                <p className={'text-xs font-bold ' + c.tipText}>💡 {t('pir_pro_tip')} {ctx.pro_tip}</p>
+                <p className={'text-xs font-bold ' + c.tipText}>💬 {t('pir_useful_in_context')}</p>
+                <p className={'text-sm ' + c.tipText}>{ctx.useful_in_context}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Don't confuse with */}
-        {results.dont_confuse_with?.length > 0 && (
-          <Section title={t('pir_dont_confuse')} emoji="⚠️" sKey="confuse">
-            <div className="space-y-2 mt-3">
-              {results.dont_confuse_with.map((item, i) => (
-                <div key={i} className={'p-3 rounded-lg ' + c.inset}>
-                  <p className={'text-xs font-bold ' + c.text}>{item.word}</p>
-                  <p className={'text-[10px] ' + c.textSecondary}>{item.difference}</p>
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* Regional variants */}
-        {results.regional_variants?.length > 0 && (
-          <Section title={t('pir_regional_variants')} emoji="🌍" sKey="regional">
-            <div className="space-y-2 mt-3">
-              {results.regional_variants.map((v, i) => (
-                <div key={i} className={'p-3 rounded-lg ' + c.inset}>
-                  <div className="flex items-center gap-2">
-                    <span className={'text-xs font-bold ' + c.text}>{v.region}</span>
-                    <span className={'text-xs ' + c.tipText}>{v.pronunciation}</span>
-                  </div>
-                  {v.note && <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{v.note}</p>}
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* Confidence script */}
-        {results.confidence_script && (
+        {/* If you're unsure */}
+        {results.confirmation_script && (
           <div className={'p-4 rounded-xl border ' + c.successBox}>
             <p className={'text-xs font-bold ' + c.successTxt + ' mb-1'}>💬 {t('pir_unsure_moment')}</p>
-            <p className={'text-sm italic ' + c.successTxt}>"{results.confidence_script}"</p>
-          </div>
-        )}
-
-        {/* Fun fact */}
-        {results.fun_fact && (
-          <div className={'p-3 rounded-lg ' + c.infoBox}>
-            <p className={'text-xs ' + c.accentTxt}>🧠 {results.fun_fact}</p>
+            <p className={'text-sm italic ' + c.successTxt}>"{results.confirmation_script}"</p>
           </div>
         )}
 
@@ -560,24 +586,20 @@ const PronounceItRight = ({ tool }) => {
         <p className={'text-xs font-bold ' + c.textMuted + ' uppercase'}>🗣️ {t('pir_batch_count', { count: batchResults.guides.length })}</p>
         {batchResults.guides.map((g, i) => (
           <div key={i} className={c.card + ' border rounded-xl p-4'}>
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className={'text-lg font-bold ' + c.text}>{g.word}</p>
-                <p className={'text-base font-bold ' + c.tipText}>{g.phonetic}</p>
-              </div>
-              {g.ipa && <span className={'text-[10px] font-mono px-2 py-0.5 rounded ' + c.ipaBg + ' ' + c.textMuted}>{g.ipa}</span>}
+            <div className="mb-2">
+              <p className={'text-lg font-bold ' + c.text}>{g.word}</p>
+              {g.phonetic
+                ? <p className={'text-base font-bold ' + c.tipText}>{g.phonetic}</p>
+                : <p className={'text-[10px] font-bold uppercase ' + c.textMuted}>{t('pir_batch_needs_context')}</p>}
             </div>
-            {g.syllables?.length > 0 && (
-              <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{g.syllables.join(' · ')}</p>
-            )}
-            {g.sounds_like && <p className={'text-xs ' + c.text + ' mb-1'}>👂 {g.sounds_like}</p>}
-            {g.top_mistake && (
+            {g.prosody && <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{g.prosody}</p>}
+            {g.sound_note && <p className={'text-xs ' + c.text + ' mb-1'}>👂 {g.sound_note}</p>}
+            {g.watch_out_for && (
               <div className={'p-2 rounded-lg ' + c.warning + ' mt-2'}>
-                <p className={'text-[10px] ' + c.warningTxt}>❌ {g.top_mistake}</p>
+                <p className={'text-[10px] ' + c.warningTxt}>⚠️ {g.watch_out_for}</p>
               </div>
             )}
-            {g.what_it_is && <p className={'text-[10px] ' + c.textMuted + ' mt-1'}>{activeCat.emoji} {g.what_it_is}</p>}
-            {g.fun_fact && <p className={'text-[10px] ' + c.textMuted + ' mt-0.5 italic'}>🧠 {g.fun_fact}</p>}
+            {!g.phonetic && g.context_needed && <p className={'text-[10px] italic ' + c.textMuted + ' mt-1'}>{g.context_needed}</p>}
           </div>
         ))}
       </div>

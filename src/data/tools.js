@@ -2287,10 +2287,10 @@ export const tools = [
     get: "A phonetic guide built from sounds you already have, plus what to avoid.",
     edge: "It calibrates to your native language — the hard part of a word is different for a Spanish speaker than a Mandarin one.",
   },
-  seoDescription: "Type any name, dish, brand, or place and get a pronunciation guide tuned to your native language — phonetic spelling, stress, common mistakes, and a confidence script.",
+  seoDescription: "Type any name, dish, brand, or place and get the clearest pronunciation guidance possible from the spelling and context you give — tuned to your native language, honest about what's genuinely uncertain.",
   seoTitle: "How to Pronounce Any Word - Pronunciation Guide",
   title: "Pronounce It Right",
-  tagline: "Names, food, places, brands — never mispronounce anything again",
+  tagline: "Know how to say it before you have to.",
   tags: [
     'pronounce', 'pronunciation', 'how to say', 'mispronounce', 'phonetics',
     'ipa', 'name', 'food', 'restaurant', 'menu', 'brand', 'foreign', 'word',
@@ -2299,27 +2299,29 @@ export const tools = [
   icon: "🗣️",
   categories: ['Discourse', 'Go Deep!'],
   headerColor: "#9a4040",
-  description: "Type any word — a name, dish, brand, place, or phrase — and get a pronunciation guide calibrated to your native language. Covers phonetic spelling, syllable stress, mouth-position tips, common mistakes with fixes, and a confidence script for uncertain moments. Batch mode handles up to 10 words at once.",
+  description: "Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.",
   guide: {
-    overview: "Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker.",
+    overview: "Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker. Names get particular care: a spelling doesn't prove how a specific person says their own name, so the guide offers the common reading plus a respectful way to ask, rather than asserting certainty it doesn't have.",
     howToUse: [
-      "Pick a category: Name, Food/Drink, Place, Brand, Music/Art, Science, Phrase, or Other.",
-      "Type the word and select your native language — this calibrates the phonetic guide to your ear.",
-      "Add optional context (e.g. 'ordering at a French restaurant', 'coworker's name') for tailored tips.",
-      "Review the guide: phonetic spelling, syllable breakdown, common mistakes, and a confidence script.",
+      "Type the word, name, or phrase — this is the only required field.",
+      "Optionally pick what kind of thing it is: Name, Food/Drink, Place, Brand, Music/Art, Science/Medical, Phrase, or Other.",
+      "Select your native language — this calibrates every sound comparison and mouth-position tip to your ear.",
+      "Add optional context (e.g. 'ordering at a French restaurant', 'my coworker's name') when spelling alone doesn't settle the reading.",
+      "Review the guide: phonetic spelling, stress/tone/rhythm (whichever applies), things to watch out for, and — for names — a script for asking someone to confirm.",
       "Use Batch mode to look up 2–10 words at once — great for travel prep or restaurant menus.",
       "Tap any word in your history to re-look it up instantly."
     ],
     example: {
       scenario: "You're going to an Italian restaurant and want to order without second-guessing yourself.",
       action: "Switch to Batch mode, select Food/Drink, enter: Gnocchi, Bruschetta, Prosciutto, Chianti.",
-      result: "Four pronunciation cards with phonetic spelling, the #1 mistake for each word, and the sounds that trip up English speakers specifically."
+      result: "Four pronunciation cards with phonetic spelling, the sound each one trips up for an English speaker specifically, and a flag on any word whose reading genuinely depends on context you haven't given."
     },
     tips: [
       "Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.",
-      "Category selection gives the AI the right context: etiquette tips for names, ordering confidence for food.",
-      "The confidence script gives you a natural thing to say when you're still unsure — better than guessing silently.",
-      "IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result."
+      "For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.",
+      "When a reading could go more than one way, the guide says so and explains what context would settle it, instead of picking one and hoping.",
+      "IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result.",
+      "'Hear it' only appears when the spelling is unambiguous enough for text-to-speech to match the written guide — audio is a convenience, not proof of the correct reading."
     ]
   }
 },
