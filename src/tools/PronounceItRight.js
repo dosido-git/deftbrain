@@ -414,6 +414,10 @@ const PronounceItRight = ({ tool }) => {
     const hasHero = !!p.phonetic;
     const needsContext = results.needs_context?.needed;
     const hasContextInfo = ctx && (ctx.what_it_is || ctx.background || ctx.useful_in_context);
+    // A schema-compliant but empty/placeholder entry (no phonetic) is not a
+    // genuine alternate reading — don't render an "Another Established
+    // Pronunciation" section that opens to nothing.
+    const realVariants = (results.variants || []).filter(v => v?.phonetic?.trim());
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
@@ -520,10 +524,10 @@ const PronounceItRight = ({ tool }) => {
         )}
 
         {/* Another established pronunciation */}
-        {results.variants?.length > 0 && (
+        {realVariants.length > 0 && (
           <Section title={t('pir_variants_title')} emoji="🔀" sKey="variants">
             <div className="space-y-2 mt-3">
-              {results.variants.map((v, i) => (
+              {realVariants.map((v, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.inset}>
                   <div className="flex items-center gap-2 flex-wrap">
                     {v.label && <span className={'text-xs font-bold ' + c.text}>{v.label}</span>}

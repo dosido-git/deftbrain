@@ -164,6 +164,56 @@ UI (not just curl) and watched the real fetch go out and return 200. "Siobhan" �
 never got audio under V2 — now does, since we're voicing "a common pronunciation is X" (which
 the text already asserts), not a stronger claim than what's on screen.
 
+## V2.2 (2026-09-07, same day) — internal consistency + a real model upgrade
+
+An owner-supplied test caught a genuine correctness bug: the Hermès result had phonetic
+respelling, IPA, sounds_like, and watch_out_for all independently reinforcing the same wrong
+final consonant (voiced /z/; correct French is voiceless /s/ — confirmed against Wikipedia's
+own IPA transcription).
+
+**Prompt fixes (all live-verified):**
+- Establish one canonical reading before generating any pronunciation field; the final
+  self-check now explicitly asks whether respelling/IPA/sounds_like/mouth_guide/watch_out_for
+  describe the exact same sounds.
+- Schema reordered so `ipa` precedes `phonetic` and the respelling is explicitly written to
+  match it — English spelling intuition (a post-vowel "s" reads as voiced, as in "days") was
+  the actual mechanism pulling the respelling toward "z" independently of a correct IPA.
+- A general linguistic rule, not a per-word memorized fact: French normally drops a word-final
+  consonant; an accent added purely to force it to be pronounced (fils, hélas, Hermès) does not
+  thereby make it voiced — a different rule (intervocalic single-consonant voicing, as in
+  "maison") only applies to a consonant sitting between two vowels, a different position.
+- French (and similarly non-lexical-stress languages) now get `prosody_label: RHYTHM` with
+  phrase-prominence framing instead of an asserted "stressed syllable" that isn't a real feature.
+- Banned: a rhyme that doesn't preserve the target vowel; a vague adjective ("softer"/"harder")
+  without the concrete articulation behind it; a variants entry without a genuinely distinct
+  reading (also filtered defensively on the frontend — `realVariants` requires non-empty
+  `phonetic`); population generalizations ("most people", "no one") anywhere, including a
+  trailing sentence tacked onto `confirmation_script`.
+
+**What prompting alone could NOT fix — the model upgrade:** repeated live testing on Haiku
+(`MODELS.FAST`) showed it wasn't simplifying for ease, it was genuinely unstable about this
+specific fact — 5 identical calls produced /z/, /s/ (correct), and a fully-dropped consonant,
+all with `reading_status: CLEAR` (the model doesn't reliably know when it doesn't know this
+class of exception). Isolated the variable: the identical prompt on Sonnet (`MODELS.SMART`) got
+it right, including the new RHYTHM framing, on its first try. Both endpoints now use
+`MODELS.SMART` — higher cost/latency than Haiku, but this tool's entire premise is not asserting
+pronunciation facts it doesn't actually have; a fast/cheap model that's confidently unstable
+about real linguistic exceptions undermines that. **Do not revert to `MODELS.FAST` without
+re-verifying this exact class of fact** (a Latin-script loanword with an orthographic exception
+that contradicts the general rule of its source language).
+
+**Two more bugs surfaced by this same live-testing pass, unrelated to the original report:**
+1. One batch call wrapped a respelling in `**markdown bold**` containing a stray Cyrillic "К"
+   standing in for Latin "K" — added a deterministic `stripMarkdown()` backstop (safe
+   regardless of script) plus an explicit "no markdown, no script substitution" prompt rule.
+2. My own new "never substitute a visually similar script" wording was briefly overbroad: one
+   run had the model flatten German umlauts to ASCII (`gleichmaessig`, `franzoesische`) instead
+   of a wrong-script substitution — a real regression from that instruction, not what it asked
+   for. Fixed the wording to distinguish "wrong script" (never) from "real accented Latin
+   letters — ä/ö/ü/ß/ç/é" (always keep them), and added "check every one of the 5 batch guides,
+   not just the first" after the flattening showed up on only some items in one response.
+   Verified clean across 2 consecutive German batch calls after the fix.
+
 ## DO NOT silently reverse
 - The V2 schema and its honesty rules (reading_status, needs_context, audio gating) —
   reverting to always-confident output reintroduces the exact problem this rewrite fixed.
@@ -175,3 +225,9 @@ the text already asserts), not a stronger claim than what's on screen.
 - The audio gate (V2.1): never render "Hear it" without genuine `pronunciation.ipa` present
   (and `reading_status !== 'UNCERTAIN'`) — and never feed the audio route raw spelling when IPA
   is available, or the written guide and audio can disagree again.
+- MODELS.SMART on both endpoints (V2.2) — see above; this was proven necessary, not a
+  precautionary default.
+- The IPA-precedes-phonetic field order and the "write phonetic to match the IPA above" framing
+  — reverting the order reopens the exact respelling-vs-IPA disagreement this fixed.
+- `stripMarkdown()` on `pronunciation.phonetic`, `syllables`, `variants[].phonetic`, and
+  `guides[].phonetic` — cheap, safe regardless of script, and already caught one real glitch.

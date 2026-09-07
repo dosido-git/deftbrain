@@ -2,9 +2,9 @@
   "_meta": {
     "tool": "PronounceItRight",
     "generated": "2026-09-07",
-    "model": "claude-haiku (MODELS.FAST), 2 LLM endpoints + 1 ElevenLabs TTS route",
-    "baseline_commit": "pronounceitright-v2.1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. SCHEMA (V2): word/reading_status/language/pronunciation{phonetic,ipa,syllables,prosody_label,prosody,sounds_like,mouth_guide}/variants[]/watch_out_for[]/context_info{what_it_is,useful_in_context,background}/confirmation_script/needs_context{needed,reason,helpful_context}/audio{safe_to_offer,language_or_locale,reading_is_constrained} for the single endpoint; guides[]{word,reading_status,phonetic,prosody,sound_note,watch_out_for,context_needed} for batch (no ipa/syllables/what_it_is/fun_fact by design). GUARDS: (1) single endpoint guards on the top-level `pronunciation` key being present (never a nested/nullable field). (2) batch guards on `guides` being a non-empty array. (3) single max_tokens 3500, batch max_tokens 3000, batch validWords capped at 8. (4) KNOWN BUG CLASS, FIXED HERE: a German-locale call to the single endpoint could return a confidently-worded quoted phrase (confirmation_script/useful_in_context/watch_out_for) with a literal ASCII double-quote character inside the JSON string value, which the shared repairJsonStrings() cannot distinguish from a real string terminator -> a JSON parse error ('Expected comma or closing brace after a property value') -> 500 on that call. Batch was unaffected because its user prompt already carried the no-double-quote rule; the single endpoint only had that rule in the system prompt, which the model did not reliably obey under locale pressure. Fix: added an explicit 'use single quotes, never a double-quote, inside any string value' rule directly in the single endpoint's USER prompt (next to the schema), matching the working batch prompt. Verified: 4 consecutive live German calls (1 ambiguous-reading food case, 1 name case x3) all returned HTTP 200 valid JSON after the fix. DO NOT reverse: the no-double-quote rule in the USER prompt (not just system prompt) on the single endpoint; single max_tokens 3500 + batch cap 8; the V2 schema and its reading_status/needs_context/audio-gating honesty rules; the PlainTalk cross-ref staying in the main render tree (S5.5). V2.1 (audio): the schema's audio{safe_to_offer,language_or_locale,reading_is_constrained} object was REMOVED — audio is now synthesized directly from pronunciation.ipa via ElevenLabs eleven_v3 (IPA wrapped in slashes), so there is no separate safety judgment left for the model to make; the frontend gates 'Hear it' on pronunciation.ipa being non-empty and reading_status !== UNCERTAIN instead. Do not re-add the audio object without re-adding the corresponding frontend gating logic it used to drive."
+    "model": "claude-sonnet (MODELS.SMART) — upgraded from Haiku, see how_to_regression_diff",
+    "baseline_commit": "pronounceitright-v2.2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. SCHEMA (V2): word/reading_status/language/pronunciation{phonetic,ipa,syllables,prosody_label,prosody,sounds_like,mouth_guide}/variants[]/watch_out_for[]/context_info{what_it_is,useful_in_context,background}/confirmation_script/needs_context{needed,reason,helpful_context}/audio{safe_to_offer,language_or_locale,reading_is_constrained} for the single endpoint; guides[]{word,reading_status,phonetic,prosody,sound_note,watch_out_for,context_needed} for batch (no ipa/syllables/what_it_is/fun_fact by design). GUARDS: (1) single endpoint guards on the top-level `pronunciation` key being present (never a nested/nullable field). (2) batch guards on `guides` being a non-empty array. (3) single max_tokens 3500, batch max_tokens 3000, batch validWords capped at 8. (4) KNOWN BUG CLASS, FIXED HERE: a German-locale call to the single endpoint could return a confidently-worded quoted phrase (confirmation_script/useful_in_context/watch_out_for) with a literal ASCII double-quote character inside the JSON string value, which the shared repairJsonStrings() cannot distinguish from a real string terminator -> a JSON parse error ('Expected comma or closing brace after a property value') -> 500 on that call. Batch was unaffected because its user prompt already carried the no-double-quote rule; the single endpoint only had that rule in the system prompt, which the model did not reliably obey under locale pressure. Fix: added an explicit 'use single quotes, never a double-quote, inside any string value' rule directly in the single endpoint's USER prompt (next to the schema), matching the working batch prompt. Verified: 4 consecutive live German calls (1 ambiguous-reading food case, 1 name case x3) all returned HTTP 200 valid JSON after the fix. DO NOT reverse: the no-double-quote rule in the USER prompt (not just system prompt) on the single endpoint; single max_tokens 3500 + batch cap 8; the V2 schema and its reading_status/needs_context/audio-gating honesty rules; the PlainTalk cross-ref staying in the main render tree (S5.5). V2.1 (audio): the schema's audio{safe_to_offer,language_or_locale,reading_is_constrained} object was REMOVED — audio is now synthesized directly from pronunciation.ipa via ElevenLabs eleven_v3 (IPA wrapped in slashes), so there is no separate safety judgment left for the model to make; the frontend gates 'Hear it' on pronunciation.ipa being non-empty and reading_status !== UNCERTAIN instead. Do not re-add the audio object without re-adding the corresponding frontend gating logic it used to drive. V2.2 (consistency + model upgrade): moved from MODELS.FAST (Haiku) to MODELS.SMART (Sonnet) after live-testing showed Haiku confidently gave internally-consistent but FACTUALLY WRONG French phonology (Hermes final consonant as /z/ instead of the correct /s/) even after multiple consistency-focused prompt fixes — a knowledge gap, not a compliance gap. Also added: an internal-consistency pass (establish one canonical reading before generating phonetic/ipa/sounds_like/mouth_guide/watch_out_for, and a final self-check that they all agree); IPA now precedes phonetic in the schema and is the explicit anchor for it; explicit French/no-lexical-stress RHYTHM guidance; a ban on rhymes that contradict the target vowel; a ban on vague adjectives (softer/harder) without concrete articulation; variants only rendered (frontend AND prompt) when genuinely distinct; a ban on population generalizations (\"most people\", \"no one\") anywhere including confirmation_script; a deterministic stripMarkdown() backstop after one live run wrapped a respelling in **markdown** with a stray Cyrillic character; and an explicit ASCII-transliteration ban after batch mode was observed writing 'gleichmaessig'/'franzoesische' instead of proper German umlauts on some but not all of the 5 guides in one response. Verified live: Hermes correct and internally consistent across 5+ consecutive calls after the fix; German batch mode uses proper umlauts across 2 consecutive calls after the ASCII-ban reinforcement. DO NOT downgrade back to MODELS.FAST without re-verifying this exact class of factual accuracy."
   },
   "cases": [
     {
@@ -24,41 +24,41 @@
         "reading_status": "MULTIPLE_ESTABLISHED_READINGS",
         "language": "Italienisch",
         "pronunciation": {
-          "phonetic": "NYOK-kee",
-          "ipa": "ˈɲɔk.ki",
+          "ipa": "ˈɲɔkki",
+          "phonetic": "NJOK-ki",
           "syllables": [
-            "nyo",
-            "kki"
+            "gnoc",
+            "chi"
           ],
           "prosody_label": "STRESS",
-          "prosody": "Das Gewicht liegt auf der ersten Silbe; die zweite Silbe ist kurz und unbetont.",
-          "sounds_like": "Das 'nyo' ähnelt dem deutschen 'Gn' in 'Gnade', gefolgt von 'o' wie in 'Gott'; das 'kki' wie das deutsche 'kk' in 'Akkord'.",
-          "mouth_guide": "Das 'ny' entsteht mit der Zunge an der Zungenrückenmitte (ähnlich dem deutschen 'ng'), während die Lippen die Zungenbewegung zulassen — kein hartes 'n', sondern fließend in das 'o' über."
+          "prosody": "Die Betonung liegt auf der ersten Silbe, wie bei den meisten zweisilbigen italienischen Wörtern; die zweite Silbe klingt kurz und unbetont aus.",
+          "sounds_like": "Klingt ungefähr wie 'NJOK-ki', wobei das NJ dem deutschen Laut in 'Njanja' oder dem 'gn' in 'Lasagne' ähnelt.",
+          "mouth_guide": "Das 'gn' wird als ein einziger Laut gesprochen: Die Zunge liegt flach am Gaumen wie beim deutschen 'n', aber gleichzeitig hebt sich die Zungenmitte wie bei einem 'j' — das ergibt den weichen Nasallaut 'nj'. Das doppelte 'k' in der Mitte wird kurz und deutlich gestoppt, ähnlich wie ein kurzes, hartes 'k' im Deutschen."
         },
         "variants": [
           {
-            "label": "Anglisierte Aussprache, im deutschsprachigen Raum verbreitet",
-            "phonetic": "NOK-kee",
-            "ipa": "ˈnɑk.ki",
-            "when_used": "In Deutschland und Österreich häufig zu hören; das 'ny' wird zu einem normalen 'n' vereinfacht."
+            "label": "Eingedeutschte Aussprache",
+            "phonetic": "NOKI",
+            "ipa": "ˈnɔki",
+            "when_used": "Im deutschen Alltag weit verbreitet; der 'gn'-Laut wird zu einem einfachen 'n' vereinfacht und das Doppel-k nicht hörbar gedoppelt."
           }
         ],
         "watch_out_for": [
           {
-            "trap": "Das 'gn' am Anfang wird oft stumm gemacht oder als hartes 'g' gesprochen, statt das 'ny'-Lautmerkmal beizubehalten.",
-            "fix": "Denken Sie an 'Gnade' — das 'Gn' wird nicht als zwei separate Laute gesprochen, sondern als weicher, palataler Nasal am Anfang, der direkt in das 'o' gleitet."
+            "trap": "Das 'g' separat aussprechen, also 'g-NOKI' oder 'GNOKI' mit hartem G",
+            "fix": "Das 'gn' ist ein einziger weicher Nasallaut 'nj' — kein hartes G davor, sondern direkt 'NJOK-ki'."
           },
           {
-            "trap": "Das doppelte 'kk' wird manchmal zu einem einfachen 'k' verkürzt.",
-            "fix": "Zwei separate 'k'-Laute bewahren den italienischen Klang: 'nyo-KK-i', nicht 'nyo-ki'."
+            "trap": "Das 'ch' am Ende wie das deutsche 'ch' (als in 'ich' oder 'Bach') aussprechen",
+            "fix": "Das 'chi' im Italienischen steht für ein einfaches 'k'-Laut; die Endung lautet '-ki', nicht '-chi' wie im Deutschen."
           }
         ],
         "context_info": {
-          "what_it_is": "Italienische Kartoffelbrei- oder Grießnocken, oft mit Sauce serviert.",
-          "useful_in_context": "",
+          "what_it_is": "Gnocchi sind kleine, weiche Klößchen aus der italienischen Küche, meist aus Kartoffeln und Mehl.",
+          "useful_in_context": "In deutschen Restaurants ist die eingedeutschte Form 'NOKI' allgemein verständlich; wer die italienische Aussprache 'NJOK-ki' verwendet, liegt ebenfalls richtig.",
           "background": ""
         },
-        "confirmation_script": "",
+        "confirmation_script": "Falls du unsicher bist: 'Hab ich das richtig ausgesprochen — 'NJOK-ki'?' ist eine völlig natürliche Rückfrage.",
         "needs_context": {
           "needed": false,
           "reason": "",
@@ -93,46 +93,46 @@
           {
             "word": "Gnocchi",
             "reading_status": "CLEAR",
-            "phonetic": "NYO-kki",
-            "prosody": "Betonung auf der ersten Silbe, kurz und prägnant",
-            "sound_note": "Das NY wie in Deutsch 'Nylon', dann doppeltes k wie in 'Klick'",
-            "watch_out_for": "Nicht Gno-TSCH-i sprechen — das erste O ist kurz und unbetont",
+            "phonetic": "NJOК-ki",
+            "prosody": "Betonung auf der ersten Silbe, kurz und knapp: NJOK-ki",
+            "sound_note": "Das GN am Wortanfang wird wie italienisches GN gesprochen: Zunge an den Gaumen wie beim deutschen N, aber mit gleichzeitigem J-Gleitlaut davor — ähnlich wie das NY in spanisch mañana, nur kürzer",
+            "watch_out_for": "Das G nicht als hartes deutsches G sprechen und das H nicht hörbar machen: beide Buchstaben zusammen ergeben den einen Laut NJ, nicht G-N-O",
             "context_needed": ""
           },
           {
             "word": "Bruschetta",
             "reading_status": "CLEAR",
-            "phonetic": "broo-SKET-ta",
-            "prosody": "Betonung auf der zweiten Silbe, drei deutliche Silben",
-            "sound_note": "Wie im Italienischen: broo (wie in 'Bruder'), dann SKET (wie 'Skelett' ohne l), ta am Ende kurz",
-            "watch_out_for": "Nicht Broo-SHET-ta — das sch-Geräusch ist deutsch, aber hier bleibt es sk",
+            "phonetic": "brus-KET-ta",
+            "prosody": "Betonung auf der zweiten Silbe: brus-KET-ta",
+            "sound_note": "Das SCH in der Mitte ist kein deutsches SCH (wie in Schule), sondern ein hartes K — weil im Italienischen CH vor E/I immer K klingt",
+            "watch_out_for": "Nicht bru-SHET-ta sprechen: das wäre der häufigste Fehler durch deutsche oder englische SCH-Intuition; die Buchstabenfolge CHE ergibt hier K",
             "context_needed": ""
           },
           {
             "word": "Charcuterie",
             "reading_status": "CLEAR",
-            "phonetic": "schar-koo-tuh-REE",
-            "prosody": "Betonung auf der letzten Silbe, vier Silben fließend",
-            "sound_note": "Französisches Wort: schar wie deutsches 'Schar', dann koo wie in 'Kuh', REE wie in 'Ree-gal' aber länger",
-            "watch_out_for": "Nicht TSCH-Laut in der Mitte — es bleibt t-u, nicht tsch",
+            "phonetic": "schar-küt-RI",
+            "prosody": "Französisch: keine starke Wortbetonung, alle Silben gleichmäßig, leichte Anhebung auf der letzten: schar-küt-RI",
+            "sound_note": "Das U in der zweiten Silbe ist ein deutsches Ü (Lippen runden, wie in über): küt. Das abschließende IE klingt wie ein langes I, das R davor ist ein gerolltes oder zäpfchen-R wie im Französischen oder Deutschen",
+            "watch_out_for": "Nicht das E am Ende sprechen: Charcuterie endet auf einem langen I-Laut, das E ist stumm — und das CH am Anfang ist ein scharfes S (wie in Celsius), nicht SCH",
             "context_needed": ""
           },
           {
             "word": "Quinoa",
             "reading_status": "CLEAR",
-            "phonetic": "KWIN-wah",
-            "prosody": "Betonung auf der ersten Silbe, zwei Silben",
-            "sound_note": "KWIN wie in 'Quintessenz', dann wah wie in 'Wasser' ohne das -ser",
-            "watch_out_for": "Nicht Kwi-NO-a — das Wort ist kein Wort mit drei Silben, sondern zwei",
+            "phonetic": "KI-nu-a",
+            "prosody": "Betonung auf der ersten Silbe: KI-nu-a, drei Silben",
+            "sound_note": "Das QUI klingt wie KI (nicht KWI): im Quechua gibt es keinen W-Laut an dieser Stelle. Das OA am Ende ergibt zwei getrennte Vokale: nu-A",
+            "watch_out_for": "Nicht KWI-no-a sprechen: der W-Laut nach dem K ist ein englischer Einfluss, der im Original nicht vorkommt",
             "context_needed": ""
           },
           {
             "word": "Açaí",
             "reading_status": "CLEAR",
-            "phonetic": "ah-sah-EE",
-            "prosody": "Betonung auf der letzten Silbe, drei Silben gleichmäßig",
-            "sound_note": "Portugiesisches Wort: ah wie in 'Asche', sah wie in 'Sache', EE lang wie in 'Fee'",
-            "watch_out_for": "Das Cedille (ç) unter dem c verschwindet in der Aussprache — es ist reines s, nicht ç-Laut",
+            "phonetic": "a-sa-I",
+            "prosody": "Betonung auf der letzten Silbe, das I ist lang und betont: a-sa-I",
+            "sound_note": "Das Ç (C mit Cedille) klingt wie ein weiches deutsches S (stimmlos, wie in sagen, nicht wie Z). Das betonte Í am Ende ist ein klares, langes I",
+            "watch_out_for": "Nicht A-tsa-i sprechen: das Ç ist kein deutsches Z (also kein TS-Laut), sondern ein einfaches S wie in satt",
             "context_needed": ""
           }
         ]
