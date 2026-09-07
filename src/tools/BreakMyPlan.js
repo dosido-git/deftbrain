@@ -17,7 +17,7 @@ const STAGE_KEY = { EARLY: 'pm_stage_early', MIDDLE: 'pm_stage_middle', LATER: '
 const PRIORITY_KEY = { 'PRIMARY WATCH': 'pm_prob_high', 'IMPORTANT WATCH': 'pm_prob_medium', 'SECONDARY WATCH': 'pm_prob_low' };
 const PRIORITY_CLS = { 'PRIMARY WATCH': 'red', 'IMPORTANT WATCH': 'amber', 'SECONDARY WATCH': 'emerald' };
 
-const PreMortem = ({ tool }) => {
+const BreakMyPlan = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -503,5 +503,5 @@ const PreMortem = ({ tool }) => {
   );
 };
 
-PreMortem.displayName = 'PreMortem';
-export default PreMortem;
+BreakMyPlan.displayName = 'BreakMyPlan';
+export default BreakMyPlan;

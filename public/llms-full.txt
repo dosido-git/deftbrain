@@ -2289,6 +2289,37 @@ Input: It's Monday morning. You have 11 tasks: 3 emails to write, a spreadsheet 
 
 Output: BatchFlow groups them into 4 batches: a 9–11am Creative batch (report + design review), an 11am–noon Social batch (calls + emails), a 1–2pm Mechanical batch (spreadsheet + form, before the meeting), and an afternoon Physical batch (groceries after the meeting). Each batch includes a focus preset, estimated duration, and a break suggestion. Context switches drop from 10 to 3.
 
+### Break My Plan?
+
+URL: https://deftbrain.com/BreakMyPlan
+Tagline: Find the weak spots in your plan before they find you.
+Categories: The Office, Veer
+
+Have a plan you're about to put into action? Describe it and Break My Plan? will work backward from an imagined failure to find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them.
+
+**What it does.** Break My Plan? runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses. The imagined failure is a thinking device, not a prediction — the fiction stays disciplined so the advice underneath it stays grounded in your actual plan.
+
+**How to use it.**
+
+1. Describe your plan, project, or decision in specific terms
+2. Select the plan type — startup, career move, project, relationship, etc.
+3. Add what's at stake and what has to go right if relevant
+4. Read the failure narrative — a plausible way it could have gone wrong
+5. Focus on the Assumption to Test First and the Assumptions Autopsy — these are the most actionable outputs
+
+**Tips.**
+
+- The more specific your plan, the more specific and actionable the failure modes
+- The Assumption to Test First is the most important output — test it before you execute
+- Use the Assumptions Autopsy to build a pre-launch checklist
+- Run this on plans you're most excited about — excitement is when blind spots are largest
+
+**Example.**
+
+Input: Launching a newsletter as a side business
+
+Output: The memo: 'The newsletter launched, but audience growth remained too slow to support the paid target. Publishing continued to consume the time reserved for other priorities, and after repeated signs that distribution wasn't improving, the project was eventually paused.' Assumption to test first: whether consistent publishing alone can produce enough distribution. First move: test whether the topic attracts a real, engaged audience before building a monetization plan around it.
+
 ### Email Urgency Triager
 
 URL: https://deftbrain.com/EmailUrgencyTriager
@@ -2422,37 +2453,6 @@ Tell it what needs to happen by the time the meeting ends, and it builds an agen
 Input: A 60-minute call with seven people to decide which two of four proposals move into design. You know one voice tends to fill the time and the conversation drifts.
 
 Output: An agenda that opens by settling the criteria AND who makes the final call if the group does not agree — because you said you were not sure, so it names that as something to clarify rather than assuming an answer. Then a block per proposal, an evaluation block, and a selection block, with a couple of minutes left unscheduled rather than padded. For each of your two concerns you get a prevention, a response, and a sentence to say: 'That is a real question, but it belongs in the design phase.' Nothing tells you who the talkative person is or why they do it — you did not say, so it does not either.
-
-### Pre-Mortem
-
-URL: https://deftbrain.com/PreMortem
-Tagline: Your plan has already failed. This is the memo explaining why.
-Categories: The Office, Veer
-
-A post-mortem written from the future, before you execute. Your plan has already failed — this is the memo explaining why. Get the most likely failure modes with probability ratings, the fatal assumption you're making, the warning signs you'll ignore, and the one thing that actually determines the outcome.
-
-**What it does.** PreMortem runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses.
-
-**How to use it.**
-
-1. Describe your plan, project, or decision in specific terms
-2. Select the plan type — startup, career move, project, relationship, etc.
-3. Add timeline and key stakes if relevant
-4. Read the failure narrative — the memo from your future self
-5. Focus on the Fatal Assumption and the Assumptions Autopsy — these are the most actionable outputs
-
-**Tips.**
-
-- The more specific your plan, the more specific and actionable the failure modes
-- The Fatal Assumption is the most important output — test it before you execute
-- Use the Assumptions Autopsy to build a pre-launch checklist
-- Run this on plans you're most excited about — excitement is when blind spots are largest
-
-**Example.**
-
-Input: Launching a newsletter as a side business
-
-Output: The memo: 'We failed because we optimized for content quality instead of distribution. We assumed great writing would spread. It didn't. Fatal assumption: quality = growth. Warning sign ignored: open rate declining month 2, no referral system built. The one thing: distribution strategy had to come before content strategy.'
 
 ### The Debrief
 

@@ -54,16 +54,16 @@ module.exports = {
 
   cta: {
     glyph:    '💀',
-    headline: "Run the pre-mortem your project actually needs",
-    body:     "Pre-Mortem takes your plan, runs the cognitive inversion, and produces the failure narrative — including the most likely failure modes with probability ratings, the Fatal Assumption you're making, the warning signs you'll ignore, and the one thing that actually determines the outcome. The technique used by NASA, military planners, and venture investors, in 90 seconds.",
+    headline: "Run Break My Plan? on the project you're about to start",
+    body:     "Break My Plan? takes your plan, imagines it failed, and works backward — surfacing the failure paths worth watching, the Assumption to Test First, observable warning signs, and the highest-value first move. The technique used by NASA, military planners, and venture investors, in about a minute.",
     features: [
-      "Failure narrative — the memo from your future self explaining why the project failed",
-      "Failure modes ranked by probability — focus mitigation on what actually matters",
-      "Fatal Assumption — the single assumption most likely to kill the project",
-      "Warning signs you'll ignore — the early indicators most teams miss",
+      "Failure narrative — a disciplined imagined failure mechanism, not a forecast",
+      "Failure modes by priority — one Primary Watch tells you what to address first",
+      "Assumption to Test First — the single dependency most worth verifying before committing",
+      "Observable warning signs — early evidence to watch for, not predicted reactions",
       "Assumptions Autopsy — becomes a pre-launch checklist for verification",
     ],
-    toolId:   'PreMortem',
-    toolName: 'Pre-Mortem',
+    toolId:   'BreakMyPlan',
+    toolName: 'Break My Plan?',
   },
 };

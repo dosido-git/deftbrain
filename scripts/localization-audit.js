@@ -108,7 +108,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/ChaosPilot.js',
   'src/tools/AlternatePath.js',
   'src/tools/WhichLife.js',
-  'src/tools/PreMortem.js',
+  'src/tools/BreakMyPlan.js',
   'src/tools/HobbyMatch.js',
   'src/tools/TheWholeStory.js',
   'src/tools/UpsellShield.js',

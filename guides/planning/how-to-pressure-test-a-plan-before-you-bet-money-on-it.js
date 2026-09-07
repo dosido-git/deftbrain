@@ -55,15 +55,15 @@ module.exports = {
   cta: {
     glyph:    '💀',
     headline: "Get the assumption list and the failure memo before you commit",
-    body:     "Pre-Mortem produces the future-failure memo that surfaces what you're implicitly betting on. The Assumptions Autopsy lists each assumption, ranked by danger. The Fatal Assumption identifies the single belief most likely to kill the plan. The technique used by NASA, military planners, and venture investors — applied in minutes, not weeks.",
+    body:     "Break My Plan? produces a fictional failure memo that surfaces what you're implicitly betting on, then works backward to the Assumption to Test First and the failure paths worth addressing. The technique used by NASA, military planners, and venture investors — applied in minutes, not weeks.",
     features: [
-      "Failure memo from your future self — specific failure narrative with probability ratings",
-      "Assumptions Autopsy — every assumption ranked by danger, becomes a pre-launch checklist",
-      "Fatal Assumption — the single belief most likely to kill the plan",
-      "Warning signs you'll ignore — early indicators teams typically miss",
+      "Failure memo from an imagined future — a disciplined failure narrative, not fabricated statistics",
+      "Assumptions Autopsy — each dependency, what's actually known about it, and how to test it",
+      "Assumption to Test First — the dependency whose answer would most change the plan",
+      "Observable warning signs — early evidence to watch for, not predictions about what you'll ignore",
       "Plan-type tuning — startup, project, career move, investment each get specialized analysis",
     ],
-    toolId:   'PreMortem',
-    toolName: 'Pre-Mortem',
+    toolId:   'BreakMyPlan',
+    toolName: 'Break My Plan?',
   },
 };

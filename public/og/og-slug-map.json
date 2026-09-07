@@ -82,6 +82,7 @@
   "PlotTwist": "plot-twist",
   "DecisionPrism": "plot-twist",
   "PreMortem": "pre-mortem",
+  "BreakMyPlan": "pre-mortem",
   "ProcedureProbe": "procedure-probe",
   "Recall": "recall",
   "RecipeChaosSolver": "recipe-chaos-solver",

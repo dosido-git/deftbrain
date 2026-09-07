@@ -1,8 +1,30 @@
 # PreMortem — architecture & lock notes (`premortem-v2`)
 
+**Renamed to "Break My Plan?" on 2026-09-07** (full id/URL rename — id is now `BreakMyPlan`,
+canonical URL `/BreakMyPlan`; new tagline "Find the weak spots in your plan before they find
+you."). Kept internally, deliberately: the i18n prefix (`pm_*`), localStorage keys
+(`premortem-result`, `premortem-history`), the backend endpoint (`/api/pre-mortem`), this notes
+filename, and the golden-sample filename/slug (`pre-mortem-golden-sample.json`,
+`npm run check:golden pre-mortem`). `/PreMortem`, `/premortem`, `/pre-mortem` all 301 to
+`/BreakMyPlan` via `LEGACY_REDIRECTS` in `backend/server.js` (single hop — old id removed from
+`TOOL_IDS`); `TOOL_ALIASES` in `ToolRenderer.js` covers the in-app client-side case. Updated
+cross-references in `ConceptCoach.js`, `SmallChangeBigDifference.js`, `HomeIntro.js`, the Gate 5
+allowlist, `tool-og-slugs.json`/`og-slug-map.json` (kept both old/new keys → same `pre-mortem` OG
+slug), and — because they'd never been touched since the V2 rewrite — the 5
+`guides/planning/*.js` CTA blocks, which still advertised the old "Fatal Assumption," "probability
+ratings," and "warning signs you'll ignore" language; rewrote all 5 to match actual V2/V3
+behavior while updating `toolId`/`toolName`. Rebuilding guides (`node scripts/build-guides.js`)
+as part of this rename also retroactively fixed the STALE `/PlotTwist`/`/PlotHole` links left
+over in all 552 static guide files from the two earlier same-week renames — those cross-reference
+grids are computed live from `tools.js` at build time, not hand-authored per guide, so any
+unrebuilt guide set silently carries the previous id until the next `build-guides.js` run.
+`pm_title`/`pm_tagline`/`pm_submit`/`pm_error` retexted across all 13 languages (dropped a
+residual lowercase "pre-mortem" from `pm_error` in every language, and literal "Pre-Mortem" in
+`ia_premortem` inside `idea-autopsy.js`).
+
 Writes a fictional post-mortem as if a plan already failed, then uses that thinking device to
 surface plausible failure modes, observable warning signs, an assumption worth testing first,
-and one concrete first move. **Frontend:** `src/tools/PreMortem.js`. **Backend:**
+and one concrete first move. **Frontend:** `src/tools/BreakMyPlan.js`. **Backend:**
 `backend/routes/pre-mortem.js` — parallel split: `pre-mortem-memo` (`MODELS.SMART`, max_tokens
 2500, owns `the_postmortem` + `warning_signs`) + `pre-mortem-prevention` (`MODELS.SMART`,
 max_tokens 3000, owns everything else), merged via `{ ...memoHalf, ...preventionHalf }`. One
@@ -121,9 +143,28 @@ more overreach patterns beyond the initial rewrite, all fixed and re-verified li
 
 `FINAL SELF-CHECK` extended to 20 items, `outputGuard.prohibit` gained 8 matching entries.
 
+## Third correction pass (2026-09-07) — general final-audit guardrail + necessary-vs-decisive
+
+Added alongside the rename: a compact `FINAL GENERAL GUARDRAIL` section that reframes the whole
+self-check as a per-statement audit — classify every visitor-unsupplied statement as (1) an
+in-scenario fictional event, (2) a conditional failure mechanism, (3) an observable warning sign,
+(4) an unsupported outside-world claim, or (5) unnecessary invented precision — then fix each
+category accordingly (contain #1, hedge #2, observe-not-psychologize #3, qualify/remove #4,
+remove #5 entirely). Also added a **necessary vs. uniquely decisive** distinction to
+`ASSUMPTION TO TEST FIRST`: when a plan has several conditions that must ALL hold, do not call
+one of them "the load-bearing wall" or "the one thing" that alone validates the plan — testing it
+reduces uncertainty, it does not certify the rest. Verified live on a multi-dependency plan
+(subscription box requiring low manufacturing costs, subscriber volume, AND publisher exclusivity
+simultaneously): `first_move.why_this_first` correctly said the test "will show you whether the
+three necessary conditions can feasibly be met" rather than claiming to validate the plan on its
+own; `assumptions_autopsy` added a fourth explicit dependency about the interdependency of the
+three conditions itself, without stacking unbounded speculation on top of it.
+
 ## DO NOT silently reverse
 - `failure_modes[].priority` stays qualitative (`PRIMARY WATCH|IMPORTANT WATCH|SECONDARY
   WATCH`) — never reintroduce a probability enum or numeric likelihood.
+- When several conditions are all necessary for a plan to work, no single one gets called "the
+  load-bearing wall" or "the one thing" that alone validates the plan.
 - Exactly one `PRIMARY WATCH` — both the prompt rule and the code-side safety net that corrects
   zero or multiple PRIMARY WATCH entries after parsing.
 - `warning_signs` never claims the visitor WILL ignore something, never invents a dismissal

@@ -54,16 +54,16 @@ module.exports = {
 
   cta: {
     glyph:    '💀',
-    headline: "Run the structured hole-finding technique on your own thinking",
-    body:     "Pre-Mortem inverts your plan and writes the failure memo from your future self — surfacing the assumptions you've been treating as facts, the warning signs you'll ignore, and the Fatal Assumption most likely to kill the conclusion. The technique used by NASA, military planners, and venture investors — applied to your own reasoning before someone else applies it for you.",
+    headline: "Run the structured stress-test on your own thinking",
+    body:     "Break My Plan? inverts your plan and writes a fictional failure memo — then works backward to the assumptions you've been treating as settled, the observable warning signs worth watching for, and the Assumption to Test First most likely to change the conclusion. The technique used by NASA, military planners, and venture investors — applied to your own reasoning before someone else applies it for you.",
     features: [
-      "Cognitive inversion — assume your conclusion is wrong, then explain why",
-      "Fatal Assumption — the single belief that, if wrong, would unravel everything",
-      "Warning signs you'll ignore — the early indicators motivated reasoning will dismiss",
-      "Failure modes ranked by probability — focus your hole-finding on what matters most",
+      "Cognitive inversion — assume your conclusion is wrong, then work backward to why",
+      "Assumption to Test First — the single dependency that, if wrong, would unravel the most",
+      "Observable warning signs — early evidence motivated reasoning tends to explain away",
+      "Failure modes by priority — one Primary Watch focuses your stress-testing",
       "Plan-type tuning — different reasoning structures get specialized stress-testing",
     ],
-    toolId:   'PreMortem',
-    toolName: 'Pre-Mortem',
+    toolId:   'BreakMyPlan',
+    toolName: 'Break My Plan?',
   },
 };

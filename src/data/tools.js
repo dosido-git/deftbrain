@@ -726,7 +726,7 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "PreMortem",
+  id: "BreakMyPlan",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -735,17 +735,17 @@ export const tools = [
     get: "The memo from the future explaining why it failed, working backward to what you'd change now.",
     edge: "Assuming failure surfaces risks that forward planning misses. NASA and venture investors use the same inversion.",
   },
-  seoDescription: "Read the memo explaining why your plan failed — before you execute. Get plausible failure modes, an assumption worth testing first, and observable warning signs. Free.",
-  seoTitle: "Pre-Mortem Risk Planner: Why Your Plan Fails",
-  title: "Pre-Mortem",
-  tagline: "Assume it failed. Find out what could have prevented it.",
+  seoDescription: "Have a plan you're about to put into action? Describe it and find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them. Free.",
+  seoTitle: "Break My Plan? — Find the Weak Spots Before You Commit",
+  title: "Break My Plan?",
+  tagline: "Find the weak spots in your plan before they find you.",
   tags: ['planning', 'strategy', 'failure', 'risk', 'decision', 'startup', 'project', 'business', 'assumptions', 'blind spots', 'career'],
   icon: "💀",
   categories: ['The Office', 'Veer'],
   headerColor: "#d4dde8",
-  description: "Imagine your plan failed. Pre-Mortem works backward to find the plausible ways it could happen, the assumptions worth testing, the warning signs to watch for, and the changes that could make the plan more resilient.",
+  description: "Have a plan you're about to put into action? Describe it and Break My Plan? will work backward from an imagined failure to find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them.",
   guide: {
-      overview: "PreMortem runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses. The imagined failure is a thinking device, not a prediction — the fiction stays disciplined so the advice underneath it stays grounded in your actual plan.",
+      overview: "Break My Plan? runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses. The imagined failure is a thinking device, not a prediction — the fiction stays disciplined so the advice underneath it stays grounded in your actual plan.",
       howToUse: [
         "Describe your plan, project, or decision in specific terms",
         "Select the plan type — startup, career move, project, relationship, etc.",

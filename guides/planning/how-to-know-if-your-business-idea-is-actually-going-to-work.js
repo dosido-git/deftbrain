@@ -54,16 +54,16 @@ module.exports = {
 
   cta: {
     glyph:    '💀',
-    headline: "Run the pre-mortem on your business idea before you start",
-    body:     "Pre-Mortem takes your idea — startup, side business, career move — and produces the failure memo from 18 months in the future. The Fatal Assumption surfaces the single belief most likely to kill it. The Assumptions Autopsy becomes your pre-launch checklist. The technique used by NASA, military planners, and venture investors, applied in minutes.",
+    headline: "Run Break My Plan? on your business idea before you start",
+    body:     "Break My Plan? takes your idea — startup, side business, career move — and produces a fictional failure memo, then works backward to the Assumption to Test First and the failure paths worth addressing. The Assumptions Autopsy becomes your pre-launch checklist. The technique used by NASA, military planners, and venture investors, applied in minutes.",
     features: [
-      "Failure memo from your future self — specific failure narrative, not abstract risks",
-      "Fatal Assumption — the single belief most likely to kill the idea",
-      "Failure modes ranked by probability — focus stress-testing on what matters",
-      "Warning signs you'll ignore — the early indicators most founders miss",
+      "Failure memo from an imagined future — a specific failure mechanism, not abstract risk",
+      "Assumption to Test First — the dependency whose answer would most change the idea's viability",
+      "Failure modes by priority — one Primary Watch, so you know what to address first",
+      "Observable warning signs — early evidence to watch for as the idea develops",
       "Plan-type tuning — startup, side business, career move, partnership each get different analysis",
     ],
-    toolId:   'PreMortem',
-    toolName: 'Pre-Mortem',
+    toolId:   'BreakMyPlan',
+    toolName: 'Break My Plan?',
   },
 };

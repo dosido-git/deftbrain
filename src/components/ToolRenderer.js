@@ -22,6 +22,7 @@ const TOOL_ALIASES = {
   PetWeirdnessDecoder: 'PetBehaviorDecoder', // renamed 2026-09-06
   PlotHole: 'PlotHoleFinder', // renamed 2026-09-06
   PlotTwist: 'DecisionPrism', // renamed 2026-09-06
+  PreMortem: 'BreakMyPlan', // renamed 2026-09-07
 };
 
 const ToolRenderer = ({ college }) => {

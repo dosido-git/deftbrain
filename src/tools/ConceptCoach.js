@@ -446,7 +446,7 @@ function ConceptCoach({ tool }) {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ia_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/PreMortem" className={`text-xs ${linkStyle}`}>🪦 {t('ia_premortem')}</a>
+            <a href="/BreakMyPlan" className={`text-xs ${linkStyle}`}>🪦 {t('ia_premortem')}</a>
             <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>⚖️ {t('ia_leverage')}</a>
           </div>
         </div>
@@ -477,7 +477,7 @@ function ConceptCoach({ tool }) {
           </div>
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('ia_xref_pitch')} <a href="/PreMortem" className={linkStyle}>🪦 {t('ia_premortem')}</a> {t('ia_xref_pitch_after')}</p>}
+      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('ia_xref_pitch')} <a href="/BreakMyPlan" className={linkStyle}>🪦 {t('ia_premortem')}</a> {t('ia_xref_pitch_after')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>

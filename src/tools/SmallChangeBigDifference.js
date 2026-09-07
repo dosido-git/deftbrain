@@ -537,7 +537,7 @@ const SmallChangeBigDifference = ({ tool }) => {
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'ChaosPilot', icon: '🎰', label: t('op_xref_chaospilot') },
-                  { id: 'PreMortem', icon: '💀', label: t('op_xref_premortem') },
+                  { id: 'BreakMyPlan', icon: '💀', label: t('op_xref_premortem') },
                   { id: 'FutureProof', icon: '🔮', label: t('op_xref_futureproof') },
                 ].map(r => (
                   <a key={r.id} href={`/${r.id}`}

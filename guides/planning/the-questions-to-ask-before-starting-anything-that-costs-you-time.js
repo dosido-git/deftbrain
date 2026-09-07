@@ -54,16 +54,16 @@ module.exports = {
 
   cta: {
     glyph:    '💀',
-    headline: "Run the formal pre-mortem on the commitment you're considering",
-    body:     "Pre-Mortem takes your plan, runs the cognitive inversion, and produces the structured failure analysis: most likely failure modes with probability ratings, the Fatal Assumption you're making, the warning signs you'll ignore, and the one thing that actually determines the outcome. The technique used by NASA, military planners, and venture investors — applied in minutes before you commit your time.",
+    headline: "Run Break My Plan? on the commitment you're considering",
+    body:     "Break My Plan? takes your plan, imagines it failed, and produces a structured analysis: the failure paths worth watching, the Assumption to Test First, observable warning signs, and the highest-value first move. The technique used by NASA, military planners, and venture investors — applied in minutes before you commit your time.",
     features: [
-      "Failure narrative — the memo from your future self explaining why this didn't work",
-      "Failure modes ranked by probability — focus on what's most likely to derail you",
-      "Fatal Assumption — the single belief most likely to kill the commitment",
-      "Warning signs you'll ignore — the early indicators motivated reasoning will dismiss",
+      "Failure narrative — an imagined failure mechanism explaining why this didn't work",
+      "Failure modes by priority — one Primary Watch tells you what's most worth addressing",
+      "Assumption to Test First — the single dependency most likely to change the commitment's viability",
+      "Observable warning signs — early evidence, not predicted reactions",
       "Plan-type tuning — startup, project, career move, relationship each get specialized analysis",
     ],
-    toolId:   'PreMortem',
-    toolName: 'Pre-Mortem',
+    toolId:   'BreakMyPlan',
+    toolName: 'Break My Plan?',
   },
 };
