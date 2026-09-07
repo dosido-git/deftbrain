@@ -1,14 +1,139 @@
 {
   "_meta": {
     "tool": "PreMortem",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
-    "baseline_commit": "premortem-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden pre-mortem). Diff for QUALITY not exact match: HTTP 200, no truncation, narrative is 2-3 paragraphs (not a stub). GUARDS: (1) narrative + executive_summary had SELF-CONTRADICTORY annotations ('3-5 paragraphs … — 1-2 sentences') — the annotation was stripped and narrative pinned to '2-3 short paragraphs' (was the token hog). (2) max_tokens 3000→4500 (multi-array + multi-paragraph schema truncated in German). (3) failure_modes.probability stays a clean pipe enum (frontend switches PROB_CONFIG on it). (4) guard `!failure_modes` (array) correct. (5) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: narrative 2-3 paragraphs (no contradiction); max_tokens 4500; clean probability enum; no annotation suffixes."
+    "generated": "2026-09-07",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), parallel split: pre-mortem-memo (max_tokens 2500) + pre-mortem-prevention (max_tokens 3000)",
+    "baseline_commit": "premortem-v2",
+    "how_to_regression_diff": "Re-run (npm run check:golden pre-mortem). Diff for QUALITY not exact match: HTTP 200, no truncation, both parallel calls returned. V2 REWRITE (2026-09-07) disciplined the fictional-post-mortem conceit that previously licensed fabricating an entire future history as though it happened: the v1 golden sample invented 310 subscribers, 11 conversions, EUR144 revenue, 3.5% conversion, a March campaign, specific churn percentages, and named competitors — then built warning signs, probability labels ('high'/'medium'/'low'), and thresholds on top of those inventions. FIELD RENAME (same six-part structure, disciplined): warning_signs_ignored[].{when,sign,why_it_was_dismissed} -> warning_signs[].{stage: EARLY|MIDDLE|LATER, watch_for, why_it_matters} (never claims the visitor WILL ignore anything; no invented dismissal rationale unless visitor supplied one); the_fatal_assumption -> assumption_to_test_first.{dependency, why_it_matters, what_is_known} (phrased as 'the plan depends on X', never 'you assume X', when the dependency was inferred rather than stated); point_of_no_return -> when_to_reconsider.{condition, response} (most plans have no single moment failure becomes inevitable -- an observable condition that should trigger reassessment, never a claimed point of no return); failure_modes[].probability ('high'|'medium'|'low', A PLAIN ENGLISH ENUM THE MODEL CHOSE AS IF IT KNEW STATISTICAL LIKELIHOOD, DO NOT REINTRODUCE) -> failure_modes[].priority ('PRIMARY WATCH'|'IMPORTANT WATCH'|'SECONDARY WATCH' -- priority for attention, never probability); failure_modes[].{description,trigger,early_warning} -> failure_modes[].{why_this_could_happen,watch_for,reduce_the_risk}; the_most_likely -> primary_failure_path.{failure_mode,one_prevention} (failure_mode must name one of the listed failure_modes identically); assumptions_autopsy[].{assumption,how_to_verify,risk_if_wrong} -> assumptions_autopsy[].{dependency,what_we_know,how_to_test,if_wrong} (phrased as 'the plan depends on X', not 'you assume X'); the_one_thing -> first_move.{action,why_this_first} (never claims one test 'actually determines the outcome'). THE CENTRAL FIX: false precision is now prohibited everywhere except visitor-supplied numbers and valid arithmetic on them -- verified live in BOTH cases below. Case 1 (EN, custom plan with NO numeric assumptions supplied) invents zero exact metrics anywhere in the output -- every warning sign and failure mode stays qualitative ('growth stayed modest', not 'X subscribers by month N'). Case 2 (DE, uses the catalog's own pm_ex_plan/pm_ex_assumptions example, which DOES supply '1,000 paid subscribers' and '~3-5% conversion' as visitor assumptions) correctly performs arithmetic on those SUPPLIED numbers (deriving a required free-list size of 20,000-33,000) rather than inventing its own conversion rate or subscriber count -- this is the USER-SUPPLIED NUMBERS rule working as intended, not a regression of the false-precision fix. Real-world boundary kept from v1 and re-verified: the prevention half (failure_modes/assumptions_autopsy/first_move) never references the invented fictional narrative's specifics, because it is generated in a separate parallel call that never sees the memo half's content -- structural, not just instructional. DO NOT reverse: qualitative failure_modes.priority (never probability); warning_signs never claiming the visitor will ignore something; assumption/dependency phrasing ('the plan depends on X'); when_to_reconsider never claiming a point of inevitable failure; the parallel-split real-world-boundary architecture; false-precision prohibition except on visitor-supplied numbers and arithmetic on them."
   },
   "cases": [
     {
-      "name": "de-fitness-app-startup",
+      "name": "en-newsletter-no-numbers-supplied-zero-invented-precision",
+      "why_this_case_exists": "The visitor supplies NO numeric assumptions at all (no subscriber targets, no conversion rate, no revenue figure) -- the exact condition under which the v1 tool invented 310 subscribers/11 conversions/EUR144/3.5% out of nothing. Verifies the v2 rewrite produces a fully qualitative analysis (failure modes, warning signs, assumptions autopsy) with zero invented exact metrics, dates, or named entities anywhere in the output when none were supplied.",
+      "endpoint": "/api/pre-mortem",
+      "input": {
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "United States",
+        "plan": "I am starting a weekly newsletter about systems thinking to build an audience, while also writing a book. I plan to publish on LinkedIn and eventually convert free subscribers to a $12/month paid tier once I have 1,000 free subscribers.",
+        "planType": "Creative Venture",
+        "stakes": "Time I have set aside for finishing my book",
+        "assumptions": "Consistent weekly publishing will build enough of an audience through LinkedIn distribution"
+      },
+      "output": {
+        "the_postmortem": {
+          "memo_header": "Post-Mortem: The Newsletter That Borrowed Time It Could Not Repay",
+          "executive_summary": "The newsletter launched with genuine momentum but never found a reliable distribution engine on LinkedIn. Publishing continued to draw from the same hours reserved for the book, and when it became clear that free subscriber growth was not approaching the threshold needed to justify the paid tier, the project was paused — leaving both the newsletter and the book behind schedule.",
+          "narrative": "The first several issues went out on time. The content was substantive and the systems-thinking angle felt distinct. But LinkedIn distribution proved inconsistent: some posts reached well beyond the immediate network, others reached almost no one, and there was no reliable pattern connecting effort to reach. Free subscriber growth came in early bursts tied to individual posts performing well, then slowed to a trickle. The 1,000-subscriber threshold — the gate before launching the paid tier — began to feel further away rather than closer.\n\nMeanwhile, the book did not pause to wait. The weekly publishing cadence, including drafting, editing, and formatting each issue, consumed more of the writing window than the original estimate had allowed. On weeks when a LinkedIn post underperformed and the subscriber count barely moved, the opportunity cost of the newsletter became harder to ignore. The plan had assumed that consistent publishing would produce compounding distribution; instead, distribution remained dependent on individual posts breaking through, which happened unpredictably.\n\nThe decision to pause came not from one bad week but from an accumulating weight: slow subscriber growth, a book falling further behind, and no clear evidence that continuing at the same pace would produce a different result. The newsletter had not failed because the content was weak — it had failed because the growth mechanism was never validated before the time cost became real."
+        },
+        "warning_signs": [
+          {
+            "stage": "EARLY",
+            "watch_for": "After several issues, subscriber growth is arriving in isolated spikes tied to specific posts rather than building steadily between them.",
+            "why_it_matters": "If growth depends on occasional breakout posts rather than compounding distribution, the path to the paid tier threshold becomes unpredictable and harder to sustain."
+          },
+          {
+            "stage": "EARLY",
+            "watch_for": "The time required to produce each issue is consistently exceeding what you originally set aside, leaving less than planned for the book.",
+            "why_it_matters": "The core risk is that the newsletter borrows hours the book needs — if this is happening from the start, the trade-off only deepens as both projects grow."
+          },
+          {
+            "stage": "MIDDLE",
+            "watch_for": "Subscriber growth has plateaued and the gap between your current count and the 1,000-subscriber threshold is not meaningfully closing.",
+            "why_it_matters": "The paid tier cannot launch until the threshold is reached; a stalled count means the revenue upside remains theoretical while the time cost remains real."
+          },
+          {
+            "stage": "LATER",
+            "watch_for": "You are maintaining the publishing cadence but have stopped making meaningful progress on the book for multiple consecutive weeks.",
+            "why_it_matters": "At this point the newsletter is no longer running alongside the book — it has replaced it, which inverts the original priority and puts the higher-stakes project at risk."
+          }
+        ],
+        "assumption_to_test_first": {
+          "dependency": "The plan depends on LinkedIn distribution being sufficient to grow a free subscriber base to 1,000 people organically through consistent weekly publishing alone.",
+          "why_it_matters": "The entire paid tier strategy is gated on reaching 1,000 free subscribers. If LinkedIn does not deliver enough reach to systems-thinking content — whether due to algorithmic limits, audience fit, or slow compounding — the paid tier may never become viable, and the time spent publishing competes directly with the book.",
+          "what_is_known": "LinkedIn is named as the sole distribution channel. No current follower count, engagement baseline, or prior publishing history on the topic was supplied, so there is no existing evidence about how this audience will respond."
+        },
+        "when_to_reconsider": {
+          "condition": "If, after a sustained period of consistent publishing, subscriber growth shows no meaningful upward trend — or if the weekly publishing cadence is repeatedly consuming time beyond what you can sustain alongside the book — the plan as designed deserves reassessment.",
+          "response": "At that point, revisit either the distribution strategy (LinkedIn alone may not be enough), the cadence (weekly may be unsustainable alongside a book), or the sequencing (newsletter first vs. book first)."
+        },
+        "failure_modes": [
+          {
+            "mode": "LinkedIn Distribution Insufficient to Reach 1,000",
+            "priority": "PRIMARY WATCH",
+            "why_this_could_happen": "Systems-thinking content is a narrow topic, and LinkedIn reach depends heavily on existing network size and post-by-post engagement signals. Without an already-sizeable following or a deliberate amplification strategy, organic growth to 1,000 free subscribers could stall well short of the target.",
+            "watch_for": "Early issues attract engagement primarily from existing connections rather than new followers; subscriber growth plateaus quickly after an initial burst; shares and comments come from the same small group repeatedly.",
+            "reduce_the_risk": "Before committing to a long publishing schedule, publish two or three pieces explicitly designed to attract new readers and measure whether they reach people outside your existing network."
+          },
+          {
+            "mode": "Newsletter Consumes Book Time",
+            "priority": "PRIMARY WATCH",
+            "why_this_could_happen": "Weekly publishing is a recurring, deadline-driven commitment. Research, drafting, editing, and distribution for a newsletter can expand to fill available time, and the book — which has no external deadline — loses out whenever the newsletter runs over.",
+            "watch_for": "Book writing sessions are being skipped or shortened to finish newsletter issues; you are writing newsletter content on days originally protected for the book; the book word count is stagnant across consecutive weeks.",
+            "reduce_the_risk": "Before launching publicly, produce and time a few sample issues to see how long each actually takes you, then compare that against the hours you have available for the book."
+          },
+          {
+            "mode": "Free-to-Paid Conversion Too Low to Sustain the Tier",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "Reaching 1,000 free subscribers does not guarantee that enough of them will pay $12/month to make the paid tier worth maintaining. The conversion rate is unknown, and a small paying group may not justify the ongoing operational overhead while the book is still unfinished.",
+            "watch_for": "When you survey or informally test paid interest among early free subscribers, responses are polite but non-committal; no one volunteers that they would pay; the content that performs best is the content that works fine for free.",
+            "reduce_the_risk": "Before reaching 1,000 free subscribers, test paid interest explicitly — a waitlist or a direct question in an issue — so you have real signal before building the paid infrastructure."
+          },
+          {
+            "mode": "Audience-Topic Mismatch on LinkedIn",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "LinkedIn audiences and systems-thinking readers may not be identical populations. The people who find you through LinkedIn may differ from those willing to pay $12/month for this content.",
+            "watch_for": "High impressions but low subscriptions; subscribers who engage with the most surface-level posts but not the deeper ones; comments that treat your content as career or productivity advice rather than systems thinking.",
+            "reduce_the_risk": "In early issues, include a clear statement of who the newsletter is for and what distinguishes it, and note which readers self-select in response."
+          },
+          {
+            "mode": "Cadence Becomes Unsustainable and Quality Drops",
+            "priority": "SECONDARY WATCH",
+            "why_this_could_happen": "Weekly is an ambitious cadence to maintain alongside a book. If issues start shipping thin or late to protect the schedule, early subscribers who joined for quality may disengage before the list reaches the paid-tier threshold.",
+            "watch_for": "You are publishing to maintain the streak rather than because the issue is ready; unsubscribe notices cluster after particular issues; your own sense of an issue's quality is noticeably lower than it was at launch.",
+            "reduce_the_risk": "Before launching publicly, track actual time spent producing each issue against time remaining for the book so you can adjust the cadence if needed."
+          }
+        ],
+        "primary_failure_path": {
+          "failure_mode": "LinkedIn Distribution Insufficient to Reach 1,000",
+          "one_prevention": "Treat LinkedIn as a hypothesis to test rather than a given: publish a small number of issues designed to attract new readers, measure whether growth is coming from beyond your existing network, and decide whether to publicly commit to the full schedule only after that evidence exists."
+        },
+        "assumptions_autopsy": [
+          {
+            "dependency": "LinkedIn reach will grow a subscriber base to 1,000 through consistent publishing alone.",
+            "what_we_know": "LinkedIn is the named channel. No current follower count, prior content performance, or audience data was supplied.",
+            "how_to_test": "Publish several pieces before officially launching the newsletter and track whether each one reaches people outside your existing connections — new followers, shares into new networks, or direct subscription requests from strangers.",
+            "if_wrong": "The distribution strategy needs to expand beyond LinkedIn — cross-posting, guest appearances, community seeding, or other channels — before the paid tier becomes a realistic near-term target."
+          },
+          {
+            "dependency": "Weekly publishing is a cadence that can coexist with finishing a book.",
+            "what_we_know": "The stake named is time set aside for the book. No detail was supplied about current book progress, available weekly hours, or how much time a newsletter issue realistically takes you to produce.",
+            "how_to_test": "Produce two or three full newsletter issues privately while maintaining your book schedule, and measure the actual time cost against time available.",
+            "if_wrong": "Either the cadence needs to drop (biweekly or monthly), the book timeline needs to extend, or one project needs to pause while the other reaches a milestone."
+          },
+          {
+            "dependency": "A meaningful portion of free subscribers will convert to $12/month once the paid tier launches.",
+            "what_we_know": "The $12/month price point was supplied. No conversion evidence, comparable audience data, or prior paid product experience was supplied.",
+            "how_to_test": "Before reaching 1,000 free subscribers, solicit direct paid interest: a waitlist, a poll in an issue, or a one-time premium piece with an optional payment — any mechanism that produces a real signal rather than assumed demand.",
+            "if_wrong": "The paid tier may need a different price point, a different value proposition, or a different audience before it becomes viable, and the time invested in free growth to date will need to be weighed against continuing."
+          },
+          {
+            "dependency": "Systems-thinking content will find a receptive and growing audience on LinkedIn specifically.",
+            "what_we_know": "LinkedIn is the named platform. No data about prior LinkedIn engagement with systems-thinking content was supplied.",
+            "how_to_test": "Search LinkedIn for existing systems-thinking content from others and observe whether those posts attract meaningful engagement beyond the author's immediate network — that is a rough proxy for whether this topic travels on the platform.",
+            "if_wrong": "A different primary channel — a dedicated newsletter platform with discovery features, a relevant online community, or a podcast — may need to carry distribution, with LinkedIn as secondary."
+          }
+        ],
+        "first_move": {
+          "action": "Before publicly committing to the newsletter schedule, publish two or three complete issues and track whether they reach readers outside your existing LinkedIn network.",
+          "why_this_first": "This tests the single assumption the entire plan is built on — that LinkedIn distribution will grow a new audience — without yet consuming months of book time or making a public cadence commitment you have to sustain."
+        }
+      }
+    },
+    {
+      "name": "de-fitness-app-startup-only-supplied-capital-figure-used",
+      "why_this_case_exists": "German-language regression case carried forward from v1 (same plan) to prove the locale pipeline and false-precision fix both hold in a non-English run. The visitor supplies exactly one number (EUR20,000 starting capital) and no conversion/churn/revenue figures. Verifies the output references that supplied figure but invents no subscriber counts, conversion percentages, campaign dates, or named competitors -- contrast with the v1 golden sample this replaces, which invented all of those in German.",
       "endpoint": "/api/pre-mortem",
       "input": {
         "userLanguage": "de",
@@ -22,105 +147,112 @@
       },
       "output": {
         "the_postmortem": {
-          "memo_header": "RE: Post-Mortem — FitPlan App Shutdown, Q2 2027",
-          "executive_summary": "Die FitPlan-App wurde im Oktober 2026 mit 20.000 EUR Startkapital und drei Entwicklern gelauncht und stellte den Betrieb im April 2027 ein. Die Nutzerakquisitionskosten über Instagram-Influencer überstiegen den monatlichen Abo-Erlös um das Siebenfache, wodurch das Kapital innerhalb von vier Monaten vollständig verbraucht wurde. Die Churn-Rate der zahlenden Nutzer lag im dritten Monat bei 68 Prozent, was ein tragfähiges Wachstum von Anfang an unmöglich machte.",
-          "narrative": "Der erste kritische Fehler passierte bereits vor dem Launch: Das Team investierte zwei der drei verfügbaren Monate ausschließlich in Produktentwicklung, ohne einen einzigen potenziellen Nutzer zu befragen oder einen Vorverkauf zu testen. Als die App schließlich im Oktober 2026 live ging, wurden drei Influencer-Kooperationen im Mittelfeld gebucht, die zusammen rund 8.000 EUR kosteten. Die Kampagnen generierten zwar kurzfristig Traffic, aber von 4.200 Klicks konvertierten nur 61 Nutzer zu einem bezahlten Abo à 12,99 EUR pro Monat, was einem Customer Acquisition Cost von über 131 EUR entsprach.",
-          "narrative_continued": "Im zweiten Monat wurde das verbleibende Budget in weitere Influencer-Posts gesteckt, weil das Team glaubte, die erste Kampagne sei lediglich schlecht getargetet gewesen. Die Churn-Rate der ersten Kohorte wurde bewusst nicht ausgewertet, da die Daten noch unvollständig wirkten. Tatsächlich hatten 42 der 61 Erstnutzer ihr Abo bereits nach 30 Tagen gekündigt. Das monatliche Abo-Modell erzeugte bei dieser Churn-Rate niemals ausreichend wiederkehrende Einnahmen, um auch nur die Serverkosten zu decken.",
-          "narrative_final": "Im Januar 2027 war das Kapital auf unter 2.000 EUR gesunken. Ein letzter Versuch, über einen größeren Influencer mit 180.000 Followern eine Trendwende herbeizuführen, scheiterte, weil die Zielgruppe des Accounts nicht mit zahlungsbereiten Fitness-App-Nutzern übereinstimmte. Im April 2027 wurde die App abgeschaltet. Der Gründer hatte ein volles Jahr Vollzeitarbeit und seine gesamten Ersparnisse verloren, ohne jemals den Product-Market-Fit validiert zu haben.",
-          "warning_signs_ignored": [
-            {
-              "when": "Early stage",
-              "sign": "Kein einziger Mensch aus dem Bekanntenkreis war bereit, auch nur 9,99 EUR pro Monat für einen personalisierten Fitnessplan zu zahlen, als der Gründer informell fragte.",
-              "why_it_was_dismissed": "Das Team wertete dies als mangelndes Verständnis der Bekannten für digitale Produkte und nicht als Marktsignal."
-            },
-            {
-              "when": "Early stage",
-              "sign": "Der Markt für Fitness-Apps in Deutschland war 2026 bereits von etablierten Anbietern wie Freeletics, Gymondo und Garmin Connect dominiert, alle mit deutlich größeren Marketingbudgets.",
-              "why_it_was_dismissed": "Das Team glaubte, die Personalisierung sei ein hinreichendes Alleinstellungsmerkmal, ohne dies je mit echten Nutzern zu testen."
-            },
-            {
-              "when": "Mid-stage",
-              "sign": "Die erste Influencer-Kampagne erzielte eine Conversion-Rate von unter 1,5 Prozent, was deutlich unter dem Branchendurchschnitt für bezahlte Fitness-App-Abos lag.",
-              "why_it_was_dismissed": "Das Team führte dies auf die falsche Wahl des Influencers zurück und entschied sich, dasselbe Modell erneut anzuwenden."
-            },
-            {
-              "when": "Mid-stage",
-              "sign": "Nutzerbefragungen nach dem Onboarding zeigten, dass 70 Prozent der Nutzer die App nach weniger als drei aktiven Trainingstagen nicht mehr öffneten.",
-              "why_it_was_dismissed": "Das Engagement-Problem wurde als technisches Onboarding-Problem eingestuft und ein weiterer Sprint für UI-Verbesserungen geplant, statt das Kernprodukt zu hinterfragen."
-            }
-          ],
-          "the_fatal_assumption": "Die Annahme, dass Instagram-Influencer-Marketing einen Customer Acquisition Cost erzeugen würde, der unter dem Lifetime Value eines monatlich zahlenden Nutzers liegt, ohne dieses Verhältnis jemals mit echten Zahlen zu modellieren.",
-          "point_of_no_return": "Der Moment, in dem das zweite Influencer-Budget von ca. 6.000 EUR freigegeben wurde, ohne zuvor die Churn-Rate der ersten Nutzerkohorte vollständig auszuwerten — ab diesem Punkt war das Kapital zu schnell verbraucht für eine strategische Kurskorrektur."
+          "memo_header": "Abschlussbericht: Warum die App vor dem Durchbruch eingestellt wurde",
+          "executive_summary": "Die App wurde drei Monate nach Launch eingestellt, nachdem das Startkapital weitgehend aufgebraucht war und die zahlenden Nutzer nicht in ausreichender Zahl zurückkehrten. Der Influencer-Kanal brachte anfänglich Installationen, aber die monatliche Verlängerungsrate blieb zu niedrig, um die laufenden Kosten zu decken. Das Team hatte kein frühes Signal ernst genug genommen: Der Unterschied zwischen neugierigen Erstnutzern und dauerhaft zahlenden Abonnenten erwies sich als entscheidend.",
+          "narrative": "Die Influencer-Kampagnen liefen an und erzeugten Downloads. Das verfügbare Budget wurde über mehrere Kooperationen verteilt. Was dabei nicht ausreichend beobachtet wurde: Wie viele dieser Nutzer nach dem ersten Monat noch zahlten. Die Churn-Rate — der Anteil der Nutzer, die nach kurzer Zeit kündigten — erwies sich als entscheidend.\n\nDas eigentliche Problem lag darin, dass die Kosten pro zahlender Nutzerin zu hoch waren oder die Nutzerbindung zu schwach ausfiel, um mit dem verfügbaren Budget einen selbsttragenden Kundenstamm aufzubauen. Die App wurde eingestellt, nicht weil das Produkt offensichtlich schlecht war, sondern weil die zentrale Annahme des Plans — dass Influencer-Reichweite sich wirtschaftlich in regelmäßige Zahlungen umwandeln würde — nie ausreichend geprüft worden war, bevor das gesamte Budget darauf ausgerichtet wurde."
+        },
+        "warning_signs": [
+          {
+            "stage": "EARLY",
+            "watch_for": "Die Installationszahlen nach einer Influencer-Kooperation sind solide, aber der Anteil der Nutzer, die nach dem Testzeitraum in ein bezahltes Abo wechseln, bleibt sehr gering.",
+            "why_it_matters": "Installationen kosten Geld, Abonnements bringen Geld. Wenn diese beiden Zahlen früh stark auseinanderfallen, zeigt das, dass der Kanal die falsche Zielgruppe liefert oder das Angebot den Wechsel nicht rechtfertigt — beides ist ein strukturelles Problem, kein vorübergehendes."
+          },
+          {
+            "stage": "EARLY",
+            "watch_for": "Der Preis pro gewonnener Installation steigt mit jeder weiteren Influencer-Kampagne, oder die Kosten einer Kooperation übersteigen schnell einen spürbaren Anteil des verfügbaren Budgets.",
+            "why_it_matters": "Bei 20.000 EUR Startkapital und laufenden Entwicklungs- und Infrastrukturkosten ist der Spielraum für Kundenakquise eng. Wenn der Kanal teurer wird, bevor er profitabel ist, verkürzt sich das Zeitfenster für Kurskorrektur erheblich."
+          },
+          {
+            "stage": "MIDDLE",
+            "watch_for": "Nutzer, die den ersten Monat bezahlt haben, kündigen in großer Zahl vor oder kurz nach der zweiten Abbuchung, ohne erkennbare Aktivität in der App vor dem Absprung.",
+            "why_it_matters": "Hohe frühe Abwanderung deutet darauf hin, dass das Produkt entweder keinen ausreichenden Gewohnheitseffekt erzeugt oder die Erwartungen aus der Influencer-Empfehlung nicht erfüllt. Beide Ursachen lassen sich nicht allein durch mehr Neuakquise lösen."
+          },
+          {
+            "stage": "LATER",
+            "watch_for": "Das verbleibende Budget reicht nicht mehr aus, um gleichzeitig neue Kampagnen zu finanzieren und den laufenden Betrieb für mehr als wenige Wochen aufrechtzuerhalten.",
+            "why_it_matters": "An diesem Punkt ist kein Kanal mehr offen: zu wenig Kapital für Wachstum, zu wenig wiederkehrende Einnahmen für Eigenstabilisierung. Das ist der Moment, in dem die Entscheidung über Weiterführung oder Einstellung nicht mehr strategisch, sondern erzwungen ist."
+          }
+        ],
+        "assumption_to_test_first": {
+          "dependency": "Der Plan hängt davon ab, dass Influencer-Kooperationen Nutzer zu Kosten liefern, die es erlauben, mit 20.000 EUR genug zahlende Abonnenten zu gewinnen, bevor das Kapital aufgebraucht ist.",
+          "why_it_matters": "Wenn die tatsächlichen Kosten pro zahlender Nutzerin deutlich höher sind als angenommen, ist das Kapital verbraucht, bevor ein tragfähiger Abonnentenstamm entsteht — und das gesamte Modell steht ohne Grundlage da.",
+          "what_is_known": "Das verfügbare Kapital beträgt 20.000 EUR. Influencer-Marketing ist als Kanal geplant. Konkrete Konditionen, Zielkosten pro Nutzer oder bisherige Testkampagnen wurden nicht genannt."
+        },
+        "when_to_reconsider": {
+          "condition": "Wenn ein erster Influencer-Test zeigt, dass die Kosten pro tatsächlich zahlender Nutzerin so hoch sind, dass das Gesamtbudget keinen selbsttragenden Abonnentenstamm ermöglichen würde — oder wenn die Churn-Rate in den ersten Wochen so hoch ist, dass Neukunden den Schwund kaum ausgleichen.",
+          "response": "Vor weiteren Ausgaben den Kanal, das Preismodell oder den Marktfokus neu bewerten. Kein weiteres Budget in denselben Ansatz investieren, solange die Grundmechanik nicht belegt ist."
         },
         "failure_modes": [
           {
-            "mode": "CAC-LTV-Kollaps",
-            "probability": "high",
-            "description": "Die Kosten, einen zahlenden Nutzer über Influencer-Marketing zu gewinnen, liegen bei 80 bis 150 EUR. Bei einem Abo von 12,99 EUR monatlich und einer durchschnittlichen Abo-Dauer von unter drei Monaten entsteht pro Nutzer ein Verlust von 40 bis 110 EUR. Das 20.000 EUR Budget ist damit in weniger als vier Monaten vollständig verbraucht, ohne dass eine profitable Einheitsökonomie je existiert hat.",
-            "trigger": "Der erste Influencer-Deal wird abgeschlossen, ohne vorher den Break-Even-CAC zu berechnen.",
-            "early_warning": "Die Kosten pro Klick aus der ersten Kampagne übersteigen 1,50 EUR und die Conversion vom Klick zum Abo liegt unter 3 Prozent."
+            "mode": "Influencer-CAC übersteigt Budget",
+            "priority": "PRIMARY WATCH",
+            "why_this_could_happen": "Influencer-Kampagnen im Fitnessbereich sind wettbewerbsintensiv. Wenn Klicks, Downloads und Konversionen zu zahlenden Abos jeweils mit Verlusten behaftet sind, kann das Budget innerhalb weniger Kampagnen aufgebraucht sein, ohne dass genug zahlende Nutzer entstehen.",
+            "watch_for": "Kosten der ersten Kampagne im Verhältnis zu tatsächlichen Abo-Abschlüssen — nicht nur Downloads oder Registrierungen.",
+            "reduce_the_risk": "Einen kleinen, klar budgetierten Test mit einem einzigen Influencer durchführen und die vollständige Konversionskette (Klick → Download → Abo) messen, bevor weiteres Budget freigegeben wird."
           },
           {
-            "mode": "Hohe Churn-Rate durch fehlenden Habit-Loop",
-            "probability": "high",
-            "description": "Personalisierte Fitnesspläne ohne Coaching, Community oder Accountability-Mechanismus führen dazu, dass Nutzer nach dem Novelty-Effekt im ersten Monat das Abo kündigen. Die App wird nicht in den Alltag integriert, weil kein Verhaltensmuster etabliert wird.",
-            "trigger": "Das Produkt wird ohne Retention-Mechanismen gelauncht, weil das kleine Team sich auf Features statt auf Nutzerbindung konzentriert hat.",
-            "early_warning": "Die durchschnittliche Anzahl aktiver Trainingstage pro Nutzer in den ersten 14 Tagen liegt unter vier."
+            "mode": "Hohe Churn-Rate untergräbt Wachstum",
+            "priority": "PRIMARY WATCH",
+            "why_this_could_happen": "Personalisierte Fitnesspläne müssen dauerhaft nützlich und frisch genug wirken, damit Nutzer monatlich verlängern. Ohne vorab getestete Nutzerbindung kann ein großer Teil der Abonnenten bereits nach dem ersten Monat kündigen, was Wachstum strukturell verhindert.",
+            "watch_for": "Verlängerungsrate nach dem ersten Abrechnungszeitraum bei den ersten Abonnenten.",
+            "reduce_the_risk": "Vor dem Launch mit einer kleinen Gruppe Testnutzer prüfen, ob der Wert des Plans über mehrere Wochen erhalten bleibt und ob die Personalisierung als ausreichend differenziert wahrgenommen wird."
           },
           {
-            "mode": "Influencer-Mismatch",
-            "probability": "high",
-            "description": "Günstiger Influencer-Traffic im Fitnessbereich stammt überwiegend von Nutzern, die Inspiration konsumieren, aber keine 12,99 EUR monatlich für eine App ausgeben. Die Reichweite ist vorhanden, die Zahlungsbereitschaft und Kaufintention der Zielgruppe jedoch nicht.",
-            "trigger": "Influencer werden nach Follower-Zahl und Preis ausgewählt, nicht nach Engagement-Rate und Kaufverhalten der Zielgruppe.",
-            "early_warning": "Viele Kommentare und Likes unter dem Influencer-Post, aber kaum nachverfolgbare App-Downloads innerhalb der ersten 48 Stunden nach Veröffentlichung."
+            "mode": "Team-Kapazität reicht nicht für Launch und laufenden Betrieb",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "Ein drei-Monatiger Starttermin lässt wenig Spielraum für unerwartete technische Herausforderungen. Wenn der Launch-Scope zu ehrgeizig ausfällt, kann die App beim Start Stabilitätsprobleme aufweisen, die Nutzer abschrecken oder Kundenakquise erschweren.",
+            "watch_for": "Ob der geplante Feature-Umfang zum Launch-Termin realistisch fertiggestellt werden kann, ohne dass kritische Qualität geopfert wird.",
+            "reduce_the_risk": "Den Launch-Scope früh radikal reduzieren auf das Minimum, das die Kernnutzenversprechen erfüllt, und alles andere verschieben."
           },
           {
-            "mode": "Kapitalmangel vor Product-Market-Fit",
-            "probability": "high",
-            "description": "20.000 EUR reichen bei drei Entwicklern, laufenden Serverkosten und Influencer-Ausgaben für maximal vier bis fünf Monate. Das ist zu wenig Zeit, um Churn-Daten zu sammeln, das Produkt zu iterieren und einen profitablen Akquisitionskanal zu finden.",
-            "trigger": "Das Budget wird am ersten Tag des Unternehmens festgelegt, ohne einen konservativen Burn-Rate-Plan mit explizitem Runway-Datum zu erstellen.",
-            "early_warning": "Das Kapital sinkt in den ersten zwei Monaten um mehr als 8.000 EUR, ohne dass ein validierter Akquisitionskanal mit positivem CAC-LTV-Verhältnis identifiziert wurde."
+            "mode": "Zahlungsbereitschaft zu niedrig für monatliche Abos",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "Nutzer laden Apps herunter und testen sie. Ob sie für personalisierte Fitnesspläne dauerhaft zahlen, ist ohne Markttest unbekannt.",
+            "watch_for": "Konversionsrate von Registrierung zu bezahltem Abo bei den ersten Nutzern, unabhängig vom Akquisitionskanal.",
+            "reduce_the_risk": "Die Zahlungsbereitschaft vor dem Launch mit einem einfachen Vorverkauf oder einer Warteliste mit klar kommuniziertem Preis testen, bevor das Marketingbudget eingesetzt wird."
           },
           {
-            "mode": "Technische Überkomplexität beim Launch",
-            "probability": "medium",
-            "description": "Das Drei-Personen-Entwicklerteam verbringt zu viel Zeit mit der Personalisierungslogik des Algorithmus und launcht drei Wochen zu spät. Das verlorene Zeitfenster verkürzt den Runway und erhöht den Druck bei der ersten Kampagne, was zu überhasteten Entscheidungen führt.",
-            "trigger": "Das MVP-Scope wird nicht radikal priorisiert und enthält Funktionen, die für die erste Validierung irrelevant sind.",
-            "early_warning": "Zwei Wochen vor dem geplanten Launch-Datum ist weniger als 60 Prozent der Kernfunktionalität fertiggestellt."
+            "mode": "Kapital aufgebraucht vor Erreichen von Eigendynamik",
+            "priority": "IMPORTANT WATCH",
+            "why_this_could_happen": "20.000 EUR müssen gleichzeitig Entwicklung, Marketing und laufende Betriebskosten decken. Wenn Influencer-Kosten und Entwicklungsaufwand die Mittel schneller binden als geplant, fehlt das Budget für Korrekturen oder eine zweite Kampagnenwelle.",
+            "watch_for": "Verbrauchsrate des Budgets in den ersten Wochen nach Launch im Vergleich zu eingehenden Abo-Erlösen.",
+            "reduce_the_risk": "Einen Mittelplan aufstellen, der explizit festhält, wie viel für Marketing, Betrieb und eine Reserve zurückgehalten wird — und diesen Plan vor dem ersten Influencer-Einsatz festlegen."
           }
         ],
-        "the_most_likely": {
-          "failure_mode": "CAC-LTV-Kollaps",
-          "the_prevention": "Berechne heute, noch vor jedem weiteren Entwicklungsaufwand, deinen Break-Even-CAC: Teile den realistischen Lifetime Value eines Nutzers (Abo-Preis multipliziert mit der durchschnittlichen Abomonaten laut Branchendaten) durch 1, und frage dann mindestens drei Influencer-Agenturen nach konkreten CPM- und Conversion-Richtwerten fuer Fitness-Apps in Deutschland, um zu pruefen, ob dein Modell mathematisch ueberhaupt funktionieren kann."
+        "primary_failure_path": {
+          "failure_mode": "Influencer-CAC übersteigt Budget",
+          "one_prevention": "Einen einzelnen, klar budgetierten Influencer-Test durchführen und die vollständige Kette bis zum bezahlten Abo messen — erst danach entscheiden, ob und wie viel weiteres Marketingbudget freigegeben wird."
         },
         "assumptions_autopsy": [
           {
-            "assumption": "Influencer-Marketing wird kostenguenstig genug sein, um profitabel Nutzer zu gewinnen.",
-            "how_to_verify": "Kontaktiere drei Mid-Tier-Influencer (50.000 bis 150.000 Follower) und frage nach ihren Preisen sowie nach nachweisbaren Conversion-Daten aus frueheren App-Kooperationen. Modelliere dann den resultierenden CAC und vergleiche ihn mit deinem LTV.",
-            "risk_if_wrong": "Das gesamte Budget wird in Nutzerakquisition verbrannt, die niemals profitabel wird, und das Unternehmen ist insolvent, bevor ein alternativer Kanal getestet werden kann."
+            "dependency": "Der Plan hängt davon ab, dass Influencer-Partnerschaften zu Kosten verfügbar sind, die mit dem vorhandenen Budget sinnvoll skalieren.",
+            "what_we_know": "Das Gesamtbudget beträgt 20.000 EUR. Konkrete Influencer-Konditionen oder Erfahrungswerte aus früheren Kampagnen wurden nicht genannt.",
+            "how_to_test": "Mit einem Micro-Influencer oder einem kleinen Paid-Post einen ersten Test mit definiertem Budget durchführen und Kosten pro Abo-Abschluss erfassen.",
+            "if_wrong": "Der gesamte Akquisitionskanal müsste neu konzipiert werden — etwa organische Reichweite, Community-Aufbau oder ein Empfehlungsprogramm."
           },
           {
-            "assumption": "Nutzer werden das Abo monatlich weiter zahlen und nicht nach dem ersten Monat kuendigen.",
-            "how_to_verify": "Analysiere oeffentlich verfuegbare Churn-Daten von vergleichbaren Fitness-Apps (z.B. aus App-Annie-Berichten oder Branchenstudien) und befrage 20 potenzielle Nutzer dazu, wie lange sie eine Fitness-App typischerweise aktiv nutzen.",
-            "risk_if_wrong": "Der LTV bricht auf unter 15 EUR pro Nutzer ein, was jeden bezahlten Akquisitionskanal strukturell unrentabel macht."
+            "dependency": "Der Plan hängt davon ab, dass Nutzer den monatlichen Abonnementpreis als gerechtfertigt empfinden und dauerhaft zahlen.",
+            "what_we_know": "Ein monatliches Abo-Modell ist vorgesehen. Weder Preis noch bisherige Nutzerfeedbacks wurden genannt.",
+            "how_to_test": "Preis und Kernnutzen vor dem Launch klar kommunizieren — etwa über eine Warteliste oder Vorverkauf — und messen, wie viele Menschen bereit sind, zu diesem Preis zu bestellen.",
+            "if_wrong": "Preismodell, Angebotstiefe oder Zielgruppe müssten angepasst werden, bevor Marketingbudget eingesetzt wird."
           },
           {
-            "assumption": "Personalisierung ist ein hinreichendes Alleinstellungsmerkmal gegenueber etablierten Wettbewerbern.",
-            "how_to_verify": "Erstelle eine einseitige Landingpage, die die personalisierte App beschreibt, und schalte fuer 300 EUR Google-Ads-Testtraffic, um zu messen, wie viele Besucher ihre E-Mail-Adresse fuer einen Fruehbucherrabatt hinterlassen.",
-            "risk_if_wrong": "Die Nutzerzielgruppe sieht keinen ausreichenden Unterschied zu bestehenden Loesungen und wechselt nicht, womit die gesamte Produktstrategie ohne Fundament ist."
+            "dependency": "Der Plan hängt davon ab, dass drei Entwickler in drei Monaten eine App liefern können, die stabil genug ist, um zahlende Nutzer zu halten.",
+            "what_we_know": "Das Team besteht aus drei Entwicklern. Der angestrebte Launch-Termin liegt in drei Monaten. Bisheriger Entwicklungsstand wurde nicht genannt.",
+            "how_to_test": "Den aktuellen Stand der App und den verbleibenden Aufwand konkret einschätzen — idealerweise mit einer schriftlichen Feature-Liste, die bis Launch fertig sein muss, und einem realistischen Zeitplan dazu.",
+            "if_wrong": "Launch-Termin verschieben oder Scope deutlich reduzieren, um mit einem stabilen Kern-Produkt zu starten."
           },
           {
-            "assumption": "Ein Team von drei Entwicklern kann in drei Monaten ein marktreifes Produkt bauen.",
-            "how_to_verify": "Erstelle ein detailliertes Sprint-Backlog fuer die drei Monate und lass alle drei Entwickler unabhaengig schaetzen, wie viel Zeit jede einzelne Funktion in Anspruch nimmt. Vergleiche die Summe mit den verfuegbaren Arbeitsstunden.",
-            "risk_if_wrong": "Der Launch verzoegert sich, der Runway verkuerzt sich und der erste Influencer-Deal wird unter Zeitdruck schlecht verhandelt."
-          },
-          {
-            "assumption": "20.000 EUR sind ausreichend, um einen skalierbaren Akquisitionskanal zu finden und zu validieren.",
-            "how_to_verify": "Erstelle einen monatlichen Burn-Rate-Plan, der Entwicklerkosten (auch bei unbezahlter Arbeit muessen Opportunitaetskosten einkalkuliert werden), Serverkosten, Marketingbudget und einen Puffer von 20 Prozent enthaelt, und berechne das exakte Datum, an dem das Kapital aufgebraucht ist.",
-            "risk_if_wrong": "Das Geld ist aufgebraucht, bevor genuegend Daten vorliegen, um das Produkt oder den Kanal sinnvoll zu iterieren, und es gibt keine zweite Chance."
+            "dependency": "Der Plan hängt davon ab, dass 20.000 EUR ausreichen, um sowohl Entwicklung als auch Marketing zu finanzieren und dabei genug zahlende Nutzer zu gewinnen, bevor das Geld aufgebraucht ist.",
+            "what_we_know": "20.000 EUR Startkapital sind vorhanden. Wie das Budget auf Entwicklung, Marketing und Betrieb aufgeteilt werden soll, wurde nicht genannt.",
+            "how_to_test": "Einen expliziten Mittelplan erstellen, der Entwicklungskosten, Serverkosten, Influencer-Budget und eine Reserve trennt — und prüfen, ob das Modell bei realistischen Kosten aufgeht.",
+            "if_wrong": "Den Launch-Scope radikal reduzieren oder den Start verschieben, um mit stabilem Kern-Produkt zu beginnen und das verfügbare Budget zu strecken."
           }
         ],
-        "the_one_thing": "Fuehre innerhalb der naechsten zwei Wochen einen manuellen Vorverkaufstest durch: Erstelle eine einfache Landingpage mit einem konkreten Angebot (z.B. drei Monate personalisierten Fitnessplan fuer 29 EUR) und gib 500 EUR fuer Instagram-Werbung aus, um zu messen, ob echte Menschen mit echtem Geld kaufen, bevor du auch nur eine Zeile Produktcode schreibst."
+        "first_move": {
+          "action": "Einen einzelnen Micro-Influencer-Test mit klar abgegrenztem Budget durchführen und die vollständige Konversionskette messen: Wie viele Menschen, die den Post sehen, laden die App herunter — und wie viele davon schließen tatsächlich ein bezahltes Abo ab?",
+          "why_this_first": "Dieser Test liefert direkte Belege für die zentrale Unbekannte des Plans: ob der geplante Kanal zahlende Nutzer zu Kosten bringt, die mit dem verfügbaren Budget vereinbar sind. Ohne diese Information ist jede weitere Ausgabe ein Blindflug."
+        }
       }
     }
   ]

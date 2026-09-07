@@ -735,32 +735,32 @@ export const tools = [
     get: "The memo from the future explaining why it failed, working backward to what you'd change now.",
     edge: "Assuming failure surfaces risks that forward planning misses. NASA and venture investors use the same inversion.",
   },
-  seoDescription: "Read the memo explaining why your plan failed — before you execute. Get likely failure modes, the fatal assumption you're making, and the warning signs. Free.",
+  seoDescription: "Read the memo explaining why your plan failed — before you execute. Get plausible failure modes, an assumption worth testing first, and observable warning signs. Free.",
   seoTitle: "Pre-Mortem Risk Planner: Why Your Plan Fails",
   title: "Pre-Mortem",
-  tagline: "Your plan has already failed. This is the memo explaining why.",
+  tagline: "Assume it failed. Find out what could have prevented it.",
   tags: ['planning', 'strategy', 'failure', 'risk', 'decision', 'startup', 'project', 'business', 'assumptions', 'blind spots', 'career'],
   icon: "💀",
   categories: ['The Office', 'Veer'],
   headerColor: "#d4dde8",
-  description: "A post-mortem written from the future, before you execute. Your plan has already failed — this is the memo explaining why. Get the most likely failure modes with probability ratings, the fatal assumption you're making, the warning signs you'll ignore, and the one thing that actually determines the outcome.",
+  description: "Imagine your plan failed. Pre-Mortem works backward to find the plausible ways it could happen, the assumptions worth testing, the warning signs to watch for, and the changes that could make the plan more resilient.",
   guide: {
-      overview: "PreMortem runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses.",
+      overview: "PreMortem runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses. The imagined failure is a thinking device, not a prediction — the fiction stays disciplined so the advice underneath it stays grounded in your actual plan.",
       howToUse: [
         "Describe your plan, project, or decision in specific terms",
         "Select the plan type — startup, career move, project, relationship, etc.",
-        "Add timeline and key stakes if relevant",
-        "Read the failure narrative — the memo from your future self",
-        "Focus on the Fatal Assumption and the Assumptions Autopsy — these are the most actionable outputs"
+        "Add what's at stake and what has to go right if relevant",
+        "Read the failure narrative — a plausible way it could have gone wrong",
+        "Focus on the Assumption to Test First and the Assumptions Autopsy — these are the most actionable outputs"
       ],
       example: {
         scenario: "Launching a newsletter as a side business",
         action: "Describe the newsletter topic, target audience, monetization plan, and time you can commit",
-        result: "The memo: 'We failed because we optimized for content quality instead of distribution. We assumed great writing would spread. It didn't. Fatal assumption: quality = growth. Warning sign ignored: open rate declining month 2, no referral system built. The one thing: distribution strategy had to come before content strategy.'"
+        result: "The memo: 'The newsletter launched, but audience growth remained too slow to support the paid target. Publishing continued to consume the time reserved for other priorities, and after repeated signs that distribution wasn't improving, the project was eventually paused.' Assumption to test first: whether consistent publishing alone can produce enough distribution. First move: test whether the topic attracts a real, engaged audience before building a monetization plan around it."
       },
       tips: [
         "The more specific your plan, the more specific and actionable the failure modes",
-        "The Fatal Assumption is the most important output — test it before you execute",
+        "The Assumption to Test First is the most important output — test it before you execute",
         "Use the Assumptions Autopsy to build a pre-launch checklist",
         "Run this on plans you're most excited about — excitement is when blind spots are largest"
       ]
