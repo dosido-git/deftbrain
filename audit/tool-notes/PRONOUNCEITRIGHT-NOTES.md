@@ -214,6 +214,52 @@ that contradicts the general rule of its source language).
    not just the first" after the flattening showed up on only some items in one response.
    Verified clean across 2 consecutive German batch calls after the fix.
 
+## V2.3 (2026-09-07, same day) — a second owner correction pass, general discipline this time
+
+Not a new factual bug — the owner's Siobhan result was correct, just carrying some habits that
+undercut the tool even when the pronunciation itself was right:
+
+- **Invented spelling rules.** `watch_out_for` explained the sound by chunking the word into
+  letter-groups and mapping each to an English sound ("Siobh makes a shiv sound, an sounds like
+  awn") — a fabricated decoding rule, not a description of the actual sound. Fixed: `sounds_like`
+  /`mouth_guide`/`watch_out_for` now must describe how the whole syllable/word actually sounds,
+  not assign a rule to a letter-group unless that's a genuine orthographic rule of the language.
+- **False precision on articulation.** `mouth_guide` said an "aw" vowel was "held slightly
+  longer" with no real basis — inventing vowel length the same way an earlier pass caught
+  inventing stress. Fixed: don't claim length/lengthening/clipping unless it's a real, confident
+  feature (ideally `prosody_label: VOWEL_LENGTH`).
+- **Approximation presented as exact.** No dedicated rule previously distinguished "a workable
+  English-friendly respelling" from "the literal source-language sound" when they diverge.
+  Added: keep the approximation prominent, but say so when it materially differs rather than
+  implying equivalence — the genuine IPA carries the precise version.
+- **CAPS implying real stress on non-stress languages.** Capitalization is fine as a navigation
+  aid for any prosody type, but only means an actual stress contrast when `prosody_label` is
+  `STRESS` — for RHYTHM/TONE/VOWEL_LENGTH languages the prosody text must say so plainly (not
+  just capitalize and imply English-style punch).
+- **`what_it_is` scope creep.** Only `background` had the "reliable and needed" bar before; now
+  `what_it_is` carries the same standard — no name meaning, equivalent-name-in-another-language,
+  or history unless it's actually needed to identify which reading is intended.
+- **Triple-repeated uncertainty.** For a `PERSON_SPECIFIC` name, the "may differ" caveat appeared
+  in the status badge AND `useful_in_context` AND a preamble to `confirmation_script` — the same
+  point three times in different words. Fixed at both the prose-rule and schema-description
+  level: say it once (the status badge), leave `useful_in_context` empty unless it's genuinely
+  new, and `confirmation_script` is the ask alone, not a second justification for asking.
+- **Section-earning discipline, restated as a literal question**: "does this help the visitor
+  pronounce THIS target?" added directly to OUTPUT DEPTH and the final self-check.
+
+**Verified live on the reported case (Siobhan):** `watch_out_for` no longer decomposes into
+letter-group rules ("just say shih-VAWN" instead of "Siobh makes a shiv sound"); no invented
+vowel length; `useful_in_context` correctly empty instead of repeating the person-specific
+caveat.
+
+**Known residual, not chased further** (diminishing returns on prompt-only iteration, and
+further live-testing has real API cost): `confirmation_script` sometimes still appends one
+reasoning clause after the ask itself ("...is the only way to be certain of their individual
+pronunciation") rather than being purely the ask; and `sounds_like`/`mouth_guide` can pick two
+English comparison words that don't rhyme in every dialect (e.g. "gone" vs "dawn") even though
+each individually approximates the target vowel reasonably. Worth another pass if either recurs
+on a live report — not worth burning more calls chasing on a single sample.
+
 ## DO NOT silently reverse
 - The V2 schema and its honesty rules (reading_status, needs_context, audio gating) —
   reverting to always-confident output reintroduces the exact problem this rewrite fixed.
