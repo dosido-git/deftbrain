@@ -13,6 +13,33 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Never place a double-quote (") character inside any JSON string value — quoted phrases or ingredient names must be written plainly or with single quotes, or it breaks the JSON.`
 
+// Shared: a named dish is not a recipe. "Chocolate chip cookies" establishes
+// nothing about quantities, egg count, fat amount, flour amount, sugar,
+// leavening, oven temperature, chill time, bake time, pan size, or yield —
+// so filling those in from memory produces a different recipe than the one
+// the visitor is actually holding, with numbers they can't verify against
+// their own kitchen. Applied to every endpoint that can be handed just a
+// dish name instead of an actual recipe (rescue, swap, multi-swap, scale).
+const PRESERVE_THE_RECIPE = `PRESERVE THE VISITOR'S RECIPE — never silently replace it with a generic one from memory.
+
+NAMING A DISH IS NOT PROVIDING A RECIPE. Quantities, egg count, fat amount, flour amount, sugar, leavening, oven temperature, chill time, bake time, pan size, and yield are NOT established by a dish name. If the visitor didn't give you a number, you don't know it — don't invent one just to make the answer look like a complete recipe.
+
+Give the substitution as a RULE relative to the visitor's own recipe wherever possible, and ask for a missing quantity only when the instruction genuinely needs it to be useful.
+
+BAD (visitor said only: chocolate chip cookies, out of butter and eggs, has coconut oil and flax): "Use 1/2 cup coconut oil, 1 flax egg, 2 1/4 cups flour, 3/4 cup each of two sugars..." — that invents an entire recipe, not a substitution.
+
+GOOD: "Coconut oil can often replace the butter in a cookie recipe, but tell me how much butter your recipe calls for and I'll give you the right amount. For the egg, a flax egg is a common substitute, though the cookies may spread or set a little differently."
+
+If the visitor DID give exact quantities, transform those — don't reconstruct the rest of the recipe around them unless they explicitly asked for a full replacement recipe. A substitution changes the ingredient(s) actually being swapped; don't rewrite the flour, sugar, salt, leavening, oven temperature, cooking time, or technique unless the substitution itself requires an adjustment, and say why when it does.
+
+DO NOT STATE A TOTAL TIME FOR A RECIPE YOU INVENTED. If the original timing is unknown, say only what extra time the substitution itself adds ("this flax mixture needs a short rest before use") — never a total like "about 30 minutes" for steps you never established. Any total time you DO give must actually equal the sum of the steps you listed elsewhere in the same response — a summary line that disagrees with its own instructions is a bug, not an estimate.
+
+DO NOT BORROW A MECHANISM FROM THE ORIGINAL INGREDIENT AND APPLY IT TO ITS SUBSTITUTE. "Hot oil scrambles the flax egg" imports egg biology into something that isn't an egg. Explain only what's actually happening physically: "let the melted coconut oil cool before mixing so it doesn't seize the other ingredients."
+
+DO NOT GENERALIZE ONE SUBSTITUTE ACROSS "MOST" RECIPES. An ingredient's role varies by recipe — say "can work in some baked goods, depending on what the egg is doing there," not "covers egg binding in most cookie and muffin recipes."
+
+Before finalizing, check every quantity, temperature, and time you're about to write against this: did the visitor's own words or supplied recipe establish this, or did I generate it? Anything you generated must be clearly a general substitution guideline, a necessary consequence of the substitution, or left out entirely.`;
+
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
   const commaIndex = dataUrl.indexOf(',');
@@ -104,7 +131,9 @@ router.post('/recipe-chaos-solver', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
 PROBLEM-SOLVING APPROACH:
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${PRESERVE_THE_RECIPE}`;
 
     const userPrompt = `RESCUE THIS:
 ${hasRecipeImage ? 'Recipe: See photo above — extract the recipe from the image' : `Recipe/Dish: ${recipeContext || 'Not specified'}`}
@@ -134,7 +163,7 @@ Return ONLY valid JSON:
       "swap_quality": "excellent swap|will work but flavor differs|emergency only" or null,
       "ingredients_used": ["ingredient with amount"],
       "missing_staples": ["basic items needed"],
-      "time": "estimated time — one sentence",
+      "time": "SHORT duration only, e.g. '15 min' or '45 min total' — never a sentence, and never a total for steps you didn't actually list",
       "difficulty": "easy|moderate|advanced",
       "success_probability": 85,
       "instructions": ["Step 1", "Step 2"],
@@ -187,7 +216,9 @@ router.post('/recipe-chaos-solver/swap', rateLimit(DEFAULT_LIMITS), async (req, 
 
 Substitution expert. For each swap: the ingredient's function (binding/leavening/flavor/moisture/structure), why substitutes work, exact ratios, honest quality rating.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${PRESERVE_THE_RECIPE}`;
 
     const userPrompt = `QUICK SWAP: "${ingredient}"
 ${recipeContext ? `In the context of: ${recipeContext}` : 'General cooking context'}
@@ -246,7 +277,9 @@ router.post('/recipe-chaos-solver/multi-swap', rateLimit(DEFAULT_LIMITS), async 
 
 Multi-ingredient substitution. Consider the combined effect — substitutions interact. Recommend a coherent strategy that works as a system, not just individual swaps.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${PRESERVE_THE_RECIPE}`;
 
     const userPrompt = `MULTI-SWAP: I'm missing ALL of these:
 ${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
@@ -312,7 +345,9 @@ router.post('/recipe-chaos-solver/scale', rateLimit(DEFAULT_LIMITS), async (req,
 
 Scale this recipe. Not everything is linear — spices/salt and leavening at ~70-80%, cooking times may shift, pan sizes may change, eggs round to whole. Flag anything non-linear.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${PRESERVE_THE_RECIPE}`;
 
     const userPrompt = `SCALE THIS RECIPE:
 ${recipeText}

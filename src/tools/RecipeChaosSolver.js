@@ -1367,13 +1367,13 @@ const RecipeChaosSolver = ({ tool }) => {
           {rescueResults.recipes?.map((recipe, idx) => (
             <div key={idx} className={`${c.card} border rounded-xl p-5`}>
               <div className="flex items-start justify-between gap-2 mb-3">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h3 className={`text-sm font-black ${c.text}`}>{recipe.name}</h3>
                   <p className={`text-xs ${c.textSecondary} mt-0.5`}>{recipe.description}</p>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {recipe.time && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.warningBox}`}>⏱️ {recipe.time}</span>}
-                  {recipe.difficulty && <span className={`text-[10px] px-1.5 py-0.5 rounded ${getDiffBadge(recipe.difficulty).bg}`}>{recipe.difficulty}</span>}
+                <div className="flex items-center gap-1.5 flex-shrink-0 max-w-[45%]">
+                  {recipe.time && <span className={`text-[10px] px-1.5 py-0.5 rounded truncate ${c.warningBox}`} title={recipe.time}>⏱️ {recipe.time}</span>}
+                  {recipe.difficulty && <span className={`text-[10px] px-1.5 py-0.5 rounded flex-shrink-0 ${getDiffBadge(recipe.difficulty).bg}`}>{recipe.difficulty}</span>}
                 </div>
               </div>
 
@@ -2925,27 +2925,25 @@ const RecipeChaosSolver = ({ tool }) => {
       {/* ── Persistent header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
-            <div className="flex items-start justify-between gap-3">
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            <div>
               <div>
-                <div>
-                  {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                  <p className={`text-base ${c.textSecondary}`}>
-                    <span className="me-2 text-lg">{tool?.icon ?? '🍳'}</span>{tool?.tagline ?? t('rcs_tagline')}
-                  </p>
-                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-                </div>
-                {(results || recipeText.trim() || problemDescription.trim()) && (
-                  <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('rcs_start_over')}</button>
-                )}
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+                <p className={`text-base ${c.textSecondary}`}>
+                  <span className="me-2 text-lg">{tool?.icon ?? '🍳'}</span>{tool?.tagline ?? t('rcs_tagline')}
+                </p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(hasInput) ? (
-                <button onClick={resetRescue} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  {t('rcs_new_problem')}
-                </button>
-              ) : null}
+              {(results || recipeText.trim() || problemDescription.trim()) && (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('rcs_start_over')}</button>
+              )}
             </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(hasInput) ? (
+              <button onClick={resetRescue} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                {t('rcs_new_problem')}
+              </button>
+            ) : null}
           </div>
         </div>
         <div className="px-5 py-3">
