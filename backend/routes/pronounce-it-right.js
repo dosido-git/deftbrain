@@ -235,4 +235,13 @@ Never place a double-quote (") character inside any string value — it breaks t
   }
 });
 
+// Reviewed against backend/lib/outputStandard.js as part of the 2026-09-07 V2
+// rewrite: the tool already leads with the answer (pronunciation before any
+// background), makes progress under uncertainty instead of manufacturing
+// certainty (reading_status/needs_context), respects the visitor's agency on
+// a name they can't know for sure (confirmation_script instead of asserting),
+// and is instructed to give the smallest complete guide rather than pad every
+// field. Declaring v2 for both endpoints in this file.
+router.outputStandard = 'v2';
+
 module.exports = router;
