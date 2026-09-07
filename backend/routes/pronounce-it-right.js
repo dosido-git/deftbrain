@@ -45,7 +45,7 @@ NATIVE-LANGUAGE CALIBRATION — the visitor's native language changes HOW you ex
 
 PHONETIC RESPELLING — this is the primary, learner-facing guide. It must represent the intended pronunciation as faithfully as practical, mark primary stress/emphasis clearly, and be calibrated to the visitor's native language. Do not produce a familiar-looking respelling that materially changes the sound. When no simple respelling captures a sound well, give the closest useful approximation, name the difference, and explain how to make the actual sound in the mouth guide.
 
-IPA — must be genuine IPA notation, not a respelling relabeled as IPA (something like "nyoh-kee" is NOT IPA). If you cannot produce reliable IPA, return an empty string rather than fabricate it.
+IPA — must be genuine IPA notation, not a respelling relabeled as IPA (something like "nyoh-kee" is NOT IPA). Include primary stress (ˈ) and, for longer words, secondary stress (ˌ) — this transcription is used to synthesize audio, and stress marks materially change how it sounds. If you cannot produce reliable IPA, return an empty string rather than fabricate it.
 
 PROSODY — most languages organize around stress; some organize around tone, mora/rhythm, or vowel length instead. Set prosody_label to whichever actually applies to this word's language (STRESS, TONE, RHYTHM, VOWEL_LENGTH, or NONE if nothing meaningful applies), and write the prosody field in those terms. Do not force every language into an English stress model.
 
@@ -63,11 +63,11 @@ CONFIRMATION SCRIPT — a short, natural thing to say if unsure in the moment. F
 
 NEEDS_CONTEXT — set needs_context.needed to true whenever reading_status is CONTEXT_DEPENDENT or UNCERTAIN, or whenever the answer would materially change with more information the visitor didn't give you. Say plainly what's missing (reason) and what would help (helpful_context). It is fine — good, even — to give a genuinely thin pronunciation section alongside this rather than invent confidence.
 
-AUDIO SAFETY — set audio.safe_to_offer and audio.reading_is_constrained based on whether a generic multilingual text-to-speech system, given only the source spelling, would plausibly produce the SAME reading you just described. For names, brands, places, acronyms, homographs, or anything with MULTIPLE_ESTABLISHED_READINGS/CONTEXT_DEPENDENT/PERSON_SPECIFIC/UNCERTAIN status, default these to false unless the spelling is essentially unambiguous in the identified language. Fill audio.language_or_locale with the pronunciation's language when known.
+AUDIO — playback is synthesized directly from your IPA transcription, not guessed from the spelling, so there is no separate "is audio safe" judgment to make: the IPA field itself is the only thing that controls it. Leave pronunciation.ipa empty when you are not genuinely confident in it, exactly as instructed above — that is what withholds playback, not a status flag.
 
 OUTPUT DEPTH — generate the SMALLEST COMPLETE GUIDE that helps the visitor say the target. A simple, familiar word may need only pronunciation + prosody + one sound note. A difficult foreign name may need IPA, articulation, variants, and a confirmation script. Omit every field that wouldn't make the pronunciation more useful — omitting is not a failure, it is the point. Empty string / empty array is the correct value for a field that doesn't apply; do not pad it.
 
-Before answering, check: is the reading actually established, or am I guessing? Could this spelling have another legitimate reading? If this is a person's name, am I pretending spelling determines their own reading? Does the phonetic respelling represent the same sound as the IPA? Is the IPA genuine IPA? Is this calibrated to the visitor's native language rather than just translated from an English guide? Did I invent an origin, etymology, cultural identity, or professional/status convention? Did I call a spelling trap an established common mistake without evidence? Could the audio read a different pronunciation than what I just described? If any answer reveals a problem, fix it before returning.
+Before answering, check: is the reading actually established, or am I guessing? Could this spelling have another legitimate reading? If this is a person's name, am I pretending spelling determines their own reading? Does the phonetic respelling represent the same sound as the IPA — since audio is synthesized directly from that IPA, any mismatch between them becomes an audible one? Is the IPA genuine IPA? Is this calibrated to the visitor's native language rather than just translated from an English guide? Did I invent an origin, etymology, cultural identity, or professional/status convention? Did I call a spelling trap an established common mistake without evidence? If any answer reveals a problem, fix it before returning.
 
 Never place a double-quote (") character inside any string value — it breaks the JSON. Return ONLY valid JSON matching the schema you're given, no markdown fences, no commentary.`;
 
@@ -142,12 +142,6 @@ Return ONLY valid JSON in exactly this shape:
     "needed": false,
     "reason": "Plainly what makes this ambiguous, if needed is true",
     "helpful_context": "What additional information would resolve it, if needed is true"
-  },
-
-  "audio": {
-    "safe_to_offer": false,
-    "language_or_locale": "e.g. 'it-IT', or empty string if unknown",
-    "reading_is_constrained": false
   }
 }
 

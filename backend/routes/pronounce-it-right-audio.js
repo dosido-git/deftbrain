@@ -4,31 +4,31 @@ const https = require('https');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
-// AUDIO CONTRACT (V2, 2026-09-07) — Generate spoken pronunciation via
-// ElevenLabs, ONLY for readings the frontend has already judged safe.
+// AUDIO CONTRACT (V2.1, 2026-09-07) — synthesize from IPA, not from spelling.
 //
 // POST /api/pronounce-it-right-audio
-// Body: { source_text: string, target_language_or_locale?: string, selected_reading?: string }
-// (word / languageOfOrigin accepted as aliases for source_text /
-// target_language_or_locale — kept for callers on the pre-V2 contract.)
+// Body: { source_text: string, ipa?: string, target_language_or_locale?: string }
+// (word accepted as an alias for source_text — kept for callers on the
+// pre-V2 contract.)
 // Returns: audio/mpeg binary
 //
-// Audio is a convenience, not evidence. The pronunciation-analysis endpoint
-// (`/api/pronounce-it-right`) decides whether a reading is safe to voice at
-// all — it sets `audio.safe_to_offer` and `audio.reading_is_constrained`, and
-// the frontend must NOT render the "Hear it" control unless both are true
-// (names, brands, places, acronyms, homographs, and anything with more than
-// one established reading default to unavailable). This route does not
-// re-derive that judgment — it trusts the caller already gated on it.
+// eleven_v3 understands IPA written directly in the text, wrapped in forward
+// slashes (no XML/SSML needed) — see
+// https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices
+// and https://elevenlabs.io/docs/cookbooks/text-to-speech/pronunciation-dictionaries.
+// When the analysis endpoint supplied a genuine IPA transcription, we speak
+// THAT — the same string the written guide shows — instead of asking a
+// multilingual model to guess a reading from raw letters. Whatever the
+// visitor sees is exactly what plays; the two cannot disagree, because audio
+// is no longer a second, independent guess.
 //
-// HONEST LIMITATION: eleven_multilingual_v2 has no reading/locale override —
-// it auto-detects pronunciation language from the text itself, so
-// `target_language_or_locale` and `selected_reading` are accepted and logged
-// for the day this (or a future TTS backend) supports constraining playback,
-// but are NOT currently able to force a specific reading. That is exactly
-// why the frontend gate above — not this route — is what keeps written guide
-// and audio from disagreeing: when we can't be sure the two would agree, we
-// don't call this endpoint at all.
+// Falls back to plain multilingual synthesis of the raw word when no IPA was
+// supplied (older callers, or a genuinely uncertain reading where the
+// analysis endpoint left pronunciation.ipa empty on purpose — the frontend
+// does not offer "Hear it" in that case, but this route stays usable
+// directly). ElevenLabs' own docs put IPA consistency at 80-90%, not 100% —
+// still a convenience, not proof, which is why the frontend keeps the
+// "AI-generated" disclaimer regardless of which path this took.
 //
 // Cost: ~$0.003–$0.006 per request (ElevenLabs charges per character).
 // ═══════════════════════════════════════════════════════════════
@@ -36,8 +36,17 @@ const { rateLimit } = require('../lib/rateLimiter');
 // Sarah — clear, neutral, works well across languages
 const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL';
 
+// Best-effort ISO 639-1 extraction from a locale-ish string ("it-IT" -> "it").
+// Wrong is not costly here — the field is optional and IPA already carries
+// the actual pronunciation — so this only fires on a clean two-letter match.
+function isoLanguageCode(locale) {
+  const m = /^([a-z]{2})(?:[-_]|$)/i.exec(String(locale || '').trim());
+  return m ? m[1].toLowerCase() : null;
+}
+
 router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
   const sourceText = req.body.source_text ?? req.body.word;
+  const ipa = typeof req.body.ipa === 'string' ? req.body.ipa.trim() : '';
 
   if (!sourceText?.trim()) {
     return res.status(400).json({ error: 'Word is required' });
@@ -48,16 +57,24 @@ router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
     return res.status(500).json({ error: 'Audio service not configured' });
   }
 
-  const payload = JSON.stringify({
-    text: sourceText.trim(),
-    model_id: 'eleven_multilingual_v2',
+  const languageCode = isoLanguageCode(req.body.target_language_or_locale);
+
+  const body = {
+    // IPA path: speak exactly the transcription the visitor already sees, via
+    // eleven_v3's native slash-wrapped IPA support. No-IPA path: fall back to
+    // eleven_multilingual_v2 guessing from the raw word, as before V2.1.
+    text: ipa ? `/${ipa}/` : sourceText.trim(),
+    model_id: ipa ? 'eleven_v3' : 'eleven_multilingual_v2',
     voice_settings: {
       stability: 0.5,
       similarity_boost: 0.75,
       style: 0.0,
       use_speaker_boost: true,
     },
-  });
+  };
+  if (languageCode) body.language_code = languageCode;
+
+  const payload = JSON.stringify(body);
 
   const options = {
     hostname: 'api.elevenlabs.io',

@@ -210,7 +210,12 @@ const PronounceItRight = ({ tool }) => {
     setResults(null); setBatchResults(null); setError(''); setBatchMode(false); setAudioUrl(null);
   }, []);
 
-  const audioSafe = !!(results?.audio?.safe_to_offer && results?.audio?.reading_is_constrained);
+  // Audio is synthesized directly from pronunciation.ipa (eleven_v3 reads IPA
+  // wrapped in slashes) — the same string shown in the result, not an
+  // independent guess from raw spelling — so it's offered whenever the model
+  // was confident enough to produce genuine IPA, and withheld when it left
+  // that field empty (nothing safe to synthesize, including UNCERTAIN reads).
+  const audioSafe = !!results?.pronunciation?.ipa && results?.reading_status !== 'UNCERTAIN';
 
   const fetchAudio = useCallback(async () => {
     if (!results?.word || !audioSafe) return;
@@ -222,8 +227,8 @@ const PronounceItRight = ({ tool }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           source_text: results.word,
-          target_language_or_locale: results.audio?.language_or_locale || results.language || null,
-          selected_reading: results.pronunciation?.phonetic || null,
+          ipa: results.pronunciation?.ipa || null,
+          target_language_or_locale: results.language || null,
         }),
       });
       if (!res.ok) throw new Error('Audio unavailable');

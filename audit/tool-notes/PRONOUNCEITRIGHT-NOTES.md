@@ -125,6 +125,45 @@ model call) — e.g. flagging IPA fields that look like a respelling, or `contex
 non-empty on a `PERSON_SPECIFIC` name — would fit this domain better than the generic
 fact-invention guard. That is real future work, not an excuse; it just is not what shipped here.
 
+## V2.1 (2026-09-07, same day) — audio synthesized from IPA, not guessed from spelling
+
+The original V2 audio contract gated "Hear it" on the model's own guess about whether a
+generic multilingual TTS voice, given only the raw spelling, would say the same thing as the
+written guide. That made audio nearly useless — it was withheld for almost every name, brand,
+or multi-reading word, which is a large share of what this tool is for.
+
+Turns out ElevenLabs' `eleven_v3` model reads genuine IPA directly out of the text when it's
+wrapped in slashes (`/ˈɲɔkːi/`) — no SSML/XML needed. See
+[best practices](https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices)
+and [pronunciation dictionaries](https://elevenlabs.io/docs/cookbooks/text-to-speech/pronunciation-dictionaries)
+(80-90% consistency, not 100%). Since this tool already generates genuine IPA as a hard
+requirement (empty string rather than a fake one), audio can now be synthesized from *that
+exact string* instead of guessing independently from the spelling — so the written guide and
+the audio can no longer disagree, because the audio is voicing the same claim shown on screen,
+not a second one.
+
+**What changed:**
+- `backend/routes/pronounce-it-right-audio.js`: when `ipa` is supplied, uses
+  `model_id: 'eleven_v3'` and sends `text: '/${ipa}/'`; falls back to the original
+  `eleven_multilingual_v2` + raw word when no IPA is available. Accepts `ipa` and
+  `target_language_or_locale` (best-effort ISO 639-1 extraction) in addition to `source_text`.
+- `backend/routes/pronounce-it-right.js`: removed the `audio{safe_to_offer,language_or_locale,
+  reading_is_constrained}` object from the schema — there's no separate safety judgment left to
+  make; withholding is now just "did I have confident enough IPA to write one". Added an
+  explicit instruction to include primary (ˈ) and secondary (ˌ) stress marks in IPA, since that
+  transcription is now what gets spoken, not just displayed.
+- `src/tools/PronounceItRight.js`: `audioSafe` now derives from
+  `!!results.pronunciation?.ipa && results.reading_status !== 'UNCERTAIN'` instead of the old
+  `audio.safe_to_offer && audio.reading_is_constrained`. `fetchAudio` sends `ipa` to the audio
+  route instead of `selected_reading`.
+- Golden re-recorded again (single-case output shape changed: `audio` key gone).
+
+**Verified live:** "Worcestershire" produced `/ˈwʊstərˌʃɛri/` and a real 21KB MP3 via
+`eleven_v3`; the no-IPA fallback path still works; clicked "Hear it" through the actual running
+UI (not just curl) and watched the real fetch go out and return 200. "Siobhan" — a name, which
+never got audio under V2 — now does, since we're voicing "a common pronunciation is X" (which
+the text already asserts), not a stronger claim than what's on screen.
+
 ## DO NOT silently reverse
 - The V2 schema and its honesty rules (reading_status, needs_context, audio gating) —
   reverting to always-confident output reintroduces the exact problem this rewrite fixed.
@@ -133,5 +172,6 @@ fact-invention guard. That is real future work, not an excuse; it just is not wh
 - Batch guard `!parsed.guides?.length`; single endpoint guard `!parsed.pronunciation`
   (top-level); single `max_tokens` 3500 + batch cap 8; no annotation suffixes; the PlainTalk
   cross-ref stays in the main render tree (S5.5).
-- The audio gate: never render "Hear it" without `audio.safe_to_offer &&
-  audio.reading_is_constrained` both true.
+- The audio gate (V2.1): never render "Hear it" without genuine `pronunciation.ipa` present
+  (and `reading_status !== 'UNCERTAIN'`) — and never feed the audio route raw spelling when IPA
+  is available, or the written guide and audio can disagree again.

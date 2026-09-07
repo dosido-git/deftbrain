@@ -3,8 +3,8 @@
     "tool": "PronounceItRight",
     "generated": "2026-09-07",
     "model": "claude-haiku (MODELS.FAST), 2 LLM endpoints + 1 ElevenLabs TTS route",
-    "baseline_commit": "pronounceitright-v2",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. SCHEMA (V2): word/reading_status/language/pronunciation{phonetic,ipa,syllables,prosody_label,prosody,sounds_like,mouth_guide}/variants[]/watch_out_for[]/context_info{what_it_is,useful_in_context,background}/confirmation_script/needs_context{needed,reason,helpful_context}/audio{safe_to_offer,language_or_locale,reading_is_constrained} for the single endpoint; guides[]{word,reading_status,phonetic,prosody,sound_note,watch_out_for,context_needed} for batch (no ipa/syllables/what_it_is/fun_fact by design). GUARDS: (1) single endpoint guards on the top-level `pronunciation` key being present (never a nested/nullable field). (2) batch guards on `guides` being a non-empty array. (3) single max_tokens 3500, batch max_tokens 3000, batch validWords capped at 8. (4) KNOWN BUG CLASS, FIXED HERE: a German-locale call to the single endpoint could return a confidently-worded quoted phrase (confirmation_script/useful_in_context/watch_out_for) with a literal ASCII double-quote character inside the JSON string value, which the shared repairJsonStrings() cannot distinguish from a real string terminator -> a JSON parse error ('Expected comma or closing brace after a property value') -> 500 on that call. Batch was unaffected because its user prompt already carried the no-double-quote rule; the single endpoint only had that rule in the system prompt, which the model did not reliably obey under locale pressure. Fix: added an explicit 'use single quotes, never a double-quote, inside any string value' rule directly in the single endpoint's USER prompt (next to the schema), matching the working batch prompt. Verified: 4 consecutive live German calls (1 ambiguous-reading food case, 1 name case x3) all returned HTTP 200 valid JSON after the fix. DO NOT reverse: the no-double-quote rule in the USER prompt (not just system prompt) on the single endpoint; single max_tokens 3500 + batch cap 8; the V2 schema and its reading_status/needs_context/audio-gating honesty rules; the PlainTalk cross-ref staying in the main render tree (S5.5)."
+    "baseline_commit": "pronounceitright-v2.1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pronounce-it-right). Diff for QUALITY not exact match: HTTP 200, no truncation. SCHEMA (V2): word/reading_status/language/pronunciation{phonetic,ipa,syllables,prosody_label,prosody,sounds_like,mouth_guide}/variants[]/watch_out_for[]/context_info{what_it_is,useful_in_context,background}/confirmation_script/needs_context{needed,reason,helpful_context}/audio{safe_to_offer,language_or_locale,reading_is_constrained} for the single endpoint; guides[]{word,reading_status,phonetic,prosody,sound_note,watch_out_for,context_needed} for batch (no ipa/syllables/what_it_is/fun_fact by design). GUARDS: (1) single endpoint guards on the top-level `pronunciation` key being present (never a nested/nullable field). (2) batch guards on `guides` being a non-empty array. (3) single max_tokens 3500, batch max_tokens 3000, batch validWords capped at 8. (4) KNOWN BUG CLASS, FIXED HERE: a German-locale call to the single endpoint could return a confidently-worded quoted phrase (confirmation_script/useful_in_context/watch_out_for) with a literal ASCII double-quote character inside the JSON string value, which the shared repairJsonStrings() cannot distinguish from a real string terminator -> a JSON parse error ('Expected comma or closing brace after a property value') -> 500 on that call. Batch was unaffected because its user prompt already carried the no-double-quote rule; the single endpoint only had that rule in the system prompt, which the model did not reliably obey under locale pressure. Fix: added an explicit 'use single quotes, never a double-quote, inside any string value' rule directly in the single endpoint's USER prompt (next to the schema), matching the working batch prompt. Verified: 4 consecutive live German calls (1 ambiguous-reading food case, 1 name case x3) all returned HTTP 200 valid JSON after the fix. DO NOT reverse: the no-double-quote rule in the USER prompt (not just system prompt) on the single endpoint; single max_tokens 3500 + batch cap 8; the V2 schema and its reading_status/needs_context/audio-gating honesty rules; the PlainTalk cross-ref staying in the main render tree (S5.5). V2.1 (audio): the schema's audio{safe_to_offer,language_or_locale,reading_is_constrained} object was REMOVED — audio is now synthesized directly from pronunciation.ipa via ElevenLabs eleven_v3 (IPA wrapped in slashes), so there is no separate safety judgment left for the model to make; the frontend gates 'Hear it' on pronunciation.ipa being non-empty and reading_status !== UNCERTAIN instead. Do not re-add the audio object without re-adding the corresponding frontend gating logic it used to drive."
   },
   "cases": [
     {
@@ -24,50 +24,45 @@
         "reading_status": "MULTIPLE_ESTABLISHED_READINGS",
         "language": "Italienisch",
         "pronunciation": {
-          "phonetic": "NJOK-ki",
-          "ipa": "[ˈɲɔkki]",
+          "phonetic": "NYOK-kee",
+          "ipa": "ˈɲɔk.ki",
           "syllables": [
-            "Njok",
-            "ki"
+            "nyo",
+            "kki"
           ],
           "prosody_label": "STRESS",
-          "prosody": "Das Wort trägt Betonung auf der ersten Silbe: NJOK-ki.",
-          "sounds_like": "Das 'nj' am Anfang funktioniert wie das 'gn' in 'Gnade', nur weicher und schneller; das Ganze klingt ähnlich wie 'Njöck' im Deutschen.",
-          "mouth_guide": "Das 'nj' entsteht, wenn du die Zunge gegen den harten Gaumen legst (wie bei 'n') und gleichzeitig ein weiches 'j' (wie in 'ja') davorlegst — beides fließt ineinander. Die beiden 'k' am Ende sind hart und kurz."
+          "prosody": "Das Gewicht liegt auf der ersten Silbe; die zweite Silbe ist kurz und unbetont.",
+          "sounds_like": "Das 'nyo' ähnelt dem deutschen 'Gn' in 'Gnade', gefolgt von 'o' wie in 'Gott'; das 'kki' wie das deutsche 'kk' in 'Akkord'.",
+          "mouth_guide": "Das 'ny' entsteht mit der Zunge an der Zungenrückenmitte (ähnlich dem deutschen 'ng'), während die Lippen die Zungenbewegung zulassen — kein hartes 'n', sondern fließend in das 'o' über."
         },
         "variants": [
           {
-            "label": "Anglisierte Aussprache",
-            "phonetic": "NOH-kee",
-            "ipa": "[ˈnoʊki]",
-            "when_used": "Diese Variante hörst du häufig in englischsprachigen Ländern und manchmal auch in deutschsprachigen Restaurants, wo der italienische Laut vereinfacht wird."
+            "label": "Anglisierte Aussprache, im deutschsprachigen Raum verbreitet",
+            "phonetic": "NOK-kee",
+            "ipa": "ˈnɑk.ki",
+            "when_used": "In Deutschland und Österreich häufig zu hören; das 'ny' wird zu einem normalen 'n' vereinfacht."
           }
         ],
         "watch_out_for": [
           {
-            "trap": "Das 'gn' am Anfang wie ein deutsches 'g' auszusprechen ('Gnocchi' wie 'Gott')",
-            "fix": "Das italienische 'gn' vor Vokalen klingt wie das weiche 'nj' in 'Njöck' — das 'g' ist stumm und fließt in den Nasallaut über."
+            "trap": "Das 'gn' am Anfang wird oft stumm gemacht oder als hartes 'g' gesprochen, statt das 'ny'-Lautmerkmal beizubehalten.",
+            "fix": "Denken Sie an 'Gnade' — das 'Gn' wird nicht als zwei separate Laute gesprochen, sondern als weicher, palataler Nasal am Anfang, der direkt in das 'o' gleitet."
           },
           {
-            "trap": "Die beiden 'k' am Ende zu trennen oder zu dehnen",
-            "fix": "Beide 'k' verschmelzen zu einem kurzen, harten Laut, gefolgt von einem kurzen 'i': -kki, nicht -keh oder -kay."
+            "trap": "Das doppelte 'kk' wird manchmal zu einem einfachen 'k' verkürzt.",
+            "fix": "Zwei separate 'k'-Laute bewahren den italienischen Klang: 'nyo-KK-i', nicht 'nyo-ki'."
           }
         ],
         "context_info": {
-          "what_it_is": "Italienische Kartoffel- oder Grießklöße, gekocht wie Pasta.",
+          "what_it_is": "Italienische Kartoffelbrei- oder Grießnocken, oft mit Sauce serviert.",
           "useful_in_context": "",
           "background": ""
         },
-        "confirmation_script": "Falls du unsicher bist, kannst du sagen: 'Sprichst du das NJOK-ki oder eher NOH-kee aus?'",
+        "confirmation_script": "",
         "needs_context": {
           "needed": false,
           "reason": "",
           "helpful_context": ""
-        },
-        "audio": {
-          "safe_to_offer": false,
-          "language_or_locale": "it-IT",
-          "reading_is_constrained": false
         }
       },
       "optionalSections": [

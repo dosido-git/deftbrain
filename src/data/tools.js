@@ -2321,7 +2321,7 @@ export const tools = [
       "For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.",
       "When a reading could go more than one way, the guide says so and explains what context would settle it, instead of picking one and hoping.",
       "IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result.",
-      "'Hear it' only appears when the spelling is unambiguous enough for text-to-speech to match the written guide — audio is a convenience, not proof of the correct reading."
+      "'Hear it' speaks the exact IPA transcription shown above, not a guess from the raw spelling — so it only appears when the guide was confident enough to produce genuine IPA, and it's a convenience, not proof of the correct reading."
     ]
   }
 },
