@@ -137,6 +137,38 @@ NEW catch entirely on its own, without being asked for it: "the MOT failure was 
 the quote covers all four corners" — filed correctly as an unknown worth asking about, not
 promoted into an invented diagnosis.
 
+## V2.2 (2026-09-07, same day) — two more grounding fixes, plus an operator credit outage
+
+**1. Questions naming alternative diagnoses.** `questions_to_ask`/`what_to_say` would ask things
+like "what confirmed the compressor rather than the evaporator fan, damper, or defrost system?"
+— naming specific alternative components/causes/tests the visitor never supplied, which makes
+the visitor sound as if they'd independently diagnosed the equipment rather than just asking for
+the basis of someone else's diagnosis. Fixed: ask neutrally ("what testing or inspection led to
+this diagnosis?"); a new explicit test — "does this question contain technical knowledge that
+came from me rather than the visitor or the quote?" — runs before `questions_to_ask`/
+`what_to_say` are finalized. New guard prohibition: `alternative_diagnosis_named_for_visitor`.
+
+**2. Warranty implying impending failure.** A warranty mention would carry an implication that
+another failure was likely or coming soon. Warranty is about financial exposure if a *covered*
+problem occurs, not a signal that one will. Fixed: frame warranty strictly as exposure ("affects
+how much financial exposure you retain if a covered problem occurs afterward"). New guard
+prohibition: `warranty_implies_impending_failure`.
+
+**Verified live**: re-ran the appliance compressor scenario — `questions_to_ask` and
+`what_to_say` both ask "what inspection or measurement led to the compressor diagnosis" with no
+named alternative anywhere in the response; every warranty mention (in `unknowns_that_matter`
+and `repair_vs_replace.missing_information`) is framed as exposure, not risk.
+
+**Unrelated operator incident, worth recording**: between V2.1 and V2.2, a live "Analysis
+failed" report turned out to be an Anthropic account credit exhaustion (`400` "credit balance
+too low"), not a code or prompt bug — confirmed by reproducing the identical error on an
+unrelated tool. Root cause was very likely the volume of this session's live-testing combined
+with the guard's own high repair-trigger rate (each triggered repair roughly triples the cost of
+a single call — main analysis + guard check + guard repair, all Sonnet-tier). Resolved by the
+account owner topping up credits; **the underlying cost/latency concern (guard firing on most
+calls) was flagged but is not yet separately addressed** — worth a future pass if it recurs or
+if latency/cost in production becomes a problem.
+
 ## DO NOT silently reverse
 
 1. The verdict enum and its definitions — `LOOKS_STRAIGHTFORWARD` must never be treated as "fair
@@ -161,6 +193,11 @@ promoted into an invented diagnosis.
    no timeframe for deterioration, regardless of how plausible the mechanical link is.
 10. The CURRENCY rule (V2.1) — every monetary figure in every field uses the one given currency,
     with its symbol attached, regardless of regional vocabulary in the free-text description.
+11. The "no alternative diagnosis in the visitor's own question" rule (V2.2) — a diagnosis
+    question must ask for the basis neutrally, never name a specific alternative cause/
+    component/test the visitor didn't supply, even when phrased as a question.
+12. The warranty-as-exposure framing (V2.2) — never let a warranty mention imply another
+    failure is likely or coming.
 
 ## Known / verified
 
