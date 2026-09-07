@@ -23,7 +23,7 @@ reversibility / values-fit / comparison-matrix frameworks. **Frontend:** `src/to
 `{ ...optionsPart, ...framingPart }`. One 8-key schema in a single call measured ~67s — past
 where Safari abandons the fetch — hence the split (see the 2026-08-08 parallel-split-pattern
 memory note: partition the structure, not the index). **Golden:**
-`audit/plot-twist-golden-sample.json` (2 cases, both from real verified live runs). Verify:
+`audit/plot-twist-golden-sample.json` (3 cases, all from real verified live runs). Verify:
 `npm run check:golden plot-twist`.
 
 ## V2 rewrite (2026-09-06) — from mind-reading to grounded analysis
@@ -102,6 +102,34 @@ safety net in the route handler that coerces any `comparison_matrix.options[].ra
 outside the 6-value enum to `UNKNOWN` before the response leaves the route. Re-verified clean on
 the next live run (`invalid ratings: []`).
 
+## Second correction pass (2026-09-06) — proximity, matrix-unknown, time-horizon, one_question
+
+A live elder-care test (father can no longer live alone; move-in vs. care home; a brother
+abroad offers money but not presence) surfaced 4 more overreach patterns, all now fixed and
+re-verified live (golden case 3):
+
+1. **Proximity → assumed personal responsibility.** The model had written "the load falls
+   primarily on whoever is present — which, given your brother's location, means you." A
+   sibling's absence doesn't establish that the visitor personally provides care — other
+   household members, paid help, or other arrangements may exist unmentioned. Fixed with an
+   explicit rule: don't convert proximity into personal responsibility unless the visitor
+   established who would actually provide care. Now speaks in terms of "your household."
+2. **Directional advantage on a flagged unknown.** The comparison matrix rated "brother's
+   financial contribution providing real relief" as an advantage for one option and a
+   disadvantage for the other, while `unknowns_that_matter` separately (and correctly) said the
+   tool didn't know what the contribution would cover. Fixed: if a dimension turns on a fact
+   flagged elsewhere as unknown, rate **both** sides UNKNOWN rather than picking a direction to
+   avoid a blank cell.
+3. **Time horizons narrating a future event.** 10-month/10-year content about caregiving load or
+   relationship strain needs the same conditional discipline as predicted emotions already had —
+   "questions that may matter by then," never "the caregiving demands will be heavier."
+4. **`one_question` presupposing an option.** A question like "if your father moved in and your
+   household found itself struggling..." starts inside one option and presumes it went badly.
+   Fixed: prefer a question that distinguishes between the options or resolves the single most
+   decision-changing unknown, without presuming a choice was made or went badly.
+
+`FINAL SELF-CHECK` extended to 16 items and `outputGuard.prohibit` gained 4 matching entries.
+
 ## DO NOT silently reverse
 - Qualitative `reversibility.level` / `values_fit.level` / comparison-matrix `ratings` — never
   reintroduce bare numeric scores anywhere in this schema.
@@ -113,3 +141,9 @@ the next live run (`invalid ratings: []`).
 - The removed `gut_check` (word-choice/omission inference) — do not resurrect it under
   `what_your_description_points_to`; that field may only restate what was actually supplied.
 - History storing full input snapshots (needed for Revisit) rather than just a preview string.
+- Proximity/absence never converted into assumed personal caregiving responsibility.
+- A comparison-matrix dimension flagged elsewhere as unknown stays UNKNOWN on both sides, never
+  a directional advantage.
+- Time-horizon content (caregiving load, relationship strain, any topic) stays conditional
+  ("questions that may matter"), never a narrated future event.
+- `one_question` stays option-neutral by default — no presuming a choice was made or went badly.
