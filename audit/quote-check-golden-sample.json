@@ -1,305 +1,420 @@
 {
- "_meta": {
-  "tool": "quote-check",
-  "generated": "2026-07-15",
-  "baseline": "quotecheck-v2",
-  "model": "claude-opus (MODELS.SMART), 1 endpoint, 3 repair-type categories (appliance/car/other)",
-  "note": "Brand new tool — built end-to-end this session per user request ('One pre-DeftBrain prototype had a tool like this for car mechanics and it was very good... Let's start from scratch'). Concept validated via market research first: appliance-repair-quote-fairness has no RepairPal-equivalent incumbent (genuine white space); car-repair-quote fairness is dominated by RepairPal (15+ years of real transactional data, certified-shop Fair Price Guarantee network since 2008), so QuoteCheck is deliberately positioned as a red-flags/leverage/negotiation-script tool for cars (NOT a pricing-precision competitor to RepairPal) while giving higher-confidence price ranges for appliances where the model's training data is more standardized. This distinction is baked into the system prompt, not just documentation. IMPLEMENTATION NOTES: (1) i18n is English-only at launch (t()-based architecture with qc_* keys in src/i18n/locales/tools/quote-check.js, 'en' block only) — missing languages fall back to 'en' automatically (src/i18n/index.js), so non-English users see clean English text, not broken keys, until a follow-up localization pass adds the other 12 languages; QuoteCheck is NOT yet in scripts/localization-audit.js's LOCALIZED_TOOLS allowlist, so Gate 5 doesn't check it (by design). (2) replace_vs_repair is appliance-only — backend hardcodes null for car/other repairType; frontend only shows the itemAge input when repairType==='appliance'. (3) NO_QUOTE_RULE included from day one (negotiation_script is 'exact words to say' — the exact field class that broke JSON in German across ~15 other tools this campaign); verified live in German with deliberately quoted third-party speech in whatTheyToldYou, zero issues. (4) Audit gate S5.5 initially failed (no pre-result cross-ref detected) because the cross-ref link lived only inside the renderInput() render-function body — the audit script's region scanner only recognizes hrefs directly in the top-level return() JSX (or inside a renderResults function), not inside other named render helpers; fixed by adding a duplicate cross-ref line directly in the top-level return, matching the established ContractDecoder pattern (same duplication exists there). (5) F3/PF-21 (optional chaining) required results?. everywhere in renderResults() despite most accesses already being guarded by an outer {results?.field && (...)} check — the audit script doesn't understand JSX control flow, it's a blanket regex requirement. Browser-verified: full submit flow, dark mode, PF-16 reset button, ActionBar Copy/Print registration, cross-ref rendering, zero console errors. 2026-07-15 (2nd pass, same day): added optional file upload — photo (JPG/PNG) or PDF of the actual quote/invoice, sent as a Claude vision image or document content block (backend/routes/quote-check.js parseQuoteFile(), reusing the exact content-block patterns already proven in LeaseTrapDetector for PDF and BikeMedic/LaundroMat for images). The file is ADDITIVE evidence, never a replacement for the required text fields — the system prompt explicitly instructs the model to treat an attached file as ground truth over the typed summary if they conflict. Live-verified with a synthetic invoice image where the typed price ($450) deliberately differed from the invoice total ($497.50) — the model correctly read the image, caught the discrepancy, and flagged it as a red flag exactly as instructed. Also verified with a synthetic PDF brake estimate containing an embedded pressure-tactic line ('approve within 24 hours') — correctly extracted and flagged. An unsupported file type (text/plain) degrades gracefully (file silently dropped, analysis proceeds text-only) rather than erroring, since the file is optional. Frontend: dropzone UI copied from LeaseTrapDetector's pattern (empty dashed-border CTA -> success chip with filename/size/remove), wired via the same FileReader-to-data-URL approach; browser-verified the full select/display/remove cycle via a simulated DOM file-input change event (the browser tool has no native file-upload action). handleReset clears the file too. All 4 gates + existing 3 golden cases re-verified with no regression after adding the feature."
- },
- "cases": [
-  {
-   "name": "appliance-compressor-vs-evaporator-fan-en",
-   "endpoint": "/api/quote-check",
-   "input": {
-    "repairType": "appliance",
-    "itemDescription": "Whirlpool refrigerator, about 6 years old",
-    "whatWentWrong": "Not cooling properly, freezer is fine but the fridge side is warm",
-    "whatTheyToldYou": "Technician said the compressor is failing and needs full replacement",
-    "quotedPrice": 450,
-    "quotedBreakdown": "",
-    "itemAge": "6 years",
-    "userLocale": "en-US",
-    "userCurrency": "USD",
-    "userRegion": "US"
-   },
-   "output": {
-    "understanding": "Your 6-year-old Whirlpool fridge has a classic symptom — warm fridge side, working freezer — and the technician jumped straight to a compressor replacement diagnosis with a $450 lump-sum quote and no itemized breakdown. That combination deserves serious scrutiny before you approve anything.",
-    "verdict": "cant_tell",
-    "verdict_explanation": "The $450 price could be reasonable IF the compressor truly needs replacing, but the symptom you described — freezer working fine, fridge side warm — is a textbook presentation of a failed evaporator fan motor or a defrost system problem (clogged defrost drain, failed defrost heater or thermostat), not a failing compressor. A compressor failure typically kills both sides. Without seeing proof the cheaper causes were ruled out first, there is no way to know if this diagnosis is even correct, let alone whether the price is fair.",
-    "price_reality_check": {
-     "typical_range": "A legitimate compressor replacement on a Whirlpool side-by-side or top-freezer fridge typically runs $300-$600 all-in including parts and labor. An evaporator fan motor replacement — a far more likely diagnosis for this symptom — typically runs $100-$200 all-in. The $450 quote falls in the right ballpark IF the diagnosis is correct, but that is a very big if here.",
-     "where_this_quote_falls": "At $450, the quote is within the plausible range for a compressor job, but it would be a significant overpayment if the real fix is a $100-$200 evaporator fan or defrost component.",
-     "confidence": "medium"
-    },
-    "red_flags": [
-     {
-      "flag": "The symptom (freezer fine, fridge warm) strongly points to an evaporator fan or defrost system issue, yet the technician diagnosed the most expensive possible component — the compressor — without explaining how they ruled out the cheaper causes first.",
-      "why_it_matters": "This is the single most common misdiagnosis pattern in appliance repair: skipping cheap causes to sell an expensive fix. A compressor failure almost never produces a healthy freezer and a warm fridge compartment simultaneously."
-     },
-     {
-      "flag": "The quote is a single lump sum with no breakdown of parts cost versus labor cost.",
-      "why_it_matters": "Without itemization you cannot verify whether the compressor part is being marked up heavily, how much labor is being charged, or whether the diagnosis fee is included — you are being asked to approve a black box."
-     },
-     {
-      "flag": "No explanation was offered for how the technician tested or confirmed compressor failure.",
-      "why_it_matters": "A legitimate compressor diagnosis requires measuring refrigerant pressure or running electrical tests on the compressor windings — if they just listened, looked around, and quoted compressor replacement, that is not a reliable diagnosis."
-     }
-    ],
-    "itemization_check": {
-     "is_itemized_enough": false,
-     "whats_missing": "No breakdown of parts cost versus labor cost, no mention of which specific compressor part number is being used, and no indication of whether the diagnostic service-call fee is credited back against the $450 if you approve the repair."
-    },
-    "replace_vs_repair": {
-     "applies": true,
-     "guidance": "At 6 years old a Whirlpool fridge has a reasonable remaining lifespan, so a $100-$200 fan or defrost repair is almost certainly worth it — but a $450 compressor job is right on the edge of the rough rule of thumb (half the cost of a comparable replacement), and you should verify the diagnosis is correct before committing to it."
-    },
-    "negotiation_script": "Before I approve this, I need a written itemized breakdown showing the parts cost and labor cost separately. I also want to understand how you confirmed it is the compressor specifically — because my understanding is that a failing compressor usually affects both sides, and my freezer is working fine. I would like to see the diagnostic test results before I sign off on this. If you are not able to provide that breakdown, I will be getting a second opinion.",
-    "questions_to_ask": [
-     "Can you give me a written itemized breakdown showing the compressor part number, parts cost, and labor cost separately?",
-     "What specific test did you run to confirm the compressor is failing — did you check refrigerant pressure or test the compressor windings electrically?",
-     "Did you check the evaporator fan motor and the defrost system before concluding it was the compressor, given that my freezer is still working?",
-     "Is the $450 diagnostic fee all-in, and was your initial service-call fee credited back against this total?"
-    ],
-    "second_opinion": {
-     "recommended": true,
-     "reason": "A second opinion from a different appliance technician is strongly worth the cost here — the symptom pattern does not match the diagnosis, the quote is non-itemized, and if the real fix is a $150 fan motor, a second opinion pays for itself many times over."
-    }
-   }
+  "_meta": {
+    "tool": "quote-check",
+    "generated": "2026-09-07",
+    "baseline": "quotecheck-v2",
+    "model": "claude-sonnet (MODELS.SMART), 1 endpoint, v2 output-guard enabled",
+    "note": "V2 (2026-09-07): replaced the invented 'typical price range' / fairness verdict (likely_fair|somewhat_high|overpriced|cant_tell) with an audit of the quote actually supplied — new verdict enum (LOOKS_STRAIGHTFORWARD|NEEDS_CLARIFICATION|HARD_TO_COMPARE|SPECIFIC_CONCERNS_FOUND|NOT_ENOUGH_INFORMATION), quote_summary (extracted, not assumed), document_discrepancies (typed vs. uploaded document), arithmetic_check (only when actually calculable), specific_concerns (grounded only — missing info is NOT a red flag, it goes to unknowns_that_matter), second_quote.scope_comparable (a price alone isn't comparable), repair_vs_replace (no universal 50% rule, no age-only lifespan inference), what_to_say (not automatically a negotiation script), safety_note. Model changed from MODELS.SMART with an ad-hoc prompt to MODELS.SMART + router.outputGuard (v2 output standard) — this domain (reasoning about the visitor's own supplied situation) fits the generic v2 guard well, unlike PronounceItRight's specialist-knowledge domain. Verified live: all 5 cases pass, including both file-upload cases (image price discrepancy still caught; PDF pressure-tactic still surfaced as a grounded specific_concern with a genuine safety_note, not a remote diagnosis)."
   },
-  {
-   "name": "car-all-four-calipers-overpriced-en",
-   "endpoint": "/api/quote-check",
-   "input": {
-    "repairType": "car",
-    "itemDescription": "2018 Honda Civic, 85,000 miles",
-    "whatWentWrong": "Grinding noise when braking",
-    "whatTheyToldYou": "They said I need new brake pads, rotors, and calipers on all four wheels",
-    "quotedPrice": 1800,
-    "quotedBreakdown": "",
-    "userLocale": "en-US",
-    "userCurrency": "USD",
-    "userRegion": "US"
-   },
-   "output": {
-    "understanding": "Your 2018 Honda Civic has a grinding noise when braking, and the shop quoted you a flat $1,800 to replace brake pads, rotors, and calipers on all four wheels with no itemized breakdown of what parts and labor cost separately.",
-    "verdict": "overpriced",
-    "verdict_explanation": "A four-wheel brake job on a 2018 Civic typically does not require caliper replacement on all four wheels — calipers rarely fail simultaneously, and grinding almost always means worn pads and rotors, not failed calipers. The $1,800 lump-sum figure is on the high end even if calipers were genuinely needed on all four corners, and without itemization there is no way to verify whether the caliper diagnosis is justified or inflating the job.",
-    "price_reality_check": {
-     "typical_range": "$300–$600 for a full four-wheel pad-and-rotor replacement on a 2018 Civic at an independent shop; add roughly $150–$300 per caliper if one or two genuinely need replacement, bringing a worst-case legitimate job to roughly $600–$900 at most independents, somewhat higher at a dealership",
-     "where_this_quote_falls": "At $1,800 with no itemization, this quote is roughly double what a well-documented worst-case four-wheel brake job on a Civic typically costs at an independent shop, and still significantly above dealer pricing for the same scope.",
-     "confidence": "medium"
+  "cases": [
+    {
+      "name": "appliance-compressor-vs-evaporator-fan-en",
+      "endpoint": "/api/quote-check",
+      "input": {
+        "repairType": "appliance",
+        "itemDescription": "Whirlpool refrigerator, about 6 years old",
+        "whatWentWrong": "Not cooling properly, freezer is fine but the fridge side is warm",
+        "whatTheyToldYou": "Technician said the compressor is failing and needs full replacement",
+        "quotedPrice": 450,
+        "quotedBreakdown": "",
+        "itemAge": "6 years",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "understanding": "Your 6-year-old Whirlpool refrigerator is cooling poorly on the fridge side while the freezer works fine, and a technician has diagnosed a failing compressor and quoted $450 for the replacement. No written breakdown of that $450 was provided.",
+        "verdict": "NEEDS_CLARIFICATION",
+        "verdict_explanation": "The $450 figure is a single number with no visible breakdown into parts, labor, fees, or warranty terms. The diagnosis — a failing compressor — is a significant and specific claim for a symptom that can have more than one cause, so it is worth understanding what testing led there before approving a major repair. Without itemization, you also cannot tell what is and is not included in the price.",
+        "quote_summary": {
+          "quoted_total": 450,
+          "stated_diagnosis": "Compressor is failing and needs full replacement",
+          "proposed_work": "Compressor replacement",
+          "parts": [],
+          "labor": "",
+          "fees": [],
+          "warranty": "",
+          "itemization_level": "LUMP_SUM"
+        },
+        "document_discrepancies": [],
+        "arithmetic_check": {
+          "possible": false,
+          "calculated_total": null,
+          "quoted_total": null,
+          "difference": null,
+          "assessment": ""
+        },
+        "specific_concerns": [
+          {
+            "concern": "The $450 quote is a lump sum with no written itemization of parts, labor, fees, or warranty — nothing in what was provided shows how the number is composed.",
+            "why_it_matters": "Without a breakdown you cannot verify what is included, compare meaningfully with another quote, or hold the provider to a specific scope if something goes wrong."
+          }
+        ],
+        "unknowns_that_matter": [
+          "What diagnostic steps or tests were performed to confirm the compressor is the cause.",
+          "Whether the $450 covers parts, labor, and any fees together, or whether additional charges could be added later.",
+          "What warranty, if any, applies to the replacement compressor and to the labor.",
+          "Whether the replacement part would be OEM or aftermarket, which can affect longevity and any warranty."
+        ],
+        "second_quote": {
+          "provided": false,
+          "price_difference": null,
+          "scope_comparable": "UNKNOWN",
+          "assessment": ""
+        },
+        "repair_vs_replace": {
+          "applies": true,
+          "assessment": "Whether to repair or replace depends on information not yet available — specifically the compressor replacement cost itemized separately from labor, and what a comparable replacement refrigerator would cost if you chose to buy new.",
+          "missing_information": [
+            "",
+            "",
+            "Whether any warranty would apply to the repaired unit"
+          ]
+        },
+        "questions_to_ask": [
+          "Can you provide a written breakdown showing the cost of the compressor part separately from labor and any other fees?",
+          "What specific test or observation confirmed the compressor is the cause — I want to understand what was ruled out?",
+          "What warranty comes with the replacement compressor and with the labor?",
+          "Is the replacement compressor OEM or aftermarket?"
+        ],
+        "what_to_say": "Before I approve the work, I would like a written breakdown of the $450 — parts, labor, and any fees listed separately. I would also like to understand what diagnostic test confirmed the compressor is the problem, since I want to make sure I am approving the right repair. Can you provide those details?",
+        "second_opinion": {
+          "assessment": "WORTH_CONSIDERING",
+          "reason": "A compressor replacement is one of the more involved and costly refrigerator repairs, the diagnosis is a specific claim that rests on testing you have not yet seen documented, and you have no itemized quote to compare — a second opinion would let you verify both the diagnosis and the scope."
+        },
+        "safety_note": ""
+      }
     },
-    "red_flags": [
-     {
-      "flag": "All four calipers recommended for replacement on a vehicle that simply has a grinding noise when braking",
-      "why_it_matters": "Calipers are expensive components that rarely all fail at once — grinding brakes are almost always a pads-and-rotors issue, and recommending four new calipers without a clear explanation of how each one failed is a classic upsell pattern."
-     },
-     {
-      "flag": "No itemized breakdown provided — quote is a single $1,800 lump sum",
-      "why_it_matters": "Without a parts-versus-labor split you cannot verify the parts markup, the labor hours being charged, or whether the caliper line items are priced at market rates — you are essentially being asked to sign a blank check."
-     },
-     {
-      "flag": "No explanation given for how they ruled out pads and rotors alone as the cause before jumping to caliper replacement",
-      "why_it_matters": "A reputable shop diagnosing caliper failure should be able to tell you specifically which caliper is seized, leaking, or not releasing — if they cannot, the diagnosis may not be grounded in actual inspection."
-     }
-    ],
-    "itemization_check": {
-     "is_itemized_enough": false,
-     "whats_missing": "No breakdown of parts cost versus labor, no individual line items for pads, rotors, and calipers per axle, and no labor hours listed — the entire $1,800 is unexplained."
+    {
+      "name": "car-all-four-calipers-overpriced-en",
+      "endpoint": "/api/quote-check",
+      "input": {
+        "repairType": "car",
+        "itemDescription": "2018 Honda Civic, 85,000 miles",
+        "whatWentWrong": "Grinding noise when braking",
+        "whatTheyToldYou": "They said I need new brake pads, rotors, and calipers on all four wheels",
+        "quotedPrice": 1800,
+        "quotedBreakdown": "",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "understanding": "You have a 2018 Honda Civic with 85,000 miles making a grinding noise when braking, and a shop has quoted you $1,800 to replace brake pads, rotors, and calipers on all four wheels. No written document was attached, so the only information available is what you typed.",
+        "verdict": "NEEDS_CLARIFICATION",
+        "verdict_explanation": "The $1,800 quote covers a significant amount of work, but it was given as a single number with no breakdown of parts, labor, fees, or warranty. Without knowing how much of that $1,800 is parts versus labor, whether all four calipers are truly included or just some, and what diagnostic steps led to recommending caliper replacement specifically, there is not enough to evaluate whether this quote is reasonable or complete.",
+        "quote_summary": {
+          "quoted_total": 1800,
+          "stated_diagnosis": "Grinding noise when braking",
+          "proposed_work": "New brake pads, rotors, and calipers on all four wheels",
+          "parts": [
+            "brake pads",
+            "rotors",
+            "calipers"
+          ],
+          "labor": "",
+          "fees": [],
+          "warranty": "",
+          "itemization_level": "LUMP_SUM"
+        },
+        "document_discrepancies": [],
+        "arithmetic_check": {
+          "possible": false,
+          "calculated_total": null,
+          "quoted_total": null,
+          "difference": null,
+          "assessment": ""
+        },
+        "specific_concerns": [
+          {
+            "concern": "All four calipers are included in the recommendation. No diagnostic basis for this was described.",
+            "why_it_matters": "Replacing all four calipers adds meaningful cost to the job. You have no way to evaluate whether each replacement is warranted without knowing what was found during inspection."
+          }
+        ],
+        "unknowns_that_matter": [
+          "No itemization exists: the split between parts cost and labor cost within the $1,800 is unknown, making it impossible to assess either component.",
+          "What diagnostic steps or inspection findings led to recommending caliper replacement on all four wheels rather than just pads and rotors is not stated.",
+          "Whether the quote includes OEM or aftermarket parts is not stated, and this can affect both cost and quality.",
+          "No warranty terms were mentioned, for either parts or labor.",
+          "Whether any fees such as shop supplies, disposal, or taxes are included in the $1,800 or would be added on top is unknown."
+        ],
+        "second_quote": {
+          "provided": false,
+          "price_difference": null,
+          "scope_comparable": "UNKNOWN",
+          "assessment": ""
+        },
+        "repair_vs_replace": {
+          "applies": false,
+          "assessment": "",
+          "missing_information": []
+        },
+        "questions_to_ask": [
+          "Can you break down the $1,800 into parts and labor separately, and list the cost for each component — pads, rotors, and calipers per axle or per wheel?",
+          "What specifically did you find on each caliper that leads you to recommend replacing all four?",
+          "Are the parts OEM, OEM-equivalent, or aftermarket, and what warranty comes with the parts and the labor?",
+          "Are there any additional fees — shop supplies, disposal, taxes — on top of the $1,800?"
+        ],
+        "what_to_say": "Before I approve this, I would like to see the quote broken down by parts and labor so I understand what each component costs. I also want to understand what you found on the calipers specifically, since replacing all four is a significant part of the total. Can you walk me through what the inspection showed and put the itemized breakdown in writing?",
+        "second_opinion": {
+          "assessment": "WORTH_CONSIDERING",
+          "reason": "The recommendation includes replacing all four calipers. Understanding what the shop found that supports this step will help you decide whether to proceed or get another look at the brakes."
+        },
+        "safety_note": "A grinding noise when braking can indicate brake wear severe enough to reduce stopping ability. Until the cause is confirmed and addressed, drive with extra following distance and avoid situations requiring hard braking if possible."
+      }
     },
-    "replace_vs_repair": null,
-    "negotiation_script": "I appreciate the diagnosis, but before I approve anything I need a written itemized quote showing the cost of each part separately and the labor hours for each task. I also need to understand why all four calipers need replacement — can you show me specifically what is wrong with each one, such as a seized piston or a fluid leak? A grinding noise on an 85,000-mile Civic is usually pads and rotors, so I want to make sure I am not paying for parts I do not need. If you cannot provide that breakdown today, I am going to get a second opinion before moving forward.",
-    "questions_to_ask": [
-     "Can you give me a written itemized quote that separates parts cost and labor cost for pads, rotors, and each caliper?",
-     "What specifically is wrong with each of the four calipers — is any one seized, leaking, or failing to release?",
-     "Can you show me the worn parts so I can see the condition of the rotors and the caliper pistons myself?",
-     "If I only replace the pads and rotors today, what is that quote, and what evidence would indicate I need the calipers too?"
-    ],
-    "second_opinion": {
-     "recommended": true,
-     "reason": "The caliper-on-all-four-wheels diagnosis on a car with a straightforward grinding complaint, combined with a non-itemized $1,800 quote, is a strong enough pattern of concern that a second opinion from an independent brake shop will almost certainly save you several hundred dollars and may reveal the job can be done correctly for half the price."
+    {
+      "name": "appliance-de-quoted-technician-speech",
+      "endpoint": "/api/quote-check",
+      "input": {
+        "repairType": "appliance",
+        "itemDescription": "Bosch Geschirrspüler, etwa 4 Jahre alt",
+        "whatWentWrong": "Reinigt nicht richtig, Geschirr kommt mit Essensresten heraus",
+        "whatTheyToldYou": "Der Techniker sagte: \"Die Umwälzpumpe ist defekt und muss komplett ersetzt werden\"",
+        "quotedPrice": 280,
+        "quotedBreakdown": "",
+        "itemAge": "4 Jahre",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "understanding": "Ihr etwa 4 Jahre alter Bosch Geschirrspüler reinigt nicht richtig, und ein Techniker hat die Umwälzpumpe als Ursache diagnostiziert und deren vollständigen Ersatz für 280 EUR angeboten. Über die genaue Aufschlüsselung dieses Betrags ist nichts bekannt.",
+        "verdict": "NEEDS_CLARIFICATION",
+        "verdict_explanation": "Die 280 EUR sind eine Pauschalsumme ohne erkennbare Aufschlüsselung in Teilekosten, Arbeitszeit, Anfahrtsgebühr oder Diagnosekosten. Ohne diese Aufteilung lässt sich nicht beurteilen, was genau im Preis enthalten ist und ob etwaige Zusatzkosten noch hinzukommen. Außerdem ist nicht dokumentiert, welche Diagnose zur Entscheidung Umwälzpumpe geführt hat.",
+        "quote_summary": {
+          "quoted_total": 280,
+          "stated_diagnosis": "Umwälzpumpe defekt",
+          "proposed_work": "Vollständiger Ersatz der Umwälzpumpe",
+          "parts": [
+            "Umwälzpumpe"
+          ],
+          "labor": "",
+          "fees": [],
+          "warranty": "",
+          "itemization_level": "LUMP_SUM"
+        },
+        "document_discrepancies": [],
+        "arithmetic_check": {
+          "possible": false,
+          "calculated_total": null,
+          "quoted_total": null,
+          "difference": null,
+          "assessment": ""
+        },
+        "specific_concerns": [],
+        "unknowns_that_matter": [
+          "Wie setzt sich der Betrag von 280 EUR zusammen: Teilepreis, Arbeitszeit, Anfahrt, Diagnosegebühr?",
+          "Welche konkreten Tests oder Beobachtungen haben zur Diagnose der Umwälzpumpe geführt?",
+          "Gibt es eine Gewährleistung auf die Reparatur, und wenn ja, für wie lange und auf was genau?",
+          "Ist die Diagnosegebühr im Angebotspreis enthalten oder wird sie zusätzlich fällig, falls Sie die Reparatur ablehnen?"
+        ],
+        "second_quote": {
+          "provided": false,
+          "price_difference": null,
+          "scope_comparable": "UNKNOWN",
+          "assessment": ""
+        },
+        "repair_vs_replace": {
+          "applies": true,
+          "assessment": "Ohne den aktuellen Neupreis eines vergleichbaren Geräts und ohne Kenntnisse über den Allgemeinzustand des Geräts lässt sich nicht sinnvoll beantworten, ob Reparatur oder Neukauf die bessere Wahl ist.",
+          "missing_information": [
+            "Aktueller Neupreis eines vergleichbaren Bosch Geschirrspülers",
+            "Allgemeiner Zustand und Reparaturhistorie des Geräts",
+            "Ob eine Herstellergewährleistung oder Händlergarantie noch läuft"
+          ]
+        },
+        "questions_to_ask": [
+          "Können Sie mir die 280 EUR aufschlüsseln: Was entfällt auf das Ersatzteil, was auf die Arbeitszeit, und sind Anfahrt und Diagnose bereits enthalten?",
+          "Wie haben Sie festgestellt, dass die Umwälzpumpe defekt ist und nicht zum Beispiel ein verstopfter Filter oder ein Problem mit den Sprüharmen?",
+          "Welche Gewährleistung gilt auf die ausgetauschte Pumpe und auf die Arbeitsleistung, und in welcher Form ist das schriftlich festgehalten?",
+          "Falls ich die Reparatur nicht beauftrage: Wird eine separate Diagnosegebühr fällig?"
+        ],
+        "what_to_say": "Vielen Dank für das Angebot. Bevor ich zustimme, hätte ich noch ein paar Fragen: Können Sie mir zeigen, wie sich die 280 EUR auf Teile, Arbeitszeit und eventuelle Anfahrtskosten aufteilen? Außerdem würde ich gerne verstehen, auf welcher Grundlage die Umwälzpumpe als Ursache identifiziert wurde. Und welche schriftliche Gewährleistung gilt auf die Reparatur?",
+        "second_opinion": {
+          "assessment": "WORTH_CONSIDERING",
+          "reason": "Der Betrag ist eine Pauschale ohne Aufschlüsselung und ohne dokumentierte Diagnoseverfahren. Eine zweite Einschätzung hilft Ihnen, die Diagnose zu überprüfen und die Kostenaufschlüsselung zu verstehen."
+        },
+        "safety_note": ""
+      }
+    },
+    {
+      "name": "appliance-upload-image-price-discrepancy",
+      "endpoint": "/api/quote-check",
+      "input": {
+        "repairType": "appliance",
+        "itemDescription": "Whirlpool refrigerator, about 6 years old",
+        "whatWentWrong": "Not cooling properly",
+        "whatTheyToldYou": "Compressor needs replacing",
+        "quotedPrice": 450,
+        "quotedBreakdown": "",
+        "itemAge": "6 years",
+        "quoteFileBase64": "data:image/jpeg;base64,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hDtA8vSppLjT0/suDFnK8nmvJCNv7tmk+clcEtyeeasD4deFF8U/8JKPDGjDxHv83+2Bp8X2zf5bRbvO278+W7JnP3WI6EigDoqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA4b4nePdV8GXfg7T9E0az1rU/EmsNpMSahqL2UMO2xu7tpGdIZifltCoUJ1cHIxWJ8Of2ifDPju6sNJmd9N8S3F3d6e9gsU09sLq2knWWJLsRiJyVtpZUUlXaIB9gBrb+J3wn0r4rXXg4a3DZ32maBrDatLpuoWSXUN7mxu7VY2VzgbWuhIGIbmIDHO4cc37OTR/GXQfGVtrdpb6Not+L2x0RdLO+0jGlzWH2WCYTBIrfMxn2LFneWySCNoAh/a68APe+FWgm1a40PxJpdxqljrCaJfeVIqTWkMaKvkbmaV7yNUwOW2J96SMN2Go/FfT5tK8I3mhf8AEwPibV00uzE8ckBUqJZLnejqHR44ra5OxlBDptIHOPPb/wDZeuZPBnw30K18S6e3/CI+Fj4WnOqaEt5b6lCTp7F2hMy+Xl9NjyAxYLI21kcLIvU6f8HtS0nwn4CsW1461rHhXW/7Ujvb3zFV45PtEMsS7nlcKlteTRxh3c/u4wznlqAG+FfjRqfiC00rxFc+GIrD4f6vHNc2evjUvMlhtlieaO6u4TEqwQyRxkqwlcjfEGCljtnn/aU+H9vp9vdSapqCm4u0sYbP+w783kkr28tzHttvI84q8MEzq4Ta3lsASRisO3/Z41CXwYfAWoeMZJfh7Bp15pNnpVlYm3u/sk1vJbxw3Fx5rLMkMUpCARJykTMWKcz6d8BtUuPiDoPjXxF4qt9W1/TL23lZrPSjaQzW8FhqVrFEEMzlX36rPK0mSDtChFHIANW1/aW+HF74c1DXoPELSaTYmw824Gn3XzpezCGzkiXyt00Ush2rJGGQkN83ytix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2Ur6hZOkej2t6+j63b3MkTr+6SMtcaZGzJhPNdgfn30AfYFFfC1zd+H4fEPw6vvEOl+CdW0nUT8QdQsR491COxsZYrjxFaT288TyQTBneGRWQBRlHY7scH6J+JH9ma18AL/+zvGNjY6SZotmrxES2EcaXyZtHa2CYtQFNq7jaUi3s7ZVmoA9btbqC+tYbm2mjuLaZBJFNEwZHUjIZSOCCDkEVLXxJ+zLq3iDX/2O/B+h+FvDGrXdrObLTdWn0bV4Jdln/Z1vJPJZPcSQBWkLeS6K37iZ7kgsYhu474IyXE2gfCmOxs9NPi2eLwZJZtqUhXW7PTI7SxW7WzRA6vYyQRXcjSeYuGmmR49+MAH6GUV4V8JvB/gvS/iJ4u8faVoeheF9LSZfCelz2NnDZrclbgLcyFlC7mlvCsABzk2qFfv8+D6TcWWl+ENT0mxtfCerLdQ2974q1nwzpr21/Y2y61aDULXUnY+YzS20t4+HWJgLeYFDgNQB920V5F+zn/Z32Lxz/wAI59n/AOEI/wCEkk/4R37Bt+x/Zfsdp532fb8vlfbPtmNvy53Y4r12gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAKulaVZaFpdnpum2dvp+nWcKW9tZ2sSxQwRIoVI0RQAqqoAAAwAABVqiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPBv2rPBj+P7j4SaLb3jabfy+L5Z7G/UZNrdw6Hqs1tNj+IJNHGxXoQpB4NeO+Cvjbf6p4l8b3t94jb4V6ZqPiO8/tjVGhgkNpq1poWhw/wBn7rhHQgyfbCMLukFqAhG7n7booA+CtG+MvxA0rxD4i/tPxTF4SutZu7fU9VXW7+2sItHnOgaPJHaxNJY3O0SSS3qhHQl/sDBWDiUye6fFLWL/AF79jD4oXmr6lDf67L4GvZNTtYI/Ljsbl9GDyQKjIsiKS/mhZh5gE3OBtUfQNFAHxD8a9Z8Sfsy2eva5o0nh74ay6no1xf2Xh3w80L6ZNPp0TuS8s9sgM9wbqNDBFAJJEtVIlQIxrufi18XPH3hi3+KmkabrDWuo+END1zxTHqRs4X32jWJbTIyrIVwtw9yAcbm/sw7yQ7bvqWsjSvCmmaLrOratawSDUdVaM3dxNPJMzhAQiLvY7I13ORGmFBdyBlmJAPl7xF8TPif4B8ReIUtPEt140l0vxFfeH7PR7nTrVPtxXwo+tRFjDEj+Z9pCwqEIBj4Ks/z0mmfFvx/qfgLxDLYeO9K1OQ6z4WsLHXNMkh1IWz32qw293EzixtoTiGRMRbGkjMhLOCyY+uaKAPlrU9f8QH4meFNI1fxtqL2nhz4pjRhqEsdpA97BN4Xe8jiudsKxkme58hdipkOuP3mxxUn8dXnin4/fDa11XxYTq1n4/wBatW8GCGBRY2sOlavHa3JITzv3sIjly7lW+0fKBsr6wooA+MH/AGpvFF34N8ARaNr9nqnik+A2vvFcTJEn2DUBe6LbXE9xtif7O9ulzqEjR7Cq7ctEwVRXo2ifEPxxe/s1/FbXrTXLTxD4h0m11Q+HdV0cpfiZ47FXiKuLSCG5ZbgyKDHDsO0IdzK5P0TRQB8qfEr9pV7+88dz+DPHVnH4d0qDwUqaxZRQXcFo1/rlxb30gYqwfNssQIJIQqcbW3Guau/j94wtdS8cwW3j37bp2iQCbwPfG0sm/wCE7uTzJabliCyeXKFts2ojY+bvydtfXniPwzpvi3T4bHVrb7XaxXlrfpH5jJie2uI7iB8qQfllijbHQ7cEEEg6lAHzh4G8c+Nn8TeFNS1PxXPqeneIPiB4l8MHR3srWOC3s7RtYa3ZXSISmVf7NiXczkFWOVLfNWH4o+NXiOzl8RTQ+Oxp2vWut3WnXfhT+y4bj+yNKTUEtxqmQnmR7bQi73zs0T+ZtC9K+q6KAPi3xr8bfH9vZeJpvDnj6S90bw74e8Va7puuJY2UyeIBp8OkSweYwh2GNZry8t2aAR7hHkEMAw6fxP8AFLxP4S1OPw/rPxJl0iwtfiQvh278UXVnYxy/YX8NHUgj7ofJQi4kVRJsGFVdxb5t31XWXrHhnTde1DQ76/tvPutEvGv7CTzGXyZ2t5rcvgEBv3VxMuGyPnzjIBAB8Wj4xeL9P8XXmpDV7G0vdY0zRrCbxJqE0Wnx/wBmRaj4lWDUS7W80cQnCWOWMLIDeqMKGUiz8RPH/ipPCmj+K9R8WxnUl+G3jq5tFgiglsNSntpbR7OQpPap57GFRNlY0V/ILIoiZ1f7dooA+Pfij8evGvhzSfHd5pXioL4msI/FCy+Fvsls39h2dlZXkmn6lgxmQ+Y8Fk2ZWaN/tuAvy17R4C8R6z4f+LfiLwV4k8WNr4XSdI1Gxnv4be3la5uX1NZoIliRAyBNO8xVIZwPMyzAcetUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/9k=",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "understanding": "You have a 6-year-old Whirlpool refrigerator that isn't cooling properly, and ABC Appliance Repair has diagnosed a failed compressor and quoted you for a replacement. The document you uploaded shows more detail than the price you typed.",
+        "verdict": "SPECIFIC_CONCERNS_FOUND",
+        "verdict_explanation": "The document shows a total of $497.50, but you typed $450 — a $47.50 discrepancy that needs to be resolved before you approve anything. The itemization itself is reasonably clear (parts, labor hours, and a waived service call fee are all shown), so the main issue is confirming which total is actually being requested and understanding what diagnostic steps led to the compressor diagnosis.",
+        "quote_summary": {
+          "quoted_total": 497.5,
+          "stated_diagnosis": "Compressor replacement needed",
+          "proposed_work": "Compressor replacement",
+          "parts": [
+            "Compressor: $310.00"
+          ],
+          "labor": "2.5 hours at an unstated rate, totaling $187.50",
+          "fees": [
+            "Service call fee: $0.00 (waived if approved)"
+          ],
+          "warranty": "",
+          "itemization_level": "ENOUGH_TO_UNDERSTAND"
+        },
+        "document_discrepancies": [
+          {
+            "user_said": "450 USD",
+            "document_says": "TOTAL DUE: $497.50"
+          }
+        ],
+        "arithmetic_check": {
+          "possible": true,
+          "calculated_total": 497.5,
+          "quoted_total": 497.5,
+          "difference": 0,
+          "assessment": "The three line items on the document ($310.00 + $187.50 + $0.00) add up exactly to the $497.50 total shown on the document."
+        },
+        "specific_concerns": [
+          {
+            "concern": "The total you typed ($450) does not match the document total ($497.50).",
+            "why_it_matters": "You may have been given a different verbal quote, or there may be a misunderstanding about what is included — this needs to be clarified in writing before you approve the work."
+          }
+        ],
+        "unknowns_that_matter": [
+          "No warranty is stated anywhere on the document — neither on parts nor labor.",
+          "The labor rate per hour is not shown (only the total labor charge), so you cannot verify whether 2.5 hours at that rate is consistent with what was discussed.",
+          "No diagnostic steps are documented — it is worth understanding what testing or inspection led to the compressor diagnosis before authorizing a major component replacement.",
+          "Whether the compressor part is OEM or aftermarket is not stated, which can affect quality and any manufacturer warranty on the part itself."
+        ],
+        "second_quote": {
+          "provided": false,
+          "price_difference": null,
+          "scope_comparable": "UNKNOWN",
+          "assessment": ""
+        },
+        "repair_vs_replace": {
+          "applies": true,
+          "assessment": "You don't have enough information yet to decide whether repair or replacement makes sense. To evaluate this, you would need to know the current cost of a comparable Whirlpool refrigerator and whether this unit has had prior repairs or reliability issues.",
+          "missing_information": [
+            "Current replacement cost for a comparable Whirlpool refrigerator",
+            "Reliability history of this unit (any prior repairs or recurring issues)",
+            "Whether any other components are showing wear that might require additional repairs soon"
+          ]
+        },
+        "questions_to_ask": [
+          "The invoice shows $497.50 but I have $450 noted from our conversation — can you confirm which total applies and send me the correct written quote?",
+          "What testing or inspection confirmed the compressor is the cause, as opposed to another component?",
+          "Is the compressor part OEM or aftermarket, and does it carry any parts warranty?",
+          "Is there a labor warranty, and if so, for how long?"
+        ],
+        "what_to_say": "I want to move forward but I need to sort out a discrepancy first — the invoice shows $497.50 and I have $450 from our earlier conversation, so can you confirm the correct total in writing? I also want to understand what diagnostic steps confirmed the compressor is the issue before I approve the replacement, and whether there is any warranty on the parts and labor.",
+        "second_opinion": {
+          "assessment": "WORTH_CONSIDERING",
+          "reason": "The quote does not document what diagnostic steps were used to reach the compressor diagnosis. A second opinion would let you confirm whether that diagnosis is correct before committing to a major component replacement."
+        },
+        "safety_note": ""
+      }
+    },
+    {
+      "name": "car-upload-pdf-pressure-tactic",
+      "endpoint": "/api/quote-check",
+      "input": {
+        "repairType": "car",
+        "itemDescription": "2018 Honda Civic",
+        "whatWentWrong": "Grinding noise when braking",
+        "whatTheyToldYou": "",
+        "quotedPrice": 1708,
+        "quotedBreakdown": "",
+        "quoteFileBase64": "data:application/pdf;base64,JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDcgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgNiAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovUGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDYgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9BdXRob3IgKGFub255bW91cykgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDcxNTE2MjMwOS0wNCcwMCcpIC9DcmVhdG9yIChhbm9ueW1vdXMpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MDcxNTE2MjMwOS0wNCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0ICh1bnNwZWNpZmllZCkgL1RpdGxlICh1bnRpdGxlZCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgMyAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggNDY3Cj4+CnN0cmVhbQpHYXMyRz9WZU5tJ1pKdSonXio6OzFsMU8kZyMsRllwYTxta1sqXVtyYixESShldGpubG90PjEvOVRXaS1kYk9ObmM9dV9mI0dbJlVtcGxULDhSMSVpbixXIyI0UkBpYjFKREE4bD9wJ0AwTFJYSj5iViVmXXNGKi1ddUA8MVBdOFwnUmtycGUqN04/KlExRmJjbmU6VFwrMzpbQF1eIXVsUjMhU1w0TjxyOlFPOz5WQSEubUJkOjgsREFXQi1wKUZGL0tIK2VrW2I7SFBCU11SM0ZzJDFIcldVWk5XVTRsTlE8LC9aLiQ4RVkuTHRzUHViSiIuXC9ULionSTBKIkhlP1UoUyxUY1VyNC46IidNWl1aWmhSWD9rREQ0OiQhMDo4NStvND9tRWRzWFRHJVZ1bEZvMDFyRzJvZlBrIVdkWGNqZlhqQ2ZeaU5xYTVBTTAnOVM3OUoqPWo7OmxbVThVYTcpIipUZzwkNm8wVzwzNmlaWiJySEVGa0I6dWVcVT1BU0J0QlFhU1VhTFM4UE8qKFU6SiVlWCFhRzUlUnBGNEs1Jm9HIWc9Xkh0bVspK10+cUxPUnNjLjJZZEYpa1gxM0RSNy1jZzwtM1FoUzVlPTB+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDgKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAwOTIgMDAwMDAgbiAKMDAwMDAwMDE5OSAwMDAwMCBuIAowMDAwMDAwNDAyIDAwMDAwIG4gCjAwMDAwMDA0NzAgMDAwMDAgbiAKMDAwMDAwMDczMSAwMDAwMCBuIAowMDAwMDAwNzkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPDI0ZTQ4Y2Y5ZDdjNzEwMzA1M2RjOTA1YTNmYWEwODI4PjwyNGU0OGNmOWQ3YzcxMDMwNTNkYzkwNWEzZmFhMDgyOD5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gNSAwIFIKL1Jvb3QgNCAwIFIKL1NpemUgOAo+PgpzdGFydHhyZWYKMTM0NwolJUVPRgo=",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "understanding": "You have an estimate for a 2018 Honda Civic with a grinding noise when braking. The quote totals $1,708 and includes replacement of brake pads and rotors on all four corners, plus all four calipers and 4.5 hours of labor.",
+        "verdict": "SPECIFIC_CONCERNS_FOUND",
+        "verdict_explanation": "The arithmetic checks out: the seven line items sum to exactly $1,708.00. Two concrete concerns are present. First, the quote recommends replacing all four calipers at $660 total with no documented inspection finding in the written estimate to explain why — calipers are not routine in a standard brake service. Second, the estimate includes a 24-hour approval deadline, which limits your time to ask follow-up questions or get a second opinion. The written estimate also contains no warranty language covering parts or labor.",
+        "quote_summary": {
+          "quoted_total": 1708,
+          "stated_diagnosis": "Grinding noise when braking — no further diagnostic finding stated in the document",
+          "proposed_work": "Replace front brake pads, front brake rotors (2), rear brake pads, rear brake rotors (2), front calipers (2), and rear calipers (2); labor 4.5 hours",
+          "parts": [
+            "Front brake pads",
+            "Front brake rotors (2)",
+            "Rear brake pads",
+            "Rear brake rotors (2)",
+            "Front calipers (2)",
+            "Rear calipers (2)"
+          ],
+          "labor": "4.5 hours at $120/hr = $540.00",
+          "fees": [],
+          "warranty": "",
+          "itemization_level": "ENOUGH_TO_UNDERSTAND"
+        },
+        "document_discrepancies": [],
+        "arithmetic_check": {
+          "possible": true,
+          "calculated_total": 1708,
+          "quoted_total": 1708,
+          "difference": 0,
+          "assessment": "The seven line items ($89 + $180 + $79 + $160 + $340 + $320 + $540) sum to exactly $1,708.00, matching the stated total."
+        },
+        "specific_concerns": [
+          {
+            "concern": "All four calipers are included in the quote with no documented reason. The written estimate states only a grinding noise — it does not describe any caliper-specific finding (seized piston, uneven wear, fluid leak, etc.) that would support replacing $660 worth of calipers.",
+            "why_it_matters": "Calipers are not a routine part of a brake job; recommending all four without a documented reason is worth understanding before you approve, since it is the single largest parts line on the quote."
+          },
+          {
+            "concern": "The estimate includes a 24-hour approval deadline to lock in the price.",
+            "why_it_matters": "A tight deadline limits your ability to ask follow-up questions, get a second opinion, or simply think it over — which matters more when the quote includes components beyond a standard brake service."
+          },
+          {
+            "concern": "No warranty of any kind is stated on the written estimate.",
+            "why_it_matters": "With $1,708 in work and six new components, having nothing in writing about parts or labor coverage leaves you unprotected if something fails shortly after the repair."
+          }
+        ],
+        "unknowns_that_matter": [
+          "What specific inspection finding led to recommending all four calipers — no diagnostic note appears in the written estimate.",
+          "Whether the parts are OEM, OEM-equivalent, or aftermarket — this affects quality and price comparisons.",
+          "Whether a diagnostic fee was charged and whether it is included in or separate from the quoted total.",
+          "Whether there is any warranty on parts or labor, and if so, what it covers and for how long."
+        ],
+        "second_quote": {
+          "provided": false,
+          "price_difference": null,
+          "scope_comparable": "UNKNOWN",
+          "assessment": ""
+        },
+        "repair_vs_replace": {
+          "applies": false,
+          "assessment": "",
+          "missing_information": []
+        },
+        "questions_to_ask": [
+          "What specific condition did you find on the calipers that makes replacing all four necessary — can you show me or describe what you saw?",
+          "Are the parts OEM, OEM-equivalent, or aftermarket?",
+          "What warranty do you provide on parts and labor for this repair, and can you put that in writing on the estimate?",
+          "Is the 24-hour deadline firm, or can I have until tomorrow afternoon — I want to make sure I understand the scope before I approve?"
+        ],
+        "what_to_say": "I want to approve this, but I have a few questions before I do. The caliper replacement is the part I am least clear on — can you walk me through what you found that makes replacing all four necessary? I would also like to know what warranty comes with the work, and whether you can add that to the written estimate. Once I have those answers I can move quickly.",
+        "second_opinion": {
+          "assessment": "WORTH_CONSIDERING",
+          "reason": "The caliper recommendation adds $660 to what would otherwise be a straightforward brake job, and the written estimate provides no documented finding to support it — a second shop can tell you whether their inspection agrees with that diagnosis."
+        },
+        "safety_note": "A grinding noise when braking warrants prompt inspection and diagnosis. Until you have had the brakes evaluated and repaired, avoid highway speeds and situations requiring hard stops."
+      }
     }
-   }
-  },
-  {
-   "name": "appliance-de-quoted-technician-speech",
-   "endpoint": "/api/quote-check",
-   "input": {
-    "repairType": "appliance",
-    "itemDescription": "Bosch Geschirrspüler, etwa 4 Jahre alt",
-    "whatWentWrong": "Reinigt nicht richtig, Geschirr kommt mit Essensresten heraus",
-    "whatTheyToldYou": "Der Techniker sagte: \"Die Umwälzpumpe ist defekt und muss komplett ersetzt werden\"",
-    "quotedPrice": 280,
-    "quotedBreakdown": "",
-    "itemAge": "4 Jahre",
-    "userLanguage": "de",
-    "userLocale": "de-DE",
-    "userCurrency": "EUR",
-    "userRegion": "DE"
-   },
-   "output": {
-    "understanding": "Ihr etwa 4 Jahre alter Bosch-Geschirrspüler reinigt nicht mehr richtig, und der Techniker hat ohne nähere Erklärung pauschal die Umwälzpumpe als Ursache benannt und 280 EUR als Gesamtsumme ohne Aufschlüsselung gefordert. Das ist genau die Situation, in der man hellhörig werden sollte.",
-    "verdict": "somewhat_high",
-    "verdict_explanation": "280 EUR als Pauschalbetrag für eine Umwälzpumpe bei einem 4 Jahre alten Bosch-Gerät liegt am oberen Rand dessen, was marktüblich wäre – und ohne Aufschlüsselung ist nicht nachvollziehbar, wie viel davon auf das Ersatzteil und wie viel auf Arbeitszeit entfällt. Hinzu kommt, dass schlechtes Spülergebnis sehr häufig deutlich günstigere Ursachen hat (verstopfte Düsen, defekter Sprüharm, verblockter Filter), die vor einer Pumpdiagnose hätten ausgeschlossen werden müssen. Möglicherweise ist die Diagnose korrekt – aber der Preis und das Vorgehen rechtfertigen mindestens eine kritische Nachfrage.",
-    "price_reality_check": {
-     "typical_range": "Eine Umwälzpumpe für einen Bosch-Geschirrspüler kostet als Ersatzteil je nach Modell typischerweise zwischen 60 und 130 EUR. Arbeitszeit für den Ein- und Ausbau liegt bei einem erfahrenen Techniker bei 45–90 Minuten, was bei deutschen Stundensätzen von 70–100 EUR netto etwa 55–120 EUR ergibt. Realistischer Gesamtrahmen: ca. 130–240 EUR, je nach Modell und Anbieter.",
-     "where_this_quote_falls": "Ihre 280 EUR liegen deutlich über diesem Rahmen – entweder handelt es sich um ein teureres Spezialersatzteil, um einen überdurchschnittlichen Aufschlag auf das Bauteil, oder um einen überhöhten Arbeitspreis.",
-     "confidence": "medium"
-    },
-    "red_flags": [
-     {
-      "flag": "Die Diagnose springt direkt zur teuersten Komponente (Umwälzpumpe), ohne dass günstigere Ursachen wie ein verblockter Filter, verschlissene Sprüharme oder verstopfte Düsen erkennbar ausgeschlossen wurden.",
-      "why_it_matters": "Schlechtes Spülergebnis ist ein klassisches Symptom, das sehr oft an einfachen, kostenlosen oder günstigen Ursachen liegt – eine seriöse Diagnose sollte diese zuerst dokumentiert ausschließen."
-     },
-     {
-      "flag": "Der Kostenvoranschlag ist ein nicht aufgeschlüsselter Pauschalbetrag von 280 EUR – keine Trennung zwischen Ersatzteilkosten und Arbeitszeit.",
-      "why_it_matters": "Ohne Itemisierung können Sie weder den Teileaufschlag noch die veranschlagte Arbeitszeit prüfen oder mit einem Alternativangebot vergleichen."
-     },
-     {
-      "flag": "Es ist nicht klar, ob die Anfahrts- oder Diagnosegebühr im Angebot enthalten ist oder zusätzlich berechnet wird.",
-      "why_it_matters": "Branchenüblich sollte eine Diagnosegebühr bei Auftragserteilung angerechnet werden – wird sie zusätzlich erhoben, verteuert sich der Auftrag weiter."
-     }
-    ],
-    "itemization_check": {
-     "is_itemized_enough": false,
-     "whats_missing": "Es fehlt die Aufschlüsselung in Ersatzteilpreis (Pumpenbezeichnung und Teilenummer), Arbeitszeit in Stunden sowie angewendeter Stundensatz – und die Information, ob die Anfahrt/Diagnose bereits eingerechnet ist."
-    },
-    "replace_vs_repair": {
-     "applies": true,
-     "guidance": "Bei einem 4 Jahre alten Bosch-Geschirrspüler (Neuwert meist 400–700 EUR) ist eine Reparatur von 280 EUR grenzwertig – das entspricht bereits 40–70 % des Neupreises; sollte die Diagnose stimmen, wäre ein Vergleichsangebot oder sogar ein Neukauf bei einem günstigen Modell wirtschaftlich sinnvoll."
-    },
-    "negotiation_script": "Ich möchte den Auftrag gerne erteilen, benötige aber zuerst eine schriftliche Aufschlüsselung: Ersatzteilbezeichnung mit Teilenummer und Einzelpreis, Arbeitszeit in Stunden und Stundensatz sowie die Information, ob die Diagnosegebühr darin enthalten ist. Außerdem würde mich interessieren, wie Sie ausgeschlossen haben, dass der Fehler an einem verblockten Filter, den Sprüharmen oder den Düsen liegt – diese Punkte hätte ich gerne kurz erklärt, bevor ich den Austausch der Pumpe freigebe.",
-    "questions_to_ask": [
-     "Können Sie mir die genaue Teilenummer der Pumpe nennen und den Einkaufspreis separat ausweisen?",
-     "Wie haben Sie ausgeschlossen, dass das Problem am Filter, den Sprüharmen oder den Düsen liegt – wurden diese vor der Diagnose geprüft?",
-     "Ist die Anfahrts- oder Diagnosegebühr in den 280 EUR bereits enthalten, und wird sie bei Auftragserteilung angerechnet?",
-     "Wie lange dauert der Einbau, und zu welchem Stundensatz arbeiten Sie?"
-    ],
-    "second_opinion": {
-     "recommended": true,
-     "reason": "Die Kombination aus Pauschalpreis ohne Aufschlüsselung, fehlender Dokumentation des Diagnosewegs und einem Betrag am oberen Marktrand rechtfertigt klar ein zweites Angebot – zumal ein Bosch-Kundendienst oder ein unabhängiger Hausgerätetechniker oft ähnliche oder bessere Konditionen bieten."
-    }
-   }
-  },
-  {
-   "name": "appliance-upload-image-price-discrepancy",
-   "endpoint": "/api/quote-check",
-   "input": {
-    "repairType": "appliance",
-    "itemDescription": "Whirlpool refrigerator, about 6 years old",
-    "whatWentWrong": "Not cooling properly",
-    "whatTheyToldYou": "Compressor needs replacing",
-    "quotedPrice": 450,
-    "quotedBreakdown": "",
-    "itemAge": "6 years",
-    "quoteFileBase64": "data:image/jpeg;base64,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hDtA8vSppLjT0/suDFnK8nmvJCNv7tmk+clcEtyeeasD4deFF8U/8JKPDGjDxHv83+2Bp8X2zf5bRbvO278+W7JnP3WI6EigDoqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA4b4nePdV8GXfg7T9E0az1rU/EmsNpMSahqL2UMO2xu7tpGdIZifltCoUJ1cHIxWJ8Of2ifDPju6sNJmd9N8S3F3d6e9gsU09sLq2knWWJLsRiJyVtpZUUlXaIB9gBrb+J3wn0r4rXXg4a3DZ32maBrDatLpuoWSXUN7mxu7VY2VzgbWuhIGIbmIDHO4cc37OTR/GXQfGVtrdpb6Not+L2x0RdLO+0jGlzWH2WCYTBIrfMxn2LFneWySCNoAh/a68APe+FWgm1a40PxJpdxqljrCaJfeVIqTWkMaKvkbmaV7yNUwOW2J96SMN2Go/FfT5tK8I3mhf8AEwPibV00uzE8ckBUqJZLnejqHR44ra5OxlBDptIHOPPb/wDZeuZPBnw30K18S6e3/CI+Fj4WnOqaEt5b6lCTp7F2hMy+Xl9NjyAxYLI21kcLIvU6f8HtS0nwn4CsW1461rHhXW/7Ujvb3zFV45PtEMsS7nlcKlteTRxh3c/u4wznlqAG+FfjRqfiC00rxFc+GIrD4f6vHNc2evjUvMlhtlieaO6u4TEqwQyRxkqwlcjfEGCljtnn/aU+H9vp9vdSapqCm4u0sYbP+w783kkr28tzHttvI84q8MEzq4Ta3lsASRisO3/Z41CXwYfAWoeMZJfh7Bp15pNnpVlYm3u/sk1vJbxw3Fx5rLMkMUpCARJykTMWKcz6d8BtUuPiDoPjXxF4qt9W1/TL23lZrPSjaQzW8FhqVrFEEMzlX36rPK0mSDtChFHIANW1/aW+HF74c1DXoPELSaTYmw824Gn3XzpezCGzkiXyt00Ush2rJGGQkN83ytix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2Ur6hZOkej2t6+j63b3MkTr+6SMtcaZGzJhPNdgfn30AfYFFfC1zd+H4fEPw6vvEOl+CdW0nUT8QdQsR491COxsZYrjxFaT288TyQTBneGRWQBRlHY7scH6J+JH9ma18AL/+zvGNjY6SZotmrxES2EcaXyZtHa2CYtQFNq7jaUi3s7ZVmoA9btbqC+tYbm2mjuLaZBJFNEwZHUjIZSOCCDkEVLXxJ+zLq3iDX/2O/B+h+FvDGrXdrObLTdWn0bV4Jdln/Z1vJPJZPcSQBWkLeS6K37iZ7kgsYhu474IyXE2gfCmOxs9NPi2eLwZJZtqUhXW7PTI7SxW7WzRA6vYyQRXcjSeYuGmmR49+MAH6GUV4V8JvB/gvS/iJ4u8faVoeheF9LSZfCelz2NnDZrclbgLcyFlC7mlvCsABzk2qFfv8+D6TcWWl+ENT0mxtfCerLdQ2974q1nwzpr21/Y2y61aDULXUnY+YzS20t4+HWJgLeYFDgNQB920V5F+zn/Z32Lxz/wAI59n/AOEI/wCEkk/4R37Bt+x/Zfsdp532fb8vlfbPtmNvy53Y4r12gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAKulaVZaFpdnpum2dvp+nWcKW9tZ2sSxQwRIoVI0RQAqqoAAAwAABVqiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPBv2rPBj+P7j4SaLb3jabfy+L5Z7G/UZNrdw6Hqs1tNj+IJNHGxXoQpB4NeO+Cvjbf6p4l8b3t94jb4V6ZqPiO8/tjVGhgkNpq1poWhw/wBn7rhHQgyfbCMLukFqAhG7n7booA+CtG+MvxA0rxD4i/tPxTF4SutZu7fU9VXW7+2sItHnOgaPJHaxNJY3O0SSS3qhHQl/sDBWDiUye6fFLWL/AF79jD4oXmr6lDf67L4GvZNTtYI/Ljsbl9GDyQKjIsiKS/mhZh5gE3OBtUfQNFAHxD8a9Z8Sfsy2eva5o0nh74ay6no1xf2Xh3w80L6ZNPp0TuS8s9sgM9wbqNDBFAJJEtVIlQIxrufi18XPH3hi3+KmkabrDWuo+END1zxTHqRs4X32jWJbTIyrIVwtw9yAcbm/sw7yQ7bvqWsjSvCmmaLrOratawSDUdVaM3dxNPJMzhAQiLvY7I13ORGmFBdyBlmJAPl7xF8TPif4B8ReIUtPEt140l0vxFfeH7PR7nTrVPtxXwo+tRFjDEj+Z9pCwqEIBj4Ks/z0mmfFvx/qfgLxDLYeO9K1OQ6z4WsLHXNMkh1IWz32qw293EzixtoTiGRMRbGkjMhLOCyY+uaKAPlrU9f8QH4meFNI1fxtqL2nhz4pjRhqEsdpA97BN4Xe8jiudsKxkme58hdipkOuP3mxxUn8dXnin4/fDa11XxYTq1n4/wBatW8GCGBRY2sOlavHa3JITzv3sIjly7lW+0fKBsr6wooA+MH/AGpvFF34N8ARaNr9nqnik+A2vvFcTJEn2DUBe6LbXE9xtif7O9ulzqEjR7Cq7ctEwVRXo2ifEPxxe/s1/FbXrTXLTxD4h0m11Q+HdV0cpfiZ47FXiKuLSCG5ZbgyKDHDsO0IdzK5P0TRQB8qfEr9pV7+88dz+DPHVnH4d0qDwUqaxZRQXcFo1/rlxb30gYqwfNssQIJIQqcbW3Guau/j94wtdS8cwW3j37bp2iQCbwPfG0sm/wCE7uTzJabliCyeXKFts2ojY+bvydtfXniPwzpvi3T4bHVrb7XaxXlrfpH5jJie2uI7iB8qQfllijbHQ7cEEEg6lAHzh4G8c+Nn8TeFNS1PxXPqeneIPiB4l8MHR3srWOC3s7RtYa3ZXSISmVf7NiXczkFWOVLfNWH4o+NXiOzl8RTQ+Oxp2vWut3WnXfhT+y4bj+yNKTUEtxqmQnmR7bQi73zs0T+ZtC9K+q6KAPi3xr8bfH9vZeJpvDnj6S90bw74e8Va7puuJY2UyeIBp8OkSweYwh2GNZry8t2aAR7hHkEMAw6fxP8AFLxP4S1OPw/rPxJl0iwtfiQvh278UXVnYxy/YX8NHUgj7ofJQi4kVRJsGFVdxb5t31XWXrHhnTde1DQ76/tvPutEvGv7CTzGXyZ2t5rcvgEBv3VxMuGyPnzjIBAB8Wj4xeL9P8XXmpDV7G0vdY0zRrCbxJqE0Wnx/wBmRaj4lWDUS7W80cQnCWOWMLIDeqMKGUiz8RPH/ipPCmj+K9R8WxnUl+G3jq5tFgiglsNSntpbR7OQpPap57GFRNlY0V/ILIoiZ1f7dooA+Pfij8evGvhzSfHd5pXioL4msI/FCy+Fvsls39h2dlZXkmn6lgxmQ+Y8Fk2ZWaN/tuAvy17R4C8R6z4f+LfiLwV4k8WNr4XSdI1Gxnv4be3la5uX1NZoIliRAyBNO8xVIZwPMyzAcetUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/9k=",
-    "userLocale": "en-US",
-    "userCurrency": "USD",
-    "userRegion": "US"
-   },
-   "output": {
-    "understanding": "Your 6-year-old Whirlpool refrigerator isn't cooling, and ABC Appliance Repair has diagnosed a compressor failure, quoting you $497.50 per the invoice — though you were verbally told $450, which is a discrepancy worth flagging.",
-    "verdict": "somewhat_high",
-    "verdict_explanation": "The invoice total of $497.50 is actually $47.50 more than the $450 you were quoted verbally — that gap alone is a red flag. The parts and labor breakdown on the invoice is reasonable in structure, but $310 for a Whirlpool compressor is on the higher end for a standard domestic refrigerator compressor, and the diagnosis of compressor failure without documented ruling-out of cheaper causes (start relay, thermistor, condenser fan) is a concern at this price level.",
-    "price_reality_check": {
-     "typical_range": "$350–$600 all-in for a compressor replacement on a standard Whirlpool refrigerator, depending on model and region — parts typically $150–$350, labor $100–$200",
-     "where_this_quote_falls": "The $497.50 invoice sits in the mid-to-upper portion of the typical range, which is not outrageous but is not a bargain either — and the $310 parts charge is toward the ceiling for a commodity Whirlpool compressor.",
-     "confidence": "medium"
-    },
-    "red_flags": [
-     {
-      "flag": "You were verbally quoted $450 but the invoice totals $497.50 — a $47.50 discrepancy with no explanation on the document.",
-      "why_it_matters": "A quote and an invoice should match before you approve work; paying more than the number you agreed to is not acceptable and should be resolved in writing before anything is touched."
-     },
-     {
-      "flag": "Compressor failure was diagnosed on a fridge that is only not cooling — cheaper root causes like a failed start relay ($10–$30 part) or dirty condenser coils were not mentioned as having been ruled out.",
-      "why_it_matters": "A compressor that tests failed can sometimes be a start relay problem masquerading as compressor failure; a reputable tech should document what they tested and eliminated before recommending a $310 part."
-     },
-     {
-      "flag": "The invoice shows a service call fee waived if approved, which is industry-standard and fine — but combined with the verbal-vs-written price gap, it creates subtle pressure to approve quickly without scrutinizing the numbers.",
-      "why_it_matters": "Any time approving the repair has a financial benefit attached (waived fee, locked-in price), slow down and verify every line before signing."
-     }
-    ],
-    "itemization_check": {
-     "is_itemized_enough": true,
-     "whats_missing": "The invoice does itemize parts and labor, which is good — but it does not specify the compressor part number or brand, which matters because aftermarket compressors vary widely in quality and actual cost, and you cannot verify the $310 parts charge without knowing exactly what part is being ordered."
-    },
-    "replace_vs_repair": {
-     "applies": true,
-     "guidance": "At 6 years old and $497.50 for the repair, this is a borderline call — a comparable new Whirlpool refrigerator runs roughly $900–$1,400, so the repair is under the 50% rule of thumb, but only just, and a compressor replacement on a mid-age unit carries real risk of another major failure within a few years."
-    },
-    "negotiation_script": "I want to move forward, but I noticed the invoice says $497.50 and I was quoted $450 — I need that reconciled in writing before I approve anything. I also need the compressor part number so I can confirm the parts cost, and I'd like to know in writing what cheaper causes like the start relay or condenser fan were tested and eliminated before the compressor diagnosis was made. If those three things check out, I'm ready to approve — otherwise I'll need to get a second opinion.",
-    "questions_to_ask": [
-     "Can you explain why the invoice total is $497.50 when I was verbally quoted $450 — which number will I actually be charged?",
-     "What is the exact part number and brand of the compressor you are ordering, so I can verify the $310 parts cost?",
-     "Did you test the start relay and condenser fan motor before concluding the compressor itself has failed, and can you show me those test results?",
-     "Does the repair come with any warranty on parts and labor, and if so, for how long?"
-    ],
-    "second_opinion": {
-     "recommended": true,
-     "reason": "The verbal-vs-invoice price gap and the absence of documented cheaper-cause elimination make this worth a second opinion — a compressor replacement is expensive enough that one $75–$100 second diagnostic call could easily save you several hundred dollars or confirm the diagnosis and give you peace of mind."
-    }
-   }
-  },
-  {
-   "name": "car-upload-pdf-pressure-tactic",
-   "endpoint": "/api/quote-check",
-   "input": {
-    "repairType": "car",
-    "itemDescription": "2018 Honda Civic",
-    "whatWentWrong": "Grinding noise when braking",
-    "whatTheyToldYou": "",
-    "quotedPrice": 1708,
-    "quotedBreakdown": "",
-    "quoteFileBase64": "data:application/pdf;base64,JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDcgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgNiAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovUGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDYgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9BdXRob3IgKGFub255bW91cykgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDcxNTE2MjMwOS0wNCcwMCcpIC9DcmVhdG9yIChhbm9ueW1vdXMpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MDcxNTE2MjMwOS0wNCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0ICh1bnNwZWNpZmllZCkgL1RpdGxlICh1bnRpdGxlZCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgMyAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggNDY3Cj4+CnN0cmVhbQpHYXMyRz9WZU5tJ1pKdSonXio6OzFsMU8kZyMsRllwYTxta1sqXVtyYixESShldGpubG90PjEvOVRXaS1kYk9ObmM9dV9mI0dbJlVtcGxULDhSMSVpbixXIyI0UkBpYjFKREE4bD9wJ0AwTFJYSj5iViVmXXNGKi1ddUA8MVBdOFwnUmtycGUqN04/KlExRmJjbmU6VFwrMzpbQF1eIXVsUjMhU1w0TjxyOlFPOz5WQSEubUJkOjgsREFXQi1wKUZGL0tIK2VrW2I7SFBCU11SM0ZzJDFIcldVWk5XVTRsTlE8LC9aLiQ4RVkuTHRzUHViSiIuXC9ULionSTBKIkhlP1UoUyxUY1VyNC46IidNWl1aWmhSWD9rREQ0OiQhMDo4NStvND9tRWRzWFRHJVZ1bEZvMDFyRzJvZlBrIVdkWGNqZlhqQ2ZeaU5xYTVBTTAnOVM3OUoqPWo7OmxbVThVYTcpIipUZzwkNm8wVzwzNmlaWiJySEVGa0I6dWVcVT1BU0J0QlFhU1VhTFM4UE8qKFU6SiVlWCFhRzUlUnBGNEs1Jm9HIWc9Xkh0bVspK10+cUxPUnNjLjJZZEYpa1gxM0RSNy1jZzwtM1FoUzVlPTB+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDgKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAwOTIgMDAwMDAgbiAKMDAwMDAwMDE5OSAwMDAwMCBuIAowMDAwMDAwNDAyIDAwMDAwIG4gCjAwMDAwMDA0NzAgMDAwMDAgbiAKMDAwMDAwMDczMSAwMDAwMCBuIAowMDAwMDAwNzkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPDI0ZTQ4Y2Y5ZDdjNzEwMzA1M2RjOTA1YTNmYWEwODI4PjwyNGU0OGNmOWQ3YzcxMDMwNTNkYzkwNWEzZmFhMDgyOD5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gNSAwIFIKL1Jvb3QgNCAwIFIKL1NpemUgOAo+PgpzdGFydHhyZWYKMTM0NwolJUVPRgo=",
-    "userLocale": "en-US",
-    "userCurrency": "USD",
-    "userRegion": "US"
-   },
-   "output": {
-    "understanding": "Your 2018 Honda Civic at 85,000 miles is grinding when braking, and Metro Auto Repair has quoted you $1,708 to replace all four brake pads, all four rotors, and all four calipers — a complete brake system overhaul. The document matches your description except that the quote is actually itemized by line item, not a lump sum.",
-    "verdict": "overpriced",
-    "verdict_explanation": "The core problem is that all four calipers are included at a combined $660 — this is the biggest red flag. Calipers rarely all fail simultaneously, and a grinding noise on a 2018 Civic at 85k miles is almost certainly worn pads and possibly scored rotors, not failed calipers. Including four new calipers without explaining why they are needed inflates this quote by roughly $500-700 before you even get to the parts markup on the other components.",
-    "price_reality_check": {
-     "typical_range": "A complete four-wheel pad-and-rotor replacement on a 2018 Honda Civic typically runs $400-$750 at an independent shop in most US markets as of mid-2026. If calipers are genuinely needed, add $150-$250 per caliper including labor — but replacing all four is extremely unusual and would require a specific, documented reason for each one.",
-     "where_this_quote_falls": "At $1,708 this quote is roughly double what a full pad-and-rotor job should cost, driven almost entirely by $660 in caliper parts that are not justified by a standard grinding-noise diagnosis.",
-     "confidence": "medium"
-    },
-    "red_flags": [
-     {
-      "flag": "All four calipers are included ($660 total) for a grinding noise complaint with no documented reason why each caliper needs replacement.",
-      "why_it_matters": "Brake calipers on a 2018 Civic at 85k miles rarely all fail at once — this looks like upsell padding, and it accounts for nearly 40% of the parts cost on this estimate."
-     },
-     {
-      "flag": "The 24-hour approval deadline is a classic pressure tactic written directly into the estimate.",
-      "why_it_matters": "Urgency pressure is designed to stop you from getting a second quote — any legitimate shop will hold a written estimate for a reasonable period and should not penalize you for taking time to compare."
-     },
-     {
-      "flag": "No inspection findings or diagnosis notes are included — the estimate jumps straight to replacing everything without explaining what was physically observed on each component.",
-      "why_it_matters": "You cannot verify whether the calipers, or even all four rotors, were actually inspected and found defective, versus being added preemptively."
-     },
-     {
-      "flag": "The labor hours (4.5 hrs at $120/hr) are on the high end for a standard pad-and-rotor job but become harder to dispute once calipers are in scope — the caliper line items are doing double duty by also justifying inflated labor.",
-      "why_it_matters": "If the calipers are removed from the estimate, the labor figure should come down noticeably too, which the shop may resist."
-     }
-    ],
-    "itemization_check": {
-     "is_itemized_enough": true,
-     "whats_missing": "Parts are listed by component but there are no part numbers, brand tier (OEM vs. aftermarket), or any diagnostic notes explaining why each item — especially the four calipers — was found to be defective. Labor is shown as a single blended total with no breakdown by axle or job."
-    },
-    "replace_vs_repair": null,
-    "negotiation_script": "I appreciate the written estimate. Before I approve anything, I need to understand the caliper findings specifically — can you show me the inspection sheet that documents what was wrong with each of the four calipers, because that is $660 I was not expecting for a grinding noise? I also need the part numbers and brand for the calipers and rotors so I can verify the pricing. I am going to take until end of week to compare this with one other shop — the 24-hour deadline does not work for a repair of this size, and any shop I trust should be fine with that.",
-    "questions_to_ask": [
-     "What specific condition did you observe on each caliper — can you show me the inspection notes or let me see the worn parts — that leads you to replace all four?",
-     "What brand and part number are you using for the calipers and rotors, and is that OEM, OEM-equivalent, or economy aftermarket?",
-     "If I only do pads and rotors now and skip the calipers, what is that price — and what is your actual evidence that the calipers are failing rather than just worn?",
-     "Is the $120/hr labor rate your standard posted rate, and does it change if the scope of work is reduced?"
-    ],
-    "second_opinion": {
-     "recommended": true,
-     "reason": "With over $660 in caliper charges that are not explained by the symptom, a second opinion from another independent shop — not a dealership — is almost certain to either remove those parts from the estimate entirely or at minimum force Metro to justify them with actual evidence, and the potential savings easily justify the time."
-    }
-   }
-  }
- ]
+  ]
 }

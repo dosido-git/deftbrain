@@ -1,47 +1,120 @@
 # QuoteCheck — architecture & lock notes (`quotecheck-v2`)
 
-Brand-new tool, built end-to-end 2026-07-15 per direct user request ("One pre-DeftBrain prototype had a tool like this for car mechanics and it was very good... Let's start from scratch"). Paste a repair quote (appliance, car, or other) — or upload a photo/PDF of the actual invoice — and get a fairness verdict, price-reality check, red flags found in the specific quote, an itemization check, repair-vs-replace guidance (appliance only), a ready-to-use negotiation script, questions to ask before approving, and a second-opinion recommendation. **Frontend:** `src/tools/QuoteCheck.js`. **Backend:** `backend/routes/quote-check.js` (1 endpoint). **Golden:** `audit/quote-check-golden-sample.json` (5 cases). **Catalog:** `src/data/tools.js`, category `Loot`, headerColor `#c0d8b8` (same family as ContractDecoder/ScamRadar/LeaseTrapDetector).
+Paste a repair quote (appliance, car, or other) — or upload a photo/PDF of the actual invoice
+— and get an audit of what the quote actually says, not an invented fairness verdict. **Frontend:**
+`src/tools/QuoteCheck.js`. **Backend:** `backend/routes/quote-check.js` (1 endpoint, `MODELS.SMART`).
+**Golden:** `audit/quote-check-golden-sample.json` (5 cases, including the two real base64 test
+files for the upload cases). **Catalog:** `src/data/tools.js`, category `Loot`.
 
-## Concept validation (before any code was written)
-User's actual ask was "is my repair person ripping me off?", not a DIY diagnostic tool. Researched market fit for both car and appliance repair quote-checking:
-- **Appliance**: genuine white space — no RepairPal-equivalent incumbent found; real recurring search demand ("how to avoid getting overcharged" articles independently written by many sites); usable reference price data pulled during research (fridge $125-500, washer $100-475, dryer $100-300, diagnostic fee $70-130, common over-diagnosis pattern of expensive parts vs. cheap sensors/fans).
-- **Car**: real demand too, but RepairPal is deeply entrenched (#1 estimator since 2008, Fair Price Guarantee network of 3,800+ certified shops, real transactional pricing data). Decision: position QuoteCheck as a red-flags/leverage/negotiation tool for cars, NOT a pricing-precision competitor — this is baked into the SYSTEM PROMPT itself, not just a design note.
-- Decided against category-narrow tools (an "ApplianceCheck" + separate "CarCheck") — the underlying evaluation logic (itemization check, parts-markup smell test, pressure-tactic red flags, the 50%-rule, negotiation script) is domain-general, so one tool with a `repairType` selector is more defensible than BikeMedic's narrow-and-deep model.
+## V2 rewrite (2026-09-07) — audit the quote you have, not the quote you wish you had
 
-## Shape
-- **1 endpoint**, `claude-opus` (`MODELS.SMART`), `max_tokens 3000`, `withLanguage(systemPrompt) + withLocaleContext`.
-- Guard: `!VALID_VERDICTS.includes(parsed?.verdict)` — `verdict` ∈ `likely_fair | somewhat_high | overpriced | cant_tell`.
-- `NO_QUOTE_RULE` included in the system prompt from day one (not retrofitted) — `negotiation_script` is "exact words to say," the exact field class that broke JSON in German across ~15 other tools in the earlier callClaudeWithRetry migration campaign.
-- `replace_vs_repair` is **appliance-only** — backend always returns `null` for `repairType !== 'appliance'`; frontend only shows the optional `itemAge` input when `repairType === 'appliance'`. Don't add it for car/other without also teaching the prompt a car-specific replace-vs-repair framework (doesn't really apply the same way to vehicles).
-- Array bounds: `red_flags` ≤5 (empty array is a valid, expected "clean quote" result — do not force-invent flags), `questions_to_ask` ≤4.
+The V1 prompt asserted that appliance repair price ranges are "relatively well-established" and
+reasoned about them with "medium-to-high confidence," actively diagnosed a cheap part vs. an
+expensive one from a one-line symptom description ("a relatively cheap, common-failure part...
+being diagnosed as an expensive core component... without a clear explanation of how they ruled
+out the cheaper cause first"), asserted a diagnostic fee is "industry-normal" to credit toward
+repair, and used a hard "repair costing more than roughly half of a realistic replacement cost is
+usually not worth it" rule. All of it sounded specific and confident; none of it is something an
+LLM with no live pricing data or an actual look at the appliance can know.
 
-## i18n status — English only at launch, by design
-- `src/i18n/locales/tools/quote-check.js` exports `quoteCheck = { en: {...} }` — only the `en` block. This is NOT an oversight: `src/i18n/index.js`'s `t()` falls back to the `en` block for any language/key it can't find (`RESOURCES[lang]?.[key] ?? RESOURCES['en']?.[key] ?? key`), so non-English users see clean English text right now, not broken `qc_*` key leaks.
-- **QuoteCheck is deliberately NOT in `scripts/localization-audit.js`'s `LOCALIZED_TOOLS` allowlist yet.** Gate 5 only checks tools in that allowlist, so it correctly skips QuoteCheck for now. Adding the other 12 languages + registering in `LOCALIZED_TOOLS` is the natural next step (see `deftbrain-localization-rollout` memory for the batch workflow) — not required for this to be a working, shippable v1.
-- Reused existing shared base keys (`try_example`) instead of duplicating a `qc_`-prefixed equivalent.
+**What changed:**
 
-## Audit gotchas hit while building (fixed same session, not retrofitted later)
-1. **S5.5 false "no pre-result cross-ref"** — the cross-ref link lived only inside the `renderInput()` render-function body. `audit_v2-3-2.py`'s region scanner (S5.5) only recognizes hrefs directly in the top-level `return(...)` JSX or inside a function literally named `renderResults`/`renderOutput`/`renderAnswer` — hrefs inside any other named render helper (like `renderInput`) are invisible to it in either the pre- or post-result region. **Fix:** added a duplicate cross-ref line directly in the top-level return, above `{!results && renderInput()}` — matches the existing (slightly redundant-looking but gate-passing) pattern already used by ContractDecoder, which shows its LeaseTrapDetector cross-ref twice for the same structural reason.
-2. **F3/PF-21 "chained results access without optional chaining"** — most of the flagged accesses were already guarded by an outer `{results?.field && (...)}` JSX condition, but the audit script is a blanket regex check with no understanding of JSX control flow — it flags `results.a.b` regardless of surrounding guards. Fixed by adding `?.` at every level throughout `renderResults()` and `buildFullText()`, even where a guard already made it runtime-safe. Treat this as the expected posture for all future tools, not something to argue with case-by-case.
+1. **Verdict enum, fully replaced**: `likely_fair | somewhat_high | overpriced | cant_tell` (a
+   fairness claim) → `LOOKS_STRAIGHTFORWARD | NEEDS_CLARIFICATION | HARD_TO_COMPARE |
+   SPECIFIC_CONCERNS_FOUND | NOT_ENOUGH_INFORMATION` (an audit-completeness claim).
+   `LOOKS_STRAIGHTFORWARD` explicitly does NOT mean the price is proven fair — the prompt says so
+   directly, and the guard's `require: verdict_matches_the_evidence_supplied` backs it.
+2. **`price_reality_check` (typical_range + confidence) removed entirely** — no field anywhere
+   invites a made-up market price range. Replaced by `quote_summary` (extracted from what was
+   typed/uploaded, never assumed) and `arithmetic_check` (only when the numbers to check are
+   actually present).
+3. **Red flag vs. question to clarify, now structurally separated**: `red_flags` (any missing
+   detail could become one) → `specific_concerns` (grounded only — arithmetic error, duplicate
+   charge, unexplained fee, missing promised warranty, explicitly reported pressure tactic) +
+   `unknowns_that_matter` (missing information that limits evaluation but isn't evidence of
+   wrongdoing). A lump-sum quote with no diagnostic writeup is now an unknown, not a red flag.
+4. **`document_discrepancies`** (new) — when an uploaded document and the typed answer disagree,
+   both are shown side by side rather than the model silently picking one.
+5. **`repair_vs_replace`** — dropped the universal ~50%-of-replacement-cost rule and any
+   age→lifespan inference; `applies` is now genuinely dynamic (not hardcoded to
+   `repairType === 'appliance'`), and `missing_information` lists what's needed rather than the
+   model inventing the replacement side of the comparison.
+6. **`negotiation_script` → `what_to_say`** — no longer automatically a negotiation posture; the
+   prompt explicitly says the right first move is often a clarifying question, and bans putting
+   an unsupported technical claim in the visitor's own mouth (the V1 example prompt literally
+   invited "my understanding is those are more common causes...").
+7. **`second_quote.scope_comparable`** (new, YES/NO/UNKNOWN) — a second price is not automatically
+   a comparable quote; the prompt requires checking scope before treating a gap as meaningful.
+   New frontend field `secondQuoteBreakdown` collects what the second quote covers.
+8. **`safety_note`** (new) — for a plausible safety issue (brakes, gas, electrical), states what
+   condition warrants stopping use, without diagnosing the hazard itself.
+9. **`second_opinion`**: `recommended: boolean` → `assessment: WORTH_CONSIDERING |
+   MAY_NOT_ADD_MUCH | NOT_ENOUGH_TO_TELL`, matching the "don't force a binary verdict" pattern
+   used across the tool.
 
-## File upload — photo/PDF of the actual quote (v2, same-day 2nd pass)
-User asked directly: "How about an option to upload a pdf, jpg or png quote?" Implemented as **optional supplementary evidence**, never a replacement for the required text fields:
-- Backend: `parseQuoteFile(dataUrl)` in `quote-check.js` parses a `data:` URL, maps `image/jpeg`/`image/png` → a Claude `type: 'image'` content block and `application/pdf` → `type: 'document'` — reusing the exact content-block shapes already proven in this codebase (PDF pattern copied from `LeaseTrapDetector`; image pattern matches `BikeMedic`/`LaundroMat`). Returns `null` (silently, no error) for anything unparseable, wrong-type, or over `MAX_FILE_BYTES` (10MB) — the caller just proceeds text-only, since the file was never required.
-- The system prompt gets one conditional line when a file is present: treat the attached document as **ground truth** over the typed fields, and flag any discrepancy. This is the behavior that actually matters — verified live with a synthetic invoice where the typed price ($450) deliberately differed from the invoice's real total ($497.50); the model read the image, caught the $47.50 gap, and surfaced it as a red flag by name.
-- Frontend: `uploadedFile`/`fileBase64` state + `fileInputRef`, `handleFileUpload`/`removeFile` handlers copied from `LeaseTrapDetector`'s battle-tested FileReader-to-data-URL pattern. UI is a compact dashed dropzone (empty state) → success chip with filename/size/✕ (selected state), placed directly after the "itemized breakdown" text field since that's the field it most directly supplements. `handleReset` clears the file too (and resets the native `<input>` element's value).
-- `accept="image/jpeg,image/png,application/pdf"` on the file input; matching validation in `handleFileUpload` (type + 10MB size) with dedicated error strings (`qc_err_file_type`, `qc_err_file_size`, `qc_err_file_read`).
-- The browser preview tool has no native file-upload action — verified the select/display/remove UI cycle by dispatching a `change` event on the hidden `<input type="file">` via `javascript_tool` (constructing a real `File`/`DataTransfer`, not mocking React state directly). This is standard practice for this gap, not a shortcut — the actual upload mechanics (FileReader, base64 encoding) are unchanged, only the "user clicks and picks a file" step was simulated.
+**Frontend**: input reordered/relabeled to match the owner's spec (item hint about make/model,
+"what does the quote include" instead of "itemized breakdown," second-quote breakdown field,
+item-age field no longer appliance-gated since `repair_vs_replace.applies` is dynamic now). Result
+reordered: recap → verdict → safety note (if any) → quote summary → document check (if any) →
+arithmetic (if possible) → specific concerns (with an explicit "no concerns found ≠ fair price"
+caveat line when empty) → unknowns → second quote (if provided) → repair-vs-replace (if applies)
+→ questions → what-to-say → second opinion. Persisted result key bumped
+`quotecheck-results` → `quotecheck-results-v2`.
+
+**Recent/history rebuilt**: previously stored only `{preview, verdict, ts}`. Now stores the full
+`input` snapshot and the full `result` per check (`quotecheck-history-v2`, still capped at 8).
+Each entry gets **View** (restores the stored result instantly, no API call — `viewFrom()`) and
+**Recheck** (restores only the original *inputs* into the editable form, never the model's own
+prior conclusions — `recheckFrom()` — so the visitor can add new information and get a fresh
+analysis rather than being fed their own past AI output as if it were a new fact).
+
+## Output standard: v2, WITH a working enforcement profile (unlike PronounceItRight)
+
+Declared `router.outputStandard = 'v2'` and wired `runOutputGuard()` with a tool-specific
+`outputGuard.prohibit` list (`invented_price_range`, `invented_industry_norm`,
+`remote_diagnosis`, `missing_info_called_a_red_flag`, `universal_repair_vs_replace_threshold`,
+`lifespan_inferred_from_age_alone`, `unsupported_technical_claim_in_script`,
+`second_quote_compared_without_scope_check`). Unlike PronounceItRight (a reference/knowledge tool
+where the generic guard couldn't verify a phonetic claim any better than the model that wrote
+it, and made things worse when tried), QuoteCheck's failure modes are almost entirely "the
+visitor's own supplied situation, invented or twisted" — exactly the guard's designed domain.
+
+**Live-tested before shipping**: the guard did fire false positives at first — flagging a
+sentence that explained what ISN'T yet known ("what test confirmed X") as `remote_diagnosis`,
+and a sentence about the practical effect of a reported pressure tactic as `mind_reading`.
+Tightened `suppliedFrom()`'s "what is NOT a violation" section to explicitly exempt reasoning
+about missing evidence and the effect of a visitor-reported tactic, re-tested: went from 3/3
+test calls flagged down to occasional (1-2 fields, mixed real/false-positive), and — critically
+— **the repaired output never visibly degraded content** across 4 separate live test calls,
+unlike PronounceItRight's hedged-into-uselessness failure. Kept the guard; this is a real
+enforcement layer here, not a cosmetic declaration.
 
 ## DO NOT silently reverse
-1. The car-repair red-flags/leverage positioning in the system prompt (never claim RepairPal-grade pricing precision for vehicles).
-2. `replace_vs_repair` staying `null` for non-appliance repair types.
-3. The duplicated pre-result cross-ref (inside `renderInput()` AND in the top-level return) — removing either one risks either a UX gap or an S5.5 audit failure.
-4. English-only i18n block — do not add stub/placeholder translations to the other 12 languages just to "fill them in"; either do a real localization pass (translate properly) or leave them absent so the `en` fallback serves clean text.
-5. The uploaded file is ADDITIVE, not a mode switch — do not make `itemDescription`/`whatWentWrong`/`quotedPrice` optional-when-file-present; the user's own words about the situation are still valuable even with a photo attached, and making them conditional would fork the validation/canSubmit logic for no real benefit.
-6. `parseQuoteFile` silently returning `null` on bad input rather than erroring — the file is optional, so a malformed upload must never fail the whole analysis request.
 
-## Known / accepted
-- 0 baseline audit issues across all 3 files (syntax, eslint, guard-keys, diff-audit) — clean from the first pass since built against the current conventions, not retrofitted.
-- Browser-verified: full submit flow (appliance example), dark mode rendering of every result section (verdict card, price reality check, red flags, itemization check, replace-vs-repair, negotiation script, questions, second opinion, cross-refs), PF-16 reset button behavior, ActionBar Copy/Print registration, file upload select/display/remove cycle, zero console errors.
-- Live-verified 5 scenarios total: appliance compressor-vs-evaporator-fan misdiagnosis (English, verdict varied `cant_tell`/`overpriced` across runs — appropriately non-deterministic given genuinely ambiguous evidence), car all-four-caliper red flag (English, correctly hedged confidence + `replace_vs_repair: null`), a German case with deliberately quoted third-party technician speech in `whatTheyToldYou` (zero truncation, zero invalid JSON, correct EUR currency), an appliance case with an uploaded synthetic invoice image containing a deliberate price discrepancy (correctly caught), and a car case with an uploaded synthetic PDF estimate containing an embedded pressure-tactic line (correctly extracted and flagged).
-- Golden sample embeds the real (small, ~20KB and ~2KB) base64 test files for the two upload cases rather than a placeholder, so `check:golden quote-check` genuinely re-exercises the vision/document path, not just the text path.
+1. The verdict enum and its definitions — `LOOKS_STRAIGHTFORWARD` must never be treated as "fair
+   price confirmed" anywhere in frontend copy or prompt text.
+2. `specific_concerns` vs `unknowns_that_matter` — a missing detail goes in the latter; only a
+   concrete, evidenced problem goes in the former. This distinction is the core fix.
+3. No price range, industry norm, or repair-vs-replace threshold anywhere in the prompt.
+4. `second_quote.scope_comparable` gating — never let the frontend or prompt imply the cheaper
+   quote is better or the pricier one more thorough without a comparable scope.
+5. `viewFrom()` never re-calls the API; `recheckFrom()` never feeds a stored `result` back in as
+   input — only the original `input` snapshot.
+6. The v2 output guard and its tool-specific `outputGuard` — this is one of the few tools where
+   it's proven to help; don't strip it out to "simplify," and don't loosen the "what is NOT a
+   violation" exemptions without re-testing for the false-positive regression they fixed.
+7. `itemAge` shown for all repair types now, not just appliance — `repair_vs_replace.applies` is
+   a model decision, not a hardcoded category gate.
+
+## Known / verified
+
+- All 7 pre-push gates pass: syntax, eslint (0 warnings), guard-keys, diff-audit (0 new issues),
+  localization-audit (13 languages, no collisions), primer-audit, sitemap-state, output-standard-
+  audit (49 on v2, all with enforcement profiles).
+- `check:golden quote-check`: 5/5 live, including both file-upload cases (image price
+  discrepancy still caught; PDF pressure-tactic still surfaces as a grounded `specific_concern`
+  with a real `safety_note`, not a remote diagnosis).
+- Browser-verified end-to-end: example load → submit → full result render (every conditional
+  section correctly shown/hidden) → Start Over → Recent Checks list → View (instant, no API
+  call) → Start Over → Recheck (restores exact original inputs into the editable form) — zero
+  console errors beyond the pre-existing unrelated dev-server WebSocket noise.

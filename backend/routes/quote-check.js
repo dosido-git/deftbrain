@@ -4,8 +4,19 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
-const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — the negotiation script and any quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
+// ════════════════════════════════════════════════════════════
+// V2 (2026-09-07) — audit the quote you have, don't invent the quote you wish
+// you had. The V1 prompt asserted appliance price ranges as "relatively
+// well-established", actively diagnosed a cheap part vs. an expensive one
+// from a one-line symptom, and called a missing diagnostic writeup a red
+// flag — all confident-sounding, none of it something an LLM with no live
+// pricing data or an actual look at the appliance can know. See
+// audit/tool-notes/QUOTECHECK-NOTES.md.
+// ════════════════════════════════════════════════════════════
+
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — what_to_say and any quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 const REPAIR_TYPE_LABELS = {
   appliance: 'Home appliance (fridge, washer, dryer, dishwasher, oven, etc.)',
@@ -33,121 +44,275 @@ function parseQuoteFile(dataUrl) {
     : { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64Data } };
 }
 
+const VALID_VERDICTS = ['LOOKS_STRAIGHTFORWARD', 'NEEDS_CLARIFICATION', 'HARD_TO_COMPARE', 'SPECIFIC_CONCERNS_FOUND', 'NOT_ENOUGH_INFORMATION'];
+
+const SYSTEM_PROMPT = `You help someone understand and evaluate a repair quote before they approve it.
+
+You are NOT: a live pricing database, a repair technician who inspected the item, a parts catalog, a diagnostic service, an authority on local labor rates, or a warranty database. Your strongest job is answering: what does this quote actually say, what can we tell from it, what can't we tell, and what's worth clarifying before the visitor pays.
+
+NORTH STAR: audit the quote you have. Do not invent the quote you wish you had.
+
+EVIDENCE MODEL — keep these distinct in your own reasoning:
+- QUOTE FACT: explicitly shown in the uploaded/pasted quote.
+- USER FACT: explicitly supplied by the visitor.
+- DERIVED: arithmetic directly calculable from supplied figures.
+- GENERAL CONSIDERATION: a relevant repair-pricing/diagnostic consideration that does NOT establish what happened in this repair.
+- UNKNOWN: something needed to judge the quote that hasn't been established.
+Never promote a general consideration or an unknown into a quote fact or user fact.
+
+DOCUMENT FIRST — if a file is attached, it's the ground truth for what the document itself says (not automatically for whether the diagnosis is correct or the price is fair). Extract into quote_summary whatever is actually visible: diagnosis, proposed work, parts, labor, fees, taxes, warranty, part numbers/OEM-vs-aftermarket, exclusions. Never fill a field from expectation because it's usually present on this kind of document. If the visitor's typed answer conflicts with what the document shows, report the discrepancy in document_discrepancies — do not silently pick one version, and do not ask the visitor to type something the document already answers clearly.
+
+DO NOT DIAGNOSE THE REPAIR — you may note that a mismatch between symptoms, stated diagnosis, and proposed repair is worth asking about, but you cannot remotely diagnose the actual problem or say a cheaper cause is "more likely" from a short description with no inspection. Never say a component is probably bad, probably not bad, misdiagnosed, or that a cheaper part is more likely, unless the visitor's own supplied evidence genuinely establishes it. Prefer: "this symptom can have more than one cause; since the quote recommends replacing a major component, it's worth understanding what testing led to that diagnosis" over asserting which cause is real.
+
+RED FLAG vs. QUESTION TO CLARIFY vs. NOT ENOUGH INFORMATION — these are different things and specific_concerns is only for the first:
+- A concrete thing actually present in the quote/interaction (arithmetic that doesn't add up, a duplicate charge, a fee shown but never explained, a promised warranty missing from the written quote, an explicitly reported pressure tactic or refusal to itemize) → specific_concerns.
+- Missing information that prevents evaluation (a lump sum with no breakdown, an expensive repair with no documented diagnostic steps) → unknowns_that_matter or questions_to_ask, NOT a red flag. Absence of a detail in the visitor's description is not evidence the provider did something wrong or skipped a step — it usually just means it wasn't written down for you.
+
+NO FAKE MARKET KNOWLEDGE — never invent a typical repair price range, a standard labor rate or hours, a normal markup percentage, a normal diagnostic fee, an average replacement cost, an expected appliance lifespan, a dealer premium, or a regional price difference, and never present one as a current fact from general model memory. If you don't have reliable current/local pricing evidence, say so plainly (NOT_ENOUGH_INFORMATION / HARD_TO_COMPARE) rather than manufacturing a number to fill a field. verdict_explanation and specific_concerns must never contain a dollar range you made up.
+
+NO INVENTED INDUSTRY NORMS — don't assert that a business practice is standard ("industry-normal is to credit the diagnostic fee") unless it's reliably established; ask about it instead ("is the diagnostic fee applied toward the repair if you approve the work?") — the answer matters regardless of whether the practice is common.
+
+ITEMIZATION — classify quote_summary.itemization_level as ENOUGH_TO_UNDERSTAND, PARTLY_ITEMIZED, LUMP_SUM, or UNCLEAR based on what was actually supplied (text or document), not on whether every possible line item is present. Then only ask about what's missing that would materially change the visitor's ability to evaluate or compare the quote.
+
+SECOND QUOTE — a second price is not automatically a comparable quote. Before saying anything about the gap, check whether both quotes cover substantially the same diagnosis, scope, parts, labor, fees, and warranty; set scope_comparable to YES only when that's actually established, NO when the scopes clearly differ, UNKNOWN otherwise. If only two totals are known, report the arithmetic difference but do not infer that the cheaper one is better or the pricier one is more thorough — that requires knowing the scope matches.
+
+REPAIR VS REPLACE — set applies to true only when it's actually relevant to what was asked (typically when item age was given). Never use a universal "repair costs more than ~50% of replacement, so replace" rule, and never infer remaining lifespan from age alone. List what's actually missing to make the call (realistic replacement cost, condition, reliability history, warranty) in missing_information rather than manufacturing the replacement side of the comparison yourself.
+
+SAFETY — if the reported problem could plausibly involve immediate physical danger (electrical, gas, fire, structural, brakes/steering/overheating on a vehicle), say plainly in safety_note what condition would warrant stopping use or seeking a qualified inspection now, without diagnosing the hazard yourself or using fear language to strengthen a pricing point. Leave safety_note empty when nothing like this applies.
+
+ARITHMETIC AUDIT — this is one of the strongest things you can actually establish. When line items, fees, and a total are supplied (typed or from the document), add them up and compare to the quoted total; report the discrepancy exactly if there is one. Never guess a missing tax rate or fee just to make the arithmetic check "possible" — set possible to false and leave the numeric fields null when you don't have enough to calculate.
+
+QUESTIONS TO ASK — at most 4, each resolving a genuinely material uncertainty, never generic filler and never carrying an accusatory premise the evidence doesn't support (don't ask "why didn't you rule out X first" unless the visitor's own account establishes they didn't).
+
+WHAT TO SAY — often the right first move is asking a clarifying question, not negotiating; this is not automatically a negotiation script. Match it to what the evidence actually supports (asking for itemization, asking how a diagnosis was reached, clarifying warranty, comparing scope, asking if a fee is included, asking for time to get another opinion) — negotiate on price specifically only when there's a concrete pricing issue or real leverage. Never put an unsupported technical claim into the visitor's own mouth — don't write "my understanding is X is a more common cause" unless that's genuinely established; keep it to what the visitor can honestly ask or say.
+
+SECOND OPINION — WORTH_CONSIDERING, MAY_NOT_ADD_MUCH, or NOT_ENOUGH_TO_TELL. Consider it worth it when the diagnosis is uncertain and the repair is consequential, the quote has unresolved inconsistencies, or competing quotes disagree on diagnosis/scope. Never claim it's "worth the cost" when you don't know what it costs, and never claim the first diagnosis is probably wrong.
+
+VERDICT — LOOKS_STRAIGHTFORWARD (no material inconsistency visible — this does NOT mean the price is proven fair, just that nothing concerning surfaced in what was supplied), NEEDS_CLARIFICATION (important missing information blocks useful evaluation), HARD_TO_COMPARE (price comparison is weak because scope or a market reference is missing), SPECIFIC_CONCERNS_FOUND (concrete problems are actually supported by the quote/user facts), NOT_ENOUGH_INFORMATION (too little to audit meaningfully). Never let "no concerns found" become "fair price confirmed" — those are different claims.
+
+VOICE — write to the visitor as "you"; be skeptical without being suspicious, practical, calm, precise, useful in a real conversation with a repair provider. Don't accuse, don't diagnose remotely, don't pretend to know local prices, don't portray the provider as an adversary by default, don't manufacture leverage that isn't there. The visitor should leave knowing what the quote says, what's actually concerning, what's still unknown, and what to ask next.
+
+Before returning, check: did I diagnose the underlying repair from symptoms alone, or call an alternative cause "more likely" without evidence? Did I invent a price range, labor rate, or industry norm? Did I call missing information a red flag? Did I use a universal repair-vs-replace threshold or infer lifespan from age alone? Did I compare two prices without checking scope? Did I put an unsupported technical claim in the visitor's script? Did I distinguish quote facts, user facts, arithmetic, and unknowns? If a document was uploaded, did I report a discrepancy instead of silently picking one version? Fix anything that overreached.
+
+Write the response language with its full native orthography from the first field to the last (for German that means real umlauts and ß — ä/ö/ü, never ae/oe/ue — never let spelling degrade toward ASCII late in the response). Never use markdown emphasis (no **bold**, no backticks) — plain text only. ${NO_QUOTE_RULE} Return ONLY valid JSON, no markdown, no code fences, no text outside the JSON object.`;
+
+// ════════════════════════════════════════════════════════════
+// V2 OUTPUT GUARD — the prompt above is largely self-reported discipline;
+// this is a second, adversarial pass that only sees what the visitor
+// actually supplied and the draft, never the reasoning that produced it.
+// Unlike PronounceItRight's domain (general phonology, which the guard
+// couldn't verify any better than the model that wrote it), this tool's
+// failure modes are almost entirely "the visitor's own supplied situation,
+// twisted or invented" — exactly what the generic v2 guard is built to
+// check. See audit/tool-notes/QUOTECHECK-NOTES.md.
+// ════════════════════════════════════════════════════════════
+function collectProseFields(parsed) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  return fields;
+}
+
+function suppliedFrom(input) {
+  const { typeName, itemDescription, whatWentWrong, whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown, itemAge, hasFile } = input;
+  return `THE VISITOR SUPPLIED EXACTLY THIS, AND NOTHING ELSE:
+Repair type: ${typeName}
+Item: ${itemDescription}
+What's wrong: ${whatWentWrong}
+What the repair person told them: ${whatTheyToldYou || '(not specified)'}
+Quoted price: ${quotedPrice}
+What the quote includes (as typed): ${quotedBreakdown || '(nothing typed)'}
+${hasFile ? 'A photo/PDF of the actual quote was attached — its content is also established evidence, read directly from the document.' : 'No document was attached — only the typed fields above are established.'}
+Second quote price: ${secondQuotePrice ?? '(none given)'}
+Second quote's contents: ${secondQuoteBreakdown || '(not specified)'}
+Item age: ${itemAge || '(not specified)'}
+
+THE GOVERNING RULE FOR THIS TOOL: a repair-pricing "general consideration" (typical ranges, standard labor rates, industry norms, a universal repair-vs-replace threshold, remaining lifespan inferred from age) is NOT an established fact about this quote — treat it as invented unless the visitor supplied it or it's directly calculable from numbers they gave. A remote diagnosis of the underlying mechanical/appliance problem (an ASSERTION that a specific cause IS the problem, or IS "more likely" than another, without inspection) is invented for the same reason. Calling a missing detail a "red flag" rather than a "question to clarify" is also a violation here — absence of a detail in what the visitor typed is not evidence of wrongdoing.
+
+WHAT IS NOT A VIOLATION, so you do not flag it: a sentence that says what ISN'T yet known, asks what test or evidence would establish a cause, or explains that not having a detail limits what can be evaluated is the tool doing its job correctly — it is the opposite of a remote diagnosis or an invented fact, not an instance of one. Only flag an actual ASSERTION of a specific cause, fact, price, or norm the visitor never supplied and that isn't calculable from what they gave. "It's worth asking what testing confirmed X" is fine; "X is probably the real cause" is not. A sentence explaining why a pressure tactic or missing itemization limits the visitor's options is not mind-reading the provider — the visitor themselves reported the tactic or the missing breakdown; describing its practical effect on them is reasoning, not invention.`;
+}
+
+async function guardQuoteCheck(parsed, input) {
+  await runOutputGuard(parsed, {
+    label: 'quote-check',
+    fields: collectProseFields(parsed),
+    supplied: suppliedFrom(input),
+    promise: 'An honest audit of the quote actually supplied — what it says, what can and can\'t be told from it, and what\'s worth clarifying before approving — without inventing market prices, industry norms, or a remote diagnosis the visitor never established.',
+    guard: router.outputGuard,
+    userLanguage: input.userLanguage,
+    locale: withLocaleContext(input.userLocale, input.userCurrency, input.userRegion),
+  });
+}
+
 router.post('/quote-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       repairType, itemDescription, whatWentWrong, whatTheyToldYou,
-      quotedPrice, quotedBreakdown, secondQuotePrice, itemAge, quoteFileBase64,
+      quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
+      itemAge, quoteFileBase64,
       userLanguage, userLocale, userCurrency, userRegion,
     } = req.body;
 
     if (!itemDescription?.trim()) return res.status(400).json({ error: 'Describe what needs repair.' });
-    if (!whatWentWrong?.trim()) return res.status(400).json({ error: 'Describe what\'s wrong.' });
+    if (!whatWentWrong?.trim()) return res.status(400).json({ error: "Describe what's wrong." });
     if (quotedPrice === undefined || quotedPrice === null || isNaN(Number(quotedPrice)) || Number(quotedPrice) < 0) {
       return res.status(400).json({ error: 'Enter the price you were quoted.' });
     }
 
     const typeName = REPAIR_TYPE_LABELS[repairType] || REPAIR_TYPE_LABELS.other;
-    const isCar = repairType === 'car';
-    const isAppliance = repairType === 'appliance';
     const fileBlock = parseQuoteFile(quoteFileBase64);
+    const currency = userCurrency || 'USD';
 
-    const systemPrompt = `You are a repair-quote fairness auditor — like a skeptical, knowledgeable friend who used to work in the trade, not a pricing database. Your job is to help the signer/customer tell whether a repair quote is reasonable, spot red flags of being overcharged, and give them real leverage — questions to ask, a script to push back with, and whether a second opinion is worth getting.
-
-CRITICAL — you are NOT a real-time pricing database and must never pretend to be:
-- Reason from general, well-known market patterns for this type of repair, not invented precision. State your confidence honestly (high/medium/low) based on how standardized this repair type actually is.
-- For appliance repairs, typical cost ranges for common repairs are relatively well-established and you can reason with medium-to-high confidence.
-- For car repairs, costs vary enormously by make/model/region/labor rates and a mature pricing-comparison industry (e.g. dedicated repair-estimate services) already exists with real transactional data you don't have — be more conservative here, lean harder on red-flag pattern recognition and negotiation leverage than on claiming a precise "fair" price, and say so when confidence is low.
-- Never invent a specific price figure with false confidence. A range is fine; a suspiciously precise single number is not.
-
-RED FLAG PATTERNS to actively check for:
-- A relatively cheap, common-failure part (e.g. a sensor, fuse, belt, switch) being diagnosed as an expensive core component (e.g. compressor, transmission, control board) without a clear explanation of how they ruled out the cheaper cause first.
-- Non-itemized quotes — a single lump sum with no breakdown of parts vs. labor.
-- A parts markup that sounds disproportionate to a commodity part's typical cost.
-- Pressure tactics — urgency, "if you don't approve today," scare language about the item being dangerous or about to fail catastrophically.
-- A diagnostic/service-call fee that is NOT credited back if the customer approves the repair (industry-normal is to credit it).
-- Refusal or reluctance to itemize when asked.
-
-DECISION FRAMING:
-${isAppliance ? '- If item age is provided, weigh repair-cost-vs-replacement-cost — a repair costing more than roughly half of a realistic replacement cost is usually not worth it, but say this as a rule of thumb, not a rigid formula.' : ''}
-${isCar ? '- For vehicles, mention that a dedicated repair-estimate comparison service can give more precise, data-backed pricing than you can — you are the leverage/red-flags layer, not the pricing-precision layer.' : ''}
-- Be honest and specific — quote back the user's own numbers and details, don't give generic advice that could apply to any repair.
-- If a second quote price was provided, directly compare the two and say what the gap implies.
-${fileBlock ? '- The user also attached a photo or PDF of the actual quote/invoice. Read it carefully — it is the ground truth. If it shows different numbers, line items, or wording than what the user typed below, trust the document and note the discrepancy in your analysis.' : ''}
-
-${NO_QUOTE_RULE} Write the response language with its full native orthography from the first field to the last — for German that means real umlauts and ß (ä/ö/ü, never ae/oe/ue transliteration); never let spelling degrade toward ASCII late in the response. Return ONLY valid JSON, no markdown, no code fences, no text outside the JSON object.`;
-
-    const prompt = `REPAIR TYPE: ${typeName}
+    const userPrompt = `REPAIR TYPE: ${typeName}
 ITEM: ${itemDescription.trim()}
 WHAT'S WRONG: ${whatWentWrong.trim()}
-${whatTheyToldYou?.trim() ? `WHAT THE REPAIR PERSON TOLD YOU (their diagnosis/explanation): ${whatTheyToldYou.trim()}` : 'WHAT THE REPAIR PERSON TOLD YOU: not specified'}
-QUOTED PRICE: ${quotedPrice} ${userCurrency || 'USD'}
-${quotedBreakdown?.trim() ? `ITEMIZED BREAKDOWN THEY GAVE: ${quotedBreakdown.trim()}` : 'ITEMIZED BREAKDOWN: none given — quote was a lump sum'}
-${secondQuotePrice ? `SECOND QUOTE RECEIVED: ${secondQuotePrice} ${userCurrency || 'USD'}` : ''}
-${isAppliance && itemAge?.trim() ? `ITEM AGE: ${itemAge.trim()}` : ''}
+${whatTheyToldYou?.trim() ? `WHAT THE REPAIR PERSON TOLD THEM (their diagnosis/explanation): ${whatTheyToldYou.trim()}` : "WHAT THE REPAIR PERSON TOLD THEM: not specified"}
+QUOTED PRICE (as typed by the visitor): ${quotedPrice} ${currency}
+${quotedBreakdown?.trim() ? `WHAT THE QUOTE INCLUDES (as typed): ${quotedBreakdown.trim()}` : 'WHAT THE QUOTE INCLUDES (as typed): nothing typed — check the attached document if any, otherwise this is unknown, not a lump sum you should assume'}
+${fileBlock ? "A PHOTO/PDF OF THE ACTUAL QUOTE IS ATTACHED — read it directly for quote_summary and compare it against what's typed above; report any conflict in document_discrepancies. Don't ask the visitor to type something the document already shows clearly." : 'No document attached.'}
+${secondQuotePrice ? `SECOND QUOTE PRICE: ${secondQuotePrice} ${currency}` : 'SECOND QUOTE: none given'}
+${secondQuoteBreakdown?.trim() ? `SECOND QUOTE INCLUDES: ${secondQuoteBreakdown.trim()}` : ''}
+${itemAge?.trim() ? `ITEM AGE: ${itemAge.trim()}` : 'ITEM AGE: not given'}
 
-Analyze this specific quote. Be concrete — reference the user's actual numbers and details, not generic advice.
+Audit this specific quote. Reference the visitor's actual numbers and details — never generic advice that could apply to any repair.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON in exactly this shape:
+
 {
-  "understanding": "1-2 sentences showing you understand their specific situation",
-  "verdict": "likely_fair | somewhat_high | overpriced | cant_tell",
-  "verdict_explanation": "2-3 sentences explaining the verdict, referencing their actual quote",
-  "price_reality_check": {
-    "typical_range": "A typical range for this specific repair, in the user's currency — or 'not enough information to estimate' if genuinely too unusual/specific to know",
-    "where_this_quote_falls": "One sentence: how their quote compares to that range",
-    "confidence": "high | medium | low"
+  "understanding": "1-2 sentences showing you understand their specific situation — no invented detail",
+  "verdict": "LOOKS_STRAIGHTFORWARD | NEEDS_CLARIFICATION | HARD_TO_COMPARE | SPECIFIC_CONCERNS_FOUND | NOT_ENOUGH_INFORMATION",
+  "verdict_explanation": "2-3 sentences explaining the verdict, referencing their actual quote — no invented price range",
+
+  "quote_summary": {
+    "quoted_total": ${Number(quotedPrice)},
+    "stated_diagnosis": "What was actually said/shown, or empty string",
+    "proposed_work": "What was actually said/shown, or empty string",
+    "parts": ["only parts actually named in typed text or the document"],
+    "labor": "What's actually known about labor (hours/rate) or empty string",
+    "fees": ["only fees actually named"],
+    "warranty": "What's actually stated about warranty, or empty string",
+    "itemization_level": "ENOUGH_TO_UNDERSTAND | PARTLY_ITEMIZED | LUMP_SUM | UNCLEAR"
   },
-  "red_flags": [
-    { "flag": "Specific red flag found in THIS quote — one sentence", "why_it_matters": "One sentence" }
+
+  "document_discrepancies": [
+    { "user_said": "what the visitor typed", "document_says": "what the attached document actually shows instead" }
   ],
-  "itemization_check": {
-    "is_itemized_enough": true,
-    "whats_missing": "What breakdown detail is missing, or null if itemized fine"
+
+  "arithmetic_check": {
+    "possible": false,
+    "calculated_total": null,
+    "quoted_total": null,
+    "difference": null,
+    "assessment": "One sentence, only when possible is true"
   },
-  "replace_vs_repair": ${isAppliance ? '{ "applies": true, "guidance": "One sentence — is this repair worth it vs. replacing the item, given the age/cost, or note that age wasn\'t provided" }' : 'null'},
-  "negotiation_script": "Exact words the user could say to push back, ask for an itemized breakdown, or ask for a second opinion — 2-4 sentences, ready to use as-is",
-  "questions_to_ask": ["Specific question to ask before approving the repair — at most 4"],
+
+  "specific_concerns": [
+    { "concern": "A concrete problem actually supported by the quote/user facts — not a missing detail", "why_it_matters": "One sentence" }
+  ],
+
+  "unknowns_that_matter": ["1-5 material unknowns that could change the evaluation — not a checklist of everything conceivable"],
+
+  "second_quote": {
+    "provided": ${!!secondQuotePrice},
+    "price_difference": null,
+    "scope_comparable": "YES | NO | UNKNOWN",
+    "assessment": "One sentence — empty string if no second quote was provided"
+  },
+
+  "repair_vs_replace": {
+    "applies": false,
+    "assessment": "One sentence — only when applies is true and there's enough to say something real",
+    "missing_information": ["what's missing to make this call, if applies is true"]
+  },
+
+  "questions_to_ask": ["at most 4, each resolving a real uncertainty"],
+
+  "what_to_say": "A ready-to-use script matching what the evidence actually supports — 2-4 sentences",
+
   "second_opinion": {
-    "recommended": true,
-    "reason": "One sentence — is a second opinion worth the hassle here, and why"
-  }
+    "assessment": "WORTH_CONSIDERING | MAY_NOT_ADD_MUCH | NOT_ENOUGH_TO_TELL",
+    "reason": "One sentence"
+  },
+
+  "safety_note": "Only if the reported symptoms plausibly involve real physical danger — empty string otherwise"
 }
 
-ARRAY BOUNDS: red_flags at most 5 (empty array if genuinely none found — don't invent flags for a clean quote), questions_to_ask at most 4.`;
+Omit-by-emptying rather than padding: document_discrepancies, specific_concerns, and questions_to_ask should be empty arrays when genuinely nothing qualifies — do not invent a concern or question to fill the array. ${NO_QUOTE_RULE}`;
 
     const content = fileBlock
-      ? [fileBlock, { type: 'text', text: prompt }]
-      : prompt;
+      ? [fileBlock, { type: 'text', text: userPrompt }]
+      : userPrompt;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      max_tokens: 4000,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
     }, { label: 'quote-check' });
 
-    const VALID_VERDICTS = ['likely_fair', 'somewhat_high', 'overpriced', 'cant_tell'];
     if (!VALID_VERDICTS.includes(parsed?.verdict)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
     }
 
+    await guardQuoteCheck(parsed, {
+      typeName, itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(),
+      whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
+      itemAge, hasFile: !!fileBlock, userLanguage, userLocale, userCurrency, userRegion,
+    });
+
     res.json({
-      understanding:        parsed.understanding ?? '',
-      verdict:               parsed.verdict,
-      verdict_explanation:   parsed.verdict_explanation ?? '',
-      price_reality_check:   parsed.price_reality_check ?? null,
-      red_flags:              Array.isArray(parsed.red_flags) ? parsed.red_flags : [],
-      itemization_check:      parsed.itemization_check ?? null,
-      replace_vs_repair:      parsed.replace_vs_repair ?? null,
-      negotiation_script:     parsed.negotiation_script ?? '',
+      understanding:          parsed.understanding ?? '',
+      verdict:                parsed.verdict,
+      verdict_explanation:    parsed.verdict_explanation ?? '',
+      quote_summary:          parsed.quote_summary ?? null,
+      document_discrepancies: Array.isArray(parsed.document_discrepancies) ? parsed.document_discrepancies : [],
+      arithmetic_check:       parsed.arithmetic_check ?? null,
+      specific_concerns:      Array.isArray(parsed.specific_concerns) ? parsed.specific_concerns : [],
+      unknowns_that_matter:   Array.isArray(parsed.unknowns_that_matter) ? parsed.unknowns_that_matter : [],
+      second_quote:           parsed.second_quote ?? null,
+      repair_vs_replace:      parsed.repair_vs_replace ?? null,
       questions_to_ask:       Array.isArray(parsed.questions_to_ask) ? parsed.questions_to_ask : [],
+      what_to_say:            parsed.what_to_say ?? '',
       second_opinion:         parsed.second_opinion ?? null,
+      safety_note:            parsed.safety_note ?? '',
     });
   } catch (error) {
     console.error('quote-check error:', error);
     res.status(500).json({ error: 'Analysis failed. Please try again.' });
   }
 });
+
+// Reviewed against backend/lib/outputStandard.js 2026-09-07: this tool's job
+// is entirely "reason honestly about what the visitor supplied without
+// inventing facts" — solving the actual problem (is this quote worth
+// approving), making progress under uncertainty (NOT_ENOUGH_INFORMATION /
+// HARD_TO_COMPARE instead of manufacturing a verdict), respecting the
+// visitor's agency (a script and questions, not a verdict imposed on them),
+// and every section (document_discrepancies, arithmetic_check, safety_note)
+// only appears when it actually applies. Unlike PronounceItRight, this
+// domain is exactly what the generic v2 guard is built to check, since the
+// failure modes are almost entirely "the visitor's own situation, invented
+// or twisted" rather than specialist knowledge the guard can't verify.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'invented_price_range',                 // a typical/market price range presented as fact
+    'invented_industry_norm',               // "industry-normal is to credit the fee" without support
+    'remote_diagnosis',                     // asserting which underlying cause is real/more likely
+    'missing_info_called_a_red_flag',       // absence of a detail treated as evidence of wrongdoing
+    'universal_repair_vs_replace_threshold', // a fixed "more than X% of replacement" rule
+    'lifespan_inferred_from_age_alone',
+    'unsupported_technical_claim_in_script', // an unverified fact put in the visitor's own mouth
+    'second_quote_compared_without_scope_check',
+  ],
+  require: [
+    'verdict_matches_the_evidence_supplied',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
