@@ -126,6 +126,10 @@ const PlotHoleFinder = ({ tool }) => {
     'CONTINUITY ISSUE': t('plh_type_continuity_issue'),
     'TIMELINE PROBLEM': t('plh_type_timeline_problem'),
     'RULE-BREAK': t('plh_type_rule_break'),
+    'THEMATIC TENSION': t('plh_type_thematic_tension'),
+    'ETHICAL CONTRADICTION': t('plh_type_ethical_contradiction'),
+    'QUESTIONABLE PREMISE': t('plh_type_questionable_premise'),
+    'UNRESOLVED MYSTERY': t('plh_type_unresolved_mystery'),
     'NOT ACTUALLY A HOLE': t('plh_type_not_a_hole'),
   }[ty] || ty);
   const findingTypeIcon = (ty) => ({
@@ -136,6 +140,10 @@ const PlotHoleFinder = ({ tool }) => {
     'CONTINUITY ISSUE': '🧩',
     'TIMELINE PROBLEM': '⏰',
     'RULE-BREAK': '📏',
+    'THEMATIC TENSION': '🎭',
+    'ETHICAL CONTRADICTION': '⚖️',
+    'QUESTIONABLE PREMISE': '🧐',
+    'UNRESOLVED MYSTERY': '🔮',
     'NOT ACTUALLY A HOLE': '✅',
   }[ty] || '🕳️');
   const verdictLabel = (v) => ({
@@ -263,6 +271,7 @@ const PlotHoleFinder = ({ tool }) => {
         lines.push(`  ${verdictLabel(f.verdict)} — ${f.why}`, '');
       });
       if (results?.strongest_case?.show) lines.push(`🕳️ ${t('plh_copy_strongest')} ${results.strongest_case.finding}`, '');
+      else if (results?.hardest_question?.show) lines.push(`🤔 ${t('plh_hardest_question')}: ${results.hardest_question.question}`, '');
       return lines.join('\n') + BRAND;
     }
     if (!defendResults) return '';
@@ -452,6 +461,16 @@ const PlotHoleFinder = ({ tool }) => {
                   <p className="text-[10px] font-bold uppercase mb-1">🕳️ {t('plh_strongest_case')}</p>
                   <p className="text-sm font-bold">{results.strongest_case.finding}</p>
                   <p className="text-xs mt-1">{results.strongest_case.why}</p>
+                </div>
+              )}
+              {/* Shown instead of Strongest Case when nothing survives as a
+                  confirmed hole — the strongest unresolved question, not a
+                  verdict dressed up as one. */}
+              {!results?.strongest_case?.show && results?.hardest_question?.show && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>🤔 {t('plh_hardest_question')}</p>
+                  <p className={`text-sm font-bold ${c.text}`}>{results.hardest_question.question}</p>
+                  <p className={`text-xs mt-1 ${c.textSecondary}`}>{results.hardest_question.why}</p>
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

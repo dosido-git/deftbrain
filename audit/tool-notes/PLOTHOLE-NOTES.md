@@ -164,3 +164,72 @@ never fed back into a fresh run as established story facts.
   arguments, at least one for laughs" defeats the entire point of this rewrite.
 - MODELS.SMART on both endpoints — this is a deliberate quality decision given the added
   reasoning complexity, not an accidental cost increase to revert.
+
+## Second correction pass — adjudication refinements (2026-09-06, same day)
+
+Live-testing the V2 rewrite surfaced one remaining weakness: the taxonomy was working (the
+model correctly distinguished REAL CONTRADICTION / UNEXPLAINED GAP / PLOT CONVENIENCE / NOT
+ACTUALLY A HOLE, and the Swiss Cheese Rating was already presented as playful rather than
+precise), but adjudication sometimes still called an interesting philosophical or unresolved
+story question a plot-logic problem when it wasn't one. Seven corrections, all in `CORE_RULES`
+or `FIND_RULES` in `backend/routes/plot-hole.js`:
+
+1. **A moral/ethical contradiction is not a logical one.** New rule + three new finding types
+   (`THEMATIC TENSION`, `ETHICAL CONTRADICTION`, `QUESTIONABLE PREMISE`). A conflict between a
+   fictional institution's rules/ethics and a character's autonomy is not `REAL CONTRADICTION`
+   unless two established facts about how the world *operates* genuinely can't both be true.
+   Worked example (Severance): the outie consents, the innie doesn't — that's the show's
+   central ethical provocation, not an internal-logic contradiction, since both facts coexist
+   fine under Lumon's own established consent rules.
+2. **Don't demand real-world science for an established fictional mechanism.** Ask "does this
+   contradict what the story previously established this can do," not "has the story explained
+   the scientific mechanism."
+3. **Verify before claiming "the story establishes."** Both sides of a contradiction must be
+   genuinely established — weaken to "the story appears to treat..." when uncertain, especially
+   for consent, legal rules, tech limits, character knowledge, physical/organizational
+   capability, and timelines.
+4. **Unresolved mystery is not an unexplained gap.** New finding type `UNRESOLVED MYSTERY`, for
+   an ongoing series that has clearly raised a question but may still intend to answer it —
+   distinct from `UNEXPLAINED GAP` (a missing explanation causing a problem *now*).
+5. **Swiss Cheese Rating calculated only after adjudication**, weighted toward
+   `REAL CONTRADICTION`/`RULE-BREAK`/`TIMELINE PROBLEM`/`CONTINUITY ISSUE`, explicitly *not*
+   increased for `THEMATIC TENSION`/`ETHICAL CONTRADICTION`/`QUESTIONABLE PREMISE`/
+   `UNRESOLVED MYSTERY`/anything judged `NOT ACTUALLY A HOLE` — with a stated consistency check
+   ("would I still give this rating with only the surviving findings?").
+6. **Strongest Case must actually survive adjudication.** `strongest_case` now requires its
+   selected finding's own verdict to be `YES — REAL HOLE`, not merely the most interesting
+   discussion. New `hardest_question` field (`{show, question, why}`) substitutes — mutually
+   exclusive with `strongest_case` in practice — when nothing clears that bar, framed as a
+   question rather than a hole dressed up as one.
+7. **No claimed deliberate authorial withholding without evidence.** "The show is deliberately
+   withholding..." → "the answer has not yet been revealed" / "this may be an intentionally
+   unresolved mystery." (The pre-existing `AUTHORIAL INTENT` restriction only lived in
+   `DEFEND_RULES`; this generalizes the same discipline to Find Holes' narrative text.)
+
+`FIND_SCHEMA`'s `type` enum grew from 8 to 12 values; `FIND_RULES`' `FINAL SELF-CHECK` grew from
+12 to 19 items (merged, not a separate checklist). 7 new `outputGuard.prohibit` categories added.
+Frontend (`src/tools/PlotHoleFinder.js`) gained icon/label mappings for the 4 new finding types
+(🎭 Thematic Tension, ⚖️ Ethical Contradiction, 🧐 Questionable Premise, 🔮 Unresolved Mystery)
+and a `hardest_question` render block (🤔) parallel to `strongest_case`, shown only when
+`strongest_case.show` is false. 5 new i18n keys × 13 languages (95/95 parity verified).
+
+**Live-verified** with the exact Severance example from the corrections: the outie/innie
+consent question now resolves `NOT A HOLE — DIFFERENT KIND OF STORY PROBLEM` with explicit
+THEMATIC TENSION reasoning ("'unjust' and 'internally contradictory' are different things"),
+and `hardest_question` correctly showed instead of `strongest_case` since the one finding that
+came closest (the Overtime Contingency's unclear rules) only reached `MAYBE — THE STORY LEAVES
+A GAP`, not `YES — REAL HOLE`. New golden case
+`find-severance-outie-consent-is-thematic-tension-not-a-hole` records this run; all 3 golden
+cases pass.
+
+### DO NOT silently reverse (second-pass additions)
+
+- The four new finding types (`THEMATIC TENSION`, `ETHICAL CONTRADICTION`,
+  `QUESTIONABLE PREMISE`, `UNRESOLVED MYSTERY`) and their exclusion from Swiss Cheese Rating
+  weighting and from `severity` — collapsing them back into `REAL CONTRADICTION` reopens the
+  exact Severance-consent bug class this pass fixed.
+- `strongest_case` requiring a `YES — REAL HOLE` verdict on its selected finding, and
+  `hardest_question` as the correct substitute when nothing qualifies — do not let
+  `strongest_case` show merely because a `MAYBE` finding was the most discussed.
+- The Swiss Cheese Rating's post-adjudication consistency check — this is what stops a
+  thematic-tension-heavy analysis from still landing on an inflated score.
