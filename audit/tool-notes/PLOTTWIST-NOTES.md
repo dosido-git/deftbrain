@@ -1,7 +1,22 @@
 # PlotTwist — architecture & lock notes (`plottwist-v2`)
 
+**Renamed to "Decision Prism" on 2026-09-06** (display name + full id/URL — id is now
+`DecisionPrism`, canonical URL `/DecisionPrism`). Kept internally, deliberately: the i18n prefix
+(`ptw_*`), localStorage keys (`plot-twist-history`, `plottwist-result`), the backend endpoint
+(`/api/plot-twist`), this notes filename, and the golden-sample filename/slug
+(`plot-twist-golden-sample.json`, `npm run check:golden plot-twist`) — renaming those buys
+nothing and breaks saved visitor state. `/PlotTwist`, `/plottwist`, `/plot-twist` all 301 to
+`/DecisionPrism` via `LEGACY_REDIRECTS` in `backend/server.js` (single hop — the old id was
+removed from `TOOL_IDS`); `TOOL_ALIASES` in `src/components/ToolRenderer.js` covers the
+in-app client-side case. Cross-reference links updated in `WrongAnswersOnly.js`, `Bookmark.js`,
+`TimeWarp.js`, `HomeIntro.js`, `tool-og-slugs.json` (kept both `PlotTwist`/`DecisionPrism` keys
+pointing at the same `plot-twist` OG slug), `og-slug-map.json`, and the Gate 5 allowlist path in
+`localization-audit.js`. `ptw_title`/`ptw_tagline` updated to "Decision Prism"/"See a tough
+decision from every angle" across all 13 languages — `ptw_title` stays an untranslated brand
+name (matches every other tool name in this catalog), `ptw_tagline` is translated per language.
+
 Decision-clarity tool — runs a decision through pre-mortem / time-horizons / opportunity-cost /
-reversibility / values-fit / comparison-matrix frameworks. **Frontend:** `src/tools/PlotTwist.js`.
+reversibility / values-fit / comparison-matrix frameworks. **Frontend:** `src/tools/DecisionPrism.js`.
 **Backend:** `backend/routes/plot-twist.js` — parallel split: `plot-twist-options`
 (`MODELS.SMART`, max_tokens 4000, owns `options_analysis` + `comparison_matrix`) +
 `plot-twist-framing` (`MODELS.SMART`, max_tokens 2500, owns everything else), merged via

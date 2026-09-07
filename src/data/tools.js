@@ -2648,7 +2648,7 @@ export const tools = [
 },
 {
   modified: "",
-  id: "PlotTwist",
+  id: "DecisionPrism",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2659,15 +2659,15 @@ export const tools = [
   },
   seoDescription: "Stuck on a tough decision? Run it through 6 proven decision frameworks free — pre-mortem, 10/10/10, reversibility, values check — and finally decide with clarity.",
   seoTitle: "Decision Helper: Get One Clear Answer",
-  title: "Plot Twist",
-  tagline: "See every angle of a tough decision — then decide with clarity",
+  title: "Decision Prism",
+  tagline: "See a tough decision from every angle",
   tags: ['decision', 'stuck', 'choose', 'options', 'dilemma', 'career', 'choice', 'pros cons', 'values'],
   icon: "🔀",
   categories: ['What If?', 'Veer'],
   headerColor: "#f5e0c0",
-  description: "Stuck between choices? Describe the decision, your options, and what matters to you. Plot Twist looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.",
+  description: "Stuck between choices? Describe the decision, your options, and what matters to you. Decision Prism looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.",
   guide: {
-    overview: "Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't guess what you secretly want or predict how you'll feel. It shows you angles and unknowns you're missing, using only what you actually tell it.",
+    overview: "Decision Prism runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't guess what you secretly want or predict how you'll feel. It shows you angles and unknowns you're missing, using only what you actually tell it.",
     howToUse: [
       "Describe the decision and what's making it hard",
       "Name the options you're actually considering",
@@ -2678,11 +2678,11 @@ export const tools = [
     example: {
       scenario: "You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.",
       action: "Describe the situation, add 'Take new job' and 'Stay' as options, select Career growth + Financial security + Family as values, pick 'I'm afraid I'll regret it' as what's making this hard.",
-      result: "Plot Twist offers a reframing question underneath the decision, runs each option through a pre-mortem, opportunity cost, reversibility, and values fit, shows a qualitative comparison matrix, summarizes what your own description actually established, flags what you still don't know, and lays out what the current facts favor versus what remains unresolved — without inventing how you'll feel or what anyone else will do."
+      result: "Decision Prism offers a reframing question underneath the decision, runs each option through a pre-mortem, opportunity cost, reversibility, and values fit, shows a qualitative comparison matrix, summarizes what your own description actually established, flags what you still don't know, and lays out what the current facts favor versus what remains unresolved — without inventing how you'll feel or what anyone else will do."
     },
     tips: [
       "The more context you provide, the sharper the analysis — but it will never invent facts you didn't give it",
-      "Plot Twist only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it",
+      "Decision Prism only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it",
       "The 'Still Stuck' exercises (coin-flip reaction, future-self exercise, smallest step) are genuinely effective — try them",
       "Use the comparison matrix to have structured conversations with people you trust"
     ]

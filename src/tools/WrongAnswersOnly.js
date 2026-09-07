@@ -247,7 +247,7 @@ const WrongAnswersOnly = ({ tool }) => {
         <p className={`text-xs text-center ${c.textMuted}`}>{t('wao_disclaimer')}</p>
         {!results && (
           <p className={`text-xs text-center ${c.textMuted} mt-3`}>
-            {t('wao_chaos_q')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}
+            {t('wao_chaos_q')} <a href="/DecisionPrism" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}
           </p>
         )}
       </div>
@@ -336,7 +336,7 @@ const WrongAnswersOnly = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wao_more_like')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
+              <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
               <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
               {/* Kept in Diversions. Which Life? sat here and is a reflective
                   tool about a real decision — a strange place to land from a

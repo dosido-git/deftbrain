@@ -3599,7 +3599,7 @@ URL: https://deftbrain.com/PlotHoleFinder
 Tagline: Find where the story stops adding up
 Categories: Diversions
 
-Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up — and separates genuine holes from things the story actually explains. Each finding gets a type (real contradiction, unexplained gap, plot convenience, questionable decision, and more), the case against it, the best defense, and a verdict. A playful Swiss Cheese Rating summarizes overall plot integrity without pretending to be a precise score. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).
+Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up—and separates genuine holes from things the story actually explains.
 
 **What it does.** Plot Hole Finder is a narrative logic analyst that sorts a genuine contradiction from an unexplained gap, a debatable character decision, or a convenience — then adjudicates only the findings that survive scrutiny. A shorter list of real holes beats a longer list padded to look impressive.
 
@@ -3973,6 +3973,37 @@ Input: Work from home, same routine every day, weeks blurring together
 
 Output: Invisible rut: you've optimized your life to minimize friction, which has eliminated the serendipity that used to make you feel alive. The disruption: take your laptop to a different neighborhood every Friday afternoon. Go somewhere inconvenient. Don't open Slack for the first 30 minutes. The friction you'll feel: 'This is inefficient.' That feeling is the signal.
 
+### Decision Prism
+
+URL: https://deftbrain.com/DecisionPrism
+Tagline: See a tough decision from every angle
+Categories: What If?, Veer
+
+Stuck between choices? Describe the decision, your options, and what matters to you. Decision Prism looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.
+
+**What it does.** Decision Prism runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't guess what you secretly want or predict how you'll feel. It shows you angles and unknowns you're missing, using only what you actually tell it.
+
+**How to use it.**
+
+1. Describe the decision and what's making it hard
+2. Name the options you're actually considering
+3. Select the values this decision touches
+4. Tell us what's making this hard — this shapes which considerations get surfaced
+5. Review the per-option analysis, comparison matrix, and what's still unknown
+
+**Tips.**
+
+- The more context you provide, the sharper the analysis — but it will never invent facts you didn't give it
+- Decision Prism only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it
+- The 'Still Stuck' exercises (coin-flip reaction, future-self exercise, smallest step) are genuinely effective — try them
+- Use the comparison matrix to have structured conversations with people you trust
+
+**Example.**
+
+Input: You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.
+
+Output: Decision Prism offers a reframing question underneath the decision, runs each option through a pre-mortem, opportunity cost, reversibility, and values fit, shows a qualitative comparison matrix, summarizes what your own description actually established, flags what you still don't know, and lays out what the current facts favor versus what remains unresolved — without inventing how you'll feel or what anyone else will do.
+
 ### Fan Theory
 
 URL: https://deftbrain.com/FanTheory
@@ -4001,37 +4032,6 @@ Create a wild but defensible fan theory about any movie, show, book, or game—o
 Input: Title: 'Toy Story'. Direction: Secret Villain.
 
 Output: Theory: Andy's Mom is actually the true villain — she systematically downsizes the toys' living space across all four films, moving them from a house to smaller and smaller rooms. Evidence: she sells the house (Toy Story 3), repeatedly threatens yard sales, and never once acknowledges the toys' sentience despite clearly seeing them move. Plausibility: 3/10. Mind-blown: 7/10.
-
-### Plot Twist
-
-URL: https://deftbrain.com/PlotTwist
-Tagline: See every angle of a tough decision — then decide with clarity
-Categories: What If?, Veer
-
-Describe any decision you're stuck on and get it analyzed through 6 decision frameworks: pre-mortem, 10/10/10, opportunity cost, reversibility check, values alignment, and the real-question-beneath-the-question. Includes a comparison matrix, gut check reading, stuck pattern diagnosis, and exercises for when you're still frozen.
-
-**What it does.** Plot Twist runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't tell you what to decide. It shows you angles you're missing so the answer becomes obvious to you.
-
-**How to use it.**
-
-1. Describe the decision and what's making it hard
-2. Name your options (we'll add 'do nothing' automatically)
-3. Select the values this decision touches
-4. Tell us why you're stuck — this helps identify your blind spot
-5. Review the framework analysis, comparison matrix, and gut check
-
-**Tips.**
-
-- The more context you provide, the sharper the gut check reading becomes
-- If you only have one option in mind, the tool automatically analyzes it against the status quo
-- The 'Still Stuck' exercises (coin flip test, future letter, smallest step) are genuinely effective — try them
-- Use the comparison matrix to have structured conversations with people you trust
-
-**Example.**
-
-Input: You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.
-
-Output: Plot Twist reveals the real question ('Am I allowed to choose growth over comfort?'), identifies fear-of-regret as the stuck pattern, shows the new job scores higher on 10-year impact but lower on reversibility, provides a comparison matrix, and delivers a gut check based on how you described the situation.
 
 ### Which Life?
 

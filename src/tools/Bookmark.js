@@ -573,7 +573,7 @@ const Bookmark = ({ tool }) => {
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('bk_related_tools')}</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
             {(results?.media_type === 'show' || results?.media_type === 'game') && (
-              <p>{t('bk_xref_plottwist_pre')} <a href="/PlotTwist" className={linkStyle}>{t('bk_xref_plottwist_link')}</a> {t('bk_xref_plottwist_post')}</p>
+              <p>{t('bk_xref_plottwist_pre')} <a href="/DecisionPrism" className={linkStyle}>{t('bk_xref_plottwist_link')}</a> {t('bk_xref_plottwist_post')}</p>
             )}
             <p>{t('bk_xref_decoder_pre')} <a href="/DecoderRing" className={linkStyle}>{t('bk_xref_decoder_link')}</a> {t('bk_xref_decoder_post')}</p>
           </div>
@@ -625,7 +625,7 @@ const Bookmark = ({ tool }) => {
       {!results && (
         <p className={'text-xs text-center ' + c.textMuted}>
           {t('bk_hint_pre')}{' '}
-          <a href="/PlotTwist" className={linkStyle}>{t('bk_hint_link')}</a>{' '}
+          <a href="/DecisionPrism" className={linkStyle}>{t('bk_hint_link')}</a>{' '}
           {t('bk_hint_post')}
         </p>
       )}

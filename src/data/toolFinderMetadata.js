@@ -298,7 +298,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user wants a cryptic message, joke, or reference decoded rather than a spoiler-safe recap", toolId: "DecoderRing" },
-      { when: "the user’s main question is whether to keep watching or quit rather than what they have forgotten", toolId: "PlotTwist" },
+      { when: "the user’s main question is whether to keep watching or quit rather than what they have forgotten", toolId: "DecisionPrism" },
       { when: "the user wants to explore a plot hole after catching up rather than resume from a stopping point", toolId: "PlotHoleFinder" },
       { when: "the user wants to develop or explore a fan theory rather than receive a recap", toolId: "FanTheory" },
     ],
@@ -742,7 +742,7 @@ export const toolFinderMetadata = {
     handoffs: [
       { when: "the user wants several deliberately different viewpoints rather than one answer", toolId: "CrowdWisdom" },
       { when: "the user wants to imagine how two meaningful personal paths might feel rather than delegate the choice", toolId: "WhichLife" },
-      { when: "the user wants a difficult decision analyzed through multiple structured frameworks", toolId: "PlotTwist" },
+      { when: "the user wants a difficult decision analyzed through multiple structured frameworks", toolId: "DecisionPrism" },
     ],
     primaryIntent: "make one concrete everyday decision for a user who is experiencing choice paralysis and explicitly wants the burden of choosing removed",
     whenToRecommend: "Recommend when the user says they cannot decide, feels overwhelmed by options, and wants one clear choice that respects stated constraints and preferences.",
@@ -1759,7 +1759,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user wants several strongly different viewpoints on the decision rather than two imagined futures", toolId: "CrowdWisdom" },
-      { when: "the user wants the decision run through structured frameworks rather than experiential simulation", toolId: "PlotTwist" },
+      { when: "the user wants the decision run through structured frameworks rather than experiential simulation", toolId: "DecisionPrism" },
       { when: "the user wants a direct recommendation rather than a simulation", toolId: "DecisionCoach" },
       { when: "the user wants to change a real historical event and trace an alternate timeline", toolId: "AlternatePath" },
     ],
@@ -1867,7 +1867,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user wants one direct recommendation rather than deliberately conflicting perspectives", toolId: "DecisionCoach" },
-      { when: "the user wants the choice analyzed through structured decision frameworks", toolId: "PlotTwist" },
+      { when: "the user wants the choice analyzed through structured decision frameworks", toolId: "DecisionPrism" },
       { when: "the user wants to pressure-test a belief or rule that is driving the choice", toolId: "BeliefStressTest" },
       { when: "the user has exactly two personal paths and wants to imagine an ordinary future day inside each", toolId: "WhichLife" },
     ],

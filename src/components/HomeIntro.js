@@ -215,7 +215,7 @@ const STORIES = [
 
 const CURIOUS = [
   { id: 'WrongAnswersOnly', name: 'Wrong Answers Only', blurb: 'Confidently, beautifully incorrect' },
-  { id: 'PlotTwist',        name: 'Plot Twist',         blurb: 'See every angle of a decision' },
+  { id: 'DecisionPrism',    name: 'Decision Prism',     blurb: 'See a tough decision from every angle' },
   { id: 'AnalogyEngine',    name: 'Analogy Engine',     blurb: 'Explain anything, using their world' },
 ];
 

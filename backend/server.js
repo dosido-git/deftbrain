@@ -244,7 +244,7 @@ const TOOL_IDS = [
   'JustifyMyMeeting','MeetingHijackStopper','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
-  'PlantRescue','PlotHoleFinder','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
+  'PlantRescue','PlotHoleFinder','DecisionPrism','PreMortem','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
@@ -277,6 +277,9 @@ const LEGACY_REDIRECTS = {
   '/PlotHole':                 '/PlotHoleFinder',  // renamed 2026-09-06
   '/plothole':                 '/PlotHoleFinder',
   '/plot-hole':                '/PlotHoleFinder',
+  '/PlotTwist':                '/DecisionPrism',  // renamed 2026-09-06
+  '/plottwist':                '/DecisionPrism',
+  '/plot-twist':               '/DecisionPrism',
   '/PetWeirdnessDecoder':      '/PetBehaviorDecoder',  // renamed 2026-09-06
   '/petweirdnessdecoder':      '/PetBehaviorDecoder',
   '/pet-weirdness-decoder':    '/PetBehaviorDecoder',

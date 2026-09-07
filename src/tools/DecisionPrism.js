@@ -71,7 +71,7 @@ const RATING_KEY = {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const PlotTwist = ({ tool }) => {
+const DecisionPrism = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -277,7 +277,7 @@ const PlotTwist = ({ tool }) => {
   submitRef.current    = analyze;
   canSubmitRef.current = !!decision.trim() && !loading;
 
-  useRegisterActions(buildFullCopy(), tool?.title || 'Plot Twist');
+  useRegisterActions(buildFullCopy(), tool?.title || 'Decision Prism');
 
   // ── Scroll to results ──
   useEffect(() => {
@@ -774,5 +774,5 @@ const PlotTwist = ({ tool }) => {
   );
 };
 
-PlotTwist.displayName = 'PlotTwist';
-export default PlotTwist;
+DecisionPrism.displayName = 'DecisionPrism';
+export default DecisionPrism;
