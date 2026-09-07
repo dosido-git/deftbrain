@@ -19,6 +19,13 @@ const anthropic = new Anthropic({
   maxRetries: 1,
 });
 
+// Where a per-request suffix starts inside the composed system string — the
+// literal openers withLanguage/withLocaleContext below use. Everything from
+// here on (language, then locale) varies per visitor and must sit AFTER the
+// cache breakpoint; everything before it is identical across every call to
+// the same tool and belongs INSIDE the cache.
+const VOLATILE_SUFFIX_RE = /\n\nLANGUAGE: Respond entirely in|\n\nLOCALE CONTEXT: The user is in/;
+
 // Every model call in the product passes through here. See lib/epistemics.js.
 // options.epistemicLabel identifies the tool for the (deliberately tiny)
 // exemption list; absent, the rules always apply, which is the safe default.
@@ -27,10 +34,30 @@ anthropic.messages.create = function (params, ...rest) {
   if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
   const label = params.epistemicLabel;
   const { epistemicLabel, ...clean } = params;
+  const rawSystem = typeof clean.system === 'string' ? clean.system : undefined;
+  // Split off the per-visitor suffix (language/locale) BEFORE the universal
+  // and per-tool prompt text is assembled, so the cache breakpoint lands
+  // right after the last byte that's identical across every call to this
+  // tool. An English/US visitor has no suffix at all — the whole thing caches.
+  const marker = rawSystem ? rawSystem.search(VOLATILE_SUFFIX_RE) : -1;
+  const stablePart = marker === -1 ? rawSystem : rawSystem.slice(0, marker);
+  const volatilePart = marker === -1 ? '' : rawSystem.slice(marker);
   // Two layers, outermost last: the epistemic contract is universal and sits on
   // top as the stable cacheable prefix; the v2 output standard sits under it and
   // applies only to routes that declared it. See lib/outputStandard.js.
-  const system = withEpistemics(withOutputStandard(clean.system), label);
+  const stableText = withEpistemics(withOutputStandard(stablePart), label) || ' ';
+  // system as an array of blocks, not a string: this is what makes the block
+  // eligible for Anthropic prompt caching. cache_control on the stable block
+  // tells the API to cache everything up to and including it; the volatile
+  // suffix (if any) rides uncached in a second block. Below the provider's
+  // per-model minimum (1024 tokens on Sonnet/Opus, 2048 on Haiku) this is a
+  // silent no-op — never an error — so it's always safe to mark. Verified live
+  // 2026-09-07: a repeat call with an unchanged stable block read the cache at
+  // ~10% of the normal input-token cost instead of paying full price again.
+  const system = [
+    { type: 'text', text: stableText, cache_control: { type: 'ephemeral' } },
+    ...(volatilePart ? [{ type: 'text', text: volatilePart }] : []),
+  ];
   return _rawMessagesCreate({ ...clean, system }, ...rest);
 };
 
@@ -42,8 +69,9 @@ anthropic.messages.create = function (params, ...rest) {
 // both the callClaudeWithRetry path and the ~31 routes that call
 // anthropic.messages.create directly — shares THIS one client, so wrapping
 // create() here injects today's date into every request with no per-route
-// change. `system` is always a plain string in this codebase (no array /
-// cache_control form), so a simple prepend is safe.
+// change. This runs BEFORE the override above, so `system` here is always
+// still the plain string a route built — the array/cache_control form is
+// assembled once, downstream of this prepend.
 const _messagesCreate = anthropic.messages.create.bind(anthropic.messages);
 anthropic.messages.create = function (params, ...rest) {
   const today = new Date().toLocaleDateString('en-US', {
@@ -339,6 +367,12 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
     try {
       message = await anthropic.messages.create(requestParams);
       noteApiOutcome(null);
+      // Visible only once caching actually activates (see the create() override
+      // above) — silent before then, so this doesn't add noise to every call.
+      const u = message.usage || {};
+      if (u.cache_read_input_tokens || u.cache_creation_input_tokens) {
+        console.log(`[${label}] cache: wrote=${u.cache_creation_input_tokens || 0} read=${u.cache_read_input_tokens || 0} (in=${u.input_tokens || 0} out=${u.output_tokens || 0})`);
+      }
     } catch (err) {
       // API/network error (429, 5xx, overload) — transient, worth retrying.
       // A 401/403/credit-exhausted is not: it is recorded so /api/health can
