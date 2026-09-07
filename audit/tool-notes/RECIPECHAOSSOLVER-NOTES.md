@@ -40,6 +40,30 @@ and short 3-col stat tiles — no overflow/crush). Fully localized (`rcs_*`, 13 
 verified). The PF-2 `c.textMuteded`/`c.label` aliases exist (had non-canonical double-space that
 the audit's literal matcher missed — normalized to single-space so the frontend audit is CLEAN).
 
+## 2026-09-07 — recipe-invention fix + output-standard review
+
+**Bug fixed:** the model was silently inventing a complete recipe (flour,
+sugar, leavening, oven temp, bake time) from just a dish name ("chocolate chip
+cookies") instead of treating the visitor's own recipe as the source of truth.
+Added a shared `PRESERVE_THE_RECIPE` rule (backend/routes/recipe-chaos-solver.js)
+to rescue/swap/multi-swap/scale: give substitution amounts as rules relative to
+the visitor's own recipe, never restate untouched ingredients/temps/times,
+never borrow a mechanism from the original ingredient (egg biology applied to
+a flax substitute), never state a total time that wasn't established. Also
+tightened `recipes[].time` to a short duration/addition instead of a sentence
+that could assert an invented, internally-inconsistent total. Verified live.
+
+**Output-standard review (opening this file for the first time since v2
+existed):** deliberately added to `FROZEN_V1` rather than declared v2 — see
+the comment in `backend/lib/outputStandard.js`. Reason: `success_probability`
+(top-level and per-recipe) trips the schema-congruence check as false
+precision, correctly. Removing it is a real fix but a separate, larger one —
+it's the main result-card visual and needs a frontend change alongside the
+schema change. Flagged to the owner as a candidate for a fuller rewrite
+(dropping success_probability/difficulty scoring, and possibly the Wins/
+Saved/History/Multi gamification surface, per owner feedback the same day)
+rather than bundled into this fix.
+
 ## Gotchas
 - **Backend rate limit = 4 req/min.** `check:golden` runs the 3 cases sequentially and fits.
 - **Golden robustness:** `ingredients_not_used` is a naturally-variable optional array — it's set

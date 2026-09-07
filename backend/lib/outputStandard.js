@@ -214,6 +214,20 @@ describe these checks in the output.
 // enforced by its own prompt discipline (reading_status/needs_context/
 // variants), verified live against the real endpoint — see
 // audit/tool-notes/PRONOUNCEITRIGHT-NOTES.md.
+// 'recipe-chaos-solver' opened 2026-09-07 to fix a real bug (the model was
+// inventing full recipes — flour/sugar/leavening/oven temp/bake time — from
+// just a dish name) and DELIBERATELY KEPT here rather than converted. Its
+// schema still carries success_probability (top-level and per-recipe) and
+// swap-quality-style fields the schema-congruence check (§3c in
+// scripts/output-standard-audit.js) correctly reads as false precision — a
+// number the model cannot actually have measured for a rescue it has never
+// tried. Removing that scoring architecture is a real fix but a separate,
+// larger one: it's rendered as the main result-card visual across all three
+// affected endpoints and needs a frontend change alongside the schema change,
+// not a same-day bundle with the recipe-invention fix. Today's fix (the
+// PRESERVE_THE_RECIPE rule, shared across rescue/swap/multi-swap/scale) is
+// enforced by prompt discipline directly, verified live — see
+// audit/tool-notes/RECIPECHAOSSOLVER-NOTES.md.
 const FROZEN_V1 = new Set([
   'alternate-path', 'analogy-engine', 'apology-calibrator', 'argue-better',
   'awkward-silence-filler', 'batch-flow', 'belief-stress-test', 'bike-medic',
@@ -224,7 +238,8 @@ const FROZEN_V1 = new Set([
   'doctor-visit-translator', 'fake-review-detective', 'final-wish',
   'ghost-writer', 'history-today', 'layover-maximizer', 'lease-trap-detector',
   'markup-detective', 'mental-health-navigator', 'mise-en-place', 'name-storm',
-  'plain-talk', 'procedure-probe', 'pronounce-it-right', 'renters-deposit-saver',
+  'plain-talk', 'procedure-probe', 'pronounce-it-right', 'recipe-chaos-solver',
+  'renters-deposit-saver',
   'roast-me', 'rulebook-breaker', 'six-degrees-of-me', 'the-alibi',
   'the-debrief', 'the-gap', 'tip-of-tongue', 'tool-finder',
   'virtual-body-double', 'waiting-mode-liberator', 'wrong-answers-only',
