@@ -164,7 +164,9 @@ Return ONLY valid JSON:
   "my_read": { "label": "WORTH ONE MORE TRY|PROBABLY WINDING DOWN|NOT ENOUGH TO TELL", "explanation": "grounded in whatever specific detail the visitor supplied — one sentence" },
   "if_you_try_again": { "say": "an exact line", "why_it_might_help": "one sentence" },
   "if_you_let_it_wind_down": { "say": "an exact line", "why_thats_fine": "one sentence" }
-}`);
+}
+
+my_read.label MUST be copied character-for-character as exactly one of the three English options above, even when the rest of the response is in another language — it is a code value the UI switches on, not display text. Never paraphrase it, add words to it, or invent a fourth option.`);
 
 const RECOVER_SYSTEM = section(`RIGHT NOW — I SAID SOMETHING AWKWARD
 
@@ -177,7 +179,9 @@ Return ONLY valid JSON:
   "say_this_now": "an exact line, or an empty string if the best move is to just keep going",
   "or_just_keep_going": "one sentence — why moving on may be the better option here",
   "if_they_reacted_badly": "one sentence — an observable-consequence-based option, not a guess at their internal state"
-}`);
+}
+
+do_you_need_to_fix_it.answer MUST be copied character-for-character as exactly one of the three English options above, even when the rest of the response is in another language — it is a code value the UI switches on, not display text. Never paraphrase it, add words to it, or invent a fourth option.`);
 
 const EXIT_SYSTEM = section(`RIGHT NOW — I NEED TO LEAVE
 
@@ -205,7 +209,7 @@ Return ONLY valid JSON:
   "what_to_do_now": "one practical next step — one sentence"
 }
 
-my_read.label MUST be exactly one of the three English options above even in another language — it is a code value the UI switches on, not display text.`);
+my_read.label MUST be copied character-for-character as exactly one of the three English options above, even when the rest of the response is in another language — it is a code value the UI switches on, not display text. Never paraphrase it, add words to it, or invent a fourth option.`);
 
 const DEPTH_SYSTEM = section(`DECODE — SHOULD I GO DEEPER OR BACK OFF?
 
@@ -220,7 +224,7 @@ Return ONLY valid JSON:
   "if_you_keep_it_light": { "say": "one sentence" }
 }
 
-my_read.label MUST be exactly one of the three English options above even in another language.`);
+my_read.label MUST be copied character-for-character as exactly one of the three English options above, even when the rest of the response is in another language. Never paraphrase it, add words to it, or invent a fourth option.`);
 
 const DEBRIEF_SYSTEM = section(`AFTERWARD — HELP ME DEBRIEF
 

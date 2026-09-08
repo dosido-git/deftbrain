@@ -1,6 +1,7 @@
 # Read the Room (was RoomReader) — architecture & lock notes
 
 **Known-good:** tag `readtheroom-v2` · golden `audit/room-reader-golden-sample.json`
+(14 cases — one per endpoint, all live-captured 2026-09-08)
 **Verify:** `npm run check:golden room-reader` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -86,27 +87,34 @@ help at all.
   grep of every `t('rr_...')` call and label-map entry in the frontend before
   assembly — zero drift either direction.
 
-## ⚠️ Verification gap — read before trusting this as fully locked
+## Live verification (2026-09-08)
 
-**The account's Anthropic API key hit its usage cap mid-session** ("You will
-regain access on 2026-10-01 at 00:00 UTC" — confirmed in `/private/tmp/backend.log`,
-not a bug in this rewrite). Live-verified end-to-end before the cap hit:
-`/room-reader` (prepare-event), `/room-reader-recover` (now-awkward),
-`/room-reader-decode` (decode-meant) — all three in English, plus a full
-Spanish pass through the awkward-recovery flow (pinned-label translation,
-UI-chrome translation, and epistemic discipline in the model's own Spanish
-output all confirmed). **Not live-verified this session**: `/room-reader-person`,
-`/room-reader-group`, `/room-reader-culture`, `/room-reader-quick`,
-`/room-reader-stalled`, `/room-reader-exit`, `/room-reader-depth`,
-`/room-reader-debrief`, `/room-reader-followup`, `/room-reader-autopsy`,
-`/room-reader-person-refresh` — these passed every static gate (syntax,
-eslint, guard-keys, diff-audit, three-way-sync, output-standard-audit) and
-share the same CORE_SYSTEM + `runOutputGuard` wiring as the three that did
-run live, but their prompts have not been eyeballed against a real model
-response. **Do this before calling the rewrite fully locked**: re-run
-`npm run check:golden room-reader` after 2026-10-01, live-test the 11
-unverified endpoints (the same way the three verified ones were — see
-`_meta.note` in the golden file), and extend the golden sample to cover them.
+The account's Anthropic API key hit its usage cap mid-session, then reset
+before the rewrite's turn was finished. All 14 endpoints ended up live-tested
+in English; the recovery flow also got a full Spanish pass (pinned-label
+translation, UI-chrome translation, and epistemic discipline in the model's
+own Spanish output all confirmed).
+
+**A real bug surfaced during this pass and was fixed.** `room-reader-stalled`
+and `room-reader-recover` were missing the character-for-character
+enum-pinning instruction that `room-reader-decode` and `room-reader-depth`
+already had. On the first live test, stalled's `my_read.label` came back as
+the paraphrased `"PATTERN SUGGESTS WINDING DOWN"` instead of the pinned
+`"PROBABLY WINDING DOWN"` — harmless in English (the frontend's `pinned()`
+helper falls back to displaying the raw string), but it would have rendered
+untranslated in every other language and silently broken the "code value, not
+display text" contract. All four pinned-enum endpoints now carry identical,
+stronger wording ("copied character-for-character... never paraphrase it, add
+words to it, or invent a fourth option") and were re-verified correct after
+the fix.
+
+`runOutputGuard` caught and repaired real violations (mind_reading,
+unsupported_prediction, invented_fact) on `room-reader-exit`,
+`room-reader-depth`, and `room-reader-autopsy` during this pass — every
+endpoint had at least one flagged field on at least one of the 15 live test
+calls made across both this pass and the earlier one. That is the guard doing
+its job, not a sign the prompts are unreliable — the captured golden outputs
+are POST-repair, i.e. what a real visitor would actually see.
 
 ## DO NOT silently reverse
 

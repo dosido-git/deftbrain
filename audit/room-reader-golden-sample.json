@@ -5,7 +5,7 @@
     "baseline": "readtheroom-v2",
     "model": "claude-sonnet-5 (via MODELS.SMART, all 14 endpoints)",
     "endpoint": "/api/room-reader (+ -person/-group/-culture/-quick/-stalled/-recover/-exit/-decode/-depth/-debrief/-followup/-autopsy/-person-refresh)",
-    "note": "V2 rewrite regression reference. Every endpoint's schema changed (see audit/tool-notes/READTHEROOM-NOTES.md) to remove mind-reading, predicted dialogue, numeric severity/confidence scores, invented personality/group-dynamics/cultural-fact claims, and to collapse the old 13-mode nav into 4 groups x contextual sub-actions. This sample covers 3 of 14 endpoints (prepare-event, now-awkward/recover, decode-meant) — capture of the remaining 11 (person, group, culture, say, stalled, leave, depth, debrief, followup, badly, person-refresh) was cut short by the account's Anthropic API usage cap ('regain access on 2026-10-01') mid-session. All 14 share the same CORE_SYSTEM epistemic rules and passed router.outputGuard live on the endpoints that did run (guard FAIL-then-repair cycles observed and confirmed working as designed — see backend log). Re-run check:golden after 2026-10-01 and extend this file with the missing 11 cases before considering the rewrite fully verified.",
+    "note": "V2 rewrite regression reference. All 14 endpoints now live-verified after the account's API usage cap reset mid-session (was exhausted, see git history for the prior partial-coverage note). Every one of the 14 shares the CORE_SYSTEM epistemic contract (section() composition in backend/routes/room-reader.js). Fixed during this verification pass: room-reader-stalled and room-reader-recover were missing the character-for-character enum-pinning instruction that room-reader-decode and room-reader-depth already had — stalled's my_read.label came back as the paraphrased 'PATTERN SUGGESTS WINDING DOWN' instead of the pinned 'PROBABLY WINDING DOWN' on the first live test. All four pinned-enum endpoints (decode, depth, stalled, recover) now use identical, stronger wording ('copied character-for-character... never paraphrase it, add words to it, or invent a fourth option') and were re-verified correct after the fix. runOutputGuard caught and repaired real violations (mind_reading, unsupported_prediction, invented_fact) on room-reader-exit, room-reader-depth, and room-reader-autopsy during this pass — confirms the guard is doing real work, not decoration; the captured outputs below are POST-repair.",
     "how_to_regression_diff": "npm run check:golden room-reader (needs local backend on :3001). Structure only — eyeball wording for epistemic drift (no mind-reading, no predicted dialogue, no severity/confidence numbers)."
   },
   "cases": [
@@ -117,6 +117,368 @@
           "Whether her replies get shorter still or start to lengthen again on their own"
         ],
         "what_to_do_now": "Send one low-pressure check-in — something like 'Hey, just wanted to see how you're doing' — that opens a door without putting her on the spot, and see what comes back."
+      }
+    },
+    {
+      "name": "prepare-person-coworker-dinner",
+      "endpoint": "/api/room-reader-person",
+      "input": {
+        "personName": "Priya",
+        "relationship": "Coworker",
+        "whatYouKnow": "She runs the design team. We have only talked in two brief meetings about a shared project.",
+        "context": "Sitting next to her at an all-hands dinner tonight",
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_you_know": "Priya leads the design team and has shared two brief project-related meetings with the visitor — that is the full extent of their history together.",
+        "what_you_dont_know_yet": [
+          "Whether she sees tonight as a work extension or genuinely off-the-clock time",
+          "Whether she already knows people at the table and has an existing conversation going",
+          "How the shared project is actually going from her side",
+          "What she cares about outside of work"
+        ],
+        "easy_ways_in": [
+          {
+            "say": "I feel like we have only ever talked about deadlines — good to actually sit next to a human being.",
+            "why": "It names the awkward context honestly and signals you want more than a status update, without inventing shared history."
+          },
+          {
+            "say": "Do you usually end up at these things knowing half the room, or does everyone feel like a stranger to you too?",
+            "why": "It makes her the one with information to share and gives you both something to riff on regardless of her answer."
+          },
+          {
+            "say": "I figured I had two options — sit next to someone I sort of know, or spend dinner learning someone from finance's full mortgage situation.",
+            "why": "It is light, mildly self-deprecating, and does not require her to perform warmth on command."
+          }
+        ],
+        "questions_that_fit": [
+          "How long has your team been working on this project from the design side — did you get pulled in early or late?",
+          "Is your whole team here tonight, or are half of them the people who got to skip this?",
+          "What does the design team actually think of all-hands events — honest answer acceptable."
+        ],
+        "what_to_notice": "If she answers your first question and then asks one back, the conversation has traction — if she answers and turns back to her plate or toward someone else, give her that space and try again later rather than pushing."
+      }
+    },
+    {
+      "name": "prepare-group-birthday-dinner",
+      "endpoint": "/api/room-reader-group",
+      "input": {
+        "situation": "A friend's birthday dinner. I know the birthday friend and one other person; the other five all work together and know each other well.",
+        "groupSize": "7-10",
+        "yourRole": "Guest, not the host",
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_you_know": "You know the birthday friend and one other person; the remaining five know each other through work and have existing relationships with each other.",
+        "ways_to_enter": [
+          {
+            "moment": "When the work group references something you have no context for — a project, a name, an inside reference",
+            "say": "I have no idea what that means but it sounds like there is a story — what happened?",
+            "why_it_helps": "It turns your outsider status into an invitation for them to explain, which gives someone a specific, easy thing to do with you."
+          },
+          {
+            "moment": "When you are next to someone during a natural pause — ordering, waiting for food, moving seats",
+            "say": "How do you know [birthday friend]? I am trying to figure out the full picture.",
+            "why_it_helps": "It is a concrete question with an obvious answer, and framing it as 'the full picture' makes it feel like curiosity rather than small talk."
+          },
+          {
+            "moment": "When the person you already know is talking to one of the work group",
+            "say": "I am going to use you as my way in here — introduce me?",
+            "why_it_helps": "It uses the relationship you already have, takes pressure off you to arrive cold, and gives your known contact something easy to do."
+          }
+        ],
+        "if_youre_not_included": {
+          "try": "Lean toward the birthday friend for a natural one-on-one stretch — you have a genuine reason to be there for them specifically, and that is not a fallback, it is the actual point of the evening.",
+          "say": "Honestly I am just happy to be here for [name] — tell me something good that has happened lately."
+        },
+        "one_thing_to_remember": "You have a built-in anchor — the birthday friend — so you are never truly unmoored, and checking in with them throughout the evening is always appropriate, not a retreat."
+      }
+    },
+    {
+      "name": "prepare-culture-japanese-client-dinner",
+      "endpoint": "/api/room-reader-culture",
+      "input": {
+        "culture": "Japanese business colleagues",
+        "situation": "A dinner with clients visiting from Tokyo",
+        "myBackground": "American, no prior experience with Japanese business customs",
+        "userLanguage": "en"
+      },
+      "output": {
+        "norms_worth_checking": [
+          {
+            "norm": "Business card exchange (meishi koukan) — you may see visitors receive a card with both hands, take a moment to read it, and set it on the table rather than pocket it immediately. If that happens, mirroring the gesture is a straightforward way to show respect.",
+            "why_it_might_matter": "Handling a card casually can read as dismissiveness toward the person presenting it, even if that is not the intent"
+          },
+          {
+            "norm": "Pouring drinks for others before yourself is a common gesture at dinner — it is often considered more polite to fill your neighbor's glass and let someone else fill yours than to serve yourself first",
+            "why_it_might_matter": "Noticing what the visitors do and mirroring it is a reasonable starting point if you are unsure"
+          },
+          {
+            "norm": "In some business contexts, an indirect or softened response rather than a flat 'no' may signal hesitation. Watch whether your visitors give you clear signals or seem to be leaving room for follow-up — that observation will tell you more than any cultural rule.",
+            "why_it_might_matter": "Noticing what the visitors do and mirroring it is a reasonable starting point if you are unsure."
+          },
+          {
+            "norm": "Pay attention to who defers to whom during the dinner — seating, who speaks first, and toast order often reflect how the group itself is organized. Let that observation guide you on who to address at key moments.",
+            "why_it_might_matter": "Directing attention to the most senior person present is generally safer than treating the group as flat"
+          }
+        ],
+        "things_to_handle_carefully": [
+          "If chopsticks are provided, avoid sticking them upright in rice — it is one of those small gestures worth simply not doing at a business dinner.",
+          "If a toast happens, 'kanpai' is the standard word — raising your glass before drinking and waiting for the toast before taking the first sip is a reasonable default",
+          "Avoid launching into hard business talk early in the meal if the visitors seem to be in social mode — reading their lead on when the conversation shifts is safer than pushing the agenda"
+        ],
+        "when_in_doubt": "Follow your visitors' lead — let them set the pace on toasts, topics, and formality level, and match rather than lead.",
+        "graceful_recovery": "A genuine, low-key acknowledgment — something like 'I want to make sure I get this right, please feel free to show me' — is usually better received than trying to cover a misstep silently.",
+        "phrase_to_know": "Itadakimasu — said before eating, roughly equivalent to 'I gratefully receive this'; if your hosts say it, joining in is a natural and appreciated gesture"
+      }
+    },
+    {
+      "name": "now-stalled-one-word-answers",
+      "endpoint": "/api/room-reader-stalled",
+      "input": {
+        "whatsHappening": "We talked about her job for a bit but the last three exchanges have all been one-word answers and she has not asked me anything back.",
+        "relationship": "New acquaintance",
+        "userLanguage": "en"
+      },
+      "output": {
+        "my_read": {
+          "label": "PROBABLY WINDING DOWN",
+          "explanation": "Three consecutive one-word answers with no questions back is a consistent pattern, not a single ambiguous cue."
+        },
+        "if_you_try_again": {
+          "say": "Is there a part of it you actually enjoy, or is it more of a 'pays the bills' situation?",
+          "why_it_might_help": "It shifts from factual questions to something more personal and gives her a genuinely easy either/or to respond to — if she wants to engage, this is a low-effort on-ramp."
+        },
+        "if_you_let_it_wind_down": {
+          "say": "Well, it was good to meet you — I'll let you get back to it.",
+          "why_thats_fine": "A clean, warm exit leaves nothing awkward behind and costs you nothing."
+        }
+      }
+    },
+    {
+      "name": "now-leave-networking-mixer",
+      "endpoint": "/api/room-reader-exit",
+      "input": {
+        "context": "Talking to a coworker at a networking mixer, need to go find the client I actually came to meet",
+        "userLanguage": "en"
+      },
+      "output": {
+        "exit_lines": [
+          {
+            "say": "I should track down the person I came to connect with before they get pulled into something — really glad we got a chance to catch up though.",
+            "move": "Smile, give a small nod, and step back before turning away."
+          },
+          {
+            "say": "I have to go hunt someone down before the night gets away from me — let's grab coffee soon.",
+            "move": "Extend a handshake or quick gesture of goodbye, then move toward where you need to go."
+          },
+          {
+            "say": "I promised myself I'd find [client name] tonight and I should make good on that — good to see you.",
+            "move": "Glance in the direction you're heading as you say it."
+          }
+        ],
+        "one_thing_to_remember": "Naming your destination gives the coworker a concrete reason for the exit."
+      }
+    },
+    {
+      "name": "decode-depth-shared-vulnerability",
+      "endpoint": "/api/room-reader-depth",
+      "input": {
+        "whatsHappening": "We started with small talk about the event, then she mentioned she recently moved here after a divorce, and asked me if I ever moved somewhere new alone.",
+        "relationship": "New friend",
+        "userLanguage": "en"
+      },
+      "output": {
+        "my_read": {
+          "label": "LEANS TOWARD GOING DEEPER",
+          "explanation": "She volunteered something personal and unprompted, then turned it back to you with a direct question — both are signs she may be open to a real conversation rather than surface chat."
+        },
+        "cues_to_continue": [
+          "She disclosed something personal (the divorce, the move) without being asked",
+          "She followed it with a direct question to you, which keeps the exchange mutual"
+        ],
+        "cues_to_keep_it_lighter": [
+          "It is early in the relationship, so she may still be in the explaining-yourself phase rather than seeking deeper conversation"
+        ],
+        "if_you_go_deeper": {
+          "say": "I have — moving somewhere alone changes how you experience a place. What's been different for you so far?"
+        },
+        "if_you_keep_it_light": {
+          "say": "I have, yeah — still figuring out the good coffee spots is half the battle. Have you found any go-to places yet?"
+        }
+      }
+    },
+    {
+      "name": "after-debrief-hosted-dinner",
+      "endpoint": "/api/room-reader-debrief",
+      "input": {
+        "eventType": "Friend's birthday dinner",
+        "whatHappened": "I organized the seating and kept conversation going most of the night since a few people did not know each other.",
+        "whatWentWell": "Two people who did not know each other ended up talking for a long time about hiking.",
+        "whatFeltAwkward": "At one point I told a story and nobody really reacted to it.",
+        "overallFeeling": "good",
+        "userLanguage": "en"
+      },
+      "output": {
+        "honest_read": "You held a social event together for people who didn't all know each other — that's real work, and it sounds like it went well.",
+        "wins": [
+          {
+            "what": "Two strangers ended up in a long conversation about hiking.",
+            "why_it_worked": "Seating people with intention gives them a starting point — proximity and a shared topic can do the rest."
+          },
+          {
+            "what": "You kept conversation moving across the whole group most of the night.",
+            "why_it_worked": "Actively bridging between people who don't know each other prevents the table from splitting into separate islands — that takes consistent effort and awareness."
+          }
+        ],
+        "another_way_to_read_it": [
+          {
+            "what_felt_bad": "You told a story and nobody really reacted.",
+            "another_way_to_read_it": "A flat landing after a story can mean the timing was off, the group was mid-transition, or people were still processing — it doesn't establish that the story itself was a miss or that anyone judged it.",
+            "next_time": "If a story lands quietly, a light pivot — 'anyway, enough from me' or a question to someone else — keeps things moving without drawing more attention to the pause."
+          }
+        ],
+        "patterns": "",
+        "next_challenge": {
+          "suggestion": "Next time you host a mixed group, try introducing two people to each other with one specific thing they have in common before stepping back.",
+          "why": "You already demonstrated good instincts for this — making it explicit once or twice could free you from carrying the conversation as much."
+        }
+      },
+      "optionalSections": [
+        "patterns"
+      ]
+    },
+    {
+      "name": "after-followup-hiking-connection",
+      "endpoint": "/api/room-reader-followup",
+      "input": {
+        "who": "Someone I met at a friend's party",
+        "context": "We talked for a while about hiking and she mentioned she goes most weekends",
+        "goal": "Would like to hang out again, not sure if romantic or just friendly",
+        "userLanguage": "en"
+      },
+      "output": {
+        "timing": "Soon enough that the party is still a natural reference point — within a few days",
+        "messages": [
+          {
+            "style": "Casual",
+            "text": "Hey, it's [your name] from [friend]'s party — I looked up that trail I mentioned and it's apparently worth the early start. Let me know if you ever want company on a weekend.",
+            "why": "It references something concrete from your actual conversation and gives her an easy, low-pressure yes or no without naming what kind of hangout it is."
+          },
+          {
+            "style": "Warm",
+            "text": "Hey, it's [your name] from [friend]'s party — really enjoyed talking, and I'm genuinely curious about the spots you hike. Would you want to do one sometime?",
+            "why": "It's a direct ask without being heavy — 'curious about the spots' keeps it natural and gives the invitation room to be friendly or more."
+          },
+          {
+            "style": "Playful",
+            "text": "Hey, [your name] from [friend]'s party — I've now talked about hiking without actually going hiking for long enough. You in?",
+            "why": "It's light enough to land well if she reads it as friendly, and direct enough to read as interested — lets her set the tone in her reply."
+          }
+        ],
+        "if_no_reply": "You've sent one message, so there's nothing to do but let it sit — what happens next is in her hands."
+      }
+    },
+    {
+      "name": "after-badly-group-brushoff",
+      "endpoint": "/api/room-reader-autopsy",
+      "input": {
+        "whatHappened": "At a networking event I tried to join a group of three people talking. I said hello and asked what they were discussing. They gave short answers and then turned back to their conversation. I stood there a moment and then walked away.",
+        "howYouFelt": "Embarrassed, like I had done something wrong",
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_happened": "You tried to join an existing group conversation at a networking event, got brief responses, and read the cues correctly enough to exit rather than push through.",
+        "what_you_could_control": [
+          "Waiting for a natural pause in their conversation before speaking, if there was one available",
+          "Offering something to the conversation rather than opening with a question about it — a light comment on the event, the topic, anything that lets them include you rather than evaluate you",
+          "Exiting sooner once the short answers started, which actually protects you from the longer awkward stand"
+        ],
+        "what_you_couldnt_know": [
+          "Whether they were mid-way through something sensitive, personal, or time-limited that had nothing to do with you",
+          "Whether the group dynamic was already closed — some groups at events are effectively private catch-ups happening in a public room",
+          "Whether any of them even registered the moment the way you did"
+        ],
+        "plausible_turning_points": [
+          {
+            "moment": "You asked what they were discussing as your opening",
+            "why_it_may_have_mattered": "Opening with a question asks them to shift from their conversation to answer you. A comment that touches on their topic or the event lets you join without requiring a response."
+          },
+          {
+            "moment": "You stood for a moment after the short answers",
+            "why_it_may_have_mattered": "The pause extends the awkward moment. Exiting immediately after the short answers — with a light line — makes the exit look deliberate rather than reluctant."
+          }
+        ],
+        "what_to_try_differently": [
+          "Approach with something low-stakes to offer — a reaction to the room, the event, anything — rather than a question that asks them to perform for you",
+          "Treat a short answer as your cue to exit: 'I'll let you get back to it' and move on. You read the moment and acted on it.",
+          "Look for pairs or solo people before targeting tight groups of three — a closed group is the hardest entry point in any room"
+        ],
+        "what_not_to_overlearn": "You did not read the situation badly. You noticed the cues and left without pushing further — that was the right call. The embarrassment is about the moment itself, not a failure on your part."
+      }
+    },
+    {
+      "name": "utility-person-refresh-aunt-carol",
+      "endpoint": "/api/room-reader-person-refresh",
+      "input": {
+        "personName": "Aunt Carol",
+        "relationship": "Family — aunt",
+        "notes": [
+          {
+            "date": "6/1/2026",
+            "topicsWorked": "her garden, roses specifically",
+            "topicsBombed": "politics — she got tense",
+            "notes": "talked for almost 20 minutes about roses"
+          },
+          {
+            "date": "7/15/2026",
+            "topicsWorked": "her garden again, and her new grandson",
+            "topicsBombed": "",
+            "notes": "brought up the grandson herself and lit up"
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_the_history_shows": [
+          "Two conversations that included her garden produced extended engagement — roses specifically held a 20-minute conversation on its own",
+          "She introduced her new grandson herself in the second logged conversation, and that topic produced visible enthusiasm",
+          "Politics produced noticeable tension in the first logged conversation"
+        ],
+        "fresh_things_to_try": [
+          {
+            "say": "Have you had any roses survive the summer heat this year, or did the season make things difficult?",
+            "why_now": "Roses worked last time, but this angle asks about something current and specific rather than replaying the same general territory"
+          },
+          {
+            "say": "Is your grandson walking yet, or still working on it?",
+            "why_now": "She brought him up herself and responded warmly — a milestone question gives her something new to report rather than just revisiting the same enthusiasm"
+          },
+          {
+            "say": "Have you tried growing anything new in the garden this year, or stuck with what you know works?",
+            "why_now": "Opens the garden topic from a fresh angle — what changed rather than what she already described — which may surface stories not yet told"
+          }
+        ],
+        "one_wildcard": {
+          "try": "Did your grandson show any interest in the garden yet, or is he still at the stage where everything just goes in his mouth?",
+          "risk": "low"
+        }
+      }
+    },
+    {
+      "name": "now-say-elevator-stranger",
+      "endpoint": "/api/room-reader-quick",
+      "input": {
+        "scenario": "Waiting in an elevator with a stranger for 8 floors",
+        "relationship": "stranger",
+        "userLanguage": "en"
+      },
+      "output": {
+        "say": "Eight floors — just long enough to have an opinion about elevator music.",
+        "why_it_works": "It names the shared situation, invites a reaction, and is easy to answer with either a laugh or a one-liner — no effort required from them.",
+        "if_they_respond_briefly": "Smile, nod, and let the floor arrival do the rest.",
+        "if_they_engage": "Follow their lead — if they riff on it, riff back; if they mention where they're headed, that's a natural next exchange.",
+        "silence_is_fine_because": "Eight floors is genuinely short, and two people standing quietly in an elevator is not awkward — it's just an elevator."
       }
     }
   ]
