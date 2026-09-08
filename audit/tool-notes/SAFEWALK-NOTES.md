@@ -1,40 +1,171 @@
-# SafeWalk — architecture & lock notes (`safewalk-v1`)
+# Safe Walk — architecture & lock notes
 
-Personal-safety companion for walking alone: pre-walk route assessment (AI) + client-side walking tools (check-in timer, fake call, GPS share, two-tier emergency, flashlight, contacts). In `LOCALIZED_TOOLS`. **Frontend:** `src/tools/SafeWalk.js` (large — 2 tabs + several full-screen overlays). **Backend:** `backend/routes/safe-walk.js` (1 endpoint, 1 action). **Golden:** `audit/safe-walk-golden-sample.json` (3 cases). Verify: `npm run check:golden safe-walk` (needs local backend; ~50–60s/case due to web_search → ~3min for 3; rate limit ~12/min).
+**Known-good:** tag `safewalk-v4` · golden `audit/safe-walk-golden-sample.json`
+(3 cases, live-captured 2026-09-08 — see `_meta` for what each one proves).
+**Verify:** `npm run check:golden safe-walk` (backend up: `npm run dev:backend`).
 
-> **History:** a Jul-1 pass wrote a lock note but never landed the golden/tag (half-landed — see `deftbrain-audit-batch3-fixes`). This is the real lock: golden captured, 3/3 passing, tagged.
+## What it is
 
-## Shape
-- **1 endpoint `/api/safe-walk`, 1 action `assess`.** `claude-sonnet-4-6` + `web_search_20250305`, `max_tokens: 4000`, 3-attempt retry, `withLanguage` (no `withLocaleContext` — safety tool, no economics).
-- Output: `safety_overview{risk_level,summary,local_context}`, `watch_for[]{concern,detail,severity}`, `checklist[]{item,why,priority}`, `route_suggestions[]{suggestion,reasoning}`, `before_you_go{eta_message,reminders[]}`. Three-layer sync clean — every field renders; every UI input reaches the route.
-- Success guard keys on **always-present arrays** (`checklist` + `watch_for`) — no nullable-field false-500.
-- `<cite>` tags stripped **twice** (backend `stripCites` + frontend `stripCitesDeep`) — web_search wraps phrases in citation markup inside JSON strings.
+Two tabs: **Plan** (one AI-backed endpoint, `POST /api/safe-walk`
+`action: 'assess'`) and **Walking** (entirely on-device tools — a check-in
+reminder, a pretend call, a flashlight/screen-light, a location link, and a
+manual emergency panel — none of it calls the backend). Frontend
+`src/tools/SafeWalk.js`. Backend `backend/routes/safe-walk.js`.
 
-## Audit fixes locked here (2026-07-10)
-1. **🐛 Deterministic 500 on vague input.** Sub-minimal routes ("downtown"/"home") made the model answer in **prose** ("I need more information…") instead of JSON → `JSON.parse` failed all 3 retries → generic 500. Fixed two ways: (a) **system-prompt rule 12** + a user-prompt line force it to ALWAYS return the schema, never prose — if it wants detail it puts the ask inside `safety_overview.summary`; (b) a persistent `SyntaxError` now returns a **graceful 422** ("Add a bit more detail about your route…") instead of a bare 500. The `vague-guard` golden case locks this (must be 200 + full schema). *Mitigating: the frontend `isLocationComplete` gate already blocks this in the UI — but the endpoint is public and the model can break format on borderline input, so the fix matters for robustness.*
-2. **⚠️ Fragile emoji-strip in `optLabel`.** Old `t(label).replace(/^..\s/, '')` assumed "2-code-units + space"; it only worked because durations ("5-10 min") have no space at index 2. Replaced with: pass through if the label starts with `[A-Za-z0-9]`, else strip a leading `\S+\s+` token. Correct for astral emoji + variation selectors and RTL/CJK labels; durations pass through untouched.
-3. **Bumped `sessionHistory` cap 6 → 25.** "Recent routes" quick-reload; no cross-tool contract (unlike `fp-history`); well under the audit's ≤50 ceiling.
+## V2 rewrite (2026-09-08) — owner brief
 
-## Also verified (no change needed)
-- **Emergency number is locale-correct** (fixed in `b3ce451`): the always-visible call button uses `getEmergencyNumber(userRegion)` (911 US/CA, 112 EU, etc.) via `emergencyHref`, and `sw_call_911` interpolates `{{num}}` in all 13 languages. The **GB live test confirmed the AI text does not inject "911"** — the model stays general on emergency numbers. `locale-gb` golden case guards this.
-- **Mobile pass (375px): clean** on input, walking, and results views — no overflow, no crushed columns. Only <44px taps are app chrome + the shared FeedbackTap; only <16px inputs are the chrome locale `<select>`s. (Render-layer — not in the golden.)
-- **Localization:** all 4 layers hold (`withLanguage`; no economics; times via `toLocaleTimeString`; every string `t()`).
+The v1 tool promised more than it did in two separate ways, and the rewrite
+fixes both.
+
+**1. The AI planning side overclaimed certainty.** It assigned an overall
+`risk_level` (low/moderate/elevated/high) with no defensible basis, invented
+street conditions ("likely unlit, narrow, and not observable from the
+street"), inferred the visitor's personal state from an activity ("post-yoga
+low alertness"), and could fold a web-searched statistic into prose without a
+visible source. The Plan input also front-loaded a taxonomy — `AREA_OPTIONS`
+(well-lit / poorly-lit / campus / residential / downtown / industrial / park /
+garage) and `ROUTE_FEATURES` (underpass / park section / transit /
+construction / bar strip / cut-through) — that pushed the visitor to classify
+the area before the tool had any actual route information, and encouraged the
+model to treat a broad category as route-specific evidence.
+
+**2. The Walking tab's copy overclaimed what the on-device tools actually do.**
+It called itself a "check-in timer" that would auto-escalate to an alarm 30
+seconds after a missed check-in; called Share Location "GPS location sharing"
+when it only copies a Google Maps link to the clipboard; called the emergency
+panel "Alarm + SOS" and auto-started an alarm + 15-second countdown to an
+"escalated" tier the moment it opened, none of which contacts anyone or sends
+anything anywhere. For a safety tool, the gap between what the interface
+implies and what a local device does is a real problem, not a nitpick.
+
+**What changed — Plan:**
+
+- **Schema fully rewritten.** `what_matters{summary, known_factors[],
+  unknowns_that_matter[]}`, `before_you_go[]{action, why_here}` (no more
+  `essential|recommended|optional` priority — ordinary prep doesn't need to
+  sound mandatory), `route_choice{useful, guidance, basis}` (only populated
+  when the visitor actually described a choice between routes),
+  `watch_for[]{condition, if_it_happens}` (must be grounded in something
+  supplied or verified — no more predicted threats like "left-turning
+  vehicles are your second-highest risk"), `check_in_plan{worth_considering,
+  reason, message}`, `verified_local_info[]{fact, source_name,
+  source_date_or_status, source_url}` (a searched fact with no traceable
+  source is dropped, not stated as an uncited claim), `bottom_line`. **No
+  `risk_level` field anywhere** — the old low/moderate/elevated/high UI
+  color-coded box is gone entirely, not just relabeled. Guard:
+  `!parsed?.what_matters || !parsed?.bottom_line`.
+- **Input taxonomy removed.** `AREA_OPTIONS` and `ROUTE_FEATURES` pill grids
+  are gone. Replaced by one free-text field, "What do you already know about
+  the route?" (optional, with example bullets as placeholder text), plus the
+  existing "particular concerns" field. `TIME_OPTIONS` gained "Other";
+  `DURATION_OPTIONS` gained "Not sure."
+- **`router.outputStandard = 'v2'` + `runOutputGuard`** now wraps the assess
+  call, with a prohibit list drawn directly from the rewrite's REMOVE list
+  (overall risk score, unsourced street/crime claims, inferred personal
+  state, profiling, uncited searched facts, invented directions, instinct-as-
+  evidence, a feature described as monitoring when it isn't).
+- **`web_search` tool kept**, but scoped tighter: only for concrete official
+  facts (closures, detours, park hours) with source fields the visitor can
+  actually see, never for neighborhood danger/crime.
+
+**What changed — Walking:**
+
+- **Check-in timer → Check-In Reminder**, with copy stating plainly it "will
+  remind you on this device. It does not notify another person
+  automatically." **Automatic emergency escalation on missed check-in is
+  gone.** Timer expiry now shows a flat "Check In" prompt with three
+  buttons — I'm Okay / Give Me 5 More Minutes / Emergency Tools — and no
+  countdown to anything.
+- **Emergency panel rebuilt as a flat, manual toolset.** Opening it no longer
+  auto-starts the alarm, auto-grabs-and-reveals a countdown, or has an
+  "escalated" tier. Four explicit buttons: Call 911 (`tel:` link), Sound
+  Alarm (manual toggle — `toggleEmergencyAlarm`, replaces the old auto-fired
+  `createAlarm()` call), Copy Location, Copy Emergency Message. A location
+  fetch still runs quietly in the background so "Copy Location" is instant,
+  but nothing is transmitted until the visitor taps copy — see the
+  `openEmergencyTools` comment. The panel's own copy states outright: "Safe
+  Walk does not automatically contact emergency services or send your
+  location." Dropped the word "SOS" entirely — nothing here transmits an SOS
+  signal.
+- **Fake Call → Pretend Call**, with an always-visible disclosure line under
+  the tile ("Simulated call on this phone") rather than only being knowable
+  once the overlay is already ringing.
+- **Location tile is capability-honest.** If `navigator.share` exists, the
+  tile reads "Share My Location" and invokes the real native share sheet
+  (`navigator.share`); otherwise it reads "Copy My Location" / "Copy
+  Location" and only ever copies a map link to the clipboard. Never called
+  "GPS location sharing."
+- **Flashlight stays honest about hardware access.** On `getUserMedia` /
+  torch failure it falls back to a bright white screen and labels the state
+  "Screen Light" (`flashlightIsScreenOnly`), not a claim that the hardware
+  flashlight is on.
+- **Recent Routes demoted** from an always-visible panel to a collapsed
+  utility row (`🕐 Recent Routes (N)`) with two actions per entry: **View**
+  (shows the captured past plan exactly as captured, never re-labeled as
+  current) and **Use Again** (restores the inputs and runs a fresh
+  assessment — route conditions can change, so a stored AI result is never
+  silently reused as current). Persisted key bumped `safewalk-history` →
+  `safewalk-history-v2` since entries now also store the plan inputs
+  (`from`/`to`/`timeOfDay`/`walkDuration`/`routeKnowledge`/`concerns`), not
+  just a preview string and a result blob.
+- **Disclaimer rewritten** to state plainly what the tool does and doesn't
+  do, dropping "Always trust your instincts" as a standalone claim (intuition
+  is preserved as *permission to act*, not asserted as *evidence of actual
+  danger* — see the NO "TRUST YOUR INSTINCTS" section of the system prompt).
+
+**Catalog and i18n:** `src/data/tools.js` guide rewritten to describe the
+actual v2 behavior. 130 `sw_*` i18n keys across 13 languages — 80 kept
+verbatim (generic UI chrome unaffected by the rewrite), 50 new or reworded
+(including the disclaimer and the "Assess"-button copy, both retranslated
+into every language since their English meaning changed).
+
+## Live verification (2026-09-08)
+
+The account's Anthropic API key hit its usage cap mid-session and reset
+before this tool's turn was fully done — the assess prompt did get a full
+live pass. 4 test calls total; every one had at least one field flagged and
+repaired by `runOutputGuard` (self_explanation, invented_fact, mind_reading,
+unsupported_prediction, searched_fact_without_traceable_source,
+false_precision) — the 3 kept as golden cases show the POST-repair output a
+real visitor would see:
+
+- **A route with a stated lighting/route-choice concern** (Portland, tonight,
+  "main road is better lit than the park shortcut"): grounded route_choice
+  guidance tied to exactly what was said, plus a real `web_search` hit
+  surfaced as a fully-sourced `verified_local_info` entry (an actual PBOT
+  repaving-project page with a source name, status date, and URL).
+- **A short, plain daytime walk with nothing supplied**: `route_choice.useful`
+  and `check_in_plan.worth_considering` both correctly came back `false`
+  rather than padded with invented content — confirms "don't force
+  it" is actually followed, not just written into the prompt.
+- **An unfamiliar city, late night, an underpass mentioned on the map**
+  (Chicago): the underpass was treated as something to route around by
+  choice ("you don't need a reason to walk around it"), never asserted as
+  unsafe or unlit: two real, cited construction-project sources were
+  surfaced instead of an invented street condition.
+
+No overall risk score appeared in any of the 4 calls. Every static gate
+also passes (syntax, eslint, guard-keys, diff-audit, localization-audit,
+i18n-convention-audit, epistemics-audit, primer-audit, sitemap checks,
+check-renames, output-standard-audit, three-way-sync), and the on-device
+Walking-tab behavior (no API call needed) was verified directly in the
+browser in English and Spanish — check-in reminder copy, the four-button
+manual emergency panel with its disclaimer, and the pretend-call disclosure
+all confirmed rendering correctly.
 
 ## DO NOT silently reverse
-1. **Guard keys on `checklist` && `watch_for`** (top-level always-present arrays) — do not change to a nullable/nested field.
-2. **`max_tokens: 4000`** — the max-schema (+web_search) endpoint truncated at 2000. Do not lower.
-3. **Prompt rule 12** ("always return JSON, never prose") + the **422 graceful parse-fail** path — together they kill the vague-input 500 class.
-4. **Client-side emergency number** via `getEmergencyNumber(userRegion)` + `{{num}}` label interpolation — do NOT re-hardcode 911. *(Supersedes the old note's "tel:911" item.)*
-5. **`Try Example` uses real option IDs + gate-passing locations.** `loadExample` must set ids that exist in TIME/DURATION/AREA/ROUTE_FEATURES, and `from`/`to` that satisfy `isLocationComplete` (zip or ", XX" state) — else the pills render unselected and Assess stays disabled after "Try Example."
-6. **Enum values clean** — `risk_level`, `severity`, `priority` (frontend switches on them for color/badge). No length annotations.
-7. **`web_search` tool** — the value prop (real street/neighborhood knowledge); removing it guts the tool and is why latency is ~50–60s/assessment (expected, not a bug).
-8. **The double `<cite>` strip** (backend + frontend) — both needed.
-9. **Error-state input styling gated on `isDark`** (was hardcoded light `bg-red-50` in both themes).
 
-## Known / accepted (pre-existing `audit_v2` flags — NOT bugs for this tool class)
-10 baseline `audit_v2-3-2.py` flags; the diff-audit gate confirms edits add none. False-positives / deliberate for a full-screen safety app:
-- **S1.2 "root div sets background"** — the fake-call/emergency/flashlight overlays are legitimately `fixed inset-0` full-screen and MUST set their own background.
-- **S5.5 `tel:${primary.phone}` "missing leading slash"** — `tel:` is a URI scheme, not a relative href; no ghost URL. Same pattern the locked DriveHome uses.
-- **S1.4e `window.open`** — the "Open in Maps" walking-directions convenience, not a print bypass.
-- **S1.1 `btnPrimary` not cyan / `dangerText`/`dangerBg` keys** — emerald/red is the deliberate safety palette.
-- **PF-2 missing `c.textMuteded`/`c.label` aliases** — cosmetic alias-naming nits; not behavior.
+- No `risk_level` / overall safety score anywhere in the schema or the UI.
+- `verified_local_info` entries always carry `source_name` +
+  `source_date_or_status` + `source_url` — never fold a searched fact into
+  `what_matters` or another prose field without its source attached.
+- The emergency panel's alarm stays a manual toggle
+  (`toggleEmergencyAlarm`) — never wire it back to auto-start on open or on a
+  missed check-in.
+- Timer expiry stays a flat "Check In" prompt (I'm Okay / 5 more minutes /
+  Emergency Tools) with no countdown to an automatic escalation.
+- The location tile's label stays conditional on `navigator.share` actually
+  existing — never claim "Share" when the real behavior is clipboard-only.
+- "Recent Routes" stays collapsed by default with explicit View / Use Again
+  actions — never reuse a stored AI result as if it reflects current
+  conditions.

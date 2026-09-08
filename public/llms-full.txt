@@ -649,36 +649,35 @@ Output: Work It Out tab: a read on where the disagreement actually is (not who's
 ### Safe Walk
 
 URL: https://deftbrain.com/SafeWalk
-Tagline: Prepare smart, walk safe
+Tagline: A little preparation before you head out.
 Categories: The Grind
 
-AI safety coach for solo walks — assess your route before you go, then use the Walking tab for a check-in timer, convincing fake incoming call, GPS location sharing, and a one-tap emergency alarm.
+Walking somewhere alone? Tell Safe Walk where you're going, when, and anything you already know about the route. It helps you think through the walk before you leave, make a simple check-in plan, and keep useful tools close while you're on the way.
 
-**What it does.** SafeWalk helps you prepare for walks with an AI safety assessment tailored to your specific route, time of day, and area — then gives you real-time companion tools while you're walking. Plan tab: describe your walk, get watch-for items, a pre-walk checklist, route suggestions, and a copy-paste ETA message. Walking tab: check-in timer with auto-escalation, fake incoming call (with ringtone and vibration), flashlight, GPS location sharing, and emergency alarm. Add emergency contacts in settings for personalized alerts.
+**What it does.** Safe Walk has two tabs. Plan takes what you actually know about a walk — the route, when, how long, anything you've noticed about it — and turns that into a practical plan: what matters, a short before-you-go list, a route choice if you described one, and a check-in message if the walk calls for one. It never assigns an overall safety score and never invents lighting, foot traffic, or crime information it doesn't have. Walking is a set of on-device tools for the walk itself: a check-in reminder (local to this device — it does not notify anyone automatically), a pretend call to create a reason to step away, a flashlight or screen light, a location link you copy or share yourself, and emergency tools you operate manually (call emergency services, sound an alarm, copy your location, copy an emergency message).
 
 **How to use it.**
 
-1. PLAN TAB: Describe your route, select time of day, area type, and duration. Add any specific concerns. Tap 'Assess My Walk' for a personalized safety briefing.
-2. Review the checklist and check off items as you prepare. Copy the ETA message and text it to someone.
-3. WALKING TAB: Set a check-in timer for your expected walk duration. When it expires, tap 'I'm Safe' or get help.
-4. Use Fake Call if you want to look occupied or need an excuse to change direction — it generates a realistic incoming call with ringtone.
-5. Use Share Location to copy your GPS coordinates and ETA into a text message with one tap.
-6. SETTINGS: Add emergency contacts — your primary contact's name appears on fake calls.
+1. PLAN: Enter where you're walking from and to, when, and about how long. Optionally add what you already know about the route and anything you're concerned about, then tap Help Me Plan the Walk.
+2. Read through What Matters, the before-you-go list, and — if you described a choice between routes — the route guidance. Check off items as you prepare.
+3. If the plan suggests a check-in message, copy it and send it yourself before you go.
+4. WALKING: Start a check-in reminder for about how long you expect the walk to take. It reminds you on this device when time is up — it does not contact anyone on its own.
+5. Use the location tile to get a map link for wherever you are, and the pretend-call tile if you want an easy reason to step away.
+6. Emergency tools are a manual panel: call emergency services, sound a local alarm, or copy your location or an emergency message to send yourself. Nothing in it is automatic.
 
 **Tips.**
 
-- Add at least one emergency contact in settings — their name shows on fake calls, making them more convincing
-- The fake call generates an actual ringtone sound and vibration pattern — it looks real to anyone nearby
-- Set the check-in timer slightly longer than your expected walk — you can always tap 'I'm Safe' early
-- Share Location copies your GPS coordinates as a Google Maps link — paste it into any messaging app
-- The AI assessment doesn't have real-time crime data — it helps you think through your walk, not guarantee safety
-- The alarm is LOUD — it uses your phone's speaker at maximum output. Use it only in a genuine emergency.
+- What you already know about the route is the most useful field on the Plan tab — Safe Walk has no live data of its own, so specific details are what make the plan specific
+- The check-in reminder is local to your device — pair it with copying the check-in message to someone yourself if you want another person to know
+- Emergency tools is a manual panel, not a monitoring service — nothing inside it contacts anyone or shares your location until you tap it
+- The pretend call discloses itself before it starts — it's a social exit tool, not something to rely on in place of moving toward help
+- If the browser can't access your phone's actual flashlight, the flashlight tile brightens the screen instead rather than failing silently
 
 **Example.**
 
-Input: Walking home from a friend's apartment at 11pm through a neighborhood with a poorly lit park section, about 20 minutes.
+Input: Walking home from a yoga class at night. You know the main road is better lit than the shortcut through the park, and a couple of blocks have streetlights that are out.
 
-Output: AI flags the park section visibility drop, suggests the commercial street alternative (+5 min but well-lit), gives a tailored checklist (headphones out, share location, reflective clothing). You copy the ETA message, text your roommate, switch to Walking tab, set 25-min timer, and go.
+Output: What Matters restates the two things you already know — the lighting difference and the dark stretches — and says plainly that Safe Walk has no live information about the route beyond that. The before-you-go list and route guidance both point to the main road, grounded in what you said, not an invented safety score. A check-in message is suggested since it's an evening walk; you copy it and send it before heading out, then start a check-in reminder on the Walking tab.
 
 ### Wardrobe Chaos Helper
 
