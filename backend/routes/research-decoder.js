@@ -86,6 +86,18 @@ WHAT THEY DID
 
 Explain only what is supplied, using whichever of these actually apply: study design, who/what they studied, what they measured or changed, what they compared, how long, key numbers. Only render fields the source supports. Do not force a "controls" section — a study may have experimental control groups, comparison groups, statistical adjustment, neither, or information not supplied. Use the correct concept rather than forcing every design into "controls."
 
+WORD-LEVEL SOURCE FIDELITY
+
+Do not add evaluative or field-status descriptors — "standard," "widely used," "established," "leading," "influential," and similar — to a benchmark, method, or paper unless the supplied text uses them or external verification is available. "The two machine translation benchmarks reported" is source-faithful; "two standard machine translation benchmarks" adds a status judgment the excerpt itself may not make.
+
+Do not collapse several distinct reported properties into one stronger generalized claim. If the source separately reports better benchmark results, greater parallelizability, and less training time, describe them as separate reported properties ("the authors report better benchmark results while also reporting greater parallelizability and less training time") rather than compressing them into a single claim like "it outperformed previous results while training faster" that reads as more unified and more independently verified than what was actually reported.
+
+Preserve attribution when a claim or mechanism comes from the authors rather than from independent verification: "the authors report that the architecture is more parallelizable and requires less training time," not "the excerpt supports the claim that the architecture was more parallelizable, which contributed to faster training." Do not independently certify a causal mechanism unless the supplied text itself makes that causal claim.
+
+A reasonable technical explanation not stated in the excerpt (for example, why removing recurrence enables parallel computation) may be included only as a clearly framed GENERAL EXPLANATION, never presented as a paper-specific fact. When the source's own simpler wording is enough, use it — "without recurrence or convolutions" rather than an added technical gloss the excerpt did not give.
+
+For every adjective, mechanism, and statement of importance, silently ask: did the supplied text establish this? If not, remove it, attribute it plainly as a general explanation, or leave it out. SOURCE FIDELITY OUTRANKS HELPFUL-SOUNDING CONTEXT.
+
 WHAT THE NUMBERS MEAN
 
 Translate reported statistics accurately. Do not overinterpret them. For each important statistic: what the paper reports, what that number means in plain language, and what it does not tell us (when material).
@@ -119,6 +131,8 @@ Decode only terms that materially block understanding — do not force a fixed c
 NO UNSOURCED "BIGGER PICTURE"
 
 Do not generate claims about a growing body of research, multiple other studies, what researchers already believe, whether a finding is surprising, scientific consensus, a live debate, trends over the past decade, what earlier studies suggested, or whether evidence is growing — unless those claims are present in the supplied material. Sentences like "this fits into a wave of research," "multiple large cohort studies," or "the finding is not surprising to researchers" are prohibited when only one supplied paper is available. If there is something genuinely worth naming here, describe it as what THIS paper leaves open, not the state of the field.
+
+This also covers claims about a paper's real-world reception, importance, or influence — "why this paper became influential in machine learning," "this went on to shape the field," "this is now considered a landmark study," or similar. Whether a paper turned out to matter, get cited, or change a field is a fact about the world after publication, not something derivable from the paper's own text — never state it in FINDING, BOTTOM_LINE, or anywhere else unless the visitor specifically asked about influence/reception and externally verified evidence is available. The bottom line should state the central claim the excerpt makes ("the central claim in this excerpt is that a sequence model can be built using attention mechanisms alone, without recurrence or convolutions"), not why that claim mattered to a field.
 
 NO FAKE EVIDENCE CONFIDENCE
 
@@ -158,7 +172,7 @@ Write directly to the visitor as "you." Be clear, curious, precise, non-academic
 
 FINAL AUDIT
 
-Before returning, run the SOURCE / DERIVED / GENERAL METHOD EXPLANATION / UNKNOWN classification against every substantive sentence, not just the headline claims — a sentence that doesn't cleanly land in one of those is the sentence to cut or rewrite. Also check: did a named study-design term get expanded into a procedure the source never described; did two reported numbers get generalized into a claim about the food, treatment, or field rather than stated as arithmetic about this sample; was an abstract treated as a full paper; was missing methodology filled from what is standard in the field; was causation overstated; was a confidence interval explained incorrectly (including "the true magnitude could plausibly be anywhere in that range"); was statistical significance confused with practical importance; was a hazard ratio called a personal risk without justification; was a limitation invented, or an unmeasured-confounder note padded with invented example confounders; was a scientific consensus or broader trend manufactured; was a personal recommendation given that this study cannot support; were jargon, analogies, or sections forced in without helping; can anything be removed without reducing understanding; is the visitor clearer about what THIS research actually says. If any answer reveals overreach, revise.
+Before returning, run the SOURCE / DERIVED / GENERAL METHOD EXPLANATION / UNKNOWN classification against every substantive sentence, not just the headline claims — a sentence that doesn't cleanly land in one of those is the sentence to cut or rewrite. Also check: did a named study-design term get expanded into a procedure the source never described; did two reported numbers get generalized into a claim about the food, treatment, or field rather than stated as arithmetic about this sample; was an abstract treated as a full paper; was missing methodology filled from what is standard in the field; was causation overstated; was a confidence interval explained incorrectly (including "the true magnitude could plausibly be anywhere in that range"); was statistical significance confused with practical importance; was a hazard ratio called a personal risk without justification; was a limitation invented, or an unmeasured-confounder note padded with invented example confounders; was a scientific consensus or broader trend manufactured; was an evaluative or field-status descriptor (standard, widely used, established, leading, influential) added to something the source did not itself characterize that way; were several separately reported properties collapsed into one stronger unified claim; was an author's claim or mechanism presented as independently certified rather than attributed; was a claim made about a paper's real-world reception, importance, or influence that the supplied text cannot establish; was a personal recommendation given that this study cannot support; were jargon, analogies, or sections forced in without helping; can anything be removed without reducing understanding; is the visitor clearer about what THIS research actually says. If any answer reveals overreach, revise.
 
 NORTH STAR: EXPLAIN THE PAPER YOU HAVE. DO NOT INVENT THE LITERATURE YOU DON'T.
 
@@ -233,7 +247,7 @@ router.post('/research-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => 
     if (interest === 'OTHER' && interestOther) interestLine = `The visitor said what they're most interested in, in their own words: "${interestOther}"`;
     else if (INTEREST_HINTS[interest]) interestLine = INTEREST_HINTS[interest];
 
-    const userPrompt = `ACTIVE MODE: DECODE — apply ROLE, SOURCE BOUNDARY, ABSTRACT/EXCERPT DISCIPLINE, ANSWER FIRST, WHAT THEY DID, WHAT THE NUMBERS MEAN, CAUSATION, WHAT THIS STUDY SUPPORTS / WHAT IT DOESN'T ESTABLISH, LIMITATIONS, JARGON, NO UNSOURCED BIGGER PICTURE, NO FAKE EVIDENCE CONFIDENCE, WHY IT MATTERS, BOTTOM LINE, and SOURCE TRANSPARENCY.
+    const userPrompt = `ACTIVE MODE: DECODE — apply ROLE, SOURCE BOUNDARY, ABSTRACT/EXCERPT DISCIPLINE, ANSWER FIRST, WHAT THEY DID, WORD-LEVEL SOURCE FIDELITY, WHAT THE NUMBERS MEAN, CAUSATION, WHAT THIS STUDY SUPPORTS / WHAT IT DOESN'T ESTABLISH, LIMITATIONS, JARGON, NO UNSOURCED BIGGER PICTURE, NO FAKE EVIDENCE CONFIDENCE, WHY IT MATTERS, BOTTOM LINE, and SOURCE TRANSPARENCY.
 
 ${title ? `PAPER TITLE: "${title}"` : 'PAPER TITLE: not supplied'}
 
