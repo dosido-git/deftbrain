@@ -44,9 +44,11 @@ const SUBSTITUTION_DISCIPLINE = `SUBSTITUTION RATIOS ARE STARTING POINTS, NOT LA
 
 A ratio like "1 tablespoon ground flax + 3 tablespoons water per egg" is a general culinary starting point, not a recipe-specific conversion — say so. Do not assume equal-volume fat substitutions, a fixed egg-substitute ratio, or that a substitute preserves the recipe's structure or replaces every function of the original ingredient work identically in every recipe.
 
+NOTICE CONTRADICTIONS OR AMBIGUITIES IN WHAT THE VISITOR SAID — don't silently resolve them into one tidy meaning without saying you did. Read what's marked missing against what's marked available before writing the fix: if something listed as available could plausibly BE the thing marked missing (they say they're out of canned tomatoes, then list a can of diced tomatoes as available), that's a real ambiguity in their own wording, not a settled fact. Name the interpretation itself, without guessing at a recipe detail you were never given (don't invent that the recipe specifically wants whole or crushed — you don't know that): "you mentioned being out of canned tomatoes but also having a can of diced tomatoes — I'm treating the diced tomatoes as what you meant, with a somewhat different texture than whatever style your recipe called for." Infer only when the intended meaning is reasonably obvious, and ask for clarification instead when the distinction would materially change the rescue.
+
 DO NOT AUTOMATICALLY ADD A COMPENSATING TECHNIQUE. A substitution does not by itself justify a fixed chill time, a changed oven temperature or cook time, added liquid, or a changed mixing technique. Prefer OBSERVED RESULT → ADJUSTMENT over SUBSTITUTION → AUTOMATIC ADJUSTMENT: "if the dough seems substantially softer than your recipe normally produces, chilling it before baking may help" — not a mandatory 30-minute chill for a recipe you were never shown.
 
-DO NOT OVERPREDICT THE RESULT. Avoid confidently stating exact texture, spreading, browning, or flavor outcomes ("your cookies will be slightly denser and chewier"). Prefer conditional framing: "this may change the texture; results vary by recipe."
+DO NOT OVERPREDICT THE RESULT. Avoid confidently stating exact texture, spreading, browning, or flavor outcomes ("your cookies will be slightly denser and chewier", "the sauce will be lighter in body and less fruity") unless the supplied recipe actually gives you a basis for that comparison. A known ingredient difference supports describing a likely tradeoff ("diced tomatoes may leave more texture than whole or crushed tomatoes would"); it does not support predicting the finished dish's specific qualities when the complete recipe is unknown. Known ingredient difference → describe the tradeoff. Unknown complete recipe → don't predict the finished dish that precisely.
 
 SUBSTITUTION QUANTITIES REQUIRE CONTEXT. Do not invent an exact amount when the original quantity or batch size is unknown. Prefer "use the diced tomatoes in place of the tomato amount your recipe calls for" or, when strength/concentration varies, "add a small amount, taste, and adjust." Ask for the original amount only when an exact conversion genuinely matters.
 
@@ -533,6 +535,8 @@ router.outputGuard = {
     'invented_current_pan_state', 'manufactured_urgency', 'invented_culinary_mechanism',
     'photo_treated_as_diagnosis_not_observation', 'ingredient_marked_missing_without_evidence',
     'dietary_constraint_overridden', 'allergen_free_claimed_without_basis',
+    'contradiction_in_visitor_input_silently_resolved',
+    'finished_dish_quality_predicted_without_recipe_basis',
   ],
   require: ['fulfills_tool_promise'],
 };

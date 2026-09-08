@@ -1,7 +1,7 @@
 {
   "_meta": {
     "tool": "recipe-chaos-solver",
-    "captured": "2026-09-07",
+    "captured": "2026-09-07 (updated same day: contradiction-noticing + conservative-prediction corrections)",
     "baseline": "recipechaossolver-v2",
     "model": "claude-sonnet-4-6 (all 5 endpoints) + lib/outputGuard.js (v2 enforcement)",
     "endpoints": [
@@ -21,7 +21,7 @@
       "input": {
         "recipeContext": "Bolognese, halfway through cooking",
         "problemDescription": "I am out of red wine and canned tomatoes",
-        "availableIngredients": "I have diced tomatoes, tomato paste, beef broth, and balsamic vinegar",
+        "availableIngredients": "I have a can of diced tomatoes, tomato paste, beef broth, and balsamic vinegar",
         "userLanguage": "en-US"
       },
       "output": {
@@ -30,23 +30,24 @@
         "visual_observation": null,
         "ingredients_recognized": [],
         "fix": {
-          "name": "Broth, Balsamic, and Tomato Stand-In",
+          "name": "Broth, Balsamic, and Diced Tomatoes",
           "assessment": "GOOD_BET",
-          "here_is_the_fix": "Use your diced tomatoes in place of the canned tomatoes your recipe calls for — they are functionally the same ingredient. For the red wine, beef broth does the heavy lifting on liquid and body, with a small amount of balsamic added for acidity and depth.",
+          "here_is_the_fix": "You have a can of diced tomatoes listed in what you have, but also said you are out of canned tomatoes. I am treating the diced tomatoes as available. For the wine, use beef broth as the base liquid and add a small amount of balsamic vinegar to contribute acidity and depth.",
           "ingredients_used": [
-            "diced tomatoes — use what you have",
-            "beef broth — use in place of red wine",
-            "balsamic vinegar — a small splash, added to taste"
+            "beef broth — use the same volume your recipe called for in wine",
+            "balsamic vinegar — a small splash, starting with about a teaspoon; taste and adjust",
+            "diced tomatoes — in place of the canned tomatoes your recipe calls for",
+            "tomato paste — as your recipe directs, or a small spoonful to deepen the tomato flavor"
           ],
           "instructions": [
-            "Use your diced tomatoes in place of canned tomatoes in your cooking.",
-            "Add beef broth where the recipe calls for red wine, using roughly the same volume.",
-            "Stir in a small amount of balsamic vinegar — start with less than you think you need, taste after a few minutes of simmering, and add more if you want more acidity or complexity.",
-            "Continue cooking as your recipe directs, tasting before serving and adjusting salt or a touch more balsamic if the sauce seems flat."
+            "Add beef broth where the recipe calls for red wine, using the same volume.",
+            "Stir in a small amount of balsamic vinegar — start with roughly a teaspoon, stir it in, and taste before adding more. It is easy to over-add.",
+            "Add the diced tomatoes in place of your canned tomatoes. If the chunky texture bothers you, crush them briefly with a spoon or the back of a spatula.",
+            "Continue cooking as your recipe directs, tasting and adjusting salt and acidity as it reduces."
           ],
-          "what_to_expect": "Diced tomatoes and canned tomatoes function similarly in Bolognese. Broth provides liquid and savory depth where wine would contribute acidity; balsamic supplies acidity without wine's full flavor profile. Start with less balsamic than you think you need — it sweetens quickly — and adjust to taste as the sauce cooks.",
-          "watch_for": "Balsamic can turn a sauce noticeably sweet if you add too much — add it gradually and taste as you go rather than pouring freely.",
-          "why_this_works": "Red wine contributes acidity, liquid volume, and flavor compounds that develop during long cooking. Broth covers the liquid and provides savory depth; balsamic supplies some of the acidity. The two together approximate the functional role of wine without fully replacing its flavor profile."
+          "what_to_expect": "The diced tomatoes may leave a slightly chunkier texture than whole or crushed tomatoes would, depending on how long the sauce continues to cook. You can crush them briefly with a spoon if the texture does not suit you.",
+          "watch_for": "Balsamic can turn sharp or overly sweet if you add too much — add it in small increments and taste between additions rather than pouring freely.",
+          "why_this_works": ""
         },
         "pivot": null
       },

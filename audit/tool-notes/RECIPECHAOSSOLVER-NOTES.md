@@ -4,6 +4,38 @@
 **Verify:** `npm run check:golden recipe-chaos-solver` (backend up: `npm run dev:backend`, started via
 `node`, not nodemon — restart it after any route edit)
 
+## 2026-09-07 (later same day) — two final rescue refinements
+
+1. **Notice contradictions/ambiguities in the visitor's own wording instead of silently resolving
+   them.** Real case: visitor said "out of red wine and canned tomatoes" while also listing "a can of
+   diced tomatoes" as available — a can of diced tomatoes IS a canned tomato, so the two statements
+   are in tension. The first draft silently treated diced tomatoes as the substitute without saying so.
+   Added to `SUBSTITUTION_DISCIPLINE`. Took **three tries** to phrase correctly:
+   - v1 gave no concrete disclosure at all (guard passed with 0 violations — it doesn't have a category
+     for "resolved an ambiguity without saying so," which is exactly why prohibit category
+     `contradiction_in_visitor_input_silently_resolved` was added alongside the prompt rule).
+   - v2's example told the model to guess the specific unstated recipe detail ("your recipe wants a
+     different style — whole or crushed") — that guess is itself an invented fact, and the guard's
+     `contradicted_supplied_fact` check flagged it, and repair stripped the disclosure entirely along
+     with the invented guess (worse than v1: back to silent resolution, now guard-sanctioned).
+   - v3 named the interpretation WITHOUT guessing an unstated detail ("I'm treating the diced tomatoes
+     as available... with a somewhat different texture than whatever style your recipe called for") —
+     verified live: `here_is_the_fix` now reads "You have a can of diced tomatoes listed in what you
+     have, but also said you are out of canned tomatoes. I am treating the diced tomatoes as
+     available." This is the shipped version. Note: the guard's checker still flags this sentence as
+     `contradicted_supplied_fact` (a false positive — it's describing the visitor's own contradiction,
+     not asserting one) but the repair pass leaves the substance intact in practice; not chased further,
+     consistent with the guard's already-documented tendency to over-fire (see QuoteCheck notes).
+2. **Keep `what_to_expect` conservative when the complete recipe is unknown.** Extended the existing
+   "DO NOT OVERPREDICT" line: a known ingredient difference supports describing a tradeoff ("diced
+   tomatoes may leave more texture"); it does not support predicting the finished dish's specific
+   qualities ("the sauce will be lighter in body and less fruity") without a recipe basis for the
+   comparison. Verified live in the same call — `what_to_expect` correctly hedged ("may leave a
+   slightly chunkier texture... depending on how long the sauce continues to cook") rather than
+   asserting a specific finished-dish quality.
+
+Golden's `rescue-bolognese-relative-substitution` case re-captured against the v3 phrasing.
+
 ## 2026-09-07 — Full V2 rewrite
 
 Replaced the entire tool per the owner's consolidated implementation brief. This was a from-scratch
