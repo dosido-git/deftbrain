@@ -48,6 +48,14 @@ const ResearchDecoder = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
+  // Defensive fallback for the primary submit buttons — t() already treats an
+  // empty resource as missing and falls back to English or the bare key, but
+  // a button that shows only its emoji and nothing else was reported here, so
+  // these five labels get an explicit belt-and-suspenders fallback on top.
+  const tr = useCallback((key, fallback) => {
+    const value = t(key);
+    return (!value || value === key) ? fallback : value;
+  }, [t]);
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -432,8 +440,8 @@ const ResearchDecoder = ({ tool }) => {
 
           <button title={t('rd_cmd_enter')} onClick={handleDecode} disabled={(!paperText.trim() && !pdfBase64) || loading} className={`relative w-full ${(!paperText.trim() && !pdfBase64) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_working')}</>
-              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_it')} →</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {tr('rd_working', 'Working…')}</>
+              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {tr('rd_decode_it', 'Decode It')} →</>}
             {!loading && (
               <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
             )}
@@ -532,7 +540,7 @@ const ResearchDecoder = ({ tool }) => {
                   <textarea value={relContext} onChange={e => setRelContext(e.target.value)} rows={2} placeholder={t('rd_rel_about_you_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
                 </div>
                 <button onClick={handleRelevance} disabled={!relWonder.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_working')}</> : <>🎯 {t('rd_check_relevance')}</>}
+                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {tr('rd_working', 'Working…')}</> : <>🎯 {tr('rd_check_relevance', 'Check Relevance to My Situation')}</>}
                 </button>
 
                 {relResult && (
@@ -576,8 +584,11 @@ const ResearchDecoder = ({ tool }) => {
             <textarea value={hlArticleExcerpt} onChange={e => setHlArticleExcerpt(e.target.value)} placeholder={t('rd_article_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           {error && mode === 'headline' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleHeadline} disabled={(!hlResearchText.trim() && !hlPdfBase64) || !hlHeadline.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_checking')}</> : <>📰 {t('rd_check_headline')}</>}
+          <button onClick={handleHeadline} disabled={(!hlResearchText.trim() && !hlPdfBase64) || !hlHeadline.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {tr('rd_checking', 'Checking…')}</> : <>📰 {tr('rd_check_headline', 'Check the Headline')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
           </button>
         </div>
 
@@ -626,8 +637,11 @@ const ResearchDecoder = ({ tool }) => {
             <textarea value={cmpPaper2} onChange={e => { setCmpPaper2(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
           {error && mode === 'compare' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleCompare} disabled={!cmpPaper1.trim() || !cmpPaper2.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_comparing')}</> : <>⚖️ {t('rd_compare_papers')}</>}
+          <button onClick={handleCompare} disabled={!cmpPaper1.trim() || !cmpPaper2.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {tr('rd_comparing', 'Comparing…')}</> : <>⚖️ {tr('rd_compare_papers', 'Compare These Papers')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
           </button>
         </div>
 
@@ -687,8 +701,11 @@ const ResearchDecoder = ({ tool }) => {
             <textarea value={termContext} onChange={e => setTermContext(e.target.value)} placeholder={t('rd_term_context_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           {error && mode === 'term' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleTerm} disabled={!termText.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_decoding')}</> : <>🔤 {t('rd_explain_it')}</>}
+          <button onClick={handleTerm} disabled={!termText.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {tr('rd_decoding', 'Decoding…')}</> : <>🔤 {tr('rd_explain_it', 'Explain It')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
           </button>
         </div>
 
