@@ -1,203 +1,259 @@
 {
   "_meta": {
     "tool": "recipe-chaos-solver",
-    "captured": "2026-06-27",
-    "baseline": "recipechaossolver-v1",
-    "model": "claude-sonnet-4-6 (all 7 endpoints)",
+    "captured": "2026-09-07",
+    "baseline": "recipechaossolver-v2",
+    "model": "claude-sonnet-4-6 (all 5 endpoints) + lib/outputGuard.js (v2 enforcement)",
     "endpoints": [
       "/api/recipe-chaos-solver",
-      "/swap",
-      "/multi-swap",
+      "/substitute",
       "/scale",
       "/preflight",
-      "/flavor-fix",
-      "/teach"
+      "/flavor-fix"
     ],
-    "note": "Regression reference for RecipeChaosSolver. Re-run each case's input against the live backend (npm run check:golden recipe-chaos-solver) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The CALM case GUARDS the main-guard fix: immediate_action is legitimately null for non-crisis/planning queries — the guard was `if(!parsed.immediate_action)` → 500 on valid responses; now `if(!parsed.recipes && !parsed.immediate_action)`. If the guard regresses, the calm case returns 500 and fails. DO NOT silently reverse: (1) all 7 endpoints sonnet-4-6; (2) main guard must accept null immediate_action when recipes are present; (3) the other 6 guards key on always-present fields (ingredient/missing_count/original_servings/recipe_name/diagnosis/lesson_title). Frontend renders null immediate_action conditionally (null-safe). See audit/tool-notes/RECIPECHAOSSOLVER-NOTES.md.",
-    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+    "note": "V2 rewrite, 2026-09-07: full architecture change per owner's consolidated brief. Nav merged Swap+Multi-Swap into one /substitute endpoint (1+ ingredients, was 2+ minimum); removed /teach (folded into fix.why_this_works) and Wins/Saved/History (replaced by a single Recent log, frontend-only, no endpoint). Removed all numeric success_probability/difficulty scoring — replaced with qualitative bands (assessment/fit/readiness enums) — this is what let the route finally declare outputStandard v2 (the old numeric fields tripped the schema-congruence gate). Schema keys changed throughout: rescue now returns a single `fix` object (was `recipes[]` with per-recipe success_probability); substitute returns `swaps[].fit` (was `quality`) and `difference_from_original` (renamed from `expected_result`, which tripped the same-day schema-congruence smell for predicting behaviour nobody observed); scale returns `timing_note` (was `timing_changes[]`) since an invented total time is exactly the failure mode this rewrite fixes; preflight's ingredient/equipment status only marks MISSING when the visitor actually said so (UNCLEAR otherwise, verified live against a recipe naming ingredients the input never mentioned); flavor-fix is now a two-turn loop (needs_more_detail + clarifying_question when the complaint is too vague to diagnose, e.g. 'tastes meh' alone). See audit/tool-notes/RECIPECHAOSSOLVER-NOTES.md for the full correction history.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 5 cases sequentially and fits."
   },
   "cases": [
     {
-      "name": "main-crisis-broken-sauce",
+      "name": "rescue-bolognese-relative-substitution",
       "endpoint": "/api/recipe-chaos-solver",
       "input": {
-        "recipeContext": "cream sauce for pasta",
-        "problemDescription": "my sauce broke and went grainy and separated",
-        "problemCategory": "sauce",
-        "cookingSkill": "beginner",
-        "timePressure": "guests arriving in 20 min"
-      },
-      "output": {
-        "immediate_action": "Pull the pan OFF the heat right now — more heat is making it worse.",
-        "safety_warning": null,
-        "success_probability": 78,
-        "difficulty": "easy",
-        "recipes": [
-          {
-            "name": "Cold Splash Re-Emulsification",
-            "description": "Rescued cream sauce with restored silky texture. Works best if the sauce broke recently and isn't scorched.",
-            "swap_quality": null,
-            "ingredients_used": [
-              "2-3 tablespoons cold heavy cream or cold milk"
-            ],
-            "missing_staples": [
-              "cold heavy cream or milk"
-            ],
-            "time": "2-3 minutes",
-            "difficulty": "easy",
-            "success_probability": 75,
-            "instructions": [
-              "Leave pan OFF heat entirely — do not attempt this over flame.",
-              "Add 2 tbsp of cold cream or milk to the broken sauce.",
-              "Whisk vigorously in tight circles for 60-90 seconds.",
-              "If it starts coming together, add pasta directly to the pan — the starch helps bind it.",
-              "Return to LOW heat only after it looks mostly smooth, stirring constantly."
-            ],
-            "explanation": "Cream sauce breaks when fat separates from the water phase, usually from overheating. Cold liquid shocks the temperature down and gives the fat droplets a chance to re-suspend as you whisk.",
-            "tips": "Adding your cooked pasta immediately is your best tool — pasta starch is a natural emulsifier and will help hold everything together.",
-            "preventive_tip": "Next time, never let cream sauce boil hard — a bare simmer is all it needs, and pull it off heat the moment it thickens.",
-            "what_if_you_dont_have": "A tablespoon of cold water works in a pinch, but cream gives the best result; warm liquid will not work."
-          },
-          {
-            "name": "Pasta Water Rescue Blend",
-            "description": "Uses starchy pasta cooking water to re-emulsify and coat pasta directly in the pan — the Italian method that professionals use intentionally.",
-            "swap_quality": null,
-            "ingredients_used": [
-              "1/4 cup hot starchy pasta cooking water"
-            ],
-            "missing_staples": [
-              "pasta cooking water — reserve it before draining"
-            ],
-            "time": "3-4 minutes",
-            "difficulty": "easy",
-            "success_probability": 82,
-            "instructions": [
-              "Scoop out 1/4 cup of the starchy pasta cooking water BEFORE draining pasta.",
-              "Pour broken sauce into a wide skillet if not already in one — surface area helps.",
-              "Add pasta cooking water 1 tablespoon at a time over low heat, whisking constantly.",
-              "Drain pasta and add it directly into the pan, tossing hard for 1-2 minutes.",
-              "The starch coats everything and hides minor separation — serve immediately."
-            ],
-            "explanation": "Pasta water is loaded with dissolved starch, which acts as an emulsifier and thickener simultaneously — it bridges the fat and water phases that split apart.",
-            "tips": "Toss the pasta aggressively; the friction and starch together do the real work here.",
-            "preventive_tip": "Always finish pasta IN the sauce pan with a splash of pasta water — it's how restaurants make cream sauces look glossy every time.",
-            "what_if_you_dont_have": "If you already drained the pasta without saving water, dissolve 1/4 tsp cornstarch in 1/4 cup warm water as a substitute."
-          }
-        ],
-        "ingredients_not_used": [],
-        "meal_plan_suggestion": "If the sauce can't be fully rescued, toss pasta with butter, parmesan, and a pinch of pepper — cacio-style — and save the broken sauce base as a soup starter tomorrow with added broth and vegetables."
-      }
-    },
-    {
-      "name": "main-calm-null-immediate-action",
-      "endpoint": "/api/recipe-chaos-solver",
-      "input": {
-        "recipeContext": "basic pancakes",
-        "problemDescription": "planning ahead — how do I make these dairy-free next time?",
-        "availableIngredients": "flour, eggs, oat milk, oil, baking powder",
-        "cookingSkill": "intermediate"
+        "recipeContext": "Bolognese, halfway through cooking",
+        "problemDescription": "I am out of red wine and canned tomatoes",
+        "availableIngredients": "I have diced tomatoes, tomato paste, beef broth, and balsamic vinegar",
+        "userLanguage": "en-US"
       },
       "output": {
         "immediate_action": null,
         "safety_warning": null,
-        "success_probability": 95,
-        "difficulty": "easy",
-        "recipes": [
+        "visual_observation": null,
+        "ingredients_recognized": [],
+        "fix": {
+          "name": "Broth, Balsamic, and Tomato Stand-In",
+          "assessment": "GOOD_BET",
+          "here_is_the_fix": "Use your diced tomatoes in place of the canned tomatoes your recipe calls for — they are functionally the same ingredient. For the red wine, beef broth does the heavy lifting on liquid and body, with a small amount of balsamic added for acidity and depth.",
+          "ingredients_used": [
+            "diced tomatoes — use what you have",
+            "beef broth — use in place of red wine",
+            "balsamic vinegar — a small splash, added to taste"
+          ],
+          "instructions": [
+            "Use your diced tomatoes in place of canned tomatoes in your cooking.",
+            "Add beef broth where the recipe calls for red wine, using roughly the same volume.",
+            "Stir in a small amount of balsamic vinegar — start with less than you think you need, taste after a few minutes of simmering, and add more if you want more acidity or complexity.",
+            "Continue cooking as your recipe directs, tasting before serving and adjusting salt or a touch more balsamic if the sauce seems flat."
+          ],
+          "what_to_expect": "Diced tomatoes and canned tomatoes function similarly in Bolognese. Broth provides liquid and savory depth where wine would contribute acidity; balsamic supplies acidity without wine's full flavor profile. Start with less balsamic than you think you need — it sweetens quickly — and adjust to taste as the sauce cooks.",
+          "watch_for": "Balsamic can turn a sauce noticeably sweet if you add too much — add it gradually and taste as you go rather than pouring freely.",
+          "why_this_works": "Red wine contributes acidity, liquid volume, and flavor compounds that develop during long cooking. Broth covers the liquid and provides savory depth; balsamic supplies some of the acidity. The two together approximate the functional role of wine without fully replacing its flavor profile."
+        },
+        "pivot": null
+      },
+      "optionalSections": [
+        "ingredients_recognized"
+      ]
+    },
+    {
+      "name": "substitute-eggs-and-butter-cookies",
+      "endpoint": "/api/recipe-chaos-solver/substitute",
+      "input": {
+        "ingredients": [
+          "eggs",
+          "butter"
+        ],
+        "recipeContext": "chocolate chip cookies",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "missing_count": 2,
+        "combined_impact": "Losing both eggs and butter removes the primary fat and the main binder/structure contributors simultaneously, so the recipe will need substitutes that cover both roles without compounding each other's weaknesses.",
+        "strategy": "Use a plant-based fat for the butter and a flax or chia egg for binding. Exact amounts depend on what your recipe calls for.",
+        "swaps": [
           {
-            "name": "Oat Milk Pancakes",
-            "description": "Fluffy, golden pancakes indistinguishable from dairy versions. Oat milk's natural sweetness and neutral fat content makes it the closest plant-milk swap for standard pancake batter.",
-            "swap_quality": "excellent swap",
-            "ingredients_used": [
-              "1 cup all-purpose flour",
-              "1 cup oat milk",
-              "1 egg",
-              "2 tbsp neutral oil",
-              "1 tsp baking powder",
-              "pinch of salt"
-            ],
-            "missing_staples": [
-              "salt",
-              "sugar (optional, 1 tsp)"
-            ],
-            "time": "15 minutes start to finish.",
-            "difficulty": "easy",
-            "success_probability": 95,
-            "instructions": [
-              "Whisk flour, baking powder, salt, and sugar in a bowl.",
-              "In a separate bowl, whisk oat milk, egg, and oil together.",
-              "Pour wet into dry and stir until just combined — lumps are fine, overmixing kills fluff.",
-              "Rest batter 3–5 minutes while pan heats to medium.",
-              "Cook until bubbles form and edges look set (~2 min), flip once, cook 1 min more."
-            ],
-            "explanation": "Baking powder provides all the leavening here, so the liquid's fat content matters less than in cakes. Oat milk is creamy enough to hydrate the flour properly without thinning the batter the way rice or almond milk can.",
-            "tips": "If batter seems thick after resting, add oat milk 1 tbsp at a time — oat milk thickens slightly as it sits.",
-            "preventive_tip": "Keep oat milk as your default pancake liquid; it outperforms almond and rice milk consistently and requires zero batter adjustments.",
-            "what_if_you_dont_have": "Soy milk is the next-best swap (higher protein, nearly identical result); coconut milk works but adds detectable flavor; almond milk produces slightly thinner, less rich pancakes."
+            "missing": "butter",
+            "substitute": "coconut oil or a neutral vegetable oil in the same volume your recipe specifies — solid coconut oil measured in its solid state if your recipe creams the butter with sugar",
+            "fit": "WORKABLE_WITH_CHANGES",
+            "why": "Butter provides fat for tenderness and flavor, and also contributes some water and milk solids that affect spread and browning — oil replaces the fat but not those other components, so texture and browning may shift.",
+            "interaction_note": "Oil produces a softer, less structured dough than butter; combined with a flax or chia egg, the dough may behave differently than the original. You will see whether it holds together well enough to scoop; if it does not, a short rest in the fridge before baking is worth trying."
+          },
+          {
+            "missing": "eggs",
+            "substitute": "For each egg your recipe calls for: 1 tablespoon ground flaxseed or chia seed stirred into 3 tablespoons water, rested about 5 minutes until gel-like — this is a general starting point, not a guaranteed 1-for-1 equivalent",
+            "fit": "WORKABLE_WITH_CHANGES",
+            "why": "Eggs bind, add moisture, and contribute to lift and structure; a flax or chia egg replaces some binding but does not replicate the protein structure or lift that eggs provide.",
+            "interaction_note": null
           }
         ],
-        "ingredients_not_used": [],
-        "meal_plan_suggestion": "Extra eggs can go into a quick scramble or fried egg to round out the pancake breakfast."
+        "difference_from_original": "The cookies may spread differently, be somewhat denser or softer, and brown less than the original — but results vary depending on your specific recipe's proportions, so treat this as a possible outcome rather than a certainty."
       }
     },
     {
-      "name": "swap-buttermilk",
-      "endpoint": "/api/recipe-chaos-solver/swap",
+      "name": "scale-banana-bread-2.5x",
+      "endpoint": "/api/recipe-chaos-solver/scale",
       "input": {
-        "ingredient": "buttermilk",
-        "recipeContext": "pancakes"
+        "recipeText": "Classic banana bread: 3 ripe bananas, 1/3 cup melted butter, 3/4 cup sugar, 1 egg, 1 tsp vanilla, 1 tsp baking soda, 1/2 tsp salt, 1.5 cups flour. Bake at 350F for 60 minutes in a loaf pan.",
+        "originalServings": 8,
+        "targetServings": 20,
+        "userLanguage": "en-US"
       },
       "output": {
-        "ingredient": "buttermilk",
-        "function_in_cooking": "Provides acid that reacts with baking soda for lift, tenderizes gluten for a soft crumb, adds tangy flavor, and contributes moisture.",
-        "swaps": [
+        "original_servings": 8,
+        "target_servings": 20,
+        "scale_factor": 2.5,
+        "scaled_ingredients": [
           {
-            "name": "Milk plus white vinegar",
-            "ratio": "1 cup buttermilk = 1 cup whole milk + 1 tbsp white vinegar, stirred and rested 5 minutes until curdled.",
-            "quality": "excellent",
-            "best_for": "Any pancake recipe; nearly indistinguishable from real buttermilk in the final product.",
-            "avoid_in": null,
-            "science": "Vinegar drops pH to ~4.5, mimicking buttermilk's acidity to activate baking soda and partially denature milk proteins, replicating curdled texture.",
-            "notes": "Do not skip the 5-minute rest — unrested milk won't curdle and the acid reaction will be incomplete."
+            "original": "3 ripe bananas",
+            "scaled": "7.5 ripe bananas",
+            "note": "Use 7 or 8 bananas depending on size. Banana flavor and moisture vary, so adjust rather than measuring precisely."
           },
           {
-            "name": "Milk plus lemon juice",
-            "ratio": "1 cup buttermilk = 1 cup whole milk + 1 tbsp fresh lemon juice, rested 5 minutes.",
-            "quality": "excellent",
-            "best_for": "Pancakes where a faint citrus note is acceptable or desirable.",
-            "avoid_in": "Savory pancakes where lemon flavor reads as off.",
-            "science": "Citric acid curdles milk proteins and activates sodium bicarbonate identically to acetic acid in vinegar.",
-            "notes": "Lemon juice adds a subtle brightness that vinegar does not; use bottled juice only if fresh is unavailable, as the pH is less reliable."
+            "original": "1/3 cup melted butter",
+            "scaled": "3/4 cup + 1 tbsp melted butter",
+            "note": null
           },
           {
-            "name": "Plain yogurt thinned with milk",
-            "ratio": "1 cup buttermilk = 3/4 cup plain full-fat yogurt + 1/4 cup whole milk, whisked smooth.",
-            "quality": "good",
-            "best_for": "Thick, fluffy diner-style pancakes where extra richness improves texture.",
-            "avoid_in": "Thin crêpe-style batters where yogurt's viscosity throws off the pour.",
-            "science": "Yogurt's lactic acid matches buttermilk's pH; the higher fat and protein content slightly increases richness and browning.",
-            "notes": "Greek yogurt needs more thinning — use a 1:1 ratio of yogurt to milk for Greek varieties."
+            "original": "3/4 cup sugar",
+            "scaled": "1 cup + 7 tsp sugar",
+            "note": "Taste the batter — ripe bananas vary in sweetness. You may want slightly less."
           },
           {
-            "name": "Kefir, full fat",
-            "ratio": "1 cup buttermilk = 1 cup kefir, used as a 1:1 direct swap with no adjustment.",
-            "quality": "good",
-            "best_for": "Pancakes when you have kefir on hand; produces a slightly tangier, airier result.",
-            "avoid_in": null,
-            "science": "Kefir's bacterial fermentation produces lactic acid at a similar concentration to buttermilk, with added CO2 that can boost early leavening.",
-            "notes": "Shake well before measuring; fat content varies by brand, which can affect tenderness."
+            "original": "1 egg",
+            "scaled": "2.5 eggs",
+            "note": "Beat 3 eggs together, weigh or measure the total volume, then use half of one beaten egg. A large egg is roughly 3 tbsp beaten; half is about 1.5 tbsp."
           },
           {
-            "name": "Sour cream thinned with water",
-            "ratio": "1 cup buttermilk = 3/4 cup sour cream + 1/4 cup water, whisked until pourable.",
-            "quality": "workable",
-            "best_for": "Rich, dense pancakes when dairy options are limited.",
-            "avoid_in": "Light, airy pancake recipes where sour cream's high fat content makes the crumb heavy.",
-            "science": "Sour cream's lactic acid activates leaveners, but its significantly higher fat content (18–20% vs buttermilk's 1–2%) changes the gluten structure noticeably.",
-            "notes": "Reduce any added butter or oil in the recipe by 1 tbsp to compensate for the extra fat."
+            "original": "1 tsp vanilla",
+            "scaled": "2.5 tsp vanilla",
+            "note": null
+          },
+          {
+            "original": "1 tsp baking soda",
+            "scaled": "2.5 tsp baking soda",
+            "note": "Baking soda does not scale purely linearly in large batches — if your loaves come out with a slightly soapy edge, reduce by 1/4 tsp next time."
+          },
+          {
+            "original": "1/2 tsp salt",
+            "scaled": "1.25 tsp salt",
+            "note": "Taste-adjust if needed; salt perception shifts with batch size."
+          },
+          {
+            "original": "1.5 cups flour",
+            "scaled": "3.75 cups flour",
+            "note": null
           }
         ],
-        "pro_tip": "Buttermilk's acid not only triggers leavening but also inhibits gluten development — if your substitute is less acidic, your pancakes will be tougher, so err toward slightly more acid rather than less.",
-        "common_mistake": "Adding vinegar or lemon juice to skim or low-fat milk, which doesn't curdle properly and produces a flat, less tender pancake — whole milk's fat and protein are needed for the reaction to work fully."
+        "timing_note": "Split into at least 2 standard loaf pans — this batter will not bake through reliably in one pan. Each loaf bakes at the same thickness as the original, so start checking at around 55 minutes. The loaf is done when a toothpick inserted in the center comes out with moist crumbs but no wet batter, and the top is deep golden brown and set. Do not rely on a fixed time.",
+        "equipment_notes": [
+          "Two 9x5 loaf pans is the practical split for 2.5x batter. A third smaller pan can handle any overflow rather than overfilling two pans.",
+          "If baking both pans at once, rotate them front-to-back at the halfway point for even browning.",
+          "A kitchen scale makes the half-egg and flour measurements faster and more accurate than cups."
+        ],
+        "warnings": [
+          "Banana bread is dense and moisture-heavy — overbaking the edges while waiting for the center to set is the main risk with fuller pans. Use a toothpick, not appearance alone.",
+          "Baking soda can leave a bitter or soapy note if the ratio gets too high relative to the acid in the bananas; adjust down slightly if this happens.",
+          "Do not overmix once flour is added — this matters at any batch size but is easy to overdo when working with a larger volume."
+        ]
+      },
+      "optionalSections": [
+        "equipment_notes",
+        "warnings"
+      ]
+    },
+    {
+      "name": "preflight-banana-bread-unclear-not-missing",
+      "endpoint": "/api/recipe-chaos-solver/preflight",
+      "input": {
+        "recipeText": "Classic banana bread: 3 ripe bananas, 1/3 cup melted butter, 3/4 cup sugar, 1 egg, 1 tsp vanilla, 1 tsp baking soda, pinch of salt, 1.5 cups flour. Bake at 350F for 60 minutes in a loaf pan.",
+        "availableIngredients": "I have bananas, flour, sugar, butter, and baking soda. Not sure about vanilla.",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "recipe_name": "Classic Banana Bread",
+        "readiness": "NEEDS_A_FEW_THINGS",
+        "ingredient_check": [
+          {
+            "ingredient": "ripe bananas (3)",
+            "status": "HAVE",
+            "substitute": null
+          },
+          {
+            "ingredient": "butter (1/3 cup)",
+            "status": "HAVE",
+            "substitute": null
+          },
+          {
+            "ingredient": "sugar (3/4 cup)",
+            "status": "HAVE",
+            "substitute": null
+          },
+          {
+            "ingredient": "flour (1.5 cups)",
+            "status": "HAVE",
+            "substitute": null
+          },
+          {
+            "ingredient": "baking soda (1 tsp)",
+            "status": "HAVE",
+            "substitute": null
+          },
+          {
+            "ingredient": "egg (1)",
+            "status": "UNCLEAR",
+            "substitute": "if none: 3 tbsp aquafaba or 1 tbsp ground flaxseed mixed with 3 tbsp water, rested 5 minutes — texture will be slightly denser"
+          },
+          {
+            "ingredient": "vanilla (1 tsp)",
+            "status": "UNCLEAR",
+            "substitute": "safe to omit entirely — banana flavor carries the bread; or use a small pinch of cinnamon or nutmeg for a different but pleasant note"
+          },
+          {
+            "ingredient": "salt (pinch)",
+            "status": "UNCLEAR",
+            "substitute": "safe to omit if truly none available, though it sharpens the flavor"
+          }
+        ],
+        "equipment_check": [
+          {
+            "item": "loaf pan (standard 9x5 or 8x4 inch)",
+            "status": "UNCLEAR",
+            "alternative": "an 8x8 square baking pan works — reduce bake time and start checking at 30-35 minutes; a muffin tin also works, check at 20-22 minutes"
+          },
+          {
+            "item": "oven",
+            "status": "UNCLEAR",
+            "alternative": null
+          },
+          {
+            "item": "mixing bowls",
+            "status": "UNCLEAR",
+            "alternative": null
+          },
+          {
+            "item": "fork or masher (for bananas)",
+            "status": "UNCLEAR",
+            "alternative": null
+          }
+        ],
+        "one_important_question": null,
+        "suggest_mise_en_place": true,
+        "go_no_go": "You have the five core ingredients that do the heavy lifting. Vanilla is uncertain and salt wasn't mentioned — both are minor gaps. Check whether you have a loaf pan (or can substitute a square or muffin tin), and you're ready to start."
+      }
+    },
+    {
+      "name": "flavor-fix-vague-complaint-asks-first",
+      "endpoint": "/api/recipe-chaos-solver/flavor-fix",
+      "input": {
+        "dish": "vegetable soup",
+        "whatsWrong": "it just tastes meh",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "needs_more_detail": true,
+        "clarifying_question": "When you taste it, does it mainly seem flat and underseasoned, too thin and watery, or like it has enough salt but still lacks something — a brightness or depth?",
+        "diagnosis": null,
+        "fixes": [],
+        "the_one_thing_to_avoid": null
       }
     }
   ]

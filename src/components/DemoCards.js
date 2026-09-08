@@ -45,7 +45,7 @@ const EXAMPLE_BUCKETS = {
       id: 'RecipeChaosSolver',
       title: 'Recipe Chaos Solver',
       icon: '🍳',
-      tagline: 'Your kitchen 911 — from crisis to confidence',
+      tagline: 'When the recipe stops going according to plan.',
       input:
         'Making chili and forgot to defrost the ground beef. Guests in 90 minutes.',
       output:

@@ -5192,55 +5192,50 @@ tagline: "Work with the energy you have.",
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Mid-cook and something has gone wrong.",
-    give: "The recipe or the problem. Or run Pre-Flight before you start.",
-    get: "A rescue with the reason it works — or, beforehand, the steps most likely to go wrong.",
-    edge: "It explains the food science, so the same mistake doesn't repeat.",
+    give: "What you're making, what's going wrong, and what you have on hand. Or run Check Before I Start before you begin.",
+    get: "A fix grounded in your actual recipe — or, beforehand, what's missing before you start.",
+    edge: "It won't invent quantities your recipe never gave it, or predict a result it can't actually know.",
   },
-  seoDescription: "Mid-cook crisis? Get instant rescue fixes, smart ingredient substitutions with exact ratios, recipe scaling, and flavor fixes. Free kitchen 911, no signup.",
+  seoDescription: "Something going wrong in the kitchen? Get a rescue grounded in your actual recipe, ingredient substitutions, flavor fixes, a pre-cook readiness check, and recipe scaling. Free, no signup.",
   seoTitle: "Cooking Rescue & Ingredient Substitution Helper",
   title: "Recipe Chaos Solver",
-  tagline: "Your kitchen 911 — from crisis to confidence",
+  tagline: "When the recipe stops going according to plan.",
   tags: ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner'],
   icon: "🍳",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
-  description: "Mid-cook crisis? Missing ingredients, burnt sauce, flat flavor? Get instant rescue solutions, smart substitutions (single or multi-ingredient), recipe scaling with non-linear adjustments, pre-flight readiness checks, flavor fix upgrades, 60-second cooking lessons, a wins journal, and a hands-free Kitchen Companion mode for flour-covered hands.",
+  description: "Something going wrong in the kitchen? Tell us what you're making, what happened, and what you have on hand. Recipe Chaos Solver helps you recover the dish, replace missing ingredients, fix the flavor, check a recipe before you start, or scale it without creating a new problem.",
   guide: {
-    overview: "Recipe Chaos Solver is your cooking emergency room AND your cooking coach. When something goes wrong mid-cook, get instant rescue solutions with science explanations. Before you start, run a Pre-Flight Check to catch problems early. When dinner's just boring, Flavor Fix diagnoses what's missing. Every rescue becomes a learning moment with Teach Me lessons, and your Wins Journal tracks your growing confidence. Kitchen Companion mode gives you hands-free step-by-step guidance while you cook.",
+    overview: "Recipe Chaos Solver works from what you actually have — your recipe, your pantry, the problem in front of you — not a generic version pulled from memory. A missing ingredient gets a substitution scaled to what your recipe calls for, not an invented replacement recipe. A rescue tells you what to do now, what to expect, and why — without predicting a result it can't actually know.",
 
     howToUse: [
-      "🍳 Rescue: Paste a recipe or describe your problem, select a category, get rescue solutions with step-by-step instructions and science explanations",
-      "✈️ Pre-Flight: Paste a recipe + what you have → get a readiness report with ingredient checks, equipment warnings, technique heads-ups, and realistic time estimates",
-      "✨ Flavor Fix: Describe a dish that tastes flat → get a diagnosis of what's missing (acid, fat, salt, umami, heat, texture) with specific fixes ranked by impact",
-      "🔄 Quick Swap: Look up a single ingredient substitution with exact ratios, science, and best-for/avoid-in guidance",
-      "🔄🔄 Multi-Swap: Missing 2-8 ingredients? Get a compound analysis that accounts for interaction effects between substitutions",
-      "⚖️ Scale: Paste a recipe and change servings → AI-aware scaling that flags non-linear ingredients (spices, leavening, eggs) with timing and equipment adjustments",
-      "🎓 Teach Me: After any rescue or swap, tap 'Teach Me Why' for a 60-second lesson on the underlying cooking principle",
-      "👨‍🍳 Kitchen Companion: Full-screen hands-free mode with huge text, built-in timers, and big navigation buttons — designed for flour-covered hands",
-      "🏆 Wins Journal: Log cooking victories to build confidence. Track your rating trend over time.",
-      "📌 Saved: Build a personal cheat sheet of rescues, swaps, lessons, and scaling notes. Searchable when you have 4+ items."
+      "🍳 Rescue: Describe what you're making and what's going wrong (or paste/photograph the recipe) → get a fix grounded in your actual recipe, with a 'Walk Me Through It' step-by-step mode",
+      "🔄 Substitute: List what you're missing (one ingredient or several) → get a coherent plan that accounts for how multiple substitutions interact",
+      "✨ Fix the Flavor: Describe what's off → if the description is too vague to diagnose, it asks one clarifying question instead of guessing",
+      "✈️ Check Before I Start: Paste a recipe + what you have → a readiness read that only marks something missing when you've actually said so",
+      "⚖️ Scale: Paste a recipe and change servings → ingredients scale mathematically, non-linear ones (salt, leavening, eggs) get flagged instead of auto-adjusted",
+      "📋 Recent: Every check you've run, with View (see the original result) and Use Again (restore your inputs and rerun)"
     ],
 
     example: {
-      scenario: "You're making chocolate chip cookies but realize you're out of eggs AND butter. The recipe calls for 2 eggs and 1 cup butter. You have applesauce, coconut oil, and Greek yogurt available.",
-      action: "Go to Multi-Swap, add 'eggs' and 'butter' as missing ingredients, paste the recipe context, and note your available substitutes.",
-      result: "Feasibility: DOABLE. Combined impact analysis: Both subs affect moisture and binding — use coconut oil (¾ cup) for butter (adds slight coconut flavor, melts similarly) + ¼ cup applesauce per egg (adds moisture + binding). Combined technique: Chill dough 30 min longer since coconut oil is softer. Interaction warning: Both subs add moisture — reduce any liquid in recipe by 2 tbsp. Expected result: Slightly chewier cookies with subtle coconut undertone. Then tap 'Teach Me Why' to learn about the 3 jobs eggs do in baking."
+      scenario: "You're halfway through a bolognese and realize you're out of red wine and canned tomatoes. You have diced tomatoes, tomato paste, beef broth, and balsamic vinegar.",
+      action: "Open Rescue, describe the dish and what's missing, and list what you have.",
+      result: "A fix using beef broth in place of the wine and diced tomatoes in place of the canned ones — both scaled to 'the same volume your recipe called for,' not an invented amount. Balsamic is suggested in a small, taste-as-you-go amount for acidity, described as a partial substitute for the wine, not a replacement for it. No total time is invented, and nothing assumes the pan is about to burn just because a step is missing."
     },
 
     tips: [
-      "Upload a photo of your recipe, your pantry, or even the disaster itself — the tool handles all three image types",
-      "Pre-Flight Check uses your saved swaps to suggest substitutes you've already tried and liked",
-      "Flavor Fix works best when you describe what's wrong ('flat', 'one-note', 'missing something') — not just the dish name",
-      "In Kitchen Companion mode, multiple timers can run simultaneously across different steps",
-      "The Wins Journal compounds with pattern insights in History — after 3+ rescues, you'll see your most common issues",
-      "Save lessons to your cheat sheet — they're searchable and build a personal cooking education over time"
+      "Upload a photo of your recipe, your pantry, or the dish itself — Rescue reads what it can clearly make out from any of them",
+      "Substitute handles one missing ingredient or several at once — list them all together so it can account for how the substitutions interact",
+      "Fix the Flavor works best when you can say more than 'it's off' — but if that's all you've got, it'll ask a narrowing question first",
+      "Check Before I Start won't invent a 'realistic cooking time' from a recipe it wasn't given enough to judge — if you want the full prep and timing workflow, it'll point you to Mise en Place",
+      "Recent keeps a running log across every mode — View shows the original result again, Use Again restores your inputs so you can adjust and rerun"
     ],
 
     pitfalls: [
-      "Multi-Swap with 5+ ingredients may return 'abandon ship' — that's honest, not broken. Some combos just don't work.",
-      "Flavor Fix is for boring food, not broken food — if something went wrong, use Rescue instead",
-      "Kitchen Companion mode is full-screen overlay — tap 'Exit Guide' to return to normal view",
-      "Pre-Flight's time estimates are realistic, not optimistic — plan accordingly"
+      "Substitute won't force multiple alternatives per ingredient just to look thorough — it recommends the one coherent plan",
+      "Fix the Flavor is for boring food, not broken food — if something actually went wrong, use Rescue instead",
+      "Check Before I Start reads a status as 'missing' only when you've actually said it's missing — an item you didn't mention shows as unclear, not absent",
+      "Scale won't invent a new total cook time from the serving-count ratio — it flags what to watch instead"
     ]
   }
 },
