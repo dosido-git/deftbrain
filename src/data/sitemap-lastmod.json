@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "50edebe8b38de7c8da8615ac082dc6abdc6d7d78",
+  "hash": "1bc5d52da3e235a407afacc8ee8d060e17163920",
   "lastmod": "2026-09-08"
  },
  "static:about": {
@@ -181,6 +181,10 @@
  },
  "tool:PhraseDecoder": {
   "hash": "0cd452c1fcd73352a3f151107d3687088b7f3823",
+  "lastmod": "2026-09-08"
+ },
+ "tool:SayWhat": {
+  "hash": "8b231dd9ebfb6e4b95197e08d70b55a15602cf85",
   "lastmod": "2026-09-08"
  }
 }

@@ -362,7 +362,7 @@ const JargonAssassin = ({ tool }) => {
           {t('jarg_pretool_q')} <a href="/VelvetHammer" className={linkStyle}>🔨 {t('jarg_xref_velvet')}</a>.
         </p>
         <p className={`text-xs ${c.textMuteded} px-5 pt-1`}>
-          {t('jarg_xref_phrase_q')} <a href="/PhraseDecoder" className={linkStyle}>💬 {t('jarg_xref_phrase')}</a>.
+          {t('jarg_xref_phrase_q')} <a href="/SayWhat" className={linkStyle}>💬 {t('jarg_xref_phrase')}</a>.
         </p>
         <div className="px-5 py-4">
 

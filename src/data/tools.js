@@ -6494,7 +6494,7 @@ tagline: "Work with the energy you have.",
 
 {
   modified: "",
-  id: "PhraseDecoder",
+  id: "SayWhat",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6503,24 +6503,24 @@ tagline: "Work with the energy you have.",
     get: "What kind of expression it is, what it means, and what it means here — without guessing at what they were really thinking.",
     edge: "It tells you when the phrase genuinely could mean two different things, instead of picking one.",
   },
-  seoDescription: "Heard or read a confusing phrase — an idiom, slang, jargon, or something else? Phrase Decoder identifies what kind of expression it is and explains what it means, plainly and in context. Free.",
+  seoDescription: "Heard or read a confusing phrase — an idiom, slang, jargon, or something else? Say What? identifies what kind of expression it is and explains what it means, plainly and in context. Free.",
   seoTitle: "Idiom, Slang & Jargon Meaning Decoder",
-  title: "Phrase Decoder",
-  tagline: "💬 What they said. What kind of expression it is. What it actually means.",
+  title: "Say What?",
+  tagline: "What did they really mean.",
   tags: ['idiom', 'slang', 'jargon', 'metaphor', 'euphemism', 'phrase meaning', 'what does this mean', 'expression', 'proverb', 'workplace phrase', 'cultural reference', 'translate meaning'],
   icon: "💬",
   categories: ['Discourse', 'Go Deep!'],
   headerColor: "#cfe3e6",
-  description: "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Phrase Decoder tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.",
+  description: "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Say What? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.",
   guide: {
-    overview: "Phrase Decoder identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.",
+    overview: "Say What? identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.",
 
     howToUse: [
       "💬 Enter the phrase: type or paste exactly what was said or written",
       "📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely",
       "🏷️ Read the classification: what kind of expression it is, and why",
       "💡 Read the plain meaning, then what it means here if you gave context",
-      "➕ Not enough? Add more of the sentence and Phrase Decoder re-evaluates from scratch — it never treats its own earlier guess as a fact",
+      "➕ Not enough? Add more of the sentence and Say What? re-evaluates from scratch — it never treats its own earlier guess as a fact",
       "🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists"
     ],
 
@@ -6531,7 +6531,7 @@ tagline: "Work with the energy you have.",
     },
 
     tips: [
-      "Context changes everything — the same words can be literal or figurative depending on the situation, and Phrase Decoder classifies the use, not just the words",
+      "Context changes everything — the same words can be literal or figurative depending on the situation, and Say What? classifies the use, not just the words",
       "If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down",
       "For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have",
       "The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer"
@@ -6539,7 +6539,7 @@ tagline: "Work with the energy you have.",
 
     pitfalls: [
       "It won't guess at tone, hostility, or hidden intent from the phrase alone — if you want that read on a real exchange, that's a different kind of question than what a phrase means",
-      "For a whole document full of unfamiliar language — a lease, a contract, a policy — Jargon Assassin is the right tool; Phrase Decoder is for one phrase or sentence at a time",
+      "For a whole document full of unfamiliar language — a lease, a contract, a policy — Jargon Assassin is the right tool; Say What? is for one phrase or sentence at a time",
       "It won't manufacture a folk origin story or claim a phrase is common/outdated/regional without a reliable basis"
     ]
   }

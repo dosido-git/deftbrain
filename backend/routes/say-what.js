@@ -10,7 +10,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 // and lib/claude.js's withOutputStandard()) — it does not belong inline in the
 // prompt text itself, and a literal reference here would just print the name
 // as confusing text the model has no instructions attached to.
-const SYSTEM_PROMPT = `PHRASE DECODER
+const SYSTEM_PROMPT = `SAY WHAT?
 
 ROLE
 
@@ -52,8 +52,11 @@ PROVERB
 LITERAL
 
 Classification is multi-label.
-Use every label that materially helps explain the expression, but do not collect labels merely because they could technically apply.
-Prefer the smallest useful classification.
+Use the smallest set of labels that materially helps the visitor understand what the expression is and how it works. Do not omit an important classification merely to keep the label count low.
+
+Rule: include a label when it explains HOW the expression works or WHERE its special meaning comes from. Do not add a technically defensible label that teaches the visitor nothing.
+
+Example: 'boil the ocean' is reasonably IDIOM, METAPHOR, and WORKPLACE_PHRASE — the METAPHOR label earns its place because the literal impossible image (boiling an entire ocean) is precisely how the phrase communicates its figurative meaning, not because 'idiom' technically implies figurative language already.
 
 Literal is a legitimate result.
 Unclear / needs context is a legitimate result.
@@ -66,9 +69,14 @@ Do not silently choose an idiomatic reading when the context does not establish 
 
 PLAIN MEANING
 
-Lead with the simplest useful explanation.
-The visitor should understand the expression after reading this section even if they read nothing else.
+Answer first. PLAIN MEANING is the answer to 'what does this mean' — nothing else.
+State the meaning directly, in as few words as the meaning allows. The visitor should be able to read only this section and be fully answered.
+Do not use PLAIN MEANING to explain the literal image, the etymology, or why the phrase works the way it does — that belongs in BACKGROUND, not here.
 Avoid explaining one unfamiliar expression with another unfamiliar expression.
+
+Weak: 'Don't try to do everything at once. Attempting to boil an ocean is a task so enormous it can never be completed — so the phrase means you shouldn't take on too much at once.'
+Strong PLAIN MEANING: 'Don't try to do everything at once.'
+If the literal image is worth explaining, it goes under BACKGROUND: 'The image is deliberately impossible: trying to boil an entire ocean. That's why it came to mean taking on an unrealistically large scope.'
 
 CONTEXTUAL MEANING
 
@@ -165,11 +173,13 @@ CURRENTNESS / REGIONALITY
 Do not invent claims such as everyone says this, mostly older people use this, this is outdated, common in a specific city, or a generation uses this unless sufficiently reliable.
 Current popularity is secondary to understanding the phrase.
 
-ORIGIN
+ORIGIN / BACKGROUND
 
-Origin/background is optional. Include it only when reasonably established and useful to understanding.
+Background is where the literal image, etymology, or figurative logic goes when explaining it helps the visitor — it is optional, but it is also the correct home for anything PLAIN MEANING should not be carrying.
+Include it only when reasonably established and useful to understanding.
 If disputed, say it is disputed.
 Never present a colorful folk origin merely because it is memorable.
+Give it a heading that says what it is doing, e.g. 'Why This Phrase?' when explaining the figurative logic, or 'Background' for history/origin.
 
 OUTPUT DEPTH
 
@@ -182,21 +192,29 @@ SAY IT PLAINLY
 
 Add tone, background, regional note, or response help only when they genuinely help.
 
+FINAL TEST
+
+PLAIN MEANING should make complete sense if the visitor reads only that section.
+CLASSIFICATION should tell the visitor what kind of language they encountered, and why each label is there.
+BACKGROUND should explain why the expression works only when that adds value — never to pad the answer.
+ANSWER FIRST. EXPLAIN SECOND.
+
 FINAL AUDIT
 
 Before returning:
 1. Is this actually figurative language?
 2. Could it be literal?
 3. Does classification depend on context?
-4. Did I force one classification when several genuinely apply?
-5. Did I attach unnecessary labels?
+4. Did I omit a classification that explains how the expression works or where its meaning comes from?
+5. Did I attach a label that teaches the visitor nothing?
 6. Did I confuse jargon with idiom?
 7. Did I infer the speaker's motive or emotional state?
 8. Did I infer identity from slang or regional language?
 9. Did I invent an origin story?
 10. Did I make an unsupported claim about how common/current the phrase is?
 11. Does SAY IT PLAINLY actually use plain language?
-12. Can I remove anything without making the answer less useful?
+12. Did PLAIN MEANING stay an answer, with any etymology or figurative-image explanation moved to BACKGROUND?
+13. Can I remove anything without making the answer less useful?
 
 If any answer reveals a problem, revise.
 
@@ -218,7 +236,7 @@ function collectProseFields(parsed) {
   return fields;
 }
 
-router.post('/phrase-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/say-what', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const phrase = cleanString(req.body.phrase, 1500);
     const context = cleanString(req.body.context, 6000);
@@ -241,7 +259,7 @@ Return ONLY valid JSON matching this shape:
       "why": "short reason this label materially helps"
     }
   ],
-  "plain_meaning": "plain-language meaning",
+  "plain_meaning": "the direct answer only — no etymology, no figurative-image explanation, no background",
   "contextual_meaning": {
     "available": true,
     "meaning": "what it most reasonably means in the supplied context"
@@ -264,7 +282,7 @@ Return ONLY valid JSON matching this shape:
   },
   "background": {
     "available": false,
-    "heading": "Why that phrase|Background|Reference",
+    "heading": "Why This Phrase?|Background|Reference",
     "explanation": ""
   },
   "regional_note": {
@@ -287,6 +305,7 @@ Rules for the JSON:
 - contextual_meaning.available must be false if no context was supplied or if the context is insufficient.
 - ambiguity.needs_context must be true when two materially different readings remain plausible.
 - background and regional_note are optional in substance: set available false and explanation empty when they do not earn their place.
+- plain_meaning must be the direct answer only. Any explanation of the literal image, etymology, or figurative logic belongs in background, not plain_meaning.
 - response_help should usually be false unless the supplied context describes an interaction where a reply would help.
 - Do not add keys outside this schema.`;
 
@@ -295,14 +314,14 @@ Rules for the JSON:
       max_tokens: 2600,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'phrase-decoder' });
+    }, { label: 'say-what' });
 
     if (!parsed?.plain_meaning && !parsed?.ambiguity?.needs_context) {
       return res.status(500).json({ error: 'Could not decode that phrase. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'phrase-decoder',
+      label: 'say-what',
       fields: collectProseFields(parsed),
       supplied: `PHRASE: ${phrase}\nCONTEXT: ${context || 'none supplied'}`,
       promise: 'Identify what kind of expression the phrase is and explain what it means — plainly, and in the supplied context without inventing subtext, identity, origin, or currentness the visitor never gave.',
@@ -312,12 +331,12 @@ Rules for the JSON:
 
     res.json(parsed);
   } catch (error) {
-    console.error('PhraseDecoder error:', error);
+    console.error('SayWhat error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
-router.post('/phrase-decoder/equivalent', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/say-what/equivalent', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const phrase = cleanString(req.body.phrase, 1500);
     const plainMeaning = cleanString(req.body.plainMeaning, 2500);
@@ -352,7 +371,7 @@ Return ONLY valid JSON:
       max_tokens: 900,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    }, { label: 'phrase-decoder-equivalent' });
+    }, { label: 'say-what-equivalent' });
 
     if (!parsed?.equivalent_type) {
       return res.status(500).json({ error: 'Could not find an equivalent right now. Please try again.' });
@@ -360,7 +379,7 @@ Return ONLY valid JSON:
 
     res.json(parsed);
   } catch (error) {
-    console.error('PhraseDecoder equivalent error:', error);
+    console.error('SayWhat equivalent error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

@@ -3190,38 +3190,6 @@ Input: You're posting in a group chat with coworkers and your manager: 'Just FYI
 
 Output: Manager reads it as a professional heads-up with subtle accountability signal — safe. Jake reads it as public shaming — risky, he'll get defensive. Rest of team reads it as you positioning for credit — mild risk of seeming political. Biggest risk: Jake feels ambushed. Rewrite suggestions include a version that achieves the same goal via DM to manager instead, and a softer group version that doesn't name the duration.
 
-### Phrase Decoder
-
-URL: https://deftbrain.com/PhraseDecoder
-Tagline: 💬 What they said. What kind of expression it is. What it actually means.
-Categories: Discourse, Go Deep!
-
-Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Phrase Decoder tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
-
-**What it does.** Phrase Decoder identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.
-
-**How to use it.**
-
-1. 💬 Enter the phrase: type or paste exactly what was said or written
-2. 📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely
-3. 🏷️ Read the classification: what kind of expression it is, and why
-4. 💡 Read the plain meaning, then what it means here if you gave context
-5. ➕ Not enough? Add more of the sentence and Phrase Decoder re-evaluates from scratch — it never treats its own earlier guess as a fact
-6. 🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists
-
-**Tips.**
-
-- Context changes everything — the same words can be literal or figurative depending on the situation, and Phrase Decoder classifies the use, not just the words
-- If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down
-- For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have
-- The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
-
-**Example.**
-
-Input: A coworker said "that's above my pay grade" after you asked who could approve an exception.
-
-Output: Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: "I'm not the person who can approve that."
-
 ### Pronounce It Right
 
 URL: https://deftbrain.com/PronounceItRight
@@ -3255,6 +3223,38 @@ Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you h
 Input: You're going to an Italian restaurant and want to order without second-guessing yourself.
 
 Output: Four pronunciation cards with phonetic spelling, the sound each one trips up for an English speaker specifically, and a flag on any word whose reading genuinely depends on context you haven't given.
+
+### Say What?
+
+URL: https://deftbrain.com/SayWhat
+Tagline: What did they really mean.
+Categories: Discourse, Go Deep!
+
+Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Say What? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
+
+**What it does.** Say What? identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.
+
+**How to use it.**
+
+1. 💬 Enter the phrase: type or paste exactly what was said or written
+2. 📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely
+3. 🏷️ Read the classification: what kind of expression it is, and why
+4. 💡 Read the plain meaning, then what it means here if you gave context
+5. ➕ Not enough? Add more of the sentence and Say What? re-evaluates from scratch — it never treats its own earlier guess as a fact
+6. 🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists
+
+**Tips.**
+
+- Context changes everything — the same words can be literal or figurative depending on the situation, and Say What? classifies the use, not just the words
+- If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down
+- For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have
+- The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
+
+**Example.**
+
+Input: A coworker said "that's above my pay grade" after you asked who could approve an exception.
+
+Output: Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: "I'm not the person who can approve that."
 
 ### The Final Word
 
