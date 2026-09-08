@@ -28,7 +28,7 @@
 - [Procedure Probe](https://deftbrain.com/ProcedureProbe): Be an informed patient before you say yes.
 - [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): When the recipe stops going according to plan.
 - [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day
-- [Roommate Court](https://deftbrain.com/RoommateCourt): Settle disputes and assign chores — no arguments
+- [Roommate Court](https://deftbrain.com/RoommateCourt): Work it out without making it worse.
 - [Safe Walk](https://deftbrain.com/SafeWalk): Prepare smart, walk safe
 - [Wardrobe Chaos Helper](https://deftbrain.com/WardrobeChaosHelper): AI picks your outfit. No more decision fatigue.
 

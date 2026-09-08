@@ -1,66 +1,309 @@
 {
   "_meta": {
     "tool": "RoommateCourt",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 3 actions (mediate/assign/rebalance)",
-    "baseline_commit": "roommatecourt-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden roommate-court) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) verdict.whos_right MUST be an English key (you|them|both|neither) — the frontend switches the verdict-badge color on it AND maps it to a localized label via t(); withLanguage would otherwise translate it → badge always rendered 'Neither is right' in 12 langs. (2) assign+rebalance now accept BOTH `history` and `sessionHistory` (frontend sends sessionHistory, backend read history → the whole history-aware balancing was silently dead). (3) conversation_script is quote-heavy German dialogue → no-inner-double-quote rule. (4) format-strict exemplars are concrete numbers (effort:2, your/their_fault_pct, fairness_score, effort_totals) — the frontend consumes them as integers for width math / sums / label lookups. (5) mediate max_tokens 4000→5000 + immediate_actions/boundaries/escalation_options<=3. DO NOT reverse: whos_right English pin; history||sessionHistory; the no-inner-quote rule; concrete numeric exemplars; mediate 5000 + caps; no annotation suffixes."
+    "captured": "2026-09-08",
+    "baseline": "roommate-court-v2",
+    "model": "claude-sonnet-4-6 (all 3 actions) + lib/outputGuard.js (v2 enforcement on mediate)",
+    "endpoints": [
+      "/api/roommate-court (action: mediate|assign|rebalance)"
+    ],
+    "note": "V2 rewrite, 2026-09-08: full architecture change per owner's brief. Renamed 'Dispute Court' tab to 'Work It Out' (tool name stays Roommate Court); removed the Category selector. Mediator no longer returns fault percentages (your_fault_pct/their_fault_pct) or a whos_right verdict -- replaced with the_read.label, a pinned-English 8-value enum (YOUR REQUEST LOOKS REASONABLE...NOT ENOUGH TO TELL). Removed underlying_issues.real_conflict / surface_conflict / communication_breakdown (invented 'real conflict') -- replaced with where_the_disagreement_is{your_stated_concern,their_reported_concern,collision,unknowns_that_matter}. conversation_script (a full scripted two-sided dialogue ending in an invented agreement) replaced with conversation{start_with_this,ask_this,if_they_push_back[],proposal} -- if_they_push_back entries are explicitly hypothetical, proposal is explicitly not an agreement. resolution.compromise/boundaries and if_stuck.escalation_options/self_protection/exit_strategy replaced with what_to_try[] and if_that_doesnt_work[] (progressive disclosure). prevention (unconditional prevention claims) and reality_check (partisan-ally framing) replaced with one_thing_not_to_lose_sight_of (optional, non-partisan). Assigner (Chore Roulette) no longer invents universal 1/2/3 effort weights or a fairness_score percentage -- chores now carry an optional household-supplied load (UNSPECIFIED|LIGHTER|MEDIUM|HEAVIER) echoed back exactly as supplied, never invented; this_round.load_totals is null unless at least one chore had a supplied load. Rebalance (was 'That's Not Fair!', now 'Something Doesn't Work?') no longer returns complaint_valid -- replaced with what_changed + adjustment_needed, treating the complaint as new information rather than a claim to adjudicate. See audit/tool-notes/ROOMMATECOURT-NOTES.md for the full correction history.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden roommate-court). Diff for QUALITY not exact match: HTTP 200, no truncation, the_read.label stays the exact pinned English string regardless of userLanguage. The mediate case is German specifically because its schema is the largest and most truncation-fragile (3500 max_tokens); verify it still returns all 6 top-level fields with no error."
   },
   "cases": [
     {
-      "name": "de-mediate-dishes-dispute",
+      "name": "de-mediate-dishes-conflict",
       "endpoint": "/api/roommate-court",
       "input": {
+        "action": "mediate",
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "Germany",
-        "action": "mediate",
-        "category": "Sauberkeit",
-        "livingSituation": "WG mit 3 Leuten",
-        "duration": "3 Monate",
-        "priorCommunication": "Einmal angesprochen",
-        "dispute": "Mein Mitbewohner lässt ständig schmutziges Geschirr in der Spüle stehen, manchmal tagelang. Ich habe es einmal angesprochen aber nichts hat sich geändert.",
-        "yourSide": "Ich putze immer sofort, er ignoriert es einfach.",
-        "theirSide": "Er sagt, er hat viel Stress im Job und kommt später dazu."
+        "dispute": "Geschirr bleibt tagelang in der Spüle stehen, manchmal eine ganze Woche",
+        "yourSide": "Ich arbeite von zu Hause aus und die Küche ist direkt neben meinem Schreibtisch. Ich starre den halben Arbeitstag auf schmutziges Geschirr. Ich verlange keine makellose Küche, nur dass es nicht mehr als eine Nacht stehen bleibt.",
+        "theirSide": "Sie arbeitet lange Schichten im Krankenhaus und sagt, sie sei zu müde, um abends um 21 Uhr Geschirr zu spülen. Sie macht es an ihren freien Tagen. Sie findet, ich sei zu pingelig, weil ich den ganzen Tag zu Hause bin.",
+        "duration": "Monate",
+        "priorCommunication": "Mehr als einmal darüber gesprochen",
+        "livingSituation": "Geteilte Wohnung"
       },
       "output": {
-        "verdict": {
-          "whos_right": "both",
-          "reasoning": "Schmutziges Geschirr tagelang in der Spüle stehen zu lassen ist objektiv rücksichtslos gegenüber Mitbewohnern – das ist sein Fehler. Allerdings ist ein einziges Gespräch nach drei Monaten zu wenig: Wer ein Problem hat, muss es klarer und konsequenter ansprechen. Beide tragen Verantwortung für die festgefahrene Situation.",
-          "your_fault_pct": 25,
-          "their_fault_pct": 75
+        "the_read": {
+          "label": "YOU'RE TALKING PAST EACH OTHER",
+          "explanation": "Du beschreibst ein Problem mit deiner Arbeitssituation – du siehst das Geschirr den ganzen Tag und es beeinträchtigt deine Konzentration. Sie beschreibt ein Problem mit ihrer Erschöpfung nach langen Schichten. Beide Anliegen sind nachvollziehbar, aber ihr redet bislang über zwei verschiedene Dinge: du über den Ort (die Küche als dein Arbeitsumfeld), sie über den Zeitpunkt (abends um 21 Uhr)."
         },
-        "underlying_issues": {
-          "surface_conflict": "Schmutziges Geschirr in der Spüle",
-          "real_conflict": "Es geht um gegenseitigen Respekt und unterschiedliche Vorstellungen davon, was in einer WG als akzeptables Verhalten gilt. Er fühlt sich möglicherweise unter Druck gesetzt, du fühlst dich ignoriert und nicht ernst genommen.",
-          "communication_breakdown": "Das erste Gespräch war wahrscheinlich zu sanft oder zu allgemein – ohne klare Konsequenzen und ohne Vereinbarung einer Frist. Er hat es als unverbindlichen Hinweis abgehakt, nicht als echtes Problem."
-        },
-        "resolution": {
-          "immediate_actions": [
-            "Schreib ihm heute noch eine kurze, sachliche Nachricht (WhatsApp oder Zettel), dass du ein Gespräch brauchst – nicht sofort, aber innerhalb von 2 Tagen.",
-            "Räum sein Geschirr ab sofort NICHT mehr weg – auch wenn es dich nervt. Nur so wird das Problem für ihn spürbar.",
-            "Überleg dir vor dem Gespräch eine konkrete Regel, der du wirklich zustimmen kannst – z.B. maximal 24 Stunden Geschirr in der Spüle."
-          ],
-          "conversation_script": "Du: Hey, ich möchte kurz in Ruhe über das Thema Küche reden. Hast du gerade 10 Minuten?\nEr: Jetzt gerade? Ich bin gerade ziemlich müde nach der Arbeit.\nDu: Ich verstehe das. Wann passt es dir dann – morgen Abend?\nEr: Na gut, was ist denn das Problem?\nDu: Das Geschirr steht seit drei Monaten regelmäßig tagelang in der Spüle. Ich habe es einmal angesprochen, aber nichts hat sich geändert. Das ist für mich kein Dauerzustand.\nEr: Ich habe Stress im Job, ich komme einfach später dazu. Ich mache es doch irgendwann.\nDu: Ich nehme dir den Stress nicht übel. Aber irgendwann reicht mir nicht mehr. Für mich heißt das konkret: Geschirr muss innerhalb von 24 Stunden gespült werden – oder zumindest in dein Zimmer. Die Spüle ist für alle.\nEr: Das ist doch übertrieben, ich wohne hier auch.\nDu: Genau, wir wohnen alle hier. Deshalb brauchen wir eine Regel, die für alle funktioniert. Ich bin bereit, dir entgegenzukommen – aber irgendeine klare Abmachung muss her.\nEr: Okay, ich versuche es.\nDu: Versuchen reicht mir leider nicht mehr. Ich würde gerne etwas Schriftliches festhalten – als WG-Vereinbarung für alle drei. Nicht gegen dich, sondern damit wir alle wissen, woran wir sind.",
-          "compromise": "Geschirr darf maximal 24 Stunden in der Spüle stehen. Wer an einem besonders stressigen Tag nicht spülen kann, stellt das Geschirr in sein Zimmer oder in eine Wanne – so blockiert er nicht die gemeinsame Spüle. Diese Regel gilt für alle drei WG-Mitglieder gleichermaßen.",
-          "boundaries": [
-            "Schmutziges Geschirr bleibt maximal 24 Stunden in der Spüle – danach wird es ins eigene Zimmer gestellt, nicht liegen gelassen.",
-            "Du räumst sein Geschirr nicht mehr weg – das ist nicht deine Aufgabe und macht das Problem unsichtbar.",
-            "Bei erneuter Nichteinhaltung nach einer schriftlichen WG-Vereinbarung folgt ein Gespräch mit allen drei Mitbewohnern gemeinsam, nicht mehr nur unter euch beiden."
+        "where_the_disagreement_is": {
+          "your_stated_concern": "Schmutziges Geschirr steht tagelang in der Spüle, direkt neben deinem Homeoffice-Arbeitsplatz. Du möchtest, dass es spätestens nach einer Nacht weggeräumt wird.",
+          "their_reported_concern": "Nach langen Krankenhausschichten ist sie abends zu erschöpft, um noch Geschirr zu spülen. Sie erledigt es an freien Tagen und empfindet deine Erwartung als übertrieben.",
+          "collision": "Deine Forderung 'nicht länger als eine Nacht' und ihr Rhythmus 'an freien Tagen' passen strukturell nicht zusammen – je nach Schichtplan können zwischen zwei freien Tagen mehrere Tage liegen. Ihr habt noch keinen gemeinsamen Standard gefunden, der beide Lebensrealitäten berücksichtigt.",
+          "unknowns_that_matter": [
+            "Wie oft und wie regelmäßig hat sie freie Tage – d.h. wie lange bleibt das Geschirr im Schnitt tatsächlich stehen?",
+            "Wäre für sie ein anderer Zeitpunkt als abends realisierbar – z.B. morgens vor der Schicht oder am nächsten freien Morgen?",
+            "Habt ihr bisher eine konkrete Frist oder Regelung vereinbart, oder war es bislang eher ein allgemeines Gespräch über das Problem?"
           ]
         },
-        "if_stuck": {
-          "escalation_options": [
-            "Alle drei Mitbewohner setzen sich zusammen und erstellen schriftlich einen WG-Vertrag mit klaren Küchenregeln – unterschrieben von allen.",
-            "Falls er weiter ignoriert: Sprecht euren Vermieter an und fragt nach einer Hausordnung oder einer Mediation – viele Vermieter bieten das informell an.",
-            "Als letzten Schritt könnt ihr eine kostenlose Mieterrechtsberatung (z.B. beim Deutschen Mieterbund) aufsuchen, um zu verstehen, welche Rechte und Pflichten in eurer WG-Konstellation gelten."
+        "what_to_try": [
+          {
+            "action": "Die Frist vom Zeitpunkt lösen und an einen Zustand knüpfen",
+            "why_it_may_help": "Statt 'nicht länger als eine Nacht' könnte das Ziel lauten: 'Geschirr ist weggeräumt, bevor ein neuer Arbeitstag für mich beginnt.' Das lässt ihr etwas Flexibilität beim Zeitpunkt, schützt aber deinen Arbeitsalltag."
+          },
+          {
+            "action": "Eine konkrete, schriftlich festgehaltene Hausregel vorschlagen",
+            "why_it_may_help": "Ihr habt mehrfach geredet, aber es ist unklar, ob dabei eine verbindliche Abmachung entstanden ist. Eine kurze schriftliche Formulierung – z.B. per Nachricht oder Notiz – macht sichtbar, worüber ihr euch tatsächlich einig seid, und verhindert spätere unterschiedliche Erinnerungen."
+          },
+          {
+            "action": "Zwischen 'muss' und 'wäre schön' trennen",
+            "why_it_may_help": "Du sagst selbst, du verlangst keine makellose Küche. Es könnte helfen, ihr genau zu sagen, was dein Minimum ist – z.B. dass die Spüle frei ist, wenn du morgens anfängst zu arbeiten – damit sie nicht das Gefühl hat, du willst permanente Sauberkeit."
+          }
+        ],
+        "conversation": {
+          "start_with_this": "Ich möchte das nochmal ansprechen, weil es für mich im Alltag wirklich ein Problem ist – nicht weil ich es perfekt haben will, sondern weil ich den ganzen Tag in Sichtweite der Spüle arbeite. Ich glaube, wir haben bisher aneinander vorbeigeredet.",
+          "ask_this": "Wann wäre für dich realistisch, das Geschirr wegzuräumen – nicht abends nach der Schicht, aber vielleicht am nächsten Morgen oder bevor du wieder arbeitest?",
+          "if_they_push_back": [
+            {
+              "possible_response": "Entfernt. Das Tool darf nicht vorhersagen, wie sie reagieren wird – das wäre Gedankenlesen. Stattdessen: Bereite dich darauf vor, dass das Gespräch schwierig sein könnte, aber konzentriere dich auf das, was du kontrollieren kannst: deine Frage, dein Anliegen klar zu benennen.",
+              "you_could_say": "Wenn sie wieder sagt, du seist zu pingelig: Bleib bei deinem Anliegen, nicht ihrer Müdigkeit oder deiner Großzügigkeit. Du könntest sagen: 'Mir geht es nicht um Perfektion – mir geht es darum, dass ich hier arbeite und tagelang schmutziges Geschirr sehe. Wann wäre für dich ein realistischer Zeitpunkt?'"
+            }
           ],
-          "self_protection": "Kauf dir ein kleines Abtropfregal oder eine verschließbare Box für dein eigenes Geschirr und lagere es in deinem Zimmer. So hast du immer sauberes Geschirr, unabhängig vom Zustand der Küche. Dokumentiere außerdem die Vorfälle mit Datum und Foto – falls es später zu Konflikten beim Auszug kommt.",
-          "exit_strategy": "Wenn nach einer schriftlichen Vereinbarung und einem Gespräch zu dritt noch immer keine Besserung eintritt, prüfe deinen Untermietvertrag oder WG-Vertrag auf Kündigungsfristen. In Deutschland beträgt die Kündigungsfrist bei WGs oft 3 Monate. Fang diskret an, Nachmieter zu suchen oder WG-Anzeigen zu lesen – nicht als Drohung, sondern als echte Option für dich."
+          "proposal": "Formuliere einen Vorschlag als Frage, nicht als Regel: 'Wäre es realistisch, wenn das Geschirr spätestens am nächsten Morgen weg ist – nicht um 21 Uhr, sondern wann immer du Zeit hast?' Dann höre, was sie sagt, bevor ihr versucht, euch zu einigen."
         },
-        "prevention": "Legt beim Einzug – oder spätestens jetzt – gemeinsam einen WG-Vertrag an. Haltet darin konkrete Küchenregeln fest: Wer ist wann für welche Bereiche zuständig, wie lange darf Geschirr stehen, wer kauft Spülmittel. Macht alle 4–6 Wochen einen kurzen WG-Check-in von 15 Minuten, um kleine Probleme anzusprechen, bevor sie zu großen werden.",
-        "reality_check": "Dein Mitbewohner verhält sich rücksichtslos – da gibt es nichts schönzureden. Aber drei Monate lang einmal sanft ansprechen und dann schweigen ist auch keine Lösung. Du hast das Problem mitgetragen, indem du es nicht klar genug benannt hast. Sein Stress-Argument ist verständlich, aber keine Dauererklärung: Stress haben wir alle, und trotzdem spülen andere ihren Teller. Jetzt ist der Moment für ein klares, ruhiges, aber unmissverständliches Gespräch – mit einer konkreten Regel und echten Konsequenzen. Wenn du weiter schweigst oder nachgibst, ändert sich garantiert nichts."
+        "if_that_doesnt_work": [
+          {
+            "next_step": "Das Gespräch schriftlich zusammenfassen",
+            "when_it_makes_sense": "Wenn ihr euch mündlich einigt, aber das Problem danach weitergeht – eine kurze Nachricht nach dem Gespräch ('Ich fasse kurz zusammen, worüber wir uns geeinigt haben...') macht aus einem Gespräch eine nachweisbare Abmachung."
+          },
+          {
+            "next_step": "Die Wohnsituation grundsätzlich neu bewerten",
+            "when_it_makes_sense": "Wenn nach mehreren Versuchen mit konkreten Vorschlägen keine Einigung entsteht und die Situation deinen Arbeitsalltag dauerhaft beeinträchtigt, lohnt es sich zu überlegen, ob die Wohnkonstellation langfristig für dich funktioniert – unabhängig davon, wer 'Recht hat'."
+          }
+        ],
+        "one_thing_not_to_lose_sight_of": "Ihr redet bislang aneinander vorbei – du über den Ort, sie über den Zeitpunkt. Ein Vorschlag, der ihr beim Zeitpunkt Spielraum lässt, aber dir beim Ergebnis Klarheit gibt, hat bessere Chancen als eine starre Frist. Das erfordert, dass ihr vorher wirklich versteht, was für die andere Person machbar ist."
+      },
+      "optionalSections": [
+        "what_to_try",
+        "if_that_doesnt_work"
+      ]
+    },
+    {
+      "name": "en-assign-first-round-with-supplied-loads",
+      "endpoint": "/api/roommate-court",
+      "input": {
+        "action": "assign",
+        "userLanguage": "en",
+        "roommates": [
+          "Jane",
+          "Ralph",
+          "Jimmy",
+          "Billy"
+        ],
+        "chores": [
+          {
+            "name": "Dishes",
+            "load": "UNSPECIFIED"
+          },
+          {
+            "name": "Bathroom",
+            "load": "HEAVIER"
+          },
+          {
+            "name": "Mopping",
+            "load": "MEDIUM"
+          },
+          {
+            "name": "Grocery Run",
+            "load": "UNSPECIFIED"
+          }
+        ],
+        "history": []
+      },
+      "output": {
+        "assignments": [
+          {
+            "roommate": "Jane",
+            "chores": [
+              {
+                "name": "Bathroom",
+                "load": "HEAVIER"
+              }
+            ]
+          },
+          {
+            "roommate": "Ralph",
+            "chores": [
+              {
+                "name": "Mopping",
+                "load": "MEDIUM"
+              }
+            ]
+          },
+          {
+            "roommate": "Jimmy",
+            "chores": [
+              {
+                "name": "Dishes",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          },
+          {
+            "roommate": "Billy",
+            "chores": [
+              {
+                "name": "Grocery Run",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          }
+        ],
+        "this_round": {
+          "chore_counts": {
+            "Jane": 1,
+            "Ralph": 1,
+            "Jimmy": 1,
+            "Billy": 1
+          },
+          "load_totals": {
+            "Jane": 3,
+            "Ralph": 2,
+            "Jimmy": 0,
+            "Billy": 0
+          }
+        },
+        "why_these_assignments": "Four chores, four members — one chore each. Bathroom (HEAVIER) and Mopping (MEDIUM) were assigned first, to Jane and Ralph respectively, randomized among members. Dishes and Grocery Run had no supplied load, so Jimmy and Billy received those by random draw. Load totals reflect supplied weights only (HEAVIER=3, MEDIUM=2); Dishes and Grocery Run contribute 0 because no household load was supplied for them. Future rounds can use this baseline to rotate who holds the heavier and medium chores.",
+        "rotation_note": "Jane holds the only HEAVIER chore this round and Ralph the only MEDIUM. Next round, rotating Bathroom and Mopping to other members would avoid back-to-back heavier assignments for Jane and Ralph."
+      }
+    },
+    {
+      "name": "en-rebalance-new-constraint-and-repeat-chore",
+      "endpoint": "/api/roommate-court",
+      "input": {
+        "action": "rebalance",
+        "userLanguage": "en",
+        "currentAssignments": [
+          {
+            "roommate": "Jane",
+            "chores": [
+              {
+                "name": "Bathroom",
+                "load": "HEAVIER"
+              }
+            ]
+          },
+          {
+            "roommate": "Ralph",
+            "chores": [
+              {
+                "name": "Mopping",
+                "load": "MEDIUM"
+              }
+            ]
+          },
+          {
+            "roommate": "Jimmy",
+            "chores": [
+              {
+                "name": "Dishes",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          },
+          {
+            "roommate": "Billy",
+            "chores": [
+              {
+                "name": "Grocery Run",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          }
+        ],
+        "complaint": "Ralph cannot do the grocery run because he does not have a car, and I did the bathroom last time too",
+        "history": [
+          {
+            "date": "9/1/2026",
+            "assignments": [
+              {
+                "roommate": "Jane",
+                "chores": [
+                  {
+                    "name": "Bathroom",
+                    "load": "HEAVIER"
+                  }
+                ]
+              },
+              {
+                "roommate": "Ralph",
+                "chores": [
+                  {
+                    "name": "Dishes",
+                    "load": "UNSPECIFIED"
+                  }
+                ]
+              },
+              {
+                "roommate": "Jimmy",
+                "chores": [
+                  {
+                    "name": "Mopping",
+                    "load": "MEDIUM"
+                  }
+                ]
+              },
+              {
+                "roommate": "Billy",
+                "chores": [
+                  {
+                    "name": "Grocery Run",
+                    "load": "UNSPECIFIED"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "what_changed": "Two new constraints: Ralph cannot do Grocery Run because he has no car, and Jane did Bathroom in both Round 1 and the current assignment, meaning she has had the HEAVIER chore two rounds in a row.",
+        "adjustment_needed": true,
+        "revised_assignments": [
+          {
+            "roommate": "Jane",
+            "chores": [
+              {
+                "name": "Mopping",
+                "load": "MEDIUM"
+              }
+            ]
+          },
+          {
+            "roommate": "Ralph",
+            "chores": [
+              {
+                "name": "Dishes",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          },
+          {
+            "roommate": "Jimmy",
+            "chores": [
+              {
+                "name": "Bathroom",
+                "load": "HEAVIER"
+              }
+            ]
+          },
+          {
+            "roommate": "Billy",
+            "chores": [
+              {
+                "name": "Grocery Run",
+                "load": "UNSPECIFIED"
+              }
+            ]
+          }
+        ],
+        "explanation": "Two things changed. First, Grocery Run is now a hard constraint for Ralph — no car means it cannot be assigned to him. Billy keeps Grocery Run since he had it both prior rounds and there is no stated constraint blocking him, but that repetition is worth flagging for the next round. Second, Jane had Bathroom (HEAVIER) in Round 1 and again in the current round — back-to-back on the heaviest chore. That is a real load-balance issue, not just a feeling. Jimmy had Mopping (MEDIUM) in Round 1 and Dishes in the current round, so rotating the HEAVIER chore to Jimmy this round is the straightforward fix. Ralph moves from Mopping to Dishes, which he did in Round 1, but that avoids the car constraint and keeps things workable. Result: Jane gets Mopping, Ralph gets Dishes, Jimmy gets Bathroom, Billy keeps Grocery Run."
       }
     }
   ]

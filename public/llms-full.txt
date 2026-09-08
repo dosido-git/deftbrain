@@ -617,34 +617,34 @@ Output: Generates: (1) A formal condition report listing every room and item wit
 ### Roommate Court
 
 URL: https://deftbrain.com/RoommateCourt
-Tagline: Settle disputes and assign chores — no arguments
+Tagline: Work it out without making it worse.
 Categories: The Grind, Humans
 
-Two tools in one: AI-powered dispute mediation that analyzes fault, surfaces the real underlying conflict, and gives you a word-for-word conversation script — plus a fair chore assignment engine that balances effort across rounds using history, so nobody can claim it's unfair. Includes a 'That's Not Fair!' button that reviews complaints against actual data.
+Roommate problem? Tell Roommate Court what's happening and what each side says. It helps you separate the facts from the disagreement, figure out what might actually resolve it, and gives you words to start the conversation. Or use Chore Roulette to divide household chores and rotate the load over time.
 
-**What it does.** RoommateCourt has two tabs. Dispute Court: describe a roommate conflict, get an impartial AI verdict with fault percentages, the real underlying issue (not just the surface fight), immediate action steps, a copy-paste conversation script, boundaries to set, escalation options tailored to your living situation, and an honest reality check. Chore Roulette: add your household and chores, get AI-balanced assignments weighted by effort (light/medium/heavy) that account for history across rounds — with a 'That's Not Fair!' button that reviews complaints against actual data and either revises assignments or explains with numbers why they're already fair.
+**What it does.** Roommate Court has two tabs. Work It Out: describe a roommate conflict — your side, and what you know of theirs — and get a read on where the disagreement actually sits, not a fault ruling. It has only your account, so it never invents the 'real conflict' behind the fight or scripts a conversation where the other person accepts a proposal that hasn't happened. Instead it gives you practical options, an opening line, a question worth asking, and a proposal to make — with escalation steps only if ordinary conversation doesn't work. Chore Roulette: add your household and the chores that need doing, optionally tell it how heavy each chore is, and get a rotation — no invented effort weights, no fake fairness percentage, just a reasonable division that a 'Something Doesn't Work?' button can revise using new information you supply.
 
 **How to use it.**
 
-1. DISPUTE COURT: Describe the conflict, select category and duration, explain your side AND what the other person would say (be honest — the AI catches one-sided framing). Select your living situation for tailored escalation advice.
-2. Review the verdict, fault split, and underlying issues. Copy the conversation script to rehearse before talking to your roommate.
-3. CHORE ROULETTE: Add household members and chores (use quick-add pills or type custom ones). Tap 'Assign Chores' for AI-balanced distribution.
-4. Check off chores as they're completed. Hit 'Finalize Round' to save to history — future assignments will account for past rounds.
-5. If assignments feel unfair, tap 'That's Not Fair!' and describe the problem. The AI reviews your complaint against history data.
+1. WORK IT OUT: Describe what's going on, and — if you know it — what they'd say in their own terms. Add how long it's been happening, what you've already tried, and your living situation for more specific options.
+2. Read the read, where the disagreement sits, and what to try. Use the opening line and the question to start the actual conversation — the proposal is something to suggest, not something already agreed to.
+3. CHORE ROULETTE: Add household members and the chores that need doing (quick-add pills or type your own). Optionally mark a chore Lighter, Medium, or Heavier — left unset, chores are treated as unweighted.
+4. Check off chores as they're completed. Hit 'Save This Round' to add it to the rotation history — future rounds use it to rotate fairly.
+5. If an assignment doesn't work, tap 'Something Doesn't Work?' and say why. It treats your answer as new information and only changes the assignment when that information actually calls for it.
 
 **Tips.**
 
-- Be honest about the other person's perspective in Dispute Court — the AI is trained to detect one-sided framing and will call it out in the reality check
-- The conversation script is the most valuable output — copy it and rehearse before the actual conversation
-- In Chore Roulette, finalize rounds consistently so the history data stays accurate — the AI uses it to prevent streaks
-- The effort system means 1 heavy chore (bathroom) = 3 light chores (trash) — it balances total effort, not just count
-- Use 'That's Not Fair!' with specifics ('I always get bathroom') rather than vague complaints — the AI checks actual numbers
+- Only fill in 'What would they say?' if you actually know — leaving it blank is honest input, guessing isn't
+- The proposal is something to bring to the conversation, not something already settled — say so if you use it
+- In Chore Roulette, save rounds consistently so the rotation history stays useful — history doesn't judge who worked harder, only who had what
+- Load labels (Lighter/Medium/Heavier) are optional and reflect your household's own sense of a chore's weight — nothing invents that for you
+- Use 'Something Doesn't Work?' with a specific reason ('I did the bathroom last time') rather than a general complaint — it's treated as new information, not a fairness dispute to win
 
 **Example.**
 
-Input: Your roommate keeps leaving dishes in the sink and you've brought it up twice but nothing changed. Also need to assign weekly chores fairly.
+Input: Your roommate keeps leaving dishes in the sink and you've brought it up twice but nothing changed. You also need to divide this week's chores.
 
-Output: Dispute tab: AI acknowledges your frustration but flags that repeated nagging without consequences isn't a strategy — gives you a specific conversation script with boundaries ('If dishes aren't done within 24 hours, I'll put them in a bin in your room'). Chore tab: assigns dishes to your roommate this round since history shows you've had them more, balances total effort points, and explains why.
+Output: Work It Out tab: a read on where the disagreement actually is (not who's at fault), a concrete proposal you could make, and an opening line to start with. Chore Roulette: dishes rotate to whoever didn't have them last round, with a plain explanation of why — no fairness score, no fault percentages.
 
 ### Safe Walk
 
