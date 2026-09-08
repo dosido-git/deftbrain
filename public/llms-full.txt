@@ -1,6 +1,6 @@
 # DeftBrain — full content
 
-> DeftBrain (https://deftbrain.com) is a free collection of 125 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 126 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 This file carries the substance behind https://deftbrain.com/llms.txt: what each tool does, and the full text of the guides. Tool pages are interactive forms, so their value is described rather than transcribed; the guides are reproduced in full.
 
@@ -550,40 +550,35 @@ Output: Explains what a crown involves in plain English, notes it's standard if 
 ### Recipe Chaos Solver
 
 URL: https://deftbrain.com/RecipeChaosSolver
-Tagline: Your kitchen 911 — from crisis to confidence
+Tagline: When the recipe stops going according to plan.
 Categories: The Grind
 
-Mid-cook crisis? Missing ingredients, burnt sauce, flat flavor? Get instant rescue solutions, smart substitutions (single or multi-ingredient), recipe scaling with non-linear adjustments, pre-flight readiness checks, flavor fix upgrades, 60-second cooking lessons, a wins journal, and a hands-free Kitchen Companion mode for flour-covered hands.
+Something going wrong in the kitchen? Tell us what you're making, what happened, and what you have on hand. Recipe Chaos Solver helps you recover the dish, replace missing ingredients, fix the flavor, check a recipe before you start, or scale it without creating a new problem.
 
-**What it does.** Recipe Chaos Solver is your cooking emergency room AND your cooking coach. When something goes wrong mid-cook, get instant rescue solutions with science explanations. Before you start, run a Pre-Flight Check to catch problems early. When dinner's just boring, Flavor Fix diagnoses what's missing. Every rescue becomes a learning moment with Teach Me lessons, and your Wins Journal tracks your growing confidence. Kitchen Companion mode gives you hands-free step-by-step guidance while you cook.
+**What it does.** Recipe Chaos Solver works from what you actually have — your recipe, your pantry, the problem in front of you — not a generic version pulled from memory. A missing ingredient gets a substitution scaled to what your recipe calls for, not an invented replacement recipe. A rescue tells you what to do now, what to expect, and why — without predicting a result it can't actually know.
 
 **How to use it.**
 
-1. 🍳 Rescue: Paste a recipe or describe your problem, select a category, get rescue solutions with step-by-step instructions and science explanations
-2. ✈️ Pre-Flight: Paste a recipe + what you have → get a readiness report with ingredient checks, equipment warnings, technique heads-ups, and realistic time estimates
-3. ✨ Flavor Fix: Describe a dish that tastes flat → get a diagnosis of what's missing (acid, fat, salt, umami, heat, texture) with specific fixes ranked by impact
-4. 🔄 Quick Swap: Look up a single ingredient substitution with exact ratios, science, and best-for/avoid-in guidance
-5. 🔄🔄 Multi-Swap: Missing 2-8 ingredients? Get a compound analysis that accounts for interaction effects between substitutions
-6. ⚖️ Scale: Paste a recipe and change servings → AI-aware scaling that flags non-linear ingredients (spices, leavening, eggs) with timing and equipment adjustments
-7. 🎓 Teach Me: After any rescue or swap, tap 'Teach Me Why' for a 60-second lesson on the underlying cooking principle
-8. 👨‍🍳 Kitchen Companion: Full-screen hands-free mode with huge text, built-in timers, and big navigation buttons — designed for flour-covered hands
-9. 🏆 Wins Journal: Log cooking victories to build confidence. Track your rating trend over time.
-10. 📌 Saved: Build a personal cheat sheet of rescues, swaps, lessons, and scaling notes. Searchable when you have 4+ items.
+1. 🍳 Rescue: Describe what you're making and what's going wrong (or paste/photograph the recipe) → get a fix grounded in your actual recipe, with a 'Walk Me Through It' step-by-step mode
+2. 🔄 Substitute: List what you're missing (one ingredient or several) → get a coherent plan that accounts for how multiple substitutions interact
+3. ✨ Fix the Flavor: Describe what's off → if the description is too vague to diagnose, it asks one clarifying question instead of guessing
+4. ✈️ Check Before I Start: Paste a recipe + what you have → a readiness read that only marks something missing when you've actually said so
+5. ⚖️ Scale: Paste a recipe and change servings → ingredients scale mathematically, non-linear ones (salt, leavening, eggs) get flagged instead of auto-adjusted
+6. 📋 Recent: Every check you've run, with View (see the original result) and Use Again (restore your inputs and rerun)
 
 **Tips.**
 
-- Upload a photo of your recipe, your pantry, or even the disaster itself — the tool handles all three image types
-- Pre-Flight Check uses your saved swaps to suggest substitutes you've already tried and liked
-- Flavor Fix works best when you describe what's wrong ('flat', 'one-note', 'missing something') — not just the dish name
-- In Kitchen Companion mode, multiple timers can run simultaneously across different steps
-- The Wins Journal compounds with pattern insights in History — after 3+ rescues, you'll see your most common issues
-- Save lessons to your cheat sheet — they're searchable and build a personal cooking education over time
+- Upload a photo of your recipe, your pantry, or the dish itself — Rescue reads what it can clearly make out from any of them
+- Substitute handles one missing ingredient or several at once — list them all together so it can account for how the substitutions interact
+- Fix the Flavor works best when you can say more than 'it's off' — but if that's all you've got, it'll ask a narrowing question first
+- Check Before I Start won't invent a 'realistic cooking time' from a recipe it wasn't given enough to judge — if you want the full prep and timing workflow, it'll point you to Mise en Place
+- Recent keeps a running log across every mode — View shows the original result again, Use Again restores your inputs so you can adjust and rerun
 
 **Example.**
 
-Input: You're making chocolate chip cookies but realize you're out of eggs AND butter. The recipe calls for 2 eggs and 1 cup butter. You have applesauce, coconut oil, and Greek yogurt available.
+Input: You're halfway through a bolognese and realize you're out of red wine and canned tomatoes. You have diced tomatoes, tomato paste, beef broth, and balsamic vinegar.
 
-Output: Feasibility: DOABLE. Combined impact analysis: Both subs affect moisture and binding — use coconut oil (¾ cup) for butter (adds slight coconut flavor, melts similarly) + ¼ cup applesauce per egg (adds moisture + binding). Combined technique: Chill dough 30 min longer since coconut oil is softer. Interaction warning: Both subs add moisture — reduce any liquid in recipe by 2 tbsp. Expected result: Slightly chewier cookies with subtle coconut undertone. Then tap 'Teach Me Why' to learn about the 3 jobs eggs do in baking.
+Output: A fix using beef broth in place of the wine and diced tomatoes in place of the canned ones — both scaled to 'the same volume your recipe called for,' not an invented amount. Balsamic is suggested in a small, taste-as-you-go amount for acidity, described as a partial substitute for the wine, not a replacement for it. No total time is invented, and nothing assumes the pan is about to burn just because a step is missing.
 
 ### Renter's Deposit Saver
 
@@ -1659,36 +1654,36 @@ Output: Shows the spirits cost about $2.50, the garnish/mixer is $0.80, labor is
 ### Quote Check
 
 URL: https://deftbrain.com/QuoteCheck
-Tagline: Paste your repair quote — know if you're being overcharged
+Tagline: Know what you're paying for before you approve the repair.
 Categories: Loot
 
-Paste a repair quote for an appliance, car, or anything else — or upload a photo or PDF of the actual invoice — and get an honest fairness read: a typical price range, specific red flags found in your quote, an itemization check, and an exact negotiation script to push back with.
+Paste a repair quote for an appliance, vehicle, or other repair — or upload the quote itself. Quote Check checks what the price actually includes, flags questions worth asking, compares a second quote if you have one, and helps you decide what to clarify before approving the work.
 
-**What it does.** Quote Check reads a repair estimate the way a knowledgeable friend who used to work in the trade would — not a pricing database pretending to precision it doesn't have, but a sharp read on whether a quote is reasonable. It checks for the patterns that separate a fair quote from an inflated one: an expensive part diagnosed without ruling out cheaper causes, a lump-sum quote with no breakdown, a parts markup that doesn't add up, or pressure to approve immediately. You get a verdict, the specific red flags found in YOUR quote, and a ready-to-use script for pushing back or asking for an itemized breakdown. You can also upload a photo or PDF of the actual quote/invoice — Quote Check reads it directly and treats it as ground truth over anything you typed.
+**What it does.** Quote Check audits the quote you actually have — not a pricing database pretending to know a market it can't see. It reads what the quote says (or what an uploaded photo/PDF actually shows), checks whether the numbers add up, distinguishes a genuine red flag from an ordinary missing detail, and tells you plainly what it can't determine rather than manufacturing a 'typical price' or a fairness verdict it has no basis for. You get a clear-eyed summary of the quote, any specific concerns the evidence actually supports, the questions most worth asking before you approve, and a script for asking them.
 
 **How to use it.**
 
-1. Select the repair type — appliance, car, or other — so the analysis is calibrated correctly (car repair pricing is far less standardized than appliance repair)
+1. Select the repair type — appliance, car, or other
 2. Describe the item and what's wrong, and what the repair person told you was the cause
-3. Enter the price you were quoted, plus any itemized breakdown they gave you (or note that they didn't give one)
-4. Optionally upload a photo or PDF of the actual quote or invoice — Quote Check reads it directly and cross-checks it against what you typed
-5. If you have a second quote, add it — Quote Check will compare the two directly
-6. For appliances, add the item's age to get a repair-vs-replace read
-7. Review the verdict, red flags, and itemization check, then use the negotiation script or the questions list before you approve anything
+3. Enter the price you were quoted, plus anything the quote says it includes (parts, labor, fees, warranty) — or paste/upload the actual document
+4. Optionally upload a photo or PDF of the actual quote — Quote Check reads it directly and flags any conflict with what you typed
+5. If you have a second quote, add its price and what it covers — a price alone isn't comparable if the scope differs
+6. Add the item's age if repair-vs-replace is relevant to your decision
+7. Review what the quote actually includes, any specific concerns, what's still unknown, and the questions or script to use before you approve anything
 
 **Tips.**
 
-- Be specific about what you were told — 'they said the compressor is bad' surfaces very different red flags than 'they didn't really explain it'
-- A non-itemized lump-sum quote is one of the most common red flags — if you weren't given a breakdown, say so, and Quote Check will flag it
-- For car repairs, treat this as a leverage and red-flags tool, not a precise price database — the honest confidence rating tells you how standardized this specific repair actually is
-- CAN'T TELL YET isn't a failure — some repairs are too unusual or under-specified to have a real opinion on; that honesty is the point
-- The negotiation script is meant to be used as-is — read it back or send it as a text/email
+- Be specific about what you were told — 'they said the compressor is bad' surfaces different questions than 'they didn't really explain it'
+- A non-itemized lump-sum quote isn't automatically a red flag — it's a reason to ask for a breakdown, which Quote Check will tell you to do
+- NOT ENOUGH INFORMATION isn't a failure — some quotes are too thin to say anything useful about, and that honesty is the point
+- If a symptom could plausibly be a safety issue (brakes, gas, electrical), Quote Check will say so plainly without pretending to diagnose it
+- The script under 'What to Say' is meant to be used as-is — read it back or send it as a text/email
 
 **Example.**
 
 Input: A refrigerator stops cooling. The repair company diagnoses a bad compressor and quotes $450 as a single lump sum, no breakdown, and says the technician needs an answer today to hold the appointment slot.
 
-Output: Verdict: SOMEWHAT HIGH. Red flags: compressor diagnosed without ruling out cheaper causes (a failed fan or thermostat produces identical symptoms and costs far less to fix); quote given as a lump sum with no parts/labor breakdown; same-day pressure to approve. Negotiation script: a direct ask for an itemized breakdown and what diagnostic steps ruled out the cheaper causes, before authorizing the repair.
+Output: Verdict: NEEDS CLARIFICATION. Specific concern: the quote is a lump sum with no split between parts and labor. What the quote doesn't tell you: what testing confirmed the compressor diagnosis, whether the replacement is OEM or aftermarket, and what warranty applies. Questions to ask before approving: an itemized breakdown, the diagnostic basis, and the warranty terms in writing.
 
 ### Scam Radar
 
@@ -3195,37 +3190,71 @@ Input: You're posting in a group chat with coworkers and your manager: 'Just FYI
 
 Output: Manager reads it as a professional heads-up with subtle accountability signal — safe. Jake reads it as public shaming — risky, he'll get defensive. Rest of team reads it as you positioning for credit — mild risk of seeming political. Biggest risk: Jake feels ambushed. Rewrite suggestions include a version that achieves the same goal via DM to manager instead, and a softer group version that doesn't name the duration.
 
-### Pronounce It Right
+### Phrase Decoder
 
-URL: https://deftbrain.com/PronounceItRight
-Tagline: Names, food, places, brands — never mispronounce anything again
+URL: https://deftbrain.com/PhraseDecoder
+Tagline: 💬 What they said. What kind of expression it is. What it actually means.
 Categories: Discourse, Go Deep!
 
-Type any word — a name, dish, brand, place, or phrase — and get a pronunciation guide calibrated to your native language. Covers phonetic spelling, syllable stress, mouth-position tips, common mistakes with fixes, and a confidence script for uncertain moments. Batch mode handles up to 10 words at once.
+Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Phrase Decoder tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
 
-**What it does.** Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker.
+**What it does.** Phrase Decoder identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.
 
 **How to use it.**
 
-1. Pick a category: Name, Food/Drink, Place, Brand, Music/Art, Science, Phrase, or Other.
-2. Type the word and select your native language — this calibrates the phonetic guide to your ear.
-3. Add optional context (e.g. 'ordering at a French restaurant', 'coworker's name') for tailored tips.
-4. Review the guide: phonetic spelling, syllable breakdown, common mistakes, and a confidence script.
-5. Use Batch mode to look up 2–10 words at once — great for travel prep or restaurant menus.
-6. Tap any word in your history to re-look it up instantly.
+1. 💬 Enter the phrase: type or paste exactly what was said or written
+2. 📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely
+3. 🏷️ Read the classification: what kind of expression it is, and why
+4. 💡 Read the plain meaning, then what it means here if you gave context
+5. ➕ Not enough? Add more of the sentence and Phrase Decoder re-evaluates from scratch — it never treats its own earlier guess as a fact
+6. 🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists
+
+**Tips.**
+
+- Context changes everything — the same words can be literal or figurative depending on the situation, and Phrase Decoder classifies the use, not just the words
+- If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down
+- For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have
+- The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
+
+**Example.**
+
+Input: A coworker said "that's above my pay grade" after you asked who could approve an exception.
+
+Output: Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: "I'm not the person who can approve that."
+
+### Pronounce It Right
+
+URL: https://deftbrain.com/PronounceItRight
+Tagline: Know how to say it before you have to.
+Categories: Discourse, Go Deep!
+
+Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.
+
+**What it does.** Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker. Names get particular care: a spelling doesn't prove how a specific person says their own name, so the guide offers the common reading plus a respectful way to ask, rather than asserting certainty it doesn't have.
+
+**How to use it.**
+
+1. Type the word, name, or phrase — this is the only required field.
+2. Optionally pick what kind of thing it is: Name, Food/Drink, Place, Brand, Music/Art, Science/Medical, Phrase, or Other.
+3. Select your native language — this calibrates every sound comparison and mouth-position tip to your ear.
+4. Add optional context (e.g. 'ordering at a French restaurant', 'my coworker's name') when spelling alone doesn't settle the reading.
+5. Review the guide: phonetic spelling, stress/tone/rhythm (whichever applies), things to watch out for, and — for names — a script for asking someone to confirm.
+6. Use Batch mode to look up 2–10 words at once — great for travel prep or restaurant menus.
+7. Tap any word in your history to re-look it up instantly.
 
 **Tips.**
 
 - Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.
-- Category selection gives the AI the right context: etiquette tips for names, ordering confidence for food.
-- The confidence script gives you a natural thing to say when you're still unsure — better than guessing silently.
+- For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.
+- When a reading could go more than one way, the guide says so and explains what context would settle it, instead of picking one and hoping.
 - IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result.
+- 'Hear it' speaks the exact IPA transcription shown above, not a guess from the raw spelling — so it only appears when the guide was confident enough to produce genuine IPA, and it's a convenience, not proof of the correct reading.
 
 **Example.**
 
 Input: You're going to an Italian restaurant and want to order without second-guessing yourself.
 
-Output: Four pronunciation cards with phonetic spelling, the #1 mistake for each word, and the sounds that trip up English speakers specifically.
+Output: Four pronunciation cards with phonetic spelling, the sound each one trips up for an English speaker specifically, and a flag on any word whose reading genuinely depends on context you haven't given.
 
 ### The Final Word
 

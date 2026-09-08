@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "4a2ba34833536038fd78ce5d01c08d99763a58a8",
-  "lastmod": "2026-08-26"
+  "hash": "50edebe8b38de7c8da8615ac082dc6abdc6d7d78",
+  "lastmod": "2026-09-08"
  },
  "static:about": {
   "hash": "dabb602e6ec1e1df666fd40b458b00ecdc06a2ed",
@@ -178,5 +178,9 @@
  "tool:MissingLink": {
   "hash": "e824eed768c38129e3048e24fdd95cb681030e4f",
   "lastmod": "2026-08-23"
+ },
+ "tool:PhraseDecoder": {
+  "hash": "0cd452c1fcd73352a3f151107d3687088b7f3823",
+  "lastmod": "2026-09-08"
  }
 }

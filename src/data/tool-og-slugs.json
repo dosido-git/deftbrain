@@ -133,5 +133,6 @@
   "ConceptCoach": "idea-autopsy",
   "GetNoticed": "luck-surface",
   "JustifyMyMeeting": "meeting-b-s-detector",
-  "MeetingHijackStopper": "meeting-hijack-preventer"
+  "MeetingHijackStopper": "meeting-hijack-preventer",
+  "PhraseDecoder": "phrase-decoder"
 }

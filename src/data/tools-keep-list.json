@@ -45,6 +45,7 @@
     "MissingLink",
     "WaitingModeLiberator",
     "WhichLife",
-    "WrongAnswersOnly"
+    "WrongAnswersOnly",
+    "PhraseDecoder"
   ]
 }
