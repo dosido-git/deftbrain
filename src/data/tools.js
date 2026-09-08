@@ -3103,43 +3103,43 @@ tagline: "Work with the energy you have.",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A headline claims a study proved something.",
-    give: "The abstract or paper text. The field, if you know it.",
-    get: "The actual finding in one sentence, what the method can and can't support, and whether the coverage is fair.",
-    edge: "It checks the claim against the paper, so you can tell whether the headline is the study's fault or the journalist's.",
+    when: "You read a research finding — a paper, an abstract, or a headline about one — and want to know what it actually says.",
+    give: "The abstract, excerpt, or paper text — or upload it. A headline or a second paper, if you're checking coverage or comparing studies.",
+    get: "The actual finding, what the study did, what the numbers mean, and what it does and doesn't support — without inventing outside research or a confidence label it can't back up.",
+    edge: "It says outright when you've only given it an abstract, not the full paper, and when a question needs outside research it doesn't have.",
   },
-  seoDescription: "Translate any research paper into plain English — no PhD needed. Get the real finding, limitations, and whether the headline about it is actually true. Free.",
+  seoDescription: "Paste an abstract, excerpt, or research paper. Research Decoder explains what the researchers found, what they actually did, what the numbers mean, and what the study can — and cannot — tell you. Free.",
   seoTitle: "Research Paper Summarizer & Explainer",
   title: "Research Decoder",
-  tagline: "What this paper actually says — and whether what you read about it is true",
+  tagline: "Understand the research without becoming a researcher.",
   tags: ['research', 'academic', 'paper', 'science', 'summary', 'study', 'digest'],
   icon: "📄",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Translate academic papers into plain language — no PhD required. Five modes: Digest breaks any paper into a one-sentence finding, methodology, limitations, decoded jargon, and an honest 'so what.' Media Check compares what a paper actually says to how headlines report it, catching exaggerations and missing context. Compare shows where two papers agree or diverge. For Me? gives personalized relevance based on your situation. Jargon Decoder explains scientific terms with analogies, not textbook definitions. Auto-builds a personal jargon dictionary as you read",
+  description: "Paste an abstract, excerpt, or research paper. Research Decoder explains what the researchers found, what they actually did, what the numbers mean, and what the study can—and cannot—tell you.",
   guide: {
-      overview: "Research Decoder is for the moment you see a headline like 'Scientists prove coffee cures everything' and think 'wait, does it really?' Instead of wading through dense abstracts, paste the paper text and get the actual finding in one sentence, what kind of study it was (described, not judged), what it proves vs. what people think it proves, and a warm honest take you'd hear from a smart friend over coffee. The Media Check is the killer feature — it compares what the paper says to what the headline claims and catches every type of distortion. Every term you encounter gets saved to a personal jargon dictionary that grows as you read.",
+      overview: "Research Decoder explains the research in front of you — nothing more. Paste an abstract, excerpt, or paper text (or upload the file) and get the actual finding, what the researchers did, what the numbers mean, and what the study can and cannot support — without importing outside studies, filling in missing methodology, or manufacturing a confidence label the supplied text can't back up. Headline Check compares a headline against the actual paper, never against the headline alone. Compare shows what two papers can tell you together without ranking one over the other. Explain a Term handles the vocabulary. Recent keeps a light record of what you've looked at.",
 
       howToUse: [
-        "📄 Digest: Paste an abstract or paper text, optionally select the field. Get the finding in one sentence, methodology description, what it proves and doesn't, limitations, decoded jargon, and an honest 'so what' section with confidence level",
-        "📰 Media Check: Paste a headline (and article excerpt if you have it) plus the paper text. Get an accuracy rating, specific distortions identified by type (causation from correlation, cherry-picked results, etc.), what they got right, and what the headline should have said",
-        "⚖️ Compare: Paste text from two papers on a similar topic. See whether they agree, why they might differ, which to trust more for your specific question, and what's still unknown",
-        "🎯 For Me?: Describe a finding and your situation. Get a personalized assessment of whether it applies to you, whether you should change anything, the cost of waiting for more evidence, and whether to talk to a professional",
-        "🔤 Jargon: List terms you don't understand — get plain English explanations with analogies, examples, common misconceptions, and why each term matters. All terms auto-save to your personal dictionary"
+        "📄 Decode: Paste the abstract, excerpt, or paper text — or upload the file. Optionally add the title and what you're most interested in. Get the finding, what they did, what the numbers mean, and what the study does and doesn't support",
+        "📰 Headline Check: Paste the research text and the headline or claim you saw. See what the research actually says compared to what the headline claims — the tool won't assess a headline from the headline alone",
+        "⚖️ Compare: Paste two papers on a related question. See what each supports, what may explain any difference, and what they establish together",
+        "🔤 Explain a Term: Paste a confusing term — with the sentence it appeared in, if you have it — for a plain explanation",
+        "🎯 After a decode, ask what it means for you: the tool checks the actual paper against your situation on three separate questions instead of collapsing them into one verdict",
+        "🕘 Recent keeps a light record of what you've decoded, checked, compared, or looked up — view it again, or revisit it to run a new pass"
       ],
 
       example: {
-        scenario: "You see a headline: 'New study proves intermittent fasting reverses aging.' You're 40, considering trying it, and your doctor mentioned it once. You found the actual paper's abstract.",
-        action: "Digest the abstract first — learn it was a 12-week study of 30 mice, not humans. Media Check the headline — catch 'proves' (it suggests), 'reverses aging' (it measured one biomarker), and 'fasting' (they used a specific 16:8 protocol). Then hit 'Does this apply to me?' with your age, health, and doctor's comment.",
-        result: "The digest explains it's an early mouse study showing a correlation with one aging marker. Media Check rates the headline 'Exaggerated' — three distortions identified. The relevance check says 'Too early to tell' for humans, but the 16:8 protocol is low-risk to try, and suggests asking your doctor specifically about your situation. Five new terms added to your jargon dictionary."
+        scenario: "You read a headline claiming a new study 'proves' processed food shortens your life. You find the actual abstract: a prospective cohort study linking a 10% increase in ultra-processed food intake to a 14% higher all-cause mortality hazard ratio, adjusted for confounders, with self-reported diet and an observational design.",
+        action: "Paste the abstract into Decode. Then paste the same headline into Headline Check alongside the research text.",
+        result: "Decode explains the finding as it's actually reported — an association, not a proven cause — notes plainly that the diet data was self-reported, and gives a bottom line that this is evidence worth noting, not a personal directive. Headline Check flags that 'proves' overstates an observational, hazard-ratio finding, and offers a more accurate version of the claim."
       },
 
       tips: [
-        "Start with Digest, then use the quick-action buttons to jump to Media Check or 'For Me?' — the paper text carries over automatically",
-        "The Media Check is the most unique feature — use it whenever a health or science headline feels too good (or too scary) to be true",
-        "Your jargon dictionary grows automatically across all modes. After a few papers, you'll start recognizing terms on your own",
-        "Compare mode is powerful when you've seen conflicting headlines — paste both abstracts to understand why studies on the same topic can reach different conclusions",
-        "The tool describes methodology rather than judging it — 'this was a small observational study' is useful information, not a verdict"
+        "Only paste what you actually have — an abstract works fine, and the tool says so rather than treating it as the full paper",
+        "Headline Check needs the underlying research, not just the headline — without the paper, there's no way to tell whether the coverage matches it",
+        "'What does this mean for me?' only appears after a decode, and it grounds every answer in the actual paper text plus what you say about your situation — never a generic risk score",
+        "The tool says plainly when a question needs outside research it doesn't have, rather than inventing a scientific consensus to sound complete"
       ]
     }
 },

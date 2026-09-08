@@ -136,7 +136,7 @@
 - [History Today](https://deftbrain.com/HistoryToday): Find the structural historical parallel — not the obvious one
 - [Missing Link](https://deftbrain.com/MissingLink): Stuck on a concept? We'll find where your understanding broke.
 - [Plain Talk](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
-- [Research Decoder](https://deftbrain.com/ResearchDecoder): What this paper actually says — and whether what you read about it is true
+- [Research Decoder](https://deftbrain.com/ResearchDecoder): Understand the research without becoming a researcher.
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): Cut through contradictions and find what the evidence actually says
 - [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
 
