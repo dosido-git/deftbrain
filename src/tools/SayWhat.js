@@ -328,33 +328,6 @@ const SayWhat = ({ tool }) => {
         </div>
       </div>
 
-      {!decoded && hasRecentLog && (
-        <div className="text-center">
-          <button onClick={() => setShowRecent(v => !v)} className={`text-xs font-semibold ${c.textMuted} hover:${c.textSecondary} inline-flex items-center gap-1`}>
-            🕘 {tr('syw_recent', 'Recent')} <span>{showRecent ? '▲' : '▼'}</span>
-          </button>
-          {showRecent && (
-            <div className={`${c.border} border rounded-xl mt-2 p-3 space-y-2 text-start`}>
-              {recentLog.map(entry => {
-                const classes = (entry.result?.classifications || []).map(x => CLASSIFICATION_META[typeof x === 'string' ? x : x.type]?.[2]).filter(Boolean).slice(0, 3);
-                return (
-                  <div key={entry.id} className={`${c.cardAlt} rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
-                    <div className="min-w-0">
-                      <div className="font-semibold truncate">“{entry.preview || entry.phrase}”</div>
-                      {classes.length > 0 && <div className={`text-xs mt-1 ${c.textMuted}`}>{classes.join(' · ')}</div>}
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button onClick={() => viewRecentLog(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{tr('syw_view', 'View')}</button>
-                      <button onClick={() => revisitRecentLog(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{tr('syw_revisit', 'Revisit')}</button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
       {!results && (
         <p className={`text-xs ${c.textMuted} text-center`}>
           {tr('syw_xref_pre', 'Need a whole document explained, not just one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
@@ -511,6 +484,33 @@ const SayWhat = ({ tool }) => {
           <p className={`text-xs ${c.textMuted} text-center`}>
             {tr('syw_xref_post', 'Got a whole document full of unfamiliar language instead of one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
           </p>
+        </div>
+      )}
+
+      {hasRecentLog && (
+        <div className="text-center pt-2">
+          <button onClick={() => setShowRecent(v => !v)} className={`text-xs font-semibold ${c.textMuted} hover:${c.textSecondary} inline-flex items-center gap-1`}>
+            🕘 {tr('syw_recent', 'Recent')} <span>{showRecent ? '▲' : '▼'}</span>
+          </button>
+          {showRecent && (
+            <div className={`${c.border} border rounded-xl mt-2 p-3 space-y-2 text-start`}>
+              {recentLog.map(entry => {
+                const classes = (entry.result?.classifications || []).map(x => CLASSIFICATION_META[typeof x === 'string' ? x : x.type]?.[2]).filter(Boolean).slice(0, 3);
+                return (
+                  <div key={entry.id} className={`${c.cardAlt} rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">“{entry.preview || entry.phrase}”</div>
+                      {classes.length > 0 && <div className={`text-xs mt-1 ${c.textMuted}`}>{classes.join(' · ')}</div>}
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => viewRecentLog(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{tr('syw_view', 'View')}</button>
+                      <button onClick={() => revisitRecentLog(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{tr('syw_revisit', 'Revisit')}</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>
