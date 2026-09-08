@@ -1,45 +1,133 @@
-# RoomReader — architecture & lock notes
+# Read the Room (was RoomReader) — architecture & lock notes
 
-**Known-good:** tag `roomreader-v1` · golden `audit/room-reader-golden-sample.json`
+**Known-good:** tag `readtheroom-v2` · golden `audit/room-reader-golden-sample.json`
 **Verify:** `npm run check:golden room-reader` (backend up: `npm run dev:backend`)
 
 ## What it is
-A 12-mode social-intelligence coach (prep / navigate / recover / debrief). Frontend
-`src/tools/RoomReader.js` (~1610 lines) with a persistent Playbook + recurring-people tracking.
-Backend `backend/routes/room-reader.js` (~820 lines) — **14 endpoints**, all `claude-sonnet-4-6`
-via `callClaudeWithRetry` + `withLanguage` (no `withLocaleContext` — purely social, no currency).
 
-| Endpoint | guard (top-level field) | max_tokens |
-|---|---|---|
-| `/room-reader` (Pre-Game, the primary mode) | `vibe_check \|\| conversation_starters` | **5000** |
-| `/room-reader-decode` | `most_likely` | 4000 |
-| `-quick` `line` · `-debrief` `honest_read` · `-followup` `timing` · `-person` `person_read` · `-group` `group_read` · `-recover` `damage_check` · `-culture` `quick_read` · `-person-refresh` `relationship_arc` · `-energy` `gap_read` · `-ladder` `ladder` · `-autopsy` `honest_assessment` | (correct) | 1500–4000 |
+A social-situation coach reorganized around 4 moments — Prepare / Right Now /
+Decode / Afterward — each exposing 2-4 contextual actions, instead of the old
+13 flat modes. Frontend `src/tools/ReadTheRoom.js`. Backend
+`backend/routes/room-reader.js` — 14 endpoints (2 new: `-stalled`, `-exit`;
+2 dropped: `-energy`, `-ladder`, folded into `-depth`), all `MODELS.SMART` via
+`callClaudeWithRetry` + `withLanguage`, on `router.outputStandard = 'v2'` with
+`runOutputGuard` on every endpoint.
 
-## DO NOT silently reverse (the locked fixes)
-1. **Success guards must check a TOP-LEVEL schema field.** Pre-Game and Decode both guarded on
-   `if (!parsed.read && !parsed.room_read)` — but `read` is **nested** (`vibe_check.read` /
-   `most_likely.read`), never top-level. So `parsed.read` was always `undefined` → the guard
-   **always fired → every Pre-Game and Decode request returned 500** (the two headline modes were
-   dead on arrival). Now: Pre-Game guards `vibe_check || conversation_starters`; Decode guards
-   `most_likely`. The golden's `pregame` + `decode` cases guard this (they 500'd before). The
-   other 12 guards already key on real top-level fields — leave them.
-2. **`/room-reader` (Pre-Game) max_tokens ≥ 5000.** Its schema (6–8 `conversation_starters` × 6
-   fields + `people_map` + `body_language` + `landmine_map` + `exit_toolkit` + `worst_case_saves`
-   + `pep_talk`) truncated at 3000 → parse-fail on all 3 retries → 500 (this fired *before* the
-   guard, so Pre-Game needed BOTH fixes). Now 5000; full output ~80s (golden timeout 180s).
-3. **All 14 endpoints on `claude-sonnet-4-6`.**
+## V2 rewrite (2026-09-08) — owner brief
 
-## Frontend
-- Mobile clean at 375px (home + results; only grid is `grid-cols-1 sm:grid-cols-3`). `buildFullText`
-  registers copy via `useRegisterActions`. Fully localized (`rr_*`, 13 languages).
-- The Playbook + recurring-people history are client-side (localStorage) — `-person-refresh`
-  builds on logged history.
+The v1 tool was pitched and written as a confident mind-reader: it predicted
+exactly what the other person would say next (`they_say`), assigned a numeric
+awkwardness score (`how_bad_really` 1-10) and a numeric read-confidence
+(`pretty sure | likely | ...`), inferred someone's `likely_personality` from a
+job title or one interaction, invented group hierarchies and cliques nobody
+described, stated cultural generalizations ("people in X expect...") as fact
+about the specific people involved, and auto-added model suggestions to the
+Playbook as if the visitor had already validated them. The interface also
+made a first-time visitor read a 13-item mode taxonomy before the tool could
+help at all.
+
+**What changed:**
+
+- **Navigation collapsed to 4 groups x contextual sub-actions**: Prepare (an
+  event / one person / a group / a cross-cultural situation), Right Now
+  (something to say / conversation stalled / said something awkward / need to
+  leave), Decode (what did that mean? / go deeper or back off?), Afterward
+  (debrief / follow-up / something went badly). Saved Plans and the Playbook
+  are utilities in the header, not modes.
+- **Every schema rewritten** to remove: predicted dialogue as fact (replaced
+  with "if they respond this way..." branches, at most 1-2), numeric
+  confidence/severity scores (`my_read.label` is now a qualitative pinned
+  enum — see below), `likely_personality` (replaced with `what_you_know` /
+  `what_you_dont_know_yet`, grounded only in supplied clues), invented group
+  hierarchy/alliances (replaced with `what_you_know` naming only supplied
+  structural facts), `dangerous_topics`/cultural facts stated flatly
+  (replaced with `norms_worth_checking` framed as tendencies to verify, plus
+  `when_in_doubt`/`graceful_recovery`), exact no-reply timelines (replaced
+  with qualitative timing tied to context), "how it probably looked from the
+  outside" (replaced with `another_way_to_read_it`, grounded in the same
+  supplied event), and forensic-sounding `signals_you_missed`/invented moods
+  (Autopsy → "Afterward: Something Went Badly", every `plausible_turning_points`
+  entry must cite an actual supplied event).
+- **A CORE_SYSTEM prompt is shared across all 14 endpoints** (`section()`
+  helper in `backend/routes/room-reader.js` composes it with each endpoint's
+  specific rules) — the epistemic rules (OBSERVED/REASONABLE POSSIBILITY/
+  UNKNOWN, no predicted dialogue, no fixed gesture meanings, "don't
+  overcorrect into uselessness") apply identically everywhere, rather than
+  being re-derived per mode as in v1.
+- **Pinned English enums** the frontend switches on, never translated:
+  `my_read.label` differs per endpoint (Decode: `leans one way | several
+  plausible reads | not enough to tell`; Depth/Stalled: shouting-case 3-value
+  enums), `do_you_need_to_fix_it.answer` (`PROBABLY NOT|MAYBE|LIKELY YES`).
+  Mapped to display text via `DECODE_LABEL_KEY` / `DEPTH_LABEL_KEY` /
+  `STALLED_LABEL_KEY` / `RECOVER_ANSWER_KEY` + the `pinned()` helper.
+- **Playbook additions are now always visitor-triggered.** v1 auto-called
+  `addToPlaybook` whenever a debrief/autopsy response happened to include a
+  suggestion string. Now there is a manual 💾 button on each Debrief "win"
+  card (`addToPlaybook(w.what, ...)`) — nothing is saved without the visitor
+  clicking it. `next_time.add_to_playbook` no longer exists in the Autopsy
+  schema at all.
+- **PF-31 gap fixed as a side effect of the rewrite**: the shared `InputCard`
+  component did not render the ⌘↵ chip even though the global keyboard
+  handler covered every mode — only the two modes with a hand-rolled button
+  (old Quick, old Recovery) had it. `InputCard` now renders it for every
+  group/sub-action.
+- **Persisted key bumped**: `room-reader-plans` → `room-reader-plans-v2` (the
+  saved-plan payload shape changed with the Prepare→Event schema rewrite —
+  old plans stored `vibe_check`/`pep_talk`, which this file no longer reads).
+  `room-reader-playbook`, `room-reader-history`, `room-reader-saved`,
+  `room-reader-people` are unchanged in shape and keep their v1 keys.
+- **Catalog rewritten** (`src/data/tools.js`): tagline, description, primer,
+  and guide all described the v1 13-mode tool and its mind-reading claims.
+- **Retranslated i18n**: 265 total `rr_*` keys across 13 languages — 146 kept
+  verbatim from v1 (generic UI chrome: event/scenario/relationship/comfort
+  option labels, placeholders, error strings — meaning unchanged), 119 newly
+  written (the 4-group nav labels, every new/changed result field, `rr_tagline`
+  updated to match the new tagline). Cross-validated key-for-key against a
+  grep of every `t('rr_...')` call and label-map entry in the frontend before
+  assembly — zero drift either direction.
+
+## ⚠️ Verification gap — read before trusting this as fully locked
+
+**The account's Anthropic API key hit its usage cap mid-session** ("You will
+regain access on 2026-10-01 at 00:00 UTC" — confirmed in `/private/tmp/backend.log`,
+not a bug in this rewrite). Live-verified end-to-end before the cap hit:
+`/room-reader` (prepare-event), `/room-reader-recover` (now-awkward),
+`/room-reader-decode` (decode-meant) — all three in English, plus a full
+Spanish pass through the awkward-recovery flow (pinned-label translation,
+UI-chrome translation, and epistemic discipline in the model's own Spanish
+output all confirmed). **Not live-verified this session**: `/room-reader-person`,
+`/room-reader-group`, `/room-reader-culture`, `/room-reader-quick`,
+`/room-reader-stalled`, `/room-reader-exit`, `/room-reader-depth`,
+`/room-reader-debrief`, `/room-reader-followup`, `/room-reader-autopsy`,
+`/room-reader-person-refresh` — these passed every static gate (syntax,
+eslint, guard-keys, diff-audit, three-way-sync, output-standard-audit) and
+share the same CORE_SYSTEM + `runOutputGuard` wiring as the three that did
+run live, but their prompts have not been eyeballed against a real model
+response. **Do this before calling the rewrite fully locked**: re-run
+`npm run check:golden room-reader` after 2026-10-01, live-test the 11
+unverified endpoints (the same way the three verified ones were — see
+`_meta.note` in the golden file), and extend the golden sample to cover them.
+
+## DO NOT silently reverse
+
+- `my_read.label` / `do_you_need_to_fix_it.answer` staying the exact pinned
+  English enum, with the frontend switching display text via the `*_KEY`
+  maps — never compare against a translated string.
+- No predicted "they will say X" dialogue anywhere — only "if they respond
+  this way..." branches, at most 1-2.
+- No numeric severity/confidence score on any endpoint.
+- `addToPlaybook` staying manual (button click) everywhere — never
+  auto-called from a generated response.
+- `InputCard`'s ⌘↵ chip — don't let a future hand-rolled button reintroduce
+  the old inconsistency.
 
 ## Gotchas
-- **Backend rate limit = 4 req/min.** `check:golden` runs the 3 cases sequentially and fits.
-- **Pre-Game is slow (~80s)** by nature (8 starters + full plan at 5000 tokens) — verify with a
-  long-timeout fetch, not a short `curl -m`.
-- **Restart the backend after route edits** (started via `node`, not nodemon).
-- Lesson (recurring): a success guard must key on a field the schema actually emits AT TOP LEVEL —
-  a nested or renamed field makes the guard always fire (every request 500s). Same class as
-  MeetingBSDetector; verify guards by checking the schema's top-level keys, not just any occurrence.
+
+- Backend rate limit ~4 req/min; space out manual golden captures.
+- Restart the backend after route edits — this session ran under `nodemon`,
+  so edits auto-reload (v1's notes assumed a manual restart; that's no longer
+  the case in this environment, but don't assume it elsewhere).
+- The account-level API usage cap above is unrelated to DeftBrain's own
+  per-route `rateLimit(DEFAULT_LIMITS)` — check `/private/tmp/backend.log` (or
+  wherever the active backend process's stdout is redirected) for
+  `"usage limits"` before assuming a 500 is a code bug.

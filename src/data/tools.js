@@ -3150,50 +3150,45 @@ tagline: "Work with the energy you have.",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before an event you're dreading, during one that's going sideways, or after one you're replaying.",
-    give: "The event and who'll be there. Or, mid-event, what just happened.",
-    get: "Conversation starters, a map of who's who, exit lines, and afterwards an honest debrief.",
-    edge: "It covers all three moments, and each one feeds a Playbook that gets more specific to you over time.",
+    when: "Before an event you're dreading, in the middle of a conversation, or after one you're replaying.",
+    give: "What's going on — the event, the person, or what just happened. It works from what you actually know.",
+    get: "A real read on the situation, actual lines to say, and cautions grounded in your own account — never a guess at what a stranger is thinking.",
+    edge: "It reasons about plausible interpretations and gives a real judgment when the evidence supports one — it never claims to know what anyone else actually felt.",
   },
-  seoDescription: "Read the room before you walk in. Free social coach for every stage — prep conversations, recover from awkward moments, and debrief afterward. No signup needed.",
+  seoDescription: "Prepare for a social situation, find words in the moment, decode what happened, or make sense of it afterward. Free social coach that reasons from what you know — never claims to read minds. No signup.",
   seoTitle: "Social Situation Coach & Conversation Prep",
   title: "Read the Room",
-  tagline: "Read the room before you walk in",
+  tagline: "Know what to say when you're not sure what to do.",
   tags: ['social', 'conversation', 'read the room', 'networking', 'awkward', 'small talk', 'people'],
   icon: "🎭",
   categories: ['Humans'],
   headerColor: "#e0b8b8",
-  description: "A 12-mode social coach for every stage of a social situation — prep, navigate, recover, and debrief. Modes include event prep, quick tap-and-go lines, conversation recovery, person and group prep, energy matching, small talk depth, culture decoding, signal decoding, follow-up drafting, and post-event analysis. Builds a persistent Playbook from your wins and tracks recurring people over time.",
+  description: "Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.",
   guide: {
-      overview: "Read the Room is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
+      overview: "Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (a debrief, a follow-up message, or understanding something that went badly). It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook only grows when you tell it something actually worked; recurring people are tracked from what you log, not a personality profile.",
 
       howToUse: [
-        "Pre-Game: Pick an event, add details, get conversation starters, people map, body language, exits, and a pep talk. Save the plan to reference at the event",
-        "Quick Read: Tap a scenario + relationship, get one line instantly. Refresh for a new one. Your playbook shapes the style",
-        "Recovery: Just said something weird? Enter what you said, get a damage score (most things are a 3/10) and immediate saves",
-        "Person Prep: Strategy for one specific person. Track recurring people by logging what worked and what bombed after each interaction, then get fresh strategies from the history",
-        "Group Dynamics: Enter conversations, contribute without dominating, recover from being ignored",
-        "Energy Match: Your energy doesn't match the room? Get techniques to bridge up, bridge down, or own the mismatch",
-        "Small Talk Ladder: Learn exact transition phrases to go from 'nice weather' to genuine connection in 5 levels",
-        "Culture Decoder: Cross-cultural social situations with do/don't lists, body language norms, and a key phrase to learn",
-        "Signal Decoder: Someone said something confusing. Get the most likely read, overthinking check, and options",
-        "Follow-Up: Draft the right post-event text with timing and multiple styles",
-        "Debrief: Log wins (auto-added to Playbook) and reframe awkward moments. Get a next challenge",
-        "Social Autopsy: Deep forensic analysis of what went wrong. Separates your fault from not-your-fault. Adds lessons to Playbook"
+        "Prepare → An Event: pick an event, add who's there and any concerns, get a simple plan, a few conversation starters, and one thing to watch for",
+        "Prepare → One Person / A Group / A Cross-Cultural Situation: get grounded prep that never invents a personality, a hidden group dynamic, or a fact about an individual from their culture",
+        "Right Now → I need something to say / Conversation stalled / I said something awkward / I need to leave: fast, in-the-moment help for exactly what's happening",
+        "Decode → What might that have meant?: a real read when the evidence points somewhere, honest uncertainty when it doesn't, and what to watch for next",
+        "Decode → Should I go deeper or back off?: reads observable reciprocity — whether they're engaging or winding down — rather than a fixed signal",
+        "Afterward → Help me debrief / Write a follow-up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked",
+        "Track a recurring person under Prepare → One Person and log what happened after each interaction — the next strategy comes from your own logged outcomes"
       ],
 
       example: {
-        scenario: "You have a work dinner Thursday with your partner's Japanese clients. Your partner's difficult mother will be at family brunch Sunday. Last week's networking event was a disaster and you can't figure out why.",
-        action: "Culture Decoder: Japanese business dinner. Person Prep: partner's mother + track her as recurring. Social Autopsy: describe the networking event. Pre-Game: Thursday dinner with saved plan.",
-        result: "Culture guide with greeting norms, seating etiquette, a phrase in Japanese, and how to handle the toast. Person strategy for the mother based on what you know, with a 'track' button that logs each interaction so next time it suggests fresh topics based on history. Autopsy reveals the networking event wasn't your fault — the group dynamics were exclusionary — but suggests a positioning trick for next time (added to Playbook). Thursday's plan saved for phone reference."
+        scenario: "You have a work dinner Thursday with clients from a culture you don't know well. Last week's networking event felt off and you can't figure out why.",
+        action: "Prepare → A Cross-Cultural Situation for Thursday's dinner. Afterward → Something went badly, describing what happened at the networking event.",
+        result: "Norms worth checking for the dinner, framed as tendencies to verify rather than facts about your specific guests, plus a safe fallback and a graceful recovery line. For the networking event: a plain restatement of what happened, what was actually in your control versus what you couldn't have known, one turning point tied to something that actually happened, and one thing not to overlearn from a single interaction."
       },
 
       tips: [
-        "Recovery mode is for RIGHT NOW — don't overthink the input, just type what you said and get a save. Most things are a 3/10",
-        "Track recurring people (in-laws, coworkers, neighbors) and log interactions. After 3-4 notes the fresh strategy becomes remarkably specific",
-        "The Small Talk Ladder is a skill builder — use it before events to practice transition phrases, not just when you're stuck",
-        "Social Autopsy is for when Debrief isn't enough. Use it when you genuinely can't figure out what went wrong. It's generous about what wasn't your fault",
-        "Copy the Cheat Sheet from saved plans — it's a phone-friendly summary of your full prep that you can pull up in the bathroom before rejoining the party"
+        "Right Now → I said something awkward doesn't produce a severity score — most things need no repair at all, and the tool says so honestly",
+        "Track recurring people and log what happened each time — after a few logged interactions, the fresh approach draws on real outcomes, not a guess at their personality",
+        "Decode → What might that have meant? will give you a real judgment when the details point somewhere; it says plainly when they don't",
+        "A tactic only lands in your Playbook when you click to save it after a debrief — nothing is added automatically just because the model suggested it",
+        "Save a Prepare → An Event plan to pull up on your phone before you walk in"
       ]
     }
 },

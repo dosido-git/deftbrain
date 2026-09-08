@@ -62,31 +62,71 @@ const COMFORT = [
   { id: 'fine',             icon: '🙂', labelKey: 'rr_comfort_fine' },
 ];
 
-const ENERGY_COLORS = {
-  low_key:   ['bg-sky-900/30 text-sky-300',    'bg-sky-100 text-sky-700'],
-  warm:      ['bg-amber-900/30 text-amber-300', 'bg-amber-100 text-amber-700'],
-  playful:   ['bg-cyan-900/30 text-cyan-300',   'bg-cyan-100 text-cyan-700'],
-  bold:      ['bg-red-900/30 text-red-300',     'bg-red-100 text-red-700'],
-  confident: ['bg-cyan-900/30 text-cyan-300',   'bg-cyan-100 text-cyan-700'],
+const TONE_COLORS = {
+  low_key: ['bg-sky-900/30 text-sky-300',    'bg-sky-100 text-sky-700'],
+  warm:    ['bg-amber-900/30 text-amber-300', 'bg-amber-100 text-amber-700'],
+  playful: ['bg-cyan-900/30 text-cyan-300',   'bg-cyan-100 text-cyan-700'],
+  direct:  ['bg-red-900/30 text-red-300',     'bg-red-100 text-red-700'],
 };
 
-const MODES = [
-  { id: 'pregame',  icon: '🎯', labelKey: 'rr_mode_pregame' },
-  { id: 'quick',    icon: '⚡', labelKey: 'rr_mode_quick' },
-  { id: 'recovery', icon: '🆘', labelKey: 'rr_mode_recovery' },
-  { id: 'person',   icon: '👤', labelKey: 'rr_mode_person' },
-  { id: 'group',    icon: '👥', labelKey: 'rr_mode_group' },
-  { id: 'energy',   icon: '🔋', labelKey: 'rr_mode_energy' },
-  { id: 'ladder',   icon: '🪜', labelKey: 'rr_mode_ladder' },
-  { id: 'culture',  icon: '🌍', labelKey: 'rr_mode_culture' },
-  { id: 'decode',   icon: '🔍', labelKey: 'rr_mode_decode' },
-  { id: 'followup', icon: '💬', labelKey: 'rr_mode_followup' },
-  { id: 'debrief',  icon: '📝', labelKey: 'rr_mode_debrief' },
-  { id: 'autopsy',  icon: '🔬', labelKey: 'rr_mode_autopsy' },
+// Top-level groups. Each opens a small set of contextual actions instead of
+// exposing all 13 old modes at once — see audit/tool-notes/READTHEROOM-NOTES.md.
+const GROUPS = [
+  { id: 'prepare', icon: '🎯', labelKey: 'rr_group_prepare' },
+  { id: 'now',     icon: '⚡', labelKey: 'rr_group_now' },
+  { id: 'decode',  icon: '🔍', labelKey: 'rr_group_decode' },
+  { id: 'after',   icon: '📝', labelKey: 'rr_group_after' },
 ];
 
+const SUB_ACTIONS = {
+  prepare: [
+    { id: 'event',   icon: '🎉', labelKey: 'rr_sub_event' },
+    { id: 'person',  icon: '👤', labelKey: 'rr_sub_person' },
+    { id: 'group',   icon: '👥', labelKey: 'rr_sub_group' },
+    { id: 'culture', icon: '🌍', labelKey: 'rr_sub_culture' },
+  ],
+  now: [
+    { id: 'say',     icon: '💬', labelKey: 'rr_sub_say' },
+    { id: 'stalled', icon: '⏸️', labelKey: 'rr_sub_stalled' },
+    { id: 'awkward', icon: '😬', labelKey: 'rr_sub_awkward' },
+    { id: 'leave',   icon: '🚪', labelKey: 'rr_sub_leave' },
+  ],
+  decode: [
+    { id: 'meant', icon: '🔎', labelKey: 'rr_sub_meant' },
+    { id: 'depth', icon: '📶', labelKey: 'rr_sub_depth' },
+  ],
+  after: [
+    { id: 'debrief',  icon: '📝', labelKey: 'rr_sub_debrief' },
+    { id: 'followup', icon: '💌', labelKey: 'rr_sub_followup' },
+    { id: 'badly',    icon: '🔬', labelKey: 'rr_sub_badly' },
+  ],
+};
+
+// Pinned English enum values from the backend → i18n key. Never compare
+// against a translated string; the code value stays exactly as sent.
+const DECODE_LABEL_KEY = {
+  'leans one way': 'rr_decode_leans',
+  'several plausible reads': 'rr_decode_several',
+  'not enough to tell': 'rr_decode_notenough',
+};
+const DEPTH_LABEL_KEY = {
+  'LEANS TOWARD GOING DEEPER': 'rr_depth_deeper',
+  'LEANS TOWARD KEEPING IT LIGHT': 'rr_depth_light',
+  'MIXED SIGNALS': 'rr_depth_mixed',
+};
+const STALLED_LABEL_KEY = {
+  'WORTH ONE MORE TRY': 'rr_stalled_try',
+  'PROBABLY WINDING DOWN': 'rr_stalled_winding',
+  'NOT ENOUGH TO TELL': 'rr_stalled_notenough',
+};
+const RECOVER_ANSWER_KEY = {
+  'PROBABLY NOT': 'rr_recover_probablynot',
+  'MAYBE': 'rr_recover_maybe',
+  'LIKELY YES': 'rr_recover_likelyyes',
+};
+
 // ════════════════════════════════════════════════════════════
-// SUB-COMPONENTS — defined outside RoomReader to prevent
+// SUB-COMPONENTS — defined outside ReadTheRoom to prevent
 // focus-loss on keystroke (React remounts inline components
 // every render because their identity changes)
 // ════════════════════════════════════════════════════════════
@@ -111,7 +151,7 @@ const ConvoLine = ({ label, emoji, text, accent = false, onSave, c, isDark, isSa
         <p className={`text-sm ${accent ? `font-semibold ${c.text}` : `${c.textSecondary} italic`}`}>"{text}"</p>
       </div>
       <div className="flex gap-1 flex-shrink-0">
-        {onSave && (
+        {onSave && text && (
           <button onClick={() => onSave(text)}
             className={`text-xs px-1.5 py-1 rounded ${isSaved(text) ? (isDark ? 'text-amber-300' : 'text-amber-600') : c.textMuted}`}>
             {isSaved(text) ? '⭐' : '☆'}
@@ -121,43 +161,6 @@ const ConvoLine = ({ label, emoji, text, accent = false, onSave, c, isDark, isSa
     </div>
   </div>
 );
-
-const StarterCard = ({ s, i, saveCtx, c, isDark, expandedSections, toggleSection, saveLine, isSaved, t }) => {
-  const ek = `starter-${i}`;
-  const isOpen = expandedSections[ek];
-  const ec = ENERGY_COLORS[s.energy] || ENERGY_COLORS.warm;
-  return (
-    <div className={`${c.cardAlt} border ${c.border} rounded-lg overflow-hidden`}>
-      <div className="p-4 space-y-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? ec[0] : ec[1]}`}>{s.energy}</span>
-          {s.best_for && <span className={`text-xs ${c.textMuted}`}>→ {s.best_for}</span>}
-        </div>
-        <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={s.line} accent
-          onSave={(line) => saveLine(line, saveCtx)} c={c} isDark={isDark} isSaved={isSaved} />
-        <p className={`text-xs ${c.textMuted}`}>{s.works_because || s.why}</p>
-        {(s.if_they_respond || s.flow) && (
-          <button onClick={() => toggleSection(ek)} className={`text-xs font-bold ${c.accentTxt}`}>
-            {isOpen ? t('rr_starter_hide_flow') : t('rr_starter_see_flow')}
-          </button>
-        )}
-      </div>
-      {isOpen && (
-        <div className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
-          {(s.if_they_respond || s.flow) && (
-            <ConvoLine label={t('rr_convo_how_it_flows')} emoji="↔️" text={s.if_they_respond || s.flow}
-              c={c} isDark={isDark} isSaved={isSaved} />
-          )}
-          {s.if_it_falls_flat && (
-            <div className={`${c.warning} border rounded-lg p-3`}>
-              <p className="text-xs">🛡️ <strong>{t('rr_starter_falls_flat')}</strong> {s.if_it_falls_flat}</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection }) => (
   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
@@ -171,6 +174,8 @@ const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection 
   </div>
 );
 
+// PF-31: every submit button carries the ⌘↵ chip, because the same global
+// keyboard handler covers every group/sub-action, not just a couple of them.
 const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, loading, tool, playbookLength, t }) => (
   <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
     <h3 className={`font-bold ${c.text}`}>{title}</h3>
@@ -180,11 +185,17 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
       </p>
     )}
     {children}
-    <button onClick={onSubmit} disabled={loading}
-      className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
+    <button title={t('cmd_enter')} onClick={onSubmit} disabled={loading}
+      className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
       {loading
         ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span>
         : <><span>{btnIcon || ''}</span> {btnLabel}</>}
+      {!loading && (
+        <kbd aria-hidden="true"
+          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+          ⌘↵
+        </kbd>
+      )}
     </button>
   </div>
 );
@@ -241,10 +252,12 @@ const ReadTheRoom = ({ tool }) => {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── State ──
-  const [mode, setMode] = useState('pregame');
+  const [group, setGroup] = useState('prepare');
+  const [sub, setSub] = useState('event');
   const [error, setError] = useState('');
+  const activeKey = `${group}:${sub}`;
 
-  // Pre-Game
+  // Prepare — Event
   const [eventType, setEventType] = useState('');
   const [eventOther, setEventOther] = useState('');
   const [eventDetails, setEventDetails] = useState('');
@@ -252,90 +265,91 @@ const ReadTheRoom = ({ tool }) => {
   const [concerns, setConcerns] = useState('');
   const [topicsToAvoid, setTopicsToAvoid] = useState('');
   const [comfort, setComfort] = useState('nervous');
-  const [preGameResults, setPreGameResults] = useState(null);
+  const [eventResult, setEventResult] = useState(null);
 
-  // Quick Read
-  const [quickScenario, setQuickScenario] = useState('');
-  const [quickOther, setQuickOther] = useState('');
-  const [quickRelationship, setQuickRelationship] = useState('');
-  const [quickResults, setQuickResults] = useState(null);
-  const [quickExclude, setQuickExclude] = useState([]);
-
-  // Decoder
-  const [theyDid, setTheyDid] = useState('');
-  const [decodeContext, setDecodeContext] = useState('');
-  const [decodeRelationship, setDecodeRelationship] = useState('');
-  const [yourConcern, setYourConcern] = useState('');
-  const [decodeResults, setDecodeResults] = useState(null);
-
-  // Follow-Up
-  const [followUpWho, setFollowUpWho] = useState('');
-  const [followUpContext, setFollowUpContext] = useState('');
-  const [followUpWhat, setFollowUpWhat] = useState('');
-  const [followUpGoal, setFollowUpGoal] = useState('');
-  const [followUpResults, setFollowUpResults] = useState(null);
-
-  // Debrief
-  const [debriefEvent, setDebriefEvent] = useState('');
-  const [debriefWhat, setDebriefWhat] = useState('');
-  const [debriefGood, setDebriefGood] = useState('');
-  const [debriefAwkward, setDebriefAwkward] = useState('');
-  const [debriefFeeling, setDebriefFeeling] = useState('mixed');
-  const [debriefResults, setDebriefResults] = useState(null);
-
-  // Person Prep + Tracker
+  // Prepare — Person
   const [personName, setPersonName] = useState('');
   const [personRelationship, setPersonRelationship] = useState('');
   const [personRelOther, setPersonRelOther] = useState('');
   const [personKnow, setPersonKnow] = useState('');
   const [personContext, setPersonContext] = useState('');
   const [personConcern, setPersonConcern] = useState('');
-  const [personResults, setPersonResults] = useState(null);
+  const [personResult, setPersonResult] = useState(null);
   const [personNoteTopics, setPersonNoteTopics] = useState('');
   const [personNoteBombed, setPersonNoteBombed] = useState('');
   const [personNoteText, setPersonNoteText] = useState('');
-  const [personRefreshResults, setPersonRefreshResults] = useState(null);
+  const [personRefreshResult, setPersonRefreshResult] = useState(null);
   const [selectedTrackedPerson, setSelectedTrackedPerson] = useState(null);
 
-  // Group
+  // Prepare — Group
   const [groupSituation, setGroupSituation] = useState('');
   const [groupSize, setGroupSize] = useState('4-6');
   const [groupRole, setGroupRole] = useState('');
   const [groupChallenge, setGroupChallenge] = useState('');
-  const [groupResults, setGroupResults] = useState(null);
+  const [groupResult, setGroupResult] = useState(null);
 
-  // Recovery
-  const [recoverySaid, setRecoverySaid] = useState('');
-  const [recoveryContext, setRecoveryContext] = useState('');
-  const [recoveryRelationship, setRecoveryRelationship] = useState('');
-  const [recoveryHowBad, setRecoveryHowBad] = useState('bad');
-  const [recoveryResults, setRecoveryResults] = useState(null);
-
-  // Culture Decoder
+  // Prepare — Culture
   const [cultureText, setCultureText] = useState('');
   const [cultureSituation, setCultureSituation] = useState('');
   const [cultureMyBg, setCultureMyBg] = useState('');
   const [cultureConcern, setCultureConcern] = useState('');
-  const [cultureResults, setCultureResults] = useState(null);
+  const [cultureResult, setCultureResult] = useState(null);
 
-  // Energy Match
-  const [myEnergy, setMyEnergy] = useState('');
-  const [roomEnergy, setRoomEnergy] = useState('');
-  const [energyContext, setEnergyContext] = useState('');
-  const [energyResults, setEnergyResults] = useState(null);
+  // Right Now — Say
+  const [quickScenario, setQuickScenario] = useState('');
+  const [quickOther, setQuickOther] = useState('');
+  const [quickRelationship, setQuickRelationship] = useState('');
+  const [quickResult, setQuickResult] = useState(null);
+  const [quickExclude, setQuickExclude] = useState([]);
 
-  // Small Talk Ladder
-  const [ladderRelationship, setLadderRelationship] = useState('');
-  const [ladderContext, setLadderContext] = useState('');
-  const [ladderDepth, setLadderDepth] = useState('');
-  const [ladderResults, setLadderResults] = useState(null);
+  // Right Now — Stalled
+  const [stalledWhat, setStalledWhat] = useState('');
+  const [stalledRelationship, setStalledRelationship] = useState('');
+  const [stalledResult, setStalledResult] = useState(null);
 
-  // Social Autopsy
+  // Right Now — Awkward
+  const [recoverySaid, setRecoverySaid] = useState('');
+  const [recoveryContext, setRecoveryContext] = useState('');
+  const [recoveryRelationship, setRecoveryRelationship] = useState('');
+  const [recoveryResult, setRecoveryResult] = useState(null);
+
+  // Right Now — Leave
+  const [exitContext, setExitContext] = useState('');
+  const [exitResult, setExitResult] = useState(null);
+
+  // Decode — Meant
+  const [theyDid, setTheyDid] = useState('');
+  const [decodeContext, setDecodeContext] = useState('');
+  const [decodeRelationship, setDecodeRelationship] = useState('');
+  const [yourConcern, setYourConcern] = useState('');
+  const [decodeResult, setDecodeResult] = useState(null);
+
+  // Decode — Depth
+  const [depthWhat, setDepthWhat] = useState('');
+  const [depthRelationship, setDepthRelationship] = useState('');
+  const [depthResult, setDepthResult] = useState(null);
+
+  // Afterward — Debrief
+  const [debriefEvent, setDebriefEvent] = useState('');
+  const [debriefWhat, setDebriefWhat] = useState('');
+  const [debriefGood, setDebriefGood] = useState('');
+  const [debriefAwkward, setDebriefAwkward] = useState('');
+  const [debriefFeeling, setDebriefFeeling] = useState('mixed');
+  const [debriefResult, setDebriefResult] = useState(null);
+
+  // Afterward — Follow-up
+  const [followUpWho, setFollowUpWho] = useState('');
+  const [followUpContext, setFollowUpContext] = useState('');
+  const [followUpWhat, setFollowUpWhat] = useState('');
+  const [followUpGoal, setFollowUpGoal] = useState('');
+  const [followUpResult, setFollowUpResult] = useState(null);
+
+  // Afterward — Something went badly
   const [autopsyWhat, setAutopsyWhat] = useState('');
   const [autopsyTimeline, setAutopsyTimeline] = useState('');
   const [autopsyFelt, setAutopsyFelt] = useState('');
   const [autopsyThink, setAutopsyThink] = useState('');
-  const [autopsyResults, setAutopsyResults] = useState(null);
+  const [autopsyResult, setAutopsyResult] = useState(null);
 
   // UI
   const [expandedSections, setExpandedSections] = useState({});
@@ -343,7 +357,7 @@ const ReadTheRoom = ({ tool }) => {
   const [showPlans, setShowPlans] = useState(false);
 
   // ── Refs ──
-  const modeRef      = useRef('pregame');
+  const activeKeyRef = useRef(activeKey);
   const submitRef    = useRef(null);
   const canSubmitRef = useRef(false);
   const resultsRef   = useRef(null);
@@ -352,18 +366,21 @@ const ReadTheRoom = ({ tool }) => {
   const shouldFocusNewTrackedPeopleRef = useRef(false);
   // ── Persistent state ──
   const [playbook, setPlaybook]           = usePersistentState('room-reader-playbook', []);
-  const [sessionHistory, setSessionHistory]             = usePersistentState('room-reader-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('room-reader-history', []);
   const [saved, setSaved]                 = usePersistentState('room-reader-saved', []);
-  const [gamePlans, setGamePlans]         = usePersistentState('room-reader-plans', []);
+  // -v2: the saved-plan shape changed with the Prepare > Event schema rewrite.
+  const [gamePlans, setGamePlans]         = usePersistentState('room-reader-plans-v2', []);
   const [trackedPeople, setTrackedPeople] = usePersistentState('room-reader-people', []);
 
   // ── Helpers ──
   const toggleSection = useCallback((k) => setExpandedSections(p => ({ ...p, [k]: !p[k] })), []);
-  const addToHistory  = useCallback((type, label) => setSessionHistory(prev => [{ type, label, preview: String(label).slice(0, 40), timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setSessionHistory]); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
-  const addToPlaybook = useCallback((tactic, context) => setPlaybook(prev => { if (prev.find(p => p.tactic === tactic)) return prev; return [{ tactic, context, rating: 4, timestamp: new Date().toISOString() }, ...prev].slice(0, 30); }), [setPlaybook]);
+  const addToHistory  = useCallback((mtype, label) => setSessionHistory(prev => [{ type: mtype, label, preview: String(label).slice(0, 40), timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setSessionHistory]); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
+  // Playbook additions are always visitor-triggered — never automatic on a
+  // generated response. See PLAYBOOK section, audit/tool-notes/READTHEROOM-NOTES.md.
+  const addToPlaybook = useCallback((tactic, context) => setPlaybook(prev => { if (prev.find(p => p.tactic === tactic)) return prev; return [{ tactic, context, timestamp: new Date().toISOString() }, ...prev].slice(0, 30); }), [setPlaybook]);
   const saveLine      = useCallback((line, ctx) => setSaved(prev => { if (prev.find(s => s.line === line)) return prev; return [{ line, context: ctx, timestamp: new Date().toISOString() }, ...prev].slice(0, 50); }), [setSaved]);
-  const isSaved       = useCallback((line) => saved.some(s => s.line === line), [saved]);
-  const saveGamePlan  = useCallback((label, data) => setGamePlans(prev => [{ label, data, timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setGamePlans]);
+  const isSaved        = useCallback((line) => saved.some(s => s.line === line), [saved]);
+  const saveGamePlan  = useCallback((label, data) => setGamePlans(prev => [{ label, preview: String(label).slice(0, 40), data, timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setGamePlans]);
 
   const addTrackedPerson = useCallback((name, rel) => {
     if (trackedPeople.find(p => p.name === name)) return;
@@ -381,168 +398,173 @@ const ReadTheRoom = ({ tool }) => {
     setPersonNoteTopics(''); setPersonNoteBombed(''); setPersonNoteText('');
   }, [personNoteText, personNoteTopics, personNoteBombed, setTrackedPeople]);
 
+  const pinned = useCallback((map, value) => {
+    const key = map[value];
+    const v = key ? t(key) : '';
+    return v || value || '';
+  }, [t]);
+
   // ── Derived values for "Other" fields ──
-  const effectiveEventType   = eventType === 'other' ? eventOther.trim()   : (EVENTS.find(e => e.id === eventType)?.label || '');
+  const effectiveEventType  = eventType === 'other' ? eventOther.trim() : (EVENTS.find(e => e.id === eventType)?.label || '');
   const effectiveQuickScenario = quickScenario === 'other' ? quickOther.trim() : (QUICK_SCENARIOS.find(s => s.id === quickScenario)?.label || '');
-  const effectivePersonRel   = personRelationship === 'other' ? personRelOther.trim() : personRelationship;
+  const effectivePersonRel  = personRelationship === 'other' ? personRelOther.trim() : personRelationship;
 
   // ── API Handlers ──
-  const handlePreGame = useCallback(async () => {
+  const handlePrepareEvent = useCallback(async () => {
     const el = effectiveEventType || eventDetails?.trim();
-    if (!el) { setError(t('rr_err_pregame')); return; }
+    if (!el) { setError(t('rr_err_event')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook });
-      if (data) { setPreGameResults(data); addToHistory('pregame', el); }
+      if (data) { setEventResult(data); addToHistory('prepare:event', el); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [effectiveEventType, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpoint, addToHistory, t]);
 
-  const handleQuickRead = useCallback(async (refresh = false) => {
-    const sl = effectiveQuickScenario;
-    if (!sl) { setError(t('rr_err_quick')); return; }
-    setError('');
-    const rl = RELATIONSHIPS.find(r => r.id === quickRelationship)?.label || quickRelationship || 'someone';
-    try {
-      const data = await callToolEndpoint('room-reader-quick', { scenario: sl, relationship: rl, playbook, exclude: refresh ? quickExclude : [] });
-      if (data) { setQuickResults(data); if (refresh && data.line) setQuickExclude(prev => [...prev, data.line]); else setQuickExclude(data.line ? [data.line] : []); addToHistory('quick', `${sl} + ${rl}`); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [effectiveQuickScenario, quickRelationship, quickExclude, playbook, callToolEndpoint, addToHistory, t]);
-
-  const handleDecode = useCallback(async () => {
-    if (!theyDid.trim()) { setError(t('rr_err_decode')); return; }
-    setError('');
-    try {
-      const data = await callToolEndpoint('room-reader-decode', { theyDid, context: decodeContext, relationship: decodeRelationship, yourConcern });
-      if (data) { setDecodeResults(data); addToHistory('decode', theyDid.substring(0, 40)); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [theyDid, decodeContext, decodeRelationship, yourConcern, callToolEndpoint, addToHistory, t]);
-
-  const handleFollowUp = useCallback(async () => {
-    if (!followUpWho.trim() && !followUpContext.trim()) { setError(t('rr_err_followup')); return; }
-    setError('');
-    try {
-      const data = await callToolEndpoint('room-reader-followup', { who: followUpWho, context: followUpContext, whatHappened: followUpWhat, goal: followUpGoal, playbook });
-      if (data) { setFollowUpResults(data); addToHistory('followup', followUpWho || followUpContext.substring(0, 30)); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [followUpWho, followUpContext, followUpWhat, followUpGoal, playbook, callToolEndpoint, addToHistory, t]);
-
-  const handleDebrief = useCallback(async () => {
-    if (!debriefWhat.trim() && !debriefGood.trim() && !debriefAwkward.trim()) { setError(t('rr_err_debrief')); return; }
-    setError('');
-    try {
-      const data = await callToolEndpoint('room-reader-debrief', { eventType: debriefEvent, whatHappened: debriefWhat, whatWentWell: debriefGood, whatFeltAwkward: debriefAwkward, overallFeeling: debriefFeeling, playbook });
-      if (data) { setDebriefResults(data); addToHistory('debrief', debriefEvent || t('rr_default_event_short')); data.wins?.forEach(w => { if (w.add_to_playbook) addToPlaybook(w.add_to_playbook, debriefEvent || t('rr_default_event_short')); }); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [debriefEvent, debriefWhat, debriefGood, debriefAwkward, debriefFeeling, playbook, callToolEndpoint, addToHistory, addToPlaybook, t]);
-
-  const handlePersonPrep = useCallback(async () => {
+  const handlePreparePerson = useCallback(async () => {
     if (!personKnow.trim() && !effectivePersonRel) { setError(t('rr_err_person')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-person', { personName, relationship: effectivePersonRel, whatYouKnow: personKnow, context: personContext, yourConcern: personConcern, playbook });
-      if (data) { setPersonResults(data); addToHistory('person', personName || effectivePersonRel || t('rr_default_someone')); }
+      if (data) { setPersonResult(data); addToHistory('prepare:person', personName || effectivePersonRel || t('rr_default_someone')); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [personName, effectivePersonRel, personKnow, personContext, personConcern, playbook, callToolEndpoint, addToHistory, t]);
 
-  const handleGroup = useCallback(async () => {
+  const handlePrepareGroup = useCallback(async () => {
     if (!groupSituation.trim() && !groupChallenge.trim()) { setError(t('rr_err_group')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-group', { situation: groupSituation, groupSize, yourRole: groupRole, challenge: groupChallenge, playbook });
-      if (data) { setGroupResults(data); addToHistory('group', groupSituation.substring(0, 40) || 'group'); }
+      if (data) { setGroupResult(data); addToHistory('prepare:group', groupSituation.substring(0, 40) || 'group'); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [groupSituation, groupSize, groupRole, groupChallenge, playbook, callToolEndpoint, addToHistory, t]);
 
-  const handleRecovery = useCallback(async () => {
-    if (!recoverySaid.trim()) { setError(t('rr_err_recovery')); return; }
-    setError('');
-    try {
-      const data = await callToolEndpoint('room-reader-recover', { whatYouSaid: recoverySaid, context: recoveryContext, relationship: recoveryRelationship, howBad: recoveryHowBad });
-      if (data) { setRecoveryResults(data); addToHistory('recovery', recoverySaid.substring(0, 30)); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [recoverySaid, recoveryContext, recoveryRelationship, recoveryHowBad, callToolEndpoint, addToHistory, t]);
-
-  const handleCulture = useCallback(async () => {
+  const handlePrepareCulture = useCallback(async () => {
     if (!cultureText.trim() && !cultureSituation.trim()) { setError(t('rr_err_culture')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-culture', { culture: cultureText, situation: cultureSituation, myBackground: cultureMyBg, specificConcern: cultureConcern });
-      if (data) { setCultureResults(data); addToHistory('culture', cultureText || cultureSituation.substring(0, 30)); }
+      if (data) { setCultureResult(data); addToHistory('prepare:culture', cultureText || cultureSituation.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [cultureText, cultureSituation, cultureMyBg, cultureConcern, callToolEndpoint, addToHistory, t]);
 
-  const handleEnergy = useCallback(async () => {
-    if (!myEnergy.trim() || !roomEnergy.trim()) { setError(t('rr_err_energy')); return; }
+  const handleNowSay = useCallback(async (refresh = false) => {
+    const sl = effectiveQuickScenario;
+    if (!sl) { setError(t('rr_err_say')); return; }
+    setError('');
+    const rl = RELATIONSHIPS.find(r => r.id === quickRelationship)?.label || quickRelationship || 'someone I don\'t know well';
+    try {
+      const data = await callToolEndpoint('room-reader-quick', { scenario: sl, relationship: rl, playbook, exclude: refresh ? quickExclude : [] });
+      if (data) { setQuickResult(data); if (refresh && data.say) setQuickExclude(prev => [...prev, data.say]); else setQuickExclude(data.say ? [data.say] : []); addToHistory('now:say', `${sl} + ${rl}`); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [effectiveQuickScenario, quickRelationship, quickExclude, playbook, callToolEndpoint, addToHistory, t]);
+
+  const handleNowStalled = useCallback(async () => {
+    if (!stalledWhat.trim()) { setError(t('rr_err_stalled')); return; }
     setError('');
     try {
-      const data = await callToolEndpoint('room-reader-energy', { myEnergy, roomEnergy, context: energyContext });
-      if (data) { setEnergyResults(data); addToHistory('energy', `${myEnergy} vs ${roomEnergy}`); }
+      const data = await callToolEndpoint('room-reader-stalled', { whatsHappening: stalledWhat, relationship: stalledRelationship });
+      if (data) { setStalledResult(data); addToHistory('now:stalled', stalledWhat.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [myEnergy, roomEnergy, energyContext, callToolEndpoint, addToHistory, t]);
+  }, [stalledWhat, stalledRelationship, callToolEndpoint, addToHistory, t]);
 
-  const handleLadder = useCallback(async () => {
+  const handleNowAwkward = useCallback(async () => {
+    if (!recoverySaid.trim()) { setError(t('rr_err_awkward')); return; }
     setError('');
     try {
-      const data = await callToolEndpoint('room-reader-ladder', { relationship: ladderRelationship, context: ladderContext, currentDepth: ladderDepth });
-      if (data) { setLadderResults(data); addToHistory('ladder', ladderRelationship || t('rr_default_conversation')); }
+      const data = await callToolEndpoint('room-reader-recover', { whatYouSaid: recoverySaid, context: recoveryContext, relationship: recoveryRelationship });
+      if (data) { setRecoveryResult(data); addToHistory('now:awkward', recoverySaid.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [ladderRelationship, ladderContext, ladderDepth, callToolEndpoint, addToHistory, t]);
+  }, [recoverySaid, recoveryContext, recoveryRelationship, callToolEndpoint, addToHistory, t]);
 
-  const handleAutopsy = useCallback(async () => {
-    if (!autopsyWhat.trim()) { setError(t('rr_err_autopsy')); return; }
+  const handleNowLeave = useCallback(async () => {
+    if (!exitContext.trim()) { setError(t('rr_err_leave')); return; }
+    setError('');
+    try {
+      const data = await callToolEndpoint('room-reader-exit', { context: exitContext });
+      if (data) { setExitResult(data); addToHistory('now:leave', exitContext.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [exitContext, callToolEndpoint, addToHistory, t]);
+
+  const handleDecodeMeant = useCallback(async () => {
+    if (!theyDid.trim()) { setError(t('rr_err_meant')); return; }
+    setError('');
+    try {
+      const data = await callToolEndpoint('room-reader-decode', { theyDid, context: decodeContext, relationship: decodeRelationship, yourConcern });
+      if (data) { setDecodeResult(data); addToHistory('decode:meant', theyDid.substring(0, 40)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [theyDid, decodeContext, decodeRelationship, yourConcern, callToolEndpoint, addToHistory, t]);
+
+  const handleDecodeDepth = useCallback(async () => {
+    if (!depthWhat.trim()) { setError(t('rr_err_depth')); return; }
+    setError('');
+    try {
+      const data = await callToolEndpoint('room-reader-depth', { whatsHappening: depthWhat, relationship: depthRelationship });
+      if (data) { setDepthResult(data); addToHistory('decode:depth', depthWhat.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [depthWhat, depthRelationship, callToolEndpoint, addToHistory, t]);
+
+  const handleAfterDebrief = useCallback(async () => {
+    if (!debriefWhat.trim() && !debriefGood.trim() && !debriefAwkward.trim()) { setError(t('rr_err_debrief')); return; }
+    setError('');
+    try {
+      const data = await callToolEndpoint('room-reader-debrief', { eventType: debriefEvent, whatHappened: debriefWhat, whatWentWell: debriefGood, whatFeltAwkward: debriefAwkward, overallFeeling: debriefFeeling, playbook });
+      if (data) { setDebriefResult(data); addToHistory('after:debrief', debriefEvent || t('rr_default_event_short')); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [debriefEvent, debriefWhat, debriefGood, debriefAwkward, debriefFeeling, playbook, callToolEndpoint, addToHistory, t]);
+
+  const handleAfterFollowup = useCallback(async () => {
+    if (!followUpWho.trim() && !followUpContext.trim()) { setError(t('rr_err_followup')); return; }
+    setError('');
+    try {
+      const data = await callToolEndpoint('room-reader-followup', { who: followUpWho, context: followUpContext, whatHappened: followUpWhat, goal: followUpGoal, playbook });
+      if (data) { setFollowUpResult(data); addToHistory('after:followup', followUpWho || followUpContext.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
+  }, [followUpWho, followUpContext, followUpWhat, followUpGoal, playbook, callToolEndpoint, addToHistory, t]);
+
+  const handleAfterBadly = useCallback(async () => {
+    if (!autopsyWhat.trim()) { setError(t('rr_err_badly')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-autopsy', { whatHappened: autopsyWhat, timeline: autopsyTimeline, howYouFelt: autopsyFelt, whatYouThinkWentWrong: autopsyThink, playbook });
-      if (data) { setAutopsyResults(data); addToHistory('autopsy', autopsyWhat.substring(0, 30)); if (data.next_time?.add_to_playbook) addToPlaybook(data.next_time.add_to_playbook, 'autopsy'); }
+      if (data) { setAutopsyResult(data); addToHistory('after:badly', autopsyWhat.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [autopsyWhat, autopsyTimeline, autopsyFelt, autopsyThink, playbook, callToolEndpoint, addToHistory, addToPlaybook, t]);
+  }, [autopsyWhat, autopsyTimeline, autopsyFelt, autopsyThink, playbook, callToolEndpoint, addToHistory, t]);
 
   const handlePersonRefresh = useCallback(async (person) => {
     if (!person.notes?.length) { setError(t('rr_err_log_interaction')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-person-refresh', { personName: person.name, relationship: person.relationship, notes: person.notes, nextContext: personContext, playbook });
-      if (data) { setPersonRefreshResults(data); addToHistory('person-refresh', person.name); }
+      if (data) { setPersonRefreshResult(data); addToHistory('prepare:person', person.name); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [personContext, playbook, callToolEndpoint, addToHistory, t]);
 
   // ── Reset (S1.5 / PF-16: header-only, single instance) ──
   const handleReset = useCallback(() => {
     setError('');
-    // Pre-Game
     setEventType(''); setEventOther(''); setEventDetails(''); setPeople('');
-    setConcerns(''); setTopicsToAvoid(''); setComfort('nervous'); setPreGameResults(null);
-    // Quick
-    setQuickScenario(''); setQuickOther(''); setQuickRelationship(''); setQuickResults(null); setQuickExclude([]);
-    // Decoder
-    setTheyDid(''); setDecodeContext(''); setDecodeRelationship(''); setYourConcern(''); setDecodeResults(null);
-    // Follow-Up
-    setFollowUpWho(''); setFollowUpContext(''); setFollowUpWhat(''); setFollowUpGoal(''); setFollowUpResults(null);
-    // Debrief
-    setDebriefEvent(''); setDebriefWhat(''); setDebriefGood(''); setDebriefAwkward(''); setDebriefFeeling('mixed'); setDebriefResults(null);
-    // Person
+    setConcerns(''); setTopicsToAvoid(''); setComfort('nervous'); setEventResult(null);
     setPersonName(''); setPersonRelationship(''); setPersonRelOther(''); setPersonKnow('');
-    setPersonContext(''); setPersonConcern(''); setPersonResults(null);
+    setPersonContext(''); setPersonConcern(''); setPersonResult(null);
     setPersonNoteTopics(''); setPersonNoteBombed(''); setPersonNoteText('');
-    setPersonRefreshResults(null); setSelectedTrackedPerson(null);
-    // Group
-    setGroupSituation(''); setGroupSize('4-6'); setGroupRole(''); setGroupChallenge(''); setGroupResults(null);
-    // Recovery
-    setRecoverySaid(''); setRecoveryContext(''); setRecoveryRelationship(''); setRecoveryHowBad('bad'); setRecoveryResults(null);
-    // Culture
-    setCultureText(''); setCultureSituation(''); setCultureMyBg(''); setCultureConcern(''); setCultureResults(null);
-    // Energy
-    setMyEnergy(''); setRoomEnergy(''); setEnergyContext(''); setEnergyResults(null);
-    // Ladder
-    setLadderRelationship(''); setLadderContext(''); setLadderDepth(''); setLadderResults(null);
-    // Autopsy
-    setAutopsyWhat(''); setAutopsyTimeline(''); setAutopsyFelt(''); setAutopsyThink(''); setAutopsyResults(null);
+    setPersonRefreshResult(null); setSelectedTrackedPerson(null);
+    setGroupSituation(''); setGroupSize('4-6'); setGroupRole(''); setGroupChallenge(''); setGroupResult(null);
+    setCultureText(''); setCultureSituation(''); setCultureMyBg(''); setCultureConcern(''); setCultureResult(null);
+    setQuickScenario(''); setQuickOther(''); setQuickRelationship(''); setQuickResult(null); setQuickExclude([]);
+    setStalledWhat(''); setStalledRelationship(''); setStalledResult(null);
+    setRecoverySaid(''); setRecoveryContext(''); setRecoveryRelationship(''); setRecoveryResult(null);
+    setExitContext(''); setExitResult(null);
+    setTheyDid(''); setDecodeContext(''); setDecodeRelationship(''); setYourConcern(''); setDecodeResult(null);
+    setDepthWhat(''); setDepthRelationship(''); setDepthResult(null);
+    setDebriefEvent(''); setDebriefWhat(''); setDebriefGood(''); setDebriefAwkward(''); setDebriefFeeling('mixed'); setDebriefResult(null);
+    setFollowUpWho(''); setFollowUpContext(''); setFollowUpWhat(''); setFollowUpGoal(''); setFollowUpResult(null);
+    setAutopsyWhat(''); setAutopsyTimeline(''); setAutopsyFelt(''); setAutopsyThink(''); setAutopsyResult(null);
   }, []);
 
   // ── Try Example (PF-17: demo functionality on multi-field tools) ──
   const loadExample = useCallback(() => {
     handleReset();
-    setMode('pregame');
+    setGroup('prepare'); setSub('event');
     const ex = pickExample('ReadTheRoom', [
       { type: 'work_happy_hour', details: 'rr_example_event_details',  people: 'rr_example_people',  worry: 'rr_example_concerns',  comfort: 'nervous' },
       { type: 'family_holiday',  details: 'rr_example2_event_details', people: 'rr_example2_people', worry: 'rr_example2_concerns', comfort: 'panicking' },
@@ -557,108 +579,137 @@ const ReadTheRoom = ({ tool }) => {
   // Visibility flag for header reset/example — only show when there's input or any result
   const hasAnyContent = !!(
     eventType || eventOther || eventDetails || people || concerns || topicsToAvoid ||
-    quickScenario || quickOther || quickRelationship ||
-    theyDid || decodeContext || yourConcern ||
-    followUpWho || followUpContext || followUpWhat || followUpGoal ||
-    debriefEvent || debriefWhat || debriefGood || debriefAwkward ||
     personName || personRelationship || personKnow || personContext || personConcern ||
     groupSituation || groupRole || groupChallenge ||
-    recoverySaid || recoveryContext ||
     cultureText || cultureSituation || cultureMyBg || cultureConcern ||
-    myEnergy || roomEnergy || energyContext ||
-    ladderRelationship || ladderContext || ladderDepth ||
+    quickScenario || quickOther || quickRelationship ||
+    stalledWhat || stalledRelationship ||
+    recoverySaid || recoveryContext ||
+    exitContext ||
+    theyDid || decodeContext || yourConcern ||
+    depthWhat || depthRelationship ||
+    debriefEvent || debriefWhat || debriefGood || debriefAwkward ||
+    followUpWho || followUpContext || followUpWhat || followUpGoal ||
     autopsyWhat || autopsyTimeline || autopsyFelt || autopsyThink ||
-    preGameResults || quickResults || decodeResults || followUpResults ||
-    debriefResults || personResults || groupResults || recoveryResults ||
-    cultureResults || energyResults || ladderResults || autopsyResults || personRefreshResults
+    eventResult || personResult || groupResult || cultureResult ||
+    quickResult || stalledResult || recoveryResult || exitResult ||
+    decodeResult || depthResult || debriefResult || followUpResult ||
+    autopsyResult || personRefreshResult
   );
 
   // Aggregate flag to anchor S5.5 cross-ref split for the multi-mode tool
-  // (audit's regex only recognizes literal `results && (`, not `preGameResults && (`)
-  const results = preGameResults || quickResults || decodeResults || followUpResults
-    || debriefResults || personResults || groupResults || recoveryResults
-    || cultureResults || energyResults || ladderResults || autopsyResults
-    || personRefreshResults;
+  const results = eventResult || personResult || groupResult || cultureResult
+    || quickResult || stalledResult || recoveryResult || exitResult
+    || decodeResult || depthResult || debriefResult || followUpResult
+    || autopsyResult || personRefreshResult;
 
-  // Submit map + can-submit
+  // Submit map + can-submit, keyed by `${group}:${sub}`
   const SUBMIT_MAP = {
-    pregame: handlePreGame, quick: () => handleQuickRead(false), recovery: handleRecovery,
-    person: handlePersonPrep, group: handleGroup, energy: handleEnergy,
-    ladder: handleLadder, culture: handleCulture, decode: handleDecode,
-    followup: handleFollowUp, debrief: handleDebrief, autopsy: handleAutopsy,
+    'prepare:event':   handlePrepareEvent,
+    'prepare:person':  handlePreparePerson,
+    'prepare:group':   handlePrepareGroup,
+    'prepare:culture': handlePrepareCulture,
+    'now:say':         () => handleNowSay(false),
+    'now:stalled':     handleNowStalled,
+    'now:awkward':     handleNowAwkward,
+    'now:leave':       handleNowLeave,
+    'decode:meant':    handleDecodeMeant,
+    'decode:depth':    handleDecodeDepth,
+    'after:debrief':   handleAfterDebrief,
+    'after:followup':  handleAfterFollowup,
+    'after:badly':     handleAfterBadly,
   };
 
-  const canSubmitForMode = useCallback((m) => {
-    switch (m) {
-      case 'pregame':  return !!(effectiveEventType || eventDetails?.trim());
-      case 'quick':    return !!effectiveQuickScenario;
-      case 'recovery': return !!recoverySaid.trim();
-      case 'person':   return !!(personKnow.trim() || effectivePersonRel);
-      case 'group':    return !!(groupSituation.trim() || groupChallenge.trim());
-      case 'energy':   return !!(myEnergy.trim() && roomEnergy.trim());
-      case 'ladder':   return true;
-      case 'culture':  return !!(cultureText.trim() || cultureSituation.trim());
-      case 'decode':   return !!theyDid.trim();
-      case 'followup': return !!(followUpWho.trim() || followUpContext.trim());
-      case 'debrief':  return !!(debriefWhat.trim() || debriefGood.trim() || debriefAwkward.trim());
-      case 'autopsy':  return !!autopsyWhat.trim();
-      default:         return false;
+  const canSubmitForKey = useCallback((key) => {
+    switch (key) {
+      case 'prepare:event':   return !!(effectiveEventType || eventDetails?.trim());
+      case 'prepare:person':  return !!(personKnow.trim() || effectivePersonRel);
+      case 'prepare:group':   return !!(groupSituation.trim() || groupChallenge.trim());
+      case 'prepare:culture': return !!(cultureText.trim() || cultureSituation.trim());
+      case 'now:say':         return !!effectiveQuickScenario;
+      case 'now:stalled':     return !!stalledWhat.trim();
+      case 'now:awkward':     return !!recoverySaid.trim();
+      case 'now:leave':       return !!exitContext.trim();
+      case 'decode:meant':    return !!theyDid.trim();
+      case 'decode:depth':    return !!depthWhat.trim();
+      case 'after:debrief':   return !!(debriefWhat.trim() || debriefGood.trim() || debriefAwkward.trim());
+      case 'after:followup':  return !!(followUpWho.trim() || followUpContext.trim());
+      case 'after:badly':     return !!autopsyWhat.trim();
+      default:                return false;
     }
-  }, [effectiveEventType, eventDetails, effectiveQuickScenario, recoverySaid, personKnow,
-      effectivePersonRel, groupSituation, groupChallenge, myEnergy, roomEnergy,
-      cultureText, cultureSituation, theyDid, followUpWho, followUpContext,
-      debriefWhat, debriefGood, debriefAwkward, autopsyWhat]);
+  }, [effectiveEventType, eventDetails, personKnow, effectivePersonRel, groupSituation, groupChallenge,
+      cultureText, cultureSituation, effectiveQuickScenario, stalledWhat, recoverySaid, exitContext,
+      theyDid, depthWhat, debriefWhat, debriefGood, debriefAwkward, followUpWho, followUpContext, autopsyWhat]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
-    const modeLabelKey = MODES.find(m => m.id === modeRef.current)?.labelKey;
-    const modeLabel = modeLabelKey ? t(modeLabelKey) : t('rr_mode_session');
+    const subLabelKey = SUB_ACTIONS[group]?.find(s => s.id === sub)?.labelKey;
+    const modeLabel = subLabelKey ? t(subLabelKey) : t('rr_mode_session');
     const lines = [t('rr_copy_header', { mode: modeLabel }), ''];
-    if (preGameResults) {
-      const r = preGameResults;
-      if (r.vibe_check) { lines.push(r.vibe_check.read); lines.push(t('rr_copy_superpower', { text: r.vibe_check.your_superpower })); lines.push(''); }
-      r.conversation_starters?.forEach((s, i) => { lines.push(t('rr_copy_starter_line', { n: i + 1, line: s.line, energy: s.energy })); });
-      if (r.pep_talk) lines.push(`\n${t('rr_copy_pep_talk', { text: r.pep_talk })}`);
+    if (eventResult) {
+      lines.push(eventResult.what_to_aim_for);
+      eventResult.starters?.forEach(s => lines.push(t('rr_copy_say', { line: s.say })));
+      if (eventResult.one_thing_to_remember) lines.push(`\n${eventResult.one_thing_to_remember}`);
     }
-    if (quickResults) {
-      lines.push(t('rr_copy_quick_say', { line: quickResults.line }));
-      if (quickResults.they_say) lines.push(t('rr_copy_quick_theyll', { line: quickResults.they_say }));
-      if (quickResults.you_follow) lines.push(t('rr_copy_quick_then', { line: quickResults.you_follow }));
+    if (personResult) {
+      lines.push(personResult.what_you_know);
+      personResult.easy_ways_in?.forEach(s => lines.push(t('rr_copy_say', { line: s.say })));
     }
-    if (decodeResults?.most_likely) {
-      lines.push(t('rr_copy_decode_likely', { text: decodeResults.most_likely.read }));
-      if (decodeResults.overthinking_check) lines.push(t('rr_copy_decode_overthinking', { text: decodeResults.overthinking_check }));
+    if (groupResult) {
+      lines.push(groupResult.what_you_know);
+      groupResult.ways_to_enter?.forEach(s => lines.push(t('rr_copy_say', { line: s.say })));
     }
-    if (followUpResults?.messages?.length) followUpResults.messages.forEach(m => lines.push(t('rr_copy_followup_msg', { style: m.style, text: m.text })));
-    if (debriefResults) { if (debriefResults.honest_read) lines.push(debriefResults.honest_read); debriefResults.wins?.forEach(w => lines.push(t('rr_copy_debrief_win', { text: w.what }))); }
-    if (personResults) { if (personResults.person_read) lines.push(t('rr_copy_person_reading', { text: personResults.person_read.likely_personality })); personResults.openers?.forEach((s, i) => lines.push(t('rr_copy_person_opener', { n: i + 1, line: s.line }))); }
-    if (groupResults) { if (groupResults.group_read) lines.push(groupResults.group_read.dynamics); groupResults.entering_conversations?.forEach(e => lines.push(t('rr_copy_group_entry', { scenario: e.scenario, line: e.line }))); }
-    if (recoveryResults?.recovery_options?.length) recoveryResults.recovery_options.forEach(o => lines.push(t('rr_copy_recovery_option', { strategy: o.strategy, line: o.line })));
-    if (cultureResults?.quick_read) { lines.push(t('rr_copy_culture_diff', { text: cultureResults.quick_read.biggest_difference })); lines.push(t('rr_copy_culture_rule', { text: cultureResults.quick_read.hidden_rule })); }
-    if (autopsyResults) { if (autopsyResults.honest_assessment) lines.push(autopsyResults.honest_assessment); if (autopsyResults.the_real_lesson) lines.push(t('rr_copy_autopsy_lesson', { text: autopsyResults.the_real_lesson })); }
-    if (ladderResults?.ladder?.length) ladderResults.ladder.forEach(level => { lines.push(t('rr_copy_ladder_level', { level: level.level, name: level.name, description: level.description })); if (level.transition_up) lines.push(t('rr_copy_ladder_transition', { phrase: level.transition_up.phrase })); });
-    if (energyResults) { if (energyResults.gap_read) lines.push(energyResults.gap_read); if (energyResults.match_up?.starter_line) lines.push(t('rr_copy_energy_starter', { line: energyResults.match_up.starter_line })); }
-    const out = lines.join('\n').trim();
+    if (cultureResult) {
+      cultureResult.norms_worth_checking?.forEach(n => lines.push(`• ${n.norm}`));
+      if (cultureResult.when_in_doubt) lines.push(cultureResult.when_in_doubt);
+    }
+    if (quickResult) {
+      lines.push(t('rr_copy_say', { line: quickResult.say }));
+      if (quickResult.silence_is_fine_because) lines.push(quickResult.silence_is_fine_because);
+    }
+    if (stalledResult) {
+      lines.push(stalledResult.my_read?.explanation);
+      if (stalledResult.if_you_try_again?.say) lines.push(t('rr_copy_say', { line: stalledResult.if_you_try_again.say }));
+    }
+    if (recoveryResult) {
+      lines.push(recoveryResult.what_happened);
+      if (recoveryResult.say_this_now) lines.push(t('rr_copy_say', { line: recoveryResult.say_this_now }));
+    }
+    if (exitResult) exitResult.exit_lines?.forEach(l => lines.push(t('rr_copy_say', { line: l.say })));
+    if (decodeResult) {
+      lines.push(decodeResult.my_read?.explanation);
+      if (decodeResult.what_to_do_now) lines.push(decodeResult.what_to_do_now);
+    }
+    if (depthResult) {
+      lines.push(depthResult.my_read?.explanation);
+    }
+    if (debriefResult) {
+      lines.push(debriefResult.honest_read);
+      debriefResult.wins?.forEach(w => lines.push(t('rr_copy_win', { text: w.what })));
+    }
+    if (followUpResult) followUpResult.messages?.forEach(m => lines.push(t('rr_copy_followup_msg', { style: m.style, text: m.text })));
+    if (autopsyResult) {
+      lines.push(autopsyResult.what_happened);
+      if (autopsyResult.what_not_to_overlearn) lines.push(autopsyResult.what_not_to_overlearn);
+    }
+    const out = lines.filter(Boolean).join('\n').trim();
     return out ? out + BRAND : '';
-  }, [preGameResults, quickResults, decodeResults, followUpResults, debriefResults,
-      personResults, groupResults, recoveryResults, cultureResults, autopsyResults,
-      ladderResults, energyResults, t]);
+  }, [group, sub, eventResult, personResult, groupResult, cultureResult, quickResult, stalledResult,
+      recoveryResult, exitResult, decodeResult, depthResult, debriefResult, followUpResult, autopsyResult, t]);
 
   // Live ref assignments
-  modeRef.current      = mode;
-  submitRef.current    = SUBMIT_MAP[mode];
-  canSubmitRef.current = canSubmitForMode(mode);
+  activeKeyRef.current  = activeKey;
+  submitRef.current     = SUBMIT_MAP[activeKey];
+  canSubmitRef.current  = canSubmitForKey(activeKey);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Room Reader');
+  useRegisterActions(buildFullText(), tool?.title || 'Read the Room');
 
-  const anyResult = preGameResults || quickResults || decodeResults || followUpResults ||
-    debriefResults || personResults || groupResults || recoveryResults ||
-    cultureResults || autopsyResults || ladderResults || energyResults || personRefreshResults;
+  const anyResult = results;
 
   useEffect(() => {
     if (!anyResult) return;
-    const t = setTimeout(() => revealSection(resultsRef.current), 100);
-    return () => clearTimeout(t);
+    const tm = setTimeout(() => revealSection(resultsRef.current), 100);
+    return () => clearTimeout(tm);
   }, [anyResult]);
 
   useEffect(() => {
@@ -696,7 +747,7 @@ const ReadTheRoom = ({ tool }) => {
           <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Room Reader'}
+                <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Read the Room'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rr_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -710,13 +761,14 @@ const ReadTheRoom = ({ tool }) => {
           </div>
         </div>
         <div className="px-5 py-3 flex flex-wrap gap-1.5">
-          {MODES.map(m => (
-            <button key={m.id} onClick={() => { setMode(m.id); setError(''); }}
+          {GROUPS.map(g => (
+            <button key={g.id} onClick={() => { setGroup(g.id); setSub(SUB_ACTIONS[g.id][0].id); setError(''); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
-                ${mode === m.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-              <span className="me-1">{m.icon}</span>{t(m.labelKey)}
+                ${group === g.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
+              <span className="me-1">{g.icon}</span>{t(g.labelKey)}
             </button>
           ))}
+          <span className={`self-center mx-1 hidden sm:inline ${c.textMuted}`}>·</span>
           {[
             ['showPlaybook', setShowPlaybook, showPlaybook, '📚', playbook.length ? t('rr_toggle_playbook_count', { count: playbook.length }) : t('rr_toggle_playbook')],
             ['showPlans',    setShowPlans,    showPlans,    '📋', gamePlans.length ? t('rr_toggle_plans_count', { count: gamePlans.length }) : t('rr_toggle_plans')],
@@ -725,6 +777,15 @@ const ReadTheRoom = ({ tool }) => {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
                 ${val ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
               <span className="me-1">{ico}</span>{lbl}
+            </button>
+          ))}
+        </div>
+        <div className="px-5 pb-3 flex flex-wrap gap-1.5">
+          {SUB_ACTIONS[group].map(s => (
+            <button key={s.id} onClick={() => { setSub(s.id); setError(''); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
+                ${sub === s.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
+              <span className="me-1">{s.icon}</span>{t(s.labelKey)}
             </button>
           ))}
         </div>
@@ -753,11 +814,22 @@ const ReadTheRoom = ({ tool }) => {
           {gamePlans.length === 0
             ? <p className={`text-sm ${c.textMuted}`}>{t('rr_plans_empty')}</p>
             : gamePlans.map((gp, i) => (
-              <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold ${c.text} truncate`}>{gp.label}</p>
-                  <p className={`text-xs ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
-                </div>
+              <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                <button onClick={() => toggleSection(`plan-${i}`)} className="w-full flex items-start justify-between">
+                  <div className="flex-1 min-w-0 text-start">
+                    <p className={`text-sm font-bold ${c.text} truncate`}>{gp.label}</p>
+                    <p className={`text-xs ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
+                  </div>
+                  <Caret open={expandedSections[`plan-${i}`]} />
+                </button>
+                {expandedSections[`plan-${i}`] && (
+                  <div className={`mt-2 pt-2 border-t ${c.border} space-y-1`}>
+                    {gp.data?.what_to_aim_for && <p className={`text-sm ${c.textSecondary}`}>{gp.data.what_to_aim_for}</p>}
+                    {gp.data?.starters?.map((s, si) => <p key={si} className={`text-xs ${c.textMuted}`}>🗣️ "{s.say}"</p>)}
+                    {gp.data?.one_thing_to_remember && <p className={`text-xs ${c.accentTxt}`}>{gp.data.one_thing_to_remember}</p>}
+                    <button onClick={() => setGamePlans(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted} mt-1`}>✕ {t('rr_remove')}</button>
+                  </div>
+                )}
               </div>
             ))}
         </div>
@@ -777,22 +849,22 @@ const ReadTheRoom = ({ tool }) => {
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* PRE-GAME                                   */}
+      {/* PREPARE — AN EVENT                          */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'pregame' && (
+      {activeKey === 'prepare:event' && (
         <>
           <p className={`text-xs ${c.textMuted} px-1`}>
-            {t('rr_pregame_hard_convo').split('{{link}}').map((part, i, arr) => (
+            {t('rr_event_hard_convo').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
                 {i < arr.length - 1 && <a href="/DifficultTalkCoach" className={linkStyle}>{t('rr_link_difficult_talk')}</a>}
               </React.Fragment>
             ))}
           </p>
-          <InputCard title={t('rr_pregame_title')} subtitle={t('rr_pregame_subtitle')} onSubmit={handlePreGame}
-            btnLabel={t('rr_pregame_btn')} btnIcon="🎯" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+          <InputCard title={t('rr_event_title')} subtitle={t('rr_event_subtitle')} onSubmit={handlePrepareEvent}
+            btnLabel={t('rr_event_btn')} btnIcon="🎉" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_pregame_event_type')}<Req c={c} /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_type')}<Req c={c} /></p>
               <TileGrid items={EVENTS} selected={eventType} onSelect={setEventType} c={c} t={t} />
               <button onClick={() => setEventType(eventType === 'other' ? '' : 'other')}
                 className={`mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
@@ -805,16 +877,16 @@ const ReadTheRoom = ({ tool }) => {
               )}
             </div>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_pregame_details')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_details')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
               <textarea value={eventDetails} onChange={e => setEventDetails(e.target.value)}
-                placeholder={t('rr_ph_pregame_details')} rows={2}
+                placeholder={t('rr_ph_event_details')} rows={2}
                 className={`w-full ${inp}`} />
             </div>
-            <input value={people} onChange={e => setPeople(e.target.value)} placeholder={t('rr_ph_pregame_people')} className={`w-full ${inp}`} />
-            <input value={concerns} onChange={e => setConcerns(e.target.value)} placeholder={t('rr_ph_pregame_concerns')} className={`w-full ${inp}`} />
-            <input value={topicsToAvoid} onChange={e => setTopicsToAvoid(e.target.value)} placeholder={t('rr_ph_pregame_avoid')} className={`w-full ${inp}`} />
+            <input value={people} onChange={e => setPeople(e.target.value)} placeholder={t('rr_ph_event_people')} className={`w-full ${inp}`} />
+            <input value={concerns} onChange={e => setConcerns(e.target.value)} placeholder={t('rr_ph_event_concerns')} className={`w-full ${inp}`} />
+            <input value={topicsToAvoid} onChange={e => setTopicsToAvoid(e.target.value)} placeholder={t('rr_ph_event_avoid')} className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_pregame_feeling')}</p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_feeling')}</p>
               <div className="flex flex-wrap gap-2">
                 {COMFORT.map(cl => (
                   <button key={cl.id} onClick={() => setComfort(cl.id)}
@@ -826,85 +898,63 @@ const ReadTheRoom = ({ tool }) => {
             </div>
           </InputCard>
 
-          {results && (preGameResults && (
+          {eventResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <button onClick={() => saveGamePlan(effectiveEventType || eventDetails?.trim() || t('rr_default_event'), preGameResults)}
+              <button onClick={() => saveGamePlan(effectiveEventType || eventDetails?.trim() || t('rr_default_event'), eventResult)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>
                 {t('rr_save_plan')}
               </button>
-              {preGameResults.vibe_check && (
-                <div className={`${c.warningBox} border rounded-xl p-5 space-y-3`}>
-                  <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_vibe_check')}</h3>
-                  <p className={`text-sm ${c.text}`}>{preGameResults.vibe_check.read}</p>
-                  <div className={`${c.success} border rounded-lg p-3`}><p className="text-sm">✨ {preGameResults.vibe_check.your_superpower}</p></div>
-                  <div className={`${c.infoBox} border rounded-lg p-3`}><p className="text-sm">💡 {preGameResults.vibe_check.comfort_hack}</p></div>
+              <div className={`${c.warningBox} border rounded-xl p-5`}>
+                <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_aim_for')}</h3>
+                <p className={`text-sm ${c.text} mt-1`}>{eventResult.what_to_aim_for}</p>
+              </div>
+              {eventResult.simple_plan?.length > 0 && (
+                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+                  <h3 className={`font-bold ${c.text}`}>{t('rr_simple_plan')}</h3>
+                  {eventResult.simple_plan.map((step, i) => (
+                    <p key={i} className={`text-sm ${c.textSecondary}`}>{i + 1}. {step}</p>
+                  ))}
                 </div>
               )}
-              {preGameResults.conversation_starters?.length > 0 && (
+              {eventResult.starters?.length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
                   <h3 className={`font-bold ${c.text}`}>{t('rr_starters')}</h3>
-                  {preGameResults.conversation_starters.map((s, i) => (
-                    <StarterCard key={i} s={s} i={i} saveCtx={effectiveEventType || eventDetails} {...sp} />
-                  ))}
+                  {eventResult.starters.map((s, i) => {
+                    const tc = TONE_COLORS[s.tone] || TONE_COLORS.warm;
+                    return (
+                      <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {s.moment && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{s.moment}</span>}
+                          {s.tone && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? tc[0] : tc[1]}`}>{s.tone}</span>}
+                          {s.use_when && <span className={`text-xs ${c.textMuted}`}>{s.use_when}</span>}
+                        </div>
+                        <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={s.say} accent
+                          onSave={(line) => saveLine(line, effectiveEventType || eventDetails)} c={c} isDark={isDark} isSaved={isSaved} />
+                        {s.why_it_helps && <p className={`text-xs ${c.textMuted}`}>{s.why_it_helps}</p>}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
-              {preGameResults.people_map?.length > 0 && (
-                <SectionBlock id="people" title={t('rr_people_map')} {...sp}>
-                  {preGameResults.people_map.map((p, i) => (
-                    <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-2`}>
-                      <p className={`text-sm font-bold ${c.text}`}>{p.who}</p>
-                      <ConvoLine label={t('rr_opener')} emoji="💬" text={p.opener} accent onSave={(line) => saveLine(line, p.who)} {...sp} />
-                      {p.watch_for && <p className={`text-xs ${c.textMuted}`}>👀 {p.watch_for}</p>}
-                    </div>
-                  ))}
+              {eventResult.if_it_stalls && (
+                <SectionBlock id="event-stalls" title={t('rr_if_it_stalls')} {...sp}>
+                  <p className={`text-sm ${c.textSecondary}`}>{eventResult.if_it_stalls.try}</p>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={eventResult.if_it_stalls.say} accent {...sp} />
                 </SectionBlock>
               )}
-              {preGameResults.body_language && (
-                <SectionBlock id="body" title={t('rr_body_language')} {...sp}>
-                  <p className={`text-sm ${c.textSecondary}`}>🚪 {preGameResults.body_language.arrival}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>🧑‍🤝‍🧑 {preGameResults.body_language.during}</p>
-                  <div className={`${c.success} border rounded-lg p-3`}><p className="text-sm">✨ {preGameResults.body_language.secret_weapon}</p></div>
-                </SectionBlock>
-              )}
-              {preGameResults.exit_toolkit?.length > 0 && (
-                <SectionBlock id="exits" title={t('rr_exits')} {...sp}>
-                  {preGameResults.exit_toolkit.map((e, i) => (
-                    <div key={i} className={`${c.quoteBg} border rounded-lg p-3`}>
-                      <p className={`text-xs ${c.textMuted}`}>{e.scenario}</p>
-                      <p className={`text-sm ${c.text}`}>"{e.line}"</p>
-                    </div>
-                  ))}
-                </SectionBlock>
-              )}
-              {preGameResults.worst_case_saves?.length > 0 && (
-                <SectionBlock id="worst" title={t('rr_worst_case')} {...sp}>
-                  {preGameResults.worst_case_saves.map((w, i) => (
-                    <div key={i} className={`${c.warning} border rounded-lg p-3`}>
-                      <p className="text-sm font-medium">😬 {w.scenario}</p>
-                      <p className="text-sm">💡 {w.save}</p>
-                    </div>
-                  ))}
-                </SectionBlock>
-              )}
-              {preGameResults.landmine_map?.length > 0 && (
+              {eventResult.things_to_handle_carefully?.length > 0 && (
                 <div className={`${c.danger} border rounded-xl p-4 space-y-2`}>
-                  <p className="text-xs font-bold">{t('rr_landmine_map')}</p>
-                  {preGameResults.landmine_map.map((lm, i) => (
-                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.text}`}>{lm.topic || lm.situation || lm}</p>
-                      {lm.why && <p className={`text-xs ${c.textSecondary}`}>{lm.why}</p>}
-                      {lm.instead && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{t('rr_instead', { text: lm.instead })}</p>}
-                    </div>
-                  ))}
+                  <p className="text-xs font-bold">{t('rr_handle_carefully')}</p>
+                  {eventResult.things_to_handle_carefully.map((th, i) => <p key={i} className="text-sm">• {th}</p>)}
                 </div>
               )}
-              {preGameResults.pep_talk && (
+              {eventResult.one_thing_to_remember && (
                 <div className={`${c.success} border rounded-xl p-5`}>
-                  <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {preGameResults.pep_talk}</p>
+                  <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {eventResult.one_thing_to_remember}</p>
                 </div>
               )}
               <p className={`text-xs ${c.textMuted}`}>
-                {t('rr_pregame_say_hard').split('{{link}}').map((part, i, arr) => (
+                {t('rr_event_say_hard').split('{{link}}').map((part, i, arr) => (
                   <React.Fragment key={i}>
                     {part}
                     {i < arr.length - 1 && <a href="/DifficultTalkCoach" className={linkStyle}>{t('rr_link_difficult_talk')}</a>}
@@ -912,139 +962,16 @@ const ReadTheRoom = ({ tool }) => {
                 ))}
               </p>
             </div>
-          ))}
-        </>
-      )}
-
-      {/* ══════════════════════════════════════════ */}
-      {/* QUICK READ                                 */}
-      {/* ══════════════════════════════════════════ */}
-      {mode === 'quick' && (
-        <>
-          <InputCard title={t('rr_quick_title')} subtitle={t('rr_quick_subtitle')} onSubmit={() => handleQuickRead(false)}
-            btnLabel={t('rr_quick_btn')} btnIcon="⚡" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_quick_situation')}<Req c={c} /></p>
-              <TileGrid items={QUICK_SCENARIOS} selected={quickScenario}
-                onSelect={(id) => { setQuickScenario(id === quickScenario ? '' : id); setQuickExclude([]); setQuickResults(null); }} c={c} t={t} />
-              <button onClick={() => { setQuickScenario(quickScenario === 'other' ? '' : 'other'); setQuickOther(''); }}
-                className={`mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
-                  ${quickScenario === 'other' ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-                {t('rr_other')}
-              </button>
-              {quickScenario === 'other' && (
-                <input value={quickOther} onChange={e => setQuickOther(e.target.value)}
-                  placeholder={t('rr_ph_describe_situation')} className={`w-full mt-2 ${inp}`} />
-              )}
-            </div>
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_quick_who')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
-              <TileGrid items={RELATIONSHIPS.map(r => ({ ...r, icon: '' }))} selected={quickRelationship} onSelect={setQuickRelationship} c={c} t={t} />
-            </div>
-          </InputCard>
-
-          {quickResults && (
-            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-                <ConvoLine label={t('rr_quick_say_this')} emoji="🗣️" text={quickResults.line} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
-                <p className={`text-xs ${c.textMuted}`}>{quickResults.why_it_works}</p>
-                <ConvoLine label={t('rr_quick_theyll_say')} emoji="💭" text={quickResults.they_say} {...sp} />
-                <div className="flex justify-center"><span className={`text-xs ${c.textMuted}`}>↓</span></div>
-                <ConvoLine label={t('rr_quick_then_you')} emoji="🗣️" text={quickResults.you_follow} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
-                {quickResults.if_nothing && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">🛡️ {quickResults.if_nothing}</p></div>}
-                {quickResults.body_tip && <p className={`text-xs ${c.textSecondary}`}>🧍 {quickResults.body_tip}</p>}
-                <button title={t('cmd_enter')} onClick={() => handleQuickRead(true)} disabled={loading}
-                  className={`relative w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px]`}>
-                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : (quickExclude.length ? t('rr_quick_different_tried', { tried: quickExclude.length }) : t('rr_quick_different'))}
-                {!loading && (
-                  <kbd aria-hidden="true"
-                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                    ⌘↵
-                  </kbd>
-                )}
-                </button>
-              </div>
-              <div className={`${c.infoBox} border rounded-xl p-4`}>
-                <p className="text-sm">🤫 <strong>{t('rr_quick_or_dont')}</strong> {quickResults.silence_reframe}</p>
-              </div>
-            </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* RECOVERY                                   */}
+      {/* PREPARE — ONE PERSON                        */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'recovery' && (
+      {activeKey === 'prepare:person' && (
         <>
-          <div className={`${c.emergencyBg} border rounded-xl p-5 space-y-4`}>
-            <h3 className={`font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>{t('rr_recovery_title')}</h3>
-            <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-600'}`}>{t('rr_recovery_subtitle')}</p>
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_recovery_what')}<Req c={c} /></p>
-              <textarea value={recoverySaid} onChange={e => setRecoverySaid(e.target.value)}
-                placeholder={t('rr_ph_be_specific')} rows={2} className={`w-full ${inp}`} />
-            </div>
-            <input value={recoveryContext} onChange={e => setRecoveryContext(e.target.value)}
-              placeholder={t('rr_ph_context')} className={`w-full ${inp}`} />
-            <div className="grid grid-cols-2 gap-3">
-              <select value={recoveryRelationship} onChange={e => setRecoveryRelationship(e.target.value)} className={`${inp}`}>
-                <option value="">{t('rr_recovery_talking_to')}</option>
-                {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
-              </select>
-              <select value={recoveryHowBad} onChange={e => setRecoveryHowBad(e.target.value)} className={`${inp}`}>
-                {[['minor','rr_howbad_minor'],['bad','rr_howbad_bad'],['terrible','rr_howbad_terrible'],['catastrophic','rr_howbad_catastrophic']].map(([v,l]) => <option key={v} value={v}>{t(l)}</option>)}
-              </select>
-            </div>
-            <button title={t('cmd_enter')} onClick={handleRecovery} disabled={loading}
-              className="relative w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-2 min-h-[48px]">
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : t('rr_recovery_btn')}
-            {!loading && (
-              <kbd aria-hidden="true"
-                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                ⌘↵
-              </kbd>
-            )}
-            </button>
-          </div>
-          {recoveryResults && (() => {
-            const r = recoveryResults;
-            return (
-              <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-                {r.damage_check && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-3xl font-bold ${r.damage_check.how_bad_really <= 3 ? (isDark ? 'text-green-300' : 'text-green-600') : r.damage_check.how_bad_really <= 6 ? (isDark ? 'text-amber-300' : 'text-amber-600') : (isDark ? 'text-red-300' : 'text-red-600')}`}>{r.damage_check.how_bad_really}/10</span>
-                      <div><h3 className={`font-bold ${c.text}`}>{t('rr_recovery_damage_check')}</h3><p className={`text-sm ${c.textSecondary}`}>{r.damage_check.immediate_read}</p></div>
-                    </div>
-                    <p className={`text-xs ${c.textMuted}`}>{t('rr_recovery_they_thought', { thought: r.damage_check.what_they_probably_thought })}</p>
-                  </div>
-                )}
-                {r.recovery_options?.map((opt, i) => (
-                  <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{opt.strategy}</span>
-                      <span className={`text-xs ${c.textMuted}`}>⏱️ {opt.timing}</span>
-                    </div>
-                    <ConvoLine label={t('rr_recovery_say_this')} emoji="🗣️" text={opt.line} accent {...sp} />
-                    <p className={`text-xs ${c.textMuted}`}>{opt.when_to_use}</p>
-                  </div>
-                ))}
-                {r.do_not_do && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm">🚫 <strong>{t('rr_recovery_dont')}</strong> {r.do_not_do}</p></div>}
-                {r.body_language && <p className={`text-sm ${c.textSecondary}`}>🧍 {r.body_language}</p>}
-                {r.perspective && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {r.perspective}</p></div>}
-              </div>
-            );
-          })()}
-        </>
-      )}
-
-      {/* ══════════════════════════════════════════ */}
-      {/* PERSON                                     */}
-      {/* ══════════════════════════════════════════ */}
-      {mode === 'person' && (
-        <>
-          <InputCard title={t('rr_person_title')} subtitle={t('rr_person_subtitle')} onSubmit={handlePersonPrep}
+          <InputCard title={t('rr_person_title')} subtitle={t('rr_person_subtitle')} onSubmit={handlePreparePerson}
             btnLabel={t('rr_person_btn')} btnIcon="👤" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <input value={personName} onChange={e => setPersonName(e.target.value)}
               placeholder={t('rr_ph_person_name')} className={`w-full ${inp}`} />
@@ -1114,85 +1041,66 @@ const ReadTheRoom = ({ tool }) => {
             </button>
           )}
 
-          {personRefreshResults && (
+          {personRefreshResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {personRefreshResults.relationship_arc && (
-                <div className={`${c.warningBox} border rounded-xl p-5`}>
-                  <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_relationship_arc')}</h3>
-                  <p className={`text-sm ${c.text} mt-1`}>{personRefreshResults.relationship_arc}</p>
+              {personRefreshResult.what_the_history_shows?.length > 0 && (
+                <div className={`${c.warningBox} border rounded-xl p-5 space-y-1`}>
+                  <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_history_shows')}</h3>
+                  {personRefreshResult.what_the_history_shows.map((ins, i) => <p key={i} className={`text-sm ${c.text}`}>💡 {ins}</p>)}
                 </div>
               )}
-              {personRefreshResults.pattern_insights?.map((ins, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>💡 {ins}</p>)}
-              {personRefreshResults.fresh_openers?.map((o, i) => (
+              {personRefreshResult.fresh_things_to_try?.map((o, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <ConvoLine label={t('rr_fresh_opener')} emoji="🗣️" text={o.line} accent {...sp} />
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={o.say} accent {...sp} />
                   <p className={`text-xs ${c.textMuted}`}>{o.why_now}</p>
                 </div>
               ))}
-              {personRefreshResults.wildcard && (
+              {personRefreshResult.one_wildcard && (
                 <div className={`${c.tipBox} border rounded-xl p-4`}>
-                  <p className="text-sm">🎲 <strong>{t('rr_wildcard')}</strong> {t('rr_wildcard_line', { move: personRefreshResults.wildcard.move, risk: personRefreshResults.wildcard.risk })}</p>
+                  <p className="text-sm">🎲 <strong>{t('rr_wildcard')}</strong> {t('rr_wildcard_line', { move: personRefreshResult.one_wildcard.try, risk: personRefreshResult.one_wildcard.risk })}</p>
                 </div>
               )}
             </div>
           )}
 
-          {personResults && (
+          {personResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <button onClick={() => saveGamePlan(personName || effectivePersonRel || t('rr_person_default'), personResults)}
+              <button onClick={() => saveGamePlan(personName || effectivePersonRel || t('rr_person_default'), personResult)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{t('rr_save_plan')}</button>
-              {personResults.person_read && (
-                <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_person_reading', { name: personName || t('rr_person_them') })}</h3>
-                  <p className={`text-sm ${c.text}`}>{personResults.person_read.likely_personality}</p>
-                  <div className={`${c.infoBox} border rounded-lg p-3`}><p className="text-sm">💭 {personResults.person_read.what_they_probably_want}</p></div>
-                  <div className={`${c.success} border rounded-lg p-3`}><p className="text-sm">✨ {personResults.person_read.your_advantage}</p></div>
+              <div className={`${c.warningBox} border rounded-xl p-5`}>
+                <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_what_you_know')}</h3>
+                <p className={`text-sm ${c.text} mt-1`}>{personResult.what_you_know}</p>
+              </div>
+              {personResult.what_you_dont_know_yet?.length > 0 && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_dont_know_yet')}</p>
+                  {personResult.what_you_dont_know_yet.map((u, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {u}</p>)}
                 </div>
               )}
-              {personResults.openers?.map((s, i) => <StarterCard key={i} s={s} i={`p-${i}`} saveCtx={personName || effectivePersonRel} {...sp} />)}
-              {personResults.topics_that_work?.map((tw, i) => (
-                <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <p className={`text-sm font-bold ${c.text}`}>{tw.topic}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>📝 "{tw.entry_point}"</p>
+              {personResult.easy_ways_in?.map((s, i) => (
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={s.say} accent onSave={(line) => saveLine(line, personName || effectivePersonRel)} {...sp} />
+                  {s.why && <p className={`text-xs ${c.textMuted}`}>{s.why}</p>}
                 </div>
               ))}
-              {personResults.topics_to_avoid?.length > 0 && (
-                <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold mb-2">{t('rr_topics_to_avoid')}</p>
-                  {personResults.topics_to_avoid.map((topic, i) => <p key={i} className="text-sm">• {topic}</p>)}
+              {personResult.questions_that_fit?.length > 0 && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_questions_that_fit')}</p>
+                  {personResult.questions_that_fit.map((q, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {q}</p>)}
                 </div>
               )}
-              {personResults.reading_them && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-                  <p className="text-xs font-bold">{t('rr_reading_them')}</p>
-                  {personResults.reading_them.interested_signals && <p className={`text-xs ${c.textSecondary}`}>{t('rr_reading_interested', { text: personResults.reading_them.interested_signals })}</p>}
-                  {personResults.reading_them.done_signals && <p className={`text-xs ${c.textSecondary}`}>{t('rr_reading_done', { text: personResults.reading_them.done_signals })}</p>}
-                  {personResults.reading_them.warming_up && <p className={`text-xs ${c.textSecondary}`}>{t('rr_reading_warming', { text: personResults.reading_them.warming_up })}</p>}
-                </div>
-              )}
-              {personResults.if_it_goes_sideways?.length > 0 && (
-                <div className={`${c.warningBox} border rounded-xl p-4 space-y-2`}>
-                  <p className="text-xs font-bold">{t('rr_goes_sideways')}</p>
-                  {personResults.if_it_goes_sideways.map((s, i) => (
-                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.text}`}>{s.scenario}</p>
-                      <p className={`text-xs ${c.textSecondary} mt-0.5`}>{s.recovery}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {personResults.overall_strategy && <div className={`${c.tipBox} border rounded-xl p-5`}><p className="text-sm">{personResults.overall_strategy}</p></div>}
+              {personResult.what_to_notice && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">👀 {personResult.what_to_notice}</p></div>}
             </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* GROUP                                      */}
+      {/* PREPARE — A GROUP                           */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'group' && (
+      {activeKey === 'prepare:group' && (
         <>
-          <InputCard title={t('rr_group_title')} subtitle={t('rr_group_subtitle')} onSubmit={handleGroup}
+          <InputCard title={t('rr_group_title')} subtitle={t('rr_group_subtitle')} onSubmit={handlePrepareGroup}
             btnLabel={t('rr_group_btn')} btnIcon="👥" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_group_describe')}<Req c={c} /></p>
@@ -1207,182 +1115,37 @@ const ReadTheRoom = ({ tool }) => {
             </div>
             <input value={groupChallenge} onChange={e => setGroupChallenge(e.target.value)} placeholder={t('rr_ph_group_challenge')} className={`w-full ${inp}`} />
           </InputCard>
-          {groupResults && (
+          {groupResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {groupResults.group_read && (
-                <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_group_read')}</h3>
-                  <p className={`text-sm ${c.text}`}>{groupResults.group_read.dynamics}</p>
-                  <div className={`${c.success} border rounded-lg p-3`}><p className="text-sm">✨ {groupResults.group_read.your_position}</p></div>
-                  <div className={`${c.infoBox} border rounded-lg p-3`}><p className="text-sm">💡 {groupResults.group_read.misconception}</p></div>
-                </div>
-              )}
-              {groupResults.entering_conversations?.map((e, i) => (
+              <div className={`${c.warningBox} border rounded-xl p-5`}>
+                <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_what_you_know')}</h3>
+                <p className={`text-sm ${c.text} mt-1`}>{groupResult.what_you_know}</p>
+              </div>
+              {groupResult.ways_to_enter?.map((e, i) => (
                 <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
-                  <p className={`text-xs font-bold ${c.textMuted}`}>{e.scenario}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>🎯 {e.technique}</p>
-                  <ConvoLine label={t('rr_group_say')} emoji="🗣️" text={e.line} accent onSave={(line) => saveLine(line, 'group')} {...sp} />
+                  {e.moment && <p className={`text-xs font-bold ${c.textMuted}`}>{e.moment}</p>}
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={e.say} accent onSave={(line) => saveLine(line, 'group')} {...sp} />
+                  {e.why_it_helps && <p className={`text-xs ${c.textMuted}`}>{e.why_it_helps}</p>}
                 </div>
               ))}
-              {groupResults.power_moves?.map((m, i) => {
-                const ec = ENERGY_COLORS[m.energy] || ENERGY_COLORS.confident;
-                return (
-                  <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? ec[0] : ec[1]}`}>{m.energy}</span>
-                    <p className={`text-sm font-bold ${c.text} mt-1`}>{m.move}</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{m.how}</p>
-                  </div>
-                );
-              })}
-              {groupResults.if_youre_being_ignored && (
-                <div className={`${c.danger} border rounded-xl p-4 space-y-1`}>
-                  <strong className="text-sm">{t('rr_group_ignored')}</strong>
-                  {groupResults.if_youre_being_ignored.why_it_happens && <p className={`text-xs ${c.textSecondary}`}>{groupResults.if_youre_being_ignored.why_it_happens}</p>}
-                  <p className="text-sm">⚡ {groupResults.if_youre_being_ignored.immediate_fix}</p>
-                  <p className="text-sm">🧍 {groupResults.if_youre_being_ignored.positioning_fix}</p>
-                  {groupResults.if_youre_being_ignored.exit_option && <p className={`text-xs ${c.textMuted} italic`}>🚪 {groupResults.if_youre_being_ignored.exit_option}</p>}
-                </div>
+              {groupResult.if_youre_not_included && (
+                <SectionBlock id="group-ignored" title={t('rr_group_not_included')} {...sp}>
+                  <p className={`text-sm ${c.textSecondary}`}>{groupResult.if_youre_not_included.try}</p>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={groupResult.if_youre_not_included.say} accent {...sp} />
+                </SectionBlock>
               )}
-              {groupResults.common_traps?.length > 0 && (
-                <div className={`${c.warningBox} border rounded-xl p-4 space-y-2`}>
-                  <p className="text-xs font-bold">{t('rr_group_traps')}</p>
-                  {groupResults.common_traps.map((trap, i) => (
-                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.text}`}>{trap.trap}</p>
-                      {trap.why_it_backfires && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{t('rr_why', { text: trap.why_it_backfires })}</p>}
-                      {trap.instead && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-0.5`}>{t('rr_instead', { text: trap.instead })}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
+              {groupResult.one_thing_to_remember && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {groupResult.one_thing_to_remember}</p></div>}
             </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* ENERGY                                     */}
+      {/* PREPARE — A CROSS-CULTURAL SITUATION        */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'energy' && (
+      {activeKey === 'prepare:culture' && (
         <>
-          <InputCard title={t('rr_energy_title')} subtitle={t('rr_energy_subtitle')} onSubmit={handleEnergy}
-            btnLabel={t('rr_energy_btn')} btnIcon="🔋" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_energy_yours')}<Req c={c} /></p>
-                <select value={myEnergy} onChange={e => setMyEnergy(e.target.value)} className={`w-full ${inp}`}>
-                  <option value="">{t('rr_select')}</option>
-                  {[['Drained / low','rr_myenergy_drained'],['Quiet / introspective','rr_myenergy_quiet'],['Calm / neutral','rr_myenergy_calm'],['Upbeat','rr_myenergy_upbeat'],['High energy / wired','rr_myenergy_high'],['Anxious / jittery','rr_myenergy_anxious']].map(([v,k]) => <option key={v} value={v}>{t(k)}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_energy_room')}<Req c={c} /></p>
-                <select value={roomEnergy} onChange={e => setRoomEnergy(e.target.value)} className={`w-full ${inp}`}>
-                  <option value="">{t('rr_select')}</option>
-                  {[['Dead quiet','rr_roomenergy_dead'],['Calm / subdued','rr_roomenergy_subdued'],['Normal conversation','rr_roomenergy_normal'],['Lively / laughing','rr_roomenergy_lively'],['Loud party mode','rr_roomenergy_party'],['Intense / heated','rr_roomenergy_intense']].map(([v,k]) => <option key={v} value={v}>{t(k)}</option>)}
-                </select>
-              </div>
-            </div>
-            <input value={energyContext} onChange={e => setEnergyContext(e.target.value)} placeholder={t('rr_ph_context')} className={`w-full ${inp}`} />
-          </InputCard>
-          {energyResults && (
-            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {energyResults.gap_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{energyResults.gap_read}</p></div>}
-              {energyResults.match_up && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <h3 className={`font-bold ${c.text}`}>{t('rr_energy_match_up')}</h3>
-                  <p className={`text-sm ${c.textSecondary}`}>{energyResults.match_up.strategy}</p>
-                  <ConvoLine label={t('rr_energy_starter')} emoji="🗣️" text={energyResults.match_up.starter_line} accent {...sp} />
-                </div>
-              )}
-              {energyResults.stay_yourself && (
-                <div className={`${c.tipBox} border rounded-xl p-5 space-y-2`}>
-                  <h3 className="font-bold">{t('rr_energy_stay_yourself')}</h3>
-                  <p className="text-sm">{energyResults.stay_yourself.strategy}</p>
-                  <p className="text-sm">{energyResults.stay_yourself.permission}</p>
-                </div>
-              )}
-              {energyResults.body_hacks?.map((h, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>⚡ {h}</p>)}
-              {energyResults.find_your_people && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">👥 {energyResults.find_your_people}</p></div>}
-              {energyResults.reframe && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">💚 {energyResults.reframe}</p></div>}
-            </div>
-          )}
-        </>
-      )}
-
-      {/* ══════════════════════════════════════════ */}
-      {/* DEPTH (SMALL TALK LADDER)                  */}
-      {/* ══════════════════════════════════════════ */}
-      {mode === 'ladder' && (
-        <>
-          <InputCard title={t('rr_ladder_title')} subtitle={t('rr_ladder_subtitle')} onSubmit={handleLadder}
-            btnLabel={t('rr_ladder_btn')} btnIcon="🪜" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_ladder_rel_type')}</p>
-              <select value={ladderRelationship} onChange={e => setLadderRelationship(e.target.value)} className={`w-full ${inp}`}>
-                <option value="">{t('rr_select')}</option>
-                {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
-              </select>
-            </div>
-            <input value={ladderContext} onChange={e => setLadderContext(e.target.value)}
-              placeholder={t('rr_ph_ladder_context')} className={`w-full ${inp}`} />
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_ladder_stuck')}</p>
-              <select value={ladderDepth} onChange={e => setLadderDepth(e.target.value)} className={`w-full ${inp}`}>
-                <option value="">{t('rr_select')}</option>
-                {[["Surface — weather, sports, basic facts","rr_depth_surface"],["Shared experience — but can't go deeper","rr_depth_shared"],["Opinions — but it feels risky","rr_depth_opinions"],["Personal — but I don't want to overshare","rr_depth_personal"]].map(([v,k]) => <option key={v} value={v}>{t(k)}</option>)}
-              </select>
-            </div>
-          </InputCard>
-          {ladderResults && (
-            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {ladderResults.ladder?.map((level, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-lg font-bold ${c.accentTxt}`}>{level.level}</span>
-                    <h3 className={`font-bold ${c.text}`}>{level.name}</h3>
-                  </div>
-                  <p className={`text-sm ${c.textSecondary}`}>{level.description}</p>
-                  {level.example_topics?.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {level.example_topics.map((topic, j) => <span key={j} className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{topic}</span>)}
-                    </div>
-                  )}
-                  {level.transition_up && (
-                    <div className={`${c.warningBox} border rounded-lg p-3 mt-2`}>
-                      <p className={`text-xs font-bold ${c.accentTxt}`}>{t('rr_ladder_go_deeper')}</p>
-                      <p className={`text-sm font-semibold ${c.text}`}>"{level.transition_up.phrase}"</p>
-                      <p className={`text-xs ${c.textMuted} mt-1`}>📖 {level.transition_up.technique}</p>
-                      <p className={`text-xs ${c.textMuted}`}>{t('rr_ladder_ready_signal', { text: level.transition_up.signal_theyre_ready })}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {ladderResults.stuck_at_surface && (
-                <div className={`${c.warning} border rounded-xl p-5 space-y-2`}>
-                  <h3 className="font-bold text-sm">{t('rr_ladder_stuck_surface')}</h3>
-                  <p className="text-sm">{ladderResults.stuck_at_surface.the_fix}</p>
-                  <ConvoLine label={t('rr_ladder_magic_question')} emoji="✨" text={ladderResults.stuck_at_surface.magic_question} accent {...sp} />
-                </div>
-              )}
-              {ladderResults.too_deep_too_fast && (
-                <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className="text-sm">⚠️ <strong>{t('rr_ladder_too_deep')}</strong> {ladderResults.too_deep_too_fast.signs}</p>
-                  <p className="text-sm mt-1">🔄 {ladderResults.too_deep_too_fast.recovery}</p>
-                </div>
-              )}
-              {ladderResults.the_goal && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">🎯 {ladderResults.the_goal}</p></div>}
-            </div>
-          )}
-        </>
-      )}
-
-      {/* ══════════════════════════════════════════ */}
-      {/* CULTURE DECODER                            */}
-      {/* ══════════════════════════════════════════ */}
-      {mode === 'culture' && (
-        <>
-          <InputCard title={t('rr_culture_title')} subtitle={t('rr_culture_subtitle')} onSubmit={handleCulture}
+          <InputCard title={t('rr_culture_title')} subtitle={t('rr_culture_subtitle')} onSubmit={handlePrepareCulture}
             btnLabel={t('rr_culture_btn')} btnIcon="🌍" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_culture_background')}<Req c={c} /></p>
@@ -1396,140 +1159,324 @@ const ReadTheRoom = ({ tool }) => {
             <input value={cultureConcern} onChange={e => setCultureConcern(e.target.value)}
               placeholder={t('rr_ph_culture_concern')} className={`w-full ${inp}`} />
           </InputCard>
-          {cultureResults && (() => {
-            const r = cultureResults;
-            return (
-              <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-                {r.quick_read && (
-                  <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
-                    <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_culture_quick_read')}</h3>
-                    <p className={`text-sm ${c.text}`}>⚡ {r.quick_read.biggest_difference}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>✅ {r.quick_read.good_news}</p>
-                    <div className={`${c.warning} border rounded-lg p-3`}><p className="text-sm">🔑 {r.quick_read.hidden_rule}</p></div>
-                  </div>
-                )}
-                {r.do_this?.map((d, i) => <div key={i} className={`${c.success} border rounded-lg p-3`}><p className="text-sm font-bold">✅ {d.norm}</p><p className="text-xs">{d.how}</p><p className={`text-xs ${c.textMuted}`}>{d.why}</p></div>)}
-                {r.avoid_this?.map((a, i) => <div key={i} className={`${c.danger} border rounded-lg p-3`}><p className="text-sm font-bold">❌ {a.mistake}</p><p className="text-xs">{a.why_its_bad}</p><p className={`text-xs ${c.accentTxt}`}>{t('rr_culture_instead', { text: a.what_to_do_instead })}</p></div>)}
-                {r.body_language && (
-                  <SectionBlock id="culturebody" title={t('rr_culture_body')} {...sp}>
-                    <p className="text-sm">🤝 {r.body_language.greetings}</p>
-                    <p className="text-sm">👁️ {r.body_language.eye_contact}</p>
-                    {r.body_language.gestures_to_avoid?.map((g, i) => <p key={i} className="text-sm">⚠️ {g}</p>)}
-                  </SectionBlock>
-                )}
-                {r.conversation && (
-                  <SectionBlock id="cultureconv" title={t('rr_culture_conversation')} {...sp}>
-                    {r.conversation.safe_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full me-1 mb-1 ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'}`}>✅ {topic}</span>)}
-                    {r.conversation.dangerous_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full me-1 mb-1 ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}>❌ {topic}</span>)}
-                    <p className={`text-sm ${c.textSecondary} mt-2`}>😄 {r.conversation.humor}</p>
-                  </SectionBlock>
-                )}
-                {r.phrase_to_know && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">🗣️ <strong>{t('rr_culture_learn_this')}</strong> {r.phrase_to_know}</p></div>}
-                {r.graceful_recovery && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm">🔄 <strong>{t('rr_culture_mess_up')}</strong> {r.graceful_recovery}</p></div>}
-              </div>
-            );
-          })()}
+          {cultureResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {cultureResult.norms_worth_checking?.length > 0 && (
+                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+                  <h3 className={`font-bold ${c.text}`}>{t('rr_norms_worth_checking')}</h3>
+                  {cultureResult.norms_worth_checking.map((n, i) => (
+                    <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                      <p className={`text-sm font-bold ${c.text}`}>{n.norm}</p>
+                      {n.why_it_might_matter && <p className={`text-xs ${c.textMuted}`}>{n.why_it_might_matter}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {cultureResult.things_to_handle_carefully?.length > 0 && (
+                <div className={`${c.warningBox} border rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_handle_carefully')}</p>
+                  {cultureResult.things_to_handle_carefully.map((th, i) => <p key={i} className="text-sm">• {th}</p>)}
+                </div>
+              )}
+              {cultureResult.when_in_doubt && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">🧭 {cultureResult.when_in_doubt}</p></div>}
+              {cultureResult.graceful_recovery && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm">🔄 <strong>{t('rr_culture_mess_up')}</strong> {cultureResult.graceful_recovery}</p></div>}
+              {cultureResult.phrase_to_know && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">🗣️ <strong>{t('rr_culture_learn_this')}</strong> {cultureResult.phrase_to_know}</p></div>}
+            </div>
+          )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* SIGNAL DECODER                             */}
+      {/* RIGHT NOW — I NEED SOMETHING TO SAY         */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'decode' && (
+      {activeKey === 'now:say' && (
         <>
-          <InputCard title={t('rr_decode_title')} subtitle={t('rr_decode_subtitle')} onSubmit={handleDecode}
-            btnLabel={t('rr_decode_btn')} btnIcon="🔍" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+          <InputCard title={t('rr_say_title')} subtitle={t('rr_say_subtitle')} onSubmit={() => handleNowSay(false)}
+            btnLabel={t('rr_say_btn')} btnIcon="💬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_decode_what')}<Req c={c} /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_situation')}<Req c={c} /></p>
+              <TileGrid items={QUICK_SCENARIOS} selected={quickScenario}
+                onSelect={(id) => { setQuickScenario(id === quickScenario ? '' : id); setQuickExclude([]); setQuickResult(null); }} c={c} t={t} />
+              <button onClick={() => { setQuickScenario(quickScenario === 'other' ? '' : 'other'); setQuickOther(''); }}
+                className={`mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
+                  ${quickScenario === 'other' ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
+                {t('rr_other')}
+              </button>
+              {quickScenario === 'other' && (
+                <input value={quickOther} onChange={e => setQuickOther(e.target.value)}
+                  placeholder={t('rr_ph_describe_situation')} className={`w-full mt-2 ${inp}`} />
+              )}
+            </div>
+            <div>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_who')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
+              <TileGrid items={RELATIONSHIPS.map(r => ({ ...r, icon: '' }))} selected={quickRelationship} onSelect={setQuickRelationship} c={c} t={t} />
+            </div>
+          </InputCard>
+
+          {quickResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+                <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={quickResult.say} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
+                <p className={`text-xs ${c.textMuted}`}>{quickResult.why_it_works}</p>
+                {quickResult.if_they_respond_briefly && <p className={`text-xs ${c.textSecondary}`}>🤏 {quickResult.if_they_respond_briefly}</p>}
+                {quickResult.if_they_engage && <p className={`text-xs ${c.textSecondary}`}>💬 {quickResult.if_they_engage}</p>}
+                <button title={t('cmd_enter')} onClick={() => handleNowSay(true)} disabled={loading}
+                  className={`relative w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px]`}>
+                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : (quickExclude.length ? t('rr_say_different_tried', { tried: quickExclude.length }) : t('rr_say_different'))}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
+                </button>
+              </div>
+              <div className={`${c.infoBox} border rounded-xl p-4`}>
+                <p className="text-sm">🤫 {quickResult.silence_is_fine_because}</p>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════ */}
+      {/* RIGHT NOW — CONVERSATION STALLED             */}
+      {/* ══════════════════════════════════════════ */}
+      {activeKey === 'now:stalled' && (
+        <>
+          <InputCard title={t('rr_stalled_title')} subtitle={t('rr_stalled_subtitle')} onSubmit={handleNowStalled}
+            btnLabel={t('rr_stalled_btn')} btnIcon="⏸️" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <div>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_stalled_what')}<Req c={c} /></p>
+              <textarea value={stalledWhat} onChange={e => setStalledWhat(e.target.value)}
+                placeholder={t('rr_ph_stalled_what')} rows={3} className={`w-full ${inp}`} />
+            </div>
+            <select value={stalledRelationship} onChange={e => setStalledRelationship(e.target.value)} className={`w-full ${inp}`}>
+              <option value="">{t('rr_stalled_who')}</option>
+              {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
+            </select>
+          </InputCard>
+          {stalledResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {stalledResult.my_read?.label && (
+                <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
+                  <h3 className={`font-bold ${c.accentTxt}`}>{pinned(STALLED_LABEL_KEY, stalledResult.my_read.label)}</h3>
+                  <p className={`text-sm ${c.text}`}>{stalledResult.my_read.explanation}</p>
+                </div>
+              )}
+              {stalledResult.if_you_try_again && (
+                <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                  <p className={`text-xs font-bold ${c.text}`}>{t('rr_try_again')}</p>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={stalledResult.if_you_try_again.say} accent {...sp} />
+                  {stalledResult.if_you_try_again.why_it_might_help && <p className={`text-xs ${c.textMuted}`}>{stalledResult.if_you_try_again.why_it_might_help}</p>}
+                </div>
+              )}
+              {stalledResult.if_you_let_it_wind_down && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+                  <p className={`text-xs font-bold ${c.textMuted}`}>{t('rr_wind_down')}</p>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={stalledResult.if_you_let_it_wind_down.say} {...sp} />
+                  {stalledResult.if_you_let_it_wind_down.why_thats_fine && <p className={`text-xs ${c.textMuted}`}>{stalledResult.if_you_let_it_wind_down.why_thats_fine}</p>}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════ */}
+      {/* RIGHT NOW — I SAID SOMETHING AWKWARD        */}
+      {/* ══════════════════════════════════════════ */}
+      {activeKey === 'now:awkward' && (
+        <>
+          <div className={`${c.emergencyBg} border rounded-xl p-5 space-y-4`}>
+            <h3 className={`font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>{t('rr_awkward_title')}</h3>
+            <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-600'}`}>{t('rr_awkward_subtitle')}</p>
+            <div>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_awkward_what')}<Req c={c} /></p>
+              <textarea value={recoverySaid} onChange={e => setRecoverySaid(e.target.value)}
+                placeholder={t('rr_ph_be_specific')} rows={2} className={`w-full ${inp}`} />
+            </div>
+            <input value={recoveryContext} onChange={e => setRecoveryContext(e.target.value)}
+              placeholder={t('rr_ph_context')} className={`w-full ${inp}`} />
+            <select value={recoveryRelationship} onChange={e => setRecoveryRelationship(e.target.value)} className={`w-full ${inp}`}>
+              <option value="">{t('rr_awkward_talking_to')}</option>
+              {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
+            </select>
+            <button title={t('cmd_enter')} onClick={handleNowAwkward} disabled={loading}
+              className="relative w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-2 min-h-[48px]">
+              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : t('rr_awkward_btn')}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
+            </button>
+          </div>
+          {recoveryResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+                <p className={`text-sm ${c.textSecondary}`}>{recoveryResult.what_happened}</p>
+                {recoveryResult.do_you_need_to_fix_it?.answer && (
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{pinned(RECOVER_ANSWER_KEY, recoveryResult.do_you_need_to_fix_it.answer)}</span>
+                  </div>
+                )}
+                {recoveryResult.do_you_need_to_fix_it?.why && <p className={`text-xs ${c.textMuted}`}>{recoveryResult.do_you_need_to_fix_it.why}</p>}
+              </div>
+              {recoveryResult.say_this_now && <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={recoveryResult.say_this_now} accent {...sp} />}
+              {recoveryResult.or_just_keep_going && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">➡️ {recoveryResult.or_just_keep_going}</p></div>}
+              {recoveryResult.if_they_reacted_badly && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm">{recoveryResult.if_they_reacted_badly}</p></div>}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════ */}
+      {/* RIGHT NOW — I NEED TO LEAVE                  */}
+      {/* ══════════════════════════════════════════ */}
+      {activeKey === 'now:leave' && (
+        <>
+          <InputCard title={t('rr_leave_title')} subtitle={t('rr_leave_subtitle')} onSubmit={handleNowLeave}
+            btnLabel={t('rr_leave_btn')} btnIcon="🚪" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <textarea value={exitContext} onChange={e => setExitContext(e.target.value)}
+              placeholder={t('rr_ph_leave_context')} rows={2} className={`w-full ${inp}`} />
+          </InputCard>
+          {exitResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {exitResult.exit_lines?.map((l, i) => (
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                  <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={l.say} accent onSave={(line) => saveLine(line, 'exit')} {...sp} />
+                  {l.move && <p className={`text-xs ${c.textMuted}`}>🚶 {l.move}</p>}
+                </div>
+              ))}
+              {exitResult.one_thing_to_remember && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {exitResult.one_thing_to_remember}</p></div>}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════ */}
+      {/* DECODE — WHAT MIGHT THAT HAVE MEANT?        */}
+      {/* ══════════════════════════════════════════ */}
+      {activeKey === 'decode:meant' && (
+        <>
+          <InputCard title={t('rr_meant_title')} subtitle={t('rr_meant_subtitle')} onSubmit={handleDecodeMeant}
+            btnLabel={t('rr_meant_btn')} btnIcon="🔎" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <div>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_meant_what')}<Req c={c} /></p>
               <textarea value={theyDid} onChange={e => setTheyDid(e.target.value)}
                 placeholder={t('rr_ph_be_specific')} rows={3} className={`w-full ${inp}`} />
             </div>
             <input value={decodeContext} onChange={e => setDecodeContext(e.target.value)} placeholder={t('rr_ph_context')} className={`w-full ${inp}`} />
             <div className="grid grid-cols-2 gap-3">
               <select value={decodeRelationship} onChange={e => setDecodeRelationship(e.target.value)} className={inp}>
-                <option value="">{t('rr_decode_relationship')}</option>
+                <option value="">{t('rr_meant_relationship')}</option>
                 {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
               </select>
-              <input value={yourConcern} onChange={e => setYourConcern(e.target.value)} placeholder={t('rr_ph_decode_worried')} className={inp} />
+              <input value={yourConcern} onChange={e => setYourConcern(e.target.value)} placeholder={t('rr_ph_meant_worried')} className={inp} />
             </div>
           </InputCard>
-          {decodeResults && (
+          {decodeResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {decodeResults.most_likely && (
+              {decodeResult.my_read?.label && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <h3 className={`font-bold ${c.text}`}>{t('rr_decode_most_likely')}</h3>
-                  <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${decodeResults.most_likely.confidence === 'pretty sure' ? (isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700') : (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>{decodeResults.most_likely.confidence}</div>
-                  <p className={`text-sm ${c.text}`}>{decodeResults.most_likely.read}</p>
-                  {decodeResults.most_likely.evidence && <p className={`text-xs ${c.textMuted} italic`}>{t('rr_decode_evidence', { text: decodeResults.most_likely.evidence })}</p>}
+                  <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{pinned(DECODE_LABEL_KEY, decodeResult.my_read.label)}</div>
+                  <p className={`text-sm ${c.text}`}>{decodeResult.my_read.explanation}</p>
                 </div>
               )}
-              {decodeResults.also_possible?.read && (
+              {decodeResult.what_supports_that_read?.length > 0 && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
-                  <p className="text-xs font-bold">{t('rr_decode_also_possible')}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{decodeResults.also_possible.read}</p>
-                  {decodeResults.also_possible.what_would_confirm && <p className={`text-xs ${c.textMuted} italic`}>{t('rr_decode_watch_for', { text: decodeResults.also_possible.what_would_confirm })}</p>}
+                  <p className="text-xs font-bold">{t('rr_meant_supports')}</p>
+                  {decodeResult.what_supports_that_read.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>)}
                 </div>
               )}
-              {decodeResults.overthinking_check && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">🧠 {decodeResults.overthinking_check}</p></div>}
-              {decodeResults.what_to_do && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-                  <h3 className={`font-bold ${c.text}`}>{t('rr_decode_options')}</h3>
-                  {decodeResults.what_to_do.if_you_want_to_address_it && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('rr_decode_address_it')}</p><p className={`text-sm ${c.text}`}>{decodeResults.what_to_do.if_you_want_to_address_it}</p></div>}
-                  {decodeResults.what_to_do.if_you_want_to_let_it_go && <div className={`${c.quoteBg} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted}`}>{t('rr_decode_let_go')}</p><p className={`text-sm ${c.textSecondary}`}>{decodeResults.what_to_do.if_you_want_to_let_it_go}</p></div>}
-                  {decodeResults.what_to_do.if_youre_not_sure && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted}`}>{t('rr_decode_not_sure')}</p><p className={`text-sm ${c.textSecondary}`}>{decodeResults.what_to_do.if_youre_not_sure}</p></div>}
+              {decodeResult.other_plausible_reads?.length > 0 && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_meant_other_reads')}</p>
+                  {decodeResult.other_plausible_reads.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>)}
                 </div>
               )}
-              {decodeResults.reframe && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {decodeResults.reframe}</p></div>}
+              {decodeResult.what_this_does_not_tell_you?.length > 0 && (
+                <div className={`${c.infoBox} border rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_meant_doesnt_tell')}</p>
+                  {decodeResult.what_this_does_not_tell_you.map((s, i) => <p key={i} className="text-sm">• {s}</p>)}
+                </div>
+              )}
+              {decodeResult.what_to_watch_next?.length > 0 && (
+                <div className={`${c.warningBox} border rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_meant_watch_next')}</p>
+                  {decodeResult.what_to_watch_next.map((s, i) => <p key={i} className="text-sm">👀 {s}</p>)}
+                </div>
+              )}
+              {decodeResult.what_to_do_now && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✅ {decodeResult.what_to_do_now}</p></div>}
             </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* FOLLOW-UP                                  */}
+      {/* DECODE — SHOULD I GO DEEPER OR BACK OFF?    */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'followup' && (
+      {activeKey === 'decode:depth' && (
         <>
-          <InputCard title={t('rr_followup_title')} subtitle={t('rr_followup_subtitle')} onSubmit={handleFollowUp}
-            btnLabel={t('rr_followup_btn')} btnIcon="💬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_who')}<Req c={c} /></p>
-                <input value={followUpWho} onChange={e => setFollowUpWho(e.target.value)} placeholder={t('rr_ph_followup_who')} className={inp} />
-              </div>
-              <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_context')}<Req c={c} /></p>
-                <input value={followUpContext} onChange={e => setFollowUpContext(e.target.value)} placeholder={t('rr_ph_followup_context')} className={inp} />
-              </div>
+          <InputCard title={t('rr_depth_title')} subtitle={t('rr_depth_subtitle')} onSubmit={handleDecodeDepth}
+            btnLabel={t('rr_depth_btn')} btnIcon="📶" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <div>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_depth_what')}<Req c={c} /></p>
+              <textarea value={depthWhat} onChange={e => setDepthWhat(e.target.value)}
+                placeholder={t('rr_ph_depth_what')} rows={3} className={`w-full ${inp}`} />
             </div>
-            <textarea value={followUpWhat} onChange={e => setFollowUpWhat(e.target.value)} placeholder={t('rr_ph_followup_what')} rows={2} className={`w-full ${inp}`} />
-            <input value={followUpGoal} onChange={e => setFollowUpGoal(e.target.value)} placeholder={t('rr_ph_followup_goal')} className={`w-full ${inp}`} />
+            <select value={depthRelationship} onChange={e => setDepthRelationship(e.target.value)} className={`w-full ${inp}`}>
+              <option value="">{t('rr_meant_relationship')}</option>
+              {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
+            </select>
           </InputCard>
-          {followUpResults && (
+          {depthResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {followUpResults.timing && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">⏰ {followUpResults.timing}</p></div>}
-              {followUpResults.messages?.map((m, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{m.style}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border ${m.risk === 'low' ? c.success : m.risk === 'high' ? c.danger : c.warning}`}>{m.risk}</span>
-                  </div>
-                  <div className={`${c.warningBox} border rounded-lg p-4`}><p className={`text-sm ${c.text}`}>{m.text}</p></div>
+              {depthResult.my_read?.label && (
+                <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
+                  <h3 className={`font-bold ${c.accentTxt}`}>{pinned(DEPTH_LABEL_KEY, depthResult.my_read.label)}</h3>
+                  <p className={`text-sm ${c.text}`}>{depthResult.my_read.explanation}</p>
                 </div>
-              ))}
-              {followUpResults.do_not_send && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm">🚫 {followUpResults.do_not_send}</p></div>}
-              {followUpResults.if_no_reply && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_followup_if_no_reply')}</p><p className={`text-sm ${c.textSecondary}`}>{followUpResults.if_no_reply}</p></div>}
+              )}
+              {depthResult.cues_to_continue?.length > 0 && (
+                <div className={`${c.success} border rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_depth_cues_continue')}</p>
+                  {depthResult.cues_to_continue.map((cq, i) => <p key={i} className="text-sm">• {cq}</p>)}
+                </div>
+              )}
+              {depthResult.cues_to_keep_it_lighter?.length > 0 && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">{t('rr_depth_cues_lighter')}</p>
+                  {depthResult.cues_to_keep_it_lighter.map((cq, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {cq}</p>)}
+                </div>
+              )}
+              <div className="grid sm:grid-cols-2 gap-3">
+                {depthResult.if_you_go_deeper?.say && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rr_depth_go_deeper')}</p>
+                    <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={depthResult.if_you_go_deeper.say} accent {...sp} />
+                  </div>
+                )}
+                {depthResult.if_you_keep_it_light?.say && (
+                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rr_depth_keep_light')}</p>
+                    <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={depthResult.if_you_keep_it_light.say} {...sp} />
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* DEBRIEF                                    */}
+      {/* AFTERWARD — HELP ME DEBRIEF                 */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'debrief' && (
+      {activeKey === 'after:debrief' && (
         <>
-          <InputCard title={t('rr_debrief_title')} subtitle={t('rr_debrief_subtitle')} onSubmit={handleDebrief}
+          <InputCard title={t('rr_debrief_title')} subtitle={t('rr_debrief_subtitle')} onSubmit={handleAfterDebrief}
             btnLabel={t('rr_debrief_btn')} btnIcon="📝" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <input value={debriefEvent} onChange={e => setDebriefEvent(e.target.value)} placeholder={t('rr_ph_debrief_event')} className={`w-full ${inp}`} />
             <div>
@@ -1547,68 +1494,118 @@ const ReadTheRoom = ({ tool }) => {
               ))}
             </div>
           </InputCard>
-          {debriefResults && (
+          {debriefResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {debriefResults.honest_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{debriefResults.honest_read}</p></div>}
-              {debriefResults.wins?.map((w, i) => (
-                <div key={i} className={`${c.success} border rounded-lg p-3`}>
-                  <p className="text-sm">✅ {w.what}</p><p className="text-xs">{w.why_it_worked}</p>
-                  {w.add_to_playbook && <p className={`text-xs ${c.accentTxt}`}>{t('rr_debrief_playbook', { text: w.add_to_playbook })}</p>}
+              {debriefResult.honest_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{debriefResult.honest_read}</p></div>}
+              {debriefResult.wins?.map((w, i) => (
+                <div key={i} className={`${c.success} border rounded-lg p-3 flex items-start justify-between gap-2`}>
+                  <div className="flex-1">
+                    <p className="text-sm">✅ {w.what}</p><p className="text-xs">{w.why_it_worked}</p>
+                  </div>
+                  <button onClick={() => addToPlaybook(w.what, debriefEvent || t('rr_default_event_short'))}
+                    title={t('rr_add_to_playbook')}
+                    className={`flex-shrink-0 text-xs px-2 py-1 rounded ${playbook.find(p => p.tactic === w.what) ? (isDark ? 'text-amber-300' : 'text-amber-600') : c.textMuted}`}>
+                    {playbook.find(p => p.tactic === w.what) ? '⭐' : '💾'}
+                  </button>
                 </div>
               ))}
-              {debriefResults.awkward_reframes?.map((a, i) => (
+              {debriefResult.another_way_to_read_it?.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                   <p className={`text-sm ${c.text}`}>😬 {a.what_felt_bad}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>👁️ {a.reality_check}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>🔄 {a.another_way_to_read_it}</p>
+                  {a.next_time && <p className={`text-xs ${c.textMuted}`}>{a.next_time}</p>}
                 </div>
               ))}
-              {debriefResults.patterns && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_debrief_patterns')}</p><p className={`text-sm ${c.textSecondary}`}>{debriefResults.patterns}</p></div>}
-              {debriefResults.confidence_note && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_debrief_confidence')}</p><p className={`text-sm ${c.textSecondary}`}>{debriefResults.confidence_note}</p></div>}
-              {debriefResults.next_challenge && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">{t('rr_debrief_next', { text: debriefResults.next_challenge.suggestion })}</p><p className="text-xs">{debriefResults.next_challenge.why}</p></div>}
+              {debriefResult.patterns && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_debrief_patterns')}</p><p className={`text-sm ${c.textSecondary}`}>{debriefResult.patterns}</p></div>}
+              {debriefResult.next_challenge && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">{t('rr_debrief_next', { text: debriefResult.next_challenge.suggestion })}</p><p className="text-xs">{debriefResult.next_challenge.why}</p></div>}
             </div>
           )}
         </>
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* SOCIAL AUTOPSY                             */}
+      {/* AFTERWARD — WRITE A FOLLOW-UP               */}
       {/* ══════════════════════════════════════════ */}
-      {mode === 'autopsy' && (
+      {activeKey === 'after:followup' && (
         <>
-          <InputCard title={t('rr_autopsy_title')} subtitle={t('rr_autopsy_subtitle')} onSubmit={handleAutopsy}
-            btnLabel={t('rr_autopsy_btn')} btnIcon="🔬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+          <InputCard title={t('rr_followup_title')} subtitle={t('rr_followup_subtitle')} onSubmit={handleAfterFollowup}
+            btnLabel={t('rr_followup_btn')} btnIcon="💌" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_who')}<Req c={c} /></p>
+                <input value={followUpWho} onChange={e => setFollowUpWho(e.target.value)} placeholder={t('rr_ph_followup_who')} className={inp} />
+              </div>
+              <div>
+                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_context')}<Req c={c} /></p>
+                <input value={followUpContext} onChange={e => setFollowUpContext(e.target.value)} placeholder={t('rr_ph_followup_context')} className={inp} />
+              </div>
+            </div>
+            <textarea value={followUpWhat} onChange={e => setFollowUpWhat(e.target.value)} placeholder={t('rr_ph_followup_what')} rows={2} className={`w-full ${inp}`} />
+            <input value={followUpGoal} onChange={e => setFollowUpGoal(e.target.value)} placeholder={t('rr_ph_followup_goal')} className={`w-full ${inp}`} />
+          </InputCard>
+          {followUpResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {followUpResult.timing && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">⏰ {followUpResult.timing}</p></div>}
+              {followUpResult.messages?.map((m, i) => (
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+                  <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{m.style}</span>
+                  <div className={`${c.warningBox} border rounded-lg p-4`}><p className={`text-sm ${c.text}`}>{m.text}</p></div>
+                  {m.why && <p className={`text-xs ${c.textMuted}`}>{m.why}</p>}
+                </div>
+              ))}
+              {followUpResult.if_no_reply && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_followup_if_no_reply')}</p><p className={`text-sm ${c.textSecondary}`}>{followUpResult.if_no_reply}</p></div>}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════ */}
+      {/* AFTERWARD — SOMETHING WENT BADLY            */}
+      {/* ══════════════════════════════════════════ */}
+      {activeKey === 'after:badly' && (
+        <>
+          <InputCard title={t('rr_badly_title')} subtitle={t('rr_badly_subtitle')} onSubmit={handleAfterBadly}
+            btnLabel={t('rr_badly_btn')} btnIcon="🔬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_autopsy_what')}<Req c={c} /></p>
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_badly_what')}<Req c={c} /></p>
               <textarea value={autopsyWhat} onChange={e => setAutopsyWhat(e.target.value)}
-                placeholder={t('rr_ph_autopsy_what')} rows={4} className={`w-full ${inp}`} />
+                placeholder={t('rr_ph_badly_what')} rows={4} className={`w-full ${inp}`} />
             </div>
             <textarea value={autopsyTimeline} onChange={e => setAutopsyTimeline(e.target.value)}
-              placeholder={t('rr_ph_autopsy_timeline')} rows={2} className={`w-full ${inp}`} />
-            <input value={autopsyFelt} onChange={e => setAutopsyFelt(e.target.value)} placeholder={t('rr_ph_autopsy_felt')} className={`w-full ${inp}`} />
-            <input value={autopsyThink} onChange={e => setAutopsyThink(e.target.value)} placeholder={t('rr_ph_autopsy_think')} className={`w-full ${inp}`} />
+              placeholder={t('rr_ph_badly_timeline')} rows={2} className={`w-full ${inp}`} />
+            <input value={autopsyFelt} onChange={e => setAutopsyFelt(e.target.value)} placeholder={t('rr_ph_badly_felt')} className={`w-full ${inp}`} />
+            <input value={autopsyThink} onChange={e => setAutopsyThink(e.target.value)} placeholder={t('rr_ph_badly_think')} className={`w-full ${inp}`} />
           </InputCard>
-          {autopsyResults && (() => {
-            const r = autopsyResults;
-            return (
-              <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-                {r.honest_assessment && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt}`}>{t('rr_autopsy_assessment')}</h3><p className={`text-sm ${c.text} mt-2`}>{r.honest_assessment}</p></div>}
-                {r.turning_point && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                    <h3 className={`font-bold ${c.text}`}>{t('rr_autopsy_turning_point')}</h3>
-                    <p className={`text-sm ${c.textSecondary}`}>{r.turning_point.moment}</p>
-                    <p className={`text-sm ${c.text}`}>{r.turning_point.what_caused_it}</p>
-                    <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${r.turning_point.was_it_you?.toLowerCase().includes('not') || r.turning_point.was_it_you?.toLowerCase().includes('outside') ? c.success : r.turning_point.was_it_you?.toLowerCase().includes('both') ? c.warning : c.infoBox}`}>{r.turning_point.was_it_you}</div>
-                  </div>
-                )}
-                {r.signals_you_missed?.map((s, i) => <div key={i} className={`${c.warning} border rounded-lg p-3`}><p className="text-sm">👀 {s.signal}</p><p className="text-xs">{s.what_it_meant}</p><p className={`text-xs ${c.accentTxt}`}>{t('rr_autopsy_next_time', { text: s.how_to_spot_it_next_time })}</p></div>)}
-                {r.what_was_not_your_fault?.length > 0 && <div className={`${c.success} border rounded-xl p-5 space-y-1`}><h3 className="font-bold text-sm">{t('rr_autopsy_not_fault')}</h3>{r.what_was_not_your_fault.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}</div>}
-                {r.what_was_in_your_control?.length > 0 && <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}><h3 className="font-bold text-sm">{t('rr_autopsy_in_control')}</h3>{r.what_was_in_your_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}</div>}
-                {r.the_real_lesson && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">{t('rr_autopsy_real_lesson')}</p><p className="text-sm mt-1">{r.the_real_lesson}</p></div>}
-                {r.next_time?.add_to_playbook && <p className={`text-xs ${c.accentTxt}`}>{t('rr_autopsy_added_playbook', { text: r.next_time.add_to_playbook })}</p>}
-                {r.compassion_note && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {r.compassion_note}</p></div>}
-              </div>
-            );
-          })()}
+          {autopsyResult && (
+            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {autopsyResult.what_happened && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt}`}>{t('rr_badly_what_happened')}</h3><p className={`text-sm ${c.text} mt-2`}>{autopsyResult.what_happened}</p></div>}
+              {autopsyResult.plausible_turning_points?.map((pt, i) => (
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className={`text-sm font-bold ${c.text}`}>{pt.moment}</p>
+                  {pt.why_it_may_have_mattered && <p className={`text-xs ${c.textSecondary}`}>{pt.why_it_may_have_mattered}</p>}
+                </div>
+              ))}
+              {autopsyResult.what_you_couldnt_know?.length > 0 && (
+                <div className={`${c.success} border rounded-xl p-5 space-y-1`}>
+                  <h3 className="font-bold text-sm">{t('rr_badly_couldnt_know')}</h3>
+                  {autopsyResult.what_you_couldnt_know.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
+                </div>
+              )}
+              {autopsyResult.what_you_could_control?.length > 0 && (
+                <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}>
+                  <h3 className="font-bold text-sm">{t('rr_badly_could_control')}</h3>
+                  {autopsyResult.what_you_could_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
+                </div>
+              )}
+              {autopsyResult.what_to_try_differently?.length > 0 && (
+                <div className={`${c.tipBox} border rounded-xl p-4 space-y-1`}>
+                  <p className="text-sm font-bold">{t('rr_badly_try_differently')}</p>
+                  {autopsyResult.what_to_try_differently.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
+                </div>
+              )}
+              {autopsyResult.what_not_to_overlearn && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {autopsyResult.what_not_to_overlearn}</p></div>}
+            </div>
+          )}
         </>
       )}
 
@@ -1616,7 +1613,18 @@ const ReadTheRoom = ({ tool }) => {
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* ── Post-result cross-refs ── */}
-      {anyResult && (
+      {!results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('rr_related_velvet')}</a>
+            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('rr_related_difficult')}</a>
+            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>{t('rr_related_spiral')}</a>
+          </div>
+        </div>
+      )}
+
+      {results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
@@ -1638,7 +1646,7 @@ const ReadTheRoom = ({ tool }) => {
             <div className="mt-3 space-y-1">
               {sessionHistory.slice(0, 20).map((h, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
-                  <span className={`text-sm ${c.textSecondary}`}>{MODES.find(m => m.id === h.type)?.icon || '🎭'} {h.label}</span>
+                  <span className={`text-sm ${c.textSecondary}`}>{h.preview}</span>
                   <span className={`text-xs ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
                 </div>
               ))}
