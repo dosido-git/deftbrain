@@ -189,7 +189,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             a tool page these two pills are the only language control there is
             (GlobalHeader does not render here), so burying them below the form
             would strand anyone who landed in the wrong language. */}
-        <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
+        {/* -mb-6 cancels most of the grid's own gap-8 (32px) row-gap below lg,
+            which stacks on top of any margin here since grid gaps add to an
+            item's margins rather than collapsing with them. Net visible gap
+            below lg: 32px - 24px = 8px — the amount this block always wanted
+            (it was mb-2 before the row/col grid restructure introduced the
+            32px gap it now has to share with every other stacked section). At
+            lg+ the pills sit beside the header in the same row, so margin
+            here is moot either way — kept at 0 for clarity. */}
+        <div data-print-hide className="flex justify-end pt-4 -mb-6 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
         </div>
 
