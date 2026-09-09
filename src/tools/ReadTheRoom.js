@@ -1638,7 +1638,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ── History ── */}
       {sessionHistory.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-          <button onClick={() => toggleSection('history')} className="flex items-center justify-between w-full">
+          <button onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
             <h3 className={`font-bold ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
             <Caret open={expandedSections.sessionHistory} />
           </button>

@@ -116,6 +116,70 @@ calls made across both this pass and the earlier one. That is the guard doing
 its job, not a sign the prompts are unreliable — the captured golden outputs
 are POST-repair, i.e. what a real visitor would actually see.
 
+## PREPARE_EVENT_SYSTEM correction pass (2026-09-08)
+
+The built-in "family holiday" example — three generations, a years-long rift
+between the visitor's mother and aunt, a cousin's new partner, two young
+children, the visitor's own pattern of always smoothing things over —
+surfaced a cluster of invention bugs in `/room-reader` specifically, all
+fixed in the same pass:
+
+- **Invented attendees not in the input** ("your cousin's partner" was
+  supplied and fine to use; the bug was adding people who were NOT supplied,
+  e.g. an uncle or sibling's spouse nobody mentioned). Fixed with an explicit
+  DO NOT INVENT ATTENDEES rule plus a FINAL ATTENDEE AUDIT instruction (list
+  supplied people/relationships/history/concerns internally, then check every
+  named or implied person in the draft against that list).
+- **A possible future moment narrated as certain** ("when the moment comes
+  where you would normally step in...") — fixed with explicit hypothetical
+  framing ("if a tense moment develops and you notice yourself about to step
+  in...").
+- **Hosting quietly became an obligation to manage tension** — this took
+  **three tightening passes** to actually close. First: "since it is his
+  house and his stated priority" (a bare invented priority). After the first
+  fix: "it is his day to manage" (same invention, reworded). After the second
+  fix: "he wants it to go well more than anyone, that means it's his to
+  manage, not yours to backstop" (the model built its own inference chain
+  from a real supplied fact — wanting a good outcome — to an invented
+  obligation). The rule now names that inference chain explicitly as a
+  disguised version of the same invention, with the exact phrasing to avoid.
+  Re-verify this specific failure mode if the PREPARE_EVENT_SYSTEM prompt is
+  ever edited again — it visibly resists correction and needs the sharpest
+  wording, not the first draft.
+- **A social identity/reputation invented for the visitor** from one stated
+  behavior pattern ("the cousin with the quiet reputation I'm actively trying
+  to undermine") — fixed; scripts stay playful but grounded (see the actually
+  correct output: "I figured I would come say hello before everyone becomes a
+  blur").
+- **THINGS TO HANDLE CAREFULLY upgrading a possibility into a diagnosis**
+  ("that is a structural problem") or inventing a reaction from an unnamed
+  person — fixed with explicit grounding language.
+- **Scripting who else is present to intervene** ("your brother, another
+  adult, the natural flow of conversation" assumes an unnamed adult is
+  available) — fixed; now "someone else may respond, or the conversation may
+  move on without your help."
+- **The visitor's actual stated goal getting quietly reassigned back to
+  them** — the concern was "I don't want to be the one who always smooths
+  things over," not just "prevent conflict." The rewrite keeps that
+  distinction as the center of the plan ("Your goal is not a conflict-free
+  day — it is a day where you did not single-handedly hold the peace
+  together") rather than routing the visitor back into monitoring seating,
+  checking on everyone, or redirecting every difficult topic.
+
+Added as a dedicated golden case
+(`prepare-event-family-holiday-no-invented-attendees`) specifically to catch
+a regression on this cluster, separate from the simpler
+`prepare-event-work-happy-hour` case.
+
+## Frontend bug fixed the same pass
+
+**The "Recent" history panel did nothing when clicked.** Its header button
+called `toggleSection('history')`, but the render check read
+`expandedSections.sessionHistory` — two different keys in the same state
+object, so the toggle never affected what the render was actually checking.
+Fixed by making both use `'sessionHistory'`. Verified live: clicking now
+expands the panel and shows the logged entries.
+
 ## DO NOT silently reverse
 
 - `my_read.label` / `do_you_need_to_fix_it.answer` staying the exact pinned

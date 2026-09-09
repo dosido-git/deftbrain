@@ -480,6 +480,59 @@
         "if_they_engage": "Follow their lead — if they riff on it, riff back; if they mention where they're headed, that's a natural next exchange.",
         "silence_is_fine_because": "Eight floors is genuinely short, and two people standing quietly in an elevator is not awkward — it's just an elevator."
       }
+    },
+    {
+      "name": "prepare-event-family-holiday-no-invented-attendees",
+      "endpoint": "/api/room-reader",
+      "input": {
+        "eventType": "Family Holiday",
+        "eventDetails": "Christmas Day at my brother's. Fourteen people, three generations, from about 11am until whenever.",
+        "people": "My mother, who has not spoken to my aunt since a funeral in 2019 and will not say why. My brother, who is hosting and wants it to go well more than anyone. My cousin's new partner, who has met none of us. Two children under six.",
+        "concerns": "I always end up being the one who smooths things over and I would like, once, not to be. But I also do not want it to go badly just to prove a point.",
+        "comfort": "panicking",
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_to_aim_for": "Get through the day having genuinely participated without automatically stepping into the gap every time tension appears. That is a different goal from keeping the peace — it is narrower, and it is yours to control.",
+        "simple_plan": [
+          "Before you arrive, decide on one specific thing you will not do: you will not re-seat people, you will not pre-emptively change the subject when your mother and aunt are in the same conversation, you will not check on everyone. Pick the one that is most automatic for you and set it down for the day.",
+          "When you notice yourself about to smooth something over, give it ten seconds first — someone else may respond, or the moment may pass on its own without your help.",
+          "Check in with your brother once, early, and ask if there is anything he actually wants from you. If there is not, you have explicit permission to just be a guest."
+        ],
+        "starters": [
+          {
+            "moment": "JOIN",
+            "tone": "warm",
+            "use_when": "You want to bring your cousin's new partner into a conversation they are hovering outside of.",
+            "say": "I was just about to ask — how did you two end up spending last Christmas?",
+            "why_it_helps": "It opens a topic they can answer from their own experience, and it naturally includes your cousin as well so the new person is not put on the spot alone."
+          },
+          {
+            "moment": "OPEN",
+            "tone": "low_key",
+            "use_when": "You are arriving and want to start simply without immediately getting pulled into logistics or triage.",
+            "say": "I figured I would find the drinks situation before I found anyone else.",
+            "why_it_helps": "It is light, gives you a reason to move through the room at your own pace, and does not signal that you are available to manage anything."
+          },
+          {
+            "moment": "EXIT",
+            "tone": "direct",
+            "use_when": "A conversation is drifting somewhere uncomfortable and you want to leave it without closing it down for everyone else.",
+            "say": "I am going to go check on the kids — catch up with you in a bit.",
+            "why_it_helps": "It is a clean, non-judgmental exit that does not require you to redirect the conversation or take responsibility for where it was going."
+          }
+        ],
+        "if_it_stalls": {
+          "try": "If the room goes quiet and everyone looks at you — or the tension is just sitting there — you do not have to fill it. A short pause is not a crisis that needs fixing.",
+          "say": "So what did everyone actually ask for this year and not get?"
+        },
+        "things_to_handle_carefully": [
+          "Your mother and aunt: you did not create that situation and you do not know what is behind it. Seating choices or topic redirects you make on their behalf may not be wanted and are not yours to manage.",
+          "Your cousin's new partner is meeting fourteen people at once — a short, easy question directed at them is genuinely useful. Beyond that, your cousin is there too.",
+          "The two children are a natural source of interruption and noise, which actually works in your favour — they will break silences and shift attention without you having to do it."
+        ],
+        "one_thing_to_remember": "You are allowed to let a moment be someone else's to handle — not because you do not care how the day goes, but because handling it is not automatically your job."
+      }
     }
   ]
 }
