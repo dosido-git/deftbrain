@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "tool": "SensoryScout",
+    "tool": "TripRecon",
     "generated": "2026-09-09",
     "model": "claude-sonnet-4-6 (MODELS.SMART), MODELS.FAST for ask-script; 7 endpoints",
     "baseline_commit": "sensoryminefieldmapper-v3.1",

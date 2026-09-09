@@ -40,7 +40,7 @@
 - [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into a memorable part of your trip
 - [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): 🗺️ Turn a free hour into a small adventure
 - [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
-- [Sensory Scout](https://deftbrain.com/SensoryScout): 🗺️ Prepare for the sensory parts of going somewhere.
+- [Trip Recon](https://deftbrain.com/TripRecon): 🗺️ Prepare for the sensory parts of going somewhere.
 
 ## Humans
 

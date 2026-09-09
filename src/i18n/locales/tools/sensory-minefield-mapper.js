@@ -1,9 +1,10 @@
-// SensoryScout (was SensoryMinefieldMapper) — smm_* keys for all 13
-// languages. V3 rewrite (2026-09-09): no environmental prediction, no
-// invented layout, no numeric/categorical intensity score, no "live rescan"
-// claim. Route mode is a single start/destination pair now, not a
-// multi-stop planner. Backend route filename, endpoints, and this prefix
-// deliberately keep the old name — see audit/RENAMES.md.
+// TripRecon (was SensoryMinefieldMapper, then SensoryScout — renamed twice
+// the same day, 2026-09-09) — smm_* keys for all 13 languages. V3 rewrite:
+// no environmental prediction, no invented layout, no numeric/categorical
+// intensity score, no "live rescan" claim. Route mode is a single
+// start/destination pair now, not a multi-stop planner. Backend route
+// filename, endpoints, and this prefix deliberately keep the old name
+// across both renames — see audit/RENAMES.md.
 // Brand/tool names stay as-is across languages.
 export const sensoryMinefieldMapper = {
   en: {

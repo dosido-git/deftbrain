@@ -1,10 +1,11 @@
 // sensory-minefield-mapper.js
 //
 // V3 rewrite (2026-09-09, full owner-supplied spec) — display renamed to
-// Sensory Scout (src/tools/SensoryScout.js, tools.js id "SensoryScout"); this
-// backend route file, every endpoint path, and the i18n prefix (`smm_`)
-// deliberately keep the old name, per the standing naming-consistency rule
-// (see audit/RENAMES.md — same treatment as BeforeHello/GravityWell,
+// Sensory Scout, then renamed again the same day to Trip Recon
+// (src/tools/TripRecon.js, tools.js id "TripRecon"); this backend route
+// file, every endpoint path, and the i18n prefix (`smm_`) deliberately keep
+// the old name, per the standing naming-consistency rule (see
+// audit/RENAMES.md — same treatment as BeforeHello/GravityWell,
 // ConceptCoach/IdeaAutopsy, etc.).
 //
 // The v2 tool was pitched as an environmental forecasting service: it
@@ -84,7 +85,7 @@ function collectProseFields(parsed) {
 }
 
 // ── Shared epistemic contract, composed with each mode's own section. ──
-const CORE_SYSTEM = `SENSORY SCOUT
+const CORE_SYSTEM = `TRIP RECON
 
 ROLE
 
@@ -342,7 +343,7 @@ NORTH STAR:
 
 THE VISITOR IS THE SENSOR.
 
-Sensory Scout prepares the visitor for possibilities. It does not simulate
+Trip Recon prepares the visitor for possibilities. It does not simulate
 having inspected the place.`;
 
 function section(body) {
@@ -469,7 +470,7 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout]', error);
+    console.error('[TripRecon]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -509,7 +510,7 @@ If route-specific information is unavailable, say so naturally and build a
 preparation plan around the visitor's concerns and travel mode instead of
 inventing what the trip will be like.
 
-Never imply that Sensory Scout has examined the route when it has not.
+Never imply that Trip Recon has examined the route when it has not.
 
 THE VISITOR IS THE SENSOR. THE ROUTE IS CONTEXT, NOT EVIDENCE.
 
@@ -578,7 +579,7 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE ROUTE: ${knownInfo}\n` : ''}${sp
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout/route]', error);
+    console.error('[TripRecon/route]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -645,7 +646,7 @@ ${originalPlanSummary ? `ORIGINAL PLAN SUMMARY: ${originalPlanSummary}` : ''}`;
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout/rescan]', error);
+    console.error('[TripRecon/rescan]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -709,7 +710,7 @@ ${specificNotes ? `NOTES: ${specificNotes}` : ''}`;
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout/comfort-kit]', error);
+    console.error('[TripRecon/comfort-kit]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -782,7 +783,7 @@ ${analysisContext?.summary?.one_liner ? `PREVIOUS PLAN SUMMARY: ${analysisContex
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout/alternatives]', error);
+    console.error('[TripRecon/alternatives]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -838,7 +839,7 @@ ${location ? `LOCATION: ${location}` : ''}`;
 
     res.json(cleaned);
   } catch (error) {
-    console.error('[SensoryScout/ask-script]', error);
+    console.error('[TripRecon/ask-script]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -894,7 +895,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     res.json(parsed);
 
   } catch (error) {
-    console.error('[SensoryScout/companion]', error);
+    console.error('[TripRecon/companion]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

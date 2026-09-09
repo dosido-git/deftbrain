@@ -5036,7 +5036,7 @@ tagline: "Work with the energy you have.",
 
 {
   modified: "2026-09-09",
-  id: "SensoryScout",
+  id: "TripRecon",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5047,7 +5047,7 @@ tagline: "Work with the energy you have.",
   },
   seoDescription: "Going somewhere that might be noisy, crowded, bright, or smelly? Get a practical preparation plan, words to ask for what you need, and a backup plan — without fake predictions. Free, no signup.",
   seoTitle: "Prepare for a Sensory-Demanding Place or Route",
-  title: "Sensory Scout",
+  title: "Trip Recon",
   tagline: "🗺️ Prepare for the sensory parts of going somewhere.",
   tags: [
     'sensory', 'noise', 'crowds', 'lighting', 'smells',
@@ -5057,9 +5057,9 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Out & About', 'Energy', 'Me'],
   headerColor: "#2a3820",
-  description: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Sensory Scout what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.",
+  description: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Trip Recon what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.",
   guide: {
-    overview: "Sensory Scout turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).",
+    overview: "Trip Recon turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).",
     howToUse: [
       "Save a profile — select what matters to you once and load it every time with one tap.",
       "Choose Prepare for a Place or Prepare for a Route.",

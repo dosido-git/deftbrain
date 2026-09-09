@@ -69,7 +69,7 @@ const CHANGE_OPTIONS = [
   { key: 'other', labelKey: 'smm_chg_other' },
 ];
 
-function SensoryScout({ tool }) {
+function TripRecon({ tool }) {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { t } = useTranslation();
@@ -308,7 +308,7 @@ function SensoryScout({ tool }) {
   }, [results, t]);
 
   const resultsRef = useRef(null);
-  useRegisterActions(buildFullText(), tool?.title || 'Sensory Scout');
+  useRegisterActions(buildFullText(), tool?.title || 'Trip Recon');
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
@@ -354,7 +354,7 @@ function SensoryScout({ tool }) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Scout'}
+                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Trip Recon'}
               </h2>
               {/* i18n key, not tool?.tagline — the catalog tagline keeps its
                   leading emoji (toolTagline() convention), which would
@@ -848,5 +848,5 @@ function SensoryScout({ tool }) {
   );
 }
 
-SensoryScout.displayName = 'SensoryScout';
-export default SensoryScout;
+TripRecon.displayName = 'TripRecon';
+export default TripRecon;

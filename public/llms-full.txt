@@ -915,15 +915,15 @@ Input: Hosting a housewarming, 25 guests, mix of work friends and college friend
 
 Output: Designs a flow: arrivals in the apartment (lower-energy mingling zone with a simple conversation game on the counter), then guided migration to the rooftop at the 45-minute mark (energy peak), introduces a '2 truths and a lie' variant that naturally mixes the groups, schedules food service to create natural gathering points, and includes the 'graceful wind-down' signal.
 
-### Sensory Scout
+### Trip Recon
 
-URL: https://deftbrain.com/SensoryScout
+URL: https://deftbrain.com/TripRecon
 Tagline: 🗺️ Prepare for the sensory parts of going somewhere.
 Categories: Out & About, Energy, Me
 
-Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Sensory Scout what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.
+Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Trip Recon what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.
 
-**What it does.** Sensory Scout turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).
+**What it does.** Trip Recon turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).
 
 **How to use it.**
 

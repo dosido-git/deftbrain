@@ -1,4 +1,9 @@
-# Sensory Scout (was Sensory Minefield Mapper) — architecture & lock notes (`sensoryminefieldmapper-v3.1`)
+# Trip Recon (was Sensory Minefield Mapper, then Sensory Scout) — architecture & lock notes (`sensoryminefieldmapper-v3.1`)
+
+**Renamed again 2026-09-09** (same day as the v3.1 pass below): `SensoryScout` → `TripRecon`, owner
+request. Display-only — see `audit/RENAMES.md` for the full chain-collapsed touchpoint list. The
+backend route file, all 7 endpoint paths, and the i18n prefix (`smm_`) are unaffected and every
+mention of "Sensory Scout" below refers to the tool under its name at the time each pass was made.
 
 **Known-good:** tag `sensoryminefieldmapper-v3.1` · golden `audit/sensory-minefield-mapper-golden-sample.json`
 (re-captured 2026-09-09 after the v3.1 output-correction + Route-mode pass)
