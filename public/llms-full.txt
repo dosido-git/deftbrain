@@ -915,37 +915,38 @@ Input: Hosting a housewarming, 25 guests, mix of work friends and college friend
 
 Output: Designs a flow: arrivals in the apartment (lower-energy mingling zone with a simple conversation game on the counter), then guided migration to the rooftop at the 45-minute mark (energy peak), introduces a '2 truths and a lie' variant that naturally mixes the groups, schedules food service to create natural gathering points, and includes the 'graceful wind-down' signal.
 
-### Sensory Minefield Mapper
+### Sensory Scout
 
-URL: https://deftbrain.com/SensoryMinefieldMapper
-Tagline: Predict and avoid overwhelming sensory environments
+URL: https://deftbrain.com/SensoryScout
+Tagline: 🗺️ Prepare for the sensory parts of going somewhere.
 Categories: Out & About, Energy, Me
 
-Scout any location before you go — predict crowd density, noise, lighting, temperature, and sensory intensity by time of day. Get a tailored game plan, layout intel, accommodation scripts, comfort kit, and live rescan if conditions shift once you're there.
+Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Sensory Scout what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.
 
-**What it does.** Sensory Minefield Mapper helps you predict what a location will feel like before you arrive. Enter where you're going, when, and what you're sensitive to — and get a full breakdown of expected conditions, the best time to visit, quiet spots and exit routes, scripts for asking staff for accommodations, and a comfort kit checklist. Use the live rescan if reality doesn't match the prediction.
+**What it does.** Sensory Scout turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).
 
 **How to use it.**
 
-1. Save a concern profile — select your sensitivities once and load them every visit with one tap.
-2. Enter your destination, date, time, and place type.
-3. Review the prediction: intensity rating, factor-by-factor breakdown, and best time to go.
-4. Open Game Plan for before/during strategies and an exit plan if things get overwhelming.
-5. Use Live Rescan if you're already there and conditions are worse than predicted.
-6. Rate the visit afterward — your ratings improve future predictions for that location.
+1. Save a profile — select what matters to you once and load it every time with one tap.
+2. Choose Prepare for a Place or Prepare for a Route.
+3. Tell it where you're going; place type, timing, and what you already know about it are all optional.
+4. Select what you'd like help with — noise, crowds, lighting, and so on.
+5. Review what's worth preparing for, before-you-go steps, and words to ask for what you need.
+6. If conditions differ once you're there, use Conditions Changed to adjust the plan from what you actually observe.
+7. Afterward, rate what was actually true — your own reports improve future preparation for that place.
 
 **Tips.**
 
-- The more specific your location name, the better the prediction — 'CVS on Main St' beats 'pharmacy'.
-- Use Challenge Mode in the Route Planner to see which stops to cut if energy runs low.
-- The Comfort Kit feature generates a personalized packing list based on your specific concerns and place type.
-- Save locations you visit regularly as Favorites — one tap to re-scout with updated conditions.
+- The more specific your location, the more useful the read — but nothing is required beyond the place and what you'd like help with.
+- What you already know about a place (a past visit, a review, a call ahead) is the strongest input — it's the difference between a general possibility and something worth actually planning around.
+- Comfort Kit personalizes a packing list from what you selected, not a generic list.
+- Save what matters to you as a profile — it's a preference preset, not a diagnosis, and it's yours to edit or delete anytime.
 
 **Example.**
 
-Input: You need to pick up a prescription at a large pharmacy on a Saturday afternoon.
+Input: You have a hospital outpatient appointment Thursday morning. You've been asked to arrive early, you can't leave and return without risking your place, and last time you waited about two hours.
 
-Output: Prediction: HIGH intensity — weekend rush, pharmacy counter waits, intercom announcements. Best time: Tuesday 9am (LOW). Game plan includes: call ahead to confirm prescription is ready, use self-checkout, bring headphones. Quiet spot: far end of the greeting card aisle.
+Output: A plan that treats your own facts as established — the wait, the arrival time, the constraint on leaving — and offers low-burden ways to prepare for noise, lighting, smells, and temperature as general possibilities, not predictions. It includes a script for asking to wait somewhere else without missing your name being called, and a backup plan that doesn't tell you to leave when you've said you can't.
 
 ## Humans
 
@@ -1312,7 +1313,7 @@ Categories: Humans
 
 Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.
 
-**What it does.** Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (a debrief, a follow-up message, or understanding something that went badly). It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook only grows when you tell it something actually worked; recurring people are tracked from what you log, not a personality profile.
+**What it does.** Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (making sense of how something went, a follow-up message, or understanding something that went badly). Each moment opens with one question and a plain-language list of choices — no second row of tabs to parse first. It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook and saved plans are small utilities at the bottom of the page, not the main event; they only grow when you tell the tool something actually worked.
 
 **How to use it.**
 
@@ -1321,7 +1322,7 @@ Not sure what to say, how to join in, or what an interaction might have meant? R
 3. Right Now → I need something to say / Conversation stalled / I said something awkward / I need to leave: fast, in-the-moment help for exactly what's happening
 4. Decode → What might that have meant?: a real read when the evidence points somewhere, honest uncertainty when it doesn't, and what to watch for next
 5. Decode → Should I go deeper or back off?: reads observable reciprocity — whether they're engaging or winding down — rather than a fixed signal
-6. Afterward → Help me debrief / Write a follow-up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked
+6. Afterward → Help me make sense of how it went / Help me follow up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked
 7. Track a recurring person under Prepare → One Person and log what happened after each interaction — the next strategy comes from your own logged outcomes
 
 **Tips.**
@@ -1682,35 +1683,35 @@ Output: Verdict: NEEDS CLARIFICATION. Specific concern: the quote is a lump sum 
 ### Scam Radar
 
 URL: https://deftbrain.com/ScamRadar
-Tagline: Paste any suspicious message — know in seconds if it's a scam
+Tagline: 🎣 Spot the warning signs before you click, pay, or reply.
 Categories: Loot
 
-Paste any suspicious email, text, DM, phone script, or invoice. AI identifies the scam type, explains the manipulation techniques being used, flags specific red flags, and tells you exactly what to do next.
+Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what looks concerning, what is still uncertain, and the safest way to verify it without relying on the message itself.
 
-**What it does.** ScamRadar analyzes messages for fraud patterns using the same detection categories professional security analysts use — phishing, advance fee fraud, authority impersonation, romance scams, fake invoices, and more. It doesn't just say 'suspicious' — it identifies the specific technique, cites actual phrases from your message that are red flags, and gives you a concrete action plan. Works on any message type: email, SMS, WhatsApp, phone scripts, invoices, social media DMs.
+**What it does.** Scam Radar treats the message and whatever you know about the sender as the only established facts — everything else is either a general scam pattern worth naming or something that genuinely needs outside verification, and it says which is which. It never assigns a numeric confidence score, never calls a domain or sender 'spoofed' or 'fraudulent' without independent verification, and never treats a generic greeting, typos, or polished branding as decisive evidence either way. It also asks whether you've already clicked a link, replied, entered a password, or sent money — because the right next step depends entirely on that, not just on what the message says.
 
 **How to use it.**
 
-1. Select the message type (email, SMS, WhatsApp/DM, phone script, invoice, or other)
-2. Paste the full message content — the more complete, the better the analysis
-3. Add sender context if you have it (email address, phone number, platform)
-4. Click 'Scan for Scams' — get a verdict, confidence score, scam type, and action plan
-5. Review red flags: each one cites a specific phrase or pattern from your actual message
-6. Follow the 'What to do' steps and check the 'Do NOT' list before taking any action
+1. Paste the full message content — the more complete, the better the read
+2. Add sender context if you have it (email address, phone number, platform)
+3. Say whether you've already clicked, replied, entered a password or code, shared information, or sent money — the response is built around this
+4. Click 'Check This Message' — get a plain-language read, why it looks concerning, and what to do right now
+5. Verify using a channel the message doesn't control — never its own link, phone number, or contact address
+6. If you already interacted, follow the guidance built specifically for what happened rather than a generic checklist
 
 **Tips.**
 
-- Paste the full message including subject lines, headers, and sender details — partial pastes get less accurate results
-- The sender context field is especially powerful: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'
-- LIKELY SAFE doesn't mean definitely safe — always verify through official channels before clicking links or providing information
-- Scan history is saved — previous scans appear below the input so you can compare patterns
-- Works across 12 languages — paste messages in any language and ScamRadar analyzes in context
+- Paste the full message including subject lines, headers, and sender details — partial pastes get a thinner read
+- The sender context field matters: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'
+- 'No clear scam signs' doesn't mean verified safe — it means nothing concerning was found in what you pasted. Verify independently before acting on any sensitive request regardless of the read
+- Recent checks are saved so you can compare patterns across messages
+- Works in any language — paste a message in your own language and Scam Radar analyzes it in context
 
 **Example.**
 
-Input: You receive an urgent email claiming your bank account has been suspended. You paste the full email body and include the sender address. ScamRadar identifies it as Authority Impersonation phishing at 96% confidence, flags the fake domain, urgency language, and sensitive data request as red flags, and tells you to report it to your bank and delete it without clicking anything.
+Input: You receive an urgent email claiming your account has been suspended, asking for your password and Social Security number within 24 hours. You paste the full email body and the sender address. You haven't clicked anything yet.
 
-Output: Verdict: SCAM (96% confidence). Scam type: Phishing. Red flags: fake domain 'bankofamerica-secure.net', 24-hour deadline pressure, request for SSN and card number. Techniques: Urgency / time pressure, Authority impersonation, Request for sensitive data. Action: Report to bank, forward to reportphishing@apwg.org, delete.
+Output: The read: likely scam. Why it's concerning: a look-alike sender domain substituting a digit for a letter, a high-risk request for card and identity details through the message's own link, and an artificial 24-hour deadline. What to do right now: don't use the link, and if you have an account with the company named, open its app or type its known website yourself and check there. How to verify it: never through the email itself — use contact information you already trust or find independently.
 
 ### Subscription Tamer
 

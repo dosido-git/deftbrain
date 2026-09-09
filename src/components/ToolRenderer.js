@@ -23,6 +23,7 @@ const TOOL_ALIASES = {
   PlotHole: 'PlotHoleFinder', // renamed 2026-09-06
   PlotTwist: 'DecisionPrism', // renamed 2026-09-06
   PreMortem: 'BreakMyPlan', // renamed 2026-09-07
+  SensoryMinefieldMapper: 'SensoryScout', // renamed 2026-09-09
 };
 
 const ToolRenderer = ({ college }) => {

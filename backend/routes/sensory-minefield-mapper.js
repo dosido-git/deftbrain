@@ -1,190 +1,656 @@
+// sensory-minefield-mapper.js
+//
+// V3 rewrite (2026-09-09, full owner-supplied spec) — display renamed to
+// Sensory Scout (src/tools/SensoryScout.js, tools.js id "SensoryScout"); this
+// backend route file, every endpoint path, and the i18n prefix (`smm_`)
+// deliberately keep the old name, per the standing naming-consistency rule
+// (see audit/RENAMES.md — same treatment as BeforeHello/GravityWell,
+// ConceptCoach/IdeaAutopsy, etc.).
+//
+// The v2 tool was pitched as an environmental forecasting service: it
+// predicted crowd density, noise, lighting, smells, and temperature by time
+// of day; invented a whole building's layout (quietest spots, exit
+// locations, restroom locations, fresh-air spots); named a "better time to
+// go" and a crowd-comparison percentage from nothing but the place type;
+// called itself a "live rescan" when it cannot sense anything; and generated
+// nearby "alternative places" by name with no search capability behind it.
+// See audit/tool-notes/SENSORYMINEFIELDMAPPER-NOTES.md for the full record.
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
-const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
+function cleanString(value, max = 4000) {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, max);
+}
+
+function collectProseFields(parsed) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  return fields;
+}
+
+// ── Shared epistemic contract, composed with each mode's own section. ──
+const CORE_SYSTEM = `SENSORY SCOUT
+
+ROLE
+
+Help someone prepare for the sensory demands of a place or route.
+
+Your job is to turn:
+
+- what the visitor knows
+- what matters to them
+- reasonable possibilities associated with the setting
+
+into a practical preparation plan.
+
+You are NOT a live environmental sensor, occupancy tracker, building
+database, accessibility directory, floor-plan service, or prediction engine.
+
+Do not pretend to know what a particular place will be like unless that
+information was:
+
+1. supplied by the visitor, or
+2. obtained from a current verified source available to the tool.
+
+NORTH STAR
+
+PREPARE FOR WHAT MIGHT MATTER. DO NOT INVENT THE PLACE.
+
+EVIDENCE MODEL
+
+Internally distinguish: KNOWN (directly supplied by the visitor, or verified
+for this specific place), REASONABLE POSSIBILITY (plausibly encountered in
+this type of setting, not established for this particular place), UNKNOWN
+(the available information cannot establish it), VISITOR PREFERENCE /
+CONSTRAINT (something the visitor says matters to them).
+
+Never silently convert: TYPE OF PLACE → FACT ABOUT THIS PLACE, TIME OF DAY →
+CROWD PREDICTION, DATE → OPERATING CONDITIONS, HOSPITAL → FLUORESCENT
+LIGHTING, RESTAURANT → LOUD MUSIC, AIRPORT → LONG LINES, GYM → STRONG
+CLEANING SMELLS, MALL → BRIGHT LIGHTING, PAST EXPERIENCE → GUARANTEED FUTURE
+CONDITION.
+
+NO FAKE ENVIRONMENTAL FORECAST
+
+Do not generate LOW / MODERATE / HIGH overall sensory intensity unless it is
+explicitly framed as a summary of the visitor's established information
+rather than a prediction. Prefer "what may be worth preparing for."
+
+Do not predict crowd density, queue length, occupancy, noise level, lighting
+level, smell intensity, temperature, waiting time, traffic, parking
+availability, staff behavior, or appointment delays from general world
+knowledge. Do not generate numerical sensory scores or confidence
+percentages.
+
+PLACE-TYPE REASONING
+
+You MAY use ordinary domain knowledge to identify POSSIBILITIES, never
+specifics. Good: "Waiting areas can use overhead lighting, so if bright light
+is difficult for you, it may be worth bringing whatever light-reduction
+option already works for you." Bad: "The waiting room has bright
+clinical-white fluorescent panels and no natural light." The first helps
+prepare; the second invents architecture.
+
+TIME OF DAY
+
+Time may be used only when it interacts with something actually known.
+Supported: "Because you're going during the period you said is usually
+crowded, plan for that possibility." Not supported: "5:30 is peak
+grocery-store traffic." Do not manufacture quieter/busier periods from
+generic assumptions.
+
+PAST EXPERIENCE
+
+Past experience is valuable evidence but is not a guarantee. "Last time I
+waited two hours" supports "preparing for another long wait may be useful,"
+never "plan for two hours" or "it always runs late" or "today's appointment
+will be delayed."
+
+SENSORY FACTORS
+
+Only discuss factors the visitor selected or factors clearly relevant to
+something they supplied, from: noise, crowds, lighting, smells, temperature,
+visual activity, personal space, waiting, arrival/parking, other. Do not
+force every factor into every result — a short result focused on two
+concerns is better than an encyclopedia.
+
+RECOMMENDATIONS
+
+Low burden, reversible where possible, grounded in the visitor's concern, and
+useful even if the anticipated condition never occurs. Do not prescribe a
+coping technique as though it works for everyone.
+
+DO NOT INVENT PERSONAL SENSORY RESPONSES
+
+Selecting a concern like NOISE does not establish auditory sensitivity,
+sensory processing disorder, autism, ADHD, migraine, anxiety,
+hypervigilance, overwhelm, shutdown, or meltdown. Use the visitor's own
+language. Good: "You said noise is something you want to plan around." Bad:
+"Because your nervous system is sensitive to unpredictable sound..."
+
+PROFILES
+
+A saved profile is a preference preset, not a diagnosis. A profile named
+"Migraine day" does not authorize inferring symptoms, severity, triggers,
+medications, disability status, or medical needs — use only what is actually
+stored in it.
+
+ACCOMMODATIONS / REQUESTS
+
+You may help the visitor ask for something. Do not promise that a venue has
+a quiet room, can change lighting, will permit early entry, can alter music,
+offers sensory accommodations, will allow waiting elsewhere, can call/text
+the visitor, or has accessible seating — unless verified. Do not claim
+entitlement unless a verified legal/policy basis is available.
+
+LAYOUT
+
+Do not invent perimeter seating, central seating banks, check-in locations,
+speaker locations, vents, windows, bathrooms, exits, corridors, quiet
+corners, sanitizer locations, or parking layout. Use conditional navigation
+instead: "If you have a choice of seats, look at the available options and
+choose the one that best fits what matters to you." Use verified maps or
+supplied descriptions when they exist.
+
+BETTER TIME TO GO
+
+Only recommend a different time when supported by the visitor's own
+experience, verified venue information, verified reservation/occupancy
+information, or explicit scheduling constraints. Do not claim staff are more
+attentive, queues shorter, rooms calmer, or backlogs smaller at a particular
+time without evidence.
+
+VOICE
+
+Write directly to the visitor as "you." Calm, practical, non-clinical,
+specific without pretending certainty. Do not narrate the visitor's internal
+state. Avoid "overstimulated," "dysregulated," "sensory overload,"
+"triggered," "grounding," "nervous system," "shutdown," "meltdown" unless the
+visitor uses that language or it is necessary to accurately describe their
+request. Do not make ordinary preferences sound like diagnoses. Do not
+prescribe "go to the bathroom and lock the door" — you don't know whether a
+bathroom exists nearby, is private, or whether leaving and returning is
+possible; prefer "if you need a break, first consider what you can change
+without creating a new problem."
+
+FINAL AUDIT
+
+Before returning, check: did you invent a physical feature of the place; predict
+crowding, noise, lighting, smells, temperature, waiting, or staff behavior
+without evidence; infer a diagnosis or sensory condition; turn the place type
+into a fact about this place; turn one past experience into a future
+prediction; recommend leaving despite a supplied constraint against leaving;
+invent an accommodation; prescribe a coping technique as though it works for
+everyone; generate a "better time" without evidence; imply you can sense
+current conditions; invent layout information. Revise if any answer reveals
+overreach.
+
+NORTH STAR: THE VISITOR KNOWS WHAT BOTHERS THEM. HELP THEM PREPARE WITHOUT
+PRETENDING YOU KNOW THE ROOM.`;
+
+function section(body) {
+  return `${CORE_SYSTEM}\n\n${body}\n\n${NO_QUOTE_RULE}`;
+}
+
+const OUTPUT_GUARD = {
+  prohibit: [
+    'numeric_or_categorical_intensity_score_not_framed_as_a_summary_of_supplied_info',
+    'invented_physical_layout_feature_of_the_place',
+    'crowd_noise_lighting_smell_temperature_or_wait_predicted_without_evidence',
+    'diagnosis_or_sensory_condition_inferred_from_a_selected_concern',
+    'place_type_converted_into_a_fact_about_this_specific_place',
+    'one_past_visit_converted_into_a_guaranteed_future_condition',
+    'better_time_to_go_recommended_without_evidence',
+    'invented_venue_accommodation_or_policy',
+    'coping_technique_prescribed_as_universally_effective',
+    'leaving_recommended_despite_a_supplied_constraint_against_it',
+    'named_specific_alternative_venue_with_no_search_capability',
+  ],
+  require: ['fulfills_tool_promise'],
+};
 
 // ═══════════════════════════════════════════════════════════════
-// MAIN — preview a location before visiting
+// MAIN — prepare for a place
 // ═══════════════════════════════════════════════════════════════
+const MAIN_SYSTEM = section(`PREPARE FOR A PLACE
+
+The visitor is going somewhere and wants a preparation plan, not a forecast.
+They may supply: where, what kind of place (optional), when (optional), what
+they'd like help with (one or more sensory factors), what they already know
+about the place, and anything else relevant. Missing fields are simply
+missing — do not fill them with assumptions.
+
+Return ONLY valid JSON:
+{
+  "summary": {
+    "heading": "the place, in a few words — no invented detail",
+    "one_liner": "one sentence orienting the visitor, grounded only in what they supplied"
+  },
+  "what_you_know": ["a fact the visitor actually supplied or that is independently verified — restated plainly, not reinterpreted"],
+  "worth_preparing_for": [
+    {
+      "factor": "one of: Noise, Crowds, Lighting, Smells, Temperature, Visual activity, Personal space, Waiting, Arrival/Parking, Other",
+      "basis": "USER_SUPPLIED|GENERAL_POSSIBILITY|VERIFIED",
+      "what_might_matter": "one sentence — a possibility, not a prediction, when basis is GENERAL_POSSIBILITY",
+      "prepare": ["a low-burden, reversible thing to do — at most 2 per factor"]
+    }
+  ],
+  "before_you_go": ["a prep step — grounded in what was supplied, not generic"],
+  "while_youre_there": ["a practical in-the-moment step"],
+  "things_you_could_ask": [
+    { "situation": "when this would come up — one sentence", "script": "words the visitor could actually say, asking rather than assuming an answer" }
+  ],
+  "backup_plan": ["a step to take if something is harder than expected — must not contradict a stated constraint (e.g. cannot leave without losing a place in line)"],
+  "unknowns_that_matter": ["something genuinely unknown that matters for this visit — never filled with a generic scam-style assumption"]
+}
+
+Only include factors the visitor selected, or one clearly implied by
+something they supplied. Omit empty sections. Do not manufacture enough
+content to populate every section — a short, honest result beats a complete-
+looking fabricated one.`);
+
+router.outputStandard = 'v2';
+router.outputGuard = OUTPUT_GUARD;
 
 router.post('/sensory-minefield-mapper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { location, visitDateTime, placeType, concerns, specificNotes, pastVisits, userLanguage } = req.body;
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const location = cleanString(req.body.location, 200);
+    const placeType = cleanString(req.body.placeType, 60);
+    const visitDateTime = cleanString(req.body.visitDateTime, 100);
+    const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
+    const knownInfo = cleanString(req.body.knownInfo, 1500);
+    const specificNotes = cleanString(req.body.specificNotes, 1500);
+    const profileNotes = cleanString(req.body.profileNotes, 1000);
+    const pastVisits = Array.isArray(req.body.pastVisits) ? req.body.pastVisits.slice(0, 3) : [];
 
-    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
-    if (!visitDateTime) return res.status(400).json({ error: 'Visit date and time are required' });
-    if (!placeType) return res.status(400).json({ error: 'Place type is required' });
-    if (!concerns?.length) return res.status(400).json({ error: 'Select at least one concern' });
+    if (!location) return res.status(400).json({ error: 'Tell us where you’re going.' });
 
-    const pastBlock = pastVisits?.length
-      ? `\nPAST VISITS TO THIS LOCATION:\n${pastVisits.slice(0, 3).map(v => `- ${v.date}: Rating ${v.rating}/5. Notes: ${v.notes}`).join('\n')}`
+    const pastBlock = pastVisits.length
+      ? `\nPAST EXPERIENCE AT THIS PLACE (evidence, not a guarantee): ${pastVisits.map(v => `${v.summary || v.notes || ''}`).filter(Boolean).join(' | ')}`
       : '';
 
-    const prompt = `You are a location scout helping someone preview what a place will be like before they visit. Many people like to know what to expect — how busy it'll be, how loud, what the vibe is, where to find quiet spots, and what to do if it's more intense than expected. This is practical planning, not medical advice.
-
-LOCATION: ${location}
-VISIT TIME: ${visitDateTime}
-PLACE TYPE: ${placeType}
-WHAT THEY CARE ABOUT: ${concerns.join(', ')}
-${specificNotes ? `SPECIFIC NOTES: ${specificNotes}` : ''}
-${pastBlock}
-
-Analyze this specific location and time combination. Be concrete and practical — predict actual conditions, not generic advice.
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON:
-{
-  "location_summary": {
-    "name": "Location name — 3-6 words",
-    "visit_time": "When they plan to go — one sentence",
-    "intensity_rating": "low / moderate / high / intense",
-    "intensity_explanation": "One sentence explaining the rating for this specific time",
-    "vibe": "Brief 5-7 word vibe description"
-  },
-  "factors": [
-    {
-      "factor": "Exactly one of these and nothing else: Noise, Crowds, Lighting, Smells, Visual Clutter, Temperature",
-      "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB') — one sentence",
-      "concern_level": "low | medium | high",
-      "peak_zones": ["Areas where this factor is worst"],
-      "avoid_times": ["Times when this factor spikes"],
-      "tips": ["Practical tip 1", "Practical tip 2"]
-    }
-  ],
-  "best_time": {
-    "recommended": "Best day and time to visit, e.g. 'Wednesday 8:00-9:00 AM'",
-    "why": "Why this time is better — one sentence",
-    "crowd_comparison": "How much less busy vs their chosen time — one sentence"
-  },
-  "layout_intel": {
-    "quietest_spots": [
-      { "area": "Area name. Nothing else.", "where": "How to find it — one sentence", "why_quiet": "Why it's calm — one sentence" }
-    ],
-    "exits": [
-      { "name": "Exit name — 3-6 words", "location": "Where it is. Nothing else.", "note": "Any relevant detail — one sentence" }
-    ],
-    "restrooms": [
-      { "location": "Where", "note": "One short note about the space, such as whether it is private or step-free" }
-    ],
-    "fresh_air": [
-      { "spot": "Where to step outside — one sentence", "note": "Covered? Seating? — one sentence" }
-    ]
-  },
-  "game_plan": {
-    "before": ["Prep step 1", "Prep step 2", "Prep step 3"],
-    "during": ["During tip 1", "During tip 2", "During tip 3"],
-    "if_overwhelming": "One clear sentence: what to do if it's too much — one sentence",
-    "time_limit": "Suggested max time to spend — one sentence"
-  },
-  "accommodation_scripts": [
-    {
-      "situation": "What you might need — one sentence",
-      "script": "Exact words to say — 2-4 sentences",
-      "likelihood": "Exactly one of these and nothing else: high, medium, low"
-    }
-  ],
-  "check_in_prompts": [
-    "Quick self-check question 1",
-    "Quick self-check question 2",
-    "Quick self-check question 3",
-    "Quick self-check question 4"
-  ],
-  "backup_plan": "One clear sentence: if this doesn't work, here's plan B — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+    const supplied = `WHERE: ${location}
+${placeType ? `WHAT KIND OF PLACE: ${placeType}\n` : ''}${visitDateTime ? `WHEN: ${visitDateTime}\n` : ''}WHAT THEY'D LIKE HELP WITH: ${concerns.length ? concerns.join(', ') : 'not specified'}
+${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${specificNotes ? `ANYTHING ELSE: ${specificNotes}\n` : ''}${profileNotes ? `SAVED PROFILE NOTES (a preference preset, not a diagnosis): ${profileNotes}\n` : ''}${pastBlock}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      max_tokens: 4500,
+      system: withLanguage(MAIN_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
     }, { label: 'sensory-minefield-mapper' });
-    if (!parsed.location_summary && !parsed.risks) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
-    }
-    res.json(parsed);
 
+    if (!parsed?.summary) {
+      return res.status(500).json({ error: 'Could not build a plan. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Help the visitor prepare for the sensory demands of a specific place using only what they supplied, plus general, clearly-labeled possibilities for that type of setting — never inventing crowd, noise, lighting, or layout facts about this specific place.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
   } catch (error) {
-    console.error('[SceneScout] Error:', error);
+    console.error('[SensoryScout]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ═══════════════════════════════════════════════════════════════
-// ALTERNATIVES — suggest better times or similar places
+// ROUTE — prepare for a route with multiple stops
 // ═══════════════════════════════════════════════════════════════
+const ROUTE_SYSTEM = section(`PREPARE FOR A ROUTE
+
+The visitor has a route with 2-5 stops. Route mode must NOT fabricate
+conditions along the route or at any stop. Do not invent construction,
+traffic, crowds, lighting, noise, sidewalk conditions, transit occupancy,
+station layout, elevators, parking, or rest areas. Do not rank stops by an
+invented "cumulative energy" score — energy over a route is real, but you
+have no way to measure it; instead, if the visitor mentions feeling drained
+by prior stops or a similar constraint, reflect that back as their own
+observation, not a computed metric.
+
+Return ONLY valid JSON:
+{
+  "route_summary": { "heading": "route or trip name, a few words", "one_liner": "one sentence, grounded only in what was supplied" },
+  "stops": [
+    {
+      "stop": "the stop's name, as supplied",
+      "what_you_know": ["fact actually supplied about this stop"],
+      "worth_preparing_for": [
+        { "factor": "one of: Noise, Crowds, Lighting, Smells, Temperature, Visual activity, Personal space, Waiting, Arrival/Parking, Other", "basis": "USER_SUPPLIED|GENERAL_POSSIBILITY", "what_might_matter": "one sentence", "prepare": ["a low-burden step"] }
+      ]
+    }
+  ],
+  "before_you_leave": ["a prep step for the whole route"],
+  "backup_plan": ["what to do if the route becomes too much partway through, respecting any supplied constraint"],
+  "unknowns_that_matter": ["something genuinely unknown for this route"]
+}
+
+Only include a stop's "worth_preparing_for" entries for factors the visitor
+selected or clearly implied. Omit empty sections.`);
+
+router.post('/sensory-minefield-mapper/route', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const stops = Array.isArray(req.body.stops) ? req.body.stops.slice(0, 5) : [];
+    const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
+    const specificNotes = cleanString(req.body.specificNotes, 1500);
+    const knownInfo = cleanString(req.body.knownInfo, 1500);
+    const travelMode = cleanString(req.body.travelMode, 60);
+    const when = cleanString(req.body.when, 100);
+
+    const validStops = stops.filter(s => cleanString(s?.location, 200));
+    if (validStops.length < 2) return res.status(400).json({ error: 'Add at least 2 stops.' });
+
+    const stopsBlock = validStops.map((s, i) => `${i + 1}. ${cleanString(s.location, 200)}`).join('\n');
+
+    const supplied = `STOPS (in the order supplied):\n${stopsBlock}
+${travelMode ? `HOW THEY'RE TRAVELING: ${travelMode}\n` : ''}${when ? `WHEN: ${when}\n` : ''}WHAT THEY'D LIKE HELP WITH: ${concerns.length ? concerns.join(', ') : 'not specified'}
+${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE ROUTE: ${knownInfo}\n` : ''}${specificNotes ? `ANYTHING ELSE: ${specificNotes}` : ''}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 4500,
+      system: withLanguage(ROUTE_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
+    }, { label: 'sensory-minefield-mapper-route' });
+
+    if (!parsed?.route_summary) {
+      return res.status(500).json({ error: 'Could not build a route plan. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper-route',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Help the visitor prepare for a multi-stop route using only what they supplied about each stop — never inventing traffic, crowd, or layout conditions along the way.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('[SensoryScout/route]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// CONDITIONS CHANGED — was "rescan" / "I'm here — rescan". The model
+// cannot sense the environment; the visitor is the sensor.
+// ═══════════════════════════════════════════════════════════════
+const RESCAN_SYSTEM = section(`CONDITIONS CHANGED
+
+The visitor is at the place now and something differs from what they
+prepared for. They report what changed; adapt the plan from THEIR
+observation. Do not call this a live scan or imply you can sense anything —
+you are working from what they just told you. Respect any constraint they
+already gave (e.g. cannot leave without losing their place).
+
+Return ONLY valid JSON:
+{
+  "acknowledgment": "one sentence reflecting back what the visitor reported, not a re-prediction",
+  "adjusted_plan": ["a specific, low-burden next step responding to what they reported"],
+  "still_applies_from_before": ["something from the original plan that's still useful, if anything genuinely is"],
+  "if_still_hard": "one sentence: the next thing to try if this doesn't help, respecting any stated constraint"
+}
+
+Omit "still_applies_from_before" if nothing from before is still relevant.`);
+
+router.post('/sensory-minefield-mapper/rescan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const location = cleanString(req.body.location, 200);
+    const whatChanged = Array.isArray(req.body.whatChanged) ? req.body.whatChanged.slice(0, 10) : [];
+    const otherText = cleanString(req.body.otherText, 500);
+    const originalPlanSummary = cleanString(req.body.originalPlanSummary, 1000);
+    const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
+
+    if (!whatChanged.length && !otherText) return res.status(400).json({ error: 'Tell us what changed.' });
+
+    const supplied = `LOCATION: ${location || 'not specified'}
+WHAT CHANGED: ${whatChanged.length ? whatChanged.join(', ') : 'see below'}${otherText ? ` — ${otherText}` : ''}
+THEY WERE PLANNING AROUND: ${concerns.length ? concerns.join(', ') : 'general comfort'}
+${originalPlanSummary ? `ORIGINAL PLAN SUMMARY: ${originalPlanSummary}` : ''}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2000,
+      system: withLanguage(RESCAN_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
+    }, { label: 'sensory-minefield-mapper-rescan' });
+
+    if (!parsed?.acknowledgment) {
+      return res.status(500).json({ error: 'Could not adjust the plan. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper-rescan',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Adjust the visitor’s plan based only on what they just reported has changed, respecting any constraint they already gave.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('[SensoryScout/rescan]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMFORT KIT — personalized packing checklist
+// ═══════════════════════════════════════════════════════════════
+const COMFORT_KIT_SYSTEM = section(`COMFORT KIT
+
+Build a packing checklist personalized to the visitor's selected concerns
+and what they supplied — not a generic list. Do not claim an item regulates
+the nervous system, prevents overwhelm, grounds the visitor, prevents
+migraine, or reduces anxiety unless the visitor described that effect
+themselves. Prefer "something you already know helps" over inventing why an
+item works.
+
+Return ONLY valid JSON:
+{
+  "essentials": [{ "item": "item name only", "why": "why for this specific outing", "priority": "must_have|nice_to_have" }],
+  "comfort_items": [{ "item": "item name only", "why": "why it helps with their specific concern", "priority": "must_have|nice_to_have" }],
+  "just_in_case": [{ "item": "item name only", "why": "when it might be needed" }],
+  "quick_note": "one practical packing tip for this specific outing"
+}
+
+Omit any section with nothing genuine to include.`);
+
+router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
+    const placeType = cleanString(req.body.placeType, 60);
+    const specificNotes = cleanString(req.body.specificNotes, 1000);
+
+    if (!concerns.length) return res.status(400).json({ error: 'Select at least one thing you’d like help with first.' });
+
+    const supplied = `GOING TO: ${placeType || 'an outing'}
+THEY'D LIKE HELP WITH: ${concerns.join(', ')}
+${specificNotes ? `NOTES: ${specificNotes}` : ''}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2000,
+      system: withLanguage(COMFORT_KIT_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
+    }, { label: 'sensory-minefield-mapper-comfort-kit' });
+
+    if (!parsed?.essentials && !parsed?.comfort_items) {
+      return res.status(500).json({ error: 'Could not build a packing list. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper-comfort-kit',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Suggest a packing checklist personalized to what the visitor selected, without claiming any item has a therapeutic or regulatory effect they did not describe themselves.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('[SensoryScout/comfort-kit]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// IF THIS ISN'T WORKABLE — was "alternatives". No live/local search
+// capability exists, so this describes qualities to look for rather than
+// naming specific nearby places.
+// ═══════════════════════════════════════════════════════════════
+const ALTERNATIVES_SYSTEM = section(`IF THIS ISN'T WORKABLE — JSON API, not a conversation
+
+This is a DIFFERENT task from preparing for a place. Do NOT produce a
+preparation plan, a factor-by-factor breakdown (Noise/Crowds/Lighting/etc.),
+or anything resembling "worth_preparing_for" — that is a different endpoint's
+job. This endpoint answers exactly one question: if this place doesn't work
+out, what should the visitor look for instead?
+
+You are a JSON API endpoint. The caller is software, not the visitor
+directly — your entire output is machine-parsed as JSON and never shown
+as-is. Any word outside the JSON object breaks the caller.
+
+The visitor is deciding this place or plan may not work. Without live/local
+search, do not invent nearby alternatives by name — and do not invent
+specific physical features of THIS place ("a corner seat away from the main
+corridor," "a secondary waiting area") to describe what an alternative
+should have. "look_for" items must describe qualities portable to ANY
+alternative venue (quieter seating, outdoor space, a shorter typical wait) —
+never a feature that only makes sense as a description of the specific place
+the visitor is trying to avoid.
+
+Output exactly this shape, nothing before the opening { and nothing after
+the closing }:
+{"look_for":["a concrete, portable quality — e.g. quieter seating, outdoor space, shorter expected wait"],"other_options":["a generic category not tied to this visit — e.g. delivery, an online equivalent, rescheduling"],"note":"one practical sentence"}`);
 
 router.post('/sensory-minefield-mapper/alternatives', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { location, placeType, visitDateTime, concerns, analysisContext, userLanguage } = req.body;
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const location = cleanString(req.body.location, 200);
+    const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
+    const analysisContext = req.body.analysisContext && typeof req.body.analysisContext === 'object' ? req.body.analysisContext : null;
 
-    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
+    if (!location) return res.status(400).json({ error: 'Location is required.' });
 
-    const prompt = `Someone previewed a location and it looks too intense. Suggest alternatives — either different times for the same place, similar places nearby that might be calmer, or online/delivery options.
-
-ORIGINAL PLAN: ${location} (${placeType}) at ${visitDateTime}
-THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
-INTENSITY RATING: ${analysisContext?.location_summary?.intensity_rating || 'unknown'}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON:
-{
-  "better_times": [
-    {
-      "when": "Specific day and time — one sentence",
-      "why_better": "Why this time is calmer — one sentence",
-      "estimated_intensity": "low / moderate"
-    }
-  ],
-  "alternative_places": [
-    {
-      "name": "Alternative location name — 3-6 words",
-      "type": "What kind of place. Nothing else.",
-      "why_better": "Why it might be less intense — one sentence",
-      "trade_off": "What you give up by going here instead — one sentence"
-    }
-  ],
-  "skip_it_options": [
-    {
-      "option": "Online/delivery/other alternative. Nothing else.",
-      "how": "How to do it — one sentence",
-      "note": "Any relevant detail — one sentence"
-    }
-  ],
-  "bottom_line": "One practical recommendation sentence — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+    const supplied = `ALTERNATIVES REQUEST — this is not a request to prepare for the place below; it is a request for what to look for INSTEAD of it. Respond with the look_for/other_options/note JSON only.
+PLACE THE VISITOR IS MOVING AWAY FROM: ${location}
+CONCERNS: ${concerns.length ? concerns.join(', ') : 'general comfort'}
+${analysisContext?.summary?.one_liner ? `PREVIOUS PLAN SUMMARY: ${analysisContext.summary.one_liner}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      max_tokens: 2000,
+      system: withLanguage(ALTERNATIVES_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
     }, { label: 'sensory-minefield-mapper-alternatives' });
-    if (!parsed.better_times) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
-    }
-    res.json(parsed);
 
+    if (!parsed?.look_for) {
+      return res.status(500).json({ error: 'Could not put this together. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper-alternatives',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Help the visitor define what to look for in an alternative without inventing a specific nearby venue the tool has no way to know exists.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
   } catch (error) {
-    console.error('[SceneScout/alternatives] Error:', error);
+    console.error('[SensoryScout/alternatives]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ═══════════════════════════════════════════════════════════════
-// COMPANION SUMMARY — shareable brief for whoever you're with
+// HELP ME ASK FOR SOMETHING — a single script for a situation not already
+// covered by the main plan's things_you_could_ask.
 // ═══════════════════════════════════════════════════════════════
+const ASK_SCRIPT_SYSTEM = section(`HELP ME ASK FOR SOMETHING
 
+The visitor needs words for one specific situation right now. Write one
+script grounded only in what they described — never promising the venue will
+grant it.
+
+Return ONLY valid JSON:
+{
+  "situation": "restate what they described, one sentence",
+  "script": "words the visitor could actually say, asking rather than assuming an answer"
+}`);
+
+router.post('/sensory-minefield-mapper/ask-script', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const need = cleanString(req.body.need, 500);
+    const location = cleanString(req.body.location, 200);
+
+    if (!need) return res.status(400).json({ error: 'Describe what you need to ask about.' });
+
+    const supplied = `WHAT THEY NEED TO ASK ABOUT: ${need}
+${location ? `LOCATION: ${location}` : ''}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 800,
+      system: withLanguage(ASK_SCRIPT_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: supplied }],
+    }, { label: 'sensory-minefield-mapper-ask-script' });
+
+    if (!parsed?.script) {
+      return res.status(500).json({ error: 'Could not write that. Please try again.' });
+    }
+
+    await runOutputGuard(parsed, {
+      label: 'sensory-minefield-mapper-ask-script',
+      fields: collectProseFields(parsed),
+      supplied,
+      promise: 'Write one script for the specific thing the visitor needs to ask about, without promising the venue will agree to it.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('[SensoryScout/ask-script]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMPANION SUMMARY — unchanged in this pass. Not addressed by the
+// supplied rewrite spec, and the new frontend's landing/result screens
+// (per the supplied mocks) do not surface a "share with companion" button,
+// so this endpoint is no longer called from the UI. Left intact rather than
+// deleted — see audit/tool-notes/SENSORYMINEFIELDMAPPER-NOTES.md for why.
+// ═══════════════════════════════════════════════════════════════
 router.post('/sensory-minefield-mapper/companion-summary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, location, concerns, gamePlan, companionName, userLanguage } = req.body;
@@ -224,203 +690,12 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'sensory-minefield-mapper-companion-summary' });
     if (!parsed.message_casual) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
-    console.error('[SceneScout/companion] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// QUICK RESCAN — adjust strategy when already at the location
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/sensory-minefield-mapper/rescan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { location, placeType, originalPrediction, currentConditions, concerns, userLanguage } = req.body;
-
-    if (!location?.trim()) return res.status(400).json({ error: 'Location is required' });
-    if (!currentConditions?.trim()) return res.status(400).json({ error: 'Describe current conditions' });
-
-    const prompt = `Someone is AT a location right now and conditions are different from what they expected. Give them a quick, calm adjusted strategy. No preamble — they need actionable advice fast.
-
-LOCATION: ${location} (${placeType || 'unknown type'})
-ORIGINAL PREDICTION: ${originalPrediction || 'moderate intensity'}
-WHAT THEY'RE EXPERIENCING: ${currentConditions}
-THEIR CONCERNS: ${concerns?.join(', ') || 'comfort'}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON:
-{
-  "quick_assessment": "One sentence: how this compares to what was expected",
-  "adjusted_intensity": "low | moderate | high | intense",
-  "immediate_actions": ["Do this right now", "Then this", "And this"],
-  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving",
-  "if_staying": "Practical advice for making it work — one sentence",
-  "nearest_relief": "Where to go for a quick reset (bathroom, outside, quiet corner) — one sentence",
-  "revised_time_limit": "How long you should plan to stay given conditions — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    }, { label: 'sensory-minefield-mapper-rescan' });
-    if (!parsed.quick_assessment) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[SceneScout/rescan] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// ROUTE — plan a multi-stop trip with cumulative energy modeling
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/sensory-minefield-mapper/route', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { stops, concerns, specificNotes, userLanguage } = req.body;
-
-    if (!stops?.length || stops.length < 2) return res.status(400).json({ error: 'Need at least 2 stops' });
-    if (stops.length > 5) return res.status(400).json({ error: 'Max 5 stops per route' });
-
-    const stopsBlock = stops.map((s, i) =>
-      `${i + 1}. ${s.location} (${s.placeType})${s.time ? ` around ${s.time}` : ''}`
-    ).join('\n');
-
-    const prompt = `Someone has multiple stops to make today. Analyze the full route considering that energy is CUMULATIVE — a moderate stop after two other moderate stops feels intense. Your job: optimal order, where to put breaks, and when to call it.
-
-STOPS:
-${stopsBlock}
-
-THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
-${specificNotes ? `NOTES: ${specificNotes}` : ''}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON:
-{
-  "route_summary": {
-    "total_stops": ${stops.length},
-    "estimated_total_time": "Total hours including travel and breaks — one sentence",
-    "overall_difficulty": "manageable | challenging | ambitious",
-    "recommendation": "One sentence summary"
-  },
-  "optimal_order": [
-    {
-      "order": 1,
-      "location": "Stop name. Nothing else.",
-      "place_type": "Type",
-      "intensity": "low / moderate / high",
-      "cumulative_energy": "fresh | fine | draining | depleted",
-      "suggested_time": "When to go — one sentence",
-      "time_limit": "Max time here — one sentence",
-      "why_this_order": "Brief reason — one sentence",
-      "key_tip": "One practical tip — one sentence"
-    }
-  ],
-  "breaks": [
-    {
-      "after_stop": 1,
-      "type": "Exactly one of these and nothing else: quick_reset, proper_break, meal_break",
-      "duration": "5-10 min",
-      "suggestion": "What to do during break — one sentence"
-    }
-  ],
-  "cut_point": {
-    "after_stop": 2,
-    "explanation": "If you're feeling drained after stop 2, skip the rest and do them another day — 1-2 sentences",
-    "reschedule_suggestion": "Best time to do remaining stops — one sentence"
-  },
-  "comfort_items": ["Item to bring for this specific route"],
-  "route_backup": "If the whole route feels too much: one sentence plan B"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    }, { label: 'sensory-minefield-mapper-route' });
-    if (!parsed.route_summary) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[SceneScout/route] Error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// COMFORT KIT — dynamic packing checklist
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { concerns, placeType, visitTime, specificNotes, duration, userLanguage } = req.body;
-
-    if (!concerns?.length) return res.status(400).json({ error: 'Concerns are required' });
-
-    const prompt = `Generate a practical packing checklist for someone heading out. This should be specific to what they care about and where they're going — not a generic list.
-
-GOING TO: ${placeType || 'general outing'}
-TIME: ${visitTime || 'daytime'}
-ESTIMATED DURATION: ${duration || 'unknown'}
-THEIR CONCERNS: ${concerns.join(', ')}
-${specificNotes ? `NOTES: ${specificNotes}` : ''}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON:
-{
-  "essentials": [
-    { "item": "Item name. Nothing else.", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have" }
-  ],
-  "comfort_items": [
-    { "item": "Item name. Nothing else.", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have" }
-  ],
-  "just_in_case": [
-    { "item": "Item name. Nothing else.", "why": "When you might need it — one sentence" }
-  ],
-  "car_stash": [
-    { "item": "Item to keep in the car. Nothing else.", "why": "For recovery after — one sentence" }
-  ],
-  "quick_note": "One practical packing tip for this type of outing — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
-
-Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    }, { label: 'sensory-minefield-mapper-comfort-kit' });
-    if (!parsed.essentials) {
-      return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[SceneScout/comfort-kit] Error:', error);
+    console.error('[SensoryScout/companion]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

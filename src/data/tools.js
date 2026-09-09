@@ -5035,49 +5035,50 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-03-24",
-  id: "SensoryMinefieldMapper",
+  modified: "2026-09-09",
+  id: "SensoryScout",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before going somewhere that might be too much.",
-    give: "Where, when, the kind of place, and what you're sensitive to. Save a profile once.",
-    get: "Expected conditions, the best time to go, where to retreat to, and an exit plan.",
-    edge: "It predicts the environment before you're in it, so the decision isn't made while overwhelmed.",
+    when: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle.",
+    give: "What matters to you and whatever you already know about the place. Save a profile once.",
+    get: "What may be worth preparing for, practical steps, words to ask for what you need, and a backup plan.",
+    edge: "It won't predict the room's conditions — it helps you prepare for possibilities without pretending to know what it can't verify.",
   },
-  seoDescription: "Scout any place before you go. Predict crowds, noise, lighting, and sensory intensity by time of day, plus a game plan and quiet spots. Free, instant, no signup.",
-  seoTitle: "Sensory Overload Planner: Scout a Place First",
-  title: "Sensory Minefield Mapper",
-  tagline: "Predict and avoid overwhelming sensory environments",
+  seoDescription: "Going somewhere that might be noisy, crowded, bright, or smelly? Get a practical preparation plan, words to ask for what you need, and a backup plan — without fake predictions. Free, no signup.",
+  seoTitle: "Prepare for a Sensory-Demanding Place or Route",
+  title: "Sensory Scout",
+  tagline: "🗺️ Prepare for the sensory parts of going somewhere.",
   tags: [
-    'sensory', 'overwhelm', 'noise', 'crowds', 'lighting', 'smells',
+    'sensory', 'noise', 'crowds', 'lighting', 'smells',
     'environment', 'planning', 'location', 'scouting', 'map', 'visit',
-    'sensitive', 'anxiety', 'temperature', 'place', 'before you go', 'overload'
+    'sensitive', 'temperature', 'place', 'before you go', 'accommodations'
   ],
   icon: "🗺️",
   categories: ['Out & About', 'Energy', 'Me'],
   headerColor: "#2a3820",
-  description: "Scout any location before you go — predict crowd density, noise, lighting, temperature, and sensory intensity by time of day. Get a tailored game plan, layout intel, accommodation scripts, comfort kit, and live rescan if conditions shift once you're there.",
+  description: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Sensory Scout what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.",
   guide: {
-    overview: "Sensory Minefield Mapper helps you predict what a location will feel like before you arrive. Enter where you're going, when, and what you're sensitive to — and get a full breakdown of expected conditions, the best time to visit, quiet spots and exit routes, scripts for asking staff for accommodations, and a comfort kit checklist. Use the live rescan if reality doesn't match the prediction.",
+    overview: "Sensory Scout turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).",
     howToUse: [
-      "Save a concern profile — select your sensitivities once and load them every visit with one tap.",
-      "Enter your destination, date, time, and place type.",
-      "Review the prediction: intensity rating, factor-by-factor breakdown, and best time to go.",
-      "Open Game Plan for before/during strategies and an exit plan if things get overwhelming.",
-      "Use Live Rescan if you're already there and conditions are worse than predicted.",
-      "Rate the visit afterward — your ratings improve future predictions for that location."
+      "Save a profile — select what matters to you once and load it every time with one tap.",
+      "Choose Prepare for a Place or Prepare for a Route.",
+      "Tell it where you're going; place type, timing, and what you already know about it are all optional.",
+      "Select what you'd like help with — noise, crowds, lighting, and so on.",
+      "Review what's worth preparing for, before-you-go steps, and words to ask for what you need.",
+      "If conditions differ once you're there, use Conditions Changed to adjust the plan from what you actually observe.",
+      "Afterward, rate what was actually true — your own reports improve future preparation for that place."
     ],
     example: {
-      scenario: "You need to pick up a prescription at a large pharmacy on a Saturday afternoon.",
-      action: "Enter the location, select Saturday 2pm, choose Pharmacy/Medical, flag noise and crowds.",
-      result: "Prediction: HIGH intensity — weekend rush, pharmacy counter waits, intercom announcements. Best time: Tuesday 9am (LOW). Game plan includes: call ahead to confirm prescription is ready, use self-checkout, bring headphones. Quiet spot: far end of the greeting card aisle."
+      scenario: "You have a hospital outpatient appointment Thursday morning. You've been asked to arrive early, you can't leave and return without risking your place, and last time you waited about two hours.",
+      action: "Choose Prepare for a Place. Enter the hospital waiting area, select noise, lighting, smells, and temperature, and note what you already know: the early arrival, the risk of losing your place, and the two-hour wait last time.",
+      result: "A plan that treats your own facts as established — the wait, the arrival time, the constraint on leaving — and offers low-burden ways to prepare for noise, lighting, smells, and temperature as general possibilities, not predictions. It includes a script for asking to wait somewhere else without missing your name being called, and a backup plan that doesn't tell you to leave when you've said you can't."
     },
     tips: [
-      "The more specific your location name, the better the prediction — 'CVS on Main St' beats 'pharmacy'.",
-      "Use Challenge Mode in the Route Planner to see which stops to cut if energy runs low.",
-      "The Comfort Kit feature generates a personalized packing list based on your specific concerns and place type.",
-      "Save locations you visit regularly as Favorites — one tap to re-scout with updated conditions."
+      "The more specific your location, the more useful the read — but nothing is required beyond the place and what you'd like help with.",
+      "What you already know about a place (a past visit, a review, a call ahead) is the strongest input — it's the difference between a general possibility and something worth actually planning around.",
+      "Comfort Kit personalizes a packing list from what you selected, not a generic list.",
+      "Save what matters to you as a profile — it's a preference preset, not a diagnosis, and it's yours to edit or delete anytime."
     ]
   }
 },

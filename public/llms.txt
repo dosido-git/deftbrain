@@ -40,7 +40,7 @@
 - [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into a memorable part of your trip
 - [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): 🗺️ Turn a free hour into a small adventure
 - [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
-- [Sensory Minefield Mapper](https://deftbrain.com/SensoryMinefieldMapper): Predict and avoid overwhelming sensory environments
+- [Sensory Scout](https://deftbrain.com/SensoryScout): 🗺️ Prepare for the sensory parts of going somewhere.
 
 ## Humans
 
@@ -69,7 +69,7 @@
 - [Magic Mouth (M²)](https://deftbrain.com/MagicMouth): The art of the ask.
 - [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
 - [Quote Check](https://deftbrain.com/QuoteCheck): Know what you're paying for before you approve the repair.
-- [Scam Radar](https://deftbrain.com/ScamRadar): Paste any suspicious message — know in seconds if it's a scam
+- [Scam Radar](https://deftbrain.com/ScamRadar): 🎣 Spot the warning signs before you click, pay, or reply.
 - [Subscription Tamer](https://deftbrain.com/SubscriptionTamer): Tame the subscriptions quietly draining you
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? Build your appeal — or find out it's not worth fighting.
 - [Upsell Shield](https://deftbrain.com/UpsellShield): Walk into high-pressure sales prepared.

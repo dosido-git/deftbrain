@@ -246,7 +246,7 @@ const TOOL_IDS = [
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
   'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','SayWhat',
- 'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
+ 'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','SensoryScout','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheWholeStory','TheDebrief',
   'TheFinalWord','MissingLink','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
@@ -320,6 +320,8 @@ const LEGACY_REDIRECTS = {
   '/RoomReader':                 '/ReadTheRoom',
   '/GravityWell':                '/BeforeHello',
   '/gravitywell':                '/BeforeHello',
+  '/SensoryMinefieldMapper':     '/SensoryScout',
+  '/sensoryminefieldmapper':     '/SensoryScout',
 
   // Idea Autopsy → Concept Coach, renamed 2026-08-31.
   '/IdeaAutopsy':                '/ConceptCoach',

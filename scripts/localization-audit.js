@@ -152,7 +152,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/RentersDepositSaver.js',
   'src/tools/DriveHome.js',
   'src/tools/BrainStateDeejay.js',
-  'src/tools/SensoryMinefieldMapper.js',
+  'src/tools/SensoryScout.js',
   'src/tools/LeaseTrapDetector.js',
   'src/tools/ToolFinder.js',
   'src/tools/HistoryToday.js',
