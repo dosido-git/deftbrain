@@ -938,15 +938,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       return out;
     }
 
-    // ── period grouping (Mon-Sun weeks, calendar months, calendar halves, calendar years) ──
+    // ── period grouping (Mon-Sun weeks, calendar months) ──
     const isoDow = (dayStr) => new Date(dayStr + 'T00:00:00Z').getUTCDay(); // 0=Sun..6=Sat
     const mondayOf = (dayStr) => addDaysStr(dayStr, -((isoDow(dayStr) + 6) % 7));
     const monthOf = (dayStr) => dayStr.slice(0, 7);
-    const halfOf = (dayStr) => { const [y, m] = dayStr.split('-'); return `${y}-H${(+m <= 6) ? 1 : 2}`; };
-    const yearOf = (dayStr) => dayStr.slice(0, 4);
     const monthBounds = (key) => { const [y, m] = key.split('-').map(Number); return [`${key}-01`, new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10)]; };
-    const halfBounds = (key) => { const [y, h] = key.split('-H'); return h === '1' ? [`${y}-01-01`, `${y}-06-30`] : [`${y}-07-01`, `${y}-12-31`]; };
-    const yearBounds = (key) => [`${key}-01-01`, `${key}-12-31`];
     const weekBounds = (key) => [key, addDaysStr(key, 6)];
 
     function groupPeriods(dayList, keyFn) {
@@ -956,8 +952,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
     const weekGroups = groupPeriods(ledgerDayList, mondayOf);
     const monthGroups = groupPeriods(ledgerDayList, monthOf);
-    const halfGroups = groupPeriods(ledgerDayList, halfOf);
-    const yearGroups = groupPeriods(ledgerDayList, yearOf);
 
     // Anomaly rule, stated plainly rather than hidden in a score: flag a
     // period where visitors showed up but nobody ran a tool, or where the
@@ -1021,62 +1015,38 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         `<td>${b.taken}</td></tr>`;
     }
 
-    // ── assemble rows in chronological order: each day, then (once its
-    // period's last day is reached) the week / month / half / year summary
-    // that closes there, nested smallest-to-largest when several land on the
-    // same day. ──
-    const ledgerRows = [];
-    const weekEndIdx = new Map(weekGroups.map((g, i) => [g.days[g.days.length - 1], i]));
-    const monthEndIdx = new Map(monthGroups.map((g, i) => [g.days[g.days.length - 1], i]));
-    const halfEndIdx = new Map(halfGroups.map((g, i) => [g.days[g.days.length - 1], i]));
-    const yearEndIdx = new Map(yearGroups.map((g, i) => [g.days[g.days.length - 1], i]));
-
-    for (const d of ledgerDayList) {
+    // ── three separate, stacked lists (day / week / month) rather than one
+    // table with summary rows interleaved between the days that make them up
+    // — the interleaved version buried each summary between its own days,
+    // which read as noise rather than a rollup you could scan on its own. ──
+    const dayRows = ledgerDayList.map(d => {
       const db = ledgerByDay[d];
       const isToday = d === todayDay;
       const prevDayBucket = ledgerByDay[addDaysStr(d, -1)] || null;
       const dayLabel = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(d + 'T00:00:00Z'));
-      ledgerRows.push(ledgerTr(dayLabel, db, prevDayBucket, isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : null));
-
-      if (weekEndIdx.has(d)) {
-        const i = weekEndIdx.get(d); const g = weekGroups[i];
-        const isCurrent = g.days[g.days.length - 1] === todayDay && g.days.length < 7;
-        const [wStart, wEnd] = weekBounds(g.key);
-        const b = sumBuckets(g.days);
-        const prevB = periodDelta(weekGroups, i, isCurrent);
-        const label = `Week of ${wStart.slice(5)}–${wEnd.slice(5)}`;
-        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(so far, ${g.days.length}/7 days)` : (g.days[0] !== wStart ? '(partial — data starts here)' : '') }));
-      }
-      if (monthEndIdx.has(d)) {
-        const i = monthEndIdx.get(d); const g = monthGroups[i];
-        const [, mEnd] = monthBounds(g.key);
-        const isCurrent = d === todayDay && d !== mEnd;
-        const b = sumBuckets(g.days);
-        const prevB = periodDelta(monthGroups, i, isCurrent);
-        const label = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(g.key + '-01T00:00:00Z'));
-        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(month so far, ${g.days.length} day${g.days.length === 1 ? '' : 's'})` : (monthBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
-      }
-      if (halfEndIdx.has(d)) {
-        const i = halfEndIdx.get(d); const g = halfGroups[i];
-        const [, hEnd] = halfBounds(g.key);
-        const isCurrent = d === todayDay && d !== hEnd;
-        const b = sumBuckets(g.days);
-        const prevB = periodDelta(halfGroups, i, isCurrent);
-        const [y, h] = g.key.split('-H');
-        const label = `${h === '1' ? 'H1' : 'H2'} ${y}`;
-        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? '(half so far)' : (halfBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
-      }
-      if (yearEndIdx.has(d)) {
-        const i = yearEndIdx.get(d); const g = yearGroups[i];
-        const [, yEnd] = yearBounds(g.key);
-        const isCurrent = d === todayDay && d !== yEnd;
-        const b = sumBuckets(g.days);
-        const prevB = periodDelta(yearGroups, i, isCurrent);
-        ledgerRows.push(ledgerTr(g.key, b, prevB, { summary: true, tag: isCurrent ? '(year so far)' : (yearBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
-      }
-    }
-    // Newest at the top — the row someone opens this page to check is today's.
-    const ledgerRowsHtml = ledgerRows.slice().reverse().join('');
+      return ledgerTr(dayLabel, db, prevDayBucket, isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : null);
+    });
+    const weekRows = weekGroups.map((g, i) => {
+      const isCurrent = g.days[g.days.length - 1] === todayDay && g.days.length < 7;
+      const [wStart, wEnd] = weekBounds(g.key);
+      const b = sumBuckets(g.days);
+      const prevB = periodDelta(weekGroups, i, isCurrent);
+      const label = `Week of ${wStart.slice(5)}–${wEnd.slice(5)}`;
+      return ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(so far, ${g.days.length}/7 days)` : (g.days[0] !== wStart ? '(partial — data starts here)' : '') });
+    });
+    const monthRows = monthGroups.map((g, i) => {
+      const [, mEnd] = monthBounds(g.key);
+      const isCurrent = g.days[g.days.length - 1] === todayDay && g.days[g.days.length - 1] !== mEnd;
+      const b = sumBuckets(g.days);
+      const prevB = periodDelta(monthGroups, i, isCurrent);
+      const label = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(g.key + '-01T00:00:00Z'));
+      return ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(month so far, ${g.days.length} day${g.days.length === 1 ? '' : 's'})` : (monthBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') });
+    });
+    // Newest at the top in every list — the row someone opens this page to
+    // check is today's, this week's, or this month's.
+    const dayRowsHtml = dayRows.slice().reverse().join('');
+    const weekRowsHtml = weekRows.slice().reverse().join('');
+    const monthRowsHtml = monthRows.slice().reverse().join('');
 
     // ── Retention trend (approximation — see caveat rendered with it) ──
     // "% of this week's sessions that self-reported as having returned
@@ -1147,9 +1117,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('tool runs today', todaySoFar.runs, `vs ${todaySoFar.prevRuns} by this time yesterday`, deltaHtml(todaySoFar.runs, todaySoFar.prevRuns))}
     </div>
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
-    <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— one row per day since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. A bold row is a week/month/half-year/year summary, inserted right after its last day — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's date/label to see the pages and tools behind its numbers.</p>
-    <div style="overflow-x:auto"><table id="ledgerTable"><tr><th>period</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${ledgerRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+    <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's date/label to see the pages and tools behind its numbers (Esc closes that panel).</p>
+    <div id="ledgerTables">
+      <h3 style="font-size:13px;margin:16px 0 6px">Daily</h3>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun)</span></h3>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+    </div>
     <div id="ledgerDetailBox" style="display:none;position:sticky;bottom:0;margin-top:10px;background:#1a2e44;color:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 -4px 16px rgba(0,0,0,.15)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <b id="ledgerDetailTitle" style="font-size:14px"></b>
@@ -1171,7 +1148,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
           return pairs.map(function (p) { return '<div>' + p[0].replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' <b>' + p[1] + '</b></div>'; }).join('');
         }
-        document.getElementById('ledgerTable').addEventListener('click', function (e) {
+        function closeBox() { box.style.display = 'none'; }
+        // One delegated listener on the shared wrapper covers all three
+        // tables (daily/weekly/monthly) instead of one per table.
+        document.getElementById('ledgerTables').addEventListener('click', function (e) {
           var btn = e.target.closest('.ledger-open');
           if (!btn) return;
           var id = btn.getAttribute('data-row');
@@ -1181,6 +1161,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           pagesEl.innerHTML = list(d.pages);
           toolsEl.innerHTML = list(d.tools);
           box.style.display = 'block';
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && box.style.display !== 'none') closeBox();
         });
       })();
     </script>
