@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacenterIp');
 const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
+const { deviceInfo } = require('../lib/deviceInfo');
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -129,6 +130,11 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   // Same privacy posture as before: derived at write time, IP discarded, never stored.
   const isSessionScoped = (event === 'page_view' && props && props.newSession) || event === 'interact';
   const location = isSessionScoped ? locationOf(req) : undefined;
+  // Same session-scoped rule as location: one device/os/browser reading per
+  // session, not per event, derived from the UA header at write time. The raw
+  // UA string itself is never stored on the event — just the three derived
+  // labels — matching the "derive then discard" posture locationOf uses for IP.
+  const device = isSessionScoped ? deviceInfo(req.headers['user-agent']) : undefined;
   logMetric('event', {
     event: event.slice(0, 60),
     path,
@@ -136,6 +142,7 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
     ...(ref ? { ref: String(ref).slice(0, 120) } : {}),
     ...(sawGuide === true ? { sawGuide: true } : {}),
     ...(location ? { location } : {}),
+    ...(device ? { device: device.device, os: device.os, browser: device.browser } : {}),
   });
   // A render crash is the one beacon worth waking someone for: the response was
   // a valid 200 and the user still got a white screen, so nothing else in the
@@ -852,6 +859,256 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         return barRow(l, n, locMax, `${ia} interactive · ${topLang(l)}${flag}`);
       }).join('');
     const locKnown = Object.values(locs).reduce((a, b) => a + b, 0);
+
+    // ════════════════════════════════════════════════════════════
+    // DAILY LEDGER — one row per calendar day, Mon–Sun weekly / calendar-
+    // month / half-year / annual rollups, click-through to the pages/tools
+    // behind any number. Independent of the range selector above: a 1-year
+    // rollup needs a year of days, so this always looks at `allRows`, not
+    // the range-filtered `rows`.
+    // ════════════════════════════════════════════════════════════
+    const LEDGER_MAX_DAYS = 400; // ~13 months — a full year plus headroom for
+                                  // the current partial year. Older history
+                                  // simply isn't shown; raise this (and expect
+                                  // a bigger payload) if that ever matters.
+    const ledgerEvents = allRows.filter(r => r.kind === 'event');
+    const todayDay = fmtDay(now);
+    const earliestDay = ledgerEvents.reduce((min, e) => {
+      const d = (e.at || '').slice(0, 10);
+      return d && (!min || d < min) ? d : min;
+    }, null);
+    function daysBetween(fromStr, toStr) {
+      const out = [];
+      let t = new Date(fromStr + 'T00:00:00Z');
+      const end = new Date(toStr + 'T00:00:00Z');
+      while (t <= end) { out.push(t.toISOString().slice(0, 10)); t = new Date(t.getTime() + 86400000); }
+      return out;
+    }
+    const addDaysStr = (dayStr, n) => { const d = new Date(dayStr + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+    let ledgerStartDay = earliestDay || todayDay;
+    let ledgerTruncated = false;
+    {
+      const full = daysBetween(ledgerStartDay, todayDay);
+      if (full.length > LEDGER_MAX_DAYS) { ledgerStartDay = full[full.length - LEDGER_MAX_DAYS]; ledgerTruncated = true; }
+    }
+    const ledgerDayList = daysBetween(ledgerStartDay, todayDay);
+
+    function emptyBucket() {
+      return { views: 0, sessions: 0, interactive: 0, returning: 0, runs: 0,
+        completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
+        pages: {}, tools: {} };
+    }
+    const ledgerByDay = {};
+    for (const d of ledgerDayList) ledgerByDay[d] = emptyBucket();
+    for (const e of ledgerEvents) {
+      const day = (e.at || '').slice(0, 10);
+      const b = ledgerByDay[day];
+      if (!b) continue; // older than the ledger window
+      if (e.event === 'page_view') {
+        b.views++;
+        const seg = (e.path || '').split('/')[1];
+        const pageName = (seg && /^[A-Z]/.test(seg)) ? seg : (e.path || '(unknown)');
+        b.pages[pageName] = (b.pages[pageName] || 0) + 1;
+        if (e.props && e.props.newSession) {
+          b.sessions++;
+          if (e.props.returning) b.returning++;
+          if (e.props.bucket === '1-7d') b.bucket1_7++;
+        }
+      } else if (e.event === 'interact') { b.interactive++; }
+      else if (e.event === 'tool_run') { b.runs++; b.tools[toolOf(e)] = (b.tools[toolOf(e)] || 0) + 1; }
+      else if (e.event === 'tool_complete') { b.completes++; }
+      else if (e.event === 'tool_error') { b.errors++; }
+      else if (e.event === 'tool_render_error') { b.renderErrors++; }
+      else if (['print', 'copy', 'share'].includes(e.event)) { b.taken++; }
+    }
+    for (const d of ledgerDayList) ledgerByDay[d].delivered = Math.max(0, ledgerByDay[d].completes - ledgerByDay[d].renderErrors);
+
+    function sumBuckets(dayStrs) {
+      const out = emptyBucket();
+      for (const d of dayStrs) {
+        const b = ledgerByDay[d]; if (!b) continue;
+        out.views += b.views; out.sessions += b.sessions; out.interactive += b.interactive;
+        out.returning += b.returning; out.runs += b.runs; out.completes += b.completes;
+        out.errors += b.errors; out.renderErrors += b.renderErrors; out.taken += b.taken;
+        out.bucket1_7 += b.bucket1_7;
+        for (const [k, n] of Object.entries(b.pages)) out.pages[k] = (out.pages[k] || 0) + n;
+        for (const [k, n] of Object.entries(b.tools)) out.tools[k] = (out.tools[k] || 0) + n;
+      }
+      out.delivered = Math.max(0, out.completes - out.renderErrors);
+      return out;
+    }
+
+    // ── period grouping (Mon-Sun weeks, calendar months, calendar halves, calendar years) ──
+    const isoDow = (dayStr) => new Date(dayStr + 'T00:00:00Z').getUTCDay(); // 0=Sun..6=Sat
+    const mondayOf = (dayStr) => addDaysStr(dayStr, -((isoDow(dayStr) + 6) % 7));
+    const monthOf = (dayStr) => dayStr.slice(0, 7);
+    const halfOf = (dayStr) => { const [y, m] = dayStr.split('-'); return `${y}-H${(+m <= 6) ? 1 : 2}`; };
+    const yearOf = (dayStr) => dayStr.slice(0, 4);
+    const monthBounds = (key) => { const [y, m] = key.split('-').map(Number); return [`${key}-01`, new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10)]; };
+    const halfBounds = (key) => { const [y, h] = key.split('-H'); return h === '1' ? [`${y}-01-01`, `${y}-06-30`] : [`${y}-07-01`, `${y}-12-31`]; };
+    const yearBounds = (key) => [`${key}-01-01`, `${key}-12-31`];
+    const weekBounds = (key) => [key, addDaysStr(key, 6)];
+
+    function groupPeriods(dayList, keyFn) {
+      const map = new Map();
+      for (const d of dayList) { const k = keyFn(d); if (!map.has(k)) map.set(k, []); map.get(k).push(d); }
+      return [...map.entries()].map(([key, days]) => ({ key, days }));
+    }
+    const weekGroups = groupPeriods(ledgerDayList, mondayOf);
+    const monthGroups = groupPeriods(ledgerDayList, monthOf);
+    const halfGroups = groupPeriods(ledgerDayList, halfOf);
+    const yearGroups = groupPeriods(ledgerDayList, yearOf);
+
+    // Anomaly rule, stated plainly rather than hidden in a score: flag a
+    // period where visitors showed up but nobody ran a tool, or where the
+    // error rate is well above normal on a large-enough sample to mean
+    // something. Both thresholds are named here, not buried in a formula.
+    function anomalyOf(b) {
+      const flags = [];
+      if (b.sessions > 0 && b.runs === 0) flags.push('sessions but 0 tool runs');
+      const errRate = b.runs ? (b.errors + b.renderErrors) / b.runs : 0;
+      if (b.runs >= 5 && errRate > 0.25) flags.push(`${Math.round(errRate * 100)}% error rate`);
+      return flags;
+    }
+
+    // Delta vs. the previous period. A COMPLETE period compares to the
+    // previous complete one; the CURRENT (in-progress) period compares to
+    // the same elapsed number of days at the start of the previous one —
+    // the same "so far vs so far" rule the headline cards already use, so a
+    // partial week never reads as a crash next to a full one.
+    function periodDelta(groups, i, isCurrent) {
+      const prev = groups[i - 1];
+      if (!prev) return null;
+      if (!isCurrent) return sumBuckets(prev.days);
+      return sumBuckets(prev.days.slice(0, groups[i].days.length));
+    }
+
+    let ledgerRowId = 0;
+    const ledgerDetail = {}; // rowId -> { pages: [[name,n]...], tools: [[name,n]...] }
+    const topN = (obj, n) => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
+    function registerDetail(bucket) {
+      const id = 'r' + (ledgerRowId++);
+      ledgerDetail[id] = { pages: topN(bucket.pages, 20), tools: topN(bucket.tools, 20) };
+      return id;
+    }
+
+    const fmtPct1 = (n, d) => d ? `${Math.round((n / d) * 1000) / 10}%` : '—';
+    const deltaPct = (cur, prevBucket, field) => {
+      if (!prevBucket) return '';
+      const prev = prevBucket[field];
+      if (!prev) return cur > 0 ? ' <span style="color:#15803d;font-size:11px">new</span>' : '';
+      const d = Math.round(((cur - prev) / prev) * 100);
+      if (d === 0) return ' <span style="color:#999;font-size:11px">±0%</span>';
+      const up = d > 0;
+      return ` <span style="color:${up ? '#15803d' : '#b91c1c'};font-size:11px;font-weight:600">${up ? '▲' : '▼'}${Math.abs(d)}%</span>`;
+    };
+    const anomalyBadge = (flags) => flags.length
+      ? ` <span title="${escH(flags.join('; '))}" style="color:#b45309;cursor:help">⚠️</span>` : '';
+    const rowLabelBtn = (id, label) => `<button class="ledger-open" data-row="${id}" style="all:unset;cursor:pointer;color:#2c4a6e;font-weight:600;text-decoration:underline;text-decoration-style:dotted">${escH(label)}</button>`;
+
+    function ledgerTr(label, b, prevBucket, opts) {
+      const id = registerDetail(b);
+      const flags = anomalyOf(b);
+      const cls = opts && opts.summary ? ' style="background:#f4f1ea;font-weight:600"' : '';
+      return `<tr${cls}><td>${rowLabelBtn(id, label)}${opts && opts.tag ? ` <span style="font-weight:400;font-size:11px;color:#888">${opts.tag}</span>` : ''}${anomalyBadge(flags)}</td>` +
+        `<td>${b.views}${deltaPct(b.views, prevBucket, 'views')}</td>` +
+        `<td>${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
+        `<td>${b.interactive}${deltaPct(b.interactive, prevBucket, 'interactive')}</td>` +
+        `<td>${b.returning}</td>` +
+        `<td>${b.runs}${deltaPct(b.runs, prevBucket, 'runs')}</td>` +
+        `<td>${b.delivered}</td>` +
+        `<td>${fmtPct1(b.delivered, b.sessions)}</td>` +
+        `<td>${b.taken}</td></tr>`;
+    }
+
+    // ── assemble rows in chronological order: each day, then (once its
+    // period's last day is reached) the week / month / half / year summary
+    // that closes there, nested smallest-to-largest when several land on the
+    // same day. ──
+    const ledgerRows = [];
+    const weekEndIdx = new Map(weekGroups.map((g, i) => [g.days[g.days.length - 1], i]));
+    const monthEndIdx = new Map(monthGroups.map((g, i) => [g.days[g.days.length - 1], i]));
+    const halfEndIdx = new Map(halfGroups.map((g, i) => [g.days[g.days.length - 1], i]));
+    const yearEndIdx = new Map(yearGroups.map((g, i) => [g.days[g.days.length - 1], i]));
+
+    for (const d of ledgerDayList) {
+      const db = ledgerByDay[d];
+      const isToday = d === todayDay;
+      const prevDayBucket = ledgerByDay[addDaysStr(d, -1)] || null;
+      const dayLabel = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(d + 'T00:00:00Z'));
+      ledgerRows.push(ledgerTr(dayLabel, db, prevDayBucket, isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : null));
+
+      if (weekEndIdx.has(d)) {
+        const i = weekEndIdx.get(d); const g = weekGroups[i];
+        const isCurrent = g.days[g.days.length - 1] === todayDay && g.days.length < 7;
+        const [wStart, wEnd] = weekBounds(g.key);
+        const b = sumBuckets(g.days);
+        const prevB = periodDelta(weekGroups, i, isCurrent);
+        const label = `Week of ${wStart.slice(5)}–${wEnd.slice(5)}`;
+        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(so far, ${g.days.length}/7 days)` : (g.days[0] !== wStart ? '(partial — data starts here)' : '') }));
+      }
+      if (monthEndIdx.has(d)) {
+        const i = monthEndIdx.get(d); const g = monthGroups[i];
+        const [, mEnd] = monthBounds(g.key);
+        const isCurrent = d === todayDay && d !== mEnd;
+        const b = sumBuckets(g.days);
+        const prevB = periodDelta(monthGroups, i, isCurrent);
+        const label = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(g.key + '-01T00:00:00Z'));
+        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(month so far, ${g.days.length} day${g.days.length === 1 ? '' : 's'})` : (monthBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
+      }
+      if (halfEndIdx.has(d)) {
+        const i = halfEndIdx.get(d); const g = halfGroups[i];
+        const [, hEnd] = halfBounds(g.key);
+        const isCurrent = d === todayDay && d !== hEnd;
+        const b = sumBuckets(g.days);
+        const prevB = periodDelta(halfGroups, i, isCurrent);
+        const [y, h] = g.key.split('-H');
+        const label = `${h === '1' ? 'H1' : 'H2'} ${y}`;
+        ledgerRows.push(ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? '(half so far)' : (halfBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
+      }
+      if (yearEndIdx.has(d)) {
+        const i = yearEndIdx.get(d); const g = yearGroups[i];
+        const [, yEnd] = yearBounds(g.key);
+        const isCurrent = d === todayDay && d !== yEnd;
+        const b = sumBuckets(g.days);
+        const prevB = periodDelta(yearGroups, i, isCurrent);
+        ledgerRows.push(ledgerTr(g.key, b, prevB, { summary: true, tag: isCurrent ? '(year so far)' : (yearBounds(g.key)[0] !== g.days[0] ? '(partial — data starts here)' : '') }));
+      }
+    }
+    // Newest at the top — the row someone opens this page to check is today's.
+    const ledgerRowsHtml = ledgerRows.slice().reverse().join('');
+
+    // ── Retention trend (approximation — see caveat rendered with it) ──
+    // "% of this week's sessions that self-reported as having returned
+    // within the last 7 days" — a proxy for "came back within a week," not a
+    // true cohort ("of LAST week's visitors, how many came back"), because
+    // no persistent identifier crosses sessions in this anonymous design
+    // (see analytics.js `visitContext` — only a coarse recency bucket is
+    // ever sent, never an id). A real cohort number would need one.
+    const retentionWeeks = weekGroups.slice(-26).map(g => {
+      const b = sumBuckets(g.days);
+      return { key: g.key, rate: b.sessions ? Math.round((b.bucket1_7 / b.sessions) * 100) : 0, sessions: b.sessions };
+    });
+
+    // ── Devices (session-scoped, derived server-side from User-Agent at
+    // write time — see lib/deviceInfo; only present on events recorded after
+    // this shipped, so earlier sessions carry none). ──
+    const deviceCounts = {}, osCounts = {}, browserCounts = {};
+    let deviceKnown = 0;
+    for (const e of sessions) {
+      if (!e.device && !e.os && !e.browser) continue;
+      deviceKnown++;
+      if (e.device) deviceCounts[e.device] = (deviceCounts[e.device] || 0) + 1;
+      if (e.os) osCounts[e.os] = (osCounts[e.os] || 0) + 1;
+      if (e.browser) browserCounts[e.browser] = (browserCounts[e.browser] || 0) + 1;
+    }
+    const deviceMax = Math.max(1, ...Object.values(deviceCounts), 1);
+    const osMax = Math.max(1, ...Object.values(osCounts), 1);
+    const browserMax = Math.max(1, ...Object.values(browserCounts), 1);
+    const deviceRows = Object.entries(deviceCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, deviceMax, pct(n, deviceKnown))).join('');
+    const osRows = Object.entries(osCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, osMax, pct(n, deviceKnown))).join('');
+    const browserRows = Object.entries(browserCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, browserMax, pct(n, deviceKnown))).join('');
+
     const ideaRows = ideas.slice(-50).reverse().map(r =>
       `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td></tr>`
     ).join('');
@@ -890,6 +1147,43 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('tool runs today', todaySoFar.runs, `vs ${todaySoFar.prevRuns} by this time yesterday`, deltaHtml(todaySoFar.runs, todaySoFar.prevRuns))}
     </div>
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
+    <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— one row per day since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. A bold row is a week/month/half-year/year summary, inserted right after its last day — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's date/label to see the pages and tools behind its numbers.</p>
+    <div style="overflow-x:auto"><table id="ledgerTable"><tr><th>period</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${ledgerRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+    <div id="ledgerDetailBox" style="display:none;position:sticky;bottom:0;margin-top:10px;background:#1a2e44;color:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 -4px 16px rgba(0,0,0,.15)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <b id="ledgerDetailTitle" style="font-size:14px"></b>
+        <button onclick="document.getElementById('ledgerDetailBox').style.display='none'" style="all:unset;cursor:pointer;color:#cbd5e1;font-size:16px;padding:0 4px">✕</button>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">PAGES VISITED</div><div id="ledgerDetailPages" style="font-size:13px"></div></div>
+        <div style="flex:1;min-width:220px"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">TOOLS RUN</div><div id="ledgerDetailTools" style="font-size:13px"></div></div>
+      </div>
+    </div>
+    <script>
+      window.__ledgerDetail = ${JSON.stringify(ledgerDetail)};
+      (function () {
+        var box = document.getElementById('ledgerDetailBox');
+        var title = document.getElementById('ledgerDetailTitle');
+        var pagesEl = document.getElementById('ledgerDetailPages');
+        var toolsEl = document.getElementById('ledgerDetailTools');
+        function list(pairs) {
+          if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
+          return pairs.map(function (p) { return '<div>' + p[0].replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' <b>' + p[1] + '</b></div>'; }).join('');
+        }
+        document.getElementById('ledgerTable').addEventListener('click', function (e) {
+          var btn = e.target.closest('.ledger-open');
+          if (!btn) return;
+          var id = btn.getAttribute('data-row');
+          var d = window.__ledgerDetail[id];
+          if (!d) return;
+          title.textContent = btn.textContent;
+          pagesEl.innerHTML = list(d.pages);
+          toolsEl.innerHTML = list(d.tools);
+          box.style.display = 'block';
+        });
+      })();
+    </script>
     <h2>How far down the home page people get</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
@@ -920,12 +1214,22 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
     <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>
+    <table><tr><th>week of</th><th>sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#2c4a6e;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Locations (sessions)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. ${interactAttributable
       ? '&ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers.'
       : `Interaction is not yet attributable to a country: ${interactUnattributed} interactive session${interactUnattributed === 1 ? '' : 's'} in this window predate the 2026-08-01 change that records location on the interact beacon. The headline &ldquo;interactive&rdquo; count is unaffected. This column will populate as new sessions arrive.`}</p>
     <table>${locRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Devices (sessions) <span style="font-weight:400;font-size:12px;color:#888">— ${deviceKnown}/${sessions.length} sessions resolved</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from the User-Agent header at write time, same as Location — the header itself is never stored, only these three labels. Sessions recorded before this shipped (2026-09-08) carry none, so a low resolved count against an older range is missing data, not a real drop.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Device</h3><table>${deviceRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">OS</h3><table>${osRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Browser</h3><table>${browserRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
+    </div>
     <h2>Recent feedback</h2>
     <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
 
