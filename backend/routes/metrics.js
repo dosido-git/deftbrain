@@ -1003,7 +1003,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     function ledgerTr(label, b, prevBucket, opts) {
       const id = registerDetail(b);
       const flags = anomalyOf(b);
-      const cls = opts && opts.summary ? ' style="background:#f4f1ea;font-weight:600"' : '';
+      // weekStart: a heavier top rule on the day list only, marking Monday —
+      // the first day of the week per the Monday–Sunday convention stated
+      // just above the tables. Purely visual; adds no row, no colspan.
+      const styles = [];
+      if (opts && opts.summary) styles.push('background:#f4f1ea', 'font-weight:600');
+      if (opts && opts.weekStart) styles.push('border-top:2px solid #c8ad6e');
+      const cls = styles.length ? ` style="${styles.join(';')}"` : '';
       return `<tr${cls}><td>${rowLabelBtn(id, label)}${opts && opts.tag ? ` <span style="font-weight:400;font-size:11px;color:#888">${opts.tag}</span>` : ''}${anomalyBadge(flags)}</td>` +
         `<td>${b.views}${deltaPct(b.views, prevBucket, 'views')}</td>` +
         `<td>${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
@@ -1024,7 +1030,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const isToday = d === todayDay;
       const prevDayBucket = ledgerByDay[addDaysStr(d, -1)] || null;
       const dayLabel = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(d + 'T00:00:00Z'));
-      return ledgerTr(dayLabel, db, prevDayBucket, isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : null);
+      const isMonday = new Date(d + 'T00:00:00Z').getUTCDay() === 1;
+      return ledgerTr(dayLabel, db, prevDayBucket, {
+        weekStart: isMonday,
+        ...(isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : {}),
+      });
     });
     const weekRows = weekGroups.map((g, i) => {
       const isCurrent = g.days[g.days.length - 1] === todayDay && g.days.length < 7;
