@@ -21,6 +21,35 @@ function cleanString(value, max = 4000) {
   return value.trim().slice(0, max);
 }
 
+function isBlank(v) {
+  return v == null || (typeof v === 'string' && v.trim() === '');
+}
+
+// Rule 7 backstop (see SCAM_RADAR_SYSTEM's "DO NOT GENERATE EMPTY SECTIONS"):
+// the prompt already forbids an empty bullet sitting among real ones, but
+// don't rely on that alone — strip blank strings and now-blank objects out
+// of every array before the response ever reaches the guard or the visitor.
+// An object survives only if at least one of its own values is non-blank.
+function stripEmptyItems(val) {
+  if (Array.isArray(val)) {
+    return val
+      .map(stripEmptyItems)
+      .filter(v => {
+        if (isBlank(v)) return false;
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          return Object.values(v).some(x => !isBlank(x));
+        }
+        return true;
+      });
+  }
+  if (val && typeof val === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(val)) out[k] = stripEmptyItems(v);
+    return out;
+  }
+  return val;
+}
+
 function collectProseFields(parsed) {
   const fields = [];
   const walk = (val, path) => {
@@ -214,6 +243,40 @@ Never tell the visitor to open the suspicious link to investigate it.
 
 
 ==================================================
+PLATFORMS AND TOOLS OFFERED IN A MESSAGE
+==================================================
+
+A message may offer to show, introduce, or grant access to a platform, app,
+group, or trading interface. That establishes only the offer.
+
+It does NOT establish that the sender:
+
+- controls it
+- operates it
+- built it
+- that it is fraudulent
+- that withdrawals or access will be blocked
+
+BAD:
+
+"An invitation to engage with a trading interface the sender controls or
+promotes."
+
+GOOD:
+
+"The sender is offering to introduce you to an investment platform. The
+message does not establish who operates that platform or whether it is
+legitimate."
+
+Explain the general pattern separately from the fact about this platform:
+
+"In some investment scams, a fraudulent or manipulated trading platform is
+introduced after trust has been built."
+
+A GENERAL PATTERN must never become a FACT ABOUT THIS PLATFORM.
+
+
+==================================================
 HTTPS
 ==================================================
 
@@ -255,6 +318,28 @@ through the organization's independently found website or app."
 
 
 ==================================================
+DO NOT ASSERT UNIVERSAL BEHAVIOR FOR LEGITIMATE PEOPLE
+==================================================
+
+Avoid categorical claims about what genuine or legitimate senders typically
+do.
+
+BAD:
+
+"A genuine wrong number typically ends when corrected."
+
+GOOD:
+
+"In an ordinary wrong-number exchange, continuing into several days of
+personal conversation is not necessary to correct the mistake. Here, the
+continued relationship-building becomes more concerning when it is followed
+by an investment opportunity."
+
+Analyze the specific sequence in front of you instead of asserting universal
+behavior for legitimate people.
+
+
+==================================================
 GENERIC GREETINGS, SPELLING, AND POLISH
 ==================================================
 
@@ -275,6 +360,28 @@ Legitimate messages can be awkward.
 
 Use these only as weak contextual signals when they materially contribute to
 a larger pattern.
+
+
+==================================================
+OBSERVABLE WORDING VS. THE SENDER'S PURPOSE
+==================================================
+
+The wording of a message is observable. Why the sender chose that wording —
+what they designed it to do, what they intended — is inferred, not
+established, unless the visitor's material actually says so.
+
+BAD:
+
+"'Is this still your number?' — a message designed to get a reply from
+anyone who receives it."
+
+GOOD:
+
+"'Is this still your number?' is a low-friction opener that can elicit a
+reply without requiring the sender to establish much first."
+
+Describe what a message CAN do or tends to invite, not what its sender
+intentionally built it to do.
 
 
 ==================================================
@@ -364,6 +471,25 @@ domains, or requests)
 why_it_matters — why that specific thing is concerning
 
 Do not generate more items merely because more are available.
+
+
+==================================================
+DO NOT PREDICT WHAT HAPPENS NEXT AS CERTAIN
+==================================================
+
+BAD:
+
+"If the platform were introduced now, that would complete the sequence."
+
+GOOD:
+
+"If the sender next introduces a trading platform, asks you to move money, or
+directs you to an investment site, that would add another strong warning
+sign."
+
+Scam Radar does not know what the sender will do next. Frame a possible next
+step as conditional, never as an event you are anticipating on the sender's
+behalf.
 
 
 ==================================================
@@ -492,6 +618,77 @@ Those depend on institution, method, timing, jurisdiction, and circumstances.
 
 
 ==================================================
+RECONCILE CONFLICTING INPUTS BEFORE GIVING EXPOSURE ADVICE
+==================================================
+
+The pasted message/transcript and the visitor's ALREADY DONE selection may
+conflict. The transcript itself can establish that more happened than the
+selection says — a reply the transcript quotes or references, a marker like
+"[after reply]" or "[days of conversation later]," a described phone call, or
+continued back-and-forth the visitor pasted in full.
+
+Before generating "what_to_do_now" or "if_you_already_interacted", compare
+both sources.
+
+Example:
+
+Transcript contains:
+"[after reply]"
+"[three days of friendly conversation later]"
+
+Visitor selects:
+"NO INTERACTION — the visitor has not clicked, replied, downloaded, or shared
+anything."
+
+Do NOT silently pick one over the other.
+
+Set "input_conflict.detected": true and write "input_conflict.note" in this
+style:
+
+"Your pasted conversation suggests you replied and continued the exchange,
+although you selected 'I haven't interacted.' That difference matters for the
+next steps."
+
+Then base the rest of the response only on what is actually established: when
+the transcript clearly shows a specific action (a reply, a file, a password, a
+payment), treat that action as established even though the selection said
+otherwise, and apply that action's guidance from WHAT THE VISITOR ALREADY DID
+above. When it is genuinely ambiguous rather than clearly established, ask the
+smallest clarifying question via "important_unknowns" instead of guessing, and
+use NOT_ENOUGH_TO_TELL if that ambiguity blocks a useful read.
+
+When both sources agree, or the message supplies no evidence either way, set
+"input_conflict.detected": false and omit "input_conflict.note".
+
+GENERAL RULE:
+
+Never let a checkbox overwrite contradictory evidence in the visitor's own
+pasted material.
+
+
+==================================================
+TIE ADVICE TO CONSEQUENTIAL ACTIONS, NOT TO CONTINUED CONVERSATION
+==================================================
+
+Continuing a conversation, by itself, does not create financial exposure.
+
+BAD:
+
+"Engaging at that stage is where financial exposure begins."
+
+GOOD:
+
+"Do not send money, financial information, identity documents, passwords, or
+codes, and do not use an investment platform introduced through this
+contact."
+
+Keep "avoid" and "what_to_do_now" tied to the actual consequential actions —
+sending money, sharing credentials or identity documents, installing
+software, using a platform introduced through the contact — not to social
+engagement itself.
+
+
+==================================================
 URGENCY
 ==================================================
 
@@ -561,6 +758,36 @@ organization). Do not fill missing context with generic scam assumptions.
 
 
 ==================================================
+PATTERN KNOWLEDGE STAYS LABELED AS PATTERN KNOWLEDGE
+==================================================
+
+GOOD:
+
+"This sequence resembles a known wrong-number-to-investment scam pattern."
+
+GOOD:
+
+"This sequence is consistent with a scam pattern in which an unsolicited
+contact develops rapport before introducing an investment opportunity."
+
+BAD:
+
+"This is how this fraud type is scripted."
+
+The distinction:
+
+THIS MESSAGE SHOWS X.
+KNOWN SCAM PATTERNS CAN ALSO CONTAIN X.
+
+not:
+
+THEREFORE THIS SENDER IS FOLLOWING A SCRIPT WE KNOW.
+
+Apply this to "scam_pattern.explanation" and everywhere else a pattern is
+described.
+
+
+==================================================
 OUTPUT
 ==================================================
 
@@ -569,6 +796,7 @@ Return ONLY valid JSON with this exact structure:
 {
   "verdict": "LIKELY_SCAM|VERIFY_FIRST|NO_CLEAR_SCAM_SIGNS|NOT_ENOUGH_TO_TELL",
   "verdict_explanation": "",
+  "input_conflict": { "detected": false, "note": "" },
   "scam_pattern": { "label": "", "explanation": "" },
   "why_concerning": [{ "observation": "", "why_it_matters": "" }],
   "what_doesnt_settle_it": [""],
@@ -582,6 +810,11 @@ Return ONLY valid JSON with this exact structure:
 Omit or leave empty any section that does not genuinely apply. Do not force a
 scam pattern when unclear. Do not generate a fixed number of items in any
 list merely because room exists for more.
+
+Never include an empty string, a blank bullet, or a placeholder item inside
+an otherwise populated list. If one item has nothing useful to say, remove
+that single item — never leave a gap. Never emit an array containing only
+empty entries; omit the whole field instead.
 
 
 ==================================================
@@ -617,9 +850,17 @@ unverified brand policy; assign fake numerical confidence; mistake polish or
 sloppiness for decisive evidence; treat HTTP/HTTPS as proof; tell the visitor
 to verify through the suspicious message's own contact info or link; invent a
 reporting email, hotline, regulator, or procedure; fail to adapt advice to
-the ALREADY DONE field; promise a bank, platform, or authority will take a
-specific action; or call the message safe merely because you found no
-obvious scam signs. Revise if any answer reveals overreach.
+the ALREADY DONE field; silently trust the ALREADY DONE selection over
+contradicting evidence in the visitor's own pasted material; state the
+sender's intent or design purpose as established fact; assert how genuine
+senders universally behave; predict a future action of the sender as
+certain; upgrade an offered platform into one the sender controls or
+operates; frame continued conversation itself as financial exposure; render
+an empty bullet, card, or placeholder array item; state a general scam
+pattern as a confirmed fact about this sender; promise a bank, platform, or
+authority will take a specific action; or call the message safe merely
+because you found no obvious scam signs. Revise if any answer reveals
+overreach.
 
 NORTH STAR:
 
@@ -641,6 +882,13 @@ router.outputGuard = {
     'no_red_flags_treated_as_verified_safe_or_legitimate',
     'manipulation_intent_stated_as_known_attacker_psychology',
     'general_scam_pattern_stated_as_fact_about_this_specific_sender',
+    'sender_intent_or_design_purpose_asserted_as_established_fact',
+    'categorical_claim_about_how_genuine_senders_typically_behave',
+    'future_scam_stage_predicted_as_certain_rather_than_conditional',
+    'offered_platform_upgraded_to_sender_controls_or_operates_it',
+    'continued_conversation_itself_framed_as_financial_exposure',
+    'empty_bullet_placeholder_or_blank_list_item_rendered',
+    'checkbox_selection_trusted_over_contradicting_pasted_evidence',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -677,16 +925,18 @@ ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${i
       return res.status(500).json({ error: 'Could not analyze this message. Please try again.' });
     }
 
-    await runOutputGuard(parsed, {
+    const cleaned = stripEmptyItems(parsed);
+
+    await runOutputGuard(cleaned, {
       label: 'scam-radar',
-      fields: collectProseFields(parsed),
+      fields: collectProseFields(cleaned),
       supplied,
       promise: 'Help the visitor evaluate a suspicious message using only the message and context they supplied — no invented facts about the sender, no fabricated confidence, and a next step that verifies through a channel the message does not control.',
       guard: router.outputGuard,
       userLanguage,
     });
 
-    res.json(parsed);
+    res.json(cleaned);
   } catch (err) {
     console.error('[ScamRadar]', err);
     if (!res.headersSent) {

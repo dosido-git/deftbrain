@@ -176,6 +176,7 @@ function ScamRadar({ tool }) {
     const lines = [t('scam_copy_header'), ''];
     lines.push(`${t('scam_copy_verdict')} ${t(`scam_verdict_${results.verdict?.toLowerCase()}`)}`);
     if (results.verdict_explanation) lines.push(`\n${results.verdict_explanation}`);
+    if (results.input_conflict?.detected && results.input_conflict?.note) lines.push(`\n⚖️ ${t('scam_input_conflict')}: ${results.input_conflict.note}`);
     if (results.what_to_do_now?.length) {
       lines.push(`\n${t('scam_what_to_do_now')}`);
       results.what_to_do_now.forEach((a, i) => lines.push(`${i + 1}. ${a}`));
@@ -409,6 +410,17 @@ function ScamRadar({ tool }) {
           </div>
           {results.verdict_explanation && <p className={`text-sm font-medium ${verdictConfig.txt}`}>{results.verdict_explanation}</p>}
         </div>
+
+        {/* INPUT CONFLICT — the pasted transcript and the "already done?"
+            selection disagree. Surfaced before any advice, per the rule
+            that a checkbox never silently overrides the visitor's own
+            pasted evidence. */}
+        {results?.input_conflict?.detected && results.input_conflict?.note && (
+          <div className={`border rounded-xl p-4 ${c.warning}`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${c.warningTxt}`}>⚖️ {t('scam_input_conflict')}</p>
+            <p className={`text-sm ${c.warningTxt}`}>{results.input_conflict.note}</p>
+          </div>
+        )}
 
         {/* Safety disclaimer — automated guidance, not financial/legal advice */}
         <p className={`text-[11px] ${c.textMuted} px-1`}>ⓘ {t('scam_disclaimer')}</p>

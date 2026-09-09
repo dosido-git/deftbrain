@@ -3,8 +3,8 @@
     "tool": "ScamRadar",
     "generated": "2026-09-09",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/scam-radar/stream, not actually streaming)",
-    "baseline_commit": "scamradar-v2",
-    "how_to_regression_diff": "Re-run (npm run check:golden scam-radar) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200, verdict is an exact English token (LIKELY_SCAM|VERIFY_FIRST|NO_CLEAR_SCAM_SIGNS|NOT_ENOUGH_TO_TELL), never translated even when every other field is in another language — this is the exact bug that took v1 down in all 12 non-English languages (verdict was a spaced human-readable string there, e.g. 'SCAM', and withLanguage translated it). GUARDS carried forward from v1 and reconfirmed live in this pass: (1) enum pinning on verdict — non-translation instruction lives directly beside the enum list in the prompt, not just in a comment. (2) NO_QUOTE_RULE (backend/lib/factCheck.js) appended to the system prompt — v1 did not have this and broke on any German case that quoted a phrase from the message; confirmed fixed by feeding a literal doubly-quoted phrase in the DE test case below and getting valid JSON back. (3) max_tokens raised 4000 -> 5000 for the larger nested schema plus non-English expansion headroom. DO NOT reverse: the verdict token pin + non-translation instruction; NO_QUOTE_RULE; router.outputStandard='v2' + router.outputGuard (the v1 tool had no output guard at all — this schema's new 'if_you_already_interacted' branch and 'what_doesnt_settle_it' anti-reassurance list are exactly the kind of field a v2 guard pass exists to keep honest); the neutral (non-green) styling on NO_CLEAR_SCAM_SIGNS and NOT_ENOUGH_TO_TELL in the frontend — neither verdict is a safety finding and must not read as one. Schema is completely different from v1 (no confidence, no scam_type/techniques_used/red_flags/green_flags/what_to_do/do_not) — the old golden sample and its schema assertions do not apply; this is a full re-record, not a diff against v1."
+    "baseline_commit": "scamradar-v2.1",
+    "how_to_regression_diff": "Re-run (npm run check:golden scam-radar) — TEST IN A NON-ENGLISH LANGUAGE. v2.1 (2026-09-09) added 8 refinements on top of the v2 rewrite, driven by a live-caught bug: the tool trusted the 'already done?' radio button over contradicting evidence in the visitor's own pasted transcript (case 'en-romance-investment-scam-no-explicit-ask-yet' below is the exact repro — transcript contains '[after reply]' and '[three days of friendly conversation later]' while interactionStatus is 'none'). DO NOT reverse, in addition to every v2 guard already listed in git history for this file: (1) the new top-level 'input_conflict' field ({detected, note}) and the RECONCILE CONFLICTING INPUTS prompt section that populates it — every case below carries this key now, including the two with detected:false; a golden diff tool that requires exact key-set parity will need this key present in ALL cases, not just the conflict one. (2) the code-side stripEmptyItems() backstop (rule 7) — strips blank strings/objects out of every array before the guard or the response ever sees them; do not remove it even though the prompt also forbids empty bullets directly. (3) the observable-wording-vs-sender-intent, no-universal-genuine-sender-behavior, no-certain-next-stage-prediction, offered-platform-is-not-controlled-platform, and pattern-labeled-as-pattern (not fact) prompt sections — all five are new outputGuard prohibit entries too; removing the prompt section without removing the guard entry just means the guard silently repairs what the prompt should have prevented, which is strictly worse for latency with no behavior difference the visitor would notice, so keep both or neither."
   },
   "cases": [
     {
@@ -18,80 +18,71 @@
       },
       "output": {
         "verdict": "LIKELY_SCAM",
-        "verdict_explanation": "The supplied message contains several strong, overlapping indicators consistent with a phishing attempt: a sender domain that does not match PayPal's, a link domain that substitutes the digit 1 for the letter l to visually resemble the brand, a 24-hour deletion threat to create pressure, and a request for card details and a Social Security Number through an unverified page. You have already entered a password or code into that page, which makes prompt action on your real account the priority right now.",
+        "verdict_explanation": "The message combines several strong warning signs: a sender domain that substitutes a digit for a letter to resemble a known brand, a link with the same substitution, a 24-hour deletion threat, and a request for a credit card number, CVV, and Social Security Number through that link. You have also already entered a password or code into a page reached through this message, which makes prompt action on your real account important.",
+        "input_conflict": {
+          "detected": false,
+          "note": ""
+        },
         "scam_pattern": {
-          "label": "Account-impersonation phishing attempt",
-          "explanation": "The message claims to be from a known financial brand, creates urgency with a deletion threat, and directs the recipient to an external page to hand over credentials and sensitive financial and identity information."
+          "label": "Phishing / Account Impersonation",
+          "explanation": "This message fits a common pattern in which a sender impersonates a financial service, creates urgency through a suspension or deletion threat, and directs the recipient to a lookalike site to harvest login credentials and sensitive personal and financial information."
         },
         "why_concerning": [
           {
-            "observation": "Sender address is security@paypa1-alerts.net",
-            "why_it_matters": "The domain paypa1-alerts.net uses the digit 1 in place of the letter l, making it visually resemble 'paypal' at a glance. It is not paypal.com. Legitimate PayPal correspondence would come from a paypal.com domain."
+            "observation": "The sender address is security@paypa1-alerts.net — the domain uses the digit '1' where 'paypal' would use the letter 'l'.",
+            "why_it_matters": "This substitution makes the domain visually resemble the PayPal brand while being an entirely different address. It is a widely recognized technique used to make recipients believe they are hearing from a legitimate sender."
           },
           {
-            "observation": "Verification link shown is http://secure-paypa1-verify.com/restore",
-            "why_it_matters": "The link domain again substitutes the digit 1 for the letter l. It is not paypal.com. The link also uses HTTP, meaning any data entered travels without the basic transport protection HTTPS provides."
+            "observation": "The verification link is http://secure-paypa1-verify.com/restore — the same digit-for-letter substitution appears in the domain, and it uses HTTP rather than HTTPS.",
+            "why_it_matters": "The domain is not paypal.com. The lookalike spelling, combined with the unencrypted connection, means any information entered there is not being submitted to PayPal and is not protected in transit."
           },
           {
-            "observation": "The message requests credit card number, CVV, and Social Security Number",
-            "why_it_matters": "Asking for all of these through a link provided in an unsolicited message is a high-risk request. This combination is sufficient for financial fraud and identity theft regardless of who is asking."
+            "observation": "The message demands action within 24 hours and threatens permanent account deletion if you do not comply.",
+            "why_it_matters": "A hard deadline with a severe consequence is a pressure tactic. It can push recipients to act before they stop to verify whether the message is genuine."
           },
           {
-            "observation": "24-hour deadline with threat of permanent account deletion",
-            "why_it_matters": "This is a pressure tactic. It is designed to push you into acting before you have time to verify the message through an independent channel."
-          },
-          {
-            "observation": "Addressed to 'Valued Customer' rather than by name",
-            "why_it_matters": "A weak contextual signal on its own, but consistent with a mass-sent message not originating from a service that already has your account details."
+            "observation": "The message asks you to provide your credit card number, CVV, and Social Security Number through the link it supplies.",
+            "why_it_matters": "This combination of information — card details plus a government identity number — is sufficient for financial fraud and identity theft. Requests for all three in a single form, reached through an unsolicited message, carry serious risk regardless of how the sender presents itself."
           }
         ],
         "what_doesnt_settle_it": [
-          "The message uses the PayPal name and presents itself as coming from a security team. That does not verify it originated from PayPal — the brand name and team label can be copied by anyone.",
-          "The message sounds professional and urgent. Polished presentation does not establish legitimacy."
+          "The message uses the name 'PayPal Security Team.' That name can be placed in any email by any sender — it does not confirm the message came from PayPal.",
+          "The message mentions 'unusual activity' as a reason for suspension. The existence of that explanation does not confirm whether any such activity actually occurred on your real account."
         ],
         "how_to_verify": [
           {
-            "action": "Go directly to paypal.com by typing it yourself, or open the official PayPal app you already have installed.",
-            "reason": "This bypasses any link the message controls. If your account is genuinely suspended, you will see that inside the real app or site."
+            "action": "Open a new browser tab and type paypal.com yourself, or open the PayPal app directly from your device.",
+            "reason": "This puts you on the real service, not a site the message directed you to. Check whether your account actually shows a suspension or unusual-activity notice there."
           },
           {
-            "action": "Do not use the link, phone number, or contact information supplied in this message for verification.",
-            "reason": "Any channel the message itself provides could be controlled by the same party that sent it."
+            "action": "Use the contact information found on the real paypal.com site — not any number or address in this message — if you need to speak with someone.",
+            "reason": "Any contact channel supplied inside the suspicious message may route back to the same sender."
           }
         ],
         "what_to_do_now": [
-          "Because you already entered a password into a page linked from this message, treat that password as exposed — change it on the real PayPal site immediately, by going there directly, not through this message's link.",
-          "If you use the same password anywhere else, change it on those accounts as well.",
-          "Once you are inside the real PayPal account, review your account-security settings, check for any unfamiliar linked email addresses, phone numbers, or connected apps, and review recent transactions.",
-          "If a one-time code was also entered, contact PayPal through their independently found official site or app and describe what happened — a one-time code can in some circumstances be used to authorise access or changes.",
-          "Do not enter your card number, CVV, or Social Security Number into any page linked from this message, even if the page looks convincing."
+          "Change your PayPal password immediately using the real paypal.com site or app — not through the link in this message.",
+          "If you used the same password on any other account, change it on those accounts as well.",
+          "Review your PayPal account for any transactions or changes you did not make, and use the real site's security or dispute options to report anything unfamiliar.",
+          "If the form you submitted also included your credit card number, CVV, or Social Security Number, see the guidance below under 'if you already interacted.'"
         ],
         "if_you_already_interacted": {
           "relevant": true,
           "guidance": [
-            "Entering a password into this page is the most urgent issue here. Change your PayPal password now through the real site (type paypal.com yourself or use your app).",
-            "Do not delay on the password change — this is not the kind of urgency the scam message manufactured, it is a real response to actual exposure.",
-            "If you also entered a one-time code, contact PayPal through an independently found channel promptly and tell them a code was submitted on an unverified page.",
-            "Do not call any phone number or use any contact detail from the suspicious message itself."
+            "Because you entered a password into a page reached through this message, treat that password as exposed. Change it on the real PayPal site now, and anywhere else you used the same password.",
+            "Check your PayPal account's security settings — look for any sessions, linked devices, or email/phone changes you did not make, and remove or reverse them through the real site.",
+            "If the page also asked for your credit card number or CVV and you entered those, contact your card issuer through the number on the back of your card and describe exactly what you shared. Ask what options they have available. Do not promise yourself they will freeze or reimburse — that depends on the institution and circumstances.",
+            "If the page asked for your Social Security Number and you entered it, the appropriate protective steps depend on your situation and jurisdiction. A good starting point is to search for the official fraud or identity-theft guidance from your country's consumer protection authority — do not rely on contact information in this message to find that guidance."
           ]
         },
         "avoid": [
-          "Clicking the link http://secure-paypa1-verify.com/restore",
-          "Entering card details, CVV, or Social Security Number into any page this message directed you to",
-          "Replying to security@paypa1-alerts.net",
-          "Calling any phone number provided only inside this message",
-          "Assuming the threat of permanent deletion is real or that you must act through the channels the message provides"
+          "Do not click the link in the message again.",
+          "Do not call any phone number or use any contact information supplied in this message.",
+          "Do not submit any further information — name, date of birth, card details, or identity numbers — through any link or form this message provided."
         ],
         "important_unknowns": [
-          "Whether the page you entered your password into also attempted to download or install anything — if you noticed a file download, that would be a separate concern worth investigating.",
-          "Whether a one-time code was entered in addition to the password — that affects how urgently you should contact PayPal directly.",
-          "Whether any financial or identity information beyond the password was submitted — if it was, the steps needed differ from a password-only exposure."
+          "It is not known from the information supplied which fields you actually filled in on that page — whether it was only a password, or also card details and your Social Security Number. The steps you should prioritize depend on that. If you entered financial or identity information beyond the password, treat the card issuer and identity-protection steps as equally urgent."
         ]
-      },
-      "optionalSections": [
-        "important_unknowns",
-        "what_doesnt_settle_it"
-      ]
+      }
     },
     {
       "name": "de-paypal-phishing-no-interaction",
@@ -107,50 +98,57 @@
       },
       "output": {
         "verdict": "LIKELY_SCAM",
-        "verdict_explanation": "Die Nachricht enthält mehrere starke Merkmale, die typisch für Phishing-Versuche sind: eine gefälschte Absenderadresse im Domain-Text, eine künstlich erzeugte Dringlichkeit mit 24-Stunden-Frist, eine Drohung mit dauerhafter Kontolöschung und die direkte Aufforderung, Passwort und Kreditkartendaten über einen externen Link einzugeben. Diese Kombination ist ein klares Warnsignal.",
+        "verdict_explanation": "Die Nachricht zeigt mehrere Warnsignale: eine gefälschte Domain (paypa1 statt paypal, Endung .xyz, HTTP statt HTTPS), eine 24-Stunden-Drohung, eine Aufforderung zur Passworteingabe und eine Forderung nach Kreditkartendaten über einen externen Link. Die Überprüfung über einen unabhängigen Kanal ist notwendig, bevor Sie einem dieser Anweisungen folgen.",
+        "input_conflict": {
+          "detected": false,
+          "note": ""
+        },
         "scam_pattern": {
-          "label": "Phishing / Konto-Impersonation",
-          "explanation": "Die Nachricht gibt vor, vom PayPal-Sicherheitsteam zu stammen, und fordert auf, sensible Zugangsdaten über einen Link einzugeben, der nicht die offizielle Domain paypal.com verwendet."
+          "label": "Phishing / Konto-Imitation",
+          "explanation": "Die Nachricht imitiert eine offizielle Mitteilung eines bekannten Zahlungsdienstleisters, verbindet eine Sperrungsdrohung mit einer kurzen Frist und fordert die Eingabe sensibler Daten über einen Link."
         },
         "why_concerning": [
           {
-            "observation": "Der Link lautet http://paypa1-sicherheit.xyz/login — mit der Ziffer 1 anstelle des Buchstabens l in paypal.",
-            "why_it_matters": "Die Domain ahmt optisch einen bekannten Markennamen nach, gehört aber erkennbar nicht zu paypal.com. Wer die URL flüchtig liest, kann das leicht übersehen."
+            "observation": "Die Link-Domain lautet http://paypa1-sicherheit.xyz/login — mit der Ziffer 1 statt des Buchstabens l in 'paypal' und der Endung .xyz statt .com oder .de.",
+            "why_it_matters": "Diese Schreibweise kann optisch an den echten Markennamen erinnern, ist aber eine andere Domain. Die Endung .xyz und der Zusatz 'sicherheit' sind kein Bestandteil der offiziell bekannten PayPal-Domains. Außerdem wird HTTP statt HTTPS verwendet, was bedeutet, dass eingegebene Daten nicht einmal verschlüsselt übertragen würden."
           },
           {
-            "observation": "Die Verbindung verwendet HTTP statt HTTPS.",
-            "why_it_matters": "HTTP statt HTTPS ist ein zusätzliches Warnsignal neben anderen Merkmalen dieser Nachricht."
+            "observation": "Die Nachricht setzt eine 24-Stunden-Frist und droht mit dauerhafter Kontolöschung.",
+            "why_it_matters": "Eine 24-Stunden-Frist soll schnelles Handeln erzwingen, bevor der Empfänger den Link überprüfen kann."
           },
           {
-            "observation": "Die Nachricht fordert auf, Passwort und Kreditkartendaten über den angegebenen Link einzugeben.",
-            "why_it_matters": "Die Kombination aus Zugangsdaten und Zahlungsinformationen in einer einzigen Aktion ist eine besonders risikoreiche Anforderung und sollte niemals über einen unbekannten Link erfolgen."
+            "observation": "Die Nachricht fordert explizit Passwort und Kreditkartendaten über den bereitgestellten Link.",
+            "why_it_matters": "Die gleichzeitige Abfrage von Anmeldedaten und Zahlungsinformationen über einen externen Link ist eine besonders risikoreiche Anfrage. Wer diese Daten eingibt, gibt beides in einem einzigen Schritt preis."
           },
           {
-            "observation": "Es wird eine 24-Stunden-Frist gesetzt und mit dauerhafter Kontolöschung gedroht.",
-            "why_it_matters": "Eine 24-Stunden-Frist und die Drohung mit Kontolöschung schaffen Druck, schnell zu handeln."
+            "observation": "Der gesamte Verifizierungsweg — Link, Anweisungen, Kontaktpunkt — stammt ausschließlich aus der Nachricht selbst.",
+            "why_it_matters": "Der gesamte Verifizierungsweg stammt aus der Nachricht selbst — es gibt keinen unabhängigen Kanal, um die Herkunft zu überprüfen."
           }
         ],
         "what_doesnt_settle_it": [
-          "Die Nachricht verwendet eine formelle Anrede und einen professionellen Abschluss. Das belegt nicht, wer sie tatsächlich gesendet hat.",
-          "Der Name PayPal Sicherheitsteam im Text ist keine Bestätigung, dass die Nachricht wirklich von PayPal stammt. Jeder kann diesen Namen in eine Nachricht schreiben.",
-          "Die Tatsache, dass tatsächlich ein PayPal-Konto existiert, bedeutet nicht, dass diese Nachricht von PayPal kommt."
+          "Die Nachricht verwendet eine förmliche Anrede und Abschlussfloskel. Das belegt nicht, wer sie tatsächlich gesendet hat.",
+          "Die Erwähnung von 'PayPal Sicherheitsteam' ist eine Behauptung in der Nachricht — keine verifizierten Absenderdaten.",
+          "Die Nachricht könnte von jedem erstellt worden sein, unabhängig davon, wie sorgfältig sie formuliert ist."
         ],
         "how_to_verify": [
           {
-            "action": "Öffnen Sie die PayPal-App, die Sie selbst installiert haben, oder tippen Sie www.paypal.com manuell in Ihren Browser — ohne den Link aus dieser Nachricht zu verwenden.",
-            "reason": "Nur so erreichen Sie den echten PayPal-Dienst. Wenn das Konto wirklich gesperrt wäre, würde das dort angezeigt."
+            "action": "Öffnen Sie die offizielle PayPal-Website, indem Sie die Adresse selbst in die Browserzeile eingeben (z. B. paypal.com), und melden Sie sich dort an.",
+            "reason": "Nur so sehen Sie, ob Ihr Konto tatsächlich eingeschränkt ist — ohne den Link aus der Nachricht zu verwenden."
           },
           {
-            "action": "Nutzen Sie die Kontaktnummer oder den Support-Bereich, den Sie auf der offiziell aufgerufenen PayPal-Website finden.",
-            "reason": "Telefonnummern oder Kontaktangaben aus der verdächtigen Nachricht selbst dürfen nicht zur Überprüfung genutzt werden."
+            "action": "Nutzen Sie alternativ die offizielle PayPal-App, die Sie selbst installiert haben.",
+            "reason": "Die App verbindet sich direkt mit PayPal und ist nicht von dieser Nachricht beeinflusst."
+          },
+          {
+            "action": "Rufen Sie den PayPal-Kundendienst über eine Telefonnummer an, die Sie auf der offiziellen Website oder auf einem früheren Kontoauszug gefunden haben — nicht über eine Nummer, die in dieser Nachricht steht.",
+            "reason": "So können Sie direkt bestätigen lassen, ob Ihr Konto gesperrt ist."
           }
         ],
         "what_to_do_now": [
-          "Klicken Sie den Link in der Nachricht nicht an.",
-          "Geben Sie keine Daten ein — weder Passwort noch Kreditkartendaten.",
-          "Öffnen Sie PayPal unabhängig über die offizielle App oder durch manuelle Eingabe von paypal.com im Browser.",
-          "Wenn Sie dort keinen Hinweis auf eine Kontosperrung sehen, ist die Nachricht höchstwahrscheinlich nicht echt.",
-          "Sie können die Nachricht über die Meldeoption Ihres E-Mail-Anbieters als Phishing markieren und löschen."
+          "Klicken Sie nicht auf den Link in der Nachricht.",
+          "Geben Sie nirgendwo Ihr Passwort oder Ihre Kreditkartendaten ein, solange Sie nicht über einen unabhängigen Kanal bestätigt haben, dass tatsächlich ein Problem besteht.",
+          "Prüfen Sie Ihren Kontostatus direkt über die offizielle PayPal-Website oder App, die Sie selbst aufrufen.",
+          "Wenn Sie die Nachricht per E-Mail erhalten haben, können Sie sie als Phishing-Versuch an die zuständige Stelle bei PayPal melden — die entsprechenden Hinweise finden Sie auf der offiziell aufgerufenen PayPal-Website."
         ],
         "if_you_already_interacted": {
           "relevant": false,
@@ -158,18 +156,13 @@
         },
         "avoid": [
           "Den Link http://paypa1-sicherheit.xyz/login öffnen.",
-          "Auf die Nachricht antworten.",
-          "Die in der Nachricht genannte Kontaktadresse oder Telefonnummer für Rückfragen nutzen.",
-          "Zugangsdaten oder Zahlungsdaten eingeben, bevor Sie PayPal direkt und unabhängig kontaktiert haben."
+          "Passwort oder Kreditkartendaten über diesen oder einen anderen in der Nachricht enthaltenen Link eingeben.",
+          "Die Nachricht an Dritte weiterzuleiten — falls jemand anderes denselben Link öffnet, ist er denselben Risiken ausgesetzt."
         ],
         "important_unknowns": [
-          "Es ist nicht bekannt, über welchen Kanal diese Nachricht eingegangen ist (E-Mail, SMS, sonstiges) — das ändert nichts an der Empfehlung, aber die vollständige Absenderadresse könnte ein weiteres Indiz liefern.",
-          "Ob tatsächlich ein PayPal-Konto des Empfängers existiert und dessen Status, lässt sich nur durch direkten Login bei PayPal feststellen."
+          "Über welchen Kanal die Nachricht kam (E-Mail, SMS, Messenger) — das ändert zwar nicht die Warnsignale, kann aber beeinflussen, wo und wie Sie sie melden können."
         ]
-      },
-      "optionalSections": [
-        "important_unknowns"
-      ]
+      }
     },
     {
       "name": "en-romance-investment-scam-no-explicit-ask-yet",
@@ -182,75 +175,82 @@
       },
       "output": {
         "verdict": "LIKELY_SCAM",
-        "verdict_explanation": "The message follows a well-documented fraud pattern: an unsolicited contact claiming a wrong number, followed by friendly conversation to build trust over several days, followed by an investment opportunity framed as a personal favor from a trusted insider. The sequence itself is the warning sign, not any single message.",
+        "verdict_explanation": "The message follows a recognizable sequence: an unsolicited wrong-number opener, several days of relationship-building with no apparent purpose, and then an unsolicited investment opportunity introduced through a personal connection ('my uncle'). Each stage is consistent with a pattern in which rapport is built before a financial platform or opportunity is introduced. No single element confirms fraud, but the combination is strong enough to treat this with serious caution.",
+        "input_conflict": {
+          "detected": true,
+          "note": "Your pasted conversation includes '[after reply]' and '[three days of friendly conversation later],' which suggests you replied and continued the exchange over multiple days. You selected 'I haven't interacted,' but the transcript indicates otherwise. The rest of this response is based on what the transcript shows, not the selection, since the transcript is the more specific evidence. If the bracketed labels were added by you to describe a hypothetical scenario rather than something that actually happened, the 'if_you_already_interacted' section may not apply to you."
+        },
         "scam_pattern": {
-          "label": "Relationship-building investment scam (sometimes called pig butchering)",
-          "explanation": "This pattern begins with accidental-seeming contact, builds a sense of personal connection over days or weeks, then introduces an investment opportunity through a trusted third party (here, an uncle with insider signals). The goal is to get the target to deposit money into a platform the scammer controls."
+          "label": "Romance / Relationship scam leading into investment fraud (sometimes called 'pig butchering')",
+          "explanation": "This sequence is consistent with a scam pattern in which an unsolicited contact — often beginning as an apparent wrong number — develops trust over days of friendly conversation, then introduces a profitable-sounding investment opportunity, usually involving a trading platform and a trusted insider (a relative or mentor). The financial opportunity is introduced after the relationship feels natural, which is what makes the ask feel low-pressure and credible. That said, this describes a recognized pattern, not a confirmed fact about this specific sender."
         },
         "why_concerning": [
           {
-            "observation": "The opening message claimed to be a wrong number addressed to 'David' from someone at a tennis club.",
-            "why_it_matters": "This is a recognized entry technique. The mistaken contact gives the sender a plausible reason to start a conversation with a stranger, and the friendly follow-up ('you seem nice') is the pivot to relationship-building."
+            "observation": "The contact opened with 'Is this still your number?' addressed to a specific name, then immediately pivoted to 'wrong number' after a reply.",
+            "why_it_matters": "This opener does not require the sender to know anything about the recipient in advance. It can draw a reply from almost anyone who receives it, and the 'wrong number' framing creates a natural reason for the conversation to continue without the recipient feeling targeted."
           },
           {
-            "observation": "Three days of friendly conversation preceded any mention of money or investing.",
-            "why_it_matters": "Building rapport before making a request is a deliberate sequence. It is designed to make the investment mention feel like a natural recommendation from a friend rather than a cold pitch."
+            "observation": "Three days of personal conversation preceded the investment mention, with no apparent reason other than building familiarity.",
+            "why_it_matters": "In an ordinary wrong-number exchange, correcting the mistake does not require days of continued personal conversation. The extended rapport-building becomes more significant when it is followed directly by a financial opportunity."
           },
           {
-            "observation": "The investment opportunity is introduced through a trusted insider ('my uncle works in commodities') and framed as signals David can simply follow.",
-            "why_it_matters": "Presenting the opportunity as insider access through family removes the need for the sender to appear as a salesperson and makes the offer feel safer. In fraud cases using this pattern, the platform and the uncle are typically controlled by the same operation."
+            "observation": "'My uncle works in commodities and hes been helping me with a gold trading account. I made 2,400 last month just following his signals.'",
+            "why_it_matters": "A specific, recent profit figure from a trusted insider is a common way to make an investment opportunity feel credible and attainable. It is presented as a personal disclosure, not a sales pitch, which lowers the perceived risk of engaging further."
           },
           {
-            "observation": "'I'm not trying to sell you anything' and 'no pressure at all' appear in the same message as the pitch.",
-            "why_it_matters": "Explicitly denying sales intent while making a financial pitch is a technique to lower the recipient's guard. It does not change what the message is asking."
+            "observation": "'Im not trying to sell you anything' and 'no pressure at all.'",
+            "why_it_matters": "Explicit reassurances that there is no sales intent can make an approach feel safer than it might otherwise. These phrases do not establish that the offer is legitimate — they address the concern without resolving it."
           },
           {
-            "observation": "A specific monthly return figure (2,400) is mentioned without any context about currency, starting capital, or risk.",
-            "why_it_matters": "A concrete gain figure makes the opportunity feel real and attractive. Without knowing the capital involved, the figure is meaningless, but it anchors a sense of easy profit."
+            "observation": "An offer to 'show you the platform' follows the trust-building stage.",
+            "why_it_matters": "Introducing a trading platform at this stage fits the pattern in which a fraudulent or manipulated interface is shown only after a relationship has been established. The message does not establish who operates the platform or whether funds placed there can be withdrawn."
           }
         ],
         "what_doesnt_settle_it": [
-          "The messages read as warm and natural. That does not verify who sent them or that the relationship is genuine.",
-          "The sender has not yet asked for money, account details, or a deposit. Requests in this pattern typically come after more trust has been established.",
-          "The sender could theoretically be a real person who genuinely likes this trading platform. The messages themselves cannot settle that."
+          "The sender's name, location story, and background details are plausible-sounding, but none of that verifies who is actually sending the messages.",
+          "The conversation tone is warm and low-pressure. Scam approaches can be low-pressure, especially early on.",
+          "A profit figure of 2,400 is specific enough to sound real. Specific numbers do not verify that the account or the returns exist.",
+          "The sender has not yet asked for money, credentials, or personal information in the supplied material. That does not mean the contact is safe — in this pattern, those requests typically come later."
         ],
         "how_to_verify": [
           {
-            "action": "Do not engage with the platform the sender offers to show you.",
-            "reason": "In this pattern, the platform is often where funds are deposited and then made inaccessible. Seeing it does not cost anything but opens the next stage of the approach."
+            "action": "Do not attempt to verify through this sender.",
+            "reason": "Any information they provide about themselves, the uncle, or the platform comes from the same unverified source."
           },
           {
-            "action": "If you want to test whether the contact is genuine, ask a question that a real wrong-number stranger from Singapore would answer easily but that requires no investment discussion.",
-            "reason": "Genuine wrong-number contacts who became friendly do not typically pivot to investment platforms. How the sender responds to a redirect tells you something, though it does not confirm identity."
+            "action": "If the sender claims any connection to a real organization or regulated platform, look up that platform independently and check whether it is registered with the relevant financial regulator in your country.",
+            "reason": "Regulated investment platforms are required to be listed with financial authorities. An unregistered platform is a significant warning sign on its own."
+          },
+          {
+            "action": "Before placing any money on a platform introduced this way, search the platform name alongside terms like 'scam,' 'withdrawal blocked,' or 'fraud' to see what others have reported.",
+            "reason": "Platforms used in this pattern often have documented complaints about blocked withdrawals or frozen accounts."
           }
         ],
         "what_to_do_now": [
-          "You have not interacted in any harmful way, which means you have no immediate action to take on accounts or finances.",
-          "The safest response is to not pursue the trading platform offer, regardless of how the conversation has felt.",
-          "If the sender continues the conversation without returning to investment topics, that does not change the assessment of how this started.",
-          "You are not obligated to reply or explain yourself."
+          "Do not send money, transfer cryptocurrency, or deposit funds into any platform this contact introduces.",
+          "Do not share financial account details, identity documents, passwords, or one-time codes with this sender.",
+          "Do not install any app or software at this sender's suggestion.",
+          "If you have already been in conversation: you can disengage at any point. You do not owe an explanation."
         ],
         "if_you_already_interacted": {
-          "relevant": false,
-          "guidance": []
+          "relevant": true,
+          "guidance": [
+            "Based on the transcript, you have been in conversation for several days. Conversation by itself does not create financial or account exposure.",
+            "The risk rises sharply if the next step involves sending money, depositing into a platform, sharing account credentials, or providing identity documents. Do not take any of those steps.",
+            "If you have already deposited money or shared financial information with this sender or a platform they introduced, contact your bank or payment provider promptly through a number on their official website or the back of your card, and describe exactly what happened."
+          ]
         },
         "avoid": [
-          "Opening or registering on any platform the sender shares.",
-          "Sending any money, gift cards, cryptocurrency, or wire transfers at any point in this thread.",
-          "Sharing financial account details, identity documents, or personal information with this contact.",
-          "Assuming the pattern has changed because the sender seems friendly, does not pressure you, or waits a long time before returning to the investment topic."
+          "Sending any money or cryptocurrency to this contact or a platform they introduce.",
+          "Sharing bank details, card numbers, identity documents, or login credentials.",
+          "Installing apps or clicking links at this sender's direction.",
+          "Using any investment platform introduced through this contact without independently verifying it is regulated and has no reported withdrawal problems."
         ],
         "important_unknowns": [
-          "Whether there is a real person behind these messages or an automated or scripted operation is not determinable from the messages alone.",
-          "What the platform being referenced actually is, and who controls it, is unknown.",
-          "Whether the sender will eventually ask for money directly, request account access, or use another method is unknown at this stage."
+          "Whether the bracketed labels in the transcript describe something that actually happened or a hypothetical scenario you constructed — this affects whether the 'if_you_already_interacted' guidance applies to you.",
+          "Whether the sender has yet named or linked to a specific platform — the nature of that platform, if introduced, would be relevant to assess further."
         ]
-      },
-      "optionalSections": [
-        "important_unknowns",
-        "what_doesnt_settle_it",
-        "avoid"
-      ]
+      }
     }
   ]
 }

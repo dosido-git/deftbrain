@@ -1,7 +1,7 @@
-# ScamRadar (Scam Radar) — architecture & lock notes (`scamradar-v2`)
+# ScamRadar (Scam Radar) — architecture & lock notes (`scamradar-v2.1`)
 
-**Known-good:** tag `scamradar-v2` · golden `audit/scam-radar-golden-sample.json`
-(3 cases, live-captured 2026-09-09)
+**Known-good:** tag `scamradar-v2.1` · golden `audit/scam-radar-golden-sample.json`
+(3 cases, re-captured 2026-09-09 after the v2.1 refinement pass)
 **Verify:** `npm run check:golden scam-radar` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -139,6 +139,96 @@ result renders in the documented order with the collapsed pattern section
 working, and `npm run check:golden scam-radar` passes 3/3 against the live
 backend.
 
+## V2.1 refinement pass (2026-09-09, owner review of the V2 rewrite)
+
+The owner approved the V2 architecture but caught one real bug during review
+plus several pattern-vs-fact leaks in the wording. All eight fixes, live
+verified:
+
+1. **🐛 The tool trusted the "already done?" radio button over contradicting
+   evidence in the visitor's own pasted transcript.** Repro: the transcript
+   contains `[after reply]` and `[three days of friendly conversation
+   later]`, but the visitor selected "No — I haven't interacted." The tool
+   said "you have not shared anything or clicked anything" — flatly
+   contradicting the transcript it had just been given. Fixed with a new
+   **RECONCILE CONFLICTING INPUTS** prompt section plus a new top-level
+   output field, `input_conflict: { detected, note }`, populated before
+   `what_to_do_now`/`if_you_already_interacted` are generated. When the
+   transcript establishes more happened than the selection says, the model
+   now says so explicitly (in the visitor's own words: "Your pasted
+   conversation suggests you replied... although you selected 'I haven't
+   interacted.' That difference matters for the next steps.") and bases the
+   rest of the response on the transcript's own evidence, not the stale
+   selection. Frontend renders this as its own callout (⚖️, `c.warning`
+   styling) directly under THE READ, before the disclaimer — visible before
+   any advice, matching the owner's "reconcile before advising" instruction.
+   New i18n key `scam_input_conflict` (all 13 languages).
+2. **Sender intent vs. observable wording.** "'Is this still your number?' —
+   a message designed to get a reply from anyone" asserted the sender's
+   design intent as fact. Now: "...is a low-friction opener that can elicit
+   a reply without requiring the sender to establish much first" — describes
+   effect, not claimed intent.
+3. **No more "genuine people typically..." claims.** "A genuine wrong number
+   typically ends when corrected" was a categorical, unsupported rule. Now
+   the prompt requires analyzing the specific sequence in front of it
+   instead.
+4. **No more certain next-stage predictions.** "If the platform were
+   introduced now, that would complete the sequence" implied the tool knows
+   what happens next. Now conditional: "If the sender next introduces a
+   trading platform... that would add another strong warning sign."
+5. **An offered platform is not a controlled platform.** "An invitation to
+   engage with a trading interface the sender controls or promotes" upgraded
+   an offer into a fact about control/operation/fraud. New **PLATFORMS AND
+   TOOLS OFFERED IN A MESSAGE** section: the offer is the only established
+   fact; who operates it is explicitly unknown; the "fraudulent platform
+   introduced after trust-building" claim stays labeled as general pattern
+   knowledge, never fact about this platform.
+6. **Continued conversation is not itself financial exposure.** "Engaging at
+   that stage is where financial exposure begins" mischaracterized ordinary
+   social engagement as exposure. New **TIE ADVICE TO CONSEQUENTIAL ACTIONS**
+   section: exposure comes from sending money, credentials, identity
+   documents, or using an introduced platform — not from talking.
+7. **No empty bullets, ever — enforced twice.** The prompt already said to
+   omit sections that don't apply, but a live case still produced an empty
+   bullet inside an otherwise-populated `what_doesnt_settle_it` array. Fixed
+   two ways, deliberately not relying on the model alone: (a) prompt now
+   explicitly forbids a blank item inside a populated list ("remove that
+   single item — never leave a gap"), and (b) a new code-side
+   `stripEmptyItems()` runs on every parsed response before the guard or the
+   client ever sees it — recursively strips blank strings and now-empty
+   objects out of every array. **Keep both** — the prompt instruction alone
+   already failed once live.
+8. **Pattern knowledge stays labeled as pattern knowledge.** "This is how
+   this fraud type is scripted" states a known script as fact about this
+   sender. New **PATTERN KNOWLEDGE STAYS LABELED AS PATTERN KNOWLEDGE**
+   section spells out the exact distinction: "THIS MESSAGE SHOWS X" +
+   "KNOWN SCAM PATTERNS CAN ALSO CONTAIN X" — never "THEREFORE THIS SENDER
+   IS FOLLOWING A SCRIPT WE KNOW."
+
+**`router.outputGuard.prohibit` gained 7 entries**, one per rule above except
+#7 (which got the code-side backstop instead of relying on the guard) and #8
+(extended the pre-existing `general_scam_pattern_stated_as_fact_about_this_
+specific_sender` entry rather than adding a new one):
+`sender_intent_or_design_purpose_asserted_as_established_fact`,
+`categorical_claim_about_how_genuine_senders_typically_behave`,
+`future_scam_stage_predicted_as_certain_rather_than_conditional`,
+`offered_platform_upgraded_to_sender_controls_or_operates_it`,
+`continued_conversation_itself_framed_as_financial_exposure`,
+`empty_bullet_placeholder_or_blank_list_item_rendered`,
+`checkbox_selection_trusted_over_contradicting_pasted_evidence`.
+
+**Live re-verification:** re-ran all 3 golden cases against the local
+backend. The exact repro scenario (case 3, `interactionStatus: "none"` +
+conflicting transcript) now correctly returns `input_conflict.detected:
+true` with the required phrasing, and every one of rules 2–8 held across all
+3 fresh captures on the first attempt — no retries needed for correctness
+(one DE capture was discarded and re-run for an unrelated quality nit, a
+near-duplicate `what_doesnt_settle_it` bullet — not a rule violation, just
+sampling noise not worth enshrining in a "known good" reference).
+`npm run check:golden scam-radar` → 3/3 PASS. Golden sample fully re-recorded
+(all 3 cases now carry `input_conflict`, including the two with
+`detected: false`).
+
 ## Audit fixes locked here (2026-07-14) — kept for history, both reconfirmed live 2026-09-09
 
 1. **🐛 DOWN in ALL 12 non-English languages — 500 every call.** The guard
@@ -174,3 +264,14 @@ backend.
   the `-v2` suffix on a future edit without checking whether the shape changed
   again.
 - `scam_disclaimer` line under the verdict banner.
+- **The `input_conflict` field and its RECONCILE CONFLICTING INPUTS prompt
+  section** — this is the fix for a real, 100%-reproducible bug (the tool
+  contradicting the visitor's own pasted transcript). Removing either
+  reintroduces it.
+- **`stripEmptyItems()` in the route handler** — the prompt's own
+  "never render an empty bullet" instruction already failed once live; the
+  code-side backstop is not redundant with it.
+- The five v2.1 outputGuard prohibit entries (sender intent, categorical
+  genuine-sender claims, certain-next-stage predictions, platform
+  control/operation, conversation-as-exposure) — each pairs with a prompt
+  section of the same name; keep both or neither, not one without the other.
