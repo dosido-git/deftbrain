@@ -27,9 +27,11 @@ function isBlank(v) {
 
 // Rule 7 backstop (see SCAM_RADAR_SYSTEM's "DO NOT GENERATE EMPTY SECTIONS"):
 // the prompt already forbids an empty bullet sitting among real ones, but
-// don't rely on that alone — strip blank strings and now-blank objects out
-// of every array before the response ever reaches the guard or the visitor.
-// An object survives only if at least one of its own values is non-blank.
+// don't rely on that alone — strip blank strings out of every array, and
+// drop an object item from an array unless EVERY one of its own
+// string-typed fields is non-blank. A half-populated object (e.g. an
+// observation with no why_it_matters) is exactly as useless to the visitor
+// as a fully-empty one, so a wholly-blank-only check isn't strict enough.
 function stripEmptyItems(val) {
   if (Array.isArray(val)) {
     return val
@@ -37,7 +39,7 @@ function stripEmptyItems(val) {
       .filter(v => {
         if (isBlank(v)) return false;
         if (v && typeof v === 'object' && !Array.isArray(v)) {
-          return Object.values(v).some(x => !isBlank(x));
+          return Object.values(v).every(x => typeof x !== 'string' || !isBlank(x));
         }
         return true;
       });
@@ -925,16 +927,22 @@ ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${i
       return res.status(500).json({ error: 'Could not analyze this message. Please try again.' });
     }
 
-    const cleaned = stripEmptyItems(parsed);
-
-    await runOutputGuard(cleaned, {
+    await runOutputGuard(parsed, {
       label: 'scam-radar',
-      fields: collectProseFields(cleaned),
+      fields: collectProseFields(parsed),
       supplied,
       promise: 'Help the visitor evaluate a suspicious message using only the message and context they supplied — no invented facts about the sender, no fabricated confidence, and a next step that verifies through a channel the message does not control.',
       guard: router.outputGuard,
       userLanguage,
     });
+
+    // Run AFTER the guard, not before: the guard mutates `parsed` in place,
+    // and its repair pass can blank out a flagged field instead of
+    // substituting it — despite being told not to. Cleaning first only
+    // catches blanks already in the raw model output, not ones the repair
+    // step introduces afterward. Caught live on Sensory Scout's near-
+    // identical code during the same session; fixed here to match.
+    const cleaned = stripEmptyItems(parsed);
 
     res.json(cleaned);
   } catch (err) {

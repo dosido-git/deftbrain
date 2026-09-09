@@ -194,9 +194,14 @@ verified:
    two ways, deliberately not relying on the model alone: (a) prompt now
    explicitly forbids a blank item inside a populated list ("remove that
    single item — never leave a gap"), and (b) a new code-side
-   `stripEmptyItems()` runs on every parsed response before the guard or the
-   client ever sees it — recursively strips blank strings and now-empty
-   objects out of every array. **Keep both** — the prompt instruction alone
+   `stripEmptyItems()` runs **after** `runOutputGuard`, not before — the
+   guard mutates its argument in place, and its repair pass can blank a
+   flagged field instead of substituting it (found live on Sensory Scout's
+   near-identical code the same day; fixed here to match) — recursively
+   strips blank strings out of every array, and drops an array item that's
+   an object unless **every** one of its own string fields is non-blank
+   (a half-populated object is as useless as a fully-blank one). **Keep
+   both, and keep the ordering** — the prompt instruction alone
    already failed once live.
 8. **Pattern knowledge stays labeled as pattern knowledge.** "This is how
    this fraud type is scripted" states a known script as fact about this
@@ -268,9 +273,12 @@ sampling noise not worth enshrining in a "known good" reference).
   section** — this is the fix for a real, 100%-reproducible bug (the tool
   contradicting the visitor's own pasted transcript). Removing either
   reintroduces it.
-- **`stripEmptyItems()` in the route handler** — the prompt's own
-  "never render an empty bullet" instruction already failed once live; the
-  code-side backstop is not redundant with it.
+- **`stripEmptyItems()` in the route handler, called AFTER `runOutputGuard`**
+  — the prompt's own "never render an empty bullet" instruction already
+  failed once live, and cleaning BEFORE the guard also failed live (the
+  guard mutates its argument in place and its repair pass can introduce a
+  blank). Both the backstop and its position after the guard are load-
+  bearing, not redundant.
 - The five v2.1 outputGuard prohibit entries (sender intent, categorical
   genuine-sender claims, certain-next-stage predictions, platform
   control/operation, conversation-as-exposure) — each pairs with a prompt
