@@ -21,7 +21,7 @@ const CONCERNS = [
   { key: 'temperature', labelKey: 'smm_con_temperature', icon: '🌡️' },
   { key: 'visual_clutter', labelKey: 'smm_con_visual_activity', icon: '🎯' },
   { key: 'personal_space', labelKey: 'smm_con_personal_space', icon: '🧍' },
-  { key: 'waiting', labelKey: 'smm_con_waiting', icon: '⏳' },
+  { key: 'waiting', labelKey: 'smm_con_waiting', icon: '🕓' },
   { key: 'parking', labelKey: 'smm_con_arrival_parking', icon: '🅿️' },
   { key: 'other', labelKey: 'smm_con_other', icon: '❓' },
 ];
@@ -78,9 +78,14 @@ function SensoryScout({ tool }) {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
+    success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
+
+  const linkStyle = isDark
+    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── View ──
   const [view, setView] = useState('home'); // home | form | results | route
@@ -171,7 +176,7 @@ function SensoryScout({ tool }) {
   const loadExample = () => {
     const ex = pickExample('SensoryScout', [
       { loc: 'smm_ex_location', type: 'grocery', concerns: { noise: true, crowds: true, lighting: true }, known: 'smm_ex_known', notes: '' },
-      { loc: 'smm_ex2_location', type: 'hospital', concerns: { lighting: true, smells: true, temperature: true, waiting: true }, known: 'smm_ex2_known', notes: 'smm_ex2_notes' },
+      { loc: 'smm_ex2_location', type: 'hospital', concerns: { lighting: true, smells: true, temperature: true, waiting: true }, known: 'smm_ex2_known', notes: '' },
     ]);
     setLocation(t(ex.loc));
     setPlaceType(ex.type);
@@ -199,6 +204,7 @@ function SensoryScout({ tool }) {
         pastVisits: pastVisitsHere.slice(0, 3).map(v => ({ summary: v.whatHelped ? `Previous visit — what helped: ${v.whatHelped}` : '' })),
       });
       setResults({ ...data, location: location.trim(), placeType, concerns: selectedConcerns });
+      // Exception: the 40 is a preview-string truncation length, not a history cap; history itself is capped at 6 below.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: location.slice(0, 40) }, ...prev].slice(0, 6));
       setView('results');
     } catch (err) { setError(err.message || t('smm_err_analyze')); }
@@ -337,7 +343,10 @@ function SensoryScout({ tool }) {
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
                 <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Scout'}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('smm_tagline')}</p>
+              {/* i18n key, not tool?.tagline — the catalog tagline keeps its
+                  leading emoji (toolTagline() convention), which would
+                  double against the icon span just above it. */}
+              <p className={`text-sm ${c.textSecondary}`}>{t('smm_tagline')}</p>
               {view === 'home' && (
                 <button onClick={loadExample} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap" style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}>✨ {t('try_example')}</button>
               )}
@@ -370,7 +379,7 @@ function SensoryScout({ tool }) {
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
                   <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
                 </div>
-                <button onClick={() => { setShowProfileForm(true); setView('form'); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap`}>+ {t('smm_new')}</button>
+                <button onClick={() => { setShowProfileForm(true); setView('form'); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap`}>{t('smm_new')}</button>
               </div>
               {profiles.length === 0 ? (
                 <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
@@ -409,7 +418,7 @@ function SensoryScout({ tool }) {
               </div>
 
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                   {PLACE_TYPES.map(pt => (
                     <button key={pt.value} onClick={() => setPlaceType(placeType === pt.value ? '' : pt.value)}
@@ -423,11 +432,11 @@ function SensoryScout({ tool }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                   <input type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                   <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
               </div>
@@ -446,12 +455,12 @@ function SensoryScout({ tool }) {
               </div>
 
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                 <textarea value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
 
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                 <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
 
@@ -466,7 +475,8 @@ function SensoryScout({ tool }) {
                     <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold ${c.accentTxt}`}>💾 {t('smm_save_as_profile')}</button>
                   ) : (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border space-y-2`}>
-                      <input type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
+                      <label htmlFor="smm-profile-name" className="sr-only">{t('smm_profile_name_sr')}</label>
+                      <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
                       <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder={t('smm_default_notes_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
                       <div className="flex gap-2">
                         <button onClick={saveProfile} disabled={!profileName.trim()} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('smm_save_profile')}</button>
@@ -639,7 +649,8 @@ function SensoryScout({ tool }) {
             {showPanel === 'ask' && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>💬 {t('smm_help_me_ask')}</p>
-                <textarea value={askNeed} onChange={e => setAskNeed(e.target.value)} placeholder={t('smm_ask_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
+                <label htmlFor="smm-ask-need" className="sr-only">{t('smm_ask_need_sr')}</label>
+                <textarea id="smm-ask-need" value={askNeed} onChange={e => setAskNeed(e.target.value)} placeholder={t('smm_ask_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
                 <button onClick={fetchAskScript} disabled={askLoading || !askNeed.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>
                   {askLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : t('smm_write_script')}
                 </button>
@@ -695,11 +706,11 @@ function SensoryScout({ tool }) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                   <input type="text" value={travelMode} onChange={e => setTravelMode(e.target.value)} placeholder={t('smm_route_traveling_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                   <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                 </div>
               </div>
@@ -712,7 +723,7 @@ function SensoryScout({ tool }) {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('optional_label')})</span></label>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                 <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
               </div>
               <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
@@ -777,13 +788,27 @@ function SensoryScout({ tool }) {
           </div>
         )}
 
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="/DecisionCoach" className={`text-xs ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-700 hover:text-cyan-800'} underline underline-offset-2`}>🎯 {t('smm_xref_decisioncoach')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-700 hover:text-cyan-800'} underline underline-offset-2`}>🌀 {t('smm_xref_spiralstopper')}</a>
+        {/* Pre-result cross-ref — at the foot, never above the form. */}
+        {!results && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
+              <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('smm_xref_spiralstopper')}</a>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Post-result cross-ref. */}
+        {results && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
+              <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('smm_xref_spiralstopper')}</a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
