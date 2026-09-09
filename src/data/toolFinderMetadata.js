@@ -3033,4 +3033,180 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user has an appliance, vehicle, home, bicycle, contractor, or other repair estimate and wants to understand, compare, or clarify the quote before approving it.",
     whenNotToRecommend: "Do not recommend for remote repair diagnosis, generic live market-price lookup, purchase evaluation unrelated to a repair quote, or an already-issued bill whose main problem is billing or collections.",
   },
+
+  RecipeChaosSolver: {
+    problems: [
+      "Something went wrong while I was cooking and I need to save the dish",
+      "I am missing an ingredient and need a workable substitute",
+      "My food tastes flat, too rich, too salty, or otherwise off",
+      "I want to check a recipe before I start or scale it to a different amount",
+    ],
+    capabilities: [
+      "builds a grounded rescue plan from the recipe, problem, and ingredients the user actually supplies",
+      "suggests ingredient substitutions while explaining relevant tradeoffs and uncertainty",
+      "uses taste-and-adjust loops for flavor problems instead of pretending it can taste the dish",
+      "checks a recipe for practical gaps before cooking and scales quantities without inventing a replacement recipe",
+    ],
+    accepts: [
+      "a recipe or the relevant part of one",
+      "what is going wrong",
+      "missing ingredients and what is available instead",
+      "dietary needs or constraints",
+      "original and target servings for scaling",
+    ],
+    notFor: [
+      "planning an entire meal from miscellaneous ingredients and coordinating several dishes",
+      "medical nutrition advice",
+      "guaranteeing that a rescue or substitution will work",
+      "food-safety decisions that require information the user has not supplied",
+    ],
+    handoffs: [
+      { when: "the user wants to decide what meal to make from ingredients on hand and coordinate the cooking order", toolId: "MiseEnPlace" },
+    ],
+    primaryIntent: "rescue, adjust, substitute, check, or scale a recipe that is already in progress or already chosen",
+    whenToRecommend: "Recommend when the user has a specific dish or recipe and needs help fixing what went wrong, replacing an ingredient, correcting flavor, checking readiness, or scaling it.",
+    whenNotToRecommend: "Do not recommend when the user mainly needs to invent a meal from available ingredients, coordinate a multi-dish meal, or obtain medical dietary advice.",
+  },
+
+  ResearchDecoder: {
+    problems: [
+      "I have a research paper or abstract and do not understand what it actually found",
+      "I want to know what a study can and cannot support",
+      "I want to check whether a headline or claim matches the underlying research",
+      "I want to compare two studies or understand a research term in context",
+    ],
+    capabilities: [
+      "translates supplied research text into plain language while preserving the source boundary",
+      "separates reported findings, study design, important numbers, limitations, and unresolved questions",
+      "checks a supplied headline or claim against the supplied research text",
+      "compares two supplied studies and explains material differences without inventing reasons for them",
+      "explains research and statistical terminology in context",
+    ],
+    accepts: [
+      "research abstract, excerpt, or paper text",
+      "optional headline or claim to check",
+      "two research texts for comparison",
+      "research term or phrase plus optional context",
+    ],
+    notFor: [
+      "conducting an unsourced literature review from model memory",
+      "personal medical, financial, or other consequential recommendations based on one study alone",
+      "general document translation unrelated to research",
+      "inventing details missing from an abstract or excerpt",
+    ],
+    handoffs: [
+      { when: "the user has a difficult non-research document that needs plain-language explanation", toolId: "PlainTalk" },
+      { when: "the user has a jargon-heavy consequential document and needs the obligations, deadlines, or actions explained", toolId: "JargonAssassin" },
+    ],
+    primaryIntent: "explain the research text in front of the user and distinguish what it supports from what it does not establish",
+    whenToRecommend: "Recommend when the user supplies a research paper, abstract, study excerpt, research headline, or research term and wants a source-faithful explanation.",
+    whenNotToRecommend: "Do not recommend for general document simplification, unsourced claims about the wider scientific literature, or personal decisions that require professional guidance beyond the supplied study.",
+  },
+
+  RoommateCourt: {
+    problems: [
+      "My roommate and I keep disagreeing about a shared-home problem",
+      "I need a practical way to raise a roommate issue without making it worse",
+      "We need to divide chores and rotate them over time",
+      "A chore assignment does not work and I need to rebalance it",
+    ],
+    capabilities: [
+      "separates the user's account, the reported other perspective, practical disagreement, and important unknowns",
+      "suggests concrete household options and natural conversation language without pretending to determine objective guilt",
+      "divides chores among supplied household members and uses saved rounds to support rotation",
+      "revises chore assignments when the user supplies a new constraint or burden detail",
+    ],
+    accepts: [
+      "description of the roommate problem",
+      "the user's concern and desired change",
+      "the other person's perspective when genuinely known",
+      "what has already been tried",
+      "household members, chores, optional relative chore-load information, and prior rounds",
+    ],
+    notFor: [
+      "legal adjudication of tenancy rights or lease disputes",
+      "assigning objective percentages of blame or fairness",
+      "diagnosing a roommate's motives or personality",
+      "serious interpersonal conversations that extend beyond ordinary shared-living coordination",
+    ],
+    handoffs: [
+      { when: "the issue requires preparing for a genuinely difficult personal conversation rather than ordinary roommate problem-solving", toolId: "DifficultTalkCoach" },
+      { when: "the user needs help understanding a lease provision that may govern the roommate or housing issue", toolId: "LeaseTrapDetector" },
+    ],
+    primaryIntent: "help housemates work through a practical shared-living disagreement or divide household chores",
+    whenToRecommend: "Recommend when the user has a roommate or housemate conflict, needs words for a practical shared-home conversation, or wants to divide and rotate chores.",
+    whenNotToRecommend: "Do not recommend for legal rulings, objective blame scoring, psychological diagnosis, or high-stakes conflict that needs a dedicated difficult-conversation tool.",
+  },
+
+  ReadTheRoom: {
+    problems: [
+      "I am going into a social situation and do not know what to say or how to join in",
+      "I am in a conversation right now and need a line, a recovery, or an exit",
+      "Someone said or did something socially ambiguous and I want help interpreting it",
+      "An interaction is over and I want to debrief it or send a follow-up",
+    ],
+    capabilities: [
+      "prepares the user for events, one person, a group, or a cross-cultural social situation",
+      "provides concise in-the-moment lines for opening, unsticking, repairing, or leaving a conversation",
+      "offers bounded interpretations of social cues without claiming to read another person's mind",
+      "helps debrief interactions and draft follow-up messages from user-supplied facts",
+      "can save user-validated plans and social tactics for later reuse",
+    ],
+    accepts: [
+      "event or social-situation details",
+      "who will be there and what the user is concerned about",
+      "what someone actually said or did plus context",
+      "what happened afterward and what the user wants to do next",
+    ],
+    notFor: [
+      "mind-reading or certainty about another person's feelings, attraction, motives, or personality",
+      "preparing the content of a genuinely difficult conversation",
+      "clinical treatment of social anxiety",
+      "party hosting logistics and full event design",
+    ],
+    handoffs: [
+      { when: "the user needs to prepare the substance of a difficult or sensitive conversation", toolId: "DifficultTalkCoach" },
+      { when: "the user specifically needs quick lines for an awkward silence rather than broader social navigation", toolId: "AwkwardSilenceFiller" },
+      { when: "the user is spiraling after an interaction and primarily needs help interrupting the rumination", toolId: "SpiralStopper" },
+      { when: "the user is hosting and needs to design the gathering itself rather than navigate it as a participant", toolId: "PartyArchitect" },
+    ],
+    primaryIntent: "help the user prepare for, navigate, interpret, and follow up on ordinary social situations without inventing other people's inner states",
+    whenToRecommend: "Recommend when the user is unsure what to say or do before, during, or after a social interaction, or wants a careful read of an ambiguous social cue.",
+    whenNotToRecommend: "Do not recommend for mind-reading, therapy, full event hosting design, or the substantive preparation of a difficult conversation.",
+  },
+
+  SafeWalk: {
+    problems: [
+      "I am walking somewhere alone and want to think through the walk before I leave",
+      "I am unfamiliar with the route and want a simple check-in plan",
+      "I want a reminder, location link, pretend call, light, or emergency controls while walking",
+    ],
+    capabilities: [
+      "builds a practical walk plan from the route facts and concerns the user actually supplies",
+      "separates known route details from unknown conditions and avoids pretending to predict danger",
+      "creates a copyable check-in message and keeps walking utilities together",
+      "uses verified local information only when it is current, relevant, and traceable",
+    ],
+    accepts: [
+      "starting point and destination",
+      "time of day and approximate duration",
+      "what the user already knows about the route",
+      "specific concerns",
+    ],
+    notFor: [
+      "crime-risk prediction or certifying that a route is safe",
+      "live monitoring of the user's walk",
+      "automatic emergency dispatch or guaranteed contact notification",
+      "authoritative turn-by-turn navigation",
+    ],
+    handoffs: [
+      { when: "the user is mainly anxious about the walk and wants help settling before leaving", toolId: "NerveCheck" },
+      { when: "the user is driving rather than walking and wants trip-safety planning", toolId: "DriveHome" },
+      { when: "the user is on a layover and wants to decide what can realistically fit between flights", toolId: "LayoverMaximizer" },
+      { when: "the user wants to plan a longer recreational outing or route rather than a practical point-to-point walk", toolId: "MicroAdventureMapper" },
+    ],
+    primaryIntent: "help the user prepare for a solo walk using known route information and simple self-managed check-in and walking tools",
+    whenToRecommend: "Recommend when the user is about to walk somewhere alone and wants practical preparation, a check-in plan, or walking utilities without a fake safety score.",
+    whenNotToRecommend: "Do not recommend for live crime prediction, route-safety certification, emergency-response guarantees, or authoritative navigation.",
+  },
 };
