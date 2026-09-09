@@ -697,7 +697,11 @@ const SafeWalk = ({ tool }) => {
   // ══════════════════════════════════════════
   // COPY / REGISTER ACTIONS
   // ══════════════════════════════════════════
-  const handleReset = useCallback(() => { setAssessResult(null); setCheckedItems({}); setError(''); }, []);
+  const handleReset = useCallback(() => {
+    setFromLocation(''); setToLocation(''); setFromTouched(false); setToTouched(false);
+    setTimeOfDay(''); setWalkDuration(''); setRouteKnowledge(''); setConcerns('');
+    setAssessResult(null); setCheckedItems({}); setError('');
+  }, []);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('SafeWalk', EXAMPLES);
@@ -1200,7 +1204,7 @@ const SafeWalk = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={submitAssessment} disabled={loading || !canSubmit}
-        className={`relative flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2
+        className={`relative flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 px-4 sm:pe-16
           ${canSubmit ? c.btnPrimary : c.btnIdle}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> {t('sw_assessing')}</>
@@ -1388,6 +1392,9 @@ const SafeWalk = ({ tool }) => {
   // MAIN RENDER
   // ══════════════════════════════════════════
   const results = assessResult;  // alias for audit cross-ref detection
+  const hasAnyContent = !!(
+    fromLocation || toLocation || timeOfDay || walkDuration || routeKnowledge || concerns || assessResult
+  );
 
   return (
     <div className={c.text}>
@@ -1404,7 +1411,7 @@ const SafeWalk = ({ tool }) => {
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ms-3">
-            {assessResult && (
+            {hasAnyContent && (
               <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
                 ↺ {t('start_over')}
               </button>
