@@ -44,8 +44,24 @@ function loadGuides() {
 // This function is mirrored in the other file of this pair (src/components/
 // RelatedLinks.js and scripts/prerender.js). Users and crawlers must see the
 // same links, so change n in BOTH or not at all.
+//
+// GENERIC_TAGS: excluded from counting toward `tg` because a single shared
+// occurrence of one of these, combined with one shared broad category (Me,
+// The Grind), was enough to pass tg>=1 && ct>=1 for tools with nothing
+// substantively in common — SensoryScout <-> FinalWish via "planning" + "Me"
+// (found 2026-09-09; SensoryScout is about sensory prep for an outing,
+// FinalWish is end-of-life/estate planning). Verified via a full pairwise
+// catalog audit that every OTHER single-shared-tag match in the catalog is
+// thematically coherent, including ones sharing an equally broad category —
+// e.g. "death" + "Me" between GriefGuide/FinalWish is a genuinely sensible
+// pairing, because "death" (unlike "planning") is specific to both tools'
+// actual subject matter. Extend this list only when a re-run of that same
+// audit turns up another offender, not preemptively — removing a tag here
+// silently weakens every genuine connection that tag was carrying too.
+const GENERIC_TAGS = new Set(['planning']);
+
 function relatedTools(tool, all, n = 2) {
-  const tags = new Set((tool.tags || []).map(s => s.toLowerCase()));
+  const tags = new Set((tool.tags || []).map(s => s.toLowerCase()).filter(t => !GENERIC_TAGS.has(t)));
   const cats = new Set(tool.categories || []);
   return all
     .filter(t => t.id !== tool.id)
