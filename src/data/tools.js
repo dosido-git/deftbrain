@@ -3165,7 +3165,7 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.",
   guide: {
-      overview: "Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (a debrief, a follow-up message, or understanding something that went badly). It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook only grows when you tell it something actually worked; recurring people are tracked from what you log, not a personality profile.",
+      overview: "Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (making sense of how something went, a follow-up message, or understanding something that went badly). Each moment opens with one question and a plain-language list of choices — no second row of tabs to parse first. It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook and saved plans are small utilities at the bottom of the page, not the main event; they only grow when you tell the tool something actually worked.",
 
       howToUse: [
         "Prepare → An Event: pick an event, add who's there and any concerns, get a simple plan, a few conversation starters, and one thing to watch for",
@@ -3173,7 +3173,7 @@ tagline: "Work with the energy you have.",
         "Right Now → I need something to say / Conversation stalled / I said something awkward / I need to leave: fast, in-the-moment help for exactly what's happening",
         "Decode → What might that have meant?: a real read when the evidence points somewhere, honest uncertainty when it doesn't, and what to watch for next",
         "Decode → Should I go deeper or back off?: reads observable reciprocity — whether they're engaging or winding down — rather than a fixed signal",
-        "Afterward → Help me debrief / Write a follow-up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked",
+        "Afterward → Help me make sense of how it went / Help me follow up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked",
         "Track a recurring person under Prepare → One Person and log what happened after each interaction — the next strategy comes from your own logged outcomes"
       ],
 

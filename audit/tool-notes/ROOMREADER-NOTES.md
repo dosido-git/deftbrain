@@ -1,7 +1,7 @@
 # Read the Room (was RoomReader) — architecture & lock notes
 
 **Known-good:** tag `readtheroom-v2` · golden `audit/room-reader-golden-sample.json`
-(16 cases — one per endpoint plus 2 dedicated regression cases, all
+(16 cases — one per endpoint plus regression/emphasis cases, all
 live-captured 2026-09-08)
 **Verify:** `npm run check:golden room-reader` (backend up: `npm run dev:backend`)
 
@@ -10,10 +10,11 @@ live-captured 2026-09-08)
 A social-situation coach reorganized around 4 moments — Prepare / Right Now /
 Decode / Afterward — each exposing 2-4 contextual actions, instead of the old
 13 flat modes. Frontend `src/tools/ReadTheRoom.js`. Backend
-`backend/routes/room-reader.js` — 14 endpoints (2 new: `-stalled`, `-exit`;
-2 dropped: `-energy`, `-ladder`, folded into `-depth`), all `MODELS.SMART` via
-`callClaudeWithRetry` + `withLanguage`, on `router.outputStandard = 'v2'` with
-`runOutputGuard` on every endpoint.
+`backend/routes/room-reader.js` — 13 endpoints (2 new vs. v1: `-stalled`,
+`-exit`; `-energy`/`-ladder` folded into `-depth`; `-debrief`/`-autopsy`
+merged into one `-debrief` endpoint taking an `emphasis` param — see the IA
+pass below), all `MODELS.SMART` via `callClaudeWithRetry` + `withLanguage`,
+on `router.outputStandard = 'v2'` with `runOutputGuard` on every endpoint.
 
 ## V2 rewrite (2026-09-08) — owner brief
 
@@ -222,6 +223,58 @@ object, so the toggle never affected what the render was actually checking.
 Fixed by making both use `'sessionHistory'`. Verified live: clicking now
 expands the panel and shows the logged entries.
 
+## IA simplification pass (2026-09-08, fourth pass) — modes → moments + choices
+
+Owner critique: the tool had accumulated "effectively nine top-level
+destinations" — the 4 real moments, plus Debrief/Follow-Up/Something Went
+Badly as three more peer modes under Afterward, plus Playbook and Saved Plans
+as permanent header panels appearing before the working form. "The
+interface exposes the internal feature architecture to the visitor... The
+visitor's problem should dominate; the tool's capabilities should recede."
+
+**Debrief + Something Went Badly merged into one endpoint.** They were
+"basically the neutral version of the other" — same schema, same honesty,
+different emphasis. `room-reader-autopsy` deleted; `room-reader-debrief` now
+takes `emphasis: 'neutral' | 'repair'` and one shared `MAKE_SENSE_SYSTEM`
+prompt (replacing `DEBRIEF_SYSTEM` + `AUTOPSY_SYSTEM`) that tells both tones
+apart by lead framing and generosity, not by truthfulness — repair emphasis
+still requires real wins if there are any (never invents one), neutral
+emphasis still tells a plain honest read if something did go wrong. Follow-Up
+was already its own thing (drafting a message, not reflecting on an event)
+and stays a separate endpoint/choice.
+
+**Sub-modes restyled as an in-form question, not a second nav row.** Each of
+the 4 groups now shows `t(QUESTION_KEY[group])` ("What's happening?", "What
+are you trying to figure out?", etc.) plus a vertical list of full-sentence
+choices ("💬 I need something to say", not a label like "Something to Say")
+the first time a visitor opens it. Clicking a choice reveals the actual form;
+a "‹ Choose something else" link goes back to the question without losing
+entered data. Clicking a top-level group tab always re-asks the question
+(`subConfirmed` resets to `false`). `loadExample` bypasses the question
+screen directly. New state: `subConfirmed` (bool); new i18n keys:
+`rr_question_*` (4), `rr_change_choice`, `rr_sense_*`/`rr_after_what`/
+`rr_ph_after_*` (merged-endpoint form), plus `rr_sub_sense`. The 6 existing
+`rr_sub_*` keys (say/stalled/awkward/leave/followup/badly) were **retexted**
+in place — same key, changed from short labels to first-person sentences —
+in all 13 languages; anything reading them as short pill labels elsewhere
+would break.
+
+**Playbook and Saved Plans demoted to a "My Stuff" utility card.** Previously
+two always-visible panels above the working form; now one small toggle bar
+(`📚 {{count}} saved` / `📋 {{count}} plans`) at the very bottom of the
+component, below Recent, expanding in place — never gating or preceding the
+form. This was almost placed wrong: an early draft put the My Stuff bar
+between the choice screen and the form (still "before the working form",
+just one level down) and was caught and moved before verification, per the
+owner's explicit complaint about ordering.
+
+Golden sample updated: `after-debrief-hosted-dinner` (old
+`/api/room-reader-debrief`, pre-merge schema) and `after-badly-group-brushoff`
+(old `/api/room-reader-autopsy`, now 404) replaced with
+`after-sense-hosted-dinner` (emphasis: neutral) and `after-badly-group-brushoff`
+(emphasis: repair, same underlying scenario, kept the name) — both against
+the merged `/api/room-reader-debrief`, live-captured 2026-09-08.
+
 ## DO NOT silently reverse
 
 - `my_read.label` / `do_you_need_to_fix_it.answer` staying the exact pinned
@@ -234,6 +287,15 @@ expands the panel and shows the logged entries.
   auto-called from a generated response.
 - `InputCard`'s ⌘↵ chip — don't let a future hand-rolled button reintroduce
   the old inconsistency.
+- The question-then-choice screen for each group — don't reintroduce a
+  second pill-nav row for sub-modes; a new sub-action belongs in the choice
+  list, not a new tab.
+- Playbook/Saved Plans staying a bottom "My Stuff" utility, never a header
+  panel that renders before the group's working form.
+- Debrief and Something Went Badly staying one endpoint distinguished by
+  `emphasis` — don't split them back into two prompts/routes just because a
+  new correction only applies to one tone; add an `if (emphasis === ...)`
+  branch to `MAKE_SENSE_SYSTEM` instead.
 
 ## Gotchas
 

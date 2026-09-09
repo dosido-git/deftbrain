@@ -268,20 +268,29 @@ Return ONLY valid JSON:
 
 my_read.label MUST be copied character-for-character as exactly one of the three English options above, even when the rest of the response is in another language. Never paraphrase it, add words to it, or invent a fourth option.`);
 
-const DEBRIEF_SYSTEM = section(`AFTERWARD — HELP ME DEBRIEF
+const MAKE_SENSE_SYSTEM = section(`AFTERWARD — MAKE SENSE OF IT
 
-Never generate "how it probably actually looked from the outside" — you were not outside. Use supplied events to offer ANOTHER WAY TO READ IT without inventing observers' reactions. Do not manufacture a confidence arc or claim progress unless actual prior history establishes it. A tactic only belongs in the visitor's Playbook once the visitor reports it actually worked — do not label a suggestion here as "what works for you."
+This endpoint serves two entry points that share the same honesty: reflecting on how something went, and understanding something that went badly. The visitor's chosen emphasis shapes tone and depth, not truthfulness — a lighter reflection still tells the truth, and a repair-focused one is still generous about what wasn't the visitor's fault.
+
+If EMPHASIS IS NEUTRAL: lead with genuine wins if there are any. Be warm, not clinical. Do not manufacture a confidence arc or claim progress unless actual prior history establishes it.
+
+If EMPHASIS IS REPAIR: lead with a plain, honest account of what happened. Do not perform "forensic analysis" of hidden social causes — never invent signals the visitor missed, other people's moods, bad timing, or group dynamics unless supplied. Be generous in what_you_couldnt_know — people blame themselves too much. wins may be empty if nothing went well; never invent one to fill the schema.
+
+In both emphases: never generate "how it probably actually looked from the outside" — you were not outside. Use supplied events to offer ANOTHER WAY TO READ IT without inventing observers' reactions. A turning point must reference an actual supplied event — "when you asked a second question and they answered with one word, that was a reasonable point to stop carrying the conversation" is fine; "they were already irritated before you arrived" is not. A tactic only belongs in the visitor's Playbook once the visitor reports it actually worked — do not label a suggestion here as "what works for you."
 
 Return ONLY valid JSON:
 {
-  "honest_read": "warm but not patronizing — one sentence",
-  "wins": [{ "what": "something that went well, even small — one sentence", "why_it_worked": "the mechanism — one sentence" }],
+  "honest_read": "a plain, honest read of what happened — warm but not patronizing in neutral emphasis, direct but not harsh in repair emphasis — one sentence",
+  "wins": [{ "what": "something that actually went well, even small — one sentence", "why_it_worked": "the mechanism — one sentence" }],
   "another_way_to_read_it": [{ "what_felt_bad": "one sentence", "another_way_to_read_it": "a grounded alternative reading of the SAME supplied event, not an invented observer reaction — one sentence", "next_time": "one sentence" }],
-  "patterns": "only fill this in if prior history is actually supplied below — otherwise return an empty string",
-  "next_challenge": { "suggestion": "one small, graduated next step — one sentence", "why": "one sentence" }
+  "what_you_could_control": ["specific, actionable, not guilt-tripping — usually only relevant in repair emphasis"],
+  "what_you_couldnt_know": ["genuinely outside the visitor's knowledge or control — be generous, especially in repair emphasis"],
+  "plausible_turning_points": [{ "moment": "must reference an actual supplied event — one sentence", "why_it_may_have_mattered": "one sentence" }],
+  "next_step": { "suggestion": "one small, specific next step — graduated in neutral emphasis, learnable in repair emphasis — one sentence", "why": "one sentence" },
+  "what_not_to_overlearn": "one sentence — the thing not to draw a sweeping conclusion from, especially relevant in repair emphasis"
 }
 
-Generate 2-3 wins and 1-2 another_way_to_read_it entries as the material supports — never invent an awkward moment to reframe if the visitor didn't describe one.`);
+Omit or leave empty any section that doesn't genuinely apply — never invent a win, a turning point, or an awkward moment to reframe just to fill the schema. Generate at most 2-3 items per list.`);
 
 const FOLLOWUP_SYSTEM = section(`AFTERWARD — WRITE A FOLLOW-UP
 
@@ -295,22 +304,6 @@ Return ONLY valid JSON:
 }
 
 Generate 3 message options with different styles.`);
-
-const AUTOPSY_SYSTEM = section(`AFTERWARD — SOMETHING WENT BADLY, HELP ME UNDERSTAND IT
-
-Do not perform "forensic analysis" of hidden social causes. Never invent signals the visitor missed, other people's moods, bad timing, or group dynamics unless supplied. A turning point must reference an actual supplied event — "when you asked a second question and they answered with one word, that was a reasonable point to stop carrying the conversation" is fine; "they were already irritated before you arrived" is not.
-
-Return ONLY valid JSON:
-{
-  "what_happened": "a plain restatement — 1-2 sentences",
-  "what_you_could_control": ["specific, actionable, not guilt-tripping"],
-  "what_you_couldnt_know": ["genuinely outside the visitor's knowledge or control — be generous here"],
-  "plausible_turning_points": [{ "moment": "must reference an actual supplied event — one sentence", "why_it_may_have_mattered": "one sentence" }],
-  "what_to_try_differently": ["specific, learnable — not platitudes"],
-  "what_not_to_overlearn": "one sentence — the thing not to draw a sweeping conclusion from"
-}
-
-Generate at most 3 items per list — be generous in what_you_couldnt_know rather than piling blame on the visitor.`);
 
 const PERSON_REFRESH_SYSTEM = section(`RECURRING PEOPLE — A FRESH APPROACH FROM HISTORY
 
@@ -806,30 +799,36 @@ ${relationship ? `RELATIONSHIP: ${relationship}` : ''}`;
 });
 
 // ═══════════════════════════════════════════════════
-// AFTERWARD — help me debrief
+// AFTERWARD — make sense of it (serves both "help me debrief" and
+// "something went badly" — same honesty, different emphasis; see
+// audit/tool-notes/READTHEROOM-NOTES.md for why these were merged)
 // ═══════════════════════════════════════════════════
 router.post('/room-reader-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
+    const emphasis = req.body.emphasis === 'repair' ? 'repair' : 'neutral';
     const eventType = cleanString(req.body.eventType, 200);
-    const whatHappened = cleanString(req.body.whatHappened, 1500);
+    const whatHappened = cleanString(req.body.whatHappened, 2000);
     const whatWentWell = cleanString(req.body.whatWentWell, 1000);
     const whatFeltAwkward = cleanString(req.body.whatFeltAwkward, 1000);
-    const overallFeeling = cleanString(req.body.overallFeeling, 40) || 'mixed';
+    const timeline = cleanString(req.body.timeline, 1000);
+    const overallFeeling = cleanString(req.body.overallFeeling, 40);
     const playbook = Array.isArray(req.body.playbook) ? req.body.playbook : [];
 
-    if (!whatHappened && !whatWentWell && !whatFeltAwkward) return res.status(400).json({ error: 'Tell us something about how it went.' });
+    if (!whatHappened && !whatWentWell && !whatFeltAwkward) return res.status(400).json({ error: 'Tell us something about what happened.' });
 
-    const supplied = `EVENT: ${eventType || 'social event'}
+    const supplied = `EMPHASIS: ${emphasis === 'repair' ? 'REPAIR — the visitor said something went badly and wants to understand it' : 'NEUTRAL — the visitor wants to reflect on how it went'}
+EVENT: ${eventType || 'social situation'}
 WHAT HAPPENED: ${whatHappened || 'not specified'}
 ${whatWentWell ? `WHAT WENT WELL: ${whatWentWell}` : ''}
-${whatFeltAwkward ? `WHAT FELT AWKWARD: ${whatFeltAwkward}` : ''}
-OVERALL FEELING: ${overallFeeling}${playbookContext(playbook)}`;
+${whatFeltAwkward ? `WHAT FELT AWKWARD OR WENT WRONG: ${whatFeltAwkward}` : ''}
+${timeline ? `TIMELINE: ${timeline}` : ''}
+${overallFeeling ? `OVERALL FEELING: ${overallFeeling}` : ''}${playbookContext(playbook)}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 1800,
-      system: withLanguage(DEBRIEF_SYSTEM, userLanguage),
+      max_tokens: 2200,
+      system: withLanguage(MAKE_SENSE_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
     }, { label: 'room-reader-debrief' });
 
@@ -841,7 +840,9 @@ OVERALL FEELING: ${overallFeeling}${playbookContext(playbook)}`;
       label: 'room-reader-debrief',
       fields: collectProseFields(parsed),
       supplied,
-      promise: 'Help the visitor process a social event honestly — real wins, a grounded alternative reading of anything that felt awkward, and a graduated next step — without inventing how it looked from the outside.',
+      promise: emphasis === 'repair'
+        ? 'Help the visitor understand a social interaction that went badly, using only what was supplied — no invented signals, moods, or group dynamics, and every turning point tied to an actual supplied event.'
+        : 'Help the visitor process a social event honestly — real wins, a grounded alternative reading of anything that felt awkward, and a graduated next step — without inventing how it looked from the outside.',
       guard: router.outputGuard,
       userLanguage,
     });
@@ -895,52 +896,6 @@ ${goal ? `VISITOR'S GOAL: ${goal}` : ''}${playbookContext(playbook)}`;
     res.json(parsed);
   } catch (error) {
     console.error('[RoomReaderFollowUp]', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
-
-// ═══════════════════════════════════════════════════
-// AFTERWARD — something went badly, help me understand it
-// ═══════════════════════════════════════════════════
-router.post('/room-reader-autopsy', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
-    const whatHappened = cleanString(req.body.whatHappened, 2000);
-    const timeline = cleanString(req.body.timeline, 1000);
-    const howYouFelt = cleanString(req.body.howYouFelt, 500);
-    const whatYouThinkWentWrong = cleanString(req.body.whatYouThinkWentWrong, 800);
-    const playbook = Array.isArray(req.body.playbook) ? req.body.playbook : [];
-
-    if (!whatHappened) return res.status(400).json({ error: 'Describe what happened.' });
-
-    const supplied = `WHAT HAPPENED: ${whatHappened}
-${timeline ? `TIMELINE: ${timeline}` : ''}
-${howYouFelt ? `HOW THE VISITOR FELT: ${howYouFelt}` : ''}
-${whatYouThinkWentWrong ? `WHAT THE VISITOR THINKS WENT WRONG: ${whatYouThinkWentWrong}` : ''}${playbookContext(playbook)}`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage(AUTOPSY_SYSTEM, userLanguage),
-      messages: [{ role: 'user', content: supplied }],
-    }, { label: 'room-reader-autopsy' });
-
-    if (!parsed?.what_happened) {
-      return res.status(500).json({ error: 'Could not read the room. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
-      label: 'room-reader-autopsy',
-      fields: collectProseFields(parsed),
-      supplied,
-      promise: 'Help the visitor understand a social interaction that went badly, using only what was supplied — no invented signals, moods, or group dynamics, and every turning point tied to an actual supplied event.',
-      guard: router.outputGuard,
-      userLanguage,
-    });
-
-    res.json(parsed);
-  } catch (error) {
-    console.error('[RoomReaderAutopsy]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

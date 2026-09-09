@@ -96,10 +96,19 @@ const SUB_ACTIONS = {
     { id: 'depth', icon: '📶', labelKey: 'rr_sub_depth' },
   ],
   after: [
-    { id: 'debrief',  icon: '📝', labelKey: 'rr_sub_debrief' },
+    { id: 'sense',    icon: '🧭', labelKey: 'rr_sub_sense' },
     { id: 'followup', icon: '💌', labelKey: 'rr_sub_followup' },
-    { id: 'badly',    icon: '🔬', labelKey: 'rr_sub_badly' },
+    { id: 'badly',    icon: '😬', labelKey: 'rr_sub_badly' },
   ],
+};
+
+// The question posed before showing a group's sub-choices — see the
+// "choice screen, not another nav row" redesign in READTHEROOM-NOTES.md.
+const QUESTION_KEY = {
+  prepare: 'rr_question_prepare',
+  now: 'rr_question_now',
+  decode: 'rr_question_decode',
+  after: 'rr_question_after',
 };
 
 // Pinned English enum values from the backend → i18n key. Never compare
@@ -254,6 +263,9 @@ const ReadTheRoom = ({ tool }) => {
   // ── State ──
   const [group, setGroup] = useState('prepare');
   const [sub, setSub] = useState('event');
+  // A group tab opens on a question + choice list, not straight into a form —
+  // subConfirmed tracks whether the visitor has answered it for this visit.
+  const [subConfirmed, setSubConfirmed] = useState(false);
   const [error, setError] = useState('');
   const activeKey = `${group}:${sub}`;
 
@@ -329,13 +341,15 @@ const ReadTheRoom = ({ tool }) => {
   const [depthRelationship, setDepthRelationship] = useState('');
   const [depthResult, setDepthResult] = useState(null);
 
-  // Afterward — Debrief
-  const [debriefEvent, setDebriefEvent] = useState('');
-  const [debriefWhat, setDebriefWhat] = useState('');
-  const [debriefGood, setDebriefGood] = useState('');
-  const [debriefAwkward, setDebriefAwkward] = useState('');
-  const [debriefFeeling, setDebriefFeeling] = useState('mixed');
-  const [debriefResult, setDebriefResult] = useState(null);
+  // Afterward — Make Sense of It (shared by "sense" and "badly" — same
+  // form and endpoint, "badly" just sends emphasis: 'repair')
+  const [afterEvent, setAfterEvent] = useState('');
+  const [afterWhat, setAfterWhat] = useState('');
+  const [afterWentWell, setAfterWentWell] = useState('');
+  const [afterFeltOff, setAfterFeltOff] = useState('');
+  const [afterTimeline, setAfterTimeline] = useState('');
+  const [afterFeeling, setAfterFeeling] = useState('');
+  const [afterResult, setAfterResult] = useState(null);
 
   // Afterward — Follow-up
   const [followUpWho, setFollowUpWho] = useState('');
@@ -343,13 +357,6 @@ const ReadTheRoom = ({ tool }) => {
   const [followUpWhat, setFollowUpWhat] = useState('');
   const [followUpGoal, setFollowUpGoal] = useState('');
   const [followUpResult, setFollowUpResult] = useState(null);
-
-  // Afterward — Something went badly
-  const [autopsyWhat, setAutopsyWhat] = useState('');
-  const [autopsyTimeline, setAutopsyTimeline] = useState('');
-  const [autopsyFelt, setAutopsyFelt] = useState('');
-  const [autopsyThink, setAutopsyThink] = useState('');
-  const [autopsyResult, setAutopsyResult] = useState(null);
 
   // UI
   const [expandedSections, setExpandedSections] = useState({});
@@ -503,14 +510,22 @@ const ReadTheRoom = ({ tool }) => {
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [depthWhat, depthRelationship, callToolEndpoint, addToHistory, t]);
 
-  const handleAfterDebrief = useCallback(async () => {
-    if (!debriefWhat.trim() && !debriefGood.trim() && !debriefAwkward.trim()) { setError(t('rr_err_debrief')); return; }
+  // Shared by "Help me make sense of how it went" (emphasis: neutral) and
+  // "Something went badly" (emphasis: repair) — same form, same endpoint.
+  const handleAfterMakeSense = useCallback(async (emphasis) => {
+    if (!afterWhat.trim() && !afterWentWell.trim() && !afterFeltOff.trim()) {
+      setError(t(emphasis === 'repair' ? 'rr_err_badly' : 'rr_err_debrief'));
+      return;
+    }
     setError('');
     try {
-      const data = await callToolEndpoint('room-reader-debrief', { eventType: debriefEvent, whatHappened: debriefWhat, whatWentWell: debriefGood, whatFeltAwkward: debriefAwkward, overallFeeling: debriefFeeling, playbook });
-      if (data) { setDebriefResult(data); addToHistory('after:debrief', debriefEvent || t('rr_default_event_short')); }
+      const data = await callToolEndpoint('room-reader-debrief', {
+        emphasis, eventType: afterEvent, whatHappened: afterWhat, whatWentWell: afterWentWell,
+        whatFeltAwkward: afterFeltOff, timeline: afterTimeline, overallFeeling: afterFeeling, playbook,
+      });
+      if (data) { setAfterResult(data); addToHistory(`after:${emphasis === 'repair' ? 'badly' : 'sense'}`, afterEvent || afterWhat.substring(0, 30) || t('rr_default_event_short')); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [debriefEvent, debriefWhat, debriefGood, debriefAwkward, debriefFeeling, playbook, callToolEndpoint, addToHistory, t]);
+  }, [afterEvent, afterWhat, afterWentWell, afterFeltOff, afterTimeline, afterFeeling, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleAfterFollowup = useCallback(async () => {
     if (!followUpWho.trim() && !followUpContext.trim()) { setError(t('rr_err_followup')); return; }
@@ -520,15 +535,6 @@ const ReadTheRoom = ({ tool }) => {
       if (data) { setFollowUpResult(data); addToHistory('after:followup', followUpWho || followUpContext.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [followUpWho, followUpContext, followUpWhat, followUpGoal, playbook, callToolEndpoint, addToHistory, t]);
-
-  const handleAfterBadly = useCallback(async () => {
-    if (!autopsyWhat.trim()) { setError(t('rr_err_badly')); return; }
-    setError('');
-    try {
-      const data = await callToolEndpoint('room-reader-autopsy', { whatHappened: autopsyWhat, timeline: autopsyTimeline, howYouFelt: autopsyFelt, whatYouThinkWentWrong: autopsyThink, playbook });
-      if (data) { setAutopsyResult(data); addToHistory('after:badly', autopsyWhat.substring(0, 30)); }
-    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [autopsyWhat, autopsyTimeline, autopsyFelt, autopsyThink, playbook, callToolEndpoint, addToHistory, t]);
 
   const handlePersonRefresh = useCallback(async (person) => {
     if (!person.notes?.length) { setError(t('rr_err_log_interaction')); return; }
@@ -556,15 +562,14 @@ const ReadTheRoom = ({ tool }) => {
     setExitContext(''); setExitResult(null);
     setTheyDid(''); setDecodeContext(''); setDecodeRelationship(''); setYourConcern(''); setDecodeResult(null);
     setDepthWhat(''); setDepthRelationship(''); setDepthResult(null);
-    setDebriefEvent(''); setDebriefWhat(''); setDebriefGood(''); setDebriefAwkward(''); setDebriefFeeling('mixed'); setDebriefResult(null);
+    setAfterEvent(''); setAfterWhat(''); setAfterWentWell(''); setAfterFeltOff(''); setAfterTimeline(''); setAfterFeeling(''); setAfterResult(null);
     setFollowUpWho(''); setFollowUpContext(''); setFollowUpWhat(''); setFollowUpGoal(''); setFollowUpResult(null);
-    setAutopsyWhat(''); setAutopsyTimeline(''); setAutopsyFelt(''); setAutopsyThink(''); setAutopsyResult(null);
   }, []);
 
   // ── Try Example (PF-17: demo functionality on multi-field tools) ──
   const loadExample = useCallback(() => {
     handleReset();
-    setGroup('prepare'); setSub('event');
+    setGroup('prepare'); setSub('event'); setSubConfirmed(true);
     const ex = pickExample('ReadTheRoom', [
       { type: 'work_happy_hour', details: 'rr_example_event_details',  people: 'rr_example_people',  worry: 'rr_example_concerns',  comfort: 'nervous' },
       { type: 'family_holiday',  details: 'rr_example2_event_details', people: 'rr_example2_people', worry: 'rr_example2_concerns', comfort: 'panicking' },
@@ -588,22 +593,22 @@ const ReadTheRoom = ({ tool }) => {
     exitContext ||
     theyDid || decodeContext || yourConcern ||
     depthWhat || depthRelationship ||
-    debriefEvent || debriefWhat || debriefGood || debriefAwkward ||
     followUpWho || followUpContext || followUpWhat || followUpGoal ||
-    autopsyWhat || autopsyTimeline || autopsyFelt || autopsyThink ||
+    afterEvent || afterWhat || afterWentWell || afterFeltOff ||
     eventResult || personResult || groupResult || cultureResult ||
     quickResult || stalledResult || recoveryResult || exitResult ||
-    decodeResult || depthResult || debriefResult || followUpResult ||
-    autopsyResult || personRefreshResult
+    decodeResult || depthResult || afterResult || followUpResult ||
+    personRefreshResult
   );
 
   // Aggregate flag to anchor S5.5 cross-ref split for the multi-mode tool
   const results = eventResult || personResult || groupResult || cultureResult
     || quickResult || stalledResult || recoveryResult || exitResult
-    || decodeResult || depthResult || debriefResult || followUpResult
-    || autopsyResult || personRefreshResult;
+    || decodeResult || depthResult || afterResult || followUpResult
+    || personRefreshResult;
 
-  // Submit map + can-submit, keyed by `${group}:${sub}`
+  // Submit map + can-submit, keyed by `${group}:${sub}` — "after:sense" and
+  // "after:badly" share one handler/form, differing only by emphasis.
   const SUBMIT_MAP = {
     'prepare:event':   handlePrepareEvent,
     'prepare:person':  handlePreparePerson,
@@ -615,9 +620,9 @@ const ReadTheRoom = ({ tool }) => {
     'now:leave':       handleNowLeave,
     'decode:meant':    handleDecodeMeant,
     'decode:depth':    handleDecodeDepth,
-    'after:debrief':   handleAfterDebrief,
+    'after:sense':     () => handleAfterMakeSense('neutral'),
     'after:followup':  handleAfterFollowup,
-    'after:badly':     handleAfterBadly,
+    'after:badly':     () => handleAfterMakeSense('repair'),
   };
 
   const canSubmitForKey = useCallback((key) => {
@@ -632,14 +637,14 @@ const ReadTheRoom = ({ tool }) => {
       case 'now:leave':       return !!exitContext.trim();
       case 'decode:meant':    return !!theyDid.trim();
       case 'decode:depth':    return !!depthWhat.trim();
-      case 'after:debrief':   return !!(debriefWhat.trim() || debriefGood.trim() || debriefAwkward.trim());
+      case 'after:sense':
+      case 'after:badly':     return !!(afterWhat.trim() || afterWentWell.trim() || afterFeltOff.trim());
       case 'after:followup':  return !!(followUpWho.trim() || followUpContext.trim());
-      case 'after:badly':     return !!autopsyWhat.trim();
       default:                return false;
     }
   }, [effectiveEventType, eventDetails, personKnow, effectivePersonRel, groupSituation, groupChallenge,
       cultureText, cultureSituation, effectiveQuickScenario, stalledWhat, recoverySaid, exitContext,
-      theyDid, depthWhat, debriefWhat, debriefGood, debriefAwkward, followUpWho, followUpContext, autopsyWhat]);
+      theyDid, depthWhat, afterWhat, afterWentWell, afterFeltOff, followUpWho, followUpContext]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
@@ -683,24 +688,23 @@ const ReadTheRoom = ({ tool }) => {
     if (depthResult) {
       lines.push(depthResult.my_read?.explanation);
     }
-    if (debriefResult) {
-      lines.push(debriefResult.honest_read);
-      debriefResult.wins?.forEach(w => lines.push(t('rr_copy_win', { text: w.what })));
+    if (afterResult) {
+      lines.push(afterResult.honest_read);
+      afterResult.wins?.forEach(w => lines.push(t('rr_copy_win', { text: w.what })));
+      afterResult.what_you_couldnt_know?.forEach(k => lines.push(`• ${k}`));
+      if (afterResult.next_step?.suggestion) lines.push(afterResult.next_step.suggestion);
+      if (afterResult.what_not_to_overlearn) lines.push(afterResult.what_not_to_overlearn);
     }
     if (followUpResult) followUpResult.messages?.forEach(m => lines.push(t('rr_copy_followup_msg', { style: m.style, text: m.text })));
-    if (autopsyResult) {
-      lines.push(autopsyResult.what_happened);
-      if (autopsyResult.what_not_to_overlearn) lines.push(autopsyResult.what_not_to_overlearn);
-    }
     const out = lines.filter(Boolean).join('\n').trim();
     return out ? out + BRAND : '';
   }, [group, sub, eventResult, personResult, groupResult, cultureResult, quickResult, stalledResult,
-      recoveryResult, exitResult, decodeResult, depthResult, debriefResult, followUpResult, autopsyResult, t]);
+      recoveryResult, exitResult, decodeResult, depthResult, afterResult, followUpResult, t]);
 
   // Live ref assignments
   activeKeyRef.current  = activeKey;
   submitRef.current     = SUBMIT_MAP[activeKey];
-  canSubmitRef.current  = canSubmitForKey(activeKey);
+  canSubmitRef.current  = subConfirmed && canSubmitForKey(activeKey);
 
   useRegisterActions(buildFullText(), tool?.title || 'Read the Room');
 
@@ -762,91 +766,37 @@ const ReadTheRoom = ({ tool }) => {
         </div>
         <div className="px-5 py-3 flex flex-wrap gap-1.5">
           {GROUPS.map(g => (
-            <button key={g.id} onClick={() => { setGroup(g.id); setSub(SUB_ACTIONS[g.id][0].id); setError(''); }}
+            <button key={g.id} onClick={() => { setGroup(g.id); setSubConfirmed(false); setError(''); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
                 ${group === g.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
               <span className="me-1">{g.icon}</span>{t(g.labelKey)}
             </button>
           ))}
-          <span className={`self-center mx-1 hidden sm:inline ${c.textMuted}`}>·</span>
-          {[
-            ['showPlaybook', setShowPlaybook, showPlaybook, '📚', playbook.length ? t('rr_toggle_playbook_count', { count: playbook.length }) : t('rr_toggle_playbook')],
-            ['showPlans',    setShowPlans,    showPlans,    '📋', gamePlans.length ? t('rr_toggle_plans_count', { count: gamePlans.length }) : t('rr_toggle_plans')],
-          ].map(([k, fn, val, ico, lbl]) => (
-            <button key={k} onClick={() => fn(!val)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
-                ${val ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-              <span className="me-1">{ico}</span>{lbl}
-            </button>
-          ))}
-        </div>
-        <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-          {SUB_ACTIONS[group].map(s => (
-            <button key={s.id} onClick={() => { setSub(s.id); setError(''); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
-                ${sub === s.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-              <span className="me-1">{s.icon}</span>{t(s.labelKey)}
-            </button>
-          ))}
         </div>
       </div>
 
-      {/* Playbook Panel */}
-      {showPlaybook && (
+      {/* ── Sub-choice: a question with a real answer, not a second nav row ── */}
+      {!subConfirmed && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-          <h3 className={`font-bold ${c.text}`}>{t('rr_playbook_title')}</h3>
-          <p className={`text-xs ${c.textMuted}`}>{t('rr_playbook_subtitle')}</p>
-          {playbook.length === 0
-            ? <p className={`text-sm ${c.textMuted}`}>{t('rr_playbook_empty')}</p>
-            : playbook.map((p, i) => (
-              <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}>
-                <div><p className={`text-sm font-medium ${c.text}`}>💡 {p.tactic}</p><p className={`text-xs ${c.textMuted}`}>{p.context}</p></div>
-                <button onClick={() => setPlaybook(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
-              </div>
+          <h3 className={`font-bold ${c.text}`}>{t(QUESTION_KEY[group])}</h3>
+          <div className="space-y-2">
+            {SUB_ACTIONS[group].map(s => (
+              <button key={s.id} onClick={() => { setSub(s.id); setSubConfirmed(true); setError(''); }}
+                className={`w-full flex items-center gap-3 p-3.5 rounded-xl border text-start transition-colors ${c.cardAlt} ${c.border} hover:brightness-95`}>
+                <span className="text-lg flex-shrink-0">{s.icon}</span>
+                <span className={`text-sm font-semibold flex-1 ${c.text}`}>{t(s.labelKey)}</span>
+                <span className={`text-sm ${c.textMuted}`} aria-hidden="true">›</span>
+              </button>
             ))}
+          </div>
         </div>
       )}
 
-      {/* Game Plans Panel */}
-      {showPlans && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-          <h3 className={`font-bold ${c.text}`}>{t('rr_plans_title')}</h3>
-          {gamePlans.length === 0
-            ? <p className={`text-sm ${c.textMuted}`}>{t('rr_plans_empty')}</p>
-            : gamePlans.map((gp, i) => (
-              <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                <button onClick={() => toggleSection(`plan-${i}`)} className="w-full flex items-start justify-between">
-                  <div className="flex-1 min-w-0 text-start">
-                    <p className={`text-sm font-bold ${c.text} truncate`}>{gp.label}</p>
-                    <p className={`text-xs ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
-                  </div>
-                  <Caret open={expandedSections[`plan-${i}`]} />
-                </button>
-                {expandedSections[`plan-${i}`] && (
-                  <div className={`mt-2 pt-2 border-t ${c.border} space-y-1`}>
-                    {gp.data?.what_to_aim_for && <p className={`text-sm ${c.textSecondary}`}>{gp.data.what_to_aim_for}</p>}
-                    {gp.data?.starters?.map((s, si) => <p key={si} className={`text-xs ${c.textMuted}`}>🗣️ "{s.say}"</p>)}
-                    {gp.data?.one_thing_to_remember && <p className={`text-xs ${c.accentTxt}`}>{gp.data.one_thing_to_remember}</p>}
-                    <button onClick={() => setGamePlans(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted} mt-1`}>✕ {t('rr_remove')}</button>
-                  </div>
-                )}
-              </div>
-            ))}
-        </div>
-      )}
-
-      {/* Saved Lines */}
-      {saved.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-          <h4 className={`font-bold text-sm ${c.text}`}>{t('rr_saved_title', { count: saved.length })}</h4>
-          {saved.slice(0, 10).map((s, i) => (
-            <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
-              <div><p className={`text-sm ${c.textSecondary} italic`}>"{s.line}"</p><p className={`text-xs ${c.textMuted}`}>{s.context}</p></div>
-              <button onClick={() => setSaved(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
-            </div>
-          ))}
-        </div>
-      )}
+      {subConfirmed && (
+      <>
+      <button onClick={() => setSubConfirmed(false)} className={`text-xs font-medium ${c.accentTxt}`}>
+        ‹ {t('rr_change_choice')}
+      </button>
 
       {/* ══════════════════════════════════════════ */}
       {/* PREPARE — AN EVENT                          */}
@@ -1472,56 +1422,82 @@ const ReadTheRoom = ({ tool }) => {
       )}
 
       {/* ══════════════════════════════════════════ */}
-      {/* AFTERWARD — HELP ME DEBRIEF                 */}
+      {/* AFTERWARD — MAKE SENSE OF IT (shared by      */}
+      {/* "sense" and "badly" — same form, same result */}
+      {/* schema; "badly" just sends emphasis: repair) */}
       {/* ══════════════════════════════════════════ */}
-      {activeKey === 'after:debrief' && (
+      {(activeKey === 'after:sense' || activeKey === 'after:badly') && (() => {
+        const isRepair = sub === 'badly';
+        return (
         <>
-          <InputCard title={t('rr_debrief_title')} subtitle={t('rr_debrief_subtitle')} onSubmit={handleAfterDebrief}
-            btnLabel={t('rr_debrief_btn')} btnIcon="📝" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <input value={debriefEvent} onChange={e => setDebriefEvent(e.target.value)} placeholder={t('rr_ph_debrief_event')} className={`w-full ${inp}`} />
+          <InputCard title={t(isRepair ? 'rr_badly_title' : 'rr_sense_title')} subtitle={t(isRepair ? 'rr_badly_subtitle' : 'rr_sense_subtitle')}
+            onSubmit={() => handleAfterMakeSense(isRepair ? 'repair' : 'neutral')}
+            btnLabel={t(isRepair ? 'rr_badly_btn' : 'rr_sense_btn')} btnIcon={isRepair ? '😬' : '🧭'} c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
+            <input value={afterEvent} onChange={e => setAfterEvent(e.target.value)} placeholder={t('rr_ph_after_event')} className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_debrief_what')}<Req c={c} /></p>
-              <textarea value={debriefWhat} onChange={e => setDebriefWhat(e.target.value)} rows={2} className={`w-full ${inp}`} />
+              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_after_what')}<Req c={c} /></p>
+              <textarea value={afterWhat} onChange={e => setAfterWhat(e.target.value)}
+                placeholder={t(isRepair ? 'rr_ph_badly_what' : 'rr_ph_after_what')} rows={isRepair ? 4 : 2} className={`w-full ${inp}`} />
             </div>
-            <textarea value={debriefGood} onChange={e => setDebriefGood(e.target.value)} placeholder={t('rr_ph_debrief_good')} rows={2} className={`w-full ${inp}`} />
-            <textarea value={debriefAwkward} onChange={e => setDebriefAwkward(e.target.value)} placeholder={t('rr_ph_debrief_awkward')} rows={2} className={`w-full ${inp}`} />
+            <textarea value={afterWentWell} onChange={e => setAfterWentWell(e.target.value)} placeholder={t('rr_ph_after_went_well')} rows={2} className={`w-full ${inp}`} />
+            <textarea value={afterFeltOff} onChange={e => setAfterFeltOff(e.target.value)} placeholder={t('rr_ph_after_felt_off')} rows={2} className={`w-full ${inp}`} />
+            <input value={afterTimeline} onChange={e => setAfterTimeline(e.target.value)} placeholder={t('rr_ph_after_timeline')} className={`w-full ${inp}`} />
             <div className="flex flex-wrap gap-2">
               {[['great','🎉','rr_feeling_great'],['good','😊','rr_feeling_good'],['mixed','😐','rr_feeling_mixed'],['rough','😓','rr_feeling_rough']].map(([v,ico,lbl]) => (
-                <button key={v} onClick={() => setDebriefFeeling(v)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${debriefFeeling === v ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
+                <button key={v} onClick={() => setAfterFeeling(afterFeeling === v ? '' : v)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${afterFeeling === v ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
                   <span className="me-1">{ico}</span>{t(lbl)}
                 </button>
               ))}
             </div>
           </InputCard>
-          {debriefResult && (
+          {afterResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {debriefResult.honest_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{debriefResult.honest_read}</p></div>}
-              {debriefResult.wins?.map((w, i) => (
+              {afterResult.honest_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{afterResult.honest_read}</p></div>}
+              {afterResult.wins?.map((w, i) => (
                 <div key={i} className={`${c.success} border rounded-lg p-3 flex items-start justify-between gap-2`}>
                   <div className="flex-1">
                     <p className="text-sm">✅ {w.what}</p><p className="text-xs">{w.why_it_worked}</p>
                   </div>
-                  <button onClick={() => addToPlaybook(w.what, debriefEvent || t('rr_default_event_short'))}
+                  <button onClick={() => addToPlaybook(w.what, afterEvent || t('rr_default_event_short'))}
                     title={t('rr_add_to_playbook')}
                     className={`flex-shrink-0 text-xs px-2 py-1 rounded ${playbook.find(p => p.tactic === w.what) ? (isDark ? 'text-amber-300' : 'text-amber-600') : c.textMuted}`}>
                     {playbook.find(p => p.tactic === w.what) ? '⭐' : '💾'}
                   </button>
                 </div>
               ))}
-              {debriefResult.another_way_to_read_it?.map((a, i) => (
+              {afterResult.another_way_to_read_it?.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                   <p className={`text-sm ${c.text}`}>😬 {a.what_felt_bad}</p>
                   <p className={`text-sm ${c.textSecondary}`}>🔄 {a.another_way_to_read_it}</p>
                   {a.next_time && <p className={`text-xs ${c.textMuted}`}>{a.next_time}</p>}
                 </div>
               ))}
-              {debriefResult.patterns && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_debrief_patterns')}</p><p className={`text-sm ${c.textSecondary}`}>{debriefResult.patterns}</p></div>}
-              {debriefResult.next_challenge && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">{t('rr_debrief_next', { text: debriefResult.next_challenge.suggestion })}</p><p className="text-xs">{debriefResult.next_challenge.why}</p></div>}
+              {afterResult.plausible_turning_points?.map((pt, i) => (
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className={`text-sm font-bold ${c.text}`}>{pt.moment}</p>
+                  {pt.why_it_may_have_mattered && <p className={`text-xs ${c.textSecondary}`}>{pt.why_it_may_have_mattered}</p>}
+                </div>
+              ))}
+              {afterResult.what_you_could_control?.length > 0 && (
+                <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}>
+                  <h3 className="font-bold text-sm">{t('rr_badly_could_control')}</h3>
+                  {afterResult.what_you_could_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
+                </div>
+              )}
+              {afterResult.what_you_couldnt_know?.length > 0 && (
+                <div className={`${c.success} border rounded-xl p-5 space-y-1`}>
+                  <h3 className="font-bold text-sm">{t('rr_badly_couldnt_know')}</h3>
+                  {afterResult.what_you_couldnt_know.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
+                </div>
+              )}
+              {afterResult.next_step && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">{t('rr_debrief_next', { text: afterResult.next_step.suggestion })}</p><p className="text-xs">{afterResult.next_step.why}</p></div>}
+              {afterResult.what_not_to_overlearn && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {afterResult.what_not_to_overlearn}</p></div>}
             </div>
           )}
         </>
-      )}
+        );
+      })()}
 
       {/* ══════════════════════════════════════════ */}
       {/* AFTERWARD — WRITE A FOLLOW-UP               */}
@@ -1559,56 +1535,6 @@ const ReadTheRoom = ({ tool }) => {
         </>
       )}
 
-      {/* ══════════════════════════════════════════ */}
-      {/* AFTERWARD — SOMETHING WENT BADLY            */}
-      {/* ══════════════════════════════════════════ */}
-      {activeKey === 'after:badly' && (
-        <>
-          <InputCard title={t('rr_badly_title')} subtitle={t('rr_badly_subtitle')} onSubmit={handleAfterBadly}
-            btnLabel={t('rr_badly_btn')} btnIcon="🔬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
-            <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_badly_what')}<Req c={c} /></p>
-              <textarea value={autopsyWhat} onChange={e => setAutopsyWhat(e.target.value)}
-                placeholder={t('rr_ph_badly_what')} rows={4} className={`w-full ${inp}`} />
-            </div>
-            <textarea value={autopsyTimeline} onChange={e => setAutopsyTimeline(e.target.value)}
-              placeholder={t('rr_ph_badly_timeline')} rows={2} className={`w-full ${inp}`} />
-            <input value={autopsyFelt} onChange={e => setAutopsyFelt(e.target.value)} placeholder={t('rr_ph_badly_felt')} className={`w-full ${inp}`} />
-            <input value={autopsyThink} onChange={e => setAutopsyThink(e.target.value)} placeholder={t('rr_ph_badly_think')} className={`w-full ${inp}`} />
-          </InputCard>
-          {autopsyResult && (
-            <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              {autopsyResult.what_happened && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt}`}>{t('rr_badly_what_happened')}</h3><p className={`text-sm ${c.text} mt-2`}>{autopsyResult.what_happened}</p></div>}
-              {autopsyResult.plausible_turning_points?.map((pt, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-1`}>
-                  <p className={`text-sm font-bold ${c.text}`}>{pt.moment}</p>
-                  {pt.why_it_may_have_mattered && <p className={`text-xs ${c.textSecondary}`}>{pt.why_it_may_have_mattered}</p>}
-                </div>
-              ))}
-              {autopsyResult.what_you_couldnt_know?.length > 0 && (
-                <div className={`${c.success} border rounded-xl p-5 space-y-1`}>
-                  <h3 className="font-bold text-sm">{t('rr_badly_couldnt_know')}</h3>
-                  {autopsyResult.what_you_couldnt_know.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
-                </div>
-              )}
-              {autopsyResult.what_you_could_control?.length > 0 && (
-                <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}>
-                  <h3 className="font-bold text-sm">{t('rr_badly_could_control')}</h3>
-                  {autopsyResult.what_you_could_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
-                </div>
-              )}
-              {autopsyResult.what_to_try_differently?.length > 0 && (
-                <div className={`${c.tipBox} border rounded-xl p-4 space-y-1`}>
-                  <p className="text-sm font-bold">{t('rr_badly_try_differently')}</p>
-                  {autopsyResult.what_to_try_differently.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
-                </div>
-              )}
-              {autopsyResult.what_not_to_overlearn && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {autopsyResult.what_not_to_overlearn}</p></div>}
-            </div>
-          )}
-        </>
-      )}
-
       {/* ── Error ── */}
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
@@ -1634,27 +1560,95 @@ const ReadTheRoom = ({ tool }) => {
           </div>
         </div>
       )}
+      </>
+      )}
 
-      {/* ── History ── */}
-      {sessionHistory.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-          <button onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
-            <h3 className={`font-bold ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
-            <Caret open={expandedSections.sessionHistory} />
-          </button>
-          {expandedSections.sessionHistory && (
-            <div className="mt-3 space-y-1">
-              {sessionHistory.slice(0, 20).map((h, i) => (
-                <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
-                  <span className={`text-sm ${c.textSecondary}`}>{h.preview}</span>
-                  <span className={`text-xs ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
+      {/* ══════════════════════════════════════════ */}
+      {/* MY STUFF — saved resources, not peer modes: */}
+      {/* Playbook, Saved Plans, saved lines, Recent  */}
+      {/* ══════════════════════════════════════════ */}
+      <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+        <div className="flex flex-wrap gap-1.5 p-3">
+          {[
+            ['showPlaybook', setShowPlaybook, showPlaybook, '📚', playbook.length ? t('rr_toggle_playbook_count', { count: playbook.length }) : t('rr_toggle_playbook')],
+            ['showPlans',    setShowPlans,    showPlans,    '📋', gamePlans.length ? t('rr_toggle_plans_count', { count: gamePlans.length }) : t('rr_toggle_plans')],
+          ].map(([k, fn, val, ico, lbl]) => (
+            <button key={k} onClick={() => fn(!val)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
+                ${val ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
+              <span className="me-1">{ico}</span>{lbl}
+            </button>
+          ))}
+        </div>
+        {showPlaybook && (
+          <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+            <p className={`text-xs ${c.textMuted}`}>{t('rr_playbook_subtitle')}</p>
+            {playbook.length === 0
+              ? <p className={`text-sm ${c.textMuted}`}>{t('rr_playbook_empty')}</p>
+              : playbook.map((p, i) => (
+                <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}>
+                  <div><p className={`text-sm font-medium ${c.text}`}>💡 {p.tactic}</p><p className={`text-xs ${c.textMuted}`}>{p.context}</p></div>
+                  <button onClick={() => setPlaybook(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
                 </div>
               ))}
-              <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('rr_clear')}</button>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+        {showPlans && (
+          <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+            {gamePlans.length === 0
+              ? <p className={`text-sm ${c.textMuted}`}>{t('rr_plans_empty')}</p>
+              : gamePlans.map((gp, i) => (
+                <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                  <button onClick={() => toggleSection(`plan-${i}`)} className="w-full flex items-start justify-between">
+                    <div className="flex-1 min-w-0 text-start">
+                      <p className={`text-sm font-bold ${c.text} truncate`}>{gp.label}</p>
+                      <p className={`text-xs ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
+                    </div>
+                    <Caret open={expandedSections[`plan-${i}`]} />
+                  </button>
+                  {expandedSections[`plan-${i}`] && (
+                    <div className={`mt-2 pt-2 border-t ${c.border} space-y-1`}>
+                      {gp.data?.what_to_aim_for && <p className={`text-sm ${c.textSecondary}`}>{gp.data.what_to_aim_for}</p>}
+                      {gp.data?.starters?.map((s, si) => <p key={si} className={`text-xs ${c.textMuted}`}>🗣️ "{s.say}"</p>)}
+                      {gp.data?.one_thing_to_remember && <p className={`text-xs ${c.accentTxt}`}>{gp.data.one_thing_to_remember}</p>}
+                      <button onClick={() => setGamePlans(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted} mt-1`}>✕ {t('rr_remove')}</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        )}
+        {saved.length > 0 && (
+          <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
+            <h4 className={`font-bold text-xs ${c.textMuted} uppercase`}>{t('rr_saved_title', { count: saved.length })}</h4>
+            {saved.slice(0, 10).map((s, i) => (
+              <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
+                <div><p className={`text-sm ${c.textSecondary} italic`}>"{s.line}"</p><p className={`text-xs ${c.textMuted}`}>{s.context}</p></div>
+                <button onClick={() => setSaved(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        {sessionHistory.length > 0 && (
+          <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
+            <button onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
+              <h3 className={`font-bold text-sm ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
+              <Caret open={expandedSections.sessionHistory} />
+            </button>
+            {expandedSections.sessionHistory && (
+              <div className="mt-3 space-y-1">
+                {sessionHistory.slice(0, 20).map((h, i) => (
+                  <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
+                    <span className={`text-sm ${c.textSecondary}`}>{h.preview}</span>
+                    <span className={`text-xs ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
+                  </div>
+                ))}
+                <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('rr_clear')}</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
     </div>
   );

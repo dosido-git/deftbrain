@@ -309,9 +309,10 @@
       }
     },
     {
-      "name": "after-debrief-hosted-dinner",
+      "name": "after-sense-hosted-dinner",
       "endpoint": "/api/room-reader-debrief",
       "input": {
+        "emphasis": "neutral",
         "eventType": "Friend's birthday dinner",
         "whatHappened": "I organized the seating and kept conversation going most of the night since a few people did not know each other.",
         "whatWentWell": "Two people who did not know each other ended up talking for a long time about hiking.",
@@ -320,33 +321,40 @@
         "userLanguage": "en"
       },
       "output": {
-        "honest_read": "You held a social event together for people who didn't all know each other — that's real work, and it sounds like it went well.",
+        "honest_read": "You held a social event together for people who didn't share history, and it worked — the flat story moment was a small dip in an otherwise successful night.",
         "wins": [
           {
             "what": "Two strangers ended up in a long conversation about hiking.",
-            "why_it_worked": "Seating people with intention gives them a starting point — proximity and a shared topic can do the rest."
+            "why_it_worked": "Seating people with potential common ground creates the conditions for that — the conversation was theirs, but you set it up."
           },
           {
-            "what": "You kept conversation moving across the whole group most of the night.",
-            "why_it_worked": "Actively bridging between people who don't know each other prevents the table from splitting into separate islands — that takes consistent effort and awareness."
+            "what": "You kept conversation moving across a mixed group for most of the night.",
+            "why_it_worked": "Keeping conversation moving across a mixed group requires active attention — you read the room and filled the gaps."
           }
         ],
         "another_way_to_read_it": [
           {
             "what_felt_bad": "You told a story and nobody really reacted.",
-            "another_way_to_read_it": "A flat landing after a story can mean the timing was off, the group was mid-transition, or people were still processing — it doesn't establish that the story itself was a miss or that anyone judged it.",
-            "next_time": "If a story lands quietly, a light pivot — 'anyway, enough from me' or a question to someone else — keeps things moving without drawing more attention to the pause."
+            "another_way_to_read_it": "A quiet moment after a story can happen for reasons unrelated to the story itself — mid-thought, mid-transition, or simply the rhythm of the room in that second.",
+            "next_time": "If you notice a story isn't landing, a short pivot question — 'has anything like that ever happened to you?' — can move the energy without dwelling on the pause."
           }
         ],
-        "patterns": "",
-        "next_challenge": {
-          "suggestion": "Next time you host a mixed group, try introducing two people to each other with one specific thing they have in common before stepping back.",
-          "why": "You already demonstrated good instincts for this — making it explicit once or twice could free you from carrying the conversation as much."
-        }
-      },
-      "optionalSections": [
-        "patterns"
-      ]
+        "what_you_could_control": [],
+        "what_you_couldnt_know": [
+          "Where people's energy and attention were in that exact moment — group attention drifts in ways that have nothing to do with the story itself."
+        ],
+        "plausible_turning_points": [
+          {
+            "moment": "Sitting the two people who ended up talking about hiking near each other.",
+            "why_it_may_have_mattered": "Seating two people near each other gave them the chance to talk. They took it and found common ground."
+          }
+        ],
+        "next_step": {
+          "suggestion": "Notice at the next group event which conversational bridges you built without thinking — you're already doing the work, naming it helps you trust it.",
+          "why": "The hosting instincts you used here are repeatable, and recognizing them makes them easier to lean on deliberately."
+        },
+        "what_not_to_overlearn": ""
+      }
     },
     {
       "name": "after-followup-hiking-connection",
@@ -381,40 +389,53 @@
     },
     {
       "name": "after-badly-group-brushoff",
-      "endpoint": "/api/room-reader-autopsy",
+      "endpoint": "/api/room-reader-debrief",
       "input": {
+        "emphasis": "repair",
+        "eventType": "Networking event",
         "whatHappened": "At a networking event I tried to join a group of three people talking. I said hello and asked what they were discussing. They gave short answers and then turned back to their conversation. I stood there a moment and then walked away.",
-        "howYouFelt": "Embarrassed, like I had done something wrong",
         "userLanguage": "en"
       },
       "output": {
-        "what_happened": "You tried to join an existing group conversation at a networking event, got brief responses, and read the cues correctly enough to exit rather than push through.",
+        "honest_read": "You tried to join a conversation, it didn't open up, and you left — that's a hard moment, but it doesn't tell you much about what you did wrong, because what you described is fairly common and has several ordinary explanations.",
+        "wins": [
+          {
+            "what": "You walked away instead of standing there indefinitely.",
+            "why_it_worked": "Recognizing when a conversation isn't opening and exiting cleanly is a real skill — staying too long makes the situation worse for everyone."
+          }
+        ],
+        "another_way_to_read_it": [
+          {
+            "what_felt_bad": "They gave short answers and turned back to their conversation.",
+            "another_way_to_read_it": "Groups mid-conversation are structurally harder to enter — the conversation has momentum and asking what they're discussing requires them to step out of it briefly.",
+            "next_time": "If a group is in full flow, it can help to wait for a natural pause before asking what they're discussing, or to catch one person on the edge of the group rather than addressing all three."
+          },
+          {
+            "what_felt_bad": "You stood there a moment and then had to walk away.",
+            "another_way_to_read_it": "When you walked away, there was no signal that you meant to leave. A light exit line — something like 'I'll let you carry on' — makes the departure read as intentional rather than abrupt.",
+            "next_time": "Having a light exit line ready — something like 'I'll let you carry on' — turns the walk-away from an awkward retreat into a normal social close."
+          }
+        ],
         "what_you_could_control": [
-          "Waiting for a natural pause in their conversation before speaking, if there was one available",
-          "Offering something to the conversation rather than opening with a question about it — a light comment on the event, the topic, anything that lets them include you rather than evaluate you",
-          "Exiting sooner once the short answers started, which actually protects you from the longer awkward stand"
+          "Targeting a group that looks more open — two people talking tend to be easier to join than three, and a group where people are looking around or standing loosely is more likely to have room for a new arrival.",
+          "Having a ready exit line so the walk-away feels intentional rather than defeated."
         ],
         "what_you_couldnt_know": [
-          "Whether they were mid-way through something sensitive, personal, or time-limited that had nothing to do with you",
-          "Whether the group dynamic was already closed — some groups at events are effectively private catch-ups happening in a public room",
-          "Whether any of them even registered the moment the way you did"
+          "Whether the conversation was at a point that made interruption difficult regardless of how you approached — you have no way to know what they were in the middle of.",
+          "Whether any of them even registered awkwardness, or whether they simply returned to their thread without a second thought about you.",
+          "Whether the short answers were about you at all, or about the topic, the dynamic between the three of them, or just the natural difficulty of mid-conversation entry."
         ],
         "plausible_turning_points": [
           {
-            "moment": "You asked what they were discussing as your opening",
-            "why_it_may_have_mattered": "Opening with a question asks them to shift from their conversation to answer you. A comment that touches on their topic or the event lets you join without requiring a response."
-          },
-          {
-            "moment": "You stood for a moment after the short answers",
-            "why_it_may_have_mattered": "The pause extends the awkward moment. Exiting immediately after the short answers — with a light line — makes the exit look deliberate rather than reluctant."
+            "moment": "Asking what they were discussing as your first move.",
+            "why_it_may_have_mattered": "Asking what they were discussing requires the group to rewind and explain instead of continuing their thread. A more natural entry sometimes comes from listening first, then catching a response opportunity that doesn't require them to backtrack."
           }
         ],
-        "what_to_try_differently": [
-          "Approach with something low-stakes to offer — a reaction to the room, the event, anything — rather than a question that asks them to perform for you",
-          "Treat a short answer as your cue to exit: 'I'll let you get back to it' and move on. You read the moment and acted on it.",
-          "Look for pairs or solo people before targeting tight groups of three — a closed group is the hardest entry point in any room"
-        ],
-        "what_not_to_overlearn": "You did not read the situation badly. You noticed the cues and left without pushing further — that was the right call. The embarrassment is about the moment itself, not a failure on your part."
+        "next_step": {
+          "suggestion": "At your next event, try joining a single person who is standing alone or on the edge of a group rather than a tight group of three mid-conversation — the opening is structurally easier and the result will tell you more about what's working.",
+          "why": "Group entry is one of the harder moves in a networking setting; practicing on a more receptive target gives you better feedback and more confidence to build on."
+        },
+        "what_not_to_overlearn": "Don't conclude from this one moment that you read the room wrong or that something about you made them close off. What you described is a situation with structural difficulty — tight groups mid-conversation are harder to join than looser ones or single people at the edge."
       }
     },
     {
