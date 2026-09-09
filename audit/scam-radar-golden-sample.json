@@ -162,7 +162,11 @@
         "important_unknowns": [
           "Über welchen Kanal die Nachricht kam (E-Mail, SMS, Messenger) — das ändert zwar nicht die Warnsignale, kann aber beeinflussen, wo und wie Sie sie melden können."
         ]
-      }
+      },
+      "optionalSections": [
+        "what_doesnt_settle_it",
+        "important_unknowns"
+      ]
     },
     {
       "name": "en-romance-investment-scam-no-explicit-ask-yet",
