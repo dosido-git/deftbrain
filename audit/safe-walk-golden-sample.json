@@ -157,34 +157,30 @@
       },
       "output": {
         "what_matters": {
-          "summary": "You are arriving around 11:40 pm with a suitcase for the first time in Chicago. The main practical unknowns are the current Union Station exit setup due to nearby construction, and which specific part of N Clark Street your hotel is on.",
+          "summary": "Your main planning variables are the ones you named: you are arriving with a suitcase around 11:40pm in a city you do not know, and you cannot tell from the map how active the streets will be at that hour. The route also passes a parking garage and an underpass, which you flagged as features worth being aware of.",
           "known_factors": [
-            "First time in Chicago — no prior sense of which streets feel busy or quiet at night",
-            "Arriving around 11:40 pm with a suitcase on a delayed train",
-            "Route passes near a parking garage and an underpass, as visible on the map",
-            "Walk is roughly 20-30 minutes"
+            "Arriving at Union Station around 11:40pm on a delayed train",
+            "Traveling with a suitcase",
+            "First time in Chicago, unfamiliar with the route",
+            "Map shows the route passing near a parking garage and an underpass",
+            "Estimated walk duration: 20-30 minutes"
           ],
           "unknowns_that_matter": [
-            "Current Canal Street construction status near Union Station exits — the long-running CDOT viaduct project has changed pedestrian access points multiple times; worth checking before you go which station exit and sidewalk are currently open",
-            "Which specific block of N Clark Street your hotel is on — the route and street character vary considerably along Clark"
+            "Safe Walk cannot tell from available information whether the specific streets your navigation app routes you through will have active vehicle or foot traffic at that hour — that will become clear once you are on the ground."
           ]
         },
         "before_you_go": [
           {
-            "action": "Before you leave the station, ask station staff which exit and sidewalk are currently open for heading north toward Clark Street.",
-            "why_here": "Union Station construction near Canal Street has involved changing pedestrian access — confirming the current route at the station saves you backtracking with a suitcase at midnight."
+            "action": "Make sure your phone is charged and your navigation app has the hotel address loaded before you leave the station.",
+            "why_here": "You are navigating an unfamiliar city at night for 20-30 minutes with luggage — a dead or dying battery removes your navigation and communication at the same time."
           },
           {
-            "action": "Make sure your phone is charged and your navigation app has the hotel address saved before you board.",
-            "why_here": "You do not know this city, it is nearly midnight, and finding the right street on a live map is easier than reorienting from memory — a dead phone removes that option."
+            "action": "Have your navigation app open and ready with your hotel address loaded before you leave Union Station.",
+            "why_here": "You are navigating an unfamiliar city at night with luggage, so having your destination ready means you can start walking immediately without standing around figuring out the route."
           },
           {
-            "action": "Let someone know your train arrival time, your destination hotel name, and that you will send a message when you check in.",
-            "why_here": "A 20-30 minute late-night walk alone with luggage in an unfamiliar city is a reasonable moment for a simple check-in plan."
-          },
-          {
-            "action": "Confirm at the station which exit to use for N Clark Street before stepping outside.",
-            "why_here": "Union Station has multiple exits, and starting in the wrong direction with a suitcase at midnight is easy to do in an unfamiliar building."
+            "action": "Tell someone your expected arrival time at the hotel before you leave the station.",
+            "why_here": "A 20-30 minute late-night walk with luggage in an unfamiliar city is a reasonable situation to have someone expect a check-in from you."
           }
         ],
         "route_choice": {
@@ -194,38 +190,38 @@
         },
         "watch_for": [
           {
-            "condition": "The underpass or parking garage area on your route looks darker or more enclosed than the surrounding streets.",
-            "if_it_happens": "You do not need a reason to walk around it — use your navigation app to find the next parallel street and rejoin your route on the other side."
+            "condition": "If the sidewalk on your planned exit from Union Station is blocked or redirected by construction signage, follow the posted pedestrian detour rather than improvising.",
+            "if_it_happens": "Use your navigation app to reorient once you are past the detour — do not try to shortcut through unfamiliar areas you have not planned."
           },
           {
-            "condition": "A sidewalk near Union Station is closed or fenced off due to construction, redirecting you unexpectedly.",
-            "if_it_happens": "Follow posted detour signs and confirm your position on the map before continuing — the Canal Street project has involved multiple pedestrian reroutes."
+            "condition": "If the route your navigation app is showing you does not match what you see on the ground, or the streets feel substantially different from what you expected.",
+            "if_it_happens": "Use your navigation app to find an alternate pedestrian route rather than pressing through a situation that does not match your expectations."
           },
           {
-            "condition": "You exit the station and cannot immediately orient yourself to which direction is north toward Clark Street.",
-            "if_it_happens": "Pause inside or just outside the station entrance, open your navigation app, and confirm your heading before committing to a direction — moving with a suitcase in the wrong direction at midnight is easy to do."
+            "condition": "If your phone battery is running low before or during the walk.",
+            "if_it_happens": "Union Station has public seating areas — charge up there before departing rather than starting the walk with an uncertain battery."
           }
         ],
         "check_in_plan": {
           "worth_considering": true,
-          "reason": "A solo late-night walk of up to 30 minutes with luggage in an unfamiliar city is a practical moment to have someone expect a message from you.",
-          "message": "Hey — my train gets in around 11:40 pm and I am walking to my hotel on N Clark, about 20-30 min. I will text you when I check in. If you do not hear from me by [time], feel free to check in."
+          "reason": "A 20-30 minute walk alone at night with luggage in an unfamiliar city gives a contact a clear, simple window to expect your arrival confirmation.",
+          "message": "Heading out from Chicago Union Station now — walking to my hotel on N Clark St. Based on the walk taking 20-30 minutes from around 11:40pm, I am expecting to arrive around midnight to 12:10am. I will let you know once I get there."
         },
         "verified_local_info": [
           {
-            "fact": "The Canal Street viaduct reconstruction project near Union Station has involved multiple phases of changing pedestrian access. Phase III covers Canal Street from Adams to Madison, with the project noting that at least one sidewalk will remain open during each construction phase, and Union Station access will remain open.",
-            "source_name": "CDOT Canal Projects — Phase III",
-            "source_date_or_status": "Active project page (last checked September 2026)",
+            "fact": "The Canal Street viaduct reconstruction project near Union Station is ongoing through 2026, with pedestrian access maintained but subject to detours at various stages — at least one sidewalk is kept open during each phase. Check posted signage or cdotcanalprojects.com for the current pedestrian configuration near the station exits.",
+            "source_name": "CDOT Canal Projects (Phase III page)",
+            "source_date_or_status": "Active project, updated through 2026",
             "source_url": "https://cdotcanalprojects.com/phase_iii/"
           },
           {
-            "fact": "Phase I of the Canal Street project was anticipated to be complete by end of 2025, but Phase II work on Canal between Jackson and Harrison was still ongoing as of recent project updates, with sidewalk and pavement work continuing.",
-            "source_name": "CDOT Canal Projects — Phase II",
-            "source_date_or_status": "Active project page",
-            "source_url": "https://cdotcanalprojects.com/phase_ii/"
+            "fact": "On Canal Street between Adams and Madison (adjacent to Union Station), access to Chicago Union Station will remain open throughout the construction phases.",
+            "source_name": "CDOT Canal Projects (Phase III page)",
+            "source_date_or_status": "Active project, updated through 2026",
+            "source_url": "https://cdotcanalprojects.com/phase_iii/"
           }
         ],
-        "bottom_line": "Confirm the current Union Station exit situation via cdotcanalprojects.com before you travel — that is the one concrete unknown that could complicate the first few minutes. Once you are on the street with your navigation app running and someone expecting your check-in text, the walk is manageable."
+        "bottom_line": "The main thing to sort out before you leave the station is your phone charge and your navigation app — those are your tools for the whole walk. There is active construction work near Union Station on Canal Street, so follow any pedestrian detour signs you see on your way out rather than assuming the exit is exactly as the map shows it."
       }
     }
   ]

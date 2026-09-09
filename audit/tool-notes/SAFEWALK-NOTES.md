@@ -1,7 +1,8 @@
 # Safe Walk — architecture & lock notes
 
-**Known-good:** tag `safewalk-v4` · golden `audit/safe-walk-golden-sample.json`
-(3 cases, live-captured 2026-09-08 — see `_meta` for what each one proves).
+**Known-good:** tag `safewalk-v5` · golden `audit/safe-walk-golden-sample.json`
+(3 cases, live-captured 2026-09-08 — see `_meta` for what each one proves; the
+Chicago case reflects the post-correction-pass prompt, below).
 **Verify:** `npm run check:golden safe-walk` (backend up: `npm run dev:backend`).
 
 ## What it is
@@ -152,6 +153,62 @@ Walking-tab behavior (no API call needed) was verified directly in the
 browser in English and Spanish — check-in reminder copy, the four-button
 manual emergency panel with its disclaimer, and the pretend-call disclosure
 all confirmed rendering correctly.
+
+## Prompt correction pass (2026-09-08, same day) — v4 → v5
+
+Re-reviewing the Chicago late-night golden case surfaced 15 finer-grained
+epistemic issues in `SYSTEM_PROMPT`, all fixed:
+
+- **Alarmist hour framing** ("a delayed arrival at nearly midnight is a bad
+  time to discover a dead battery") replaced with functional framing (check
+  charge because you're relying on the phone for navigation).
+- **Areawide construction presented as route-specific** ("active construction
+  in the Loop area") — now explicitly distinguished from a source that
+  actually covers the visitor's specific blocks; a general checker gets
+  pointed to as an action ("check CDOT's current street-work information"),
+  never stated as a current fact about the route.
+- **Citation coverage widened explicitly** to name every category (station
+  facilities, rideshare pickup, closures, construction, pedestrian
+  facilities, park/trail hours) — any of these without a traceable source
+  gets omitted, not stated.
+- **Judging distance as normal** ("the walk is not unusually long") removed —
+  there's no defensible denominator for "unusual"; an alternative (rideshare)
+  can be named neutrally, never as a verdict on the walk itself.
+- **`watch_for` conditions stated as already true** ("the path near the
+  underpass is darker... than the map suggested") — now required to open
+  with an explicit "if..." contingency; `if_it_happens` can no longer be a
+  prescribed safety tactic for a threat that was never confirmed ("keep
+  moving at a steady pace").
+- **Invented route geometry** ("you can exit to a parallel street") — Safe
+  Walk doesn't know the route's actual geometry; redirected to "use your
+  navigation app to check for another pedestrian route."
+- **Check-in messages promising an emotional effect** ("removes worry for you
+  and whoever you tell") — now required to describe the function (a clear
+  expected time, closing the loop) instead of predicted psychology.
+- **Arrival-time estimates masquerading as precise navigation ETAs**
+  ("should arrive by around 12:15am" with no shown basis) — now required to
+  show the arithmetic against the visitor's own numbers ("if I leave around
+  11:40, expecting to arrive roughly between midnight and 12:10").
+- **`unknowns_that_matter` inventing its own hypothetical concern**
+  ("whether sidewalks... are interrupted by construction not captured by
+  current advisories" — manufacturing a worry out of the shape of the tool's
+  own uncertainty) and framing a real unknown as the visitor's homework
+  ("worth knowing, if you find out"). Both fixed; the frontend heading
+  changed from "Worth knowing, if you find out" to "What Safe Walk Doesn't
+  Know" across all 13 languages (`sw_unknowns`).
+- **A visitor's stated concern treated as evidence of danger** — added an
+  explicit standalone rule: lateness, luggage, an underpass, a garage, or
+  unknown foot traffic are planning context, not proof the route, the
+  underpass, or the garage is actually dangerous.
+- **`FINAL AUDIT` extended** from 11 to 17 checks covering all of the above,
+  so future edits to this prompt get re-checked against the same list.
+
+Re-verified live on the exact Chicago case: `runOutputGuard` caught and
+repaired 4 real violations on the re-test call itself (`invented_fact` x3,
+`false_precision`) — confirms the guard is still doing real work against the
+tightened prompt, not that the prompt introduced new problems. The captured
+golden output for this case was refreshed to the post-fix response.
+`check:golden safe-walk` 3/3 passing after the change.
 
 ## DO NOT silently reverse
 
