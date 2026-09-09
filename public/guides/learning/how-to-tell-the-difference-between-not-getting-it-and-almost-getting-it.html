@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6"></script>
+  <!-- Google tag (gtag.js) — skipped for operator/dev traffic.
+       Same db-operator flag as public/index.html and src/utils/analytics.js
+       (?operator=1 / ?operator=0). Keep both templates in sync. -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var op = params.get('operator');
+        if (op === '1') localStorage.setItem('db-operator', '1');
+        else if (op === '0') localStorage.removeItem('db-operator');
+        if (localStorage.getItem('db-operator') === '1') return;
+      } catch (e) {}
 
-    gtag('config', 'G-0MLY19QEW6');
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-0MLY19QEW6');
+    })();
   </script>
 
   <meta charset="UTF-8">
