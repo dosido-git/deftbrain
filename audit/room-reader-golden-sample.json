@@ -533,6 +533,59 @@
         ],
         "one_thing_to_remember": "You are allowed to let a moment be someone else's to handle — not because you do not care how the day goes, but because handling it is not automatically your job."
       }
+    },
+    {
+      "name": "prepare-event-coworker-dinner-no-status-rules",
+      "endpoint": "/api/room-reader",
+      "input": {
+        "eventType": "Work Happy Hour",
+        "eventDetails": "First one since I started the job three weeks ago. Mostly people from other teams I have not met.",
+        "people": "My manager Priya will be there, plus senior engineers and product people I have previously emailed.",
+        "concerns": "I am not sure how much to talk about myself since I am still new.",
+        "topicsToAvoid": "",
+        "comfort": "nervous",
+        "userLanguage": "en"
+      },
+      "output": {
+        "what_to_aim_for": "Leave having had a few real conversations and put faces to names — that is a complete success for a first happy hour three weeks in.",
+        "simple_plan": [
+          "Pick one or two people you have emailed and introduce yourself in person — you already have a natural opener with each of them.",
+          "Ask more than you tell: you are new, which means you have genuine reasons to be curious about how things work and what people are working on.",
+          "Set a soft exit window in your head so you are not watching the clock anxiously — stay long enough for two or three conversations, then leaving is fine."
+        ],
+        "starters": [
+          {
+            "moment": "OPEN",
+            "tone": "warm",
+            "use_when": "You spot someone you have emailed but never met in person",
+            "say": "Hey — I think we have been in each other's inboxes. I am [your name], just joined the team three weeks ago.",
+            "why_it_helps": "It gives them an immediate shared reference point and takes the pressure off both of you to explain who you are."
+          },
+          {
+            "moment": "JOIN",
+            "tone": "low_key",
+            "use_when": "You are approaching a small group you do not know yet",
+            "say": "Mind if I join? I am still in the phase of trying to put faces to names.",
+            "why_it_helps": "It explains your presence without overstating it, and 'still learning names' is a recognizable new-hire situation that needs no further justification."
+          },
+          {
+            "moment": "CONTINUE",
+            "tone": "direct",
+            "use_when": "The conversation has moved past introductions and you want to keep it going",
+            "say": "What are you and your team focused on right now?",
+            "why_it_helps": "It is a specific, open question that gives the other person something easy to answer, and it lets you listen more than you talk."
+          }
+        ],
+        "if_it_stalls": {
+          "try": "Wrap it cleanly rather than forcing it — a short conversation that ends well is better than a long one that drags.",
+          "say": "It was great to finally meet you in person — I am sure I will be back in your inbox soon."
+        },
+        "things_to_handle_carefully": [
+          "With Priya present, you do not need to perform for her or avoid her — treat her like anyone else you say hello to.",
+          "You do not need to account for your three weeks or explain your role unprompted — most people will not be tracking your timeline."
+        ],
+        "one_thing_to_remember": "Being new gives you a genuine reason to ask questions and listen — that is not a disadvantage to overcome, it is the most natural role you can play tonight."
+      }
     }
   ]
 }

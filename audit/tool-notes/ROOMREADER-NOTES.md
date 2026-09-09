@@ -1,7 +1,8 @@
 # Read the Room (was RoomReader) — architecture & lock notes
 
 **Known-good:** tag `readtheroom-v2` · golden `audit/room-reader-golden-sample.json`
-(14 cases — one per endpoint, all live-captured 2026-09-08)
+(16 cases — one per endpoint plus 2 dedicated regression cases, all
+live-captured 2026-09-08)
 **Verify:** `npm run check:golden room-reader` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -170,6 +171,47 @@ Added as a dedicated golden case
 (`prepare-event-family-holiday-no-invented-attendees`) specifically to catch
 a regression on this cluster, separate from the simpler
 `prepare-event-work-happy-hour` case.
+
+## CORE_SYSTEM correction pass (2026-09-08, third pass) — shared, not event-only
+
+The coworker-dinner Prepare-Event case (Priya, her boss, senior engineers,
+product people the visitor had emailed — all correctly drawn from supplied
+input, confirming the attendee-invention fix held) still surfaced three
+finer epistemic slips. All three are general principles, not event-specific,
+so they were added to **CORE_SYSTEM** — shared across all 14 endpoints —
+rather than to PREPARE_EVENT_SYSTEM alone:
+
+- **A feeling distributed across a whole room is still mind-reading.**
+  "Leaving space to move around is more comfortable for everyone" claims to
+  know a group's collective internal state — the same violation as claiming
+  to know one person's, just spread out. SOCIAL INTERPRETATION now says so
+  explicitly: ground advice in the visitor's own goal or in the mechanics of
+  conversation, never in a predicted collective feeling.
+- **Status is not an automatic behavior switch.** "Priya's boss is in the
+  room — listen more than you talk" invented a deference rule from a title
+  alone, with no supplied reason for it. New STATUS IS NOT A BEHAVIOR SWITCH
+  section: a title/seniority/age/wealth/fame/authority may be context, but
+  never automatically justifies talk-less/defer-more/flatter/impress/avoid/
+  seek-out — only the visitor's actual stated goal or situation can justify
+  a different behavior. Re-verified live: the corrected output says "you do
+  not need to perform for her or avoid her — treat her like anyone else."
+- **The visitor's own body language can't be promised a social effect.**
+  "The line between quiet and composed is mostly posture and eye contact"
+  invents a perception rule and promises a specific read in exchange for a
+  specific posture. The existing BODY LANGUAGE section only covered reading
+  *other people's* gestures — extended to also cover the reverse direction:
+  a suggestion about the visitor's own posture/eye contact/presentation may
+  describe an action, never the social meaning it will earn them.
+
+Also fixed: `one_thing_to_remember` claiming "you are not being evaluated on
+your small-talk performance" — a direct claim about how the visitor is or
+isn't being judged, which the tool cannot know. PREPARE_EVENT_SYSTEM's
+encouragement guidance now names this example explicitly alongside the
+existing banned reassurances ("literally everyone remembers being new").
+
+Re-verified live on the exact case that surfaced this cluster:
+`room-reader-prepare-event` guard PASS with 0 fields flagged — the fix
+didn't just relocate the problem into something the guard has to repair.
 
 ## Frontend bug fixed the same pass
 
