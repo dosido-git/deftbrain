@@ -3,8 +3,8 @@
     "tool": "SensoryScout",
     "generated": "2026-09-09",
     "model": "claude-sonnet-4-6 (MODELS.SMART), MODELS.FAST for ask-script; 7 endpoints",
-    "baseline_commit": "sensoryminefieldmapper-v3",
-    "how_to_regression_diff": "Re-run (npm run check:golden sensory-minefield-mapper) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200, no numeric/categorical intensity score anywhere, no invented layout (exits/restrooms/quiet spots/fresh air), no 'better time to go' without evidence. GUARDS: this is a full v3 re-record, not a diff against v2 — the schema is completely different (no intensity_rating, no layout_intel, no best_time, no route cumulative_energy). CRITICAL — /alternatives specifically: this endpoint returned prose instead of JSON on 100% of calls (9/9 across 3 separate top-level requests) before the fix documented in audit/tool-notes/SENSORYMINEFIELDMAPPER-NOTES.md. If a future prompt edit touches ALTERNATIVES_SYSTEM, re-verify with at least 3 separate live calls, not one — the failure was 100% reproducible but a single lucky call could look fine. DO NOT REVERSE: the up-front 'this is a DIFFERENT task' disambiguator, the reworded 'ALTERNATIVES REQUEST' user-message prefix (never a bare 'PLACE:/CONCERNS:' pair identical in shape to the main endpoint's input), or the explicit 'you are a JSON API endpoint' framing — all three were needed together."
+    "baseline_commit": "sensoryminefieldmapper-v3.1",
+    "how_to_regression_diff": "Re-run (npm run check:golden sensory-minefield-mapper). v3.1 (2026-09-09) added 10 output-correction rules on top of the v3 rewrite (no compounded place-type possibilities, no place-type-as-fact framing, no unsupported mechanism claims, past-visit duration never restated as a forecast, supplied constraints preserved exactly rather than strengthened, no invented clock times, no generic reassurance, only-selected-or-necessary sensory factors, a 5-way KNOWN/PAST EXPERIENCE/POSSIBILITY/UNKNOWN/PREPARATION evidence model, and \"THE VISITOR IS THE SENSOR\" as the closing north star) plus a required, fixed-set travel-mode field for Route mode (was free text) with its own ROUTE MODE RULES section forbidding invented route/transit/traffic conditions. DO NOT reverse any of those, or the 7 new outputGuard.prohibit entries that back them. Real bug found and fixed during this pass, same failure class as ScamRadar v2.1 the same day: runOutputGuard mutates its `draft` argument IN PLACE, and its repair pass can blank out a flagged field instead of substituting it — despite the repair prompt explicitly saying not to. A stripEmptyItems() call made BEFORE runOutputGuard only catches blanks already in the raw model output, not ones the repair step introduces afterward; caught live via a route-mode call that came back with a populated `factor` and `prepare` array sitting next to a blank `what_might_matter`. Fix: run stripEmptyItems() AFTER runOutputGuard, not before, and drop an array-of-objects item if ANY of its own string fields is blank (not just when ALL of them are) — a half-populated object is exactly as useless as a fully-blank one. Do not move the stripEmptyItems() call back above runOutputGuard, and do not loosen the \"every string field\" check back to \"some field\" — both regressions were caught live in this exact session."
   },
   "cases": [
     {
@@ -25,97 +25,93 @@
       },
       "output": {
         "summary": {
-          "heading": "Regional hospital — outpatient wing",
-          "one_liner": "You have a 30-minute check-in window before your appointment, cannot leave the waiting area, and your last visit ran about two hours — so the main task is making a potentially long, fixed wait more manageable."
+          "heading": "Regional hospital, outpatient wing",
+          "one_liner": "You have a 9:00 appointment with an 8:30 arrival, and you need to stay within earshot the whole time."
         },
         "what_you_know": [
-          "Arrival required by 8:30 for a 9:00 appointment.",
-          "You cannot leave and return — missing your name being called moves you to the end of the line.",
-          "Your last visit involved roughly a two-hour wait."
+          "Arrival time is 8:30 for a 9:00 appointment.",
+          "If your name is called and you are not present, you go to the end of the line — so you need to stay within earshot.",
+          "Your last visit involved about a two-hour wait."
         ],
         "worth_preparing_for": [
           {
             "factor": "Noise",
-            "basis": "GENERAL_POSSIBILITY",
-            "what_might_matter": "Outpatient waiting areas can have overlapping sounds — PA announcements, conversation, medical equipment, doors — with little predictability about when or how loud.",
+            "basis": "USER_SUPPLIED",
+            "what_might_matter": "Outpatient waiting areas can have overhead announcements, background PA systems, other patients, and staff movement — the mix and volume vary by area and time.",
             "prepare": [
-              "Bring whatever you already use to reduce unwanted sound — earplugs, earbuds, or headphones — so you have the option without needing to find anything on-site.",
-              "If you use audio (music, a podcast, white noise) to mask background sound, download it beforehand so you are not dependent on the hospital wifi."
+              "Bring whatever hearing management you already use — earplugs, earcups, or earbuds — set at a level where you can still hear your name called.",
+              "If you use earbuds, keep one ear open or set a low enough volume that announcements come through."
             ]
           },
           {
             "factor": "Lighting",
-            "basis": "GENERAL_POSSIBILITY",
-            "what_might_matter": "Indoor waiting areas in hospitals often use overhead artificial lighting with little or no adjustment available to you.",
+            "basis": "USER_SUPPLIED",
+            "what_might_matter": "Some hospital waiting areas use overhead artificial lighting; the type and intensity vary and are not established for this specific room.",
             "prepare": [
-              "If overhead light is difficult for you, consider bringing sunglasses or a cap with a brim — both are easy to remove if you do not need them.",
-              "Choose a seat away from direct overhead fixtures if the room gives you a choice when you arrive."
+              "Bring sunglasses or a hat with a brim if bright overhead light is something you want the option to reduce.",
+              "If you have a preferred seat position relative to light sources, look at the room when you arrive and choose accordingly if there is a choice."
             ]
           },
           {
             "factor": "Smells",
-            "basis": "GENERAL_POSSIBILITY",
-            "what_might_matter": "Hospital outpatient areas may have cleaning product smells, hand sanitizer dispensers nearby, or other medical-setting odors that vary by location within the wing.",
+            "basis": "USER_SUPPLIED",
+            "what_might_matter": "Hospital environments may have cleaning products, hand sanitiser stations, or other clinical smells — what is present in this specific area is not known in advance.",
             "prepare": [
-              "If certain smells are difficult for you, a small personal item with a neutral or familiar scent (a tissue, a lip balm, a scarf) can give you something to focus on briefly without attracting attention."
+              "If you have a scent you find neutral or grounding, bring a small amount on a tissue or cloth you can hold near your face.",
+              "Identify ahead of time whether there is any movement available to you within the permitted waiting area, so you have that option if one spot is more difficult than another."
             ]
           },
           {
             "factor": "Temperature",
-            "basis": "GENERAL_POSSIBILITY",
-            "what_might_matter": "Waiting areas can run cooler than expected, and you will not be able to step outside to warm up given the cannot-leave constraint.",
+            "basis": "USER_SUPPLIED",
+            "what_might_matter": "Climate control in waiting areas can run cooler or warmer than expected and may not be adjustable.",
             "prepare": [
-              "Bring a layer you can add or remove — a cardigan or light jacket takes up little space and covers both a cold room and one that is warmer than expected."
+              "Wear or bring a layer you can add or remove easily.",
+              "A small water bottle can help if the air is dry."
             ]
           },
           {
             "factor": "Waiting",
             "basis": "USER_SUPPLIED",
-            "what_might_matter": "Your last visit was about two hours, and you cannot leave the area — so this is the central challenge of the visit.",
+            "what_might_matter": "Because your last visit involved about a two-hour wait, today could be similar — though it may also differ.",
             "prepare": [
-              "Plan something absorbing enough to hold attention across a long stretch but interruptible the moment your name is called — a downloaded show, a book, a game, a playlist.",
-              "Bring anything that makes the physical wait more comfortable: a snack, water, something for your hands, or a small cushion if seating comfort matters to you."
+              "Bring enough to occupy yourself for a potentially extended wait — reading, audio, a task on your phone — keeping the earpiece arrangement above in mind.",
+              "Charge your devices fully before you go, since a long wait can deplete a phone."
             ]
           }
         ],
         "before_you_go": [
-          "Download any audio or video you want — do not rely on hospital wifi being fast or free.",
-          "Eat something before you arrive if the wait tends to be harder on an empty stomach.",
-          "Charge your phone or device fully the night before; consider bringing a small power bank given the potential two-hour-plus timeline.",
-          "Pack everything into one bag you can keep on your lap or under your chair without needing to rummage — you want to be ready to stand up immediately when called."
+          "Pack everything the night before or well ahead of departure so you are not assembling it at the last minute.",
+          "Eat and hydrate before you arrive — you may be there for a while and may not want to leave the area for food or drink.",
+          "If you take any medication on a schedule, account for the possibility that you are still there at the next dose time."
         ],
         "while_youre_there": [
-          "When you check in at 8:30, confirm with staff how names are called — whether it is verbal only, a screen, or both — so you know what to watch for.",
-          "Pick your seat before you settle in: consider proximity to the check-in desk or wherever names are called, distance from high-traffic doors, and overhead lighting if that matters to you.",
-          "Keep your phone volume up or on vibrate with the screen facing you if staff might also call or page you."
+          "When you check in, confirm with staff what 'present when called' means in practice — whether there is any flexibility to step a short distance away, use a nearby bathroom, or move within a corridor — so you know your actual range of movement rather than assuming the most restrictive version.",
+          "Choose a seat where you are visible to staff and can hear announcements, then settle your comfort items from there.",
+          "If one part of the waiting area is noticeably more difficult than another, check with staff whether you can move to a different permitted spot before committing to a seat."
         ],
         "things_you_could_ask": [
           {
-            "situation": "At check-in, to understand how you will be called",
-            "script": "How will I know when it is my turn — is it announced verbally, shown on a screen, or both? I want to make sure I do not miss it."
+            "situation": "At check-in, before you settle in to wait.",
+            "script": "I need to make sure I hear my name when it is called. Is it okay if I sit anywhere in this waiting area, or should I stay in a particular spot? And is there anywhere nearby — like a hallway or bathroom — that I can step to briefly without losing my place?"
           },
           {
-            "situation": "If the wait is running long and you want an update without losing your place",
-            "script": "I checked in at 8:30 for a 9:00 appointment. Is there any sense of how much longer the wait might be? I just want to make sure I am in the right place."
-          },
-          {
-            "situation": "If temperature, light, or noise is difficult and you want to know if options exist",
-            "script": "Is there another spot I could wait that might be a bit quieter or away from the main area, as long as I would still be called in the same way?"
+            "situation": "If the environment is difficult and you want to know whether moving is an option.",
+            "script": "Is there another area I am allowed to wait in? I want to make sure I can still hear when I am called."
           }
         ],
         "backup_plan": [
-          "If the environment becomes harder to tolerate, adjust what you can without moving: put on headphones, add your layer, shift your seat within the waiting area — changes that do not risk missing your name.",
-          "If you need to use a nearby bathroom or step away briefly, tell the check-in desk before you go and ask them to confirm you will still be called — do not assume it is fine without checking."
+          "If noise becomes difficult, adjust your hearing management to the lowest reduction level that still lets you hear your name — prioritise staying in earshot over maximum comfort reduction.",
+          "If the lighting or smells in your current seat are difficult, ask staff whether you can move within the permitted waiting area before deciding you are stuck.",
+          "If you feel like you need a short mental break, consider what you can change from your seat — switching what you are listening to, closing your eyes, adjusting your layer — before doing anything that takes you out of hearing range."
         ],
         "unknowns_that_matter": [
-          "Whether names are called verbally, shown on a screen, or both — this determines how closely you need to watch and listen, and whether headphones are safe to use at full volume.",
-          "Whether the waiting area has any lower-stimulation spots (a corner, a secondary seating area) that still keep you within earshot — worth asking at check-in.",
-          "Whether today's wait will be similar to last time — that was one data point, not a pattern, so the two-hour estimate may not hold."
+          "What the actual range of permitted movement is — the check-in conversation will establish this and is worth having early.",
+          "Whether the waiting area has natural light, window seating, or any variation in lighting across the room.",
+          "Whether there are strong smells in this specific outpatient area on this visit.",
+          "How long today's wait will actually be — your past experience gives context but does not determine today."
         ]
-      },
-      "optionalSections": [
-        "unknowns_that_matter"
-      ]
+      }
     },
     {
       "name": "de-supermarket-noise-quoted-phrase",
@@ -133,57 +129,54 @@
       "output": {
         "summary": {
           "heading": "Supermarkt um die Ecke",
-          "one_liner": "Du weißt bereits, dass es nach der Arbeit meistens sehr laut ist – der Plan bereitet dich auf genau diese Situation vor."
+          "one_liner": "Du weißt bereits, dass es nach der Arbeit meistens sehr laut ist – der Plan geht davon aus, dass das heute wieder so sein könnte."
         },
         "what_you_know": [
-          "Der Supermarkt ist nach der Arbeit meistens sehr laut – das hast du selbst so erlebt."
+          "Nach deiner Erfahrung ist der Supermarkt nach der Arbeit meistens sehr laut."
         ],
         "worth_preparing_for": [
           {
             "factor": "Noise",
             "basis": "USER_SUPPLIED",
-            "what_might_matter": "Du hast beschrieben, dass es nach der Arbeit meistens sehr laut ist – damit ist das die wahrscheinlichste Bedingung, auf die du dich einstellst.",
+            "what_might_matter": "Du hast selbst erlebt, dass es nach der Arbeit meistens sehr laut ist.",
             "prepare": [
-              "Nimm Ohrstöpsel oder einen Gehörschutz mit – du musst sie nicht durchgehend tragen, hast sie aber zur Hand wenn es zu viel wird.",
-              "Schreib eine kurze Einkaufsliste, bevor du gehst – so brauchst du im Laden weniger Denkarbeit und kannst schneller wieder raus."
+              "Nimm Ohrstöpsel oder Kopfhörer mit – auch ohne Musik können sie den Geräuschpegel dämpfen.",
+              "Überleg vorher, was du brauchst, damit du dich kürzer im lautesten Bereich aufhalten musst."
             ]
           },
           {
             "factor": "Crowds",
-            "basis": "GENERAL_POSSIBILITY",
-            "what_might_matter": "In Supermärkten können allgemein verschiedene Lärmquellen auftreten – Musik, Gespräche, Kassen, Waren, die gestapelt werden. Das kann die Konzentration erschweren.",
+            "basis": "USER_SUPPLIED",
+            "what_might_matter": "Du weißt, dass es laut ist – ob das auch mit mehr Menschen zusammenhängt, ist unklar.",
             "prepare": [
-              "Überlege, ob du einen Moment brauchst, um nach der Arbeit runterzufahren, bevor du in den Lärm gehst – das kann helfen, bereits erschöpfte Sinne nicht direkt zu überlasten.",
-              "Nimm dir Zeit für die Einkaufsliste – je präziser sie ist, desto zielgerichteter kannst du durch den Laden gehen."
+              "Falls du eine Wahl hast, such dir die weniger belebte Kasse oder den Self-Checkout aus, wenn das für dich leichter ist.",
+              "Plane etwas Pufferzeit ein, falls Schlangen länger sind als erwartet."
             ]
           }
         ],
         "before_you_go": [
-          "Pack Ohrstöpsel oder Gehörschutz in die Tasche, bevor du das Haus verlässt.",
-          "Schreib deine Einkaufsliste vollständig auf – je weniger du im Laden improvisieren musst, desto kürzer und gezielter kann der Einkauf sein."
+          "Leg Ohrstöpsel oder Kopfhörer griffbereit – in die Jackentasche oder oben in die Tasche, damit du sie nicht suchen musst.",
+          "Schreib dir eine kurze Einkaufsliste, damit du dich im Laden auf das Wesentliche konzentrieren kannst."
         ],
         "while_youre_there": [
-          "Wenn es zu laut wird: Ohrstöpsel einsetzen, einen Moment stehen bleiben, durchatmen. Das gibt dir die Möglichkeit, wieder einen klaren Kopf zu bekommen.",
-          "Arbeite die Liste von oben nach unten ab, damit du nicht mehrfach durch den ganzen Laden laufen musst."
+          "Wenn der Lärm belastend wird, mach eine kurze Pause – setz die Ohrstöpsel rein oder bleib kurz still, bevor du weitermachst.",
+          "Behalt im Blick, welche Kasse gerade am wenigsten besetzt wirkt, damit du nicht unnötig lange stehst."
         ],
         "things_you_could_ask": [
           {
-            "situation": "Wenn du wissen willst, wann es erfahrungsgemäß ruhiger ist",
-            "script": "Entschuldigung, ich komme meistens nach der Arbeit und finde es dann sehr voll und laut. Gibt es eine Uhrzeit, zu der es bei euch etwas ruhiger ist?"
+            "situation": "Wenn du wissen möchtest, wann es erfahrungsgemäß ruhiger ist",
+            "script": "Entschuldigung, ich frage mich, ob es bestimmte Uhrzeiten gibt, zu denen hier weniger los ist – haben Sie da eine Einschätzung?"
           }
         ],
         "backup_plan": [
-          "Falls Lärm und Gedränge zusammenkommen und du merkst, dass du dich nicht mehr gut konzentrieren kannst: Stell den Wagen kurz ab, setz die Ohrstöpsel ein und atme einen Moment durch, bevor du weitermachst.",
-          "Falls der Lärm und das Gedränge zusammen dich völlig überlasten: Stell den Wagen ab, verlasse den Supermarkt, setz die Ohrstöpsel ein und atme einen Moment durch, bevor du entscheidest, wie du weitermachst."
+          "Wenn es zu laut oder zu voll ist: Setz die Kopfhörer auf oder steck die Ohrstöpsel rein, und konzentriere dich auf einen Schritt nach dem anderen – erst die Liste abarbeiten, dann zur Kasse.",
+          "Wenn die Situation unangenehm wird: Ohrstöpsel rein oder Kopfhörer auf, dann Schritt für Schritt weitermachen – erst das Nötigste kaufen, dann zur Kasse."
         ],
         "unknowns_that_matter": [
-          "Du weißt, dass es nach der Arbeit meistens laut ist – aber nicht, ob es heute so sein wird oder ob es eine ruhigere Alternative gibt (andere Uhrzeit, anderer Eingang, Self-Checkout). Das ist etwas, das du gegebenenfalls beim Personal erfragen kannst."
+          "Wie laut und voll es heute konkret sein wird – deine Erfahrung gilt für 'meistens', nicht für jeden Besuch.",
+          "Ob es Uhrzeiten gibt, zu denen es spürbar ruhiger ist – das wäre beim Personal zu erfragen."
         ]
-      },
-      "optionalSections": [
-        "unknowns_that_matter",
-        "things_you_could_ask"
-      ]
+      }
     },
     {
       "name": "en-route-farmers-market",
@@ -207,72 +200,52 @@
       },
       "output": {
         "route_summary": {
-          "heading": "Walk to the farmers market",
-          "one_liner": "A walking trip to the downtown farmers market, with a focus on crowds and noise."
+          "heading": "Walk to downtown farmers market",
+          "one_liner": "A walking trip to the farmers market, with crowds and noise as the main things to prepare for."
         },
         "stops": [
           {
-            "stop": "Home",
-            "what_you_know": [
-              "Starting point for the walk"
-            ],
-            "worth_preparing_for": [
-              {
-                "factor": "Noise",
-                "basis": "GENERAL_POSSIBILITY",
-                "what_might_matter": "If you use any hearing protection or noise-reducing options, deciding to bring them before you leave is easier than wishing you had them later.",
-                "prepare": [
-                  "Pack whatever noise-reduction option already works for you — earbuds, earplugs, or headphones — before you head out."
-                ]
-              }
-            ]
-          },
-          {
             "stop": "Downtown farmers market",
             "what_you_know": [
-              "The market is usually busiest right at opening."
+              "You said the market is usually busiest right at opening."
             ],
             "worth_preparing_for": [
               {
                 "factor": "Crowds",
                 "basis": "USER_SUPPLIED",
-                "what_might_matter": "You know from experience that opening time draws the biggest crowd, so crowd density at that moment is a real possibility to plan around.",
+                "what_might_matter": "You said the market tends to be at its busiest right at opening, so if you arrive then, that is the density you would be walking into.",
                 "prepare": [
-                  "If arriving at opening is flexible, arriving 15-30 minutes after opening is one option — though whether that meaningfully reduces crowds is something only your own experience with this specific market can tell you.",
-                  "If you arrive at opening by choice or necessity, having a loose plan for which part of the market to head to first may reduce time spent navigating the densest areas.",
-                  "Give yourself permission to pause at the edge of the market before entering, rather than walking straight into the center."
+                  "If arriving at opening is flexible, arriving slightly after the initial rush — based on your own sense of when it tends to thin out — may give you a different experience.",
+                  "Once you arrive, you can assess which areas feel more or less crowded and adjust where you spend your time accordingly.",
+                  "If you have a specific item to get, knowing in advance which vendor you need means you can move with more purpose and spend less time navigating the busiest areas."
                 ]
               },
               {
                 "factor": "Noise",
-                "basis": "GENERAL_POSSIBILITY",
-                "what_might_matter": "Outdoor markets can involve vendor calls, music, PA announcements, and crowd noise — the mix and volume vary and are not predictable in advance.",
+                "basis": "VISITOR_CONCERN",
+                "what_might_matter": "You mentioned crowds and noise as things to prepare for. Noise at the market could come from various sources, but you would know best what you encounter based on your visits.",
                 "prepare": [
-                  "Have your noise-reduction option accessible, not buried in a bag, so using it is a low-friction decision.",
-                  "If noise becomes a problem while you are there, you already have your noise-reduction option accessible."
+                  "If noise is something you manage when it becomes overwhelming, having your usual approach accessible means you are not caught off guard.",
+                  "Notice what the noise level is like when you first arrive and whether it changes as you move through different parts of the market."
                 ]
               }
             ]
           }
         ],
         "before_you_leave": [
-          "Bring your noise-reduction gear with you.",
-          "If your arrival time is flexible, consider what your own past experience suggests about when the market feels more manageable — you have more relevant information about this specific market than any general advice does.",
-          "Bring water and anything that helps you feel comfortable if you end up waiting or pausing."
+          "If there are specific times you have found work better at the market based on your past visits, planning around those may help.",
+          "If your list of what you need at the market is short, writing it down means less time spent in the busiest parts working out what you still need."
         ],
         "backup_plan": [
-          "If the market feels overwhelming, leaving early or cutting your visit short is a valid option.",
-          "If noise or crowd density becomes a problem mid-visit, stepping to a quieter edge of the market (rather than trying to exit the area entirely) is one option that keeps the trip from feeling like a loss."
+          "If the crowd or noise becomes too much once you are there, stepping to the outer edge or a corner of the market space — away from the densest vendor rows — gives you somewhere to pause without leaving entirely.",
+          "If you need to leave earlier than planned, anything on your list that you did not get could be noted for another visit or sourced elsewhere."
         ],
         "unknowns_that_matter": [
-          "Whether arriving after opening actually reduces crowds at this specific market — that is worth noting from your own visits over time.",
-          "Whether there are any quieter sections of the market layout, such as ends or side rows — something you can observe on arrival rather than plan for in advance.",
-          "Whether the walk itself passes any places that are reliably noisy or crowded on the way."
+          "How long the opening rush typically lasts at this particular market — you would know better than anyone based on your past visits.",
+          "Whether the market has any quieter sections (for example, a perimeter away from a stage or main entrance) — something you could look for once you arrive.",
+          "Whether there is amplified sound (music, announcements) and where it is positioned."
         ]
-      },
-      "optionalSections": [
-        "unknowns_that_matter"
-      ]
+      }
     },
     {
       "name": "en-rescan-longer-wait-more-crowded",
@@ -291,23 +264,20 @@
         ]
       },
       "output": {
-        "acknowledgment": "You are facing a longer wait than the two hours you planned for, in a more crowded space.",
+        "acknowledgment": "You're reporting that the wait is running longer and the space is more crowded than you prepared for.",
         "adjusted_plan": [
-          "Since you cannot leave, focus first on what you can adjust where you are sitting — shift your position, angle, or posture to find what feels most manageable in the space available to you.",
-          "If you have headphones, earbuds, or any audio you brought, now is a reasonable time to use them — even low-volume sound or just the passive noise reduction of earbuds can help.",
-          "Let the front desk or check-in staff know the wait is running longer than expected and ask if there is any way to be notified when your name is close — a verbal heads-up, a call to your phone, or a text — so you can use that time without having to stay on high alert.",
-          "Extend whatever pacing strategy you had for two hours: if you had snacks, water, a screen, something to read, or a task to work through, spread those out rather than burning through them now.",
-          "If your current spot feels uncomfortable as the crowd builds, consider whether you can shift to a different seat in the waiting area without losing your place — check with staff if you are unsure."
+          "If you brought headphones or earplugs, now is a reasonable time to put them on — more people in the space likely means more ambient noise.",
+          "If you have something to occupy yourself, shift to it now rather than waiting until you feel worn down.",
+          "Ask a staff member or check with the desk about roughly where you are in the queue — knowing you have more time ahead lets you pace yourself rather than staying on alert for your name.",
+          "Ask whether you are permitted to wait just outside the immediate area (a hallway, a quieter corner nearby) while still being reachable when called — your constraint is about being present when your name comes up, not about staying in one exact spot.",
+          "If the crowding is making the noise harder to manage, consider whether any of your existing items — a jacket, a bag — can create a small buffer of personal space around you."
         ],
         "still_applies_from_before": [
-          "The constraint stands: do not leave without checking in with staff first. Ask them directly whether stepping away briefly is possible without losing your place.",
-          "Anything you brought to manage the wait — phone, headphones, snacks, something to focus on — is still your main resource."
+          "The plan to stay within earshot when your name is called still applies — that constraint hasn't changed.",
+          "Anything you brought to occupy yourself during a long wait is still worth using."
         ],
-        "if_still_hard": "If the environment feels unmanageable where you are sitting, ask staff directly whether there is anywhere else in the building you are permitted to wait — a quieter hallway, a less busy area — and how they can reach you when it is your turn."
-      },
-      "optionalSections": [
-        "still_applies_from_before"
-      ]
+        "if_still_hard": "If noise and crowding together become difficult to manage where you are sitting, ask at the desk whether there is any permitted waiting spot nearby that tends to be quieter."
+      }
     },
     {
       "name": "en-comfort-kit-hospital",
@@ -324,58 +294,46 @@
       "output": {
         "essentials": [
           {
-            "item": "Earbuds, earplugs, or headphones",
-            "why": "If noise becomes difficult to manage during your visit, having something to reduce or mask it gives you an option.",
+            "item": "Charged phone or tablet",
+            "why": "Having something to occupy yourself gives you an option if you need a distraction.",
             "priority": "must_have"
           },
           {
-            "item": "Sunglasses or tinted glasses",
-            "why": "If bright light becomes uncomfortable, having these means you can put them on without needing to find a different spot.",
-            "priority": "must_have"
-          },
-          {
-            "item": "Something to do while waiting",
-            "why": "Waits at hospitals can be unpredictable in length — having something absorbing to focus on (book, download, puzzle, music) gives you somewhere to put your attention",
+            "item": "Downloaded content (music, podcasts, video, reading)",
+            "why": "Gives you something to engage with that does not depend on a reliable connection",
             "priority": "must_have"
           }
         ],
         "comfort_items": [
           {
-            "item": "Water bottle",
-            "why": "A long or uncertain wait is easier to sit through when you are not also thirsty; check whether drinks are permitted in the area you will be in",
+            "item": "Earplugs or earphones",
+            "why": "You listed noise as a concern; these give you an option if the environment is louder than you want",
+            "priority": "must_have"
+          },
+          {
+            "item": "Sunglasses or brim hat",
+            "why": "You listed lighting as a concern; either can reduce overhead light without requiring you to do anything else",
             "priority": "nice_to_have"
           },
           {
-            "item": "Small snack",
-            "why": "Useful if the wait runs longer than expected and you have not eaten; again, check local rules if the area has restrictions",
+            "item": "Power bank or charger",
+            "why": "Keeps your device available for as long as you need it.",
             "priority": "nice_to_have"
           },
           {
-            "item": "Light layer or cardigan",
-            "why": "A layer you can add or remove helps you stay comfortable if the temperature shifts during your wait.",
-            "priority": "nice_to_have"
-          },
-          {
-            "item": "Eye mask or hat with a brim",
-            "why": "If glasses feel like too much, a brim can cut overhead glare without requiring anything on your face; an eye mask is useful if you want to close your eyes during the wait",
+            "item": "Something to read or do offline",
+            "why": "A backup that does not depend on battery or connection",
             "priority": "nice_to_have"
           }
         ],
         "just_in_case": [
           {
-            "item": "Charged phone or portable battery",
-            "why": "If the wait stretches, a dead phone removes entertainment, communication, and distraction options all at once"
-          },
-          {
-            "item": "Pen and small notepad",
-            "why": "Useful for writing down anything said to you that you want to remember, which can reduce the mental work of holding information during a stressful visit"
-          },
-          {
-            "item": "A contact number for someone outside",
-            "why": "If you want to step away briefly or need support during a long wait, having a way to reach someone quickly is useful"
+            "item": "A light layer (jacket or cardigan)",
+            "why": "Hospitals often run cool; having a layer you can add or remove gives you control over your comfort.",
+            "priority": "nice_to_have"
           }
         ],
-        "quick_note": "Pack your noise and light items at the very top of your bag so you can reach them easily if you need them during your visit."
+        "quick_note": "Pack your bag the day before so you are not assembling it just before you leave — easier to notice if something is missing."
       }
     },
     {
@@ -391,18 +349,18 @@
       },
       "output": {
         "look_for": [
-          "a smaller clinic or specialist office with fewer concurrent patients",
-          "a facility where you can ask about appointment scheduling that fits your schedule",
-          "a smaller practice or clinic with separate waiting areas for different appointment types",
-          "a facility that separates urgent/walk-in traffic from scheduled appointments",
-          "a telehealth option for consultations that do not require physical examination or procedures"
+          "quieter waiting areas with fewer people passing through",
+          "smaller or independent clinics that handle the same type of appointment",
+          "facilities where you can wait in your car and be called or texted when it is your turn",
+          "appointment slots at lower-traffic times as reported by the venue or your own past experience",
+          "outdoor or semi-outdoor waiting space as an option"
         ],
         "other_options": [
-          "a community health clinic or GP practice for referrals or follow-up that would otherwise require a hospital visit",
-          "telehealth or video consultation platforms if the appointment type permits it",
-          "an urgent care centre if your appointment type qualifies, as these often handle lower volumes than hospital outpatient wings"
+          "rescheduling the appointment at a different facility that offers smaller-scale outpatient services",
+          "telehealth consultation if the appointment type permits it",
+          "asking your referrer whether a smaller satellite clinic or community health centre can handle the same care"
         ],
-        "note": "When contacting a new facility, asking directly whether they offer car-waiting or callback arrangements can help you avoid the main waiting area regardless of the size of the practice."
+        "note": "When contacting a potential alternative, ask directly whether they offer car waiting or text-when-ready options and what their typical patient volume is like — staff can often tell you which slots tend to be calmer."
       }
     },
     {
@@ -414,8 +372,8 @@
         "location": "hospital waiting room"
       },
       "output": {
-        "situation": "You want to wait somewhere quieter while still hearing when your name is called at the hospital.",
-        "script": "I'd like to wait somewhere quieter while I'm here. Would it be possible for me to step out or wait elsewhere, and have someone let me know when my name is called?"
+        "situation": "You need to ask whether you can wait in a quieter area while still being present when your name is called.",
+        "script": "I'd like to ask—is there a quieter place I could wait instead of the main waiting room? I want to make sure I'm here when my name is called. What would work with your system?"
       }
     }
   ]

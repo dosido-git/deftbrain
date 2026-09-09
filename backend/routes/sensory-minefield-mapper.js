@@ -28,6 +28,50 @@ function cleanString(value, max = 4000) {
   return value.trim().slice(0, max);
 }
 
+// Maps the frontend's required "how are you traveling?" choice to a plain
+// English phrase for the prompt — same reasoning as ScamRadar's
+// INTERACTION_LABELS: kept fixed/untranslated regardless of userLanguage.
+const TRAVEL_MODE_LABELS = {
+  walking: 'walking',
+  driving: 'driving',
+  public_transit: 'public transit',
+  bicycle: 'bicycle',
+  other: 'other',
+};
+
+function isBlank(v) {
+  return v == null || (typeof v === 'string' && v.trim() === '');
+}
+
+// Structural backstop for "never render an empty bullet" — the prompt says
+// so in several places, but live testing still produced two shapes of it:
+// unknowns_that_matter: ["", "", ""] (whole array of blanks), and a
+// worth_preparing_for entry with a populated factor/prepare but a blank
+// what_might_matter (one bad field, not a wholly-blank object). Strips blank
+// strings out of arrays, and drops an object item from an array unless
+// EVERY one of its own string-typed fields is non-blank — a half-populated
+// object (one required sentence missing) is exactly as useless to the
+// visitor as a fully-empty one.
+function stripEmptyItems(val) {
+  if (Array.isArray(val)) {
+    return val
+      .map(stripEmptyItems)
+      .filter(v => {
+        if (isBlank(v)) return false;
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          return Object.values(v).every(x => typeof x !== 'string' || !isBlank(x));
+        }
+        return true;
+      });
+  }
+  if (val && typeof val === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(val)) out[k] = stripEmptyItems(v);
+    return out;
+  }
+  return val;
+}
+
 function collectProseFields(parsed) {
   const fields = [];
   const walk = (val, path) => {
@@ -69,17 +113,32 @@ PREPARE FOR WHAT MIGHT MATTER. DO NOT INVENT THE PLACE.
 
 EVIDENCE MODEL
 
-Internally distinguish: KNOWN (directly supplied by the visitor, or verified
-for this specific place), REASONABLE POSSIBILITY (plausibly encountered in
-this type of setting, not established for this particular place), UNKNOWN
-(the available information cannot establish it), VISITOR PREFERENCE /
-CONSTRAINT (something the visitor says matters to them).
+For every substantive statement, internally classify it as one of:
 
-Never silently convert: TYPE OF PLACE → FACT ABOUT THIS PLACE, TIME OF DAY →
-CROWD PREDICTION, DATE → OPERATING CONDITIONS, HOSPITAL → FLUORESCENT
+KNOWN — supplied by the visitor, or verified for this specific place.
+
+PAST EXPERIENCE — the visitor reports it happened on a previous visit. Not
+the same as KNOWN: it describes what happened before, not what is true
+today.
+
+POSSIBILITY — a reasonable general possibility for this type of setting, not
+established for this particular place.
+
+UNKNOWN — information that would matter but cannot be established from what
+is available.
+
+PREPARATION — a practical action that is useful whether or not the
+possibility it responds to turns out to be true.
+
+A visitor preference or constraint — something the visitor says matters to
+them, or a limit they've stated — is KNOWN, but must be restated exactly as
+given; see PRESERVE CONSTRAINTS EXACTLY below.
+
+Never silently promote: PAST EXPERIENCE → TODAY'S CONDITION, POSSIBILITY →
+PLACE FACT, PLACE TYPE → SPECIFIC ENVIRONMENT, UNKNOWN → ASSUMPTION, TIME OF
+DAY → CROWD PREDICTION, DATE → OPERATING CONDITIONS, HOSPITAL → FLUORESCENT
 LIGHTING, RESTAURANT → LOUD MUSIC, AIRPORT → LONG LINES, GYM → STRONG
-CLEANING SMELLS, MALL → BRIGHT LIGHTING, PAST EXPERIENCE → GUARANTEED FUTURE
-CONDITION.
+CLEANING SMELLS, MALL → BRIGHT LIGHTING.
 
 NO FAKE ENVIRONMENTAL FORECAST
 
@@ -102,6 +161,22 @@ option already works for you." Bad: "The waiting room has bright
 clinical-white fluorescent panels and no natural light." The first helps
 prepare; the second invents architecture.
 
+When using general place-type knowledge, mention only the minimum plausible
+condition needed to make the preparation useful. Do not compound
+possibilities into an increasingly specific imagined environment — each
+added detail is another invented claim, not more usefulness.
+
+Good: "Hospital waiting areas may have bright overhead lighting."
+Bad: "Outpatient waiting areas sometimes use overhead fluorescent or bright
+LED lighting with little natural light." (Do not add "little natural light"
+unless the visitor supplied it or a verified source establishes it.)
+
+A place-type possibility is never a fact about this visit. Frame it that
+way: "Some [place type] environments have [possibility]. If [factor] is one
+of your concerns, it may be worth preparing for that possibility." Not:
+"[Place type] environments can carry [possibility]..." stated as though it
+describes what the visitor will actually encounter.
+
 TIME OF DAY
 
 Time may be used only when it interacts with something actually known.
@@ -110,26 +185,85 @@ crowded, plan for that possibility." Not supported: "5:30 is peak
 grocery-store traffic." Do not manufacture quieter/busier periods from
 generic assumptions.
 
+DO NOT INVENT A TIME NOT SUPPLIED
+
+Never state a specific clock time, "the night before," or a rush/deadline
+moment the visitor did not supply. "Pack your waiting kit the night before
+so you are not rushing at 8:00" invents a departure time nothing
+established. Prefer: "Pack your waiting kit ahead of time so you aren't
+assembling it just before you leave."
+
 PAST EXPERIENCE
 
-Past experience is valuable evidence but is not a guarantee. "Last time I
-waited two hours" supports "preparing for another long wait may be useful,"
-never "plan for two hours" or "it always runs late" or "today's appointment
-will be delayed."
+Past experience is valuable evidence but is not a guarantee, and not today's
+forecast. "Last time I waited about two hours" supports "because your last
+visit involved about a two-hour wait, you may want to bring enough to occupy
+yourself if today's wait is similarly long" — always conditional on "if
+today is similar." It does NOT support restating that duration as today's
+plan: never "plan enough to occupy two or more hours comfortably,"
+"two-plus hours sitting still," "two hours of use can drain your phone," "it
+always runs late," or "today's appointment will be delayed." Keep the
+visitor's own number attached to their own past visit — don't detach it and
+reissue it as a forecast for today.
+
+PRESERVE CONSTRAINTS EXACTLY
+
+Restate a supplied constraint exactly as given — do not strengthen it into a
+broader one. "I cannot leave and come back — if my name is called and I'm
+not there I go to the end of the line" establishes only that: presence is
+required when called, with a specific cost for missing it. It does NOT
+establish that the visitor must stay in one exact spot, cannot use a nearby
+bathroom or hallway, or has no room to move at all.
+
+Good: "You said you need to be present when your name is called, which
+limits how far you can go while waiting."
+Bad: "The cannot-leave constraint means you will be in the same space for
+that entire period with no option to step out."
+
+If the plan later asks staff what range of movement is actually permitted,
+do not contradict that open question earlier in the response by asserting a
+stricter limit than the visitor actually described.
 
 SENSORY FACTORS
 
-Only discuss factors the visitor selected or factors clearly relevant to
-something they supplied, from: noise, crowds, lighting, smells, temperature,
-visual activity, personal space, waiting, arrival/parking, other. Do not
-force every factor into every result — a short result focused on two
-concerns is better than an encyclopedia.
+A factor (noise, crowds, lighting, smells, temperature, visual activity,
+personal space, waiting, arrival/parking, other) may appear in the response
+only when at least one of these is true:
+
+A. the visitor selected it;
+B. the visitor described it as a concern in their own words;
+C. it follows directly from a constraint they supplied; or
+D. it is necessary to make a selected concern actionable.
+
+The place type alone is never sufficient reason to include a factor — do not
+generate a standard sensory checklist just because the setting makes those
+factors conceivable. A short result focused on two concerns is better than
+an encyclopedia covering every factor a place of this type could
+theoretically have.
+
+NO GENERIC REASSURANCE
+
+Do not close a list of unknowns, or any section, with reassurance that adds
+no preparation value ("you don't need to predict all of these correctly to
+arrive with a useful plan"). Omit it unless there is a specific reason for
+reassurance tied to what the visitor described. End a list of unknowns with
+the actual unknowns — nothing added after them.
 
 RECOMMENDATIONS
 
 Low burden, reversible where possible, grounded in the visitor's concern, and
 useful even if the anticipated condition never occurs. Do not prescribe a
 coping technique as though it works for everyone.
+
+NO UNSUPPORTED MECHANISMS
+
+Do not explain a coping suggestion using a physiological or mechanistic
+claim ("mouth breathing... can reduce what reaches you through the nose," "a
+small portable fan... disperses the smell so it reaches you less") unless it
+is necessary and well grounded. Prefer practical language over an invented
+mechanism: "If smells become difficult, use whatever strategy you already
+know works for you, or ask whether you can move to another permitted
+waiting area."
 
 DO NOT INVENT PERSONAL SENSORY RESPONSES
 
@@ -186,18 +320,30 @@ without creating a new problem."
 
 FINAL AUDIT
 
-Before returning, check: did you invent a physical feature of the place; predict
-crowding, noise, lighting, smells, temperature, waiting, or staff behavior
-without evidence; infer a diagnosis or sensory condition; turn the place type
-into a fact about this place; turn one past experience into a future
-prediction; recommend leaving despite a supplied constraint against leaving;
-invent an accommodation; prescribe a coping technique as though it works for
-everyone; generate a "better time" without evidence; imply you can sense
-current conditions; invent layout information. Revise if any answer reveals
-overreach.
+Before returning, check: did you invent a physical feature of the place;
+predict crowding, noise, lighting, smells, temperature, waiting, or staff
+behavior without evidence; compound a place-type possibility into an
+increasingly specific imagined environment; present a place-type possibility
+as though it describes this visit rather than a general possibility; explain
+a coping suggestion with an unsupported physiological or mechanistic claim;
+infer a diagnosis or sensory condition; turn the place type into a fact
+about this place; restate a past visit's specific duration or detail as
+today's expectation; strengthen a supplied constraint beyond what the
+visitor actually said; invent a clock time, deadline, or "the night before"
+moment nothing supplied; close a section with reassurance that adds no
+preparation value; include a sensory factor the visitor did not select,
+describe, or need for an actionable step; recommend leaving despite a
+supplied constraint against leaving; invent an accommodation; prescribe a
+coping technique as though it works for everyone; generate a "better time"
+without evidence; imply you can sense current conditions; invent layout
+information. Revise if any answer reveals overreach.
 
-NORTH STAR: THE VISITOR KNOWS WHAT BOTHERS THEM. HELP THEM PREPARE WITHOUT
-PRETENDING YOU KNOW THE ROOM.`;
+NORTH STAR:
+
+THE VISITOR IS THE SENSOR.
+
+Sensory Scout prepares the visitor for possibilities. It does not simulate
+having inspected the place.`;
 
 function section(body) {
   return `${CORE_SYSTEM}\n\n${body}\n\n${NO_QUOTE_RULE}`;
@@ -216,6 +362,14 @@ const OUTPUT_GUARD = {
     'coping_technique_prescribed_as_universally_effective',
     'leaving_recommended_despite_a_supplied_constraint_against_it',
     'named_specific_alternative_venue_with_no_search_capability',
+    'possibility_compounded_into_an_increasingly_specific_imagined_environment',
+    'unsupported_physiological_or_mechanistic_claim',
+    'past_visit_duration_or_detail_restated_as_todays_expectation',
+    'supplied_constraint_strengthened_beyond_what_was_said',
+    'invented_clock_time_or_deadline_not_supplied',
+    'generic_reassurance_that_adds_no_preparation_value',
+    'sensory_factor_included_without_visitor_basis_or_necessity',
+    'route_or_travel_condition_invented_without_evidence_or_connected_source',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -305,7 +459,15 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
       userLanguage,
     });
 
-    res.json(parsed);
+    // Run AFTER the guard, not before: the guard mutates `parsed` in place,
+    // and its repair pass can blank out a flagged field instead of
+    // substituting it — despite being told not to. Cleaning first only
+    // catches blanks already in the raw model output, not ones the repair
+    // step introduces afterward. (Caught live during v2.1/v3.1 verification —
+    // don't move this back above runOutputGuard.)
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -317,14 +479,39 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
 // ═══════════════════════════════════════════════════════════════
 const ROUTE_SYSTEM = section(`PREPARE FOR A ROUTE
 
-The visitor has a route with 2-5 stops. Route mode must NOT fabricate
-conditions along the route or at any stop. Do not invent construction,
-traffic, crowds, lighting, noise, sidewalk conditions, transit occupancy,
-station layout, elevators, parking, or rest areas. Do not rank stops by an
-invented "cumulative energy" score — energy over a route is real, but you
-have no way to measure it; instead, if the visitor mentions feeling drained
-by prior stops or a similar constraint, reflect that back as their own
-observation, not a computed metric.
+The visitor has a route with 2-5 stops and has told you how they're
+traveling (walking, driving, public transit, bicycle, or other) — this is
+now a required field, not an optional detail, because it changes what's
+worth preparing for. Do not rank stops by an invented "cumulative energy"
+score — energy over a route is real, but you have no way to measure it;
+instead, if the visitor mentions feeling drained by prior stops or a similar
+constraint, reflect that back as their own observation, not a computed
+metric.
+
+ROUTE MODE RULES
+
+Start and destination provide context. They do NOT establish the conditions
+between those locations.
+
+Do not invent: a route, streets or turns, travel time, traffic, transit
+conditions, crowd levels, lighting, construction, noise, smells, sidewalk
+conditions, parking availability, station conditions, accessibility, or
+safer/quieter/calmer alternatives.
+
+Use only:
+1. facts supplied by the visitor;
+2. current facts obtained from an actual connected/verified source;
+3. clearly labeled general possibilities associated with the stated mode of
+   travel (e.g., a possibility for someone walking differs from one for
+   someone driving or taking transit).
+
+If route-specific information is unavailable, say so naturally and build a
+preparation plan around the visitor's concerns and travel mode instead of
+inventing what the trip will be like.
+
+Never imply that Sensory Scout has examined the route when it has not.
+
+THE VISITOR IS THE SENSOR. THE ROUTE IS CONTEXT, NOT EVIDENCE.
 
 Return ONLY valid JSON:
 {
@@ -358,11 +545,13 @@ router.post('/sensory-minefield-mapper/route', rateLimit(DEFAULT_LIMITS), async 
 
     const validStops = stops.filter(s => cleanString(s?.location, 200));
     if (validStops.length < 2) return res.status(400).json({ error: 'Add at least 2 stops.' });
+    if (!TRAVEL_MODE_LABELS[travelMode]) return res.status(400).json({ error: "Tell us how you're traveling." });
 
     const stopsBlock = validStops.map((s, i) => `${i + 1}. ${cleanString(s.location, 200)}`).join('\n');
 
     const supplied = `STOPS (in the order supplied):\n${stopsBlock}
-${travelMode ? `HOW THEY'RE TRAVELING: ${travelMode}\n` : ''}${when ? `WHEN: ${when}\n` : ''}WHAT THEY'D LIKE HELP WITH: ${concerns.length ? concerns.join(', ') : 'not specified'}
+HOW THEY'RE TRAVELING: ${TRAVEL_MODE_LABELS[travelMode]}
+${when ? `WHEN: ${when}\n` : ''}WHAT THEY'D LIKE HELP WITH: ${concerns.length ? concerns.join(', ') : 'not specified'}
 ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE ROUTE: ${knownInfo}\n` : ''}${specificNotes ? `ANYTHING ELSE: ${specificNotes}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
@@ -380,12 +569,14 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE ROUTE: ${knownInfo}\n` : ''}${sp
       label: 'sensory-minefield-mapper-route',
       fields: collectProseFields(parsed),
       supplied,
-      promise: 'Help the visitor prepare for a multi-stop route using only what they supplied about each stop — never inventing traffic, crowd, or layout conditions along the way.',
+      promise: 'Help the visitor prepare for a route using only what they supplied and the stated mode of travel — never inventing traffic, crowd, transit, or layout conditions along the way.',
       guard: router.outputGuard,
       userLanguage,
     });
 
-    res.json(parsed);
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout/route]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -450,7 +641,9 @@ ${originalPlanSummary ? `ORIGINAL PLAN SUMMARY: ${originalPlanSummary}` : ''}`;
       userLanguage,
     });
 
-    res.json(parsed);
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout/rescan]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -512,7 +705,9 @@ ${specificNotes ? `NOTES: ${specificNotes}` : ''}`;
       userLanguage,
     });
 
-    res.json(parsed);
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout/comfort-kit]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -583,7 +778,9 @@ ${analysisContext?.summary?.one_liner ? `PREVIOUS PLAN SUMMARY: ${analysisContex
       userLanguage,
     });
 
-    res.json(parsed);
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout/alternatives]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -637,7 +834,9 @@ ${location ? `LOCATION: ${location}` : ''}`;
       userLanguage,
     });
 
-    res.json(parsed);
+    const cleaned = stripEmptyItems(parsed);
+
+    res.json(cleaned);
   } catch (error) {
     console.error('[SensoryScout/ask-script]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

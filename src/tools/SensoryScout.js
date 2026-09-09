@@ -26,6 +26,18 @@ const CONCERNS = [
   { key: 'other', labelKey: 'smm_con_other', icon: '❓' },
 ];
 
+// Required for Route mode — walking/driving/transit/cycling produce
+// fundamentally different preparation advice, so this can't be left to a
+// free-text field the visitor might skip. See ROUTE_SYSTEM's ROUTE MODE
+// RULES for how the backend uses this.
+const TRAVEL_MODES = [
+  { value: 'walking', labelKey: 'smm_travel_walking', icon: '🚶' },
+  { value: 'driving', labelKey: 'smm_travel_driving', icon: '🚗' },
+  { value: 'public_transit', labelKey: 'smm_travel_transit', icon: '🚌' },
+  { value: 'bicycle', labelKey: 'smm_travel_bicycle', icon: '🚲' },
+  { value: 'other', labelKey: 'smm_travel_other', icon: '❓' },
+];
+
 const PLACE_TYPES = [
   { value: 'restaurant', labelKey: 'smm_pt_restaurant', icon: '🍽️' },
   { value: 'grocery', labelKey: 'smm_pt_grocery', icon: '🛒' },
@@ -212,11 +224,12 @@ function SensoryScout({ tool }) {
 
   const planRoute = async () => {
     if (!routeStart.trim() || !routeDestination.trim()) { setError(t('smm_err_route_stops')); return; }
+    if (!travelMode) { setError(t('smm_err_route_travel_mode')); return; }
     setRouteLoading(true); setRouteResults(null); setError('');
     try {
       const data = await callToolEndpoint('sensory-minefield-mapper/route', {
         stops: [{ location: routeStart.trim() }, { location: routeDestination.trim() }],
-        travelMode: travelMode || undefined,
+        travelMode,
         when: routeWhen || undefined,
         concerns: selectedConcerns,
         knownInfo: routeKnownInfo.trim() || undefined,
@@ -313,7 +326,7 @@ function SensoryScout({ tool }) {
   planRouteRef.current = planRoute;
   viewRef.current = view;
   canSubmitRef.current = !!(location.trim() && selectedConcerns.length > 0);
-  canRouteRef.current = !!(routeStart.trim() && routeDestination.trim());
+  canRouteRef.current = !!(routeStart.trim() && routeDestination.trim() && travelMode);
 
   useEffect(() => {
     const handler = (e) => {
@@ -710,15 +723,21 @@ function SensoryScout({ tool }) {
                   <input type="text" value={routeDestination} onChange={e => setRouteDestination(e.target.value)} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                  <input type="text" value={travelMode} onChange={e => setTravelMode(e.target.value)} placeholder={t('smm_route_traveling_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+              <div>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={c.required}>*</span></label>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {TRAVEL_MODES.map(tm => (
+                    <button key={tm.value} onClick={() => setTravelMode(tm.value)}
+                      className={`p-2 rounded-xl border text-center transition-all ${travelMode === tm.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                      <div className="text-lg">{tm.icon}</div>
+                      <div className={`text-[10px] font-semibold mt-0.5 ${c.textSecondary}`}>{t(tm.labelKey)}</div>
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                  <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-                </div>
+              </div>
+              <div>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_care_about')}</label>
@@ -729,7 +748,10 @@ function SensoryScout({ tool }) {
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                {/* Own key, distinct from smm_known_label (used by the main
+                    "Prepare for a Place" form) — reusing that key here said
+                    "the place" on a screen asking about a route. */}
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                 <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
               </div>
               <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
