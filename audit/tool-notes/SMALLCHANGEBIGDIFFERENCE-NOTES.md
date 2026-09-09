@@ -1,7 +1,7 @@
 # OnePercenter — architecture & lock notes (`onepercenter-v1`)
 
 Finds the single highest-leverage 1% change in a daily routine. **Frontend:** `src/tools/OnePercenter.js`.
-**Backend:** `backend/routes/one-percenter.js` (1 endpoint, `MODELS.SMART`, **SSE streaming** via
+**Backend:** `backend/routes/small-change-big-difference.js` (1 endpoint, `MODELS.SMART`, **SSE streaming** via
 `anthropic.messages.stream` — the client accumulates `chunk` events and parses the final JSON; no
 server-side guard). **Golden:** `audit/one-percenter-golden-sample.json`. Verify: `npm run check:golden one-percenter`.
 
@@ -33,11 +33,14 @@ allowlist all updated. `server.js` 301s from `/OnePercenter`, `/onepercenter`,
 `/one-percenter`, single-hop to `/SmallChangeBigDifference`.
 **Deliberately left unchanged, per the established i18n-stability precedent
 (SubSweep/DebateMe) — this tool was already locked (`onepercenter-v1` +
-golden sample) before this pass:** backend route file/endpoint
-(`one-percenter.js` / `/api/one-percenter`) and i18n filename/prefix
-(`one-percenter.js` / `op_`). No separate request to move those was made
-this time — contrast Document Detective, where the user asked for the
-backend rename explicitly in a follow-up.
+golden sample) before this pass:** the endpoint (`/api/one-percenter`) and
+i18n filename/prefix (`one-percenter.js` / `op_`). No separate request to
+move those was made this time — contrast Document Detective, where the user
+asked for the backend rename explicitly in a follow-up. The **backend route
+file** did later move, filename-only, in the 2026-09-08 sweep:
+`one-percenter.js` → `small-change-big-difference.js` (see
+`audit/RENAMES.md`) — the endpoint path inside it, and the i18n file above,
+were untouched.
 
 **SSE streaming architecture preserved unchanged.** This route predates the
 v2 output standard's `callClaudeWithRetry` + `runOutputGuard` convention and

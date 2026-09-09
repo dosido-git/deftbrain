@@ -1,6 +1,6 @@
 # ArgueSmarter (was ArgueBetter) — architecture & lock notes (`arguebetter-v1`)
 
-First-ever audit-kit lock for this tool (built pre-audit-kit; never had a golden sample, NOTES.md, or git tag before this pass). Complete intellectual sparring system: state a position, face a steelman opponent across 5 debate formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic), get coached, fact-checked, scored, judged by an undecided audience, and mapped into an argument tree. Plus 4 standalone modes: Quick Spar, Devil's Advocate Prep, Fallacy Gym, and cross-debate Highlight Reel. **Frontend:** `src/tools/ArgueBetter.js`. **Backend:** `backend/routes/argue-better.js` (13 endpoints). **Golden:** `audit/argue-better-golden-sample.json` (14 cases). **Catalog:** `src/data/tools.js`, category `Diversions`/`What If?`, headerColor `#b8dcd8`.
+First-ever audit-kit lock for this tool (built pre-audit-kit; never had a golden sample, NOTES.md, or git tag before this pass). Complete intellectual sparring system: state a position, face a steelman opponent across 5 debate formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic), get coached, fact-checked, scored, judged by an undecided audience, and mapped into an argument tree. Plus 4 standalone modes: Quick Spar, Devil's Advocate Prep, Fallacy Gym, and cross-debate Highlight Reel. **Frontend:** `src/tools/ArgueBetter.js`. **Backend:** `backend/routes/argue-smarter.js` (13 endpoints). **Golden:** `audit/argue-better-golden-sample.json` (14 cases). **Catalog:** `src/data/tools.js`, category `Diversions`/`What If?`, headerColor `#b8dcd8`.
 
 ## Shape
 - **13 endpoints**, all `MODELS.SMART`, all through `callClaudeWithRetry` + `withLanguage`/`withLocaleContext` (was already migrated pre-audit — not part of the callClaudeWithRetry sweep).
@@ -24,7 +24,9 @@ First-ever audit-kit lock for this tool (built pre-audit-kit; never had a golden
 ## Naming-consistency pass (2026-07-16)
 
 Catalog id is `ArgueBetter`, but the backend route file and every endpoint path were still `debate-me.js`/`debate-*` (an artifact of the tool's history: ArgumentSimulator → Debate Me → Argue Better, where the 2026-07-10 rename deliberately left the endpoint alone — see `audit/RENAMES.md`). Since this tool had never been locked before, the rename cost nothing extra (no golden sample or tag to migrate), so as part of this first lock:
-- `backend/routes/debate-me.js` → `backend/routes/argue-better.js`.
+- `backend/routes/debate-me.js` → `backend/routes/argue-better.js` (renamed
+  again, filename-only, to `argue-smarter.js` in the 2026-09-08 sweep — see
+  below).
 - All 13 endpoint paths `/debate-*` → `/argue-better-*`.
 - All 13 `callToolEndpoint('debate-*', ...)` call sites in `src/tools/ArgueBetter.js` updated to match.
 - **Deliberately left alone:** the i18n file (`src/i18n/locales/tools/debate-me.js`) and its `dm_*` key prefix — renaming either would force touching every one of ~150 keys × 13 languages for zero user-facing benefit, and matches the established precedent (see SubSweep/SubscriptionTamer below) that i18n prefixes stay stable across a route rename.
@@ -39,7 +41,7 @@ Catalog id is `ArgueBetter`, but the backend route file and every endpoint path 
 
 ## Known / accepted
 
-- 0 pre-existing diff-audit issues on either file before this pass; both files clean after (S7.13 does NOT apply here — `argue-better.js` has one schema per endpoint except fallacy-train's intentional dual-schema, which diff-audit correctly can't statically resolve and flags as a "current issue" on the new-file baseline; confirmed harmless live, both branches tested).
+- 0 pre-existing diff-audit issues on either file before this pass; both files clean after (S7.13 does NOT apply here — `argue-smarter.js` has one schema per endpoint except fallacy-train's intentional dual-schema, which diff-audit correctly can't statically resolve and flags as a "current issue" on the new-file baseline; confirmed harmless live, both branches tested).
 - Golden: 14/14 cases pass, covering all 13 endpoints (fallacy-train covered twice, once per branch) — includes 4 German cases (2 targeting the enum-pin fix, 1 targeting the prep headroom fix, 1 quoted-speech JSON-safety spot-check via source-check).
 - Browser-verified live (not just curl): Fallacy Gym full cycle (New Exercise → Check → Correct verdict) with zero console errors and zero crashes, on a fresh tab at mobile viewport (375×812) — the exact flow that previously crashed to the CRA error overlay on every attempt.
 
@@ -80,13 +82,16 @@ was changed.
 
 **Renamed ArgueBetter → ArgueSmarter** (owner approved). "Argue Better" pulled
 the experience toward competition; the tool's job is better thinking. Display
-name, `tools.js` id, component file, 301 and RENAMES.md all moved. **The
-backend route stays `argue-better.js` / `/api/argue-better-*` and i18n stays
-`dm_`** — same as Mend keeping `apology-calibrator.js`. Two traps the rename
-sprang, both caught by the gates: `scripts/localization-audit.js` keys its
-allowlist on the file path, so the rename silently dropped the tool from the
-gate (125 → 124 with no failure); and `/DebateMe` already had a redirect row,
-so adding another produced a duplicate-key lint error.
+name, `tools.js` id, component file, 301 and RENAMES.md all moved. **At the
+time, the backend route stayed `argue-better.js` / `/api/argue-better-*` and
+i18n stayed `dm_`** — same as Mend keeping `apology-calibrator.js` back then.
+(The backend route file was later renamed `argue-better.js` →
+`argue-smarter.js` in the 2026-09-08 filename-only sweep — endpoint path and
+i18n prefix untouched; see `audit/RENAMES.md`.) Two traps the 2026-08-14
+rename sprang, both caught by the gates: `scripts/localization-audit.js` keys
+its allowlist on the file path, so the rename silently dropped the tool from
+the gate (125 → 124 with no failure); and `/DebateMe` already had a redirect
+row, so adding another produced a duplicate-key lint error.
 
 **Format labels revised again.** Round 2 changed three of round 1's five:
 Lincoln-Douglas is "Explore values" (not "Take the other side" — LD really is

@@ -1,12 +1,16 @@
 # Pet Behavior Decoder — architecture & lock notes (`petweirdnessdecoder-v2`)
 
 Displays as **Pet Behavior Decoder**, id **`PetBehaviorDecoder`** (full rename,
-2026-09-06 — see below). **Route, i18n prefix, and backend filename stay
+2026-09-06 — see below). **Route and i18n prefix stay
 `pet-weirdness-decoder`/`pwd_`** — internal, deliberately kept per
 REWRITE-INSTALL-KIT §7's own instruction and the CrashPredictor/BeforeTheCrash
-precedent (its i18n/backend files are still named `crash-predictor.js` too).
-This tool-notes file also keeps its old filename for the same reason —
-matching CRASHPREDICTOR-NOTES.md, which never became BEFORETHECRASH-NOTES.md.
+precedent (its i18n file is still named `crash-predictor.js` too). The
+**backend route file** was renamed `pet-weirdness-decoder.js` →
+`pet-behavior-decoder.js` in the 2026-09-08 filename-only sweep (see
+`audit/RENAMES.md`) — endpoint paths, i18n prefix, and golden sample all
+stayed put. This tool-notes file also keeps its old filename for the same
+reason — matching CRASHPREDICTOR-NOTES.md, which never became
+BEFORETHECRASH-NOTES.md.
 
 **2026-09-06: the display-text side of the rename was finished.** The initial
 display-only rename correctly left the URL/id alone, but it also left every
@@ -112,7 +116,7 @@ was reported, an action-level triage (never a diagnosis or probability), and a
 factual vet summary. Vision-capable (photo/video of the pet).
 **Frontend:** `src/tools/PetBehaviorDecoder.js` (renamed from
 `PetWeirdnessDecoder.js` 2026-09-06). **Backend:**
-`backend/routes/pet-weirdness-decoder.js` (2 endpoints, `MODELS.SMART` +
+`backend/routes/pet-behavior-decoder.js` (2 endpoints, `MODELS.SMART` +
 `MODELS.FAST` v2 guard). **Golden:**
 `audit/pet-weirdness-decoder-golden-sample.json` (5 cases). Verify:
 `npm run check:golden pet-weirdness-decoder`.

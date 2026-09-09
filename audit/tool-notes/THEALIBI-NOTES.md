@@ -1,7 +1,7 @@
 # TheAlibi — architecture & lock notes (`thealibi-v1`)
 
 Frames an awkward truth for a specific audience — reframe + 2-3 strategic script versions + follow-up
-prep + delivery tips. **Frontend:** `src/tools/TheAlibi.js`. **Backend:** `backend/routes/the-alibi.js`
+prep + delivery tips. **Frontend:** `src/tools/TheAlibi.js`. **Backend:** `backend/routes/the-whole-story.js`
 (1 endpoint, `MODELS.FAST`, max_tokens 4000). **Golden:** `audit/the-alibi-golden-sample.json`.
 Verify: `npm run check:golden the-alibi`.
 

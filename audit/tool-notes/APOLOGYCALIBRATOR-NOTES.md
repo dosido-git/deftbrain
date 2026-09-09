@@ -7,7 +7,7 @@
 A full-spectrum apology coach (sensitive domain — apology / forgiveness / manipulation
 detection, handled with a never-shame, validate-without-catastrophizing tone). Frontend
 `src/tools/ApologyCalibrator.js` (~2660 lines, 11 feature tabs). Backend
-`backend/routes/apology-calibrator.js` — **11 endpoints**, all `claude-sonnet-4-6`, all via
+`backend/routes/mend.js` — **11 endpoints**, all `claude-sonnet-4-6`, all via
 `callClaudeWithRetry`, each with a **distinct, correct** success guard:
 
 | Endpoint | guard field | max_tokens |

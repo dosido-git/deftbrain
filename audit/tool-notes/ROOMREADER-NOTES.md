@@ -10,7 +10,7 @@ live-captured 2026-09-08)
 A social-situation coach reorganized around 4 moments — Prepare / Right Now /
 Decode / Afterward — each exposing 2-4 contextual actions, instead of the old
 13 flat modes. Frontend `src/tools/ReadTheRoom.js`. Backend
-`backend/routes/room-reader.js` — 13 endpoints (2 new vs. v1: `-stalled`,
+`backend/routes/read-the-room.js` — 13 endpoints (2 new vs. v1: `-stalled`,
 `-exit`; `-energy`/`-ladder` folded into `-depth`; `-debrief`/`-autopsy`
 merged into one `-debrief` endpoint taking an `emphasis` param — see the IA
 pass below), all `MODELS.SMART` via `callClaudeWithRetry` + `withLanguage`,
@@ -52,7 +52,7 @@ help at all.
   (Autopsy → "Afterward: Something Went Badly", every `plausible_turning_points`
   entry must cite an actual supplied event).
 - **A CORE_SYSTEM prompt is shared across all 14 endpoints** (`section()`
-  helper in `backend/routes/room-reader.js` composes it with each endpoint's
+  helper in `backend/routes/read-the-room.js` composes it with each endpoint's
   specific rules) — the epistemic rules (OBSERVED/REASONABLE POSSIBILITY/
   UNKNOWN, no predicted dialogue, no fixed gesture meanings, "don't
   overcorrect into uselessness") apply identically everywhere, rather than

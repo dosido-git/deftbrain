@@ -2,7 +2,7 @@
 
 Academic diagnostician — traces backwards through the prerequisite chain to find the exact concept
 where a student's understanding broke, then digs into one prerequisite. **Frontend:** `src/tools/TheGap.js`.
-**Backend:** `backend/routes/the-gap.js` (2 endpoints, `MODELS.SMART`). **Golden:**
+**Backend:** `backend/routes/missing-link.js` (2 endpoints, `MODELS.SMART`). **Golden:**
 `audit/the-gap-golden-sample.json` (2 DE cases). Verify: `npm run check:golden the-gap`.
 
 ## Audit fixes locked here (2026-07-14)

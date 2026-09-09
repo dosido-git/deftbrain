@@ -7,7 +7,7 @@ Brutal startup-idea autopsy: viability score, verdict, risks, strengths, kill-qu
 (`/api/idea-autopsy/stream`) deliberately keep the old name — internal, and
 renaming them buys nothing.
 
-**Frontend:** `src/tools/ConceptCoach.js` (`ia_` keys). **Backend:** `backend/routes/idea-autopsy.js`
+**Frontend:** `src/tools/ConceptCoach.js` (`ia_` keys). **Backend:** `backend/routes/concept-coach.js`
 (single endpoint `/idea-autopsy/stream` — misnamed, plain JSON; `MODELS.SMART`, `max_tokens 5000`).
 **Golden:** `audit/idea-autopsy-golden-sample.json` (1 DE case). Verify: `npm run check:golden idea-autopsy`.
 

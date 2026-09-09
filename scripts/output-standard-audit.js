@@ -121,7 +121,7 @@ const SCHEMA_CONGRUENCE_EXEMPT = new Map([
     'the visitor is about to turn. The tool\'s real false precision was ' +
     'success_probability on a garment it has never seen, and that is gone from ' +
     'both the stain and rescue schemas.'],
-  ['idea-autopsy',
+  ['concept-coach',
     'Concept Coach\'s "risk_level" is an IMPORTANCE ordering, not a likelihood. ' +
     'The prompt says so in the schema itself — "risk_level means importance to ' +
     'the decision, not probability" — and asks for risks "ordered by decision ' +

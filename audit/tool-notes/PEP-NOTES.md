@@ -39,7 +39,7 @@ re-deriving from scratch.
    declared v2 but called nothing to enforce it — `output-standard-audit.js`
    treats that as "v2 would be an instruction nothing verifies" and fails
    outright. Added `router.outputGuard` + a `validateResult()` regex-walk
-   (same pattern as the prior PEP rewrite and `one-percenter.js`), carrying
+   (same pattern as the prior PEP rewrite and `small-change-big-difference.js`), carrying
    forward the categories still relevant to `generate`/`just-do-this`/`reflect`
    (burnout terminology, battery/energy-cost arithmetic, nervous-system/deep-
    rest claims, forced encouragement, restorative-vs-numbing binary, invented-

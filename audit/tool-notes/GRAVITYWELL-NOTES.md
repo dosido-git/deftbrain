@@ -3,7 +3,7 @@
 90-day "orbit strategy" for building genuine influence with a specific person: target profile,
 a current→target gravity score, a 3-phase plan, first-contact scripting, and a value offer.
 **Frontend:** `src/tools/GravityWell.js` (in `LOCALIZED_TOOLS`, `gw_` keys). **Backend:**
-`backend/routes/gravity-well.js` (single endpoint). **Golden:** `audit/gravity-well-golden-sample.json`
+`backend/routes/before-hello.js` (single endpoint). **Golden:** `audit/gravity-well-golden-sample.json`
 (1 case). Verify: `npm run check:golden gravity-well` (~40-90s; sonnet).
 
 ## Shape

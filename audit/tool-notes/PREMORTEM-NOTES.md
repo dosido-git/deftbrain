@@ -20,7 +20,7 @@ grids are computed live from `tools.js` at build time, not hand-authored per gui
 unrebuilt guide set silently carries the previous id until the next `build-guides.js` run.
 `pm_title`/`pm_tagline`/`pm_submit`/`pm_error` retexted across all 13 languages (dropped a
 residual lowercase "pre-mortem" from `pm_error` in every language, and literal "Pre-Mortem" in
-`ia_premortem` inside `idea-autopsy.js`).
+`ia_premortem` inside `concept-coach.js`).
 
 Writes a fictional post-mortem as if a plan already failed, then uses that thinking device to
 surface plausible failure modes, observable warning signs, an assumption worth testing first,

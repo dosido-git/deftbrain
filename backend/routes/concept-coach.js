@@ -1,4 +1,4 @@
-// idea-autopsy.js
+// concept-coach.js
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');

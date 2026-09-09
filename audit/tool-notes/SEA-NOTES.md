@@ -5,7 +5,7 @@ endpoints). Approved for Prime Time after a full polish pass (logic + output + i
 The 5 gates check structure, not output quality or layout — this note + the golden sample
 do. **Read before changing SEA.**
 
-## Shape (`backend/routes/social-energy-audit.js`)
+## Shape (`backend/routes/social-battery-advisor.js`)
 
 Six endpoints, all on **`claude-haiku-4-5`** via `callClaudeWithRetry` + `withLanguage`
 (no `withLocaleContext` — correct, there is no currency/economic reasoning). All prompts

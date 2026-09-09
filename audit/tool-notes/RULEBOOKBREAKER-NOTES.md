@@ -1,7 +1,7 @@
 # RulebookBreaker — architecture & lock notes (`rulebookbreaker-v1`)
 
 Finds legitimate escalation paths, loopholes, and pressure points to win against a bureaucratic
-system. **Frontend:** `src/tools/RulebookBreaker.js`. **Backend:** `backend/routes/rulebook-breaker.js`
+system. **Frontend:** `src/tools/RulebookBreaker.js`. **Backend:** `backend/routes/not-so-fast.js`
 (1 endpoint, `MODELS.SMART`, **max_tokens 6000**). **Golden:** `audit/rulebook-breaker-golden-sample.json`.
 Verify: `npm run check:golden rulebook-breaker`.
 
