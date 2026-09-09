@@ -1,7 +1,7 @@
-# ScamRadar (Scam Radar) — architecture & lock notes (`scamradar-v2.1`)
+# ScamRadar (Scam Radar) — architecture & lock notes (`scamradar-v2.2`)
 
-**Known-good:** tag `scamradar-v2.1` · golden `audit/scam-radar-golden-sample.json`
-(3 cases, re-captured 2026-09-09 after the v2.1 refinement pass)
+**Known-good:** tag `scamradar-v2.2` · golden `audit/scam-radar-golden-sample.json`
+(3 cases, verified 2026-09-09 after the v2.2 final-corrections pass)
 **Verify:** `npm run check:golden scam-radar` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -234,6 +234,67 @@ sampling noise not worth enshrining in a "known good" reference).
 (all 3 cases now carry `input_conflict`, including the two with
 `detected: false`).
 
+## V2.2 final-corrections pass (2026-09-09, second owner review)
+
+Same day as v2.1, a second review of live output on the PayPal phishing
+example caught three overclaiming sentences the model was still producing —
+each one asserted more than the tool actually knows, even though the
+underlying verdict and evidence were sound. Two more corrections reinforced
+existing rules with sharper worked examples rather than fixing new bugs.
+
+1. **An independent account check doesn't prove who sent a message.**
+   "If your account is fine when you log in through the real site, the
+   email was not from PayPal" treats an absent alert as proof of sender
+   identity. New **DO NOT OVERSTATE WHAT AN INDEPENDENT CHECK PROVES**
+   section: "if your account shows no matching alert... that is additional
+   reason not to trust the email" — the check adds to the evidence, it
+   doesn't settle who sent anything.
+2. **Don't assert what a legitimate account "would" show.** "If your
+   account were genuinely suspended, it would show in your account status"
+   claims verified knowledge of PayPal's own system behavior. Same new
+   section: recommend checking directly, without promising what the check
+   will reveal.
+3. **Don't assert what's "normal" for a category of notification.** "The
+   threat of legal action in a routine account-verification email is not a
+   feature of standard account notifications from financial services" is
+   an unsourced industry-practice claim — the same failure mode
+   `BRAND / ORGANIZATION CLAIMS` already covered for claims naming a
+   specific company, just not yet for claims about a *category* of
+   organization or notification. Added directly to that section: "the
+   legal-action threat adds pressure but does not provide evidence that
+   the message is genuine."
+4. **Reinforced OBSERVED vs. PATTERN KNOWLEDGE** with a worked example
+   added to `EVIDENCE MODEL` itself, built on the actual PayPal case:
+   listing exactly what's OBSERVED (the lookalike domains, the specific
+   information requested, the deadline, the threats) against what's PATTERN
+   KNOWLEDGE (lookalike domains/urgency/sensitive-info-requests are known
+   phishing features) — "this combination is consistent with a well-known
+   phishing pattern," never "we know this sender is following that
+   phishing script."
+5. **Explicitly protected the strong verdict.** None of the above should
+   soften `LIKELY_SCAM` when the evidence genuinely supports it — added a
+   paragraph directly under the `LIKELY_SCAM` definition: convergence of
+   concrete, observable warning signs earns the strong verdict regardless
+   of whether sender identity is independently proven; the verdict is an
+   evidence-based assessment, not a forensic identity claim.
+
+New `outputGuard.prohibit` entry for #1/#2 (a genuinely new failure
+category, not a phrasing gap in an existing one):
+`absence_or_presence_of_an_account_alert_treated_as_proof_of_sender_identity`.
+#3 relies on the pre-existing `unsourced_brand_policy_or_company_behavior_
+stated_as_fact` entry — extending the prompt's own examples was the fix,
+not the guard.
+
+**Live re-verification**: re-ran the exact PayPal phishing scenario from the
+owner's review. All 5 corrections held on the first attempt — `how_to_verify`
+now says "if your account shows no matching alert, that is further reason to
+distrust this message," the legal-action line says "provides no evidence the
+message is genuine," `scam_pattern.explanation` and `why_concerning` stay in
+"is a common feature of / is a high-risk pattern" language throughout, and
+the verdict stayed `LIKELY_SCAM` with a confidently-worded explanation.
+`npm run check:golden scam-radar` → 3/3 PASS, no golden re-record needed
+(no schema change, only prompt wording).
+
 ## Audit fixes locked here (2026-07-14) — kept for history, both reconfirmed live 2026-09-09
 
 1. **🐛 DOWN in ALL 12 non-English languages — 500 every call.** The guard
@@ -283,3 +344,20 @@ sampling noise not worth enshrining in a "known good" reference).
   genuine-sender claims, certain-next-stage predictions, platform
   control/operation, conversation-as-exposure) — each pairs with a prompt
   section of the same name; keep both or neither, not one without the other.
+- **DO NOT OVERSTATE WHAT AN INDEPENDENT CHECK PROVES** and its
+  `absence_or_presence_of_an_account_alert_treated_as_proof_of_sender_
+  identity` guard entry — an absent account alert is additional evidence,
+  never proof of who sent a message. This is a distinct failure from the
+  brand-policy rule below; don't fold it back in or drop it as apparently
+  redundant.
+- **The strong-verdict protection paragraph under `LIKELY_SCAM`** — every
+  overclaiming fix in this tool trims the READ down toward hedged language;
+  this paragraph exists specifically to stop that trend from also quietly
+  weakening a verdict the evidence actually supports. Convergence of
+  concrete, observable signs earns `LIKELY_SCAM` even with sender identity
+  unconfirmed — that's the intended behavior, not a gap to close.
+- **The `BRAND / ORGANIZATION CLAIMS` section covers claims about a
+  *category* of organization/notification, not just a named company** — "no
+  legitimate company ever..." and "that's not how financial-service
+  notifications work" are the same failure mode; don't reduce the section
+  back to only naming specific brands.
