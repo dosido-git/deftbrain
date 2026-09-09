@@ -329,46 +329,47 @@ export const tools = [
 },
 {
   id: "ScamRadar",
+  modified: "2026-09-09",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A message arrived and something feels off.",
-    give: "The full message, its type, and whatever you know about the sender.",
-    get: "A verdict, the specific technique being used, and what to do next.",
-    edge: "It names the technique — advance fee, authority impersonation, romance — rather than just scoring it 'suspicious'.",
+    give: "The full message and whatever you know about the sender.",
+    get: "A read on what's concerning, what's still uncertain, and how to verify it safely.",
+    edge: "It won't claim to have verified the sender or the site — it tells you how to check for yourself, through a channel the message doesn't control.",
   },
-  seoDescription: "Paste any suspicious email, text, or DM and find out in seconds if it's a scam. Free scam checker — flags the red flags and tells you exactly what to do next.",
+  seoDescription: "Paste a suspicious email, text, DM, phone script, or invoice. See what's concerning, what's still uncertain, and how to verify it safely — no numeric confidence scores, no false reassurance. Free, no signup.",
   seoTitle: "Scam & Phishing Checker: Is This a Scam?",
   title: "Scam Radar",
-  tagline: "Paste any suspicious message — know in seconds if it's a scam",
+  tagline: "🎣 Spot the warning signs before you click, pay, or reply.",
   tags: ['scam', 'phishing', 'fraud', 'email', 'sms', 'smishing', 'suspicious', 'fake', 'security', 'safety', 'identity theft', 'spam', 'social engineering', 'consumer', 'protect', 'scammer', 'verify'],
   icon: "🎣",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Paste any suspicious email, text, DM, phone script, or invoice. AI identifies the scam type, explains the manipulation techniques being used, flags specific red flags, and tells you exactly what to do next.",
+  description: "Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what looks concerning, what is still uncertain, and the safest way to verify it without relying on the message itself.",
   guide: {
-    overview: "ScamRadar analyzes messages for fraud patterns using the same detection categories professional security analysts use — phishing, advance fee fraud, authority impersonation, romance scams, fake invoices, and more. It doesn't just say 'suspicious' — it identifies the specific technique, cites actual phrases from your message that are red flags, and gives you a concrete action plan. Works on any message type: email, SMS, WhatsApp, phone scripts, invoices, social media DMs.",
+    overview: "Scam Radar treats the message and whatever you know about the sender as the only established facts — everything else is either a general scam pattern worth naming or something that genuinely needs outside verification, and it says which is which. It never assigns a numeric confidence score, never calls a domain or sender 'spoofed' or 'fraudulent' without independent verification, and never treats a generic greeting, typos, or polished branding as decisive evidence either way. It also asks whether you've already clicked a link, replied, entered a password, or sent money — because the right next step depends entirely on that, not just on what the message says.",
 
     howToUse: [
-      "Select the message type (email, SMS, WhatsApp/DM, phone script, invoice, or other)",
-      "Paste the full message content — the more complete, the better the analysis",
+      "Paste the full message content — the more complete, the better the read",
       "Add sender context if you have it (email address, phone number, platform)",
-      "Click 'Scan for Scams' — get a verdict, confidence score, scam type, and action plan",
-      "Review red flags: each one cites a specific phrase or pattern from your actual message",
-      "Follow the 'What to do' steps and check the 'Do NOT' list before taking any action",
+      "Say whether you've already clicked, replied, entered a password or code, shared information, or sent money — the response is built around this",
+      "Click 'Check This Message' — get a plain-language read, why it looks concerning, and what to do right now",
+      "Verify using a channel the message doesn't control — never its own link, phone number, or contact address",
+      "If you already interacted, follow the guidance built specifically for what happened rather than a generic checklist",
     ],
 
     tips: [
-      "Paste the full message including subject lines, headers, and sender details — partial pastes get less accurate results",
-      "The sender context field is especially powerful: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'",
-      "LIKELY SAFE doesn't mean definitely safe — always verify through official channels before clicking links or providing information",
-      "Scan history is saved — previous scans appear below the input so you can compare patterns",
-      "Works across 12 languages — paste messages in any language and ScamRadar analyzes in context",
+      "Paste the full message including subject lines, headers, and sender details — partial pastes get a thinner read",
+      "The sender context field matters: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'",
+      "'No clear scam signs' doesn't mean verified safe — it means nothing concerning was found in what you pasted. Verify independently before acting on any sensitive request regardless of the read",
+      "Recent checks are saved so you can compare patterns across messages",
+      "Works in any language — paste a message in your own language and Scam Radar analyzes it in context",
     ],
 
     example: {
-      scenario: "You receive an urgent email claiming your bank account has been suspended. You paste the full email body and include the sender address. ScamRadar identifies it as Authority Impersonation phishing at 96% confidence, flags the fake domain, urgency language, and sensitive data request as red flags, and tells you to report it to your bank and delete it without clicking anything.",
-      result: "Verdict: SCAM (96% confidence). Scam type: Phishing. Red flags: fake domain 'bankofamerica-secure.net', 24-hour deadline pressure, request for SSN and card number. Techniques: Urgency / time pressure, Authority impersonation, Request for sensitive data. Action: Report to bank, forward to reportphishing@apwg.org, delete."
+      scenario: "You receive an urgent email claiming your account has been suspended, asking for your password and Social Security number within 24 hours. You paste the full email body and the sender address. You haven't clicked anything yet.",
+      result: "The read: likely scam. Why it's concerning: a look-alike sender domain substituting a digit for a letter, a high-risk request for card and identity details through the message's own link, and an artificial 24-hour deadline. What to do right now: don't use the link, and if you have an account with the company named, open its app or type its known website yourself and check there. How to verify it: never through the email itself — use contact information you already trust or find independently."
     },
   },
 },
