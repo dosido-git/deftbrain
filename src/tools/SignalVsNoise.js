@@ -89,9 +89,10 @@ const SignalVsNoise = ({ tool }) => {
   const [results, setResults] = usePersistentState('signalvsnoise-result', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-history', []);
   const [error, setError] = useState('');
-  // Only "sources" (HOW THE NOISE GETS MADE) is collapsed by default —
-  // signal, noise, and still-unsettled are all part of the main answer.
-  const [expanded, setExpanded] = useState({ noise: true, debated: true, sources: false });
+  // "sources" (HOW THE NOISE GETS MADE) and "verify" (STILL WORTH
+  // VERIFYING) are collapsed by default — the target layout keeps the main
+  // answer to signal/noise/bottom-line, with the rest one click away.
+  const [expanded, setExpanded] = useState({ noise: true, debated: false, sources: false });
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
@@ -134,9 +135,10 @@ const SignalVsNoise = ({ tool }) => {
       });
       out += '\n';
     }
-    if (results?.genuinely_debated?.length) {
+    if (results?.still_worth_verifying?.length || results?.what_general_claims_cant_decide?.length) {
       out += `${t('svn_copy_debated')}\n`;
-      results.genuinely_debated.forEach(d => { out += `• ${d.question}\n`; });
+      results?.still_worth_verifying?.forEach(d => { out += `• ${d.question}\n`; });
+      results?.what_general_claims_cant_decide?.forEach(x => { out += `• ${x}\n`; });
       out += '\n';
     }
     const bl = results?.the_bottom_line;
@@ -316,10 +318,15 @@ const SignalVsNoise = ({ tool }) => {
               </div>
             )}
 
-            {/* STILL UNSETTLED — zero items is expected and correct; the
-                prompt is explicitly told not to manufacture a debate. No
-                count in the header (matches THE NOISE above). */}
-            {results?.genuinely_debated?.length > 0 && (
+            {/* STILL WORTH VERIFYING — two distinct lists, never a fake
+                two-sided evidence debate (this tool has no sources to
+                characterize both sides of one). still_worth_verifying is a
+                genuinely unresolved GENERAL empirical question;
+                what_general_claims_cant_decide is a person-specific
+                question a general analysis can never resolve either way.
+                Collapsed by default; zero items in both is expected and
+                correct. */}
+            {(results?.still_worth_verifying?.length > 0 || results?.what_general_claims_cant_decide?.length > 0) && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button onClick={() => toggle('debated')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
@@ -329,37 +336,27 @@ const SignalVsNoise = ({ tool }) => {
                 </button>
                 {expanded.debated && (
                   <div className={`border-t ${c.border}`}>
-                    {results?.genuinely_debated?.map((item, i) => {
-                      // Not every unsettled question is a two-sided evidence
-                      // dispute — some are too-broad claims whose real
-                      // answer depends on the visitor's own situation. Only
-                      // render the comparison grid when there's actually a
-                      // dispute to show; otherwise why_unsettled carries the
-                      // explanation as the item's main content, not a footnote.
-                      const hasViews = item.what_supports_one_view || item.what_supports_another_view;
-                      return (
-                        <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
-                          <p className={`text-sm font-semibold mb-2 ${c.text}`}>{item.question}</p>
-                          {hasViews && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              <div className={`p-2.5 rounded-lg text-xs ${c.signalBg}`}>
-                                <p className={`font-bold mb-1 ${c.signalText}`}>{t('svn_one_view')}</p>
-                                <p className={c.textSecondary}>{item.what_supports_one_view}</p>
-                              </div>
-                              <div className={`p-2.5 rounded-lg text-xs ${isDark ? 'bg-amber-900/20 border border-amber-700/30' : 'bg-amber-50 border border-amber-200'}`}>
-                                <p className={`font-bold mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_another_view')}</p>
-                                <p className={c.textSecondary}>{item.what_supports_another_view}</p>
-                              </div>
-                            </div>
-                          )}
-                          {item.why_unsettled && (
-                            hasViews
-                              ? <p className={`text-xs mt-2 italic ${c.textMuted}`}>{t('svn_why_unsettled')} {item.why_unsettled}</p>
-                              : <p className={`text-sm ${c.textSecondary}`}>{item.why_unsettled}</p>
-                          )}
-                        </div>
-                      );
-                    })}
+                    {results?.still_worth_verifying?.map((item, i) => (
+                      <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
+                        <p className={`text-sm font-semibold mb-1 ${c.text}`}>{item.question}</p>
+                        {item.why_it_matters && (
+                          <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_why')}</span> {item.why_it_matters}</p>
+                        )}
+                        {item.what_would_help && (
+                          <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_would_help')}</span> {item.what_would_help}</p>
+                        )}
+                      </div>
+                    ))}
+                    {results?.what_general_claims_cant_decide?.length > 0 && (
+                      <div className={`px-5 py-4 ${results?.still_worth_verifying?.length > 0 ? `border-t ${c.border}` : ''}`}>
+                        <p className={`text-[10px] font-bold uppercase tracking-wide mb-2 ${c.textMuted}`}>{t('svn_cant_decide_header')}</p>
+                        <ul className="space-y-1">
+                          {results.what_general_claims_cant_decide.map((x, i) => (
+                            <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

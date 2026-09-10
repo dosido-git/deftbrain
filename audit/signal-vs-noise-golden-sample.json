@@ -3,238 +3,237 @@
     "tool": "SignalVsNoise",
     "generated": "2026-09-10",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/signal-vs-noise, fans out to 2 parallel calls merged server-side)",
-    "baseline_commit": "signalvsnoise-v3 (final-corrections pass, on top of signalvsnoise-v2)",
-    "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). v2 (2026-09-09) fixed the health-domain instances of the tool implying a literature review it never performed. This v3 pass (2026-09-10) fixed the SAME failure mode recurring in a non-health (career/labor) domain the tool hadn't been tested against — 'wage data shows,' 'employer recruiting patterns support,' an invented MBA-recruiting market map — plus: an invented causal mechanism for why job-switching raises pay; a strawmanned 'follow your passion' critique; an extra unrequested career-advice claim (the visitor supplied 3 claims, v2 output added a 4th nobody raised); two noise_type mislabels (cherry_picked/individual_variation used where the actual defect was scope, not selective evidence or biological variation); an unsupported claim about publicity/selection bias used to rebut an overclaim with another overclaim; debate-club phrasing ('the burden is on the claim...'); and a STILL UNSETTLED section that read empty because a person-dependent question ('would an MBA be worth it for YOUR situation') was being forced into a two-sided evidence-dispute shape it didn't have. SCHEMA CHANGES this pass (structural, not just wording): (1) genuinely_debated[].what_supports_one_view/what_supports_another_view are now nullable — null on both sides signals a person-dependent question (the real answer needs specifics about the visitor's situation, not more research), non-null on both signals a live evidence dispute; the backend filter (signal-vs-noise.js) requires the two view fields to be null-or-populated TOGETHER, never one without the other; (2) noise_type enum gained too_broad and context_dependent (frontend NOISE_TYPE_CONFIG + 13-language i18n labels added) — cherry_picked and individual_variation are now restricted in the prompt to when that specific defect is actually observable, not used as a catch-all for 'overgeneralized.' NON-SCHEMA changes: svn_why_we_know's i18n label changed from 'Evidence behind it:' (implied a review that didn't happen) to 'Why this holds up:' in all 13 languages; genuinely_debated cap raised 2->3 (matching the 0-3 target shape); PERSONALITY gained a top-of-file EVIDENCE MODE section (Mode A claim analysis / Mode B source analysis / Mode C verified research, which this tool never performs) and rules 3, 4, 21, 22 (new) plus extensions to rules 1, 5, 7, 16, 17, 19 — see the file's own header comment and inline rule text; outputGuard.prohibit grew from 21 to 28 entries. DO NOT reverse any of these — each new rule and guard entry pairs with a live-tested failure mode listed above, not a hypothetical one.",
+    "baseline_commit": "signalvsnoise-v4 (hard-mode-switch pass, on top of v3/v2)",
+    "v4_note": "A THIRD 'final corrections' pass, same day as v3, found the identical literature-review-voice failure in a domain not yet tested — finance ('persistent tracking of fund returns... across multiple markets and asset classes,' 'the evidence covers funds that survived long enough to be measured,' a fabricated survivorship-bias limitation for a dataset never examined). Three prompt-only passes had not fully suppressed this, so v4 adds what they didn't have: a deterministic, ENGLISH-ONLY code-level backstop (see signal-vs-noise.js's CLAIM_MODE_BANNED_RE / findBannedPhrase / callClaimModeChecked) — every prose field is scanned against a fixed phrase list, a violating half is regenerated once with the exact offending phrase quoted back at it, and any array item that still violates after that is silently dropped rather than shown. The prompt still tries hard to get it right the first time (extensive new PERSONALITY rules, worked BAD/GOOD examples for the fee/valuation/real-estate/survivorship/professional-referral/ranking-against-unnamed-alternatives failures) — the regex is the guarantee, not a replacement for it. SCHEMA CHANGE: genuinely_debated (with nullable what_supports_one_view/another_view, introduced in v3) is REMOVED entirely and replaced by two separate top-level arrays: still_worth_verifying[] ({question, why_it_matters, what_would_help} — a genuinely unresolved GENERAL empirical question, never a fabricated two-sided debate) and what_general_claims_cant_decide[] (plain strings — person-specific questions a general analysis can never resolve, e.g. 'whether direct real estate fits your actual situation'). v3's null-views mechanism for person-dependent questions is superseded by this split, not extended. Response also gains analysis_mode ('claim_analysis', hard-locked in code, not model-self-reported) and sources_examined (always [] today — no source-paste feature exists). Caps changed: the_signal 4->3, still_worth_verifying capped at 2 (was genuinely_debated at 3), what_general_claims_cant_decide capped at 3, the_bottom_line.what_would_change_the_answer 2->3. i18n: svn_nuance reworded 'Limits:' -> \"What it doesn't establish:\"; svn_debated_header reworded 'Still Unsettled' -> 'Still Worth Verifying'; new keys svn_verify_why/svn_verify_would_help/svn_cant_decide_header; svn_one_view/svn_another_view/svn_why_unsettled are now orphaned (left in the locale files, no longer referenced in JSX — the two-sided-debate UI was removed, not relabeled). outputGuard.prohibit grew from 28 to 37 entries. DO NOT reverse the schema split or the code-level regex backstop — three prompt-only passes already proved insufficient on their own.",
+    "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). v2 (2026-09-09) fixed the health-domain instances of the tool implying a literature review it never performed. v3 (2026-09-10) fixed the SAME failure mode recurring in a non-health (career/labor) domain — 'wage data shows,' an invented MBA-recruiting market map, an invented causal mechanism for job-switching pay, a strawmanned 'follow your passion' critique, an extra unrequested career-advice claim, two noise_type mislabels, an unsupported publicity/selection-bias claim used to rebut an overclaim with another overclaim, debate-club phrasing, and a STILL UNSETTLED section forced into a two-sided-evidence shape it didn't have for a person-dependent question. v4 (same day) is documented in v4_note above.",
     "prior_baseline_commit": "signalvsnoise-v2",
-    "prior_notes": "v2 (2026-09-09) was a full owner-supplied rewrite: the v1 tool asserted \"real consensus,\" named specific actors as \"generating noise,\" and invoked specific research designs, biomarkers, genetic variants, and validation findings from memory as though it had performed a sourced evidence review — exactly the authority the tool was never in a position to claim. Schema changed completely from v1 (why_this_field_is_noisy -> framing; the_signal.items[].why_we_know_this -> basis; .the_nuance -> limits; genuinely_debated[].side_a/side_b -> what_supports_one_view/what_supports_another_view; the_noise[] gained what_the_evidence_supports_instead alongside renamed what_went_wrong (was the_problem); the_bottom_line's three single-string fields became three arrays; sources_of_noise[].actor/incentive/how_to_spot_it -> source_type/how_it_distorts/how_to_recognize_it, no longer naming an accused actor). Guards added that pass: NO_QUOTE_RULE, router.outputStandard='v2' + outputGuard, and a post-guard structural validation pass (see code comment: the guard mutates its argument in place and its repair pass can leave a field incomplete despite instructions not to)."
+    "prior_notes": "v2 (2026-09-09) was a full owner-supplied rewrite: the v1 tool asserted \"real consensus,\" named specific actors as \"generating noise,\" and invoked specific research designs, biomarkers, genetic variants, and validation findings from memory as though it had performed a sourced evidence review — exactly the authority the tool was never in a position to claim. Schema changed completely from v1 (why_this_field_is_noisy -> framing; the_signal.items[].why_we_know_this -> basis; .the_nuance -> limits; genuinely_debated[].side_a/side_b -> what_supports_one_view/what_supports_another_view (later removed entirely in v4); the_noise[] gained what_the_evidence_supports_instead alongside renamed what_went_wrong (was the_problem); the_bottom_line's three single-string fields became three arrays; sources_of_noise[].actor/incentive/how_to_spot_it -> source_type/how_it_distorts/how_to_recognize_it, no longer naming an accused actor). Guards added that pass: NO_QUOTE_RULE, router.outputStandard='v2' + outputGuard, and a post-guard structural validation pass (see code comment: the guard mutates its argument in place and its repair pass can leave a field incomplete despite instructions not to)."
   },
   "cases": [
     {
-      "name": "en-career-advice-person-dependent-unsettled",
+      "name": "en-investing-slogans-claim-mode",
       "endpoint": "/api/signal-vs-noise",
       "input": {
         "userLanguage": "en",
-        "topic": "career advice for young professionals",
-        "conflictingAdvice": "Follow your passion vs. passion follows mastery, job hop for salary vs. loyalty pays off, get an MBA vs. skip grad school"
+        "topic": "investing strategies",
+        "conflictingAdvice": "Index funds always win vs. active management can beat the market, time in market beats timing the market vs. valuations matter, real estate vs. stocks"
       },
       "output": {
+        "analysis_mode": "claim_analysis",
+        "sources_examined": [],
         "the_noise": [
           {
-            "claim": "Follow your passion",
+            "claim": "Index funds always win",
             "noise_type": "too_broad",
-            "noise_label": "Passion as prerequisite",
-            "what_the_evidence_supports_instead": "Interest in your work matters, and interest can develop through gaining skill, autonomy, and meaningful results — it does not have to precede career choice as a fixed, identifiable thing.",
-            "what_went_wrong": "The advice becomes too broad when it implies that you must locate a pre-existing passion before choosing a path. It treats passion as a stable input rather than something that can emerge from experience, which sets up an unrealistic starting condition for most early-career decisions.",
-            "kernel_of_truth": "Working in an area that holds no interest for you is a real cost. Interest is not irrelevant — the problem is treating it as a prerequisite rather than something that can grow."
+            "noise_label": "Always win overstates it",
+            "what_the_evidence_supports_instead": "Low-cost index funds avoid the problem of picking the right manager and generally charge less than actively managed alternatives. Whether they outperform in any specific period, market, or asset class is a narrower question the slogan does not answer.",
+            "what_went_wrong": "The word 'always' converts a structural argument about costs and manager selection into a universal guarantee across all time periods, markets, and investor situations. The logic of the cost argument holds without needing 'always.'",
+            "kernel_of_truth": "A fee deducted from a return reduces that return relative to the same investment without the fee. Over time, that difference can compound. That arithmetic is straightforward and does not require the 'always' claim."
           },
           {
-            "claim": "Job-hop for salary — switching employers is the reliable way to increase pay",
-            "noise_type": "context_dependent",
-            "noise_label": "Job-hopping as universal salary strategy",
-            "what_the_evidence_supports_instead": "Changing employers can sometimes produce a larger pay increase than staying. Whether it does in any specific case depends on the role, the offer, current compensation, the labor market at the time, and what the person would give up by moving.",
-            "what_went_wrong": "A pattern observed in some labor market conditions and some roles gets presented as a general, reliable rule. It converts a conditional association into a prescription, ignoring that outcomes vary significantly by field, timing, seniority level, and individual circumstance. It also says nothing about the mechanism, which remains unestablished as a general claim.",
-            "kernel_of_truth": "External offers can reset compensation in ways that internal incremental raises may not. This is a real possibility worth being aware of, not a guaranteed outcome."
+            "claim": "Time in the market beats timing the market",
+            "noise_type": "oversimplified",
+            "noise_label": "True principle, overextended conclusion",
+            "what_the_evidence_supports_instead": "Successfully moving out of the market before declines and back in before recoveries requires getting multiple decisions right in sequence. That makes 'time the market' a much stronger prescription than simply recognizing that staying invested avoids certain compounding mistakes. Staying invested is easier to execute reliably than a correct sequence of in-and-out calls.",
+            "what_went_wrong": "The slogan treats 'timing the market' as a single decision, when it is at minimum two decisions (when to exit, when to re-enter) that must both be correct. It also does not address situations where an investor's actual time horizon, liquidity need, or risk exposure makes some adjustment genuinely appropriate — not as market prediction, but as personal circumstance.",
+            "kernel_of_truth": "The core point — that repeated attempts to predict short-term market movements introduce additional decision points where things can go wrong — is structurally sound without needing to be stated as an absolute rule."
           },
           {
-            "claim": "Loyalty pays off — staying with one employer rewards you over time",
+            "claim": "Valuations matter",
             "noise_type": "context_dependent",
-            "noise_label": "Loyalty as reliable career strategy",
-            "what_the_evidence_supports_instead": "Staying with an employer can produce compounding benefits in some situations — accumulated trust, institutional knowledge, seniority. Whether those benefits outweigh alternatives depends heavily on the organization, the role, and the opportunities available.",
-            "what_went_wrong": "Like its opposite, this converts a conditional outcome into a dependable rule. Whether loyalty pays off varies by employer, industry, and individual trajectory. Presenting it as a general strategy ignores that the conditions making it true in one setting may not hold in another.",
-            "kernel_of_truth": "Genuine tenure in a role can build things that are hard to replicate quickly elsewhere — relationships, reputation, deep domain knowledge. These are real assets in the right environment."
+            "noise_label": "True in one sense, misused in another",
+            "what_the_evidence_supports_instead": "The price paid for an investment is relevant to its potential return — that much follows from basic arithmetic. But 'valuations matter' becomes a stronger claim when it is used to imply that a current valuation reading tells you when to enter or exit the market. Those are different propositions.",
+            "what_went_wrong": "Recognizing that price affects expected return does not supply a reliable buy or sell rule. The slogan is accurate as a statement about price and value, but gets extended into a timing instruction it cannot support on its own.",
+            "kernel_of_truth": "Price is not irrelevant to an investment's future return. That part of the claim stands without requiring it to serve as a market-timing signal."
           },
           {
-            "claim": "Get an MBA — it is worth it for career advancement and salary",
-            "noise_type": "context_dependent",
-            "noise_label": "MBA as broadly worthwhile investment",
-            "what_the_evidence_supports_instead": "An MBA can be useful in specific situations — particular industries, roles, or when someone lacks access to a network they genuinely need. Whether it is worth the cost and time depends on the specific program, the person's field, what opportunities they already have access to, and how they intend to use it.",
-            "what_went_wrong": "Average or high-profile outcomes get generalized into a broad claim. The range of outcomes associated with an MBA is wide, and the return depends heavily on factors that vary by individual. Treating it as broadly worthwhile skips the question of whether those conditions apply to any particular person's situation.",
-            "kernel_of_truth": "In some fields and roles, an MBA from a particular program provides access and credentials that are otherwise difficult to obtain. That is a real value in the cases where it holds."
+            "claim": "Real estate vs. stocks — one clearly beats the other",
+            "noise_type": "oversimplified",
+            "noise_label": "The comparison hides what actually differs",
+            "what_the_evidence_supports_instead": "Stocks and direct real estate expose an investor to different combinations of liquidity, concentration, leverage, costs, management demands, and cash flows. A 'which asset class wins?' framing can obscure those structural differences, which are often more decision-relevant than a return comparison.",
+            "what_went_wrong": "Changing which costs are included (leverage, transaction costs, maintenance, vacancy, taxes), which time period is selected, and whether leverage effects are accounted for can materially change any comparison. A simple head-to-head return claim is sensitive to each of those choices.",
+            "kernel_of_truth": "Both asset classes can be legitimate ways to build wealth. The useful question is how their structural differences fit a particular investor's situation — not which one won over some past window."
           }
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "Treat 'follow your passion' cautiously as a starting rule. Interest can develop from doing meaningful work well — you do not have to identify a passion before moving forward.",
-            "Neither 'always job-hop' nor 'always stay loyal' survives as a universal rule. Both can produce good outcomes in the right conditions. The actual offer, what you would give up, and your specific situation matter more than the general principle.",
-            "Whether an MBA is worth pursuing depends heavily on your field, the specific program, and what you are trying to gain that you cannot get another way — not on average outcomes across all MBA graduates."
+            "The cost argument for index funds is structurally sound: a lower fee means more of the return stays with the investor, and that difference can compound. That conclusion does not require 'always win.'",
+            "Staying invested avoids a specific compounding risk — making multiple sequential timing decisions that must each go right. That is a meaningful practical point, even without claiming that valuations are irrelevant.",
+            "The real estate vs. stocks question turns substantially on structural factors — leverage, liquidity, concentration, costs, management demands — that a simple return comparison can hide. Identifying those factors is more useful than declaring a winner."
           ],
           "treat_skeptically": [
-            "Any version of these claims presented as a reliable rule rather than a conditional one — 'always job-hop,' 'passion must come first,' 'an MBA pays off.'",
-            "Salary or career-outcome claims built on high-profile examples. Visible success stories from a strategy are easier to encounter than quiet failures from the same strategy, which can make any approach look more reliable than it is."
+            "Any investing claim that uses 'always,' 'never,' or 'beats' without specifying the time period, costs included, and investor situation — the strength of those words is rarely earned.",
+            "Valuation arguments that slide from 'price affects expected return' into 'therefore exit now' — the first is a matter of arithmetic, the second is a timing claim that requires much more to support.",
+            "Return comparisons between real estate and stocks that do not spell out their assumptions about leverage, transaction costs, and management input — changing those assumptions can reverse the comparison."
           ],
           "what_would_change_the_answer": [
-            "Your specific field and the labor market conditions in it — the job-hopping and loyalty tradeoffs in particular are sensitive to these, and general advice may not transfer.",
-            "The specific MBA program and what you are trying to accomplish — aggregate outcomes for MBA graduates are not a reliable guide to what a particular program in a particular field would produce for you."
+            "Your actual time horizon, liquidity needs, and how concentrated your exposure already is matter more to these questions than the general claims do — the claims analyzed here do not resolve what makes sense for a specific situation.",
+            "If any of these claims were encountered in a specific article, fund pitch, or comparison tool, examining what costs and assumptions were included or excluded would clarify how much to rely on its conclusion."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Success story visibility",
-            "how_it_distorts": "People who got a large salary bump by switching, or who credit an MBA for a career breakthrough, are more likely to tell that story publicly. People whose outcome was flat or negative from the same strategy are less visible. This can make a strategy look more reliable than it actually is across all the people who tried it.",
-            "how_to_recognize_it": "Ask whether the advice is built primarily on examples of it working, with little attention to cases where it did not."
+            "source_type": "Slogan compression",
+            "how_it_distorts": "A principle that holds under specific conditions gets compressed into a universal rule. The conditions that limited the original claim disappear, and the slogan travels further than its reasoning supports.",
+            "how_to_recognize_it": "The claim uses 'always,' 'beats,' or 'wins' without specifying time period, asset type, cost structure, or investor situation. Ask: under what conditions would this not hold?"
           },
           {
-            "source_type": "Conditional findings generalized into universal rules",
-            "how_it_distorts": "A pattern that holds in certain industries, labor markets, or career stages gets restated as general career advice. The conditions that made it true in the original context disappear, and the advice travels further than the evidence behind it.",
-            "how_to_recognize_it": "The advice contains no conditions — no 'depending on,' no 'in roles like,' no 'when.' A rule stated without any limiting conditions is worth testing against your specific situation before acting on it."
+            "source_type": "Assumption-sensitive comparisons",
+            "how_it_distorts": "A comparison between two asset classes or strategies is presented as a straightforward factual result, but the conclusion depends heavily on which costs, leverage assumptions, time windows, and return components were included. Different choices produce different outcomes.",
+            "how_to_recognize_it": "A comparison that presents a single winner without disclosing its assumptions about leverage, fees, time period, and what counts as a return. Ask: what would change if those inputs were different?"
           },
           {
-            "source_type": "Self-report and anecdote as evidence",
-            "how_it_distorts": "Career advice is frequently built from what successful people say worked for them. That is useful as one input, but it conflates what came before success with what caused it, and it samples only from people who reached a particular outcome.",
-            "how_to_recognize_it": "The evidence for the claim is entirely first-person — 'this is what I did' or 'everyone I know who did X succeeded.' No account is taken of people who followed the same path and got a different result."
+            "source_type": "Principle-to-prescription slide",
+            "how_it_distorts": "A sound general principle (price affects return; staying invested avoids certain errors) gets extended into a specific action instruction (exit now; never adjust). The instruction requires more support than the principle provides.",
+            "how_to_recognize_it": "The claim moves from a general observation to a specific buy, sell, or hold recommendation without explaining what additional evidence or reasoning bridges the gap."
           }
         ],
-        "topic_as_understood": "Three common pieces of career advice for young professionals — follow your passion vs. passion follows mastery, job-hop for salary vs. loyalty pays off, and get an MBA vs. skip grad school — and how much weight each deserves",
-        "framing": "Each of these three contrasts is often presented as a rule that applies broadly, when the honest answer in each case is conditional. What the evidence can do is identify where the absolute version of a claim breaks down — it cannot tell you which version applies to your situation.",
+        "topic_as_understood": "Three recurring investing debates: whether index funds reliably outperform active management, whether staying invested beats trying to time the market, and whether real estate or stocks is the better investment",
+        "framing": "Each of these debates packages a genuine insight inside a claim that is broader than the insight warrants. The useful work is separating the part that holds up from the part that was added through certainty or generalization.",
         "the_signal": {
           "items": [
             {
-              "claim": "Career interests can develop through experience, skill, and exposure — they are not fixed traits you must identify before choosing a direction.",
-              "basis": "This is broadly consistent with what is known about how interests form: competence, autonomy, and meaningful challenge tend to sustain engagement, and these can develop in fields a person did not initially feel passionate about. The idea that interests are static and pre-existing is not well supported.",
-              "limits": "This does not mean initial interest is irrelevant — it can reduce early friction. It also does not mean any field will eventually become engaging for any person. The claim is that 'identify your pre-existing passion first' is not the only reliable path, not that passion never matters."
+              "claim": "A fee deducted from an investment reduces its net return relative to the same investment without that fee, and that difference compounds over time.",
+              "basis": "This follows from arithmetic. If two investments produce the same gross return and one charges a higher ongoing fee, the net return of the higher-fee investment will be lower by at least that amount each period, and the gap widens as compounding proceeds. Low-cost index funds avoid the manager-selection problem and generally charge less than actively managed alternatives. The stronger claim — that index funds always win — does not follow from this, because it converts a structural cost observation into a universal performance guarantee.",
+              "limits": "This establishes that costs matter to net returns. It does not establish that any specific active fund will underperform, that manager skill cannot offset costs in a given case, or that low cost is the only factor relevant to choosing between funds."
             },
             {
-              "claim": "Whether changing employers produces a larger pay increase than staying depends on the specific role, labor market, offer, and what you would give up by leaving — a general rule in either direction is not reliable.",
-              "basis": "The claim that job-hopping reliably produces faster salary growth rests on cases where an external offer reset compensation upward. The loyalty claim rests on cases where tenure brought promotions, raises, or non-monetary benefits that mattered. Both patterns exist; neither is universal.",
-              "limits": "This conclusion is deliberately non-directional. It does not establish which path is better for any individual — that depends on the actual offer and the full picture of what staying or leaving involves."
+              "claim": "Successfully moving out of the market before declines and back in before recoveries requires getting multiple decisions right under uncertainty, which makes 'time the market' a substantially stronger prescription than simply recognizing that price paid is relevant to expected return.",
+              "basis": "This follows from what the strategy requires. A market-timing approach demands at least two correct calls per cycle — when to exit and when to re-enter — and errors in either direction reduce the benefit. Recognizing that valuations are not irrelevant is a much weaker claim than asserting a reliable timing rule can be derived from them. Both can be true simultaneously: price paid can matter to long-run expected return without that mattering translating into an actionable signal.",
+              "limits": "This does not establish that valuations have no predictive relevance to long-run returns, nor that staying invested is always correct regardless of an investor's time horizon, liquidity needs, or specific circumstances."
             },
             {
-              "claim": "An MBA's value varies substantially by program, field, goal, and opportunity cost — treating it as a general career accelerator or a general waste of money both overstate the case.",
-              "basis": "This follows from the structure of the decision itself: the costs (tuition, foregone income, time) are specific to the program and the person, and the benefits depend heavily on which doors the program actually opens in the relevant field and network. Neither blanket endorsement nor blanket rejection holds across those variables.",
-              "limits": "This does not resolve the question for any individual. It means the right question is not 'is an MBA worth it' but 'is this specific program worth it for my specific goal' — and that requires examining the program, the field, and the realistic alternatives."
+              "claim": "Stocks and direct real estate expose an investor to meaningfully different combinations of liquidity, concentration, leverage, management demands, and cash flow structure — a simple 'which asset class wins?' comparison tends to obscure those differences.",
+              "basis": "This follows from what the assets are. A stock in a diversified fund can typically be sold in seconds; a property cannot. Direct real estate is often purchased with leverage, which amplifies both gains and losses in a way a comparison to unleveraged stock returns would not capture. Direct real estate also requires ongoing management time and carries transaction costs that are substantially higher than those of most stock transactions. A return comparison that does not account for these structural differences is comparing different things.",
+              "limits": "This does not establish which asset class produces better returns for any given investor or period. It establishes that fair comparison requires accounting for the structural differences, not that either asset class is superior."
             }
           ]
         },
-        "genuinely_debated": [
+        "still_worth_verifying": [
           {
-            "question": "For a given person, which of the three choices — passion-first vs. mastery-first, stay vs. move, MBA vs. no MBA — is the better path?",
-            "what_supports_one_view": null,
-            "what_supports_another_view": null,
-            "why_unsettled": "All three contrasts are framed as general rules, but what would actually resolve each one is information about the specific person: their field, current compensation and trajectory, the specific program they are considering, their financial situation, and their goals. General evidence can establish that absolute rules in either direction are unreliable — it cannot substitute for those specifics. The debate is not primarily a live research dispute; it is a person-specific question dressed up as a universal principle."
+            "question": "Over what range of time horizons and market conditions does the cost advantage of passive indexing translate into a net performance advantage, and how consistent is that relationship across different fund categories and geographies?",
+            "why_it_matters": "The 'index funds always win' claim depends on this being stable and broad — if the cost-to-performance relationship varies substantially by category, period, or market structure, the universal version of the claim weakens further.",
+            "what_would_help": "Long-horizon, category-level comparisons of net returns between passive and active funds across multiple market environments, broken down by asset class and geography, would help assess how stable and broad the relationship actually is."
           }
+        ],
+        "what_general_claims_cant_decide": [
+          "Whether the cost advantage of index funds outweighs other considerations for any specific fund, account type, or investment goal you are evaluating.",
+          "Whether your time horizon, liquidity needs, and circumstances make staying fully invested the right posture, or whether some allocation to cash or other assets is appropriate for your situation.",
+          "Whether direct real estate, REITs, stocks, or some combination makes sense given your actual capital, tolerance for illiquidity, appetite for active management, and existing holdings."
         ]
       },
       "optionalSections": [
-        "genuinely_debated"
+        "still_worth_verifying"
       ]
     },
     {
-      "name": "de-career-advice-mixed-debate-shapes",
+      "name": "de-investing-slogans-claim-mode",
       "endpoint": "/api/signal-vs-noise",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "Germany",
-        "topic": "Karriereberatung",
-        "conflictingAdvice": "Folge deiner Leidenschaft vs. Leidenschaft folgt Können, wechsle den Job fuer mehr Gehalt vs. Loyalitaet zahlt sich aus, mach ein MBA vs. spar dir das"
+        "topic": "Investieren",
+        "conflictingAdvice": "Indexfonds gewinnen immer vs. aktives Management kann den Markt schlagen, Zeit im Markt schlaegt Markt-Timing vs. Bewertungen sind wichtig"
       },
       "output": {
+        "analysis_mode": "claim_analysis",
+        "sources_examined": [],
         "the_noise": [
           {
-            "claim": "Folge deiner Leidenschaft",
+            "claim": "Indexfonds gewinnen immer",
             "noise_type": "too_broad",
-            "noise_label": "Leidenschaft als universeller Kompass",
-            "what_the_evidence_supports_instead": "Interesse an der eigenen Arbeit hängt mit Zufriedenheit zusammen, aber Interessen können sich durch Kompetenz, Erfahrung und Verantwortung entwickeln – sie müssen nicht vorab feststehen. Die Empfehlung wird dann problematisch, wenn sie suggeriert, man müsse zuerst eine fertige Leidenschaft finden und ihr dann folgen.",
-            "what_went_wrong": "Der Rat setzt voraus, dass Leidenschaften stabil, erkennbar und unabhängig von Erfahrung existieren. Das ist eine Annahme, keine gesicherte Grundlage. Wer noch keine klare Leidenschaft kennt, bekommt damit keine handlungsrelevante Orientierung – und wer einer vorhandenen Leidenschaft folgt, ohne Markt, Kompetenz und Lebensumstände zu berücksichtigen, kann trotzdem scheitern.",
-            "kernel_of_truth": "Arbeit, die sich bedeutsam anfühlt und die eigene Neugier anspricht, lässt sich leichter aufrechterhalten. Das ist ein realer Faktor – nur kein hinreichender."
+            "noise_label": "Aus einem strukturellen Vorteil wird eine Garantie",
+            "what_the_evidence_supports_instead": "Kostengünstige Indexfonds vermeiden das Problem der Managerauswahl und belasten die Rendite mit geringeren laufenden Kosten als aktiv verwaltete Fonds. Daraus folgt kein Versprechen, dass sie in jedem Zeitraum, in jeder Anlageklasse oder unter jeder Marktbedingung besser abschneiden.",
+            "what_went_wrong": "Der Anspruch verwandelt einen strukturellen Kostenvorteil in eine zeitlose Garantie. Ein niedrigerer Kostenblock verbessert die Nettorendite gegenüber dem identischen Investment mit höherem Kostenblock – das ist Arithmetik, kein empirisch bewiesenes 'Immer-Gewinnen'. Das Wort 'immer' trägt eine Beweislast, die kein strukturelles Argument erfüllen kann.",
+            "kernel_of_truth": "Eine Gebühr, die vom investierten Kapital abgezogen wird, schmälert die Nettorendite gegenüber demselben Investment ohne diese Gebühr. Dieser Unterschied kann sich über Zeit verstärken. Das ist der legitime Kern des Arguments."
           },
           {
-            "claim": "Wechsle den Job für mehr Gehalt",
+            "claim": "Aktives Management kann den Markt schlagen",
             "noise_type": "context_dependent",
-            "noise_label": "Jobwechsel als zuverlässige Gehaltstrategie",
-            "what_the_evidence_supports_instead": "Ein Arbeitgeberwechsel kann in bestimmten Situationen einen größeren Gehaltssprung ermöglichen als interne Beförderungen. Ob das zutrifft, hängt vom konkreten Angebot, der Branche, dem Arbeitsmarkt zum jeweiligen Zeitpunkt und dem ab, was man beim Wechsel aufgibt.",
-            "what_went_wrong": "Aus dem Muster 'Wechsel kann Gehalt steigern' wird eine Handlungsanweisung gemacht, die für alle gilt. Der Rat blendet aus, dass das Ergebnis stark von den Spezifika abhängt – und dass nicht jeder Wechsel zu einem höheren Gehalt führt.",
-            "kernel_of_truth": "Interne Gehaltserhöhungen sind nicht immer so hoch wie das, was bei einem Wechsel verhandelbar wäre. Das ist ein realer Effekt, aber kein Gesetz."
+            "noise_label": "Möglichkeit wird zur allgemeinen Empfehlung",
+            "what_the_evidence_supports_instead": "Dass aktives Management den Markt schlagen kann, ist logisch möglich – Märkte sind nicht perfekt, und einzelne Entscheidungen können sich als richtig erweisen. Ob ein bestimmter Fonds oder Manager es tut, hängt von Kosten, Zeitraum, Anlageklasse und Glück versus Können ab. Die allgemeine Aussage 'kann schlagen' rechtfertigt weder die Wahl eines bestimmten aktiven Produkts noch den Verzicht auf kostengünstigere Alternativen.",
+            "what_went_wrong": "Die Aussage ist technisch wahr, aber als Handlungsanleitung zu schwach, um nützlich zu sein. Sie sagt nichts darüber, wie wahrscheinlich es ist, im Voraus den richtigen Manager zu identifizieren, welche Kosten dabei entstehen, oder ob der Vorteil nach Gebühren bestehen bleibt. Eine Möglichkeit zu benennen ist keine Empfehlung, auf sie zu setzen.",
+            "kernel_of_truth": "Aktives Management ist nicht per Definition unmöglich. Es gibt Marktsegmente, in denen Informationsvorsprünge oder Spezialisierung theoretisch einen Mehrwert erzeugen könnten. Ob und wo das zuverlässig gilt, ist eine offene Frage, keine gesicherte Grundlage für eine Kaufentscheidung."
           },
           {
-            "claim": "Loyalität zahlt sich aus",
-            "noise_type": "too_broad",
-            "noise_label": "Betriebstreue als sichere Strategie",
-            "what_the_evidence_supports_instead": "Langfristige Zugehörigkeit zu einem Unternehmen kann Vorteile haben – etwa aufgebautes Vertrauen, Einblicke, und manche Vergütungsbestandteile. Ob sie sich 'auszahlt', hängt davon ab, was das konkrete Unternehmen dafür bietet und wie sich Markt und Karriere entwickeln.",
-            "what_went_wrong": "Der Satz klingt wie eine allgemeine Gesetzmäßigkeit, ist aber eine Behauptung über das Verhalten von Unternehmen, die erheblich variiert. Manche Arbeitgeber fördern langjährige Mitarbeitende gezielt, andere nicht. Loyalität ohne Gegenseitigkeit ist strategisch kein verlässlicher Plan.",
-            "kernel_of_truth": "Beziehungen und Vertrauen, die über Zeit entstehen, haben einen echten beruflichen Wert – der Fehler liegt in der Verallgemeinerung, nicht in der Idee selbst."
-          },
-          {
-            "claim": "Mach einen MBA",
-            "noise_type": "context_dependent",
-            "noise_label": "MBA als sicherer Karrierebooster",
-            "what_the_evidence_supports_instead": "Ein MBA kann in bestimmten Karrierepfaden, Branchen und bei spezifischen Zielen sinnvoll sein. Ob er es ist, hängt stark davon ab, welche Hochschule, welche Finanzierungsform, welcher Zeitpunkt und welches Ziel dahinterstehen.",
-            "what_went_wrong": "Die Empfehlung behandelt ein kostspieliges, zeitintensives Programm als allgemeingültige Investition. Der MBA-Markt ist sehr heterogen – Programme unterscheiden sich erheblich in Kosten, Netzwerkwert und Arbeitsmarktsignal. Eine pauschale Empfehlung ignoriert diese Streuung.",
-            "kernel_of_truth": "In einigen Bereichen – etwa Unternehmensberatung, bestimmte Führungspositionen oder Karriereumstiege – kann ein MBA tatsächlich Türen öffnen, die sonst schwer zugänglich wären."
+            "claim": "Bewertungen sind wichtig",
+            "noise_type": "oversimplified",
+            "noise_label": "Preis ist relevant wird zu: Timing-Regel",
+            "what_the_evidence_supports_instead": "Der Preis, den man für ein Investment zahlt, ist für die mögliche zukünftige Rendite relevant – das folgt aus der Logik des Kaufens. Daraus folgt aber nicht, dass gängige Bewertungsmaßstäbe verlässlich anzeigen, wann man ein- oder aussteigen sollte.",
+            "what_went_wrong": "'Bewertungen sind wichtig' ist, für sich genommen, kaum bestreitbar. Das Problem entsteht, wenn daraus eine Timing-Anweisung abgeleitet wird: 'Bewertungen sind hoch, also nicht kaufen' oder 'Bewertungen sind niedrig, also kaufen'. Das sind zwei unterschiedliche Aussagen. Letztere setzt voraus, dass Bewertungsmaßstäbe kurzfristige oder mittelfristige Marktbewegungen zuverlässig vorhersagen – eine deutlich stärkere Behauptung als die erste.",
+            "kernel_of_truth": "Preis ist nicht irrelevant. Der Preis, zu dem man kauft, beeinflusst die Rendite – das ist keine Kontroverse. Die Kontroverse betrifft die Frage, ob verfügbare Bewertungskennzahlen als praktisches Timing-Instrument taugen."
           }
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "Interesse und Kompetenz schließen sich nicht aus – Leidenschaft kann sich durch gute Arbeit entwickeln, muss aber nicht vorher feststehen. Es lohnt sich, Erfahrungen als Informationsquelle zu nutzen, anstatt auf eine vorhandene Leidenschaft zu warten.",
-            "Ob ein Jobwechsel das Gehalt steigert oder ob Betriebstreue sich auszahlt, hängt vom konkreten Unternehmen, Angebot und Markt ab – beides kann stimmen, keines ist garantiert.",
-            "Ob ein MBA sinnvoll ist, lässt sich seriös nur mit Blick auf das konkrete Programm, die Kosten, die eigenen Ziele und den angestrebten Berufsweg beurteilen – nicht pauschal."
+            "Kostengünstige Indexfonds haben einen strukturellen Vorteil gegenüber teureren Alternativen: Niedrigere Kosten bedeuten höhere Nettorendite bei sonst gleichen Bedingungen. Das folgt aus Arithmetik, nicht aus einer Renditegarantie.",
+            "Aktives Management ist nicht grundsätzlich ausgeschlossen, aber 'es ist möglich' reicht nicht als Begründung für ein konkretes Produkt. Die relevante Frage ist, ob der erwartete Mehrwert die höheren Kosten nach Gebühren übertrifft – und das lässt sich im Voraus kaum zuverlässig beurteilen.",
+            "Bewertungen und Markt-Timing sind unterschiedliche Konzepte. Dass der Kaufpreis die potenzielle Rendite beeinflusst, ist unbestritten. Ob Bewertungskennzahlen als Timing-Signal funktionieren, ist eine eigenständige, offenere Frage."
           ],
           "treat_skeptically": [
-            "Karriereratschläge, die als Faustregeln für alle formuliert sind – 'folge X', 'mach Y', 'bleib / wechsle' – ohne Bedingungen zu nennen, unter denen sie gelten.",
-            "Gehaltsversprechen, die mit Jobwechseln oder Abschlüssen verknüpft werden, ohne den Einzelfall zu berücksichtigen – Branche, Zeitpunkt, konkretes Angebot und was man aufgibt, sind entscheidend.",
-            "Erfahrungsberichte einzelner Personen ('Ich habe durch Wechseln / durch Loyalität / durch den MBA viel gewonnen') als Beleg dafür, dass dieselbe Strategie allgemein funktioniert."
+            "Jede Formulierung, die einen strukturellen oder statistischen Vorteil in eine Garantie verwandelt – 'gewinnt immer', 'schlägt immer' oder 'funktioniert immer'.",
+            "Timing-Empfehlungen, die aus Bewertungsbeobachtungen abgeleitet werden, ohne zu erklären, auf welchem Zeithorizont und mit welcher Treffsicherheit diese Verbindung gilt.",
+            "Das Argument 'aktives Management kann schlagen' als Begründung für ein konkretes Produkt – die logische Möglichkeit ist kein Kaufargument."
           ],
           "what_would_change_the_answer": [
-            "Deine konkrete Situation – Branche, Berufsfeld, bisherige Karrierestufe, Ziel und finanzielle Ausgangslage – würde deutlich eingrenzen, welcher der Ratschläge für dich überhaupt relevant ist.",
-            "Spezifische Daten zum eigenen Arbeitsmarkt und Unternehmen (zum Beispiel: Wie entwickeln sich Gehälter intern? Was kosten vergleichbare Programme? Welche Positionen verlangen einen MBA?) würden die allgemeinen Ratschläge auf eine belastbarere Grundlage stellen."
+            "Wenn ein konkreter Fonds, Zeitraum oder Bewertungsmaßstab genannt wird, lässt sich die jeweilige Aussage gezielter prüfen – allgemeine Analyseprinzipien ersetzen diese produktspezifische Prüfung nicht."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Erfolgsgeschichten und Einzelfallberichte",
-            "how_it_distorts": "Wer mit einer Strategie erfolgreich war, erzählt davon – wer dieselbe Strategie verfolgt hat und gescheitert ist, oft nicht. Dadurch entsteht der Eindruck, eine bestimmte Entscheidung funktioniere zuverlässig, obwohl nur ein Teil der Ergebnisse sichtbar wird.",
-            "how_to_recognize_it": "Der Rat stützt sich hauptsächlich auf Beispiele von Personen, denen es gut gegangen ist. Frage: Was ist mit denen passiert, die dieselbe Entscheidung getroffen haben und nicht hier darüber berichten?"
+            "source_type": "Vereinfachende Faustregeln",
+            "how_it_distorts": "Komplexe, bedingungsabhängige Zusammenhänge werden in einprägsame Sätze komprimiert. Dabei fallen die Bedingungen weg, unter denen die Aussage gilt – und der Satz wird breiter weitergegeben, als er gemeint war.",
+            "how_to_recognize_it": "Absolute Formulierungen ohne Angabe von Bedingungen, Zeiträumen oder Ausnahmen: 'gewinnt immer', 'schlägt immer', 'funktioniert immer'."
           },
           {
-            "source_type": "Vereinfachende Merksätze in Karrierekontexten",
-            "how_it_distorts": "Einprägsame Formeln ('Folge deiner Leidenschaft', 'Loyalität zahlt sich aus') lassen sich leicht weitergeben und merken – gerade deshalb überleben sie auch dann, wenn sie nur unter bestimmten Bedingungen zutreffen. Die Kürze, die sie einprägsam macht, ist dieselbe, die wichtige Einschränkungen unsichtbar macht.",
-            "how_to_recognize_it": "Wenn ein Ratschlag keine Bedingungen nennt, unter denen er nicht gilt, ist das ein Hinweis, dass er vereinfacht wurde."
+            "source_type": "Verwechslung von Möglichkeit und Wahrscheinlichkeit",
+            "how_it_distorts": "Dass etwas möglich ist, wird als hinreichende Begründung behandelt, darauf zu setzen. Der Schritt von 'kann passieren' zu 'wird wahrscheinlich passieren' oder 'ist für mich wahrscheinlich erreichbar' wird übersprungen.",
+            "how_to_recognize_it": "Aussagen, die 'kann' oder 'ist möglich' als Kaufargument präsentieren, ohne Wahrscheinlichkeit, Kosten oder Bedingungen zu nennen."
           },
           {
-            "source_type": "Angebote mit finanziellem Interesse am Ratschlag",
-            "how_it_distorts": "Wer ein MBA-Programm, einen Karrierecoach oder ein Weiterbildungsprodukt anbietet, hat ein strukturelles Interesse daran, dass der Ratschlag 'Mach X' allgemeingültig klingt. Das bedeutet nicht, dass der Ratschlag falsch ist – aber die Einschränkungen werden tendenziell weniger betont.",
-            "how_to_recognize_it": "Frage: Verdient die Person oder Institution, die diesen Rat gibt, Geld, wenn ich ihm folge? Wenn ja, lohnt sich ein genauerer Blick auf die Bedingungen, die nicht genannt werden."
+            "source_type": "Sprung von Beobachtung zu Timing-Regel",
+            "how_it_distorts": "Eine berechtigte Beobachtung (z. B. dass Bewertungen die Rendite beeinflussen) wird direkt in eine Handlungsanleitung umgewandelt, ohne zu prüfen, ob die Beobachtung als zuverlässiges Signal für konkrete Kauf- oder Verkaufszeitpunkte taugt.",
+            "how_to_recognize_it": "Wenn auf eine allgemeine Aussage über Preise oder Bewertungen unmittelbar folgt, wann man kaufen oder verkaufen sollte – ohne dass der Zwischenschritt begründet wird."
           }
         ],
-        "topic_as_understood": "Drei verbreitete Karriereratschläge werden gegeneinander gestellt: Leidenschaft als Kompass vs. Können als Grundlage für Interesse, Jobwechsel für Gehaltssprünge vs. Loyalität, und MBA als Investition vs. Verzicht darauf.",
-        "framing": "Alle drei Paare wirken wie Widersprüche, sind es aber oft nicht – sie beschreiben unterschiedliche Bedingungen, unter denen verschiedene Strategien sinnvoller sein können. Die eigentliche Frage ist jeweils: Für wen, in welchem Kontext und mit welchen konkreten Optionen?",
+        "topic_as_understood": "Drei verbreitete Investitionsthesen im Vergleich: Indexfonds gegen aktives Management, Zeit im Markt gegen Markt-Timing, und die Frage, ob Bewertungen eine Rolle spielen.",
+        "framing": "Alle drei Thesen bewegen sich auf unterschiedlichen Ebenen: Die erste betrifft Produktwahl, die zweite Verhalten über die Zeit, die dritte die Frage, ob der Einstiegszeitpunkt überhaupt messbar relevant ist. Eine Behauptung kann auf einer Ebene zutreffen und auf einer anderen trotzdem zu weit gehen.",
         "the_signal": {
           "items": [
             {
-              "claim": "Berufliches Interesse kann sich durch Kompetenz, Erfahrung und Verantwortung entwickeln – es muss nicht als fertige Leidenschaft vorhanden sein, bevor man eine Richtung einschlägt.",
-              "basis": "Beobachtungen aus Berufslaufbahnen und arbeitspsychologischer Theorie sind damit vereinbar: Zufriedenheit hängt häufig mit Autonomie, Kompetenzerleben und sozialer Einbettung zusammen, nicht allein mit vorgängigem Enthusiasmus für ein Thema.",
-              "limits": "Das widerlegt nicht, dass starkes Vorinteresse bei manchen Menschen eine hilfreiche Orientierung bietet. Es zeigt nur, dass das Fehlen einer 'Leidenschaft' kein zuverlässiger Grund ist, eine Richtung auszuschließen."
+              "claim": "Indexfonds vermeiden das Problem der Managerwahl und erheben in der Regel geringere Gebühren als aktiv verwaltete Fonds. Eine Gebühr, die vom investierten Kapital abgezogen wird, reduziert die Nettorendite gegenüber derselben Anlage ohne diese Gebühr — und dieser Unterschied kann sich über Zeit durch Zinseszinseffekte vergrößern.",
+              "basis": "Dies folgt aus der Arithmetik des Zinseszinses: Eine dauerhaft geringere Kostenbasis erhöht den Anteil der Rendite, der im Portfolio verbleibt. Das Managerproblem — ob ein bestimmter aktiver Manager den Markt zuverlässig übertrifft — entfällt bei einem Indexfonds per Konstruktion, weil er den Markt abbildet statt ihn zu schlagen.",
+              "limits": "Daraus folgt nicht, dass Indexfonds 'immer gewinnen'. Es folgt nicht, dass kein aktiver Manager den Markt schlagen kann. Es folgt nicht, dass Indexfonds für jede Anlagestrategie, jeden Zeithorizont oder jede steuerliche Situation die überlegene Wahl sind."
             },
             {
-              "claim": "Ein Arbeitgeberwechsel kann – in bestimmten Konstellationen – zu einem größeren Gehaltssprung führen als eine interne Beförderung im gleichen Zeitraum.",
-              "basis": "Dieses Muster ist in Einzelbeobachtungen und Berichten aus Arbeitsmarktanalysen erkennbar, ohne dass ein einheitlicher Mechanismus als etabliert gelten kann.",
-              "limits": "Ob das im Einzelfall zutrifft, hängt vom konkreten Angebot, der Branche, dem eigenen Profil und dem ab, was man beim Wechsel aufgibt. Das Muster ist kein allgemeines Gesetz."
+              "claim": "Markt-Timing als zuverlässige Strategie setzt voraus, dass mehrere Entscheidungen hintereinander richtig getroffen werden: wann man aussteigt, wann man wieder einsteigt, und dies konsistent über viele Marktzyklen. Je mehr solche Entscheidungen richtig sein müssen, desto anspruchsvoller wird die Bedingung.",
+              "basis": "Dies folgt aus der Struktur des Timings selbst: Wer den Markt verlässt, muss mindestens zwei Zeitpunkte richtig bestimmen — den Ausstieg und den Wiedereinstieg. Jede zusätzliche Timing-Entscheidung multipliziert die Anforderung an die Treffsicherheit. Das ist keine Aussage darüber, was Anleger im Durchschnitt tun, sondern über das, was die Strategie strukturell verlangt.",
+              "limits": "Daraus folgt nicht, dass Markt-Timing niemals funktioniert oder dass Bewertungen für Anlageentscheidungen irrelevant sind. Es folgt nicht, dass 'einfach investiert bleiben' unter allen Umständen die bessere Entscheidung ist — das hängt vom tatsächlichen Zeithorizont, der Liquiditätssituation und den konkreten Kosten ab."
             },
             {
-              "claim": "Der Wert eines MBA ist stark kontextabhängig: Branche, Programmrang, Karriereziel und Finanzierungskosten bestimmen, ob die Investition aufgeht – eine allgemeine Empfehlung dafür oder dagegen lässt sich daraus nicht ableiten.",
-              "basis": "Beobachtungen aus Personalentscheidungen und Berufsverläufen legen nahe, dass ein MBA in manchen Feldern (z. B. Unternehmensberatung, bestimmte Führungspositionen) als Qualifikationssignal fungiert, in anderen deutlich weniger Gewicht hat.",
-              "limits": "Selbst innerhalb derselben Branche variiert der Nutzen erheblich je nach Programm, Netzwerkqualität, vorherigem Hintergrund und Karrierezeitpunkt."
+              "claim": "Der Preis, den man für eine Anlage zahlt, ist rechnerisch relevant für die potenzielle Rendite: Bei gleichen künftigen Erträgen führt ein höherer Einstiegspreis zu einer niedrigeren prozentualen Rendite. 'Bewertungen spielen eine Rolle' ist in diesem rechnerischen Sinne zutreffend.",
+              "basis": "Dies folgt aus der Definition von Rendite: Rendite ergibt sich aus dem Verhältnis von Ertrag zu eingesetztem Kapital. Steigt der Einstiegspreis bei gleichem künftigem Ertrag, sinkt die Rendite. Das ist keine empirische Behauptung über Märkte, sondern eine arithmetische Beziehung.",
+              "limits": "Daraus folgt nicht, dass gängige Bewertungsmaßstäbe zuverlässig anzeigen, wann der richtige Zeitpunkt zum Kauf oder Verkauf ist. 'Bewertungen spielen eine Rolle' und 'Bewertungsmaßstäbe liefern ein verlässliches Timing-Signal' sind zwei verschiedene Behauptungen. Die zweite ist aus dem arithmetischen Argument allein nicht ableitbar."
             }
           ]
         },
-        "genuinely_debated": [
+        "still_worth_verifying": [
           {
-            "question": "Zahlt sich Loyalität gegenüber einem Arbeitgeber – über Gehalt hinaus – langfristig aus?",
-            "what_supports_one_view": "Seniorität, gewachsenes Vertrauen, institutionelles Wissen und interne Netzwerke können Vorteile bieten, die von außen schwer replizierbar sind – in Unternehmen mit stabilen Strukturen und aktiver Talentförderung.",
-            "what_supports_another_view": "In Organisationen mit flachen Budgets, wenig interner Mobilität oder hohem Führungswechsel kann lange Betriebszugehörigkeit die Sichtbarkeit am externen Markt verringern, ohne dass interne Vorteile das ausgleichen.",
-            "why_unsettled": "Die Antwort hängt wesentlich davon ab, wie das eigene Unternehmen mit langjährigen Mitarbeitenden umgeht, welche Branchennormen gelten und welche konkreten Alternativen verfügbar wären – das sind situative Fragen, keine allgemein beantwortbaren."
-          },
-          {
-            "question": "Lohnt sich ein MBA in meiner spezifischen Situation?",
-            "what_supports_one_view": null,
-            "what_supports_another_view": null,
-            "why_unsettled": "Ob ein MBA sinnvoll ist, lässt sich allgemein nicht entscheiden. Was die Antwort tatsächlich bestimmt: das konkrete Programm und seine Kosten, das angestrebte Berufsfeld, der bisherige Hintergrund, die verfügbaren Alternativen und ob der Abschluss in der Zielbranche tatsächlich gefordert oder erwartet wird. Ohne diese Angaben bleibt jede allgemeine Antwort unzuverlässig."
+            "question": "Liefern verfügbare Bewertungsmaßstäbe — wie Kurs-Gewinn-Verhältnisse oder ähnliche Kennzahlen — über unterschiedliche Marktphasen und Zeithorizonte hinweg ein zuverlässiges Timing-Signal, das nach Transaktionskosten und Steuern einen Vorteil gegenüber dem Investiertbleiben ergibt?",
+            "why_it_matters": "Wenn ja, wäre 'Zeit im Markt schlägt Timing' als allgemeine Regel zu schwach; wenn nein, bleibt die Timing-Kritik strukturell begründet.",
+            "what_would_help": "Langfristige, vergleichende Daten zu Anlagestrategien, die auf Bewertungssignalen basieren, unter Einbezug aller relevanten Kosten und verschiedener Marktregimes — nicht nur günstiger Zeitfenster."
           }
+        ],
+        "what_general_claims_cant_decide": [
+          "Ob Indexfonds oder aktiv verwaltete Fonds für deine konkrete Situation sinnvoller sind — das hängt von deinem Zeithorizont, der steuerlichen Behandlung in deinem Fall, verfügbaren Produkten und deinen tatsächlichen Kosten ab.",
+          "Ob du in einer bestimmten Marktphase investiert bleiben, einsteigen oder abwarten solltest — das erfordert Informationen über deine Liquiditätssituation, deinen Anlagezeitraum und was du tatsächlich mit dem Kapital vorhast.",
+          "Ob ein bestimmter aktiv verwalteter Fonds seine Mehrkosten durch Mehrrendite rechtfertigen kann — das lässt sich aus allgemeinen Thesen nicht ableiten und erfordert die Prüfung des konkreten Produkts."
         ]
       },
       "optionalSections": [
-        "genuinely_debated"
+        "still_worth_verifying"
       ]
     }
   ]

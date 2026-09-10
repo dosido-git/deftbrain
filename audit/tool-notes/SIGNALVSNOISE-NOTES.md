@@ -1,8 +1,8 @@
-# Signal vs. Noise — architecture & lock notes (`signalvsnoise-v2` → `signalvsnoise-v3`)
+# Signal vs. Noise — architecture & lock notes (`signalvsnoise-v2` → `v3` → `v4`)
 
-**Known-good:** tag `signalvsnoise-v3` · golden `audit/signal-vs-noise-golden-sample.json`
-(2 cases, live-captured 2026-09-10 — both career-domain, replacing the v2 sleep/nutrition cases;
-see the "V3" section below for why)
+**Known-good:** tag `signalvsnoise-v4` · golden `audit/signal-vs-noise-golden-sample.json`
+(2 cases, live-captured 2026-09-10 — both investing-domain, replacing the v3 career cases; see the
+"V4" section below for why)
 **Verify:** `npm run check:golden signal-vs-noise` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -262,15 +262,107 @@ should demonstrate the fix, not just avoid contradicting it).
 
 ## DO NOT silently reverse (V3 additions)
 
-10. **The nullable `genuinely_debated` view fields and the "null-or-populated together" filter** — a
-    person-dependent unsettled question is a legitimate, common result for this tool once claims get
-    specific (career, finance, any decision that hinges on details only the visitor has); don't force
-    it back into a two-view shape or drop it for having empty views.
-11. **`expanded.debated` defaults to `true`** — only `expanded.sources` (How the Noise Gets Made) stays
-    collapsed by default.
+10. **SUPERSEDED BY V4 — see below.** V3's nullable `genuinely_debated` view fields (and the
+    "null-or-populated together" filter) were removed entirely in V4, not extended. Do not
+    reintroduce them; see V4 item 1.
+11. **SUPERSEDED BY V4.** `expanded.debated` now defaults to `false` again (V4 item 4) — V3's
+    "defaults to `true`" was correct for V3's UI but the section it applied to (a two-sided debate
+    card) no longer exists in the same shape.
 12. **`too_broad` / `context_dependent` stay in the `noise_type` enum**, and `cherry_picked` /
     `individual_variation` stay restricted to when that specific defect is actually observable — don't
     quietly widen them back into catch-alls.
 13. **`svn_why_we_know` stays "Why this holds up:" (or the equivalent per-language rewording)** — not
     "Evidence behind it" in any language; that phrasing is the exact thing rule 1 forbids the model
     from implying, and the label shouldn't imply it either.
+
+## V4 — hard mode switch (2026-09-10, same day as V3, third "final corrections" pass)
+
+V3 fixed the literature-review-voice problem recurring in a career/labor domain. The owner then
+tested a THIRD domain — finance — and found the identical failure: "This is supported by persistent
+tracking of fund returns against benchmarks over multi-decade periods... the pattern holds across
+multiple markets and asset classes," and a compounded version of it — "the evidence covers funds that
+survived long enough to be measured, which may exclude funds that closed after poor performance" (a
+fabricated methodological limitation of a dataset that was never examined in the first place). Three
+prompt-only correction passes (V2, and two same-day V3 rounds) had not fully suppressed this pattern
+across domains. V4's central change: **a deterministic, code-level backstop, not a fourth round of
+prompt language alone.**
+
+1. **SCHEMA CHANGE — `genuinely_debated` removed, replaced by two arrays.** V3's nullable-views
+   mechanism (populated views = evidence dispute, null views = person-dependent question) is gone.
+   In its place: `still_worth_verifying[]` (`{question, why_it_matters, what_would_help}` — a
+   genuinely unresolved GENERAL empirical question; never a fabricated two-sided "evidence pointing
+   this way / another way," since this tool has no sources to characterize two sides of anything) and
+   `what_general_claims_cant_decide[]` (plain strings — person-specific questions a general analysis
+   can never resolve, e.g. "whether direct real estate fits your actual situation"). The two concepts
+   V3 conflated into one nullable field are now two clearly separate things, per the owner's
+   diagnosis: "STILL UNSETTLED is misclassifying two different things."
+2. **CODE-LEVEL ENFORCEMENT — `CLAIM_MODE_BANNED_RE` / `findBannedPhrase` / `callClaimModeChecked`
+   in `backend/routes/signal-vs-noise.js`.** Every prose field in each of the two calls (signal, noise)
+   is scanned against a fixed phrase list ("evidence shows/suggests/supports/that", "studies show",
+   "historical data show", "tracking of returns", "documented tendency/context/case/advantage",
+   "research finds/shows/confirms", "empirical/observational/controlled evidence", "multiple markets
+   and asset classes", "multi-decade", "evidence base", "track record", "literature shows/suggests",
+   "the evidence covers", "historical N comparisons", plus a few more; see the regex itself). A hit
+   triggers ONE regeneration of that half with the exact offending phrase quoted back at the model. If
+   the regenerated result still violates, the structural-validation pass (which already dropped
+   incomplete items) also drops any item that still contains a hit — the visitor never sees it, the
+   section just has one fewer item, exactly the same "omit rather than pad" behavior already used for
+   incomplete items. **ENGLISH ONLY** — `withLanguage()` translates output into 12 other languages and
+   this regex does not follow it there; a live German test during this pass produced correct output on
+   its own (the prompt-level SOURCE MODE rules held), but that is NOT the same guarantee the English
+   regex provides. If violations start appearing in a non-English language, translate the phrase list —
+   don't declare the job done because English is covered.
+3. **A negation/missing-evidence exception window (`ALLOWED_EXCEPTION_RE`)** prevents the broadened
+   "evidence that/is evidence that" patterns from flagging the explicitly-ALLOWED phrasing the prompt
+   itself teaches the model to use — "does not provide evidence for," "no evidence that," "would be
+   needed to establish." Checks a 60-char window before the raw regex match for a negation cue before
+   calling it a real violation. Verified against 12 hand-built test cases (5 real violations from the
+   owner's cited output, 7 legitimate/allowed sentences) — all 12 passed before this shipped.
+4. **UI**: `svn_debated_header` reworded "Still Unsettled" → "Still Worth Verifying"; `svn_nuance`
+   reworded "Limits:" → "What it doesn't establish:"; new keys `svn_verify_why`/`svn_verify_would_help`/
+   `svn_cant_decide_header`. The old two-column "evidence pointing this way / another way" comparison
+   grid is gone from the JSX, not relabeled — replaced by a plain question+why+what-would-help card for
+   `still_worth_verifying` and a bullet list for `what_general_claims_cant_decide`, both under one
+   collapsed disclosure (`expanded.debated`, now defaulting to `false`). `svn_one_view`/
+   `svn_another_view`/`svn_why_unsettled` are orphaned in the 13 locale files (harmless, not deleted —
+   matches this session's established practice of leaving unused i18n keys rather than touching all 13
+   languages to remove them).
+5. **Caps changed**: `the_signal` 4→3; `still_worth_verifying` capped at 2 (replacing
+   `genuinely_debated`'s 3); `what_general_claims_cant_decide` capped at 3;
+   `the_bottom_line.what_would_change_the_answer` 2→3.
+6. **New PERSONALITY rules 23–25** (renumbered from the old 19-item scheme, which is now 26 rules
+   total): rule 23 (unsourced research summary for an "X matters" claim, with the valuation worked
+   example verbatim from the owner's spec), rule 24 (no historical performance comparison even
+   hedged — real estate vs. stocks), rule 25 (the still-worth-verifying vs. can't-decide split,
+   described above). Rules 8, 13, 14, 16 extended in place with worked examples for: motive assigned
+   through a comparison's framing ("tends to favor whichever asset class the presenter prefers"), a
+   default professional-referral closer ("worth working through with a fiduciary adviser"), a factor
+   ranked against unnamed alternatives ("among the most reliably controllable factors"), an unsourced
+   quantified population claim ("most actively managed funds have not outperformed"), and reaching for
+   a specific historical argument to support a point pure logic already establishes ("missing a small
+   number of strong return days").
+7. **`outputGuard.prohibit` grew from 28 to 37 entries** — one per new/extended rule above.
+8. **Golden re-recorded** (2 investing cases, EN + DE, live-verified, 0 banned-phrase hits on either) —
+   the old V3 career-domain cases used the now-removed `genuinely_debated` shape and couldn't pass
+   structurally under the new schema regardless of content quality.
+
+**Live-tested against:** the exact investing scenario from the owner's spec (index funds / market
+timing / valuations / real estate vs. stocks), in English and German, run twice each. Zero banned-
+phrase hits on any of the 4 runs — the regenerate-once mechanism was not even needed live, though its
+correctness was verified separately via 12 unit-style test cases run directly against the regex.
+
+## DO NOT silently reverse (V4 additions)
+
+14. **The `genuinely_debated` → `still_worth_verifying` + `what_general_claims_cant_decide` split** —
+    do not recombine them into one field, and do not put a person-specific question into
+    `still_worth_verifying` (or vice versa) to save a UI section.
+15. **The code-level `CLAIM_MODE_BANNED_RE` backstop and its one-regeneration-then-drop behavior** —
+    this is what V3's prompt-only approach was missing after three attempts. Do not remove it because
+    "the prompt should be enough now" — that exact reasoning is what let the finance-domain failure
+    reach production after two prior corrections already shipped.
+16. **The backstop is English-only, by design, for now** — do not assume it silently covers other
+    languages. If a non-English violation is reported, the fix is translating `CLAIM_MODE_BANNED_RE`,
+    not just adding another English example to PERSONALITY.
+17. **`ALLOWED_EXCEPTION_RE`'s negation window** — removing it will cause the tool's OWN
+    explicitly-taught allowed phrasing ("does not provide evidence for...") to trigger false-positive
+    regenerations/drops on every response that correctly describes missing evidence.
