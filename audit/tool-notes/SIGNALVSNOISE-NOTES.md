@@ -1,7 +1,8 @@
-# Signal vs. Noise — architecture & lock notes (`signalvsnoise-v2`)
+# Signal vs. Noise — architecture & lock notes (`signalvsnoise-v2` → `signalvsnoise-v3`)
 
-**Known-good:** tag `signalvsnoise-v2` · golden `audit/signal-vs-noise-golden-sample.json`
-(2 cases, live-captured 2026-09-09)
+**Known-good:** tag `signalvsnoise-v3` · golden `audit/signal-vs-noise-golden-sample.json`
+(2 cases, live-captured 2026-09-10 — both career-domain, replacing the v2 sleep/nutrition cases;
+see the "V3" section below for why)
 **Verify:** `npm run check:golden signal-vs-noise` (backend up: `npm run dev:backend`)
 
 ## What it is
@@ -165,10 +166,111 @@ by default). `npm run check:golden signal-vs-noise` → 2/2 PASS.
 6. **`sources_of_noise` never names an actor** — `source_type` describes a general mechanism
    ("consumer product marketing," "media simplification of research findings"), never a company,
    person, or industry unless the visitor supplied that specific claim.
-7. **The 4 array caps** (signal ≤4, noise ≤5, debated ≤3, sources ≤4) — this is what fixed v1's
-   double-truncation bug on a maximally-noisy German topic; removing them reopens that failure.
+7. **The 4 array caps** (signal ≤4, noise ≤4, debated ≤3, sources ≤4 — `noise` was tightened 5→4 and
+   `debated` raised 2→3 in the V3 pass below) — this is what fixed v1's double-truncation bug on a
+   maximally-noisy German topic; removing the caps entirely reopens that failure.
 8. **Zero `genuinely_debated` items is a correct, expected result**, not a bug — the prompt is
    explicitly told never to manufacture a debate to fill the schema (rule 8, "no false consensus" /
    rule 14). Don't "fix" a topic that returns `[]` there.
 9. **Tagline renders via `t('svn_tagline')`, never `tool?.tagline`** — the catalog field keeps its
    emoji for card display elsewhere; using it in-page doubles the icon already rendered next to it.
+
+## V3 — FINAL CORRECTIONS pass (2026-09-10)
+
+V2 fixed the tool's literature-review-voice problem in the health domain it was tested against. The
+owner then tested it on a career/labor topic (three classic career slogans — "follow your passion,"
+"job-hop for salary," "get an MBA") and the exact same failure mode came back in a domain-specific
+disguise, plus five smaller leaks. **Lesson: a rule proven against one domain's examples is not proven
+against all domains — test new epistemic rules against a domain unlike the one that motivated them.**
+
+What broke and what fixed it (all verified live against this exact scenario before recording the new
+golden — see `svn_career_test.json`-style transcript in the session, not committed):
+
+1. **Literature-review voice recurred as market/labor claims** — "wage data shows," "employer
+   recruiting patterns support," an invented MBA-recruiting-pipeline market map stated as established
+   fact. Rule 1 extended with career/industry-specific banned phrases and an "institution- or
+   industry-specific historical claim stated as established fact" example (the MBA market map).
+2. **A strength qualifier ("a weak guide... in most cases") invented scope the evidence didn't
+   support.** Rule 5 (was rule 3, "calibrate the claim") extended: qualifiers like "typically,"
+   "generally," "in most cases" need the same evidentiary support as the outcome claim itself.
+3. **New rule 3 — no invented causal mechanism.** "Changing jobs increases pay *because* external
+   offers reset salary to market rate" bundles an unverified explanation onto a claim; state the
+   pattern without the mechanism unless the mechanism is itself established.
+4. **New rule 4 — don't rebut an overclaim with another overclaim.** The model countered "get an MBA"
+   with an unverified claim about which career outcomes get discussed/publicized more (a selection-bias
+   claim stated as fact). Now: state a real possibility as a possibility, never as the explanation.
+5. **New rule 21 — stay within what was supplied.** V2 output added a 4th "signal" claim ("early
+   career years are disproportionately important...") that nobody raised, alongside analysis of the 3
+   claims the visitor actually supplied. Both prompts (signal + noise) now instruct: when the visitor
+   supplies discrete claims, analyze those — don't append an unprompted one.
+6. **Strawmanning.** "The 'follow your passion' model assumes passions are fixed and identifiable in
+   advance" reads assumptions into the claim that its own wording doesn't require. Rule 7 (was rule 5,
+   "noise ≠ false") extended: critique the claim as supplied, not a stronger/more-naive version that's
+   easier to debunk.
+7. **Enumerated hypothetical harms turned one claim into an advice essay** ("vesting schedules,
+   seniority benefits... periods without income, failed negotiations, probationary periods"). Rule 16
+   (was rule 13, "practical advice must follow from the analysis") extended: name a consideration only
+   when it materially clarifies the claim, otherwise say plainly that it depends on the specifics.
+8. **`noise_type` mislabeling — "cherry_picked" and "individual_variation" used where the actual
+   defect was scope, not selective evidence or biological variation.** New rule 22 + two new enum
+   values, `too_broad` and `context_dependent` (frontend `NOISE_TYPE_CONFIG` + all 13 languages'
+   `svn_nt_too_broad`/`svn_nt_context_dependent`). `cherry_picked` and `individual_variation` are now
+   restricted in the prompt to when that specific defect is actually observable — not a catch-all for
+   "overgeneralized."
+9. **STILL UNSETTLED read as empty** — not literally empty, but forced into a two-sided
+   evidence-dispute shape ("what supports one view" / "what supports another view") for a question
+   that was actually person-dependent ("would an MBA be worth it for *your* situation"), which the
+   model couldn't fill with anything real. **Schema change:** `genuinely_debated[].what_supports_one_
+   view`/`.what_supports_another_view` are now nullable — both null signals "the real answer needs
+   information about the visitor's specific situation, not more research"; both populated signals a
+   live evidence dispute. The backend filter requires the pair to be null-or-populated *together*.
+   Frontend (`SignalVsNoise.js`) renders the two-view comparison grid only when at least one view is
+   present; otherwise `why_unsettled` becomes the card's main content, not an italic footnote. Rule 17
+   (was rule 14, "omit empty sections") extended with this distinction. `expanded.debated` default
+   flipped `false`→`true` (only "How the Noise Gets Made" stays collapsed by default now — matches the
+   target layout: signal, noise, and still-unsettled are all part of the main answer).
+10. **Debate-club phrasing** ("the burden is on the specific claim to show it applies to your
+    situation") — not literally in the old prompt, but the model produced it live. Rule 19 (language)
+    now explicitly names and bans this phrasing pattern with a plain-language replacement.
+11. **`svn_why_we_know`'s label ("Evidence behind it:") itself implied a review that never
+    happened** — reworded to "Why this holds up:" in all 13 languages. This is the one purely-i18n fix
+    in this pass; no schema or prompt change needed it, just the static label the field renders under.
+12. **New top-of-file `EVIDENCE MODE` section** in `PERSONALITY` — names Mode A (claim analysis, the
+    default), Mode B (source analysis, only when the visitor's own text quotes/pastes a specific
+    source), and Mode C (verified research — explicitly: this tool never performs live retrieval, so
+    Mode C never applies here, don't write as though it does). This operationalizes the "first
+    determine what evidence you actually have" framing that now opens `PERSONALITY`, and gives the
+    per-rule fixes above (1, 3, 4) a shared vocabulary instead of restating "you weren't given sources"
+    ad hoc in each one.
+13. **`outputGuard.prohibit` grew from 21 to 28 entries** — one new entry per new rule above (3, 4, 21,
+    22) plus one for the qualifier-invention fix in rule 5.
+14. **`genuinely_debated` cap raised 2→3** (both in the prompt RULES and the code `.slice()`) — matches
+    the target "STILL UNSETTLED: 0–3 concise items" shape; was previously capped tighter than the
+    other sections for no principled reason.
+
+**Live-tested against:** the exact 3-claim career scenario above (EN, the case that motivated this
+pass), the same scenario in German (confirms JSON-escaping/locale safety on the longer prompt and
+exercises *both* debate shapes — one populated-views item for a genuinely disputed claim, one
+null-views item for the person-dependent MBA question, in the same response), and the original v2
+intermittent-fasting scenario (confirms the OVERSTATED-vs-UNSETTLED split from v2 still holds and a
+real evidence dispute still gets populated views, not nulled out by the new rule). All three: 0 banned
+literature-review phrases (grepped), correct new `noise_type` values used only where warranted, no
+extra unprompted claims, no debate-club phrasing. `npm run check:golden signal-vs-noise` → 2/2 PASS on
+the re-recorded golden (see the file's own `_meta` for why the v2 sleep/nutrition cases were replaced
+rather than kept alongside — the whole point was to prove the career domain, and the golden file
+should demonstrate the fix, not just avoid contradicting it).
+
+## DO NOT silently reverse (V3 additions)
+
+10. **The nullable `genuinely_debated` view fields and the "null-or-populated together" filter** — a
+    person-dependent unsettled question is a legitimate, common result for this tool once claims get
+    specific (career, finance, any decision that hinges on details only the visitor has); don't force
+    it back into a two-view shape or drop it for having empty views.
+11. **`expanded.debated` defaults to `true`** — only `expanded.sources` (How the Noise Gets Made) stays
+    collapsed by default.
+12. **`too_broad` / `context_dependent` stay in the `noise_type` enum**, and `cherry_picked` /
+    `individual_variation` stay restricted to when that specific defect is actually observable — don't
+    quietly widen them back into catch-alls.
+13. **`svn_why_we_know` stays "Why this holds up:" (or the equivalent per-language rewording)** — not
+    "Evidence behind it" in any language; that phrasing is the exact thing rule 1 forbids the model
+    from implying, and the label shouldn't imply it either.

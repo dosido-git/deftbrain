@@ -17,6 +17,8 @@ const NOISE_TYPE_CONFIG = {
   cherry_picked:        { key: 'svn_nt_cherry',         cls: 'red' },
   outdated:             { key: 'svn_nt_outdated',       cls: 'zinc' },
   oversimplified:       { key: 'svn_nt_oversimplified', cls: 'amber' },
+  too_broad:            { key: 'svn_nt_too_broad',      cls: 'amber' },
+  context_dependent:    { key: 'svn_nt_context_dependent', cls: 'cyan' },
   individual_variation: { key: 'svn_nt_variation',      cls: 'cyan' },
   media_distortion:     { key: 'svn_nt_media',          cls: 'sky' },
   weak_evidence:        { key: 'svn_nt_weak_evidence',  cls: 'zinc' },
@@ -87,7 +89,9 @@ const SignalVsNoise = ({ tool }) => {
   const [results, setResults] = usePersistentState('signalvsnoise-result', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-history', []);
   const [error, setError] = useState('');
-  const [expanded, setExpanded] = useState({ noise: true, debated: false, sources: false });
+  // Only "sources" (HOW THE NOISE GETS MADE) is collapsed by default —
+  // signal, noise, and still-unsettled are all part of the main answer.
+  const [expanded, setExpanded] = useState({ noise: true, debated: true, sources: false });
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
@@ -325,24 +329,37 @@ const SignalVsNoise = ({ tool }) => {
                 </button>
                 {expanded.debated && (
                   <div className={`border-t ${c.border}`}>
-                    {results?.genuinely_debated?.map((item, i) => (
-                      <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
-                        <p className={`text-sm font-semibold mb-2 ${c.text}`}>{item.question}</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <div className={`p-2.5 rounded-lg text-xs ${c.signalBg}`}>
-                            <p className={`font-bold mb-1 ${c.signalText}`}>{t('svn_one_view')}</p>
-                            <p className={c.textSecondary}>{item.what_supports_one_view}</p>
-                          </div>
-                          <div className={`p-2.5 rounded-lg text-xs ${isDark ? 'bg-amber-900/20 border border-amber-700/30' : 'bg-amber-50 border border-amber-200'}`}>
-                            <p className={`font-bold mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_another_view')}</p>
-                            <p className={c.textSecondary}>{item.what_supports_another_view}</p>
-                          </div>
+                    {results?.genuinely_debated?.map((item, i) => {
+                      // Not every unsettled question is a two-sided evidence
+                      // dispute — some are too-broad claims whose real
+                      // answer depends on the visitor's own situation. Only
+                      // render the comparison grid when there's actually a
+                      // dispute to show; otherwise why_unsettled carries the
+                      // explanation as the item's main content, not a footnote.
+                      const hasViews = item.what_supports_one_view || item.what_supports_another_view;
+                      return (
+                        <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
+                          <p className={`text-sm font-semibold mb-2 ${c.text}`}>{item.question}</p>
+                          {hasViews && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div className={`p-2.5 rounded-lg text-xs ${c.signalBg}`}>
+                                <p className={`font-bold mb-1 ${c.signalText}`}>{t('svn_one_view')}</p>
+                                <p className={c.textSecondary}>{item.what_supports_one_view}</p>
+                              </div>
+                              <div className={`p-2.5 rounded-lg text-xs ${isDark ? 'bg-amber-900/20 border border-amber-700/30' : 'bg-amber-50 border border-amber-200'}`}>
+                                <p className={`font-bold mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_another_view')}</p>
+                                <p className={c.textSecondary}>{item.what_supports_another_view}</p>
+                              </div>
+                            </div>
+                          )}
+                          {item.why_unsettled && (
+                            hasViews
+                              ? <p className={`text-xs mt-2 italic ${c.textMuted}`}>{t('svn_why_unsettled')} {item.why_unsettled}</p>
+                              : <p className={`text-sm ${c.textSecondary}`}>{item.why_unsettled}</p>
+                          )}
                         </div>
-                        {item.why_unsettled && (
-                          <p className={`text-xs mt-2 italic ${c.textMuted}`}>{t('svn_why_unsettled')} {item.why_unsettled}</p>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
