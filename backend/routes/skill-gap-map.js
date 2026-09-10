@@ -170,6 +170,16 @@ const OUTPUT_GUARD = {
     'personal_preference_or_enjoyment_assumed_as_established',
     'general_role_description_elevated_into_a_universal_requirement',
     'plausible_direction_treated_as_a_recommended_career_or_ranked_by_fit',
+    'hypothetical_research_findings_described_as_though_they_occurred',
+    'employer_confidential_access_or_recorded_user_data_suggested_as_a_practice_source',
+    'build_size_or_effort_estimate_generated_for_a_skill_gap',
+    'specific_commercial_product_or_brand_named_merely_as_an_example',
+    'employer_type_taxonomy_invented_without_basis',
+    'third_person_reference_to_the_visitor_instead_of_you',
+    'start_here_gap_presented_as_objectively_highest_priority_without_basis',
+    'generic_tool_familiarity_classified_as_a_skill_gap_instead_of_a_role_expectation',
+    'unsupplied_detail_invented_about_the_purpose_or_audience_of_past_experience',
+    'single_supplied_skill_upgraded_into_an_unestablished_technical_scope',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -219,47 +229,87 @@ YOUR PART: the primary result — what carries over, the one gap worth
 starting with, the next concrete move, and the fuller list of gaps worth
 checking.
 
+SKILL GAP MAP IS NOT A MODEL OF A PROFESSION. It is a comparison between
+what the visitor told you they have done and capabilities that MAY matter
+for the kind of role they named. Without a supplied or verified job
+posting, every role-capability claim describes a possibility, not a
+specification:
+
+Say: commonly relevant, may involve, some roles require, worth checking,
+may transfer, not established by what you supplied.
+Avoid: "[role]s regularly...", "[role] requires...", "standard [role]
+deliverables are...", "the role expects...", "interviewers look for...",
+"employers want...", "this is foundational...", "this is the most
+important gap...".
+
+Never turn:
+GENERAL OCCUPATIONAL KNOWLEDGE → THIS JOB'S REQUIREMENT
+MISSING EVIDENCE → MISSING SKILL
+RELATED EXPERIENCE → PROFICIENCY
+A PLAUSIBLE GAP → THE MOST IMPORTANT GAP
+A PRACTICE EXERCISE → REAL EXPERIENCE
+A TOOL CATEGORY → CORE PROFESSIONAL SKILL
+
+Do not invent what the visitor's past experience was FOR, ABOUT, or
+DIRECTED AT beyond what they actually said — if they supplied "survey
+design," do not describe its purpose as "understanding marketing
+preferences" or any other objective they didn't state. Do not invent the
+visitor's stakeholder types, the target employer's stakeholder types, or
+how often something happens ("regularly present to product, design, and
+business stakeholders") — describe the general possibility only.
+
+Do not upgrade one supplied skill into a specific technical scope it
+doesn't establish. "Data analysis in Excel" does not establish
+research-data analysis, survey-result analysis, or behavioral-metrics
+analysis — state exactly what was supplied, note that the input doesn't
+establish what KIND of data or analysis, and describe the transfer as
+depending on the target role, not asserted.
+
+ADDRESS THE VISITOR AS "YOU" IN EVERY FIELD. Never write "the visitor,"
+"the user," "the candidate," or any other third-person reference — this is
+an individual-facing tool advising one person about their own transition.
+
 Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys:
 starting_point, transferable_strengths, start_here, next_move, skill_gaps.
 
 {
   "starting_point": {
     "summary": "One or two sentences: what carries over, stated plainly, grounded only in supplied evidence",
-    "important_unknown": "The most consequential thing supplied information doesn't establish — often that the target role varies by company, and an actual job posting would replace general expectations with this specific one"
+    "important_unknowns": ["1-3 things supplied information doesn't establish, most consequential first — almost always including that the target role varies by company and an actual job posting would replace general expectations with that employer's specifics"]
   },
   "transferable_strengths": [
     {
       "strength": "A capability named directly from supplied experience — 3-6 words",
-      "evidence": "The visitor's own supplied experience this rests on, restated at its actual strength — one sentence",
-      "transfer": "What that evidence reasonably suggests may carry over — one sentence, conditional, never upgraded into leadership/strategy/judgment/empathy/management unless the visitor supplied evidence for those specifically"
+      "evidence": "The visitor's own supplied experience this rests on, restated at its actual strength — one sentence, addressed to 'you'",
+      "transfer": "What that evidence reasonably suggests may carry over — one sentence, conditional, never upgraded into leadership/strategy/judgment/empathy/management unless the visitor supplied evidence for those specifically",
+      "confidence": "direct | partial — 'direct' when the supplied evidence squarely establishes this strength; 'partial' when it's plausibly relevant but the input leaves the specifics (what kind, how much, in what context) unestablished — e.g. 'data analysis in Excel' toward a research-analysis capability is partial, not direct"
     }
   ],
   "start_here": {
-    "capability": "The single most consequential capability not established by supplied evidence — 3-6 words",
-    "why_it_matters": "Why this one before the others, tied to the target role and labeled by basis — one sentence",
+    "capability": "A capability worth investigating first — 3-6 words. This is a SUGGESTED starting point, not an objectively-ranked priority, unless a supplied job posting or a clear dependency between capabilities justifies calling it the priority",
+    "why_it_matters": "Why THIS one is worth investigating first — normally because it's adjacent to evidence you already have, not because it's asserted to be the most important gap. If a supplied job posting or a clear dependency between capabilities justifies a stronger claim, say so specifically; otherwise frame it as one reasonable place to start, not the correct answer",
     "current_evidence": "What the visitor's supplied experience does or doesn't establish about this — one sentence",
     "gap": "The specific difference between supplied evidence and the capability — one sentence",
     "next_move": "One short line naming how to build or demonstrate it — the full version is the top-level next_move below",
-    "proof": "What observable artifact or example could demonstrate it — one sentence"
+    "proof": "What observable artifact could demonstrate it — written to cover BOTH cases in one honest sentence when it's not established whether the visitor has already done the underlying activity: what to produce if they haven't done it yet (a plan/draft), and what to document if they have. Never describe hypothetical findings, participants, or observations as though they already happened"
   },
   "next_move": {
-    "primary": "ONE feasible move, described concretely enough to act on today — assumes no special access, authority, or permission the visitor didn't mention",
+    "primary": "ONE feasible move, described concretely enough to act on today — assumes no special access, authority, or permission the visitor didn't mention. If it depends on whether the visitor has already done the underlying activity, cover both cases explicitly ('If you haven't run one yet, draft a plan for X. If you have, document what you did and learned.') rather than blending hypothetical-plan and already-happened language in a way that implies research occurred when it may not have",
     "why": "Why this move specifically, tied to start_here — one sentence",
-    "proof": "What you'd have afterward — a concrete artifact you can revise, discuss, or use as the start of a portfolio piece — one sentence",
-    "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed"]
+    "proof": "What you'd have afterward — a concrete artifact you can revise, discuss, or use as the start of a portfolio piece — one sentence, consistent with whichever case (plan or documentation) actually applies",
+    "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed. Never suggest accessing an employer's confidential systems, internal user recordings, or anything requiring special permission or raising consent/privacy questions the visitor didn't ask about — prefer a self-contained exercise or something the visitor has clear, legitimate access to"]
   },
   "skill_gaps": [
     {
-      "capability": "Specific capability — 3-6 words, not 'learn leadership'",
-      "target_relevance": "Why this may matter for the target role — one sentence",
+      "capability": "Specific capability — 3-6 words, not 'learn leadership'. Generic familiarity with a category of tool or software (not a technique or judgment capability) does not belong here — that goes in the other analyst's role_expectations_to_check instead, since specific tool requirements vary by employer",
+      "target_relevance": "Why this MAY matter for the target role, framed as a possibility ('commonly relevant to...', 'some roles require...') — never a flat statement of what the role requires or what employers want — one sentence",
       "relevance_basis": "commonly_relevant | role_dependent | employer_dependent | verified_target",
-      "current_evidence": "What the visitor actually supplied that bears on this, or 'None supplied.' — one sentence",
+      "current_evidence": "What the visitor actually supplied that bears on this, or 'None supplied.' — one sentence, addressed to 'you'",
       "status": "evidence_you_have | some_related_evidence | not_established | needs_clarification",
       "gap": "The specific difference between supplied evidence and the capability — one sentence",
       "next_move": "One practical, feasible way to strengthen or demonstrate it — one sentence",
-      "proof": "What observable artifact, experience, or example could demonstrate it — one sentence",
-      "priority": "start_here | important | useful | role_dependent",
-      "effort": "smaller_build | moderate_build | larger_build, or null if no reasonable comparison is possible"
+      "proof": "What observable artifact could demonstrate it — one sentence, never describing hypothetical findings as though they already occurred",
+      "priority": "start_here | important | useful | role_dependent"
     }
   ]
 }
@@ -268,23 +318,33 @@ RULES:
 - 4-7 skill_gaps after semantic deduplication — not padded to fill a count.
 - Do not repeat the capability chosen for start_here inside skill_gaps.
 - Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
-- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives.
-- No numeric scores anywhere in this response.`, userLanguage);
+- Do not put generic tool/software familiarity in skill_gaps — that belongs in the other analyst's role_expectations_to_check.
+- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives, maximum 3 starting_point.important_unknowns.
+- Do not name a specific commercial product, tool, or brand anywhere in this response — describe the category instead ("research-specific software," not "Dovetail, Lookback, UserTesting").
+- Do not invent a taxonomy of employer types ("agency, startup, mid-size product company, enterprise") — one phrase acknowledging general variability is enough.
+- No numeric scores, and no effort/size estimate for a skill gap — priority (start_here/important/useful/role_dependent) is the only prioritization signal; do not add a build-size label.`, userLanguage);
 
     const secondaryPrompt = section(`${brief}
 
 YOUR PART: what's worth checking about the target role itself, and the
 practical non-skill tasks the transition involves.
 
-Return ONLY valid JSON. Your response MUST contain ALL 3 top-level keys:
-role_expectations_to_check, transition_tasks, unknowns.
+Follow the same discipline as the other analyst: role capabilities are
+possibilities without a supplied job posting ("commonly relevant," "some
+roles," "worth checking" — never "the role expects," "employers want").
+Address the visitor as "you" in every field, never "the visitor" or "the
+user." Do not name specific commercial products or brands. Do not invent
+an employer-type taxonomy.
+
+Return ONLY valid JSON. Your response MUST contain ALL 2 top-level keys:
+role_expectations_to_check, transition_tasks.
 
 {
   "role_expectations_to_check": [
     {
-      "question": "Something about the target role worth verifying rather than assuming — degree of ownership, IC vs. management, customer contact, analytics expectations, technical depth, domain expertise, portfolio expectations, travel/on-call/location — one sentence",
+      "question": "Something about the target role worth verifying rather than assuming — degree of ownership, IC vs. management, customer contact, analytics expectations, technical depth, domain expertise, portfolio expectations, specific tool/software familiarity, travel/on-call/location — one sentence",
       "why_it_matters": "Why this could materially change the plan if the answer differs from the general pattern — one sentence",
-      "how_to_verify": "Best source is an actual job posting for this exact role — one sentence"
+      "how_to_verify": "Best source is an actual job posting for this exact role, and comparing several similar postings — one sentence"
     }
   ],
   "transition_tasks": [
@@ -292,14 +352,14 @@ role_expectations_to_check, transition_tasks, unknowns.
       "task": "A networking, resume, outreach, or application task — not a skill to build — one sentence",
       "why": "Why this task specifically matters for this transition — one sentence"
     }
-  ],
-  "unknowns": ["Anything else important that the supplied information doesn't establish, beyond starting_point.important_unknown"]
+  ]
 }
 
 RULES:
-- Maximum 4 role_expectations_to_check, 3 transition_tasks, 3 unknowns.
-- Zero of any is allowed — omit rather than manufacture.
+- Maximum 4 role_expectations_to_check, 3 transition_tasks.
+- Zero of either is allowed — omit rather than manufacture.
 - Label every expectation as something to VERIFY, never as a known fact about the target.
+- If a target role commonly involves a category of specialized tool or software, that belongs here as something to check ("some employers may expect familiarity with particular research/testing/analysis tools — the specific tools vary; check the posting"), not as a skill_gap in the other analyst's response.
 - No numeric scores anywhere in this response.`, userLanguage);
 
     // primary max_tokens: this exact schema (up to 7 skill_gaps x 10 fields,
@@ -361,7 +421,11 @@ RULES:
     parsed.transition_tasks = Array.isArray(parsed.transition_tasks)
       ? parsed.transition_tasks.filter(x => nonBlank(x?.task)).slice(0, 3)
       : [];
-    parsed.unknowns = Array.isArray(parsed.unknowns) ? parsed.unknowns.filter(nonBlank).slice(0, 3) : [];
+    if (parsed.starting_point) {
+      parsed.starting_point.important_unknowns = Array.isArray(parsed.starting_point.important_unknowns)
+        ? parsed.starting_point.important_unknowns.filter(nonBlank).slice(0, 3)
+        : [];
+    }
     if (parsed.next_move) {
       parsed.next_move.alternatives = Array.isArray(parsed.next_move.alternatives)
         ? parsed.next_move.alternatives.filter(nonBlank).slice(0, 2)

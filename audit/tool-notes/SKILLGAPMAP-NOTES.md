@@ -90,3 +90,93 @@ real MAIN route. This pass tightened that separation:
 
 **DO NOT silently reverse:** the field renames above, the count-4 default, the near-duplicate-variant
 ban, or the null-safe additive behavior of "Show 2 More."
+
+## MAIN correction pass (2026-09-10, same day, owner spec "SKILL GAP MAP — LATEST OUTPUT CORRECTIONS")
+
+Third same-day pass, MAIN-route-specific. Tested against a UX Researcher scenario (marketing
+coordinator → UX Researcher) and found the "not a model of a profession" principle from the v3
+rewrite wasn't fully holding under a new target role: the tool still described capabilities as
+settled facts about the profession, over-claimed what a single supplied skill established, presented
+its suggested starting point as an objective priority, and blurred hypothetical practice exercises
+with completed research.
+
+**Prompt fixes (MAIN route only — not CORE_SYSTEM, matching this session's established practice of
+keeping domain-specific corrections scoped to the route that needs them):**
+- **No universal profession descriptions.** "UX researchers regularly present findings to product,
+  design, and business stakeholders" states a fact about a profession never surveyed. Now: "commonly
+  relevant," "may involve," "some roles" — everywhere, not just in one rule.
+- **No upgrading one supplied skill into unestablished technical scope.** "Data analysis in Excel"
+  does not establish "research-data analysis" — say what was supplied, note what it doesn't
+  establish, describe the transfer as depending on the target role.
+- **No inventing what past experience was FOR.** Don't describe the visitor's survey work as being
+  "about marketing preferences" (or any other objective) unless they said so — don't invent
+  stakeholder types, audiences, or frequency ("regularly present to... stakeholders") either.
+- **`start_here` is a SUGGESTED starting point, not an objective priority**, unless a supplied job
+  posting or a clear capability dependency justifies calling it the priority. The prompt now asks for
+  the reasoning ("worth investigating first because it's adjacent to evidence you already have"), not
+  an assertion that it's the most important gap.
+- **No hypothetical-research-as-real.** `start_here.proof` and `next_move.primary` must cover BOTH
+  cases in one honest sentence when it isn't established whether the visitor already did the
+  underlying activity — "if you haven't run one yet, draft a plan; if you have, document what you did
+  and learned" — never describing participants, observations, or findings as though they already
+  happened.
+- **No employer-confidential-access suggestions.** Practice-exercise alternatives must avoid anything
+  requiring special permission or raising consent/privacy questions (recorded internal user sessions,
+  confidential systems) — a self-contained exercise or something the visitor has legitimate access to
+  only.
+- **No effort/build-size labels.** `skill_gaps[].effort` (smaller/moderate/larger_build) is removed
+  from the schema entirely — priority (start_here/important/useful/role_dependent) is the only
+  prioritization signal now. The tool doesn't know the visitor's proficiency, the depth an employer
+  wants, or available learning resources; a build-size label implied it did.
+- **No specific commercial products/brands** (Dovetail, Lookback, UserTesting, Qualtrics, etc.)
+  anywhere in the response, including inside unknowns — name the category instead.
+- **No invented employer-type taxonomy** ("agency, startup, mid-size product company, enterprise") —
+  one phrase acknowledging general variability replaces a manufactured four-category list.
+- **Generic tool/software familiarity is a role expectation to VERIFY, not a skill gap to BUILD** —
+  moved from `skill_gaps` to the secondary call's `role_expectations_to_check`, since specific tool
+  requirements vary by employer.
+- **"You," never "the visitor."** Every field in both calls now explicitly must address the person as
+  "you" — this is an individual-facing tool, not a case-file description of a third party.
+
+**SCHEMA CHANGES:**
+- `starting_point.important_unknown` (string) → `starting_point.important_unknowns` (array, 1-3
+  items, most consequential first). It now absorbs what the secondary call's `unknowns[]` used to
+  hold. **The secondary `/skill-gap-map` call's response no longer has an `unknowns` key at all** —
+  don't reintroduce it there; the frontend only reads `starting_point.important_unknowns` now.
+- `skill_gaps[].effort` removed entirely (see above).
+- `transferable_strengths[]` gained `confidence: "direct" | "partial"` — "direct" when supplied
+  evidence squarely establishes the strength, "partial" when it's plausibly relevant but the input
+  leaves specifics unestablished. Powers the new compact ✓/~ checklist UI.
+- `outputGuard.prohibit` grew by 10 entries, one per bullet above (minus the schema-only changes).
+
+**UI CHANGES (`src/tools/SkillGapMap.js`):**
+- **"What Carries Over"** (renamed from "Transferable Skills (N)") is now a compact ✓/~ checklist,
+  not five full-size green cards — a "Why these may transfer ▾" toggle (shared `expandedSections`
+  state, key `_transferable`) reveals the evidence/transfer text per item on demand. The visitor
+  already told us these things; they shouldn't cost a page of reading before the actual gap (item 22).
+- **"One place to start"** (relabeled from "Start here") gained a "Why this one" eyebrow above the
+  reasoning line, making explicit that this is a suggested starting point with stated reasoning, not
+  an asserted priority.
+- **The separate "Other Things We Can't Tell Yet" card is gone.** Its content is now
+  `starting_point.important_unknowns`, rendered once, in the opening card — not restated as its own
+  report section further down the page.
+- **"Transition Tasks" only renders when `transition_tasks.length > 0`** — an always-visible "(0)"
+  disclosure was proof there was nothing there, not progressive disclosure. Its Network/Outreach/
+  Resume/Reframe action buttons moved into "More Ways to Prepare," which is now the one place they
+  live regardless of whether the model returned any transition_tasks text — they stay reachable
+  either way instead of disappearing when the section that used to house them is hidden.
+- `EFFORT_LABELS` and its badge on skill_gaps cards removed (dead now that the field doesn't exist).
+
+**Live-tested against:** the exact marketing-coordinator → UX Researcher scenario from the owner's
+spec. Zero instances of "the visitor," zero named tool brands, zero employer-type taxonomy, zero
+`effort` field, `important_unknowns` correctly populated as an array, `confidence: "partial"` on all
+5 transferable strengths (correctly — none of the supplied single-line skills squarely established
+their target-role application), `start_here` framed as "a reasonable place to start... because it
+sits at the intersection of..." rather than an asserted priority, and `next_move.primary` explicitly
+covering both the "have done it" and "haven't done it" cases in one sentence. `npm run check:golden
+skill-gap-map` → 4/4 PASS on the re-recorded golden.
+
+**DO NOT silently reverse:** the `effort` field removal, the `important_unknown` → `important_unknowns`
+schema change (and the secondary call's `unknowns` key removal), the `confidence` field, the "start_here
+is suggested, not objective" framing, the hedged-both-cases proof/next_move language, or the
+Transition-Tasks-only-when-non-empty rendering.

@@ -7,168 +7,184 @@
     "endpoint": "/api/skill-gap-* (22 endpoints)",
     "note": "V3 rewrite (2026-09-10, full owner-supplied spec) of the primary flow only. skill-gap-map's response SHAPE changed completely — the MAP and TIMELINE cases below were re-recorded; ECONOMICS was left byte-identical because that route's prompt/schema was NOT touched this pass. What changed and why: v2 assigned Impact/Effort/ROI (0-100 each), a Readiness percentage, current->target proficiency levels, hour estimates, and named commercial tools/certificates from two role descriptions and an optional skills paragraph — none of that has a defensible calculation behind it. V3 replaces skill_gaps' numeric fields with qualitative priority (start_here|important|useful|role_dependent) and effort (smaller_build|moderate_build|larger_build|null), adds status (evidence_you_have|some_related_evidence|not_established|needs_clarification) and relevance_basis (commonly_relevant|role_dependent|employer_dependent|verified_target) instead of current_level/target_level, and replaces overall_readiness/quick_wins/hidden_requirements with starting_point/transferable_strengths/start_here/next_move/role_expectations_to_check/transition_tasks/unknowns. skill-gap-explore ALSO changed shape (paths[] with salary_change/demand/difficulty -> directions[] with why_it_may_connect/what_the_work_involves, no market data at all — it no longer invents a target and maps against its own invention). skill-gap-timeline changed from total_weeks/phases/milestones with fabricated week numbers to first/then/later/plateau_note — hours_per_week sizes the plan, never a completion date. DO NOT silently reverse any of the above: the whole point of the rewrite was removing fabricated precision, not relabeling it. The 19 untouched secondary routes (Proof, Network, Reframe, Economics, Resume, Companies, Interview, Calibrate, Progress, DayLife, Outreach, Decode, Adjacency, Mock, Market, Celebrate, Nudge, Mentor, plus Explore's own downstream callers) still receive the old field shape via a frontend compatibility shim (toLegacyGaps()/legacyTransition in src/tools/SkillGapMap.js) — do not remove that shim without also rewriting those routes' prompts. See audit/tool-notes/SKILLGAPMAP-NOTES.md.",
     "followup_2026_09_10b": "TWO further corrections landed the same day, after the note above was written: (1) MAIN's primary call truncated at max_tokens=3000 under real rich input (callClaudeWithRetry hard-throws on stop_reason==='max_tokens', so every truncation was a guaranteed 500) — raised to 5000 (secondary 2000->2500); this is the exact truncation v1 already hit and fixed once before, reintroduced by the v3 rewrite. (2) EXPLORE-specific corrections (owner spec 'SKILL GAP MAP — HELP ME EXPLORE — FINAL CORRECTIONS'): directions field names renamed (why_it_may_connect->why_it_connects, what_to_learn_more_about->worth_learning_more_about, one_low_cost_way_to_investigate->one_way_to_investigate — see the EXPLORE case below, not the stale names in the note above); default count is exactly 4, not 4-6, with near-duplicate role variants (e.g. two PM flavors) explicitly barred from the same batch; new count/excludeDirections params power 'Show 2 More Directions' (additive, not a replace); new refinementNote param powers 'Tell Me What You're Looking For'; removed natural-fit/aptitude/entry-path/named-company overreach; no ranking semantics anywhere (order is presentation only). DO NOT reverse the field renames or reintroduce a 4-6 range as the request default.",
-    "rate_limit_note": "Backend limits 4 req/min; the MAP case runs two parallel calls (primary 5000 tokens, secondary 2500 tokens) plus the v2 output guard — budget ~60-90s. check:golden runs the cases sequentially."
+    "rate_limit_note": "Backend limits 4 req/min; the MAP case runs two parallel calls (primary 5000 tokens, secondary 2500 tokens) plus the v2 output guard — budget ~60-90s. check:golden runs the cases sequentially.",
+    "followup_2026_09_10c": "A third same-day pass, MAIN-specific (owner spec 'SKILL GAP MAP — LATEST OUTPUT CORRECTIONS'), tested against a UX Researcher scenario and found the tool still writing universal profession descriptions ('UX researchers regularly...', 'standard UX deliverables') instead of possibilities, upgrading single supplied skills into unestablished technical scope ('data analysis in Excel' -> 'research-data analysis'), presenting start_here as an objective priority rather than a suggested one, describing hypothetical practice exercises as though real research had occurred, suggesting employer-confidential/recorded-user-session access as a practice source, naming specific tool brands and an employer-type taxonomy, and saying 'the visitor' throughout instead of 'you'. SCHEMA CHANGES: starting_point.important_unknown (string) -> important_unknowns (array, 1-3 items) and now absorbs what the secondary call's removed unknowns[] used to hold — the secondary /skill-gap-map call's response no longer has an unknowns key at all; skill_gaps[].effort field removed entirely (priority is the only prioritization signal now — no build-size/hour estimate of any kind); transferable_strengths[] gained a confidence field ('direct' | 'partial') powering a compact ✓/~ checklist. UI: the old 5-big-card Transferable Strengths section is now a compact checklist with a 'Why these may transfer ▾' expand (item 22); 'Start here' relabeled 'One place to start' with a new 'Why this one' eyebrow on the reasoning line; the separate 'Other Things We Can't Tell Yet' card is gone — its content now lives in starting_point's bulleted unknowns, shown once, not twice; 'Transition Tasks' only renders when the model actually returned tasks (no more visible '(0)' disclosures) and its Network/Outreach/Resume/Reframe buttons moved into 'More Ways to Prepare' so they stay reachable either way. DO NOT reintroduce the effort field, the important_unknown singular string, the duplicate unknowns section, or an always-rendered empty Transition Tasks disclosure. Full detail in audit/tool-notes/SKILLGAPMAP-NOTES.md."
   },
   "cases": [
     {
-      "name": "map-marketing-to-pm",
+      "name": "map-marketing-to-ux-researcher",
       "endpoint": "/api/skill-gap-map",
       "input": {
-        "currentRole": "marketing coordinator",
-        "targetRole": "product manager",
-        "currentSkills": "3 years running campaigns, some analytics, coordinated with dev on a launch",
+        "currentRole": "Marketing coordinator, 4 years, B2B SaaS",
+        "targetRole": "UX Researcher",
+        "currentSkills": "Survey design, customer interviews, data analysis in Excel, writing, stakeholder communication",
         "hoursPerWeek": 5
       },
       "output": {
         "transition": {
-          "current": "marketing coordinator",
-          "target": "product manager"
+          "current": "Marketing coordinator, 4 years, B2B SaaS",
+          "target": "UX Researcher"
         },
         "starting_point": {
-          "summary": "Three years of campaign work, some analytics experience, and direct coordination with a dev team on a launch give you genuine grounding in cross-functional work and data-informed decisions — both commonly relevant to product management. The coordination with dev is particularly transferable because it suggests you have navigated a boundary that many marketing-only backgrounds have not crossed.",
-          "important_unknown": "Product manager roles vary substantially by company — some weight technical depth heavily, others weight go-to-market or customer research; without a specific job posting, the gaps flagged here are based on what is commonly relevant to the role, not what any particular employer requires."
+          "summary": "You have direct experience with survey design, customer interviews, and stakeholder communication — three activities that commonly appear in UX research work. Your data analysis and writing experience may also carry over, though how much depends on what kind of data you have worked with and what the specific role requires.",
+          "important_unknowns": [
+            "What an actual job posting would require — without one, everything here describes what commonly matters in this kind of role, not what a specific employer needs from you.",
+            "What your customer interviews and survey design were directed at — the context and methods matter for assessing how directly they transfer to a UX research setting.",
+            "What kind of data your Excel analysis covered — 'data analysis in Excel' does not establish whether you have worked with research data specifically, which affects how much that experience carries over."
+          ]
         },
         "transferable_strengths": [
           {
-            "strength": "Cross-functional launch coordination",
-            "evidence": "You coordinated with a dev team on a launch.",
-            "transfer": "That experience may carry over to working across engineering and other functions, which is commonly part of a PM role — though the scope and depth of that coordination is not established from what you described."
+            "strength": "Customer interview experience",
+            "evidence": "You supplied customer interviews as part of your experience.",
+            "transfer": "Conducting interviews with customers may carry over to UX research, where one-on-one interviews are a commonly used method — though the framing, objectives, and analysis approach in a research context may differ from what you have done.",
+            "confidence": "partial"
           },
           {
-            "strength": "Campaign planning and execution",
-            "evidence": "You have run campaigns for three years.",
-            "transfer": "Running campaigns involves scoping work, sequencing tasks, and delivering to a deadline, which may carry over to managing a product initiative — though PM planning typically includes additional dimensions like tradeoff decisions and engineering constraints."
-          },
-          {
-            "strength": "Analytics engagement",
-            "evidence": "You have some analytics experience as part of your campaign work.",
-            "transfer": "Familiarity with data as part of decision-making is commonly relevant to product management, though the depth and tools involved are not established from what you described."
+            "strength": "Survey design experience",
+            "evidence": "You supplied survey design as part of your experience.",
+            "transfer": "Survey design is a method that appears in UX research, so this experience may carry over — how directly depends on what those surveys were trying to learn and how they were structured.",
+            "confidence": "partial"
           },
           {
             "strength": "Stakeholder communication",
-            "evidence": "Coordinating a launch across marketing and dev implies communicating across different functions with different vocabularies and priorities.",
-            "transfer": "That may carry over to the stakeholder communication a PM regularly handles, though the nature of your coordination — whether you were driving decisions or executing someone else's plan — is not established."
+            "evidence": "You supplied stakeholder communication as part of your four years in a B2B SaaS environment.",
+            "transfer": "Communicating findings or recommendations to stakeholders is commonly relevant in UX research roles, and your existing experience in this area may transfer.",
+            "confidence": "partial"
+          },
+          {
+            "strength": "Writing experience",
+            "evidence": "You supplied writing as part of your experience.",
+            "transfer": "Research roles often involve written deliverables such as research plans, discussion guides, and reports — your writing experience may carry over to those forms, though the specific formats would be new.",
+            "confidence": "partial"
+          },
+          {
+            "strength": "Data analysis in Excel",
+            "evidence": "You supplied data analysis in Excel as part of your experience.",
+            "transfer": "Working with data is relevant to UX research, but what kind of data you have analyzed is not established by what you supplied — the transfer depends on whether the target role involves quantitative survey analysis or other work that overlaps with what you have done.",
+            "confidence": "partial"
           }
         ],
         "start_here": {
-          "capability": "Defining and prioritizing product requirements",
-          "why_it_matters": "Translating user needs and business goals into a prioritized set of requirements is commonly relevant to product management, and it is the capability most distinctly different from marketing coordination work.",
-          "current_evidence": "You have written or coordinated around specs in a launch context is not established — your supplied experience covers campaigns, analytics, and launch coordination, but not requirement definition or prioritization decisions.",
-          "gap": "Moving from coordinating around a launch to owning the articulation of what gets built, why, and in what order is the core PM capability your supplied experience does not yet demonstrate.",
-          "next_move": "Write a one-page requirements doc or prioritized feature brief for a product you use or know well — a concrete artifact you can discuss.",
-          "proof": "A written requirements doc or prioritized problem statement that reflects tradeoffs you made and the reasoning behind them."
+          "capability": "Structuring and analyzing research findings",
+          "why_it_matters": "This is a reasonable place to start because it sits at the intersection of things you already have some evidence for — interviewing, surveys, data analysis, and writing — and a capability that commonly runs through UX research work. Building here lets you develop something adjacent to your existing experience rather than starting from scratch, and it produces an artifact you can show.",
+          "current_evidence": "You have experience with customer interviews, survey design, and data analysis in Excel, but what you supplied does not establish how you have synthesized or structured findings from those activities into research outputs.",
+          "gap": "The difference is between conducting research activities and producing a structured analysis — identifying patterns, drawing defensible observations, and communicating what the data does and does not show.",
+          "next_move": "Draft a research analysis document using interview notes or survey data you already have, or plan one using a self-contained exercise if you do not.",
+          "proof": "A written document that moves from raw notes or data to organized observations and clear takeaways — even a draft version demonstrates the thinking."
         },
         "next_move": {
-          "primary": "Pick a product you use regularly and write a short requirements or prioritization brief for one feature or improvement: describe the user problem, why it matters, what you would build to address it, and what you would leave out and why. Keep it to one page.",
-          "why": "This directly builds the capability identified in start_here, and produces a concrete artifact — something you can revise, show, or talk through — without requiring any access or permission you do not already have.",
-          "proof": "A written brief that shows you can frame a problem, make a prioritization tradeoff, and articulate a rationale — usable as a starting portfolio piece.",
+          "primary": "If you have notes or data from a past customer interview or survey you conducted, write up a short analysis: what patterns you saw, what remained unclear, and what you would have done differently with a clearer research question. If you have not done this kind of structured synthesis before, draft a research plan for a small self-contained interview study — define the question, who you would talk to, what you would ask, and how you would analyze what you heard.",
+          "why": "Either version builds the synthesis and planning capability that is not yet established by what you supplied, and produces a concrete artifact you can revise or use as a portfolio starting point.",
+          "proof": "A written document — either an analysis of real notes or a research plan — that you can continue developing as your understanding of the role grows.",
           "alternatives": [
-            "If you have access to any product decisions or roadmap discussions in your current role, volunteer to document the problem being solved and the options considered — the same skill applied to real work.",
-            "If you can get time with a PM in your network or current company, ask to see how they write requirements or PRDs, then use that as a model for your own practice document."
+            "If you have access to a product or service you use regularly, draft a brief research plan for a usability question about it — this keeps the exercise self-contained and avoids any access or consent questions.",
+            "If your current role involves gathering customer feedback, document one recent instance in research terms: what the question was, how you gathered input, what you observed, and what a reasonable next step would have been — framing existing work in research language is a concrete step you can take without new access."
           ]
         },
         "skill_gaps": [
           {
-            "capability": "User research and discovery",
-            "target_relevance": "PMs commonly need to surface user needs through interviews, usability observation, or other structured methods — not just interpret data after the fact.",
+            "capability": "Research question framing",
+            "target_relevance": "UX research commonly begins with defining a clear, appropriately scoped research question — some roles place significant weight on this as a distinct skill.",
             "relevance_basis": "commonly_relevant",
-            "current_evidence": "None supplied — your analytics experience may involve interpreting campaign data, but direct user research is not described.",
+            "current_evidence": "You supplied customer interviews and survey design, which both involve some form of question development, but what you supplied does not establish how you have defined or scoped research questions.",
+            "status": "some_related_evidence",
+            "gap": "The difference between writing survey or interview questions and framing a research question that guides method choice, scope, and analysis is not established by what you supplied.",
+            "next_move": "Practice writing research questions for scenarios you are familiar with, then note what method each would call for and why.",
+            "proof": "A short written exercise pairing a research question with a method rationale — a reusable reference you can build on.",
+            "priority": "important"
+          },
+          {
+            "capability": "Usability testing methods",
+            "target_relevance": "Usability testing is a method that commonly appears in UX research roles, though how central it is varies by role and team.",
+            "relevance_basis": "role_dependent",
+            "current_evidence": "None supplied.",
             "status": "not_established",
-            "gap": "There is no supplied evidence of conducting discovery conversations, synthesizing qualitative feedback, or translating user input into product direction.",
-            "next_move": "Conduct a few informal interviews with people who use a product you know, then write up what you learned and what it implies for the product.",
-            "proof": "A short synthesis document — even one page — showing the problem you heard, patterns across conversations, and what they suggest.",
-            "priority": "important",
-            "effort": "moderate_build"
+            "gap": "Your supplied experience does not establish familiarity with planning, facilitating, or analyzing usability tests.",
+            "next_move": "Read methodological overviews of moderated and unmoderated usability testing, then draft a simple test plan for a product you use.",
+            "proof": "A written test plan — scenario, tasks, what you would observe and why — that shows you understand the method's structure.",
+            "priority": "important"
           },
           {
-            "capability": "Structuring product decisions with tradeoffs",
-            "target_relevance": "PMs commonly need to make and document prioritization decisions that weigh competing factors — user value, technical cost, business goal — rather than executing a plan handed down.",
+            "capability": "Choosing and justifying research methods",
+            "target_relevance": "Some UX research roles require the ability to recommend a method based on the research question and constraints — not just execute a method someone else selected.",
+            "relevance_basis": "role_dependent",
+            "current_evidence": "You supplied experience with two specific methods — interviews and surveys — but what you supplied does not establish whether you have selected or justified methods in response to a defined question.",
+            "status": "some_related_evidence",
+            "gap": "Having used two methods is different from being able to compare methods and explain why one fits a given question better than another.",
+            "next_move": "Practice writing brief rationales: given a research question, which method would you use, what would it tell you, and what would it miss?",
+            "proof": "A short written comparison of two methods applied to one question — a format you can reuse across different questions.",
+            "priority": "important"
+          },
+          {
+            "capability": "Synthesizing qualitative research data",
+            "target_relevance": "Identifying patterns across qualitative data — interviews, open-ended responses, observational notes — is commonly relevant in UX research roles.",
             "relevance_basis": "commonly_relevant",
-            "current_evidence": "Running campaigns and coordinating a launch suggests experience executing against plans, but whether you were making tradeoff decisions or carrying them out is not established.",
+            "current_evidence": "You supplied customer interviews and data analysis in Excel, but neither establishes experience synthesizing qualitative research data specifically — the type and method of your past analysis is not established.",
+            "status": "some_related_evidence",
+            "gap": "The difference is between working with data you have and systematically coding, grouping, and interpreting qualitative responses to answer a research question.",
+            "next_move": "Take a set of open-ended text responses — from a past survey or a public dataset — and practice grouping themes, labeling them, and writing one or two observations that the groupings support.",
+            "proof": "A documented set of labeled themes with a short written summary of what they show and what remains unclear.",
+            "priority": "start_here"
+          },
+          {
+            "capability": "Communicating research findings in a research format",
+            "target_relevance": "Presenting research findings to product, design, or business audiences is commonly part of UX research work — the format and conventions differ from general stakeholder communication.",
+            "relevance_basis": "commonly_relevant",
+            "current_evidence": "You supplied stakeholder communication and writing experience, which suggests familiarity with communicating to internal audiences, but does not establish experience with research-specific output formats.",
+            "status": "some_related_evidence",
+            "gap": "General stakeholder communication does not establish the ability to structure a research report or readout — showing what was studied, how, what was found, and what is recommended or uncertain.",
+            "next_move": "Draft a short research readout using any real or practice findings you have, following the structure: question, method, observations, open questions.",
+            "proof": "A written or slide-based readout document — even a single example demonstrates familiarity with the format.",
+            "priority": "useful"
+          },
+          {
+            "capability": "Applying ethical and consent considerations in research",
+            "target_relevance": "Informed consent, participant privacy, and ethical handling of research data are considerations that commonly arise when working directly with research participants.",
+            "relevance_basis": "commonly_relevant",
+            "current_evidence": "You supplied customer interviews, which may have involved some form of consent process, but what you supplied does not establish whether this was handled in a research context or how.",
             "status": "needs_clarification",
-            "gap": "Supplied experience does not establish ownership of prioritization decisions or the reasoning behind build-versus-defer tradeoffs.",
-            "next_move": "In your practice requirements brief, explicitly document at least two options you considered and why you chose one over the other.",
-            "proof": "Written tradeoff reasoning — even in a practice doc — that shows you can weigh competing considerations, not just describe a chosen direction.",
-            "priority": "important",
-            "effort": "smaller_build"
-          },
-          {
-            "capability": "Working with engineering on scope and feasibility",
-            "target_relevance": "PMs commonly need to negotiate scope, understand technical constraints at a useful level, and align with engineering on what is feasible within a timeframe.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "You coordinated with dev on a launch — this is relevant, though the nature of that coordination (whether you were discussing scope and feasibility or handling communication logistics) is not established.",
-            "status": "some_related_evidence",
-            "gap": "Coordination on a launch does not establish experience negotiating scope, pushing back on estimates, or making build-versus-buy-versus-defer decisions with engineering input.",
-            "next_move": "Reflect on your launch coordination and document what decisions were made, who made them, and how — that reflection will clarify what to deepen.",
-            "proof": "A written account of a cross-functional decision from that launch, framed from the perspective of what problem was being solved and what tradeoffs were involved.",
-            "priority": "important",
-            "effort": "smaller_build"
-          },
-          {
-            "capability": "Defining and tracking product metrics",
-            "target_relevance": "PMs commonly own the metrics that define whether a feature or product is succeeding, which is distinct from tracking campaign performance metrics.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "You have some analytics experience, likely in a campaign context — the tools, metrics, and decisions involved are not described.",
-            "status": "some_related_evidence",
-            "gap": "Campaign analytics and product analytics serve different questions — defining activation, retention, or adoption metrics for a product feature is not established by campaign measurement experience.",
-            "next_move": "For the product in your practice brief, define two or three metrics that would tell you whether your proposed feature is working, and write a sentence on why each one.",
-            "proof": "A short metrics section in your practice doc that names success conditions, not just outputs.",
-            "priority": "useful",
-            "effort": "smaller_build"
-          },
-          {
-            "capability": "Communicating product strategy to varied audiences",
-            "target_relevance": "PMs often need to present direction and rationale to executives, engineering teams, and other stakeholders — each requiring a different framing of the same information.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "Campaign coordination and launch work imply some cross-functional communication, but crafting strategic narratives for different audiences is not established.",
-            "status": "some_related_evidence",
-            "gap": "There is no supplied evidence of presenting a product strategy or roadmap direction and adapting the framing to an executive or a skeptical technical audience.",
-            "next_move": "Take your practice requirements brief and write a two-paragraph version for a non-technical stakeholder and a separate two-paragraph version for an engineering lead — same content, different framing.",
-            "proof": "Two written versions of the same product argument, demonstrating that you can adjust framing without changing the substance.",
-            "priority": "useful",
-            "effort": "moderate_build"
+            "gap": "Research ethics and consent practices in a UX context — including what participants need to know and how their data should be handled — are not established by what you supplied.",
+            "next_move": "Read an overview of research ethics in a UX or applied research context, focusing on informed consent and data handling.",
+            "proof": "A short written summary of consent considerations you would apply to a simple interview study — shows you have engaged with the topic concretely.",
+            "priority": "useful"
           }
         ],
         "role_expectations_to_check": [
           {
-            "question": "Whether the target PM role expects ownership of discovery and roadmap decisions, or operates more as a coordination and execution function between stakeholders",
-            "why_it_matters": "A coordination-heavy PM role may draw more directly on the visitor's campaign and cross-functional coordination experience, while a discovery-and-strategy-led role would require building skills less evidenced by what they described",
-            "how_to_verify": "Read job postings carefully for language like 'define the roadmap' vs. 'partner with stakeholders to deliver' — then talk to someone currently in that type of PM role to hear how the balance plays out day to day"
+            "question": "Worth verifying whether the role expects a formal research portfolio with documented study artifacts — screener guides, discussion guides, synthesis deliverables — or whether demonstrated experience and examples discussed in interview are sufficient.",
+            "why_it_matters": "If a portfolio is expected, building one from your existing interview and survey work becomes a concrete pre-application task rather than an optional step.",
+            "how_to_verify": "Check several current postings for this title and look for explicit language around portfolio, work samples, or case studies in the application or requirements section."
           },
           {
-            "question": "Whether the role requires fluency with quantitative product metrics — retention, activation, funnel analysis — beyond campaign or traffic analytics",
-            "why_it_matters": "Marketing analytics and product analytics overlap in tooling but differ in what is being measured and why; if the role expects the visitor to own instrumentation decisions or interpret behavioral data, the gap may be larger than 'some analytics' alone establishes",
-            "how_to_verify": "Look for phrases like 'define success metrics,' 'work with data science,' or specific tools named in postings for roles at companies you are targeting"
+            "question": "Worth verifying whether the role is embedded in a product team — working alongside designers and PMs daily — or operates as a centralized research function serving multiple teams on request.",
+            "why_it_matters": "The embedded model tends to require faster, lighter-weight research cycles; the centralized model often involves more formal study design and longer timelines — these call for different preparation emphasis.",
+            "how_to_verify": "Look for phrases like 'partner with product and design' versus 'research team' or 'research practice' in postings, and look at org structure if the company is large enough to have public team pages."
           },
           {
-            "question": "Whether the role expects prior PM title and experience, or is open to adjacent-background candidates making a deliberate transition",
-            "why_it_matters": "Some PM openings screen for prior PM title as a baseline, which would make this a harder door to push through directly; others hire for demonstrated product thinking from adjacent roles, which is a more navigable path given the visitor's background",
-            "how_to_verify": "Check the 'required' vs. 'preferred' sections of postings carefully, and look for roles labeled 'associate PM,' 'growth PM,' or 'technical program manager' that may serve as stepping-stone entry points"
+            "question": "Worth verifying what level of quantitative analysis the role expects — whether basic survey analysis suffices or whether statistical fluency, significance testing, or experience with specialized analysis software is listed.",
+            "why_it_matters": "Your Excel-based analysis may be sufficient for some roles and may fall short for others that expect more formal quantitative research methods.",
+            "how_to_verify": "Look at the required versus preferred skills sections of several postings and note whether quantitative methods or specific analytical capabilities appear there."
           },
           {
-            "question": "Whether the role sits in a domain where the visitor's marketing background is relevant — growth, acquisition, consumer product — vs. a domain where it is largely orthogonal",
-            "why_it_matters": "A PM role on a growth or marketing product team could treat the visitor's campaign and analytics background as a genuine asset; a role in infrastructure, platform, or B2B enterprise product would not",
-            "how_to_verify": "Look at the product area described in each posting and ask whether someone with no marketing background would be disadvantaged there — if not, the domain fit argument weakens"
+            "question": "Worth verifying whether the role expects prior experience in a specific domain — enterprise software, fintech, healthcare, consumer — or is open to candidates with transferable B2B research exposure.",
+            "why_it_matters": "Your B2B SaaS background is relevant context, but some employers weight domain-specific user knowledge heavily in early screening.",
+            "how_to_verify": "Check whether postings list industry background as required or preferred, and look at the LinkedIn profiles of people currently in this role at target companies to see how varied their backgrounds are."
           }
         ],
         "transition_tasks": [
           {
-            "task": "Reframe the dev-launch coordination and campaign work on the resume using product language — problem, decision, outcome — rather than marketing execution language",
-            "why": "Hiring managers reading for PM fit will look for evidence of ownership and judgment; the same experience described in campaign terms reads differently than described in terms of what was decided and what changed as a result"
+            "task": "Reframe your existing work — customer interviews, survey projects, stakeholder presentations — into research case study narratives that describe the question you were investigating, your method, what you found, and what decision it informed.",
+            "why": "UX Research hiring often evaluates how you think through a research problem, not just whether you have done interviews; your existing experience becomes more legible in this framing."
           },
           {
-            "task": "Identify and reach out to people currently working as PMs who came from marketing, coordination, or other non-engineering backgrounds",
-            "why": "This transition is common enough that people have navigated it recently; firsthand accounts of which roles, companies, or entry points were accessible will be more accurate than any general pattern"
+            "task": "Identify and connect with people currently working as UX Researchers, particularly those who came from non-design backgrounds, to learn how they describe the transition and what they wish they had prepared.",
+            "why": "People who made a similar move can surface role realities and unwritten expectations that postings do not capture, and may surface opportunities before they are posted."
           },
           {
-            "task": "Find and apply to roles where the marketing-to-product path is a recognized fit — growth PM, consumer PM, or PM roles explicitly tied to acquisition or lifecycle — rather than applying broadly",
-            "why": "Targeting roles where the visitor's background is a plausible asset, rather than a gap to explain away, changes the strength of the application before any skill-building occurs"
+            "task": "Update your resume and any public professional profile to foreground the research-relevant elements of your marketing work — study design, interview facilitation, insight synthesis, stakeholder communication — rather than leading with marketing outcomes.",
+            "why": "Hiring reviewers for a research role may not read far enough to find relevant experience if the framing signals 'marketer' before 'researcher.'"
           }
-        ],
-        "unknowns": [
-          "Whether the dev coordination experience involved the visitor making or influencing product decisions, or was primarily logistical handoff work — this distinction materially affects how much of that experience is transferable as PM evidence",
-          "What industry or product domain the visitor is targeting, which affects both which PM roles are reachable and whether the marketing background reads as relevant or unrelated",
-          "Whether the visitor has any artifacts — a brief, a spec, a launch retrospective, a dashboard they built — that could demonstrate product-adjacent thinking concretely, or whether the transition argument rests entirely on job title and description"
         ]
       }
     },

@@ -429,7 +429,6 @@ const SkillGapMap = ({ tool }) => {
   const ScoreBar = ({ score, color }) => (<div className={`w-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-1.5 overflow-hidden`}><div className={`${color || (score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500')} h-1.5 rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} /></div>);
 
   const PRIORITY_COLORS = { start_here: 'danger', important: 'warning', useful: 'info', role_dependent: 'success' };
-  const EFFORT_LABELS = { smaller_build: 'sgm_effort_smaller', moderate_build: 'sgm_effort_moderate', larger_build: 'sgm_effort_larger' };
   const BASIS_LABELS = { commonly_relevant: 'sgm_basis_commonly', role_dependent: 'sgm_basis_role', employer_dependent: 'sgm_basis_employer', verified_target: 'sgm_basis_verified' };
   const STATUS_LABELS = { evidence_you_have: 'sgm_status_have', some_related_evidence: 'sgm_status_some', not_established: 'sgm_status_not_established', needs_clarification: 'sgm_status_clarify' };
   const STATUS_COLORS = { evidence_you_have: 'success', some_related_evidence: 'info', not_established: 'warning', needs_clarification: 'warning' };
@@ -664,40 +663,65 @@ const SkillGapMap = ({ tool }) => {
 
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
-          {/* ─── STARTING POINT ─── */}
+          {/* ─── STARTING POINT ─── unknowns framed here, once — the
+              catch-all "Other Things We Can't Tell Yet" card at the bottom
+              was the same caveat repeated as its own report section. */}
           <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-2`}>{t('sgm_starting_point')}</h3>
             <p className={`text-sm ${c.text}`}>{results.starting_point?.summary}</p>
-            {results.starting_point?.important_unknown && (
+            {results.starting_point?.important_unknowns?.length > 0 && (
               <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mt-3`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('sgm_important_unknown')}</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results.starting_point.important_unknown}</p>
+                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_important_unknown')}</p>
+                {results.starting_point.important_unknowns.map((u, i) => (
+                  <p key={i} className={`text-xs ${c.textSecondary} ${i > 0 ? 'mt-1' : ''}`}>• {u}</p>
+                ))}
               </div>
             )}
           </div>
 
-          {/* ─── TRANSFERABLE STRENGTHS ─── */}
+          {/* ─── WHAT CARRIES OVER ─── compact checklist, not five full-size
+              cards — the visitor already told us these things, so this
+              shouldn't cost a page of reading before reaching the actual
+              gap (item 22). ✓ = confidence: direct, ~ = confidence: partial
+              (plausibly relevant, but the input doesn't establish specifics). */}
           {results.transferable_strengths?.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable', { count: results.transferable_strengths.length })}</h3>
-              <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable')}</h3>
+                <button onClick={() => toggleSection('_transferable')} className={`text-xs font-semibold ${c.accentTxt} flex items-center gap-1 flex-shrink-0`}>
+                  {t('sgm_why_may_transfer')} <Caret open={!!expandedSections._transferable} />
+                </button>
+              </div>
+              <div className="mt-3 space-y-1.5">
                 {results.transferable_strengths.map((ts, i) => (
-                  <div key={i} className={`p-3 rounded-lg ${c.success} border`}>
-                    <p className="text-sm font-bold">{ts.strength}</p>
-                    <p className="text-xs mt-0.5">{ts.evidence}</p>
-                    <p className="text-xs mt-1 opacity-90">→ {ts.transfer}</p>
+                  <div key={i}>
+                    <p className={`text-sm ${c.text}`}>
+                      <span className={ts.confidence === 'partial' ? c.textMuteded : (isDark ? 'text-emerald-400' : 'text-emerald-600')}>{ts.confidence === 'partial' ? '~' : '✓'}</span>
+                      {' '}<span className="font-semibold">{ts.strength}</span>
+                    </p>
+                    {expandedSections._transferable && (
+                      <p className={`text-xs ${c.textSecondary} ms-5 mt-0.5`}>{ts.evidence} → {ts.transfer}</p>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ─── START HERE ─── */}
+          {/* ─── ONE PLACE TO START ─── a suggested starting point, not an
+              objectively-ranked priority (item 7) — "why_it_matters" is the
+              model's stated reason for suggesting this one, not a claim
+              that it's the most important gap. */}
           {results.start_here && (
             <div className={`${c.card} rounded-2xl shadow-sm p-6 border-2 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
               <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
               <h3 className={`text-lg font-black ${c.text}`}>{results.start_here.capability}</h3>
-              <p className={`text-sm ${c.textSecondary} mt-1`}>{results.start_here.why_it_matters}</p>
+              {results.start_here.why_it_matters && (
+                <>
+                  <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded} mt-2`}>{t('sgm_why_this_one')}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results.start_here.why_it_matters}</p>
+                </>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                 <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_current_evidence')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.current_evidence}</p></div>
                 <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_gap_label')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.gap}</p></div>
@@ -906,7 +930,7 @@ const SkillGapMap = ({ tool }) => {
                           <Badge c={c} type={STATUS_COLORS[gap.status] || 'info'}>{t(STATUS_LABELS[gap.status] || gap.status)}</Badge>
                         </div>
                         <p className={`text-xs ${c.textSecondary} mb-1`}>{gap.gap}</p>
-                        <p className={`text-[10px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}{gap.effort ? ` · ${t(EFFORT_LABELS[gap.effort])}` : ''}</p>
+                        <p className={`text-[10px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}</p>
                       </div>
                       <button onClick={() => toggleSection(gap.capability)} className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections[gap.capability]} /></button>
                     </div>
@@ -970,36 +994,33 @@ const SkillGapMap = ({ tool }) => {
           )}
 
           {/* ─── TRANSITION TASKS ─── networking, resume, outreach, and
-              application tactics: never a skill gap (item 11). */}
-          <details className={`group ${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-            <summary className="cursor-pointer list-none p-4 flex items-center justify-between">
-              <span className={`font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('sgm_transition_tasks', { count: results.transition_tasks?.length || 0 })}</span>
-              <Caret groupOpen />
-            </summary>
-            <div className="p-4 pt-0 space-y-2">
-              {results.transition_tasks?.map((tt, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
-                  <p className={`text-xs font-bold ${c.text}`}>{tt.task}</p>
-                  <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{tt.why}</p>
-                </div>
-              ))}
-              <div className="flex flex-wrap gap-2 pt-1">
-                {!networkData && <Btn onClick={handleNetwork} disabled={networkLoading} icon="🌐" label={t('sgm_btn_network')} />}
-                {!showOutreach && <Btn onClick={() => setShowOutreach(true)} icon="📧" label={t('sgm_btn_outreach')} />}
-                {!showResume && <Btn onClick={() => setShowResume(true)} icon="📋" label={t('sgm_btn_resume')} />}
-                {!showReframe && <Btn onClick={() => setShowReframe(true)} icon="🔄" label={t('sgm_btn_reframe')} />}
+              application tactics: never a skill gap (item 11). Rendered
+              only when the model actually returned tasks — an empty "(0)"
+              disclosure proved there was nothing there is not progressive
+              disclosure, it's a section with nothing in it (item 20). The
+              related action buttons live in More Ways to Prepare below
+              regardless, so they stay reachable either way. */}
+          {results.transition_tasks?.length > 0 && (
+            <details className={`group ${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              <summary className="cursor-pointer list-none p-4 flex items-center justify-between">
+                <span className={`font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('sgm_transition_tasks', { count: results.transition_tasks.length })}</span>
+                <Caret groupOpen />
+              </summary>
+              <div className="p-4 pt-0 space-y-2">
+                {results.transition_tasks.map((tt, i) => (
+                  <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
+                    <p className={`text-xs font-bold ${c.text}`}>{tt.task}</p>
+                    <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{tt.why}</p>
+                  </div>
+                ))}
               </div>
-            </div>
-          </details>
-
-          {results.unknowns?.length > 0 && (
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1.5`}>{t('sgm_other_unknowns')}</p>
-              {results.unknowns.map((u, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {u}</p>)}
-            </div>
+            </details>
           )}
 
-          {/* ─── MORE WAYS TO PREPARE ─── collapsed by default: learning
+          {/* ─── MORE WAYS TO PREPARE ─── collapsed by default: networking,
+              resume, outreach, and reframing tools live here now regardless
+              of whether the model returned transition_tasks text, so they
+              stay reachable even on an empty-tasks response; plus learning
               sequence, portfolio proof, salary context, company targeting,
               interview prep, mentor matching, market pulse. Each still its
               own on-demand call to the untouched secondary routes. */}
@@ -1009,6 +1030,10 @@ const SkillGapMap = ({ tool }) => {
               <Caret groupOpen />
             </summary>
             <div className="p-4 pt-0 flex flex-wrap gap-2">
+              {!networkData && <Btn onClick={handleNetwork} disabled={networkLoading} icon="🌐" label={t('sgm_btn_network')} />}
+              {!showOutreach && <Btn onClick={() => setShowOutreach(true)} icon="📧" label={t('sgm_btn_outreach')} />}
+              {!showResume && <Btn onClick={() => setShowResume(true)} icon="📋" label={t('sgm_btn_resume')} />}
+              {!showReframe && <Btn onClick={() => setShowReframe(true)} icon="🔄" label={t('sgm_btn_reframe')} />}
               {!timelineData && <Btn onClick={handleTimeline} disabled={timelineLoading} icon="📅" label={t('sgm_btn_timeline')} />}
               {!showCalibrate && <Btn onClick={() => setShowCalibrate(true)} icon="⚙️" label={t('sgm_btn_calibrate')} />}
               {!proofData && <Btn onClick={handleProof} disabled={proofLoading} icon="🏗️" label={t('sgm_btn_proof')} />}
