@@ -101,7 +101,7 @@ function TripRecon({ tool }) {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── View ──
-  const [view, setView] = useState('home'); // home | form | results | route
+  const [view, setView] = useState('form'); // form | results | route (place-prep is the landing screen; route is a tab, not a separate page)
   const [error, setError] = useState('');
 
   // ── Place form ──
@@ -225,7 +225,7 @@ function TripRecon({ tool }) {
     setComfortKit(null); setKitChecked({}); setAskResult(null); setAskNeed('');
     setRatePerFactor({}); setRateWhatHelped(''); setRateWhatDifferent('');
     setRouteStart(''); setRouteDestination(''); setTravelMode(''); setRouteWhen(''); setRouteKnownInfo('');
-    setView('home');
+    setView('form');
   };
 
   const loadExample = () => {
@@ -405,13 +405,11 @@ function TripRecon({ tool }) {
                   leading emoji (toolTagline() convention), which would
                   double against the icon span just above it. */}
               <p className={`text-sm ${c.textSecondary}`}>{t('smm_tagline')}</p>
-              {view === 'home' && (
+              {view === 'form' && (
                 <button onClick={loadExample} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap" style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}>✨ {t('try_example')}</button>
               )}
             </div>
-            {view !== 'home' && (
-              <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>↺ {t('smm_start_over')}</button>
-            )}
+            <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('smm_start_over')}</button>
           </div>
         </div>
       </div>
@@ -419,55 +417,46 @@ function TripRecon({ tool }) {
       <div className="max-w-3xl mx-auto space-y-4">
         {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
-        {/* ════════ HOME ════════ */}
-        {view === 'home' && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setView('form')} className={`py-4 rounded-2xl font-bold text-base ${c.btnPrimary}`}>
-                <span className="block text-2xl mb-1">🔍</span> {t('smm_scout_place')}
-              </button>
-              <button onClick={() => setView('route')} className={`py-4 rounded-2xl font-bold text-base ${c.btnSecondary}`}>
-                <span className="block text-2xl mb-1">🧭</span> {t('smm_plan_route')}
-              </button>
-            </div>
-
-            <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
-                </div>
-                <button onClick={() => { setShowProfileForm(true); setView('form'); }} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap`}>{t('smm_new')}</button>
-              </div>
-              {profiles.length === 0 ? (
-                <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {profiles.map(p => (
-                    <div key={p.id} className="flex items-center gap-1">
-                      <button onClick={() => { loadProfile(p); setView('form'); }} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>
-                      <button onClick={() => deleteProfile(p.id)} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* ════════ MODE TABS ════════ Place-prep is the landing screen;
+            route is a second tab, not a separate near-empty page. */}
+        {(view === 'form' || view === 'route') && (
+          <div className={`flex border-b ${c.border}`}>
+            <button onClick={() => setView('form')}
+              className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'form' ? `${c.accentTxt} border-cyan-500` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
+              🔍 {t('smm_scout_place')}
+            </button>
+            <button onClick={() => setView('route')}
+              className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'route' ? `${c.accentTxt} border-cyan-500` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
+              🧭 {t('smm_plan_route')}
+            </button>
           </div>
         )}
 
         {/* ════════ PLACE FORM ════════ */}
         {view === 'form' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('home'); setShowProfileForm(false); setSelectedRecent(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('smm_back')}</button>
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
-              {profiles.length > 0 && (
-                <div>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-1.5`}>{t('smm_load_profile')}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {profiles.map(p => <button key={p.id} onClick={() => loadProfile(p)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>)}
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <div className="flex items-center justify-between mb-2 gap-3">
+                  <div>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
+                    <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
                   </div>
+                  <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap flex-shrink-0`}>{t('smm_new')}</button>
                 </div>
-              )}
+                {profiles.length === 0 ? (
+                  <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {profiles.map(p => (
+                      <div key={p.id} className="flex items-center gap-1">
+                        <button onClick={() => loadProfile(p)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>
+                        <button onClick={() => deleteProfile(p.id)} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
@@ -808,7 +797,6 @@ function TripRecon({ tool }) {
         {/* ════════ ROUTE ════════ */}
         {view === 'route' && (
           <div className="space-y-5">
-            <button onClick={() => { setView('home'); setRouteResults(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('smm_back')}</button>
             <div className={`${c.card} border ${c.border} rounded-2xl p-5 space-y-4`}>
               <p className={`text-lg font-black ${c.text}`}>🧭 {t('smm_route_title')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -906,7 +894,11 @@ function TripRecon({ tool }) {
           </div>
         )}
 
-        {sessionHistory.length > 0 && view === 'home' && (
+        {/* Fallback only: once Recent Places has anything, its cards
+            supersede this plain log for the same information — this
+            covers a returning visitor whose old sessionHistory predates
+            that feature but who hasn't searched again yet. */}
+        {sessionHistory.length > 0 && recentPlaces.length === 0 && view === 'form' && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('smm_recent')}</p>
             <div className="space-y-1">
