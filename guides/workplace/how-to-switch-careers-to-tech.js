@@ -22,16 +22,16 @@ module.exports = {
   cta: {
     glyph:    '🗺️',
     headline: "Map the gap. Close it.",
-    body:     "Skill Gap Map takes your current role, your target role, and your existing skills, and produces a prioritized gap analysis with effort estimates and a learning timeline. It also runs day-in-the-life simulations, decodes real job postings, and runs mock interviews — so the work between here and there has shape.",
+    body:     "Skill Gap Map compares what you already know with what your target role is likely to require, then shows you which gaps are worth working on first — without inventing a proficiency score or a fixed timeline. Optional deeper sections cover a learning sequence, portfolio proof ideas, company targeting, and interview prep.",
     features: [
-      "Prioritized skill gaps with effort estimates and urgency ratings",
-      "Day-in-the-life reality check before you commit to a target",
-      "Job posting decoder shows what percent qualified you actually are",
-      "Mock interview rounds with AI coaching on your answers"
+      "What carries over and what isn't established yet — from your own supplied experience, not a guess",
+      "One gap worth starting with, and a next move you can actually take",
+      "Role expectations labeled as things to verify, not facts about your target employer",
+      "Optional: learning sequence, proof-of-skill ideas, job posting decoder, and more"
     ],
     toolId:   'SkillGapMap',
     toolName: 'Skill Gap Map',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-09-10',
 };

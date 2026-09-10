@@ -3241,47 +3241,46 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-10",
   id: "SkillGapMap",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You want a different job and don't know what's actually missing.",
-    give: "Your current role and the one you want. Or your interests, to find candidates.",
-    get: "The real gap, the order to close it, what the day-to-day is really like, and the salary economics.",
-    edge: "It sequences the learning. Knowing which skills you lack is easy; knowing which to get first is the useful part.",
+    give: "Your current role and the one you want — or your interests, to find candidates.",
+    get: "What already carries over, the one gap worth starting with, and a next move you can actually take.",
+    edge: "It won't hand you a percentage or an hour estimate — just what your own experience actually establishes, and what to check next.",
   },
-  seoDescription: "Map the exact skill gap between your current job and your dream role — then close it with a timeline, projects, and mock interviews. Free career planner, no signup.",
+  seoDescription: "Compare what you already know with what your target role is likely to require, and see which gaps are worth working on first. Free, no signup.",
   seoTitle: "Career Change Skill Gap Analyzer",
   title: "Skill Gap Map",
-  tagline: "Your GPS from current role to dream job",
+  tagline: "🗺 See what carries over. Find what to build next.",
   tags: ['career', 'skills', 'job', 'transition', 'learning', 'gap', 'resume'],
   icon: "🗺️",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#ccdfc4",
-  description: "Map the exact skill gap between your current role and your target — then close the gap. 22 tools covering every stage of a career transition: skill gap analysis, learning timeline, proof-of-skill projects, job posting decoder, mock interviews, resume audit, target company finder, day-in-the-life simulations, market pulse, salary economics, mentor matching, networking scripts, weekly nudges, and progress tracking with milestone celebrations.",
+  description: "Thinking about a career move? Skill Gap Map compares what you already know with what your target role is likely to require, then shows you which gaps are worth working on first.",
   guide: {
-      overview: "Skill Gap Map is a 22-feature career transition engine. Start by exploring roles or mapping your gap — then unlock a full pipeline: day-in-the-life reality checks, optimal learning sequences, salary economics, proof-of-skill projects, networking strategy with outreach drafts, resume audits, company targeting, job posting decoders, mock interviews with AI, market demand tracking, weekly assignments, milestone celebrations, and mentor matching. It remembers your progress across sessions and adapts as you grow.",
+      overview: "Skill Gap Map starts from your own supplied experience, not a guess at your proficiency. Tell it your current role and target role (or your interests, if you haven't picked a target) and it separates what genuinely carries over from what isn't established yet, then gives you one place to start and one concrete next move. A handful of optional deeper tools — a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, and more — stay tucked behind a disclosure so the first thing you see is the answer, not a dashboard.",
 
       howToUse: [
-        "🔍 Explore Mode: Enter your interests to discover matching roles with difficulty ratings, salary ranges, and surprise suggestions — or skip straight to Map Mode if you know your target",
-        "🗺️ Map Mode: Enter your current role, target role, and existing skills → get a prioritized gap analysis with effort estimates, urgency ratings, and a visual progress tracker",
-        "📅 Unlock Depth: Click any skill gap for a deep dive (resources, projects, time estimates), then expand into Timeline, Proof Projects, Networking, Economics, and Resume Audit panels",
-        "🎯 Prepare: Use Job Posting Decoder to analyze real listings, Mock Interview for AI-powered practice rounds, and Company Targets to find where to apply",
-        "📈 Stay on Track: Check your progress tracker, trigger milestone celebrations, get weekly nudge assignments, and find your ideal mentor profile"
+        "🔍 Help Me Explore: Enter your current role and interests to see plausible directions worth investigating — not a single invented target scored against itself",
+        "🗺️ I Know My Target: Enter your current role, target role, and whatever experience you want considered → see what transfers, the one gap worth starting with, and the fuller list worth checking",
+        "✅ Act on it: Take the suggested next move, or open any skill gap for what would demonstrate it",
+        "📂 Go deeper (optional): Open the collapsed sections for a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, resume feedback, and more — none of it required to get value from the first screen"
       ],
 
       example: {
         scenario: "You're a marketing coordinator who wants to become a product manager. You have project management and analytics skills but no technical background.",
-        action: "Enter 'Marketing Coordinator' as current role, 'Product Manager' as target. List your skills (project management, analytics, stakeholder communication). Set 10 hours/week for learning. Click Map My Gap.",
-        result: "You get 6 prioritized skill gaps (SQL, wireframing, A/B testing, technical communication, roadmapping, user research) with effort bars and urgency ratings. Expand SQL for a deep dive with free courses and a portfolio project. Generate a 6-month timeline. Click Day in Life to see what a PM's Tuesday actually looks like. Decode a real PM job posting to see you're already 65% qualified. Run a mock interview round where the AI asks 'How would you prioritize these three features?' and coaches your answer."
+        action: "Enter 'Marketing Coordinator' as current role, 'Product Manager' as target, and list what you already do (project management, analytics, stakeholder communication).",
+        result: "You see what carries over (stakeholder communication, structured project work), the one gap worth starting with (translating data into a product decision, not just reporting it), and a next move you can do today — like writing a one-page brief on a decision you'd make with data you already have access to. The fuller list below adds a few more gaps worth checking, each labeled by how well your supplied experience actually establishes it, not a score.",
       },
 
       tips: [
-        "Start with Explore Mode if you're unsure about your target — the surprise suggestions often surface roles you hadn't considered that match your existing strengths",
-        "Use Day in Life before committing to a career switch — the hour-by-hour schedule and frustration scenarios reveal whether you'd actually enjoy the daily reality",
-        "Run Job Posting Decoder on 3-5 real listings to calibrate which gaps matter most in the actual market versus theoretical skill lists",
-        "The Weekly Nudge gives you one specific assignment with a deliverable — treat it like homework to maintain momentum between big planning sessions"
+        "Use Help Me Explore if you're unsure about your target — it suggests directions traceable to what you've actually done, not a single confident guess",
+        "The 'Add trip details'-style disclosures (Timeline, Proof to Build, Economics, and the rest) are genuinely optional — the first screen is designed to stand on its own",
+        "A real job posting is the best way to replace this tool's general role expectations with the actual requirements of one specific job — the Job Posting Decoder panel is built for exactly that",
+        "\"Not established yet\" means the evidence you supplied doesn't show it — not that you lack it. Add more detail if a gap looks off, and it'll reassess"
       ]
     }
 },

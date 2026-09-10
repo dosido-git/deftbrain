@@ -163,12 +163,30 @@ const SkillGapMap = ({ tool }) => {
 
   // ─── State: UI ───
   const [expandedSections, setExpandedSections] = useState({});
-  const [sortBy, setSortBy] = useState('roi');
-  const [filterCategory, setFilterCategory] = useState('all');
   const [savedMaps, setSavedMaps] = usePersistentState('skill-gap-saved', []);
 
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const lang = navigator.language || 'en';
+
+  // ═══════════════ V2->V3 COMPATIBILITY SHIM ═══════════════
+  // The 18 secondary drill-down routes below (Proof, Network, Reframe,
+  // Economics, Resume, Companies, Interview, Calibrate, Progress, DayLife,
+  // Outreach, Decode, Adjacency, Mock, Market, Celebrate, Nudge, Mentor)
+  // were NOT rewritten this pass — their prompts still expect the v2 gap
+  // shape (skill/category/current_level/time_estimate_hours) and
+  // transitionSummary.from/to. Rather than touch 18 prompt files, map the
+  // new v3 shape down to what they already read, so they keep working
+  // rather than silently receiving "undefined" in their prompt text. This
+  // is a known seam, not a fix — those routes' own fabricated-precision
+  // issues (fit scores, salary figures, ATS claims) are untouched follow-up
+  // work; see the top-of-file comment in backend/routes/skill-gap-map.js.
+  const LEGACY_PRIORITY = { start_here: 'critical', important: 'high', useful: 'medium', role_dependent: 'nice_to_have' };
+  const toLegacyGaps = (gaps) => (gaps || []).map(g => ({
+    id: g.capability, skill: g.capability, category: undefined,
+    priority: LEGACY_PRIORITY[g.priority] || g.priority,
+    current_level: undefined, target_level: undefined, time_estimate_hours: undefined,
+  }));
+  const legacyTransition = results?.transition ? { from: results.transition.current, to: results.transition.target } : undefined;
 
   // ═══════════════ HANDLERS ═══════════════
 
@@ -182,7 +200,7 @@ const SkillGapMap = ({ tool }) => {
       });
       setResults(data);
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (targetRole || currentRole || '').substring(0, 40) }, ...prev].slice(0, 6)); // outer history cap is 6
-      setSavedMaps(prev => [{ from: currentRole.trim(), to: targetRole.trim(), date: new Date().toISOString(), readiness: data.overall_readiness?.score, gaps: data.skill_gaps?.length }, ...prev].slice(0, 6));
+      setSavedMaps(prev => [{ from: currentRole.trim(), to: targetRole.trim(), date: new Date().toISOString(), gaps: data.skill_gaps?.length }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('sgm_err_failed')); }
   };
 
@@ -198,8 +216,8 @@ const SkillGapMap = ({ tool }) => {
     } catch (err) { setError(err.message || t('sgm_err_failed')); }
   };
 
-  const selectExplorePath = (path) => {
-    setTargetRole(path.target_role);
+  const selectExploreDirection = (direction) => {
+    setTargetRole(direction.target_role);
     setExploreData(null);
     setMode('map');
   };
@@ -210,16 +228,20 @@ const SkillGapMap = ({ tool }) => {
     loadSetter(false);
   };
 
-  const handleTimeline = makeHandler('skill-gap-timeline', setTimelineData, setTimelineLoading, { transitionSummary: results?.transition_summary, skillGaps: results?.skill_gaps, hoursPerWeek });
-  const handleProof = makeHandler('skill-gap-proof', setProofData, setProofLoading, { transitionSummary: results?.transition_summary, skillGaps: results?.skill_gaps });
-  const handleNetwork = makeHandler('skill-gap-network', setNetworkData, setNetworkLoading, { transitionSummary: results?.transition_summary, targetRole: targetRole.trim() });
-  const handleEconomics = makeHandler('skill-gap-economics', setEconomicsData, setEconomicsLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), transitionSummary: results?.transition_summary });
-  const handleCompanies = makeHandler('skill-gap-companies', setCompanyData, setCompanyLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), transitionSummary: results?.transition_summary });
-  const handleInterview = makeHandler('skill-gap-interview', setInterviewData, setInterviewLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: results?.skill_gaps, transferableSkills: results?.transferable_skills });
+  const handleTimeline = makeHandler('skill-gap-timeline', setTimelineData, setTimelineLoading, { transitionSummary: results?.transition, skillGaps: results?.skill_gaps, hoursPerWeek });
+  const handleProof = makeHandler('skill-gap-proof', setProofData, setProofLoading, { transitionSummary: legacyTransition, skillGaps: toLegacyGaps(results?.skill_gaps) });
+  const handleNetwork = makeHandler('skill-gap-network', setNetworkData, setNetworkLoading, { transitionSummary: legacyTransition, targetRole: targetRole.trim() });
+  const handleEconomics = makeHandler('skill-gap-economics', setEconomicsData, setEconomicsLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), transitionSummary: legacyTransition });
+  const handleCompanies = makeHandler('skill-gap-companies', setCompanyData, setCompanyLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), transitionSummary: legacyTransition });
+  const handleInterview = makeHandler('skill-gap-interview', setInterviewData, setInterviewLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: toLegacyGaps(results?.skill_gaps), transferableSkills: results?.transferable_strengths?.map(s => ({ current_name: s.strength, target_name: s.transfer })) });
 
   const handleDeep = async (gap) => {
-    setDeepLoading(gap.id); setError('');
-    try { const data = await callToolEndpoint('skill-gap-deep', { gap, transitionSummary: results?.transition_summary, userLanguage: lang }); setDeepData(prev => ({ ...prev, [gap.id]: data })); } catch (err) { setError(err.message); }
+    setDeepLoading(gap.capability); setError('');
+    try {
+      const legacyGap = toLegacyGaps([gap])[0];
+      const data = await callToolEndpoint('skill-gap-deep', { gap: legacyGap, transitionSummary: legacyTransition, userLanguage: lang });
+      setDeepData(prev => ({ ...prev, [gap.capability]: data }));
+    } catch (err) { setError(err.message); }
     setDeepLoading(null);
   };
 
@@ -233,13 +255,13 @@ const SkillGapMap = ({ tool }) => {
   const handleResume = async () => {
     if (!resumeText.trim()) { setError(t('sgm_err_resume')); return; }
     setResumeLoading(true); setError('');
-    try { setResumeData(await callToolEndpoint('skill-gap-resume', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), resumeText: resumeText.trim(), skillGaps: results?.skill_gaps, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setResumeData(await callToolEndpoint('skill-gap-resume', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), resumeText: resumeText.trim(), skillGaps: toLegacyGaps(results?.skill_gaps), userLanguage: lang })); } catch (err) { setError(err.message); }
     setResumeLoading(false);
   };
 
   const handleCalibrate = async () => {
     setCalibrateLoading(true); setError('');
-    try { setCalibrateData(await callToolEndpoint('skill-gap-calibrate', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: results?.skill_gaps, constraints, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setCalibrateData(await callToolEndpoint('skill-gap-calibrate', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: toLegacyGaps(results?.skill_gaps), constraints, userLanguage: lang })); } catch (err) { setError(err.message); }
     setCalibrateLoading(false);
   };
 
@@ -247,22 +269,22 @@ const SkillGapMap = ({ tool }) => {
     const completed = Object.entries(completedSkills).filter(([, v]) => v).map(([k]) => k);
     if (!completed.length) { setError(t('sgm_err_check_skills')); return; }
     setProgressLoading(true); setError('');
-    try { setProgressData(await callToolEndpoint('skill-gap-progress', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), originalGaps: results?.skill_gaps, completedSkills: completed, newExperience: newExperience.trim() || null, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setProgressData(await callToolEndpoint('skill-gap-progress', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), originalGaps: toLegacyGaps(results?.skill_gaps), completedSkills: completed, newExperience: newExperience.trim() || null, userLanguage: lang })); } catch (err) { setError(err.message); }
     setProgressLoading(false);
   };
 
   const toggleCompleted = (skillName) => setCompletedSkills(prev => ({ ...prev, [skillName]: !prev[skillName] }));
   const completedCount = Object.values(completedSkills).filter(Boolean).length;
 
-  const handleDayLife = makeHandler('skill-gap-daylife', setDaylifeData, setDaylifeLoading, { targetRole: targetRole.trim(), transitionSummary: results?.transition_summary });
-  const handleAdjacency = makeHandler('skill-gap-adjacency', setAdjacencyData, setAdjacencyLoading, { skillGaps: results?.skill_gaps });
+  const handleDayLife = makeHandler('skill-gap-daylife', setDaylifeData, setDaylifeLoading, { targetRole: targetRole.trim(), transitionSummary: legacyTransition });
+  const handleAdjacency = makeHandler('skill-gap-adjacency', setAdjacencyData, setAdjacencyLoading, { skillGaps: toLegacyGaps(results?.skill_gaps) });
   const handleMarket = makeHandler('skill-gap-market', setMarketData, setMarketLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim() });
-  const handleMentor = makeHandler('skill-gap-mentor', setMentorData, setMentorLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: results?.skill_gaps });
+  const handleMentor = makeHandler('skill-gap-mentor', setMentorData, setMentorLoading, { currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: toLegacyGaps(results?.skill_gaps) });
 
   const handleNudge = async () => {
     setNudgeLoading(true); setError('');
     const completed = Object.entries(completedSkills).filter(([, v]) => v).map(([k]) => k);
-    try { setNudgeData(await callToolEndpoint('skill-gap-nudge', { targetRole: targetRole.trim(), skillGaps: results?.skill_gaps, completedSkills: completed, hoursPerWeek, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setNudgeData(await callToolEndpoint('skill-gap-nudge', { targetRole: targetRole.trim(), skillGaps: toLegacyGaps(results?.skill_gaps), completedSkills: completed, hoursPerWeek, userLanguage: lang })); } catch (err) { setError(err.message); }
     setNudgeLoading(false);
   };
 
@@ -276,7 +298,7 @@ const SkillGapMap = ({ tool }) => {
   const handleDecode = async () => {
     if (!jobPosting.trim()) { setError(t('sgm_err_job_posting')); return; }
     setDecodeLoading(true); setError('');
-    try { setDecodeData(await callToolEndpoint('skill-gap-decode', { jobPosting: jobPosting.trim(), currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: results?.skill_gaps, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setDecodeData(await callToolEndpoint('skill-gap-decode', { jobPosting: jobPosting.trim(), currentRole: currentRole.trim(), targetRole: targetRole.trim(), skillGaps: toLegacyGaps(results?.skill_gaps), userLanguage: lang })); } catch (err) { setError(err.message); }
     setDecodeLoading(false);
   };
 
@@ -309,7 +331,7 @@ const SkillGapMap = ({ tool }) => {
   const handleCelebrate = async (milestone) => {
     setError('');
     const completed = Object.entries(completedSkills).filter(([, v]) => v).map(([k]) => k);
-    try { setCelebrateData(await callToolEndpoint('skill-gap-celebrate', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), milestone, completedSkills: completed, readinessScore: progressData?.updated_readiness?.score || results?.overall_readiness?.score, userLanguage: lang })); } catch (err) { setError(err.message); }
+    try { setCelebrateData(await callToolEndpoint('skill-gap-celebrate', { currentRole: currentRole.trim(), targetRole: targetRole.trim(), milestone, completedSkills: completed, readinessScore: progressData?.updated_readiness?.score, userLanguage: lang })); } catch (err) { setError(err.message); }
   };
 
   const clearResults = () => {
@@ -327,23 +349,26 @@ const SkillGapMap = ({ tool }) => {
   };
   const reset = () => { setCurrentRole(''); setTargetRole(''); setCurrentSkills(''); setInterests(''); clearResults(); setError(''); setExperienceText(''); setResumeText(''); setConstraints({}); setNewExperience(''); };
 
-  // ─── Sorting / Filtering ───
-  const sortedGaps = (results?.skill_gaps || [])
-    .filter(g => filterCategory === 'all' || g.category === filterCategory)
-    .sort((a, b) => sortBy === 'roi' ? (b.roi_score || 0) - (a.roi_score || 0) : sortBy === 'impact' ? (b.impact || 0) - (a.impact || 0) : (a.effort || 0) - (b.effort || 0));
-  const categories = [...new Set((results?.skill_gaps || []).map(g => g.category))];
+  // ─── Ordering ─── qualitative priority replaces v2's roi_score/impact/
+  // effort sort — a fixed, meaningful order rather than a user-facing sort
+  // control over numbers the tool no longer generates.
+  const PRIORITY_RANK = { start_here: 0, important: 1, useful: 2, role_dependent: 3 };
+  const sortedGaps = [...(results?.skill_gaps || [])].sort((a, b) => (PRIORITY_RANK[a.priority] ?? 9) - (PRIORITY_RANK[b.priority] ?? 9));
 
   const buildFullText = () => {
     if (!results) return '';
     const l = [
-      t('sgm_copy_header', { from: results.transition_summary?.from, to: results.transition_summary?.to }),
-      t('sgm_copy_readiness', { score: results.overall_readiness?.score, difficulty: results.transition_summary?.difficulty, months: results.transition_summary?.estimated_months }),
+      t('sgm_copy_header', { from: results.transition?.current, to: results.transition?.target }),
+      results.starting_point?.summary || '',
       '',
     ];
+    if (results.start_here) {
+      l.push(t('sgm_copy_start_here', { capability: results.start_here.capability }), `   ${results.start_here.gap}`, '');
+    }
     results.skill_gaps?.forEach((g, i) => l.push(
-      t('sgm_copy_gap', { n: i + 1, skill: g.skill, priority: g.priority, impact: g.impact, effort: g.effort, roi: g.roi_score }),
-      `   ${g.description}`,
-      `   ${t('sgm_copy_resource', { resource: g.resource_type })}`,
+      t('sgm_copy_gap', { n: i + 1, skill: g.capability, priority: t(`sgm_priority_${g.priority}`) }),
+      `   ${g.gap}`,
+      `   ${t('sgm_copy_resource', { resource: g.next_move })}`,
       '',
     ));
     return l.join('\n') + BRAND;
@@ -387,9 +412,11 @@ const SkillGapMap = ({ tool }) => {
   );
   const ScoreBar = ({ score, color }) => (<div className={`w-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-1.5 overflow-hidden`}><div className={`${color || (score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500')} h-1.5 rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} /></div>);
 
-  const PRIORITY_COLORS = { critical: 'danger', high: 'warning', medium: 'info', nice_to_have: 'success' };
-  const CAT_ICONS = { technical: '💻', soft_skill: '🤝', domain_knowledge: '📚', tool_platform: '🔧', credential: '📜', network: '🌐' };
-  const DIFF_COLORS = { 'Lateral move': 'success', 'Moderate stretch': 'warning', 'Significant pivot': 'danger', 'Major career change': 'danger' };
+  const PRIORITY_COLORS = { start_here: 'danger', important: 'warning', useful: 'info', role_dependent: 'success' };
+  const EFFORT_LABELS = { smaller_build: 'sgm_effort_smaller', moderate_build: 'sgm_effort_moderate', larger_build: 'sgm_effort_larger' };
+  const BASIS_LABELS = { commonly_relevant: 'sgm_basis_commonly', role_dependent: 'sgm_basis_role', employer_dependent: 'sgm_basis_employer', verified_target: 'sgm_basis_verified' };
+  const STATUS_LABELS = { evidence_you_have: 'sgm_status_have', some_related_evidence: 'sgm_status_some', not_established: 'sgm_status_not_established', needs_clarification: 'sgm_status_clarify' };
+  const STATUS_COLORS = { evidence_you_have: 'success', some_related_evidence: 'info', not_established: 'warning', needs_clarification: 'warning' };
 
   const hasResults = results || exploreData;
 
@@ -509,22 +536,6 @@ const SkillGapMap = ({ tool }) => {
           )}
           </button>
 
-          {!currentRole.trim() && !targetRole.trim() && !loading && (
-            <div className="flex justify-center mt-2">
-              <button
-                onClick={() => {
-                  setCurrentRole('Senior Software Engineer at a 200-person SaaS company. Mostly backend, leading a team of 4.');
-                  setTargetRole('Engineering Manager — running a platform org with 15+ engineers reporting through team leads.');
-                  setCurrentSkills('Strong: distributed systems, code review, mentoring 1:1s. Some: hiring, performance reviews. Gap: cross-functional planning, headcount budgeting, executive presentations.');
-                  setInterests('Building systems that scale teams. Less interested in pure people management — want to keep technical credibility.');
-                  setHoursPerWeek(5);
-                  setMode('map');
-                }}
-                className={`text-xs font-medium ${c.textMuteded} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
 
           {savedMaps.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-sm p-4`}>
@@ -536,7 +547,7 @@ const SkillGapMap = ({ tool }) => {
                 <button key={i} onClick={() => { setCurrentRole(s.from); setTargetRole(s.to); setMode('map'); }}
                   className={`w-full text-start p-2 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-colors flex items-center justify-between mt-1`}>
                   <span className={c.text}>{s.from} → {s.to}</span>
-                  <span className={c.textMuteded}>{s.readiness}% · {new Date(s.date).toLocaleDateString()}</span>
+                  <span className={c.textMuteded}>{new Date(s.date).toLocaleDateString()}</span>
                 </button>
               ))}
             </div>
@@ -546,117 +557,106 @@ const SkillGapMap = ({ tool }) => {
         </div>
       )}
 
-      {/* ═══════════════ EXPLORE RESULTS ═══════════════ */}
+      {/* ═══════════════ EXPLORE RESULTS ═══════════════ Plausible
+          directions, not one invented target scored against itself — no
+          salary_change, demand rating, or difficulty label; those implied a
+          market analysis this step never did. */}
       {exploreData && (
         <div className="space-y-5">
           <div className={`${c.card} rounded-xl shadow-sm p-4`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('sgm_explore_paths_from', { role: currentRole })}</p>
           </div>
-          {exploreData.current_profile_summary && <p className={`text-sm ${c.text} ${c.card} rounded-xl shadow-lg p-4`}>{exploreData.current_profile_summary}</p>}
 
           <div className="space-y-3">
-            {exploreData.paths?.map((path, i) => (
-              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${DIFF_COLORS[path.difficulty] === 'success' ? (isDark ? 'border-green-500' : 'border-green-400') : DIFF_COLORS[path.difficulty] === 'warning' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-red-500' : 'border-red-400')}`}>
+            {exploreData.directions?.map((dir, i) => (
+              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <h4 className={`text-lg font-bold ${c.text}`}>{path.target_role}</h4>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <Badge c={c} type={DIFF_COLORS[path.difficulty] || 'info'}>{path.difficulty}</Badge>
-                      <span className={`text-xs font-bold ${path.salary_change?.startsWith('+') ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.text}`}>{path.salary_change}</span>
-                      <span className={`text-xs ${c.textMuteded}`}>{path.time_to_transition}</span>
-                      <Badge c={c} type={path.demand === 'High' ? 'success' : path.demand === 'Medium' ? 'warning' : 'danger'}>{t('sgm_explore_demand', { demand: path.demand })}</Badge>
-                    </div>
-                  </div>
-                  <button onClick={() => selectExplorePath(path)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnPrimary}`}>{t('sgm_map_this')}</button>
+                  <h4 className={`text-lg font-bold ${c.text} flex-1`}>{dir.target_role}</h4>
+                  <button onClick={() => selectExploreDirection(dir)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnPrimary} flex-shrink-0`}>{t('sgm_map_this')}</button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                  <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_key_gap')}</p><p className={`text-xs ${c.textSecondary}`}>{path.key_gap}</p></div>
-                  <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_your_advantage')}</p><p className={`text-xs ${c.textSecondary}`}>{path.key_advantage}</p></div>
+                <p className={`text-xs ${c.accentTxt} mt-1`}>{dir.why_it_may_connect}</p>
+                <p className={`text-sm ${c.textSecondary} mt-2`}>{dir.what_the_work_involves}</p>
+                <div className={`p-2 rounded ${c.cardAlt} mt-2`}>
+                  <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_explore_learn_more')}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{dir.what_to_learn_more_about}</p>
                 </div>
-                {path.surprise_factor && <p className={`text-[10px] ${c.accentTxt} mt-2`}>💡 {path.surprise_factor}</p>}
-                {path.lifestyle_change && <p className={`text-[10px] ${c.textMuteded} mt-1`}>📅 {path.lifestyle_change}</p>}
+                {dir.one_low_cost_way_to_investigate && <p className={`text-[10px] ${c.textMuteded} mt-2`}>💡 {dir.one_low_cost_way_to_investigate}</p>}
               </div>
             ))}
           </div>
-
-          {exploreData.avoid_paths?.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-              <h4 className={`font-bold ${c.text} mb-2`}>{t('sgm_avoid_paths')}</h4>
-              {exploreData.avoid_paths.map((ap, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.danger} border mb-2`}>
-                  <p className="text-xs font-bold">{ap.role}</p><p className="text-[10px]">{ap.why_trap}</p>
-                </div>
-              ))}
-            </div>
-          )}
-          {exploreData.pattern_insight && <p className={`text-sm ${c.text} italic ${c.card} rounded-xl shadow-lg p-4`}>🔮 {exploreData.pattern_insight}</p>}
-          {exploreData.next_step && <div className={`${c.warningBox} border rounded-xl p-4`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_next_step')}</p><p className={`text-xs ${c.text}`}>{exploreData.next_step}</p></div>}
         </div>
       )}
 
-      {/* ═══════════════ MAP RESULTS ═══════════════ */}
+      {/* ═══════════════ MAP RESULTS ═══════════════ Default-open: Starting
+          Point, Transferable Strengths, Start Here, Next Move, Skill Gaps.
+          Everything else — the 18 secondary drill-downs plus the two data
+          sections that ship with the main response — lives in labeled,
+          collapsed groups below the gaps list, not a wall of buttons above
+          the answer. */}
       {results && (
         <div ref={resultsRef} className="scroll-mt-24 space-y-5">
-          {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-sm p-4`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm font-semibold ${c.text}`}>🗺️ {results.transition_summary?.from} → {results.transition_summary?.to}</p>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <Badge c={c} type={DIFF_COLORS[results.transition_summary?.difficulty] || 'info'}>{results.transition_summary?.difficulty}</Badge>
-                  <span className={`text-xs ${c.textMuteded}`}>{t('sgm_summary_estimate', { months: results.transition_summary?.estimated_months, hours: hoursPerWeek })}</span>
-                  {completedCount > 0 && <Badge c={c} type="success">{t('sgm_completed_badge', { count: completedCount })}</Badge>}
-                </div>
-                {results.transition_summary?.core_challenge && (
-                  <p className={`text-xs ${c.textMuteded} mt-1 italic`}>{t('sgm_core_challenge', { challenge: results.transition_summary.core_challenge })}</p>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { show: !economicsData, fn: handleEconomics, ld: economicsLoading, icon: '💰', label: t('sgm_btn_economics'), clr: isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700' },
-                { show: !timelineData, fn: handleTimeline, ld: timelineLoading, icon: '📅', label: t('sgm_btn_timeline'), clr: isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-50 text-sky-700' },
-                { show: !proofData, fn: handleProof, ld: proofLoading, icon: '🏗️', label: t('sgm_btn_proof'), clr: isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700' },
-                { show: !networkData, fn: handleNetwork, ld: networkLoading, icon: '🌐', label: t('sgm_btn_network'), clr: isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700' },
-                { show: !companyData, fn: handleCompanies, ld: companyLoading, icon: '🏢', label: t('sgm_btn_companies'), clr: isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700' },
-                { show: !interviewData, fn: handleInterview, ld: interviewLoading, icon: '🎤', label: t('sgm_btn_interview'), clr: isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700' },
-                { show: !showResume, fn: () => setShowResume(true), ld: false, icon: '📋', label: t('sgm_btn_resume') },
-                { show: !showReframe, fn: () => setShowReframe(true), ld: false, icon: '🔄', label: t('sgm_btn_reframe') },
-                { show: !showCalibrate, fn: () => setShowCalibrate(true), ld: false, icon: '⚙️', label: t('sgm_btn_calibrate') },
-                { show: completedCount > 0 && !showProgress, fn: () => setShowProgress(true), ld: false, icon: '📊', label: t('sgm_btn_progress', { count: completedCount }), clr: isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-50 text-emerald-700' },
-                { show: !daylifeData, fn: handleDayLife, ld: daylifeLoading, icon: '🪞', label: t('sgm_btn_daylife'), clr: isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700' },
-                { show: !adjacencyData, fn: handleAdjacency, ld: adjacencyLoading, icon: '🧠', label: t('sgm_btn_sequence'), clr: isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-50 text-sky-700' },
-                { show: !marketData, fn: handleMarket, ld: marketLoading, icon: '📊', label: t('sgm_btn_market'), clr: isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-700' },
-                { show: !mentorData, fn: handleMentor, ld: mentorLoading, icon: '🤝', label: t('sgm_btn_mentor'), clr: isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700' },
-                { show: !showDecode, fn: () => setShowDecode(true), ld: false, icon: '🎯', label: t('sgm_btn_decode') },
-                { show: !showOutreach, fn: () => setShowOutreach(true), ld: false, icon: '📧', label: t('sgm_btn_outreach') },
-                { show: !showMock, fn: () => { setShowMock(true); handleMockStart(); }, ld: false, icon: '🗣️', label: t('sgm_btn_mock') },
-                { show: !nudgeData, fn: handleNudge, ld: nudgeLoading, icon: '📬', label: t('sgm_btn_nudge') },
-              ].filter(b => b.show).map((b, i) => <Btn key={i} onClick={b.fn} disabled={b.ld} icon={b.icon} label={b.label} color={b.clr} />)}
-            </div>
+            <p className={`text-sm font-semibold ${c.text}`}>🗺️ {results.transition?.current} → {results.transition?.target}</p>
+            {completedCount > 0 && <Badge c={c} type="success">{t('sgm_completed_badge', { count: completedCount })}</Badge>}
           </div>
 
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
-          {/* Readiness */}
+          {/* ─── STARTING POINT ─── */}
           <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className={`font-bold ${c.text}`}>{t('sgm_readiness')}</h3>
-              <span className={`text-2xl font-black ${results.overall_readiness?.score >= 60 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : results.overall_readiness?.score >= 30 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>{results.overall_readiness?.score}%</span>
-            </div>
-            <ScoreBar score={results.overall_readiness?.score || 0} />
-            <p className={`text-sm ${c.text} mt-3`}>{results.overall_readiness?.summary}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-              <div className={`p-3 rounded-lg ${c.danger} border`}><p className="text-[10px] font-bold mb-0.5">{t('sgm_biggest_gap')}</p><p className="text-xs">{results.overall_readiness?.biggest_gap}</p></div>
-              <div className={`p-3 rounded-lg ${c.success} border`}><p className="text-[10px] font-bold mb-0.5">{t('sgm_surprise')}</p><p className="text-xs">{results.overall_readiness?.pleasant_surprise}</p></div>
-            </div>
+            <h3 className={`font-bold ${c.text} mb-2`}>{t('sgm_starting_point')}</h3>
+            <p className={`text-sm ${c.text}`}>{results.starting_point?.summary}</p>
+            {results.starting_point?.important_unknown && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mt-3`}>
+                <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('sgm_important_unknown')}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results.starting_point.important_unknown}</p>
+              </div>
+            )}
           </div>
 
-          {/* Quick Wins */}
-          {results.quick_wins?.length > 0 && (
+          {/* ─── TRANSFERABLE STRENGTHS ─── */}
+          {results.transferable_strengths?.length > 0 && (
+            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable', { count: results.transferable_strengths.length })}</h3>
+              <div className="space-y-2">
+                {results.transferable_strengths.map((ts, i) => (
+                  <div key={i} className={`p-3 rounded-lg ${c.success} border`}>
+                    <p className="text-sm font-bold">{ts.strength}</p>
+                    <p className="text-xs mt-0.5">{ts.evidence}</p>
+                    <p className="text-xs mt-1 opacity-90">→ {ts.transfer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ─── START HERE ─── */}
+          {results.start_here && (
+            <div className={`${c.card} rounded-2xl shadow-sm p-6 border-2 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
+              <h3 className={`text-lg font-black ${c.text}`}>{results.start_here.capability}</h3>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>{results.start_here.why_it_matters}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_current_evidence')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.current_evidence}</p></div>
+                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_gap_label')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.gap}</p></div>
+              </div>
+              {results.start_here.proof && <p className={`text-xs ${c.accentTxt} mt-2`}>🎯 {results.start_here.proof}</p>}
+            </div>
+          )}
+
+          {/* ─── NEXT MOVE ─── */}
+          {results.next_move && (
             <div className={`${c.warningBox} border rounded-xl p-5`}>
-              <h4 className={`font-bold ${c.accentTxt} mb-2`}>{t('sgm_do_this_week')}</h4>
-              {results.quick_wins.map((qw, i) => <p key={i} className={`text-xs ${c.text} mb-1`}>✅ {qw}</p>)}
+              <h4 className={`font-bold ${c.accentTxt} mb-2`}>{t('sgm_next_move')}</h4>
+              <p className={`text-sm ${c.text}`}>{results.next_move.primary}</p>
+              {results.next_move.why && <p className={`text-xs ${c.textMuteded} mt-1 italic`}>{results.next_move.why}</p>}
+              {results.next_move.proof && <p className={`text-xs ${c.accentTxt} mt-2`}>🎯 {results.next_move.proof}</p>}
+              {results.next_move.alternatives?.length > 0 && (
+                <div className="mt-3">
+                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_other_options')}</p>
+                  {results.next_move.alternatives.map((alt, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {alt}</p>)}
+                </div>
+              )}
             </div>
           )}
 
@@ -824,67 +824,51 @@ const SkillGapMap = ({ tool }) => {
             </div>
           )}
 
-          {/* ─── SKILL GAPS ─── */}
+          {/* ─── SKILL GAPS ─── qualitative priority/effort, no scores. */}
           <div className={`${c.card} rounded-xl shadow-sm overflow-hidden`}>
-            <div className={`p-4 border-b ${c.border} flex items-center justify-between flex-wrap gap-2`}>
+            <div className={`p-4 border-b ${c.border}`}>
               <h3 className={`font-bold ${c.text}`}>{t('sgm_skill_gaps', { count: sortedGaps.length })}</h3>
-              <div className="flex items-center gap-2 flex-wrap">
-                {['roi', 'impact', 'effort'].map(s => (
-                  <button key={s} onClick={() => setSortBy(s)} className={`text-[10px] px-2 py-1 rounded ${sortBy === s ? c.btnPrimary : c.btnSecondary} font-medium`}>{s === 'roi' ? t('sgm_sort_roi') : s === 'impact' ? t('sgm_sort_impact') : t('sgm_sort_effort')}</button>
-                ))}
-                <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className={`text-[10px] px-2 py-1 rounded border ${c.input}`}>
-                  <option value="all">{t('sgm_filter_all')}</option>
-                  {categories.map(cat => <option key={cat} value={cat}>{CAT_ICONS[cat] || '📌'} {cat.replace('_', ' ')}</option>)}
-                </select>
-              </div>
             </div>
             <div className="p-4 space-y-3">
               {sortedGaps.map((gap, idx) => (
-                <div key={gap.id || idx} className={`border rounded-lg ${c.border} overflow-hidden`}>
+                <div key={gap.capability || idx} className={`border rounded-lg ${c.border} overflow-hidden`}>
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <button onClick={() => toggleCompleted(gap.skill)} className={`text-sm flex-shrink-0 ${completedSkills[gap.skill] ? '' : 'opacity-30 hover:opacity-60'} transition-opacity`}>
-                            {completedSkills[gap.skill] ? '✅' : '⬜'}
+                          <button onClick={() => toggleCompleted(gap.capability)} className={`text-sm flex-shrink-0 ${completedSkills[gap.capability] ? '' : 'opacity-30 hover:opacity-60'} transition-opacity`}>
+                            {completedSkills[gap.capability] ? '✅' : '⬜'}
                           </button>
-                          <span>{CAT_ICONS[gap.category] || '📌'}</span>
-                          <span className={`text-sm font-bold ${c.text} ${completedSkills[gap.skill] ? 'line-through opacity-60' : ''}`}>{gap.skill}</span>
-                          <Badge c={c} type={PRIORITY_COLORS[gap.priority] || 'info'}>{gap.priority}</Badge>
+                          <span className={`text-sm font-bold ${c.text} ${completedSkills[gap.capability] ? 'line-through opacity-60' : ''}`}>{gap.capability}</span>
+                          <Badge c={c} type={PRIORITY_COLORS[gap.priority] || 'info'}>{t(`sgm_priority_${gap.priority}`)}</Badge>
+                          <Badge c={c} type={STATUS_COLORS[gap.status] || 'info'}>{t(STATUS_LABELS[gap.status] || gap.status)}</Badge>
                         </div>
-                        <p className={`text-xs ${c.textSecondary} mb-2`}>{gap.description}</p>
-                        <div className="flex items-center gap-4 text-[10px]">
-                          <span className={c.textMuteded}>{t('sgm_gap_impact')} <span className={`font-bold ${gap.impact >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.text}`}>{gap.impact}</span></span>
-                          <span className={c.textMuteded}>{t('sgm_gap_effort')} <span className="font-bold">{gap.effort}</span></span>
-                          <span className={c.textMuteded}>{t('sgm_gap_roi')} <span className={`font-bold ${c.accentTxt}`}>{gap.roi_score}</span></span>
-                          <span className={c.textMuteded}>{t('sgm_gap_hours', { hours: gap.time_estimate_hours })}</span>
-                          {gap.current_level && gap.target_level && (
-                            <span className={c.textMuteded}>{gap.current_level} <span className={c.accentTxt}>→</span> {gap.target_level}</span>
-                          )}
-                        </div>
+                        <p className={`text-xs ${c.textSecondary} mb-1`}>{gap.gap}</p>
+                        <p className={`text-[10px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}{gap.effort ? ` · ${t(EFFORT_LABELS[gap.effort])}` : ''}</p>
                       </div>
-                      <button onClick={() => toggleSection(gap.id)} className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections[gap.id]} /></button>
+                      <button onClick={() => toggleSection(gap.capability)} className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections[gap.capability]} /></button>
                     </div>
                   </div>
-                  {expandedSections[gap.id] && (
+                  {expandedSections[gap.capability] && (
                     <div className={`p-4 space-y-3 ${c.cardAlt} border-t ${c.border}`}>
-                      <p className={`text-xs ${c.text}`}><span className="font-bold">{t('sgm_gap_why')}</span> {gap.why_it_matters}</p>
+                      <p className={`text-xs ${c.text}`}><span className="font-bold">{t('sgm_target_relevance')}</span> {gap.target_relevance}</p>
+                      <p className={`text-xs ${c.text}`}><span className="font-bold">{t('sgm_current_evidence')}:</span> {gap.current_evidence}</p>
                       <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
-                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_resource')}</p>
-                        <p className={`text-xs font-semibold ${c.text}`}>{gap.resource_type}</p>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{gap.resource_detail}</p>
+                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_next_move')}</p>
+                        <p className={`text-xs font-semibold ${c.text}`}>{gap.next_move}</p>
+                        {gap.proof && <p className={`text-[10px] ${c.textSecondary} mt-1`}>🎯 {gap.proof}</p>}
                       </div>
-                      {!deepData[gap.id] ? <Btn onClick={() => handleDeep(gap)} disabled={deepLoading === gap.id} icon="🔍" label={t('sgm_gap_deep_dive')} color={c.btnPrimary} /> : <span className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('sgm_gap_plan_below')}</span>}
-                      {deepData[gap.id] && (
+                      {!deepData[gap.capability] ? <Btn onClick={() => handleDeep(gap)} disabled={deepLoading === gap.capability} icon="🔍" label={t('sgm_gap_deep_dive')} color={c.btnPrimary} /> : <span className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('sgm_gap_plan_below')}</span>}
+                      {deepData[gap.capability] && (
                         <div className={`border-t ${c.border} pt-3 space-y-3`}>
-                          {deepData[gap.id].learning_path?.map((stage, si) => (
+                          {deepData[gap.capability].learning_path?.map((stage, si) => (
                             <div key={si} className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
-                              <div className="flex items-center justify-between mb-1"><span className={`text-xs font-bold ${c.text}`}>{stage.stage}</span><span className={`text-[9px] ${c.textMuteded}`}>{t('sgm_gap_stage_hours', { hours: stage.hours })}</span></div>
+                              <p className={`text-xs font-bold ${c.text} mb-1`}>{stage.stage}</p>
                               {stage.activities?.map((a, ai) => <p key={ai} className={`text-[10px] ${c.text} mb-1`}>• {a.activity} <span className={c.textMuteded}>({a.resource}, {a.free_or_paid})</span></p>)}
                               <p className={`text-[10px] ${c.accentTxt}`}>✓ {stage.checkpoint}</p>
                             </div>
                           ))}
-                          {deepData[gap.id].good_enough_threshold && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_good_enough')}</p><p className={`text-xs ${c.text}`}>{deepData[gap.id].good_enough_threshold}</p></div>}
+                          {deepData[gap.capability].good_enough_threshold && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_good_enough')}</p><p className={`text-xs ${c.text}`}>{deepData[gap.capability].good_enough_threshold}</p></div>}
                         </div>
                       )}
                     </div>
@@ -894,41 +878,90 @@ const SkillGapMap = ({ tool }) => {
             </div>
           </div>
 
-          {/* ─── TRANSFERABLE + HIDDEN (compact) ─── */}
-          {results.transferable_skills?.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-              <button onClick={() => toggleSection('transfer')} className={`w-full flex items-center justify-between`}>
-                <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable', { count: results.transferable_skills.length })}</h3>
-                <Caret open={expandedSections.transfer} />
-              </button>
-              {expandedSections.transfer && <div className="space-y-2 mt-3">{results.transferable_skills.map((ts, i) => (
-                <div key={i} className={`p-3 rounded-lg ${c.success} border`}>
-                  <span className="text-xs font-medium">{ts.current_name}</span><span className={c.textMuteded}> → </span><span className="text-xs font-bold">{ts.target_name}</span>
-                  <p className="text-[10px] mt-0.5">{ts.reframe}</p>
-                  {ts.gap_to_close && ts.gap_to_close !== 'None — direct transfer' && (
-                    <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>{t('sgm_transfer_gap', { gap: ts.gap_to_close })}</p>
-                  )}
+          {/* ─── ROLE EXPECTATIONS WORTH CHECKING ─── renamed from "Hidden
+              Requirements" — that name implied the tool knows unstated
+              hiring criteria. Every item here is something to VERIFY, not
+              a fact about the target employer. Job Posting Decoder folded
+              in here since it does exactly that verification. */}
+          {(results.role_expectations_to_check?.length > 0 || true) && (
+            <details className={`group ${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              <summary className="cursor-pointer list-none p-4 flex items-center justify-between">
+                <span className={`font-bold ${c.text} flex items-center gap-2`}><span>🕵️</span> {t('sgm_role_expectations', { count: results.role_expectations_to_check?.length || 0 })}</span>
+                <Caret groupOpen />
+              </summary>
+              <div className="p-4 pt-0 space-y-2">
+                {results.role_expectations_to_check?.map((re, i) => (
+                  <div key={i} className={`p-4 rounded-lg border ${c.border}`}>
+                    <p className={`text-sm font-bold ${c.text}`}>{re.question}</p>
+                    <p className={`text-xs ${c.textSecondary} mt-0.5`}>{re.why_it_matters}</p>
+                    <p className={`text-xs ${c.accentTxt} mt-1`}>🔎 {re.how_to_verify}</p>
+                  </div>
+                ))}
+                {!showDecode && (
+                  <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                    <p className={`text-xs ${c.text} mb-2`}>{t('sgm_decode_hint')}</p>
+                    <Btn onClick={() => setShowDecode(true)} icon="🎯" label={t('sgm_btn_decode')} color={c.btnPrimary} />
+                  </div>
+                )}
+              </div>
+            </details>
+          )}
+
+          {/* ─── TRANSITION TASKS ─── networking, resume, outreach, and
+              application tactics: never a skill gap (item 11). */}
+          <details className={`group ${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+            <summary className="cursor-pointer list-none p-4 flex items-center justify-between">
+              <span className={`font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('sgm_transition_tasks', { count: results.transition_tasks?.length || 0 })}</span>
+              <Caret groupOpen />
+            </summary>
+            <div className="p-4 pt-0 space-y-2">
+              {results.transition_tasks?.map((tt, i) => (
+                <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
+                  <p className={`text-xs font-bold ${c.text}`}>{tt.task}</p>
+                  <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{tt.why}</p>
                 </div>
-              ))}</div>}
+              ))}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {!networkData && <Btn onClick={handleNetwork} disabled={networkLoading} icon="🌐" label={t('sgm_btn_network')} />}
+                {!showOutreach && <Btn onClick={() => setShowOutreach(true)} icon="📧" label={t('sgm_btn_outreach')} />}
+                {!showResume && <Btn onClick={() => setShowResume(true)} icon="📋" label={t('sgm_btn_resume')} />}
+                {!showReframe && <Btn onClick={() => setShowReframe(true)} icon="🔄" label={t('sgm_btn_reframe')} />}
+              </div>
+            </div>
+          </details>
+
+          {results.unknowns?.length > 0 && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1.5`}>{t('sgm_other_unknowns')}</p>
+              {results.unknowns.map((u, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {u}</p>)}
             </div>
           )}
 
-          {results.hidden_requirements?.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-              <button onClick={() => toggleSection('hidden')} className={`w-full flex items-center justify-between`}>
-                <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🕵️</span> {t('sgm_hidden_reqs', { count: results.hidden_requirements.length })}</h3>
-                <Caret open={expandedSections.hidden} />
-              </button>
-              {expandedSections.hidden && <div className="space-y-2 mt-3">{results.hidden_requirements.map((hr, i) => (
-                <div key={i} className={`p-4 rounded-lg border ${c.border}`}>
-                  <p className={`text-sm font-bold ${c.text}`}>{hr.skill}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{t('sgm_hidden_because', { reason: hr.why_hidden })}</p>
-                  {hr.how_to_spot && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('sgm_hidden_spot', { how: hr.how_to_spot })}</p>}
-                  <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_hidden_build', { how: hr.how_to_build })}</p>
-                </div>
-              ))}</div>}
+          {/* ─── MORE WAYS TO PREPARE ─── collapsed by default: learning
+              sequence, portfolio proof, salary context, company targeting,
+              interview prep, mentor matching, market pulse. Each still its
+              own on-demand call to the untouched secondary routes. */}
+          <details className={`group ${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+            <summary className="cursor-pointer list-none p-4 flex items-center justify-between">
+              <span className={`font-bold ${c.text} flex items-center gap-2`}><span>📂</span> {t('sgm_more_ways')}</span>
+              <Caret groupOpen />
+            </summary>
+            <div className="p-4 pt-0 flex flex-wrap gap-2">
+              {!timelineData && <Btn onClick={handleTimeline} disabled={timelineLoading} icon="📅" label={t('sgm_btn_timeline')} />}
+              {!showCalibrate && <Btn onClick={() => setShowCalibrate(true)} icon="⚙️" label={t('sgm_btn_calibrate')} />}
+              {!proofData && <Btn onClick={handleProof} disabled={proofLoading} icon="🏗️" label={t('sgm_btn_proof')} />}
+              {!adjacencyData && <Btn onClick={handleAdjacency} disabled={adjacencyLoading} icon="🧠" label={t('sgm_btn_sequence')} />}
+              {!nudgeData && <Btn onClick={handleNudge} disabled={nudgeLoading} icon="📬" label={t('sgm_btn_nudge')} />}
+              {!economicsData && <Btn onClick={handleEconomics} disabled={economicsLoading} icon="💰" label={t('sgm_btn_economics')} />}
+              {!companyData && <Btn onClick={handleCompanies} disabled={companyLoading} icon="🏢" label={t('sgm_btn_companies')} />}
+              {!daylifeData && <Btn onClick={handleDayLife} disabled={daylifeLoading} icon="🪞" label={t('sgm_btn_daylife')} />}
+              {!marketData && <Btn onClick={handleMarket} disabled={marketLoading} icon="📊" label={t('sgm_btn_market')} />}
+              {!interviewData && <Btn onClick={handleInterview} disabled={interviewLoading} icon="🎤" label={t('sgm_btn_interview')} />}
+              {!showMock && <Btn onClick={() => { setShowMock(true); handleMockStart(); }} icon="🗣️" label={t('sgm_btn_mock')} />}
+              {!mentorData && <Btn onClick={handleMentor} disabled={mentorLoading} icon="🤝" label={t('sgm_btn_mentor')} />}
+              {completedCount > 0 && !showProgress && <Btn onClick={() => setShowProgress(true)} icon="📊" label={t('sgm_btn_progress', { count: completedCount })} />}
             </div>
-          )}
+          </details>
 
           {/* ─── TIMELINE ─── */}
           {timelineData && (

@@ -3,11 +3,180 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
-const NO_QUOTE_RULE = ' Never place a double-quote (") character inside any JSON string value — quoted phrases, resume bullets, and message templates must be written plainly or with single quotes, or it breaks the JSON.';
+function collectProseFields(parsed) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  return fields;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// V3 rewrite (2026-09-10, full owner-supplied spec). V2 assigned Impact /
+// Effort / ROI (0-100 each), a Readiness percentage, current->target
+// proficiency levels, hour estimates, and named commercial tools and
+// certificates — all from two role descriptions and an optional skills
+// paragraph. None of that has a defensible calculation behind it; a few
+// fields (age, name, occasionally hormone/mechanism-style specifics on other
+// tools this session) turned out to survive multiple review passes before
+// finally landing. See audit/tool-notes/SKILLGAPMAP-NOTES.md.
+//
+// Scope of this pass: the MAIN route below plus skill-gap-explore and
+// skill-gap-timeline (further down this file) are the primary flow and were
+// rewritten to v3. The other ~19 secondary drill-down routes in this file
+// (Proof, Network, Reframe, Economics, Resume, Companies, Interview,
+// Calibrate, Progress, DayLife, Outreach, Decode, Adjacency, Mock, Market,
+// Celebrate, Nudge, Mentor) were NOT touched — they still carry the same
+// fabricated-precision patterns (salary figures, fit scores, ATS claims)
+// this rewrite removes from the primary result. Flagged as follow-up, not
+// silently left as-is.
+// ═══════════════════════════════════════════════════════════════
+const CORE_SYSTEM = `SKILL GAP MAP
+
+NORTH STAR:
+
+MAP THE EVIDENCE, NOT THE PERSON.
+MAP THE LIKELY GAP, NOT AN IMAGINARY EXACT GAP.
+SHOW WHAT CARRIES OVER.
+SHOW WHAT ISN'T ESTABLISHED YET.
+GIVE ONE GOOD PLACE TO START.
+
+Reason from the visitor's experience. Do not invent their proficiency. Do
+not invent the employer. Do not invent the market. Do not invent precision.
+
+SKILL GAP MAP DOES NOT KNOW THE VISITOR'S SKILLS. IT KNOWS THE EVIDENCE THE
+VISITOR HAS PROVIDED.
+
+SKILL GAP MAP DOES NOT KNOW THE EXACT TARGET JOB. IT KNOWS THE ROLE
+DESCRIPTION THE VISITOR PROVIDED AND, WHEN AVAILABLE, THE REQUIREMENTS IN
+SUPPLIED OR VERIFIED TARGET MATERIAL.
+
+EVIDENCE MODEL — distinguish these at all times:
+
+VISITOR-SUPPLIED EVIDENCE — what the visitor says they have done.
+TRANSFERABLE IMPLICATION — what that experience reasonably suggests may carry over.
+GENERAL ROLE EXPECTATION — a capability commonly relevant to this kind of work.
+TARGET-SPECIFIC REQUIREMENT — established by a supplied job posting or verified source.
+UNKNOWN — anything the available evidence does not establish.
+
+Never silently promote:
+NO EVIDENCE → NO SKILL
+RELATED EXPERIENCE → PROFICIENCY
+GENERAL ROLE PATTERN → THIS EMPLOYER'S REQUIREMENT
+TIME AVAILABLE → COMPLETION DATE
+MODEL PRIORITY → OBJECTIVE ROI
+PLAUSIBLE ADVANTAGE → HIRING ADVANTAGE
+CAREER ADVICE → MARKET FACT
+
+PRESERVE THE VISITOR'S EVIDENCE AT ITS ACTUAL STRENGTH.
+Supplied "written specs" -> allowed: "You have experience writing specs."
+Not allowed: "You have a spec-writing habit," "before you've built the
+instinct or track record," or any other inferred history of what the
+visitor usually, rarely, formally, or informally does. State what they told
+you, at the strength they told you, once.
+
+CURRENT-EVIDENCE STATUS — use exactly these four for every capability:
+EVIDENCE_YOU_HAVE — the visitor supplied experience directly relevant to it.
+SOME_RELATED_EVIDENCE — supplied experience overlaps but doesn't establish the full capability.
+NOT_ESTABLISHED — the visitor hasn't supplied evidence of it. This means "we don't have evidence of this from what you told us" — it does NOT mean "you don't have this skill."
+NEEDS_CLARIFICATION — the supplied information is insufficient to classify responsibly.
+
+TARGET-RELEVANCE BASIS — use exactly these four for every capability:
+COMMONLY_RELEVANT — often part of this kind of role.
+ROLE_DEPENDENT — important in some versions of the role but not others.
+EMPLOYER_DEPENDENT — depends substantially on the company, team, seniority, or posting.
+VERIFIED_TARGET — only when a supplied job posting or verified target-specific evidence establishes it.
+
+Never write, about a target role's expectations: "this is the skill
+interviewers probe hardest," "the operational layer [role]s use daily," "a
+capability most candidates lack entirely," "applicant tracking systems ...
+use it as a filter," what recruiters filter on, what a specific employer
+values, what earns trust fastest, ATS behavior, or hiring-market demand —
+unless supported by supplied or verified evidence. Use the four basis
+states above instead.
+
+DO NOT COMPARE THE VISITOR TO UNNAMED OTHERS OR PREDICT REACTIONS.
+Do not write "unlike most candidates" or predict how a coworker,
+interviewer, or team will react to something the visitor brings. A
+transferable strength is traceable to the visitor's own supplied
+experience — full stop, not a favorable comparison to people who weren't
+described.
+
+DO NOT INVENT A SELF-EXPERIMENT OR TRACKING PLAN.
+Do not assign precise hours, "over weeks," beginner->intermediate style
+proficiency jumps, or a measurement regimen the visitor didn't ask for. Use
+qualitative sizing only.
+
+DO NOT RECOMMEND A SPECIFIC COMMERCIAL TOOL OR CREDENTIAL WITHOUT A REASON.
+"Roadmap Tooling — Productboard or Aha" and "PSPO or Pragmatic Marketing
+Certificate" are unsupported product placements. A target role may need
+"experience working with roadmap/planning tools" without needing a
+particular product. Name a specific tool or credential only when the
+visitor asked about credentials, a supplied job posting requires or
+prefers one, or verified target-specific evidence makes it materially
+relevant. Never invent recruiter/ATS value to justify a certificate.
+
+PRIORITY AND EFFORT — qualitative only, never numeric:
+Priority: start_here | important | useful | role_dependent
+Effort (only when a reasonable comparison across gaps is possible):
+smaller_build | moderate_build | larger_build
+
+Never generate a 0-100 score, a percentage, a "ROI" figure, or an hour
+estimate for a skill unless the visitor is working from a defined course,
+curriculum, project, or other bounded task they described.
+
+SEMANTIC DEDUPLICATION.
+Before returning skill_gaps, ask of every pair: "would meaningfully working
+on one of these substantially build the other?" If yes, combine them unless
+the distinction is genuinely useful to keep separate. Two schema-shaped
+slots existing is not a reason to fill both.
+
+NETWORKING, CREDENTIALS, AND JOB-SEARCH TACTICS ARE NOT SKILL GAPS.
+A professional network is not a capability gap in the sense that
+prioritization or research synthesis is. Route networking, resume
+positioning, outreach, and application tactics to transition_tasks, never
+to skill_gaps. Lacking professional connections is not the same category
+of thing as lacking a job skill.
+
+VOICE.
+Direct, specific, plain. No filler, no padding, no restating what was
+asked. Never repeat information across fields — a distinction established
+once should be built on by the next section, not restated in different
+words.`;
+
+const OUTPUT_GUARD = {
+  prohibit: [
+    'numeric_score_percentage_or_roi_figure_generated_for_a_skill_or_readiness',
+    'proficiency_level_assigned_without_visitor_supplied_evidence',
+    'hour_estimate_or_completion_date_invented_without_a_bounded_task',
+    'target_role_expectation_stated_as_universal_fact_without_a_basis_label',
+    'unverified_hiring_market_or_ats_claim',
+    'commercial_tool_or_credential_recommended_without_a_supplied_reason',
+    'limited_evidence_promoted_into_an_inferred_habit_or_history',
+    'self_experiment_or_tracking_plan_invented',
+    'networking_or_job_search_tactic_classified_as_a_skill_gap',
+    'duplicate_or_near_duplicate_skill_gap_not_merged',
+    'unnamed_candidates_used_as_a_favorable_comparison',
+    'coworker_or_interviewer_reaction_predicted',
+  ],
+  require: ['fulfills_tool_promise'],
+};
+
+function section(body, userLanguage) {
+  return withLanguage(`${CORE_SYSTEM}\n\n${body}`, userLanguage) + `\n\n${NO_QUOTE_RULE}`;
+}
+
+router.outputStandard = 'v2';
+router.outputGuard = OUTPUT_GUARD;
 
 // ═══════════════════════════════════════════════════
-// ROUTE 1: MAIN — Map skill gaps between Job A and Job B
+// ROUTE 1: MAIN — the primary skill-gap map
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -18,157 +187,172 @@ router.post('/skill-gap-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     }
 
     const skillsCtx = currentSkills?.trim()
-      ? `\nSKILLS/EXPERIENCE THE USER ALREADY HAS: "${currentSkills.trim()}"`
-      : '';
+      ? `\nEXPERIENCE THE VISITOR SUPPLIED: "${currentSkills.trim()}"`
+      : '\nEXPERIENCE THE VISITOR SUPPLIED: none — do not invent any.';
 
     const hoursCtx = hoursPerWeek
-      ? `\nAVAILABLE HOURS PER WEEK FOR LEARNING: ${hoursPerWeek}`
+      ? `\nHOURS PER WEEK AVAILABLE (use only to size the plan, never to calculate a completion date): ${hoursPerWeek}`
       : '';
 
-    // Parallel split (2 calls, disjoint top-level keys): skill_gaps[] (~10 fields ×
-    // 8-12 gaps) is by far the largest section; the remaining five sections are roughly
-    // a third of the output. Output tokens generate serially, so two part-size
-    // generations in parallel cut wall-clock; merged response keeps the original shape —
-    // frontend needs zero changes.
-    const sharedIntro = `Map the complete skill gap between these two roles. Be ruthlessly specific — not "learn leadership" but "learn to run a sprint retrospective and synthesize team feedback into actionable changes."
-
-CURRENT ROLE: "${currentRole.trim()}"
+    const brief = `CURRENT ROLE: "${currentRole.trim()}"
 TARGET ROLE: "${targetRole.trim()}"
 ${skillsCtx}
-${hoursCtx}`;
+${hoursCtx}
 
-    const sharedTail = `Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+You are producing ONE PART of the analysis. Another analyst is producing
+the other part — return only your own keys.`;
 
-NUMBERS: restate the user's own figures VERBATIM. If you derive a new number from theirs (a percentage change, a ratio), show the inputs inline — e.g. "churn 14%→9% (a ~36% relative drop)" — and double-check the arithmetic; a resume line with a wrong derived number is worse than none.`;
+    // Two disjoint-key calls in parallel, merged back to one response. Split
+    // by what the frontend shows immediately vs. behind a disclosure (see
+    // item 16 of the rewrite spec) — a real UI boundary, unlike v2's
+    // technical/soft-skill category split, which existed only to avoid
+    // duplicate generation and had no meaning past that.
+    const primaryPrompt = section(`${brief}
 
-    // skill_gaps is 15 fields per entry and was the whole latency cost: one call
-    // for 8-12 of them measured 62s, past the ~60s where Safari abandons a fetch
-    // and reports "Load failed". Splitting it needs the two halves to not
-    // produce the same gap twice, and the schema already has the seam — the
-    // category enum. Partitioning by category gives each call a self-contained
-    // brief with no overlap by construction, so no coordinating pick stage is
-    // needed and the arrays simply concatenate.
-    const gapsPromptFor = (label, cats) => withLanguage(`${sharedIntro}
+YOUR PART: the primary result — what carries over, the one gap worth
+starting with, the next concrete move, and the fuller list of gaps worth
+checking.
 
-INSTRUCTIONS:
-1. Identify 3-6 specific skill gaps between these roles — ONLY in these categories: ${label}. Ignore every other kind of gap; another pass covers those. The ones that actually block the move, not every difference you can name.
-2. For each, assess impact (how much it matters for getting hired) and effort (how hard/long to learn)
-3. The "category" field MUST be one of: ${cats}
-4. Rank by impact-to-effort ratio (best ROI first)
-5. Be specific to THIS transition, not generic career advice
-6. Account for skills the user likely already has from their current role
+Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys:
+starting_point, transferable_strengths, start_here, next_move, skill_gaps.
 
-Return ONLY valid JSON. Your response MUST contain ALL 1 top-level key: skill_gaps.
 {
+  "starting_point": {
+    "summary": "One or two sentences: what carries over, stated plainly, grounded only in supplied evidence",
+    "important_unknown": "The most consequential thing supplied information doesn't establish — often that the target role varies by company, and an actual job posting would replace general expectations with this specific one"
+  },
+  "transferable_strengths": [
+    {
+      "strength": "A capability named directly from supplied experience — 3-6 words",
+      "evidence": "The visitor's own supplied experience this rests on, restated at its actual strength — one sentence",
+      "transfer": "What that evidence reasonably suggests may carry over — one sentence, conditional, never upgraded into leadership/strategy/judgment/empathy/management unless the visitor supplied evidence for those specifically"
+    }
+  ],
+  "start_here": {
+    "capability": "The single most consequential capability not established by supplied evidence — 3-6 words",
+    "why_it_matters": "Why this one before the others, tied to the target role and labeled by basis — one sentence",
+    "current_evidence": "What the visitor's supplied experience does or doesn't establish about this — one sentence",
+    "gap": "The specific difference between supplied evidence and the capability — one sentence",
+    "next_move": "One short line naming how to build or demonstrate it — the full version is the top-level next_move below",
+    "proof": "What observable artifact or example could demonstrate it — one sentence"
+  },
+  "next_move": {
+    "primary": "ONE feasible move, described concretely enough to act on today — assumes no special access, authority, or permission the visitor didn't mention",
+    "why": "Why this move specifically, tied to start_here — one sentence",
+    "proof": "What you'd have afterward — a concrete artifact you can revise, discuss, or use as the start of a portfolio piece — one sentence",
+    "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed"]
+  },
   "skill_gaps": [
     {
-      "id": "gap_1",
-      "skill": "Specific skill name — 3-6 words",
-      "description": "What this skill actually means in practice — not a definition, but what you'd DO with it — 1-2 sentences",
-      "category": "technical|soft_skill|domain_knowledge|tool_platform|credential|network",
-      "impact": 90,
-      "effort": 40,
-      "roi_score": 88,
-      "priority": "critical|high|medium|nice_to_have",
-      "current_level": "none|beginner|intermediate|advanced",
-      "target_level": "beginner|intermediate|advanced|expert",
-      "why_it_matters": "Why this specific skill is a gate for the target role — be blunt — one sentence",
-      "time_estimate_hours": 40,
-      "resource_type": "Search Coursera for 'X'|Read 'Book Title' by Author|Practice via Y|Build Z",
-      "resource_detail": "Specific search term or resource description — never a URL, always a findable reference — one sentence",
-      "free_or_paid": "free | cheap | moderate | expensive (rough cost tier, not a currency figure)"
+      "capability": "Specific capability — 3-6 words, not 'learn leadership'",
+      "target_relevance": "Why this may matter for the target role — one sentence",
+      "relevance_basis": "commonly_relevant | role_dependent | employer_dependent | verified_target",
+      "current_evidence": "What the visitor actually supplied that bears on this, or 'None supplied.' — one sentence",
+      "status": "evidence_you_have | some_related_evidence | not_established | needs_clarification",
+      "gap": "The specific difference between supplied evidence and the capability — one sentence",
+      "next_move": "One practical, feasible way to strengthen or demonstrate it — one sentence",
+      "proof": "What observable artifact, experience, or example could demonstrate it — one sentence",
+      "priority": "start_here | important | useful | role_dependent",
+      "effort": "smaller_build | moderate_build | larger_build, or null if no reasonable comparison is possible"
     }
   ]
 }
 
-${sharedTail}`, userLanguage);
+RULES:
+- 4-7 skill_gaps after semantic deduplication — not padded to fill a count.
+- Do not repeat the capability chosen for start_here inside skill_gaps.
+- Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
+- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives.
+- No numeric scores anywhere in this response.`, userLanguage);
 
-    const gapsHardPrompt = gapsPromptFor('technical skills, tools/platforms, and credentials', 'technical|tool_platform|credential');
-    const gapsHumanPrompt = gapsPromptFor('soft skills, domain knowledge, and network', 'soft_skill|domain_knowledge|network');
+    const secondaryPrompt = section(`${brief}
 
-    const contextPrompt = withLanguage(`${sharedIntro}
+YOUR PART: what's worth checking about the target role itself, and the
+practical non-skill tasks the transition involves.
 
-INSTRUCTIONS:
-1. Assess this transition's overall difficulty, readiness, transferable skills, and hidden requirements
-2. Be specific to THIS transition, not generic career advice
-3. Account for skills the user likely already has from their current role
+Return ONLY valid JSON. Your response MUST contain ALL 3 top-level keys:
+role_expectations_to_check, transition_tasks, unknowns.
 
-Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys: transition_summary, transferable_skills, hidden_requirements, quick_wins, overall_readiness.
 {
-  "transition_summary": {
-    "from": "${currentRole.trim()}",
-    "to": "${targetRole.trim()}",
-    "difficulty": "Lateral move|Moderate stretch|Significant pivot|Major career change",
-    "estimated_months": 6,
-    "core_challenge": "The single biggest obstacle in this specific transition — 1 sentence"
-  },
-  "transferable_skills": [
+  "role_expectations_to_check": [
     {
-      "current_name": "What the user calls this skill in their current role — 3-6 words",
-      "target_name": "What the target role calls the same skill — 3-6 words",
-      "reframe": "How to describe this on a resume for the target role — one sentence",
-      "gap_to_close": "Any delta between how they use it now vs. how the target role uses it (or 'None — direct transfer') — one sentence"
+      "question": "Something about the target role worth verifying rather than assuming — degree of ownership, IC vs. management, customer contact, analytics expectations, technical depth, domain expertise, portfolio expectations, travel/on-call/location — one sentence",
+      "why_it_matters": "Why this could materially change the plan if the answer differs from the general pattern — one sentence",
+      "how_to_verify": "Best source is an actual job posting for this exact role — one sentence"
     }
   ],
-  "hidden_requirements": [
+  "transition_tasks": [
     {
-      "skill": "A skill that rarely appears in job descriptions but actually determines who gets hired — 3-6 words",
-      "why_hidden": "Why this doesn't show up in postings — one sentence",
-      "how_to_spot": "How to tell if an employer actually cares about this — one sentence",
-      "how_to_build": "How to develop this without having the target job yet — one sentence"
+      "task": "A networking, resume, outreach, or application task — not a skill to build — one sentence",
+      "why": "Why this task specifically matters for this transition — one sentence"
     }
   ],
-  "quick_wins": ["2-3 things the user could do THIS WEEK to start closing gaps"],
-  "overall_readiness": {
-    "score": 45,
-    "summary": "Honest 1-sentence assessment of how close they are right now — 1-2 sentences",
-    "biggest_gap": "The single skill that would move the needle most — one sentence",
-    "pleasant_surprise": "Something they probably already have that they don't realize counts — one sentence"
-  }
+  "unknowns": ["Anything else important that the supplied information doesn't establish, beyond starting_point.important_unknown"]
 }
 
-${sharedTail}`, userLanguage);
+RULES:
+- Maximum 4 role_expectations_to_check, 3 transition_tasks, 3 unknowns.
+- Zero of any is allowed — omit rather than manufacture.
+- Label every expectation as something to VERIFY, never as a known fact about the target.
+- No numeric scores anywhere in this response.`, userLanguage);
 
-    // Three calls, not two. The gaps half alone was the long pole at 62s; each
-    // category group now emits roughly half the array, so wall-clock is the
-    // slowest of three rather than the old single mega-array. 3000 each is
-    // ample for 3-6 gaps (the undivided call needed 5000 for 8-12).
-    const [gapsHardPart, gapsHumanPart, contextPart] = await Promise.all([
+    const [primaryPart, secondaryPart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 3000,
-        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-        messages: [{ role: 'user', content: gapsHardPrompt }]
-      }, { label: 'SkillGapMap:gaps-hard' }),
+        system: withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: primaryPrompt }],
+      }, { label: 'SkillGapMap:primary' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-        messages: [{ role: 'user', content: gapsHumanPrompt }]
-      }, { label: 'SkillGapMap:gaps-human' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        // Summary + transferables + hidden + quick_wins + readiness — measured ~9k chars
-        // (≈2.5k tokens EN, ≈2.7k DE); 2400 truncated a live EN probe → 3000 restores
-        // headroom (split total 8000 never exceeds the original 8000 budget).
-        max_tokens: 3000,
-        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-        messages: [{ role: 'user', content: contextPrompt }]
-      }, { label: 'SkillGapMap:context' })
+        max_tokens: 2000,
+        system: withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: secondaryPrompt }],
+      }, { label: 'SkillGapMap:secondary' }),
     ]);
 
-    // The two gap calls partition by category, so their arrays concatenate
-    // rather than overwrite. Re-rank by ROI across the merged set — each call
-    // only ranked within its own categories — and renumber the ids, which are
-    // positional and would otherwise collide (both halves start at gap_1).
-    const mergedGaps = [...(gapsHardPart.skill_gaps || []), ...(gapsHumanPart.skill_gaps || [])]
-      .sort((a, b) => (Number(b.roi_score) || 0) - (Number(a.roi_score) || 0))
-      .map((g, i) => ({ ...g, id: `gap_${i + 1}` }));
-    const parsed = { ...contextPart, skill_gaps: mergedGaps };
+    const parsed = {
+      transition: { current: currentRole.trim(), target: targetRole.trim() },
+      ...primaryPart,
+      ...secondaryPart,
+    };
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.starting_point || !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
+
+    await runOutputGuard(parsed, {
+      label: 'skill-gap-map',
+      fields: collectProseFields(parsed),
+      supplied: brief,
+      promise: 'Show what supplied experience carries over to the target role, what is not yet established, and one good place to start — without inventing proficiency, the employer, the market, or precision.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    // Structural cleanup after the guard (guard mutates in place; a repair
+    // pass can leave a field incomplete despite being told not to — same
+    // lesson as ScamRadar/Sensory Scout/Signal vs Noise this session).
+    const nonBlank = (v) => typeof v === 'string' && v.trim().length > 0;
+    parsed.transferable_strengths = Array.isArray(parsed.transferable_strengths)
+      ? parsed.transferable_strengths.filter(x => nonBlank(x?.strength) && nonBlank(x?.evidence)).slice(0, 5)
+      : [];
+    parsed.skill_gaps = Array.isArray(parsed.skill_gaps)
+      ? parsed.skill_gaps.filter(x => nonBlank(x?.capability) && nonBlank(x?.gap)).slice(0, 7)
+      : [];
+    parsed.role_expectations_to_check = Array.isArray(parsed.role_expectations_to_check)
+      ? parsed.role_expectations_to_check.filter(x => nonBlank(x?.question)).slice(0, 4)
+      : [];
+    parsed.transition_tasks = Array.isArray(parsed.transition_tasks)
+      ? parsed.transition_tasks.filter(x => nonBlank(x?.task)).slice(0, 3)
+      : [];
+    parsed.unknowns = Array.isArray(parsed.unknowns) ? parsed.unknowns.filter(nonBlank).slice(0, 3) : [];
+    if (parsed.next_move) {
+      parsed.next_move.alternatives = Array.isArray(parsed.next_move.alternatives)
+        ? parsed.next_move.alternatives.filter(nonBlank).slice(0, 2)
+        : [];
+    }
+
     res.json(parsed);
 
   } catch (error) {
@@ -178,7 +362,11 @@ ${sharedTail}`, userLanguage);
 });
 
 // ═══════════════════════════════════════════════════
-// ROUTE 2: TIMELINE — Week-by-week learning plan
+// ROUTE 2: TIMELINE — sequenced, not scheduled. Hours/week may size the
+// plan; it may never be used to calculate a completion date from invented
+// per-skill hour estimates — the v2 version did exactly that (total_weeks,
+// per-week milestones with a specific week number) despite never being
+// given a bounded curriculum to derive it from.
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-timeline', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -190,60 +378,57 @@ router.post('/skill-gap-timeline', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
     const hours = hoursPerWeek || 5;
     const gapCtx = skillGaps.slice(0, 8).map((g, i) =>
-      `${i + 1}. ${g.skill} (${g.priority}, ~${g.time_estimate_hours}h, ${g.category})`
+      `${i + 1}. ${g.capability || g.skill} (${g.priority})`
     ).join('\n');
 
-    const prompt = withLanguage(`Create a realistic week-by-week learning plan for this career transition. The user has ${hours} hours per week to dedicate to learning.
+    const prompt = section(`Sequence this career transition's skill-building — not a schedule with dates, a SEQUENCE with a reasoning order. The visitor has ${hours} hours/week available.
 
-TRANSITION: ${transitionSummary?.from || 'Current role'} → ${transitionSummary?.to || 'Target role'}
-ESTIMATED TOTAL MONTHS: ${transitionSummary?.estimated_months || 6}
+TRANSITION: ${transitionSummary?.current || transitionSummary?.from || 'Current role'} → ${transitionSummary?.target || transitionSummary?.to || 'Target role'}
 
 SKILL GAPS (prioritized):
 ${gapCtx}
 
-INSTRUCTIONS:
-- Break into phases (Foundation, Building, Advanced, Application)
-- Each phase has specific weeks and milestones
-- Every week has a concrete deliverable or checkpoint
-- Account for the ${hours} hours/week constraint
-- Front-load high-ROI skills
-- Include rest/consolidation weeks — learning isn't linear
-- Be realistic about what's achievable
-
 Return ONLY valid JSON:
 {
-  "total_weeks": 24,
   "hours_per_week": ${hours},
-  "phases": [
-    {
-      "name": "Phase name — e.g., 'Foundation' — 3-6 words",
-      "weeks": "1-6",
-      "focus": "What this phase accomplishes — 1 sentence",
-      "milestones": [
-        {
-          "week": 2,
-          "milestone": "Specific, verifiable checkpoint — e.g., 'Complete Python basics course, build first data cleaning script' — one sentence",
-          "deliverable": "What you should have to show for it — a project, a certificate, a document, a conversation — one sentence"
-        }
-      ]
-    }
-  ],
-  "plateau_warning": "When and why the user is likely to feel stuck, and what to do about it — one sentence",
-  "ready_to_apply_by": "Week X — at this point, start applying even if you're not 'done' because... — one sentence"
+  "first": {
+    "focus": "Which gap(s) to work on first and why that order, given the hours available — one or two sentences",
+    "how_youll_know": "A concrete, self-checkable sign this step is genuinely done — not a time-based one — one sentence"
+  },
+  "then": {
+    "focus": "What comes after, and how what's learned in 'first' should inform whether this is still the right next gap — one or two sentences"
+  },
+  "later": {
+    "focus": "Secondary capabilities or transition tasks that can wait until the earlier gaps are underway — one or two sentences"
+  },
+  "plateau_note": "A realistic, non-date-based note about when motivation typically dips in this kind of learning process and what to do about it — one sentence, or null"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+RULES:
+- Do NOT generate total_weeks, a week number, "~Xh", or any completion estimate ("~6 months", "12 weeks") — nothing here is bounded enough to support one.
+- hours_per_week is for SIZING each phase's scope (how much to attempt at once), never for calculating when the visitor will be "done."
+- Sequence by what a visitor can self-verify, not by an invented schedule.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage('You are a learning plan designer who builds realistic, week-by-week roadmaps. You understand that people have jobs and lives, and plan accordingly. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
+      max_tokens: 1500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapTimeline' });
 
-    if (!parsed.total_weeks) {
-      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    if (!parsed.first) {
+      return res.status(500).json({ error: 'Could not sequence your plan. Please try again.' });
     }
+
+    await runOutputGuard(parsed, {
+      label: 'skill-gap-timeline',
+      fields: collectProseFields(parsed),
+      supplied: prompt,
+      promise: 'Sequence skill-building by reasoning order, without inventing a completion date or schedule.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
     res.json(parsed);
 
   } catch (error) {
@@ -543,8 +728,6 @@ Return ONLY valid JSON:
     "note": "Any relevant context — e.g., 'Entry-level PM pay varies wildly by company size' — one sentence"
   },
   "salary_delta": {
-    "expected_increase_percent": 45,
-    "annual_dollar_increase": 25000,
     "realistic_starting_salary": "What you'll actually get in your FIRST target-role job — usually below the midpoint — one sentence"
   },
   "transition_costs": [
@@ -566,6 +749,8 @@ Return ONLY valid JSON:
   "financial_warning": "Any honest caution about the financial side of this specific transition (or null if the math is clearly good) — one sentence"
 }
 
+Do NOT include a percent increase or dollar increase field yourself — those are computed from your own current_salary_range.mid and target_salary_range.mid after you respond, so they always agree with the ranges you gave rather than risking a second, independently-stated number that contradicts them.
+
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -578,6 +763,19 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.current_salary_range) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
+
+    // Computed here, not asked of the model: a second independently-stated
+    // number ("expected 45% increase") could silently disagree with the
+    // salary ranges the model just gave, and there is no reason to let it —
+    // the ranges already establish everything these two figures need.
+    const currentMid = Number(parsed.current_salary_range?.mid);
+    const targetMid = Number(parsed.target_salary_range?.mid);
+    if (Number.isFinite(currentMid) && currentMid > 0 && Number.isFinite(targetMid)) {
+      parsed.salary_delta ??= {};
+      parsed.salary_delta.annual_dollar_increase = Math.round(targetMid - currentMid);
+      parsed.salary_delta.expected_increase_percent = Math.round(((targetMid - currentMid) / currentMid) * 100);
+    }
+
     res.json(parsed);
 
   } catch (error) {
@@ -895,7 +1093,13 @@ Write every field with precision — no filler, no padding, no restating what wa
 });
 
 // ═══════════════════════════════════════════════════
-// ROUTE 12: EXPLORE — Suggest target roles from current skills
+// ROUTE 12: EXPLORE — Possible directions, not an invented target mapped
+// against itself. This visitor has no target yet; the old version invented
+// one (a specific role title, a salary_change percentage, a demand rating)
+// and then confidently mapped gaps against its own invention. Now it stops
+// after suggesting directions — "Map This Direction" in the frontend hands
+// the chosen target_role to the real /skill-gap-map above, which reasons
+// from the visitor's OWN evidence, not a role this endpoint made up.
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-explore', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -905,54 +1109,58 @@ router.post('/skill-gap-explore', rateLimit(DEFAULT_LIMITS), async (req, res) =>
       return res.status(400).json({ error: 'Describe your current role.' });
     }
 
-    const prompt = withLanguage(`This person knows they want a change but hasn't picked a target yet. Based on their current role and skills, suggest 5-6 realistic career paths — ranging from easy lateral moves to ambitious pivots.
+    const prompt = section(`This visitor knows they want a change but hasn't picked a target yet.
+Suggest 4-6 plausible directions from what they've supplied — do not invent
+a single "correct" target and analyze against it.
 
 CURRENT ROLE: "${currentRole.trim()}"
-${currentSkills?.trim() ? `SKILLS/EXPERIENCE: "${currentSkills.trim()}"` : ''}
-${interests?.trim() ? `INTERESTS: "${interests.trim()}"` : ''}
+${currentSkills?.trim() ? `EXPERIENCE SUPPLIED: "${currentSkills.trim()}"` : 'EXPERIENCE SUPPLIED: none — do not invent any.'}
+${interests?.trim() ? `INTERESTS SUPPLIED: "${interests.trim()}"` : ''}
 
-INSTRUCTIONS:
-- Range from easy (lateral) to hard (major pivot)
-- For each, show the salary change, difficulty, and key gap
-- Include at least one surprising option they wouldn't think of
-- Be honest about which paths are realistic vs. aspirational
-
-Return ONLY valid JSON:
+Return ONLY valid JSON. Your response MUST contain the top-level key: directions.
 {
-  "current_profile_summary": "What their current role signals about their skills — 1 sentence",
-  "paths": [
+  "directions": [
     {
-      "target_role": "Specific role title — 3-6 words",
-      "difficulty": "Lateral move|Moderate stretch|Significant pivot|Major career change",
-      "salary_change": "+15%|+30%|−10%|Similar",
-      "time_to_transition": "3-6 months|6-12 months|1-2 years",
-      "key_gap": "The single biggest skill they'd need to develop — one sentence",
-      "key_advantage": "What from their current role gives them a head start — one sentence",
-      "surprise_factor": "Why this path might not be obvious but is realistic — one sentence",
-      "lifestyle_change": "How their day-to-day would differ — one sentence",
-      "demand": "High|Medium|Low — current job market for this role"
+      "target_role": "A specific, plausible direction — 3-6 words",
+      "why_it_may_connect": "Why this connects to what the visitor actually supplied — one sentence, traceable to their evidence",
+      "what_the_work_involves": "What the work generally involves — one or two sentences, general knowledge about the field, not a claim about a specific employer",
+      "what_to_learn_more_about": "The main thing worth investigating before committing — one sentence",
+      "one_low_cost_way_to_investigate": "A specific, feasible first step that doesn't assume a job, access, or budget — one sentence"
     }
-  ],
-  "pattern_insight": "What these options collectively reveal about their transferable strengths — one sentence",
-  "avoid_paths": [
-    {
-      "role": "A role that seems like a natural transition but actually isn't — 3-6 words",
-      "why_trap": "Why this path is harder than it looks — one sentence"
-    }
-  ],
-  "next_step": "What to do right now to start exploring — one specific action — one sentence"
-}`, userLanguage);
+  ]
+}
+
+RULES:
+- 4-6 directions, ranging from close/lateral to more ambitious.
+- Do not assign a salary figure, salary change percentage, demand rating, difficulty score, or timeline — this step is about plausible directions, not a market analysis.
+- Every "why_it_may_connect" must trace to something actually supplied, not a generic compliment.
+- Include at least one direction that isn't the obvious first guess, if one genuinely fits.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
+      max_tokens: 2500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapExplore' });
 
-    if (!parsed.current_profile_summary) {
-      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
+    if (!parsed.directions) {
+      return res.status(500).json({ error: 'Could not suggest directions. Please try again.' });
     }
+
+    await runOutputGuard(parsed, {
+      label: 'skill-gap-explore',
+      fields: collectProseFields(parsed),
+      supplied: prompt,
+      promise: 'Suggest plausible career directions traceable to supplied experience, without inventing a target role\'s market data.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+
+    const nonBlank = (v) => typeof v === 'string' && v.trim().length > 0;
+    parsed.directions = Array.isArray(parsed.directions)
+      ? parsed.directions.filter(x => nonBlank(x?.target_role) && nonBlank(x?.why_it_may_connect)).slice(0, 6)
+      : [];
+
     res.json(parsed);
 
   } catch (error) {
