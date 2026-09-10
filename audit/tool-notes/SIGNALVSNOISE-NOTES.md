@@ -458,3 +458,100 @@ validate it correctly).
     phrase-ban regex covers it, it doesn't and structurally can't.
 21. **The "CLAIM ANALYSIS" mode badge** — don't remove it as "just disclosure text"; the owner's
     stated reasoning is that it reinforces the conceptual boundary for the visitor, not merely informs.
+
+## V6 — "WHAT AUTHORIZES THIS SENTENCE?" (sleep domain)
+
+V5's hard mode switch and broad-phrase regex killed the fake-literature-review voice, confirmed by
+the owner. A fourth live test (sleep: "everyone needs exactly 8 hours," blue-light glasses, sleep
+debt) found a narrower, different failure: **unlabeled empirical premises that never use
+evidence-provenance wording at all**, so `CLAIM_MODE_BANNED_RE` structurally cannot catch them —
+"most adults need roughly 7-9 hours," "light exposure is one input to the body's circadian timing
+system," "additional sleep after restriction can reduce sleepiness" are stated as bare fact, not as
+"evidence shows" or "studies find." Plus two more issues: a logical non-sequitur reasoning backward
+from a metaphor's usefulness to a property of the thing it describes ("if a single night fully erased
+sleep debt, the metaphor wouldn't be useful" does not follow), and a bottom line that broke back into
+sleep guidance and invented personal context (`what_would_change_the_answer`) nobody supplied.
+
+**Fix is prompt-level, not regex** — this class of error has no stable lexical marker a regex can key
+on; a bare factual sentence looks identical whether or not the model actually knows it's true.
+
+- **New rule 27 ("WHAT AUTHORIZES THIS SENTENCE?")** — before writing a factual sentence, checks it
+  against three bases: A. USER_CLAIM (the visitor supplied it), B. LOGIC (follows from the claim's own
+  structure — overbreadth, ambiguity, unsupported causal jumps, false precision — no empirical finding
+  needed), C. LABELED_BACKGROUND (genuinely ordinary vocabulary-only background, e.g. what "circadian
+  rhythm" *means* — used sparingly, never to supply the central empirical answer). None of the three →
+  rewrite or remove. Explicitly frames this as "claim analysis does not mean ignore everything you
+  know" — logic and vocabulary stay available, remembered *findings* do not.
+- **New rule 28 ("A metaphor's usefulness does not establish the underlying reality")** — fixes the
+  sleep-debt non-sequitur. Critique what a metaphor actually fails to establish (e.g. "'sleep debt' is
+  a metaphor — it doesn't establish that lost sleep accumulates hour-for-hour, or that a given amount
+  of recovery sleep restores the prior state"), never reason backward from "what would make the
+  metaphor useful."
+- **New rule 29 ("The bottom line summarizes the claim analysis, not sleep/finance/parenting
+  guidance")** — every bottom-line item must be traceable to what `the_signal`/`the_noise` already
+  established about *these* claims, never a new substantive conclusion about the underlying topic.
+  Also locks `what_would_change_the_answer` to being about evidence, not an invented personal
+  situation — that belongs only when the visitor's own supplied context leaves a real, specific gap.
+- NORTH STAR gained a prepended 3-line frame: "USE KNOWLEDGE TO UNDERSTAND THE CLAIM. USE LOGIC TO
+  TEST THE CLAIM. USE ACTUAL EVIDENCE TO SETTLE THE CLAIM." (kept the existing 3 lines below it).
+- 3 new `OUTPUT_GUARD.prohibit` entries (37 → 40): `unauthorized_empirical_fact_or_figure_used_as_an_
+  unlabeled_premise`, `metaphors_usefulness_used_to_infer_a_property_of_the_underlying_reality`,
+  `personal_situation_invented_in_what_would_help_evidence_replaced_with_a_case_nobody_supplied`.
+
+**TRAP HIT AND FIXED DURING THIS PASS** — worth remembering on its own: rule 27 and rule 29's first
+draft quoted the exact attractor phrase "additional sleep after restriction can reduce sleepiness"
+**twice**, verbatim, as a "here's what NOT to write" example. Live testing showed the model echoing
+that near-verbatim phrase straight into `the_noise[].what_the_evidence_supports_instead` anyway — see
+`deftbrain-voice-prompt-traps` memory: worked BAD-example text tends to get copied rather than
+avoided. Fixed by rewriting both examples to describe the ERROR PATTERN in the abstract (no specific
+number, no specific mechanism, no specific magnitude-of-benefit claim left to copy verbatim), plus an
+explicit "this is illustrating a pattern, not a script — a close paraphrase is the same violation"
+line. Verified 0 attractor-phrase / 0 banned-phrase hits across 3 consecutive live regenerations of
+the exact sleep scenario after the reword (the run immediately before the reword did produce the
+attractor phrase; none of the 3 after did).
+
+**UI additions (pure frontend, no new backend capability):**
+- A visible **"No outside sources reviewed"** sub-label now sits beside the CLAIM ANALYSIS badge
+  itself (`svn_no_sources_reviewed`) — the existing disclosure lived only in a hover tooltip, which is
+  poor discoverability for something meant to set an expectation up front.
+- A **"Research These Claims"** disclosure (`svn_research_these_claims`) now renders at the end of
+  results, built from `still_worth_verifying` (falling back to `the_bottom_line.
+  what_would_change_the_answer` when that's empty) — one external search-engine link per open
+  question, opened in a new tab. This is **not** a live-retrieval / verified-research mode: nothing is
+  fetched or checked by DeftBrain itself, the link just hands the visitor a ready-made search. Built
+  as an honest, low-risk version of "finish the idea" — see "NOT built this pass" below for what
+  remains a real decision.
+- i18n: `svn_honest_uncertainty` relabeled "? What Could Change the Answer" → "? What Would Help"
+  across all 13 languages — claim-analysis mode is never actually about the visitor's personal
+  situation today (this tool doesn't branch on a genuinely-supplied personal case), so the
+  evidence-focused label is the honest default. New keys: `svn_no_sources_reviewed`,
+  `svn_research_these_claims`, `svn_research_intro`, `svn_search_this` (13 languages each).
+
+**STILL NOT built this pass — flagged as a real decision again, not defaulted on:** the owner asked a
+second time ("finish the idea") for a genuine live-retrieval `verified_research` mode with real
+sources and citations. This tool still has no web-search/retrieval capability wired in. The search-
+link button above is the honest, zero-infra version of that idea; actual retrieval remains a real
+product/infrastructure decision (cost per request, latency, a new external dependency, reliability)
+that should be made explicitly, not defaulted into or out of during a prompt-correction pass.
+
+**Live-tested against:** the exact sleep-hours/blue-light-glasses/sleep-debt scenario from the
+owner's spec, 3 consecutive regenerations post-fix. 0 hits for the attractor phrase, 0 hits for the
+v5 banned-phrase list, "circadian" appeared once in a LOGIC-framed open question ("whether circadian
+timing effects... offset any recovery benefit") which is legitimate rule-27-C vocabulary use, not an
+unlabeled premise. Recorded as a 4th golden case (`en-sleep-hours-claim-mode`) rather than replacing
+the existing 3 — this pass didn't change the schema, so the investing/parenting cases still validate
+correctly against it.
+
+## DO NOT silently reverse (V6 additions)
+
+22. **Rule 27's "WHAT AUTHORIZES THIS SENTENCE?" test (USER_CLAIM/LOGIC/LABELED_BACKGROUND)** — this
+    is the only defense against unlabeled bare-fact premises; the regex structurally cannot do this
+    job (no stable lexical marker distinguishes a true bare fact from a false one).
+23. **Rule 27/28/29's illustrative examples must stay abstract, not quote a specific number, mechanism,
+    or magnitude figure.** This was a proven, live-tested trap in this exact file: a concrete "here's
+    what NOT to write" example gets echoed back into output rather than avoided. If a future domain
+    needs a new illustrative example, describe the *shape* of the error, not a copyable sentence.
+24. **The "Research These Claims" search-link disclosure is deliberately NOT live retrieval.** Don't
+    quietly upgrade it into fetching or verifying anything without the explicit infra decision noted
+    above — that changes this tool's cost/latency/reliability profile in a way a UI pass shouldn't
+    decide unilaterally.

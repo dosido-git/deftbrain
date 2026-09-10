@@ -92,7 +92,7 @@ const SignalVsNoise = ({ tool }) => {
   // "sources" (HOW THE NOISE GETS MADE) and "verify" (STILL WORTH
   // VERIFYING) are collapsed by default — the target layout keeps the main
   // answer to signal/noise/bottom-line, with the rest one click away.
-  const [expanded, setExpanded] = useState({ noise: true, debated: false, sources: false });
+  const [expanded, setExpanded] = useState({ noise: true, debated: false, sources: false, research: false });
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
@@ -261,9 +261,12 @@ const SignalVsNoise = ({ tool }) => {
                       retrieval); source_analysis/verified_research labels would
                       be added here if that capability is ever built. */}
                   {results?.analysis_mode === 'claim_analysis' && (
-                    <span title={t('svn_mode_claim_analysis_tip')} className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border cursor-help ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>
-                      {t('svn_mode_claim_analysis')}
-                    </span>
+                    <>
+                      <span title={t('svn_mode_claim_analysis_tip')} className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border cursor-help ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>
+                        {t('svn_mode_claim_analysis')}
+                      </span>
+                      <span className={`text-[10px] ${c.textMuted}`}>{t('svn_no_sources_reviewed')}</span>
+                    </>
                   )}
                 </div>
                 <button onClick={() => { setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
@@ -444,9 +447,47 @@ const SignalVsNoise = ({ tool }) => {
               </div>
             )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
-            </div>
+            {/* Research These Claims — this tool has no live-retrieval
+                capability (item 15 of the sleep-domain corrections asked to
+                "finish the idea," but a real research mode needing external
+                lookups is an infra decision, not a prompt fix). What ships
+                here is honest about that: it hands the visitor ready-made
+                search links built from the claims already surfaced above,
+                it does not claim DeftBrain went and checked anything. */}
+            {(() => {
+              const items = results?.still_worth_verifying?.length > 0
+                ? results.still_worth_verifying
+                : (results?.the_bottom_line?.what_would_change_the_answer || []).map(x => ({ question: x }));
+              if (!items.length) return null;
+              return (
+                <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
+                  <button onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                    <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔎 {t('svn_research_these_claims')}</p>
+                    <Caret open={expanded.research} />
+                  </button>
+                  {expanded.research && (
+                    <div className={`border-t ${c.border} px-5 py-4 space-y-3`}>
+                      <p className={`text-xs ${c.textMuted}`}>{t('svn_research_intro')}</p>
+                      <ul className="space-y-2">
+                        {items.map((item, i) => (
+                          <li key={i} className={`flex items-start justify-between gap-3 text-sm ${c.textSecondary}`}>
+                            <span>• {item.question}</span>
+                            <a
+                              href={'https://www.google.com/search?q=' + encodeURIComponent(item.question)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`text-xs font-semibold whitespace-nowrap ${linkStyle}`}
+                            >
+                              {t('svn_search_this')} ↗
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Cross-references */}
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
