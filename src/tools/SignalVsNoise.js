@@ -240,7 +240,17 @@ const SignalVsNoise = ({ tool }) => {
 
             {/* Topic + framing */}
             <div className={`rounded-xl border ${c.border} p-5 ${c.card}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('svn_analyzing')}</p>
+              {/* PF-16's "one reset, on the title row" lived only in the
+                  !results block above, which unmounts the instant results
+                  exist — the tool had no way back to the input screen once
+                  it had an answer. Same handler, same key, just reachable
+                  from both states now. */}
+              <div className="flex items-start justify-between gap-3 mb-1">
+                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_analyzing')}</p>
+                <button onClick={() => { setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  {t('svn_new_topic')}
+                </button>
+              </div>
               <p className={`font-bold text-base mb-3 ${c.text}`}>{results?.topic_as_understood}</p>
               {results?.framing && (
                 <>
