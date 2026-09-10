@@ -186,7 +186,10 @@
             "why": "Hiring reviewers for a research role may not read far enough to find relevant experience if the framing signals 'marketer' before 'researcher.'"
           }
         ]
-      }
+      },
+      "optionalSections": [
+        "transition_tasks"
+      ]
     },
     {
       "name": "explore-swe-to-adjacent-directions",
