@@ -1,12 +1,132 @@
 {
   "_meta": {
     "tool": "SignalVsNoise",
-    "generated": "2026-07-14",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
-    "baseline_commit": "signalvsnoise-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) 4 arrays (the_signal.items, the_noise, genuinely_debated, sources_of_noise) truncated at 3000 AND 4000 on a maximally-noisy topic (nutrition) in German → capped (4/5/3/4) + max_tokens 5000. (2) noise_type is a machine enum but the frontend displays it via t(cfg.key) and switches on the token — the CORRECT language-independent pattern; leave it. (3) no-inner-double-quote rule (the_noise[].claim is wrapped in literal quotes by the frontend). (4) guard keys top-level the_signal + why_this_field_is_noisy. DO NOT reverse: the array caps + max_tokens 5000; the no-inner-quote rule; no annotation suffixes."
+    "generated": "2026-09-09",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/signal-vs-noise, fans out to 2 parallel calls merged server-side)",
+    "baseline_commit": "signalvsnoise-v2",
+    "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). v2 (2026-09-09) is a full owner-supplied rewrite: the v1 tool asserted \"real consensus,\" named specific actors as \"generating noise,\" and invoked specific research designs, biomarkers, genetic variants, and validation findings from memory as though it had performed a sourced evidence review — exactly the authority the tool was never in a position to claim. Schema is completely different from v1 (why_this_field_is_noisy -> framing; the_signal.items[].why_we_know_this -> basis; .the_nuance -> limits; genuinely_debated[].side_a/side_b -> what_supports_one_view/what_supports_another_view; the_noise[] gained what_the_evidence_supports_instead alongside renamed what_went_wrong (was the_problem); the_bottom_line's three single-string fields (what_to_do/what_to_ignore/the_honest_uncertainty) became three arrays (supported_takeaways/treat_skeptically/what_would_change_the_answer); sources_of_noise[].actor/incentive/how_to_spot_it -> source_type/how_it_distorts/how_to_recognize_it, and no longer names an accused actor, only a general mechanism) — this is a full re-record, not a diff against v1. GUARDS carried forward or added this pass: (1) NO_QUOTE_RULE (v1 never had it — added here for the first time); (2) router.outputStandard='v2' + router.outputGuard with a 12-entry prohibit list (v1 had no output guard at all); (3) a structural validation pass, run AFTER runOutputGuard (not before — the guard mutates its argument in place and its repair pass can leave a field incomplete despite instructions not to; see ScamRadar/Sensory Scout for the same lesson learned live the same session), that drops any the_signal/the_noise/genuinely_debated/sources_of_noise item missing a required field and caps each array's length; (4) the noise_type enum dropped \"ideology\" and added \"weak_evidence\" — frontend NOISE_TYPE_CONFIG and the i18n badge label were updated to match, and the prompt explicitly forbids \"ideology\" as a noise_type. DO NOT reverse any of the epistemic rules in PERSONALITY (no fake literature review, no invented motives, no false balance, no individualized medical/financial instructions, no invented precision) or the matching outputGuard entries — each pairs with a prompt section of the same intent."
   },
   "cases": [
+    {
+      "name": "en-sleep-optimization-genuinely-debated",
+      "endpoint": "/api/signal-vs-noise",
+      "input": {
+        "userLanguage": "en",
+        "topic": "sleep optimization",
+        "conflictingAdvice": "8 hours vs polyphasic sleep, blue light glasses fix screen time before bed, sleep debt is real vs you cant catch up"
+      },
+      "output": {
+        "the_noise": [
+          {
+            "claim": "Everyone needs exactly 8 hours of sleep",
+            "noise_type": "oversimplified",
+            "noise_label": "One number fits all",
+            "what_the_evidence_supports_instead": "Sleep need varies across individuals, with most adults functioning well somewhere in a range — commonly cited as roughly 7 to 9 hours — and some outside that range without impairment. Eight hours is a reasonable population-level reference point, not a personal prescription.",
+            "what_went_wrong": "A population average (or recommended range midpoint) got converted into a universal individual target. Individual variation in sleep need is real and documented. Treating a single number as a biological requirement ignores that variation and can create unnecessary anxiety about missing it by minutes.",
+            "kernel_of_truth": "Chronic short sleep — consistently under 6 hours for most adults — is associated with measurable impairments in cognitive performance and health markers. The 8-hour figure points toward a real pattern, even if the exact number is not universal."
+          },
+          {
+            "claim": "Blue light glasses fix the problem of screen use before bed",
+            "noise_type": "weak_evidence",
+            "noise_label": "Glasses as a complete solution",
+            "what_the_evidence_supports_instead": "Blue light is one factor that can suppress melatonin production, but screen use before bed involves additional factors — mental stimulation, content that raises alertness or anxiety, and displacement of wind-down time — that blue light filtering does not address. The evidence that blue light glasses meaningfully improve sleep outcomes in real-world use is not strong.",
+            "what_went_wrong": "A plausible mechanism (blue light affects the circadian system) was turned into a product solution. The mechanism is real, but isolating blue light as the primary problem, and glasses as the fix, goes well beyond what the evidence supports. Controlled trials on blue light glasses and actual sleep quality have produced mixed results.",
+            "kernel_of_truth": "Light exposure, including short-wavelength light, does affect the circadian system and melatonin timing. Reducing bright screen use in the hour before bed — with or without glasses — is a reasonable, low-risk adjustment."
+          },
+          {
+            "claim": "You can fully catch up on sleep debt over a weekend",
+            "noise_type": "oversimplified",
+            "noise_label": "Weekend recovery erases the deficit",
+            "what_the_evidence_supports_instead": "Some recovery of subjective sleepiness and certain performance measures appears possible after extended recovery sleep, but some deficits — particularly in metabolic and cognitive domains — do not fully reverse with short-term catch-up. Chronic partial sleep restriction followed by weekend recovery does not appear to restore all functions to baseline.",
+            "what_went_wrong": "Partial recovery was treated as full recovery. The observation that people feel better after sleeping in on weekends is real, but feeling restored is not the same as being fully restored. The claim goes further than the evidence supports, particularly for repeated or prolonged debt.",
+            "kernel_of_truth": "Acute sleep loss (one or a few nights) is more recoverable than chronic restriction. A period of extended sleep after short-term deprivation does produce measurable improvements. The problem is the claim of completeness, not the idea of recovery itself."
+          },
+          {
+            "claim": "Polyphasic sleep is an effective alternative to consolidated nightly sleep for most people",
+            "noise_type": "individual_variation",
+            "noise_label": "Polyphasic works for everyone",
+            "what_the_evidence_supports_instead": "A single midday nap combined with a full or near-full night of sleep has reasonable support for improving alertness and performance. Extreme polyphasic schedules — multiple short sleep blocks replacing consolidated sleep — have very limited evidence supporting their safety or effectiveness in general populations, and the adaptation period carries real performance costs.",
+            "what_went_wrong": "Anecdotal accounts of individuals who report thriving on unusual sleep schedules get generalized into a system that 'works.' The controlled evidence on extreme polyphasic schedules is thin. Individual variation in chronotype and sleep architecture is real, but that variation does not establish that most people can safely reduce total sleep time by fragmenting it.",
+            "kernel_of_truth": "Napping has genuine support as a tool for managing alertness, and consolidated nighttime sleep is not the only valid schedule for every person or every cultural context. Flexibility in how sleep is distributed across a day is real."
+          }
+        ],
+        "the_bottom_line": {
+          "supported_takeaways": [
+            "Total sleep time matters more than whether you hit a specific number. Chronic short sleep carries real costs; the exact threshold varies by person.",
+            "Winding down before bed — reducing stimulation, bright light, and mentally activating content — has more support than any single product fix like blue light glasses.",
+            "Some recovery from sleep debt is possible, but assuming a weekend fully erases a week of restriction is not well supported. Consistency matters more than catch-up.",
+            "A brief planned nap is one of the better-supported tools for managing daytime alertness, separate from the question of polyphasic schedules."
+          ],
+          "treat_skeptically": [
+            "Any single-number sleep target presented as a universal biological requirement.",
+            "Products that claim to 'fix' a sleep problem by addressing one mechanism (blue light, a supplement, a device) without evidence of real-world sleep outcome improvement.",
+            "Polyphasic sleep systems promoted with strong claims about effectiveness, especially when the evidence base is personal testimonials rather than controlled observation.",
+            "The idea that weekend catch-up sleep fully restores what chronic restriction costs."
+          ],
+          "what_would_change_the_answer": [
+            "Peer-reviewed trials on blue light glasses measuring actual sleep outcomes (not just melatonin levels) would sharpen the blue light question considerably.",
+            "Your own sleep history and whether you are dealing with acute short-term restriction or chronic long-term restriction — the recovery picture differs between them.",
+            "Whether a specific polyphasic schedule claim cites controlled evidence or relies on self-reported productivity from people who self-selected into the practice.",
+            "Individual factors like chronotype, age, and any underlying sleep disorders can materially change which general findings apply to a specific person — a clinician is better placed to apply population evidence to individual circumstances."
+          ]
+        },
+        "sources_of_noise": [
+          {
+            "source_type": "Product-driven simplification",
+            "how_it_distorts": "A real mechanism (blue light affects melatonin; a supplement affects a pathway) gets elevated into 'the cause' of the problem, and the product becomes 'the fix.' This framing tends to overstate both the mechanism's importance and the product's effect on actual outcomes.",
+            "how_to_recognize_it": "The explanation focuses on a single biological mechanism while the claim is about a complex real-world outcome. Look for a gap between what was measured (melatonin levels, lab markers) and what is being promised (better sleep, better health)."
+          },
+          {
+            "source_type": "Anecdote generalized to system",
+            "how_it_distorts": "An individual or small group reports thriving on an unusual practice — polyphasic sleep, extreme fasting windows, cold exposure — and this gets packaged as a method that works broadly. People who do not do well self-select out of the narrative.",
+            "how_to_recognize_it": "The evidence is mainly first-person accounts or community reports, with no comparison group. Ask whether anyone tracked the people who tried it and stopped."
+          },
+          {
+            "source_type": "Population average presented as individual target",
+            "how_it_distorts": "A number derived from studying groups — an average, a recommended range, a threshold associated with risk — gets stated as though it is the right target for every person. Variation within populations is real and gets erased.",
+            "how_to_recognize_it": "Precise universal numbers with no acknowledgment of variation: 'you need exactly X hours,' 'your heart rate should be below Y.' No mention of how wide the range is across individuals."
+          }
+        ],
+        "topic_as_understood": "Whether common sleep advice — 8-hour targets, polyphasic schedules, blue light glasses, and catching up on sleep debt — is supported by evidence or overstated",
+        "framing": "Sleep research has produced some fairly robust general findings, but much popular advice compresses those findings into simpler rules than the evidence actually supports. The useful distinction is between what holds up as a broad pattern across populations and what is being sold as a precise individual prescription.",
+        "the_signal": {
+          "items": [
+            {
+              "claim": "Most adults function better with somewhere between 7 and 9 hours of sleep per night than with consistently less. Regularly sleeping under 6 hours is associated with measurable impairments in cognitive performance, mood, and metabolic markers.",
+              "basis": "This pattern emerges consistently from controlled sleep-restriction studies and large observational datasets. The association between short sleep and impaired functioning is among the more replicated findings in sleep research.",
+              "limits": "The 7-9 range is a population pattern, not a fixed individual requirement. Some people appear to function well on less; a small number may need more. The evidence does not establish a single correct number for any given person, and it does not prove that short sleep causes poor health outcomes rather than correlating with other factors."
+            },
+            {
+              "claim": "Light exposure in the hours before sleep — particularly short-wavelength blue light — can delay the onset of melatonin release and shift the body's internal clock later, making it harder to fall asleep at a desired time.",
+              "basis": "The underlying mechanism (light suppressing melatonin via the retina) is well established from controlled laboratory studies. The delay effect from evening screen use has also been observed in controlled conditions.",
+              "limits": "This does not establish that blue light glasses reliably solve the problem in real-world use. Screen brightness, ambient light, and how close to bedtime exposure occurs all matter. The evidence for glasses specifically — as opposed to dimming screens or reducing light more broadly — is weaker and less consistent than the marketing around them suggests."
+            },
+            {
+              "claim": "Missing substantial sleep over several nights produces a cumulative deficit that is not fully reversed by a single recovery night. Performance and alertness remain impaired even after one night of extended sleep following multiple nights of restriction.",
+              "basis": "Controlled sleep-restriction studies that measured objective performance across multiple days and recovery nights support this pattern.",
+              "limits": "This does not mean recovery is impossible — it means it takes longer than one night and that people often feel more recovered than they objectively are. The exact timeline for full recovery, and whether all impairments are fully reversible, is less certain."
+            }
+          ]
+        },
+        "genuinely_debated": [
+          {
+            "question": "Can people substantially 'catch up' on sleep debt through extended weekend sleep, or does chronic short sleep produce lasting effects that weekend recovery cannot undo?",
+            "what_supports_one_view": "Some studies find that after extended recovery sleep, many performance measures return toward baseline, suggesting meaningful recovery is possible. People subjectively feel restored, and some physiological markers normalize.",
+            "what_supports_another_view": "Other research finds that people who regularly restrict sleep and then recover on weekends remain more impaired than those who simply slept adequately throughout — and that people underestimate their own impairment after partial recovery.",
+            "why_unsettled": "Studies vary in how they define 'recovery,' how long they follow participants, and what outcomes they measure. Short-term lab recovery may not reflect what happens with months or years of irregular sleep. The question of whether any harm from chronic sleep restriction is fully reversible over a long enough period remains open."
+          },
+          {
+            "question": "Is polyphasic sleep — splitting sleep into multiple shorter periods across 24 hours — a viable and healthy alternative to a single nightly block for most people?",
+            "what_supports_one_view": "Shorter naps are well-supported as beneficial for alertness and performance, and some historical and cross-cultural patterns suggest segmented sleep has been common. A few occupational contexts (shift work, military) have studied adapted schedules with some success.",
+            "what_supports_another_view": "Extreme polyphasic schedules that reduce total sleep well below 7 hours rely mainly on anecdote and self-report rather than controlled evidence. The consolidation of sleep into certain stages may matter for memory and restoration in ways that are disrupted by heavy fragmentation.",
+            "why_unsettled": "Rigorous long-term studies of extreme polyphasic schedules in healthy adults are scarce. Most evidence for napping covers short naps added to adequate nightly sleep, not as a replacement for it. Individual variation in circadian biology makes this hard to generalize."
+          }
+        ]
+      },
+      "optionalSections": [
+        "genuinely_debated"
+      ]
+    },
     {
       "name": "de-nutrition-weight-loss",
       "endpoint": "/api/signal-vs-noise",
@@ -20,118 +140,127 @@
         "userContext": "Ich will 10 kg abnehmen und bin verwirrt."
       },
       "output": {
-        "topic_as_understood": "Gewichtsverlust durch Ernährungsanpassung: Welche Strategie (Low-Carb, Low-Fat, IF, Kalorienzählen) ist tatsächlich wirksam?",
-        "why_this_field_is_noisy": "Die Ernährungsforschung leidet strukturell unter schlechter Methodik: Ernährungsstudien basieren meist auf Selbstberichten, laufen zu kurz und können keine Langzeit-RCTs wie in der Pharmakologie durchführen. Gleichzeitig ist der Markt für Diätbücher, Apps, Supplements und Ernährungsberatung in Deutschland mehrere Milliarden Euro schwer — jeder Anbieter braucht ein Alleinstellungsmerkmal, das ihn von Grundkonsens unterscheidet. Hinzu kommt ausgeprägte individuelle Variation in Stoffwechsel, Darmmikrobiom und Essverhalten, die echte Widersprüche erzeugt, die dann von Interessengruppen für ihre Zwecke genutzt werden.",
-        "the_signal": {
-          "label": "ETABLIERTER WISSENSCHAFTLICHER KONSENS",
-          "items": [
-            {
-              "claim": "Kaloriendefizit ist die notwendige Bedingung für Gewichtsverlust — ohne es passiert nichts, egal welche Methode.",
-              "why_we_know_this": "Thermodynamik und hunderte kontrollierte Studien sowie stationäre Stoffwechselstudien bestätigen: kein Mensch verliert Fettmasse ohne Energiedefizit. Meta-Analysen (z.B. Cochrane Reviews) über alle Diätformen hinweg zeigen, dass Gewichtsverlust proportional zum Defizit ist, nicht zur Makronährstoffverteilung.",
-              "the_nuance": "Kaloriendefizit ist notwendig, aber nicht hinreichend erklärt — verschiedene Lebensmittel beeinflussen Hunger, Sättigung und Defizit-Einhaltung sehr unterschiedlich. Das Defizit muss real sein, nicht nur kalkuliert."
-            },
-            {
-              "claim": "Langfristig unterscheiden sich Low-Carb und Low-Fat beim Gewichtsverlust kaum, wenn Kalorien und Protein kontrolliert werden.",
-              "why_we_know_this": "DIETFITS-Studie (Gardner et al., 2018, JAMA, n=609, 12 Monate) und mehrere Meta-Analysen zeigen: nach einem Jahr kein klinisch bedeutsamer Unterschied zwischen Low-Carb und Low-Fat bei gleichem Proteingehalt und gleicher Betreuungsintensität.",
-              "the_nuance": "Individuelle Reaktionen variieren erheblich — manche Menschen verlieren mit Low-Carb deutlich mehr, andere mit Low-Fat. Kein Durchschnittsergebnis sagt etwas über den Einzelfall."
-            },
-            {
-              "claim": "Hohe Proteinzufuhr (ca. 1,6–2,2 g/kg Körpergewicht) schützt beim Abnehmen vor Muskelmasseverlust und erhöht die Sättigung.",
-              "why_we_know_this": "Gut replizierte RCTs und Meta-Analysen (u.a. Helms et al., 2014) zeigen konsistent: höheres Protein reduziert den Abbau fettfreier Masse, senkt den Hunger durch hormonelle Mechanismen (GLP-1, PYY) und erhöht den thermischen Effekt der Nahrung leicht.",
-              "the_nuance": "Die optimale Menge ist nicht auf die Stelle genau bekannt; 1,6 g/kg ist gut abgesichert, höhere Mengen bringen bei Gesunden kaum zusätzlichen Nutzen und sind unnötig teuer."
-            },
-            {
-              "claim": "Gewichtsverlust ist zu ~80 % eine Ernährungsfrage, Bewegung allein ist ein ineffektives Abnehmwerkzeug.",
-              "why_we_know_this": "Energiebilanzdaten zeigen, dass eine Stunde moderates Ausdauertraining ca. 300–400 kcal verbrennt — was leicht durch Mehressen kompensiert wird. Sport ist für Gesundheit und Gewichtserhalt wichtig, aber schlechte Strategie als primärer Abnehmhebel (Pontzer et al., 2016, Current Biology).",
-              "the_nuance": "Sport verbessert die Körperzusammensetzung (mehr Muskel, weniger Fett) auch ohne große Waage-Veränderung und erhöht die Erfolgsquote beim langfristigen Halten des Gewichts deutlich."
-            }
-          ]
-        },
         "the_noise": [
           {
-            "claim": "Low-Carb oder Keto ist metabolisch überlegen und ermöglicht Gewichtsverlust ohne Kaloriendefizit durch hormonelle Vorteile.",
-            "noise_type": "ideology",
-            "noise_label": "Insulin-Hypothese als Allheilmittel",
-            "the_problem": "Die Carbohydrate-Insulin-Hypothese (Gary Taubes et al.) postuliert, Insulin blockiere Fettverbrennung so stark, dass Kalorien irrelevant seien. Kontrollierte stationäre Studien (Hall et al., NIH) haben dies direkt geprüft und widerlegt: bei gleichem Kaloriendefizit kein Fettverlustvorteil durch Low-Carb. Frühe Vorteile sind meist Wasserverlust durch Glykogenabbau.",
-            "kernel_of_truth": "Low-Carb reduziert bei vielen Menschen den Hunger stark und verbessert die Blutzuckerkontrolle — es ist ein nützliches Werkzeug, nicht aber ein Ausnahme von der Thermodynamik."
-          },
-          {
-            "claim": "Intermittierendes Fasten (IF) hat spezifische metabolische Vorteile jenseits des Kaloriendefizits.",
-            "noise_type": "cherry_picked",
-            "noise_label": "IF-Hype auf Basis selektiver Studien",
-            "the_problem": "Viele IF-Studien haben keine isokalorische Kontrollgruppe — Teilnehmer essen einfach weniger, weil das Essfenster kleiner ist. Wenn Kalorien kontrolliert werden, zeigt IF in Meta-Analysen keine konsistenten metabolischen Zusatzvorteile gegenüber normaler Kalorienrestriktion. Behauptungen über Autophagie beim typischen 16:8-Fasten bei Normalernährenden sind stark übertrieben.",
-            "kernel_of_truth": "IF funktioniert für viele Menschen als praktische Strategie zur unbewussten Kalorienreduktion — der Mechanismus ist Vereinfachung, nicht Magie."
-          },
-          {
-            "claim": "Kalorienzählen funktioniert nicht und ist zu ungenau, um es zu versuchen.",
+            "claim": "Low-Carb ist die effektivste Methode zum Abnehmen",
             "noise_type": "oversimplified",
-            "noise_label": "Anti-Kalorienzählen-Narrativ",
-            "the_problem": "Das Argument, Kalorien-Angaben seien ungenau (±20 %), wird genutzt, um Kalorienbewusstsein als sinnlos abzutun — aber selbst ungenaues Tracking schlägt kein Tracking, weil es Bewusstsein für Portionsgrößen schärft. Studien zeigen, dass Menschen ohne Tracking ihre Kalorienzufuhr systematisch um 30–50 % unterschätzen.",
-            "kernel_of_truth": "Perfektes Kalorienzählen ist unrealistisch und kann bei manchen Menschen eine ungesunde Beziehung zum Essen fördern — intuitive Methoden können für manche genauso gut funktionieren, wenn sie Defizite erzeugen."
+            "noise_label": "Eine Methode für alle",
+            "what_the_evidence_supports_instead": "Low-Carb führt bei manchen Menschen kurzfristig zu schnellerem Gewichtsverlust, langfristig gleichen sich die Ergebnisse verschiedener Diätformen jedoch weitgehend an, wenn die Gesamtkalorienmenge ähnlich ist.",
+            "what_went_wrong": "Kurzfristige Vorteile von Low-Carb (teils durch Wasserverlust) werden als dauerhafter Vorteil gegenüber anderen Ansätzen dargestellt. Der entscheidende Faktor – ein anhaltendes Kaloriendefizit – wird ausgeblendet.",
+            "kernel_of_truth": "Kohlenhydratreduktion kann bei manchen Menschen das Sättigungsgefühl verbessern und die Kalorienmenge indirekt senken. Für diese Personen ist Low-Carb ein wirksames Werkzeug."
           },
           {
-            "claim": "Bestimmte Superfoods oder Supplements (Grüner Tee, Garcinia, CLA) beschleunigen den Fettstoffwechsel signifikant.",
-            "noise_type": "marketing",
-            "noise_label": "Supplement-Marketing ohne klinische Relevanz",
-            "the_problem": "Selbst die am besten belegten Substanzen (Koffein, grüner Tee-Extrakt) zeigen in Meta-Analysen Effekte von 0,5–1 kg über mehrere Monate — klinisch irrelevant gegenüber Ernährungs- und Verhaltensänderungen. Der deutsche Supplement-Markt generiert über 1 Mrd. EUR/Jahr mit Produkten, die diesen winzigen Effekt gegen teures Geld verkaufen.",
-            "kernel_of_truth": "Koffein hat einen kleinen, echten thermogenen Effekt und kann die Trainingsleistung verbessern — das ist aber nicht dasselbe wie ein bedeutsamer Fettverlust-Effekt."
+            "claim": "Kalorien zählen ist unnötig – es kommt nur auf die Lebensmittelqualität an",
+            "noise_type": "oversimplified",
+            "noise_label": "Qualität statt Menge",
+            "what_the_evidence_supports_instead": "Lebensmittelqualität beeinflusst Sättigung, Nährstoffversorgung und wie leicht ein Defizit entsteht – sie hebt aber die Bedeutung der Gesamtenergiezufuhr nicht auf.",
+            "what_went_wrong": "Der Zusammenhang zwischen Energiezufuhr und Körpergewicht ist gut belegt. Die Aussage, Kalorienmengen seien irrelevant, ist mit diesem Zusammenhang nicht vereinbar. Qualität kann das Zählen erleichtern oder überflüssig machen – sie ersetzt die zugrundeliegende Mechanik nicht.",
+            "kernel_of_truth": "Wer sättigende, wenig verarbeitete Lebensmittel isst, nimmt oft automatisch weniger Kalorien auf – ohne bewusstes Zählen. Das ist praktisch hilfreich, ändert aber nichts am Prinzip."
           },
           {
-            "claim": "Mahlzeitenfrequenz (viele kleine Mahlzeiten) kurbelt den Stoffwechsel an.",
+            "claim": "Intermittierendes Fasten hat einen eigenen stoffwechselfördernden Effekt, unabhängig von der Kalorienmenge",
+            "noise_type": "weak_evidence",
+            "noise_label": "Fasten als Stoffwechsel-Booster",
+            "what_the_evidence_supports_instead": "Intermittierendes Fasten kann ein Kaloriendefizit erleichtern, indem es das Essfenster einschränkt. Ein von der Kalorienmenge unabhängiger Stoffwechselvorteil ist bisher nicht überzeugend belegt.",
+            "what_went_wrong": "Mechanistische Hypothesen (z. B. zu Insulin oder Autophagie) werden als bewiesene Vorteile präsentiert. Kontrollierte Vergleiche, die Kalorienmenge konstant halten, zeigen meist keinen zusätzlichen Effekt des Fastens an sich.",
+            "kernel_of_truth": "Für Menschen, die mit einem festen Essfenster gut zurechtkommen, ist intermittierendes Fasten ein praktisch wirksamer Ansatz zur Kalorienreduktion."
+          },
+          {
+            "claim": "Low-Fat ist die wissenschaftlich bewährte Methode zur Gewichtsreduktion",
             "noise_type": "outdated",
-            "noise_label": "Veralteter Mythos der Metabolismus-Aktivierung",
-            "the_problem": "Die Vorstellung, sechs kleine Mahlzeiten würden den Grundumsatz steigern, ist durch aktuelle Forschung klar widerlegt. Der thermische Effekt der Nahrung ist proportional zur Gesamtkalorienmenge, nicht zur Anzahl der Mahlzeiten. Das Konzept stammt aus einer Fehlinterpretation von Stoffwechselstudien der 1990er Jahre.",
-            "kernel_of_truth": "Häufige kleine Mahlzeiten können bei manchen Menschen den Hunger besser kontrollieren — aber das ist individuell, kein universeller Stoffwechselvorteil."
-          }
-        ],
-        "genuinely_debated": [
-          {
-            "question": "Gibt es klinisch relevante metabolische Adaptation (adaptiver Thermogenese), die Gewichtsplateau und Rückfall erklärt, und wie stark ist sie?",
-            "side_a": "Forschende wie Leibel und Rosenbaum zeigen: Der Körper reduziert den Energieverbrauch beim Abnehmen stärker als durch Masse allein erklärbar — bis zu 300–500 kcal/Tag weniger. Dies erklärt anhaltende Gewichtsplateaus und macht langfristiges Halten schwieriger als gedacht.",
-            "side_b": "Andere Forschende (z.B. Pontzer) argumentieren, die Adaptation werde überschätzt und sei größtenteils durch verringerte Bewegung und weniger Körpermasse erklärbar, nicht durch echte Stoffwechselverlangsamung.",
-            "why_unsettled": "Methodisch schwierig zu messen; erfordert stationäre Langzeitstudien mit präziser Doppelmarkierungs-Wassermethode über Jahre. Individuelle Variation ist wahrscheinlich groß."
+            "noise_label": "Veraltete Standardempfehlung",
+            "what_the_evidence_supports_instead": "Low-Fat war jahrzehntelang die vorherrschende Empfehlung, hat sich aber in direkten Vergleichen nicht als überlegen gegenüber anderen Ansätzen erwiesen, wenn die Gesamtkalorienmenge vergleichbar ist.",
+            "what_went_wrong": "Die Empfehlung entstand teilweise aus früher Ernährungsforschung mit methodischen Schwächen. Spätere, besser kontrollierte Untersuchungen zeigen kein konsistentes Übergewicht für Low-Fat.",
+            "kernel_of_truth": "Fettreiche Lebensmittel haben eine hohe Kaloriendichte. Fettzufuhr zu reduzieren kann ein einfacher Weg sein, die Gesamtkalorienmenge zu senken – je nach persönlichem Essverhalten."
           },
           {
-            "question": "Ist das Darmmikrobiom ein kausaler Faktor für Gewichtszunahme oder Gewichtsverlust — und kann man es gezielt manipulieren?",
-            "side_a": "Tiermodelle (Maus-Transplantationsstudien) und Korrelationsdaten beim Menschen zeigen starke Verbindungen zwischen Mikrobiom-Zusammensetzung und Fettleibigkeit; bestimmte Bakterienstämme extrahieren mehr Kalorien aus Nahrung.",
-            "side_b": "Kausalität beim Menschen ist nicht nachgewiesen; Interventionsstudien mit Probiotika und Prebiotika zeigen bislang keine klinisch relevanten Effekte auf das Körpergewicht. Das Mikrobiom könnte Folge, nicht Ursache sein.",
-            "why_unsettled": "Mikrobiomdaten sind extrem variabel, Messmethoden nicht standardisiert, und kontrollierte Humanstudien sind methodisch extrem schwer durchzuführen."
-          },
-          {
-            "question": "Ist kalorienreduzierte Ernährung oder sehr niedrig-kalorische Ernährung (VLCD) langfristig kontraproduktiv durch Rebound-Effekte?",
-            "side_a": "Daten aus der Biggest-Loser-Studie und anderen zeigen, dass starke Kalorienrestriktion die metabolische Rate dauerhaft senkt und Hunger-Hormone (Leptin, Ghrelin) Jahre nach Gewichtsverlust noch abnormalerweise verändert sind, was Rückfall begünstigt.",
-            "side_b": "Diese Studien betreffen extreme Gewichtsabnahmen unter ungewöhnlichen Bedingungen. Moderatere Defizite (500 kcal/Tag) bei ausreichend Protein und Krafttraining zeigen in kontrollierten Studien keine dauerhaft pathologische metabolische Adaptation.",
-            "why_unsettled": "Fehlen von Langzeit-RCTs mit verschiedenen Defizitgrößen und standardisierten Nachsorgedaten über fünf oder mehr Jahre."
+            "claim": "Die richtige Diät lässt Gewicht schmelzen – Willenskraft oder Kalorien spielen kaum eine Rolle",
+            "noise_type": "media_distortion",
+            "noise_label": "Die magische Diät",
+            "what_the_evidence_supports_instead": "Keine Diätform hebt das Grundprinzip auf, dass Gewichtsverlust ein anhaltend niedrigeres Energieangebot erfordert als der Körper verbraucht. Diäten unterscheiden sich darin, wie leicht dieses Defizit erreichbar und aufrechtzuerhalten ist.",
+            "what_went_wrong": "Medienformate belohnen einfache, dramatische Versprechen. 'Iss X, verliere Gewicht ohne Einschränkung' ist eingängiger als 'Finde eine Methode, die dir hilft, dauerhaft weniger zu essen.'",
+            "kernel_of_truth": "Die Wahl der richtigen Methode für die eigene Person ist tatsächlich wichtig – nicht weil sie Physik außer Kraft setzt, sondern weil Durchhaltbarkeit entscheidend für den Langzeiterfolg ist."
           }
         ],
         "the_bottom_line": {
-          "what_to_do": "Erzeuge ein moderates Kaloriendefizit von ca. 400–600 kcal/Tag (ungefähr 0,5–0,8 kg Verlust/Woche — realistisch und nachhaltig). Erhöhe die Proteinzufuhr auf mindestens 1,6 g/kg Körpergewicht, um Muskeln zu schützen und den Hunger zu dämpfen. Wähle dann die Ernährungsstrategie (Low-Carb, IF, bewusstes Portionieren), bei der du das Defizit am einfachsten einhältst — Präferenz und Alltagstauglichkeit sind hier entscheidender als Makronährstoffoptimierung. Für 10 kg Verlust kalkuliere 12–20 Wochen ein.",
-          "what_to_ignore": "Ignoriere Versprechen, dass eine bestimmte Diätform die Kalorienphysik überlistet. Ignoriere Supplements außer ggf. Vitamin D und Magnesium bei nachgewiesenem Mangel. Ignoriere Ratschläge, die Sport als primären Abnehmhebel positionieren oder täglich sechs Mahlzeiten fordern.",
-          "the_honest_uncertainty": "Es ist wirklich nicht bekannt, warum manche Menschen auf eine bestimmte Ernährungsstrategie deutlich besser ansprechen als andere. Ob das Mikrobiom, Genetik, psychologische Faktoren oder Hormonmuster sind, ist ungeklärt. Das bedeutet praktisch: Es lohnt sich, eine Strategie 6–8 Wochen ernsthaft zu testen, bevor man wechselt — nicht nach zwei Wochen."
+          "supported_takeaways": [
+            "Ein dauerhaftes Kaloriendefizit ist die gemeinsame Grundlage aller wirksamen Abnahmeansätze – unabhängig davon, welche Methode dieses Defizit erzeugt.",
+            "Low-Carb, Low-Fat und intermittierendes Fasten sind unterschiedliche Wege zum selben Ziel. Welcher für eine bestimmte Person besser funktioniert, hängt von Gewohnheiten, Vorlieben und Verträglichkeit ab – nicht davon, welcher 'objektiv überlegen' ist.",
+            "Die Methode, die sich am besten aufrechterhalten lässt, ist praktisch die wirksamste – weil Gewichtsabnahme Zeit braucht.",
+            "Für 10 kg Gewichtsverlust ist kein exotischer Ansatz notwendig. Wichtiger ist, eine Ernährungsweise zu finden, bei der ein moderates Defizit über Monate haltbar bleibt."
+          ],
+          "treat_skeptically": [
+            "Jede Behauptung, eine bestimmte Methode habe einen einzigartigen Vorteil, der über die erzielte Kalorienreduktion hinausgeht – sofern das nicht durch hochwertige kontrollierte Studien gestützt wird.",
+            "Versprechen schnellen Gewichtsverlusts ohne Einschränkung der Nahrungsmenge.",
+            "Absolute Verbote oder Gebote einzelner Makronährstoffe (Kohlenhydrate, Fett, Eiweiß) ohne Berücksichtigung der Gesamtmenge und des individuellen Kontexts."
+          ],
+          "what_would_change_the_answer": [
+            "Individuelle medizinische Faktoren – z. B. Insulinresistenz, bestimmte Stoffwechselerkrankungen oder Medikamente – können beeinflussen, welcher Ansatz sinnvoller oder riskanter ist. Das wäre mit einer Ärztin oder einem Arzt zu klären.",
+            "Neue, gut kontrollierte Langzeitstudien, die einen von der Kalorienmenge unabhängigen Effekt einer bestimmten Diätform zeigen, würden die Einschätzung zu diesem Ansatz verändern.",
+            "Persönliche Informationen darüber, welche Lebensmittel sättigen, welche Mahlzeitenstruktur im Alltag realistisch ist und wie das bisherige Essverhalten aussieht – sie bestimmen, welcher Ansatz praktisch umsetzbar ist."
+          ]
         },
         "sources_of_noise": [
           {
-            "actor": "Diätbuch-Autoren und Ernährungs-Influencer",
-            "incentive": "Brauchen ein vermarktbares Alleinstellungsmerkmal, das sie von Grundkonsens unterscheidet — denn 'moderate Kalorienreduktion mit viel Protein' verkauft kein Buch und kein Coaching-Programm für 297 EUR.",
-            "how_to_spot_it": "Wenn jemand behauptet, seine Methode funktioniere auf einem anderen Prinzip als Energiebilanz, oder wenn Testimonials den einzigen Beweis darstellen."
+            "source_type": "Produkte und Programme mit einfacher Kernbotschaft",
+            "how_it_distorts": "Wer ein Produkt oder Programm verkauft, das auf einem einzelnen Prinzip beruht (z. B. 'keine Kohlenhydrate' oder 'nur in diesem Fenster essen'), hat einen Anreiz, dieses Prinzip als entscheidend darzustellen – unabhängig davon, was die Evidenz tatsächlich zeigt.",
+            "how_to_recognize_it": "Die Botschaft lautet: 'Alles andere ist falsch, nur diese Methode wirkt.' Kein Verweis auf Vergleichsstudien, keine Einschränkungen, keine Ausnahmen."
           },
           {
-            "actor": "Supplement- und Functional-Food-Hersteller",
-            "incentive": "Der deutsche Markt für Nahrungsergänzungsmittel zum Gewichtsmanagement umfasst Hunderte Millionen Euro jährlich. Hersteller finanzieren selektiv kleine Studien mit surrogaten Endpunkten (Fettoxidation im Labor statt tatsächlichem Fettverlust) und kommunizieren relative Risikoreduktionen statt absoluter Effekte.",
-            "how_to_spot_it": "Wenn eine Studie vom Produkthersteller finanziert wurde, n unter 50 ist, kürzer als 12 Wochen läuft, oder wenn der Effekt in Gramm pro Woche statt Kilogramm über Monate angegeben wird."
+            "source_type": "Medien- und Social-Media-Formate",
+            "how_it_distorts": "Klare, dramatische Aussagen ('Dieses Lebensmittel lässt Fett schmelzen') bekommen mehr Aufmerksamkeit als differenzierte Einschätzungen. Das erzeugt einen Selektionsdruck zugunsten übertriebener Behauptungen.",
+            "how_to_recognize_it": "Fehlende Quellenangaben, Vorher-Nachher-Bilder ohne Kontextinformationen, Sprache wie 'Wissenschaftler sind schockiert' oder 'Der Trick, den niemand kennt'."
           },
           {
-            "actor": "Boulevardmedien und Food-Journalismus",
-            "incentive": "Ernährungsstudien generieren Klicks, besonders wenn sie etabliertes Wissen umkehren. Journalisten übersetzen eine einzelne Tierstudie oder Pilotstudie (n=20) in Schlagzeilen wie 'Schokolade macht schlank'. Differenzierte Metaanalysen-Befunde sind journalistisch unattraktiv.",
-            "how_to_spot_it": "Wenn ein Artikel auf genau einer neuen Studie basiert, keine Kontextualisierung durch unabhängige Experten enthält, und die Schlagzeile deutlich stärker formuliert ist als die Studie selbst."
+            "source_type": "Kurzfristige Studienergebnisse, die als Langzeitbeweis präsentiert werden",
+            "how_it_distorts": "Viele Ernährungsstudien laufen über wenige Wochen oder Monate. Ergebnisse aus diesem Zeitraum – z. B. schnellerer Gewichtsverlust durch Low-Carb – werden auf dauerhafte Überlegenheit verallgemeinert, obwohl Langzeitdaten das oft nicht bestätigen.",
+            "how_to_recognize_it": "Prüfen, über welchen Zeitraum eine Studie lief und ob Langzeitergebnisse genannt werden. Fehlt die Zeitangabe, ist das ein Warnsignal."
+          }
+        ],
+        "topic_as_understood": "Welche Ernährungsstrategie – Low-Carb, Low-Fat, intermittierendes Fasten oder Kalorienzählen – ist beim Abnehmen von ca. 10 kg wirksam und worauf kann man sich dabei verlassen?",
+        "framing": "Die verschiedenen Ansätze klingen wie Gegensätze, sind es aber meist nicht: Sie sind unterschiedliche Wege, dasselbe zu erreichen. Die entscheidende Frage ist nicht, welche Methode 'richtig' ist, sondern was hinter den Unterschieden tatsächlich steckt.",
+        "the_signal": {
+          "items": [
+            {
+              "claim": "Ein dauerhaftes Kaloriendefizit – weniger Energie aufnehmen als der Körper verbraucht – ist die notwendige Bedingung für Gewichtsverlust. Keine Methode umgeht dieses Prinzip.",
+              "basis": "Dieses Prinzip ist durch kontrollierte Ernährungsstudien und Stoffwechselforschung sehr gut belegt und wird nicht ernsthaft bestritten.",
+              "limits": "Es sagt nichts darüber aus, wie groß das Defizit sein sollte, wie leicht es im Alltag aufrechtzuerhalten ist oder warum es manchen Menschen schwerer fällt als anderen."
+            },
+            {
+              "claim": "Low-Carb, Low-Fat und intermittierendes Fasten führen beim direkten Vergleich über längere Zeiträume zu ähnlichen Gewichtsverlusten, wenn die Gesamtkalorienmenge vergleichbar ist.",
+              "basis": "Mehrere kontrollierte Vergleichsstudien und Übersichtsarbeiten kommen zu diesem Ergebnis. Der anfangs oft größere Gewichtsverlust bei Low-Carb erklärt sich teilweise durch Wasserverlust.",
+              "limits": "Das gilt für Gruppen im Durchschnitt. Einzelne Personen sprechen unterschiedlich an – aus Gründen, die noch nicht vollständig verstanden sind."
+            },
+            {
+              "claim": "Die Methode, die jemand langfristig durchhalten kann, ist für den tatsächlichen Gewichtsverlust wichtiger als die theoretisch überlegene Methode, die nach wenigen Wochen aufgegeben wird.",
+              "basis": "Dieses Muster zeigt sich konsistent in Langzeitdaten: Gewichtsverlust korreliert stark mit der Einhaltung der gewählten Strategie, nicht mit der Strategieauswahl selbst.",
+              "limits": "Das ist kein Freibrief für beliebige Methoden – eine Strategie muss immer noch ein echtes Defizit erzeugen."
+            },
+            {
+              "claim": "Ausreichend Protein in der Ernährung erleichtert das Einhalten eines Kaloriendefizits, weil es länger satt hält und den Muskelerhalt beim Abnehmen unterstützt.",
+              "basis": "Der sättigende Effekt von Protein und sein Beitrag zum Muskelerhalt bei Kalorienreduktion ist durch kontrollierte Studien gut gestützt.",
+              "limits": "Wie viel Protein optimal ist, und ob Unterschiede zwischen Proteinquellen relevant sind, ist weniger eindeutig."
+            }
+          ]
+        },
+        "genuinely_debated": [
+          {
+            "question": "Hat intermittierendes Fasten einen eigenständigen Stoffwechselvorteil – unabhängig von der reduzierten Kalorienmenge?",
+            "what_supports_one_view": "Einige Studien deuten auf Effekte hin, die über das bloße Kaloriendefizit hinausgehen könnten, etwa auf hormoneller Ebene oder bei der Fettverbrennung.",
+            "what_supports_another_view": "Gut kontrollierte Vergleichsstudien, in denen die Kalorienmenge angeglichen wurde, finden meist keinen klaren Zusatzvorteil durch das Fastenfenster selbst.",
+            "why_unsettled": "Es ist schwer, in Studien 'gleiches Kaloriendefizit mit vs. ohne Fastenstruktur' sauber zu trennen. Zudem sind relevante Langzeitdaten noch begrenzt."
           },
           {
-            "actor": "Wohlgemeinte, aber veraltete Ernährungsberatung durch Nicht-Spezialisten",
-            "incentive": "Keine finanzielle Fehlincentivierung, aber Ausbildungen in Allgemeinmedizin, Sportvereinen und Schulen transportieren oft 20–30 Jahre alten Konsens (z.B. Fettvermeidung, viele kleine Mahlzeiten). Aktualisierung erfordert aktive Fortbildung, die oft unterbleibt.",
-            "how_to_spot_it": "Wenn Empfehlungen auf Konzepten aus den 1990ern beruhen (Fett ist schlecht, Kalorien aus Fett zählen doppelt) oder wenn Standardempfehlungen ohne Quellenangabe wiederholt werden."
+            "question": "Ist Kalorienzählen notwendig, oder reicht eine qualitative Ernährungsumstellung?",
+            "what_supports_one_view": "Manche Menschen erzielen durch strukturelle Umstellungen – etwa mehr unverarbeitete Lebensmittel, weniger Zucker – ein Defizit, ohne zu zählen.",
+            "what_supports_another_view": "Studien zeigen, dass Menschen die Kalorienmenge ihrer Mahlzeiten systematisch unterschätzen. Explizites Zählen verbessert bei vielen die Genauigkeit.",
+            "why_unsettled": "Ob Zählen hilft oder eher belastet, hängt stark von der Person ab. Dazu gibt es kaum randomisierte Langzeitdaten mit harten Endpunkten."
           }
         ]
-      }
+      },
+      "optionalSections": [
+        "genuinely_debated"
+      ]
     }
   ]
 }

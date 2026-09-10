@@ -137,7 +137,7 @@
 - [Missing Link](https://deftbrain.com/MissingLink): Stuck on a concept? We'll find where your understanding broke.
 - [Plain Talk](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
 - [Research Decoder](https://deftbrain.com/ResearchDecoder): Understand the research without becoming a researcher.
-- [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): Cut through contradictions and find what the evidence actually says
+- [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): 📡 Find what holds up — and what doesn't.
 - [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
 
 ## Diversions

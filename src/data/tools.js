@@ -683,7 +683,7 @@ export const tools = [
 },
 
 {
-  modified: "2025-03-05",
+  modified: "2026-09-09",
   id: "SignalVsNoise",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -693,34 +693,34 @@ export const tools = [
     get: "What the evidence actually supports, what's noise and why, and where honest people still disagree.",
     edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses.",
   },
-  seoDescription: "Cut through contradictory studies and find what the evidence actually says on any health, finance, or productivity topic. Free: what to do, what to ignore.",
-  seoTitle: "Evidence Checker: What Studies Actually Say",
+  seoDescription: "Sort the stronger evidence from claims that outrun it, on any health, finance, or productivity topic. Free: what holds up, what to treat skeptically, and what's still genuinely unsettled.",
+  seoTitle: "Evidence Checker: Signal vs. Noise",
   title: "Signal vs. Noise",
-  tagline: "Cut through contradictions and find what the evidence actually says",
+  tagline: "📡 Find what holds up — and what doesn't.",
   tags: ['research', 'health', 'science', 'evidence', 'fact check', 'contradictory', 'study', 'debunked', 'diet', 'finance', 'productivity', 'truth'],
   icon: "📡",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Separates established evidence from marketing, ideology, and noise in any health, finance, productivity, or self-improvement topic. Three sections: what we actually know, what's noise and why, and what's genuinely debated. Ends with what to do and what to ignore.",
+  description: "Conflicting advice everywhere? Signal vs. Noise helps you sort stronger evidence from overstatement, weak claims, and questions that are still genuinely unsettled.",
   guide: {
-      overview: "SignalVsNoise is an evidence filter. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what the evidence actually supports, what's noise and why, and what's legitimately still debated.",
+      overview: "Signal vs. Noise is an evidence-calibration tool, not a literature review. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what's reasonably well supported, which popular claims outrun their evidence and why, and what remains genuinely unresolved. It does not invent citations, statistics, or motives to make an answer sound more authoritative than the evidence allows.",
       howToUse: [
         "Enter any health, finance, productivity, or lifestyle topic you've seen conflicting advice about",
-        "Review The Signal — claims with high confidence and the reason we know them",
-        "Review The Noise — marketing, cherry-picked studies, and methodology problems",
-        "Check Genuinely Debated — questions where reasonable experts still disagree",
-        "Use the Bottom Line to know exactly what to do and what to ignore"
+        "Review The Signal — conclusions calibrated to what the evidence actually supports, with their limits",
+        "Review The Noise — where popular claims are stronger, broader, or more certain than their evidence",
+        "Check Still Unsettled — genuinely open questions, not manufactured both-sides debates",
+        "Use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer"
       ],
       example: {
         scenario: "Is creatine actually worth taking for fitness?",
         action: "Enter 'creatine supplementation for athletic performance'",
-        result: "Signal: strong evidence for strength and power output, safe for most healthy adults. Noise: cognitive enhancement claims are preliminary, loading phase is marketing. Genuinely debated: optimal timing, long-term effects in older adults. Bottom line: if you lift, probably worth it. Skip loading protocols."
+        result: "Signal: evidence from controlled studies supports strength and power benefits for most healthy adults who resistance train. Noise: cognitive-enhancement claims and 'loading phase' marketing outrun what the evidence establishes. Still unsettled: optimal long-term dosing patterns in older adults. Bottom line: broadly supported for people who already train; the loading-protocol and cognition claims are the parts to treat skeptically."
       },
       tips: [
         "Works best on topics where you've seen contradictory headlines or advice",
-        "The 'sources of noise' section names who benefits from the misinformation",
-        "The Genuinely Debated section is where intellectual honesty lives — don't skip it",
-        "Use this before making any significant health, financial, or lifestyle decision"
+        "\"How the Noise Gets Made\" describes general mechanisms of distortion — marketing, media simplification — never named companies or motives unless you supplied that evidence yourself",
+        "Still Unsettled is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap",
+        "Use this before making any significant health, financial, or lifestyle decision — and treat the Bottom Line as a starting point for a clinician or advisor conversation, not a substitute for one"
       ]
     }
 },
