@@ -163,9 +163,17 @@ function TripRecon({ tool }) {
   const [selectedRecent, setSelectedRecent] = useState(null);
   const [showAllRecent, setShowAllRecent] = useState(false);
 
+  // Route mode's own Recent — same continuity idea, keyed on the
+  // start→destination pair rather than a single place.
+  const [recentRoutes, setRecentRoutes] = usePersistentState('smm-recent-routes-v1', []);
+  const [selectedRecentRoute, setSelectedRecentRoute] = useState(null);
+  const [showAllRecentRoutes, setShowAllRecentRoutes] = useState(false);
+
   const selectedConcerns = Object.entries(concerns).filter(([, v]) => v).map(([k]) => k);
   const concernLabel = (key) => { const con = CONCERNS.find(c2 => c2.key === key); return con ? t(con.labelKey) : key; };
   const placeTypeIcon = (val) => PLACE_TYPES.find(pt => pt.value === val)?.icon || '📍';
+  const travelModeIcon = (val) => TRAVEL_MODES.find(tm => tm.value === val)?.icon || '🧭';
+  const travelModeLabel = (val) => { const tm = TRAVEL_MODES.find(t2 => t2.value === val); return tm ? t(tm.labelKey) : val; };
   const today = new Date().toISOString().split('T')[0];
 
   const pastVisitsHere = visitHistory.filter(v => location.length > 3 && v.location?.toLowerCase().includes(location.toLowerCase().slice(0, 6)));
@@ -199,28 +207,57 @@ function TripRecon({ tool }) {
     ].slice(0, 12));
   };
 
-  // Picking a recent place only restores the place itself (location + type)
-  // — settled facts about where it is. Concerns and notes are what the
-  // visitor observed LAST time, not necessarily true today, so those wait
-  // for an explicit "use these again" in the recap below.
+  // Picking a recent place restores the place itself AND which concerns
+  // applied there — reselecting "noise" isn't claiming an observation, it's
+  // just restating what the visitor cares about. Free-text notes are
+  // different: a wait time or a lighting complaint was true of the LAST
+  // visit, not a fact about this one, so those only surface as a recap the
+  // visitor explicitly confirms (below) — never applied silently.
   const pickRecentPlace = (rec) => {
-    setLocation(rec.location); setPlaceType(rec.placeType || ''); setSelectedRecent(rec);
+    setLocation(rec.location); setPlaceType(rec.placeType || '');
+    const restored = {};
+    (rec.concerns || []).forEach(k => { restored[k] = true; });
+    setConcerns(restored);
+    setSelectedRecent((rec.knownInfo || rec.specificNotes) ? rec : null);
   };
   const useRecentDetails = () => {
     if (!selectedRecent) return;
-    const restored = {};
-    (selectedRecent.concerns || []).forEach(k => { restored[k] = true; });
-    setConcerns(restored);
     setKnownInfo(selectedRecent.knownInfo || '');
     setSpecificNotes(selectedRecent.specificNotes || '');
     setSelectedRecent(null);
   };
   const startFreshFromRecent = () => setSelectedRecent(null);
 
+  // Same split for routes: start/destination/travel-mode/concerns are
+  // settled facts about the trip, restored immediately; the free-text note
+  // is a past observation, gated the same way.
+  const rememberRoute = (start, dest, mode, cons, known) => {
+    const norm = `${start.trim().toLowerCase()}→${dest.trim().toLowerCase()}`;
+    if (!start.trim() || !dest.trim()) return;
+    setRecentRoutes(prev => [
+      { id: Date.now(), norm, routeStart: start.trim(), routeDestination: dest.trim(), travelMode: mode || '', concerns: cons, knownInfo: known || '', lastVisit: new Date().toISOString() },
+      ...prev.filter(r => r.norm !== norm),
+    ].slice(0, 12));
+  };
+  const pickRecentRoute = (rec) => {
+    setRouteStart(rec.routeStart); setRouteDestination(rec.routeDestination); setTravelMode(rec.travelMode || '');
+    const restored = {};
+    (rec.concerns || []).forEach(k => { restored[k] = true; });
+    setConcerns(restored);
+    setSelectedRecentRoute(rec.knownInfo ? rec : null);
+  };
+  const useRecentRouteDetails = () => {
+    if (!selectedRecentRoute) return;
+    setRouteKnownInfo(selectedRecentRoute.knownInfo || '');
+    setSelectedRecentRoute(null);
+  };
+  const dismissRecentRoute = () => setSelectedRecentRoute(null);
+
   const resetAll = () => {
     setLocation(''); setPlaceType(''); setVisitDate(''); setVisitTime('');
     setConcerns({}); setKnownInfo(''); setSpecificNotes(''); setActiveProfileNotes('');
     setResults(null); setRouteResults(null); setError(''); setSelectedRecent(null); setShowAllRecent(false);
+    setSelectedRecentRoute(null); setShowAllRecentRoutes(false);
     setShowPanel(null); setRescanResult(null); setRescanChanged({}); setRescanOtherText('');
     setComfortKit(null); setKitChecked({}); setAskResult(null); setAskNeed('');
     setRatePerFactor({}); setRateWhatHelped(''); setRateWhatDifferent('');
@@ -280,6 +317,7 @@ function TripRecon({ tool }) {
         knownInfo: routeKnownInfo.trim() || undefined,
       });
       setRouteResults(data);
+      rememberRoute(routeStart, routeDestination, travelMode, selectedConcerns, routeKnownInfo.trim());
     } catch (err) { setError(err.message || t('smm_err_route')); }
     finally { setRouteLoading(false); }
   };
@@ -417,180 +455,286 @@ function TripRecon({ tool }) {
       <div className="max-w-3xl mx-auto space-y-4">
         {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
-        {/* ════════ MODE TABS ════════ Place-prep is the landing screen;
-            route is a second tab, not a separate near-empty page. */}
+        {/* ════════ MODE TABS + SHARED PANEL ════════ Place-prep is the
+            landing screen; route is a real tab attached to the same panel,
+            not a separate near-empty page. */}
         {(view === 'form' || view === 'route') && (
-          <div className={`flex border-b ${c.border}`}>
-            <button onClick={() => setView('form')}
-              className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'form' ? `${c.accentTxt} border-cyan-500` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
-              🔍 {t('smm_scout_place')}
-            </button>
-            <button onClick={() => setView('route')}
-              className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'route' ? `${c.accentTxt} border-cyan-500` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
-              🧭 {t('smm_plan_route')}
-            </button>
-          </div>
-        )}
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
+            <div className={`flex border-b ${c.border}`}>
+              <button onClick={() => setView('form')}
+                className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'form' ? `${c.accentTxt} border-cyan-500 ${isDark ? 'bg-zinc-700/30' : 'bg-slate-50'}` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
+                🔍 {t('smm_scout_place')}
+              </button>
+              <button onClick={() => setView('route')}
+                className={`flex-1 py-3 text-sm font-bold text-center border-b-2 -mb-px transition-colors ${view === 'route' ? `${c.accentTxt} border-cyan-500 ${isDark ? 'bg-zinc-700/30' : 'bg-slate-50'}` : `${c.textMuted} border-transparent hover:${c.text}`}`}>
+                🧭 {t('smm_plan_route')}
+              </button>
+            </div>
 
-        {/* ════════ PLACE FORM ════════ */}
-        {view === 'form' && (
-          <div className="space-y-5">
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <div className="flex items-center justify-between mb-2 gap-3">
-                  <div>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
-                  </div>
-                  <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap flex-shrink-0`}>{t('smm_new')}</button>
-                </div>
-                {profiles.length === 0 ? (
-                  <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {profiles.map(p => (
-                      <div key={p.id} className="flex items-center gap-1">
-                        <button onClick={() => loadProfile(p)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>
-                        <button onClick={() => deleteProfile(p.id)} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
+            <div className="p-5 space-y-5">
+              {/* ════════ PLACE FORM ════════ */}
+              {view === 'form' && (
+                <>
+                  <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                    <div className="flex items-center justify-between mb-2 gap-3">
+                      <div>
+                        <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
+                        <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
                       </div>
-                    ))}
+                      <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap flex-shrink-0`}>{t('smm_new')}</button>
+                    </div>
+                    {profiles.length === 0 ? (
+                      <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {profiles.map(p => (
+                          <div key={p.id} className="flex items-center gap-1">
+                            <button onClick={() => loadProfile(p)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>
+                            <button onClick={() => deleteProfile(p.id)} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
-                <input type="text" value={location}
-                  onChange={e => { setLocation(e.target.value); if (selectedRecent && e.target.value !== selectedRecent.location) setSelectedRecent(null); }}
-                  placeholder={t('smm_where_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
-                {pastVisitsHere.length > 0 && <p className={`text-xs mt-1.5 ${c.accentTxt}`}>📋 {t('smm_been_here_n', { count: pastVisitsHere.length })}</p>}
-              </div>
-
-              {/* Recent places — continuity over history: reuse what the
-                  visitor already told us about a place they've searched
-                  before, instead of asking place type / concerns again. */}
-              {recentPlaces.length > 0 && (
-                <div>
-                  <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {(showAllRecent ? recentPlaces : recentPlaces.slice(0, 3)).map(rec => (
-                      <button key={rec.id} onClick={() => pickRecentPlace(rec)}
-                        className={`px-3 py-2 rounded-xl border text-start transition-all ${selectedRecent?.id === rec.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
-                        <span className={`text-xs font-bold block ${c.text}`}>{placeTypeIcon(rec.placeType)} {rec.location}</span>
-                        <span className={`text-[10px] ${c.textMuteded}`}>{t('smm_last_visit', { date: new Date(rec.lastVisit).toLocaleDateString() })}</span>
-                      </button>
-                    ))}
-                  </div>
-                  {!showAllRecent && recentPlaces.length > 3 && (
-                    <button onClick={() => setShowAllRecent(true)} className={`text-xs font-bold mt-2 ${c.accentTxt}`}>{t('smm_see_all_recent')}</button>
+                  {/* Recent — an input shortcut, so it comes before the
+                      blank input it fills in, not after the submit button.
+                      Hidden entirely with no history. */}
+                  {recentPlaces.length > 0 && (
+                    <div>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
+                      <div className="space-y-2">
+                        {(showAllRecent ? recentPlaces : recentPlaces.slice(0, 3)).map(rec => (
+                          <button key={rec.id} onClick={() => pickRecentPlace(rec)}
+                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecent?.id === rec.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <p className={`text-sm font-bold truncate ${c.text}`}>{placeTypeIcon(rec.placeType)} {rec.location}</p>
+                                <p className={`text-[10px] ${c.textMuteded}`}>{t('smm_last_visit', { date: new Date(rec.lastVisit).toLocaleDateString() })}</p>
+                                {rec.concerns?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-0.5 truncate`}>{rec.concerns.map(k => concernLabel(k)).join(' · ')}</p>}
+                              </div>
+                              <span className={`text-xs font-bold ${c.accentTxt} flex-shrink-0`}>{t('smm_use_again')} →</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      {!showAllRecent && recentPlaces.length > 3 && (
+                        <button onClick={() => setShowAllRecent(true)} className={`text-xs font-bold mt-2 ${c.accentTxt}`}>{t('smm_see_all_recent')}</button>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
 
-              {selectedRecent && (
-                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-                  <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
-                  {selectedRecent.concerns?.length > 0 && (
-                    <p className={`text-xs ${c.textSecondary}`}>{selectedRecent.concerns.map(k => concernLabel(k)).join(' • ')}</p>
+                  {selectedRecent && (
+                    <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
+                      {selectedRecent.knownInfo && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.knownInfo}”</p>}
+                      {selectedRecent.specificNotes && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.specificNotes}”</p>}
+                      <p className={`text-xs font-bold ${c.text}`}>{t('smm_still_relevant')}</p>
+                      <div className="flex gap-2">
+                        <button onClick={useRecentDetails} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary}`}>✓ {t('smm_use_these_again')}</button>
+                        <button onClick={startFreshFromRecent} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_start_fresh')}</button>
+                      </div>
+                    </div>
                   )}
-                  {selectedRecent.knownInfo && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.knownInfo}”</p>}
-                  {selectedRecent.specificNotes && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.specificNotes}”</p>}
-                  <p className={`text-xs font-bold ${c.text}`}>{t('smm_still_relevant')}</p>
-                  <div className="flex gap-2">
-                    <button onClick={useRecentDetails} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary}`}>✓ {t('smm_use_these_again')}</button>
-                    <button onClick={startFreshFromRecent} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_start_fresh')}</button>
-                  </div>
-                </div>
-              )}
 
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_care_about')} <span className={c.required}>*</span></label>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  {CONCERNS.map(con => (
-                    <button key={con.key} onClick={() => toggleConcern(con.key)}
-                      className={`p-3 rounded-xl border text-center transition-all ${concerns[con.key] ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
-                      <span className="text-xl block">{con.icon}</span>
-                      <span className={`text-xs font-bold ${c.text}`}>{t(con.labelKey)}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                <textarea value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
-              </div>
-
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
-              </div>
-
-              {/* Place type + day/time — tucked away rather than removed.
-                  Recent already carries placeType forward for a returning
-                  visitor; a first-time visitor can still set either, but
-                  neither blocks the one required question (concerns). */}
-              <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>
-                    + {t('smm_add_trip_details')}
-                    <Caret groupOpen className="ms-auto" />
-                  </div>
-                </summary>
-                <div className="space-y-4 mt-4">
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                      {PLACE_TYPES.map(pt => (
-                        <button key={pt.value} onClick={() => setPlaceType(placeType === pt.value ? '' : pt.value)}
-                          className={`p-2 rounded-xl border text-center transition-all ${placeType === pt.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
-                          <span className="text-lg block">{pt.icon}</span>
-                          <span className={`text-[10px] font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
+                    <input type="text" value={location}
+                      onChange={e => { setLocation(e.target.value); if (selectedRecent && e.target.value !== selectedRecent.location) setSelectedRecent(null); }}
+                      placeholder={t('smm_where_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                    {pastVisitsHere.length > 0 && <p className={`text-xs mt-1.5 ${c.accentTxt}`}>📋 {t('smm_been_here_n', { count: pastVisitsHere.length })}</p>}
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_care_about')} <span className={c.required}>*</span></label>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {CONCERNS.map(con => (
+                        <button key={con.key} onClick={() => toggleConcern(con.key)}
+                          className={`p-3 rounded-xl border text-center transition-all ${concerns[con.key] ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                          <span className="text-xl block">{con.icon}</span>
+                          <span className={`text-xs font-bold ${c.text}`}>{t(con.labelKey)}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                      <input type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
-                    </div>
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                      <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
-                    </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                   </div>
-                </div>
-              </details>
 
-              <button title={t('cmd_enter')} onClick={analyzeLocation} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
-                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
-                {loading ? t('smm_scouting') : t('smm_help_prepare')}
-                {!loading && (
-                  <kbd aria-hidden="true"
-                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                    ⌘↵
-                  </kbd>
-                )}
-              </button>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                  </div>
 
-              {selectedConcerns.length > 0 && (
-                <div>
-                  {!showProfileForm ? (
-                    <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold ${c.accentTxt}`}>💾 {t('smm_save_as_profile')}</button>
-                  ) : (
-                    <div className={`p-3 rounded-xl ${c.cardAlt} border space-y-2`}>
-                      <label htmlFor="smm-profile-name" className="sr-only">{t('smm_profile_name_sr')}</label>
-                      <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
-                      <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder={t('smm_default_notes_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
+                  {/* Place type + day/time — tucked away rather than removed.
+                      Recent already carries placeType forward for a returning
+                      visitor; a first-time visitor can still set either, but
+                      neither blocks the one required question (concerns). */}
+                  <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                    <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                      <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>
+                        + {t('smm_add_trip_details')}
+                        <Caret groupOpen className="ms-auto" />
+                      </div>
+                    </summary>
+                    <div className="space-y-4 mt-4">
+                      <div>
+                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                          {PLACE_TYPES.map(pt => (
+                            <button key={pt.value} onClick={() => setPlaceType(placeType === pt.value ? '' : pt.value)}
+                              className={`p-2 rounded-xl border text-center transition-all ${placeType === pt.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                              <span className="text-lg block">{pt.icon}</span>
+                              <span className={`text-[10px] font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <input type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                        </div>
+                        <div>
+                          <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </details>
+
+                  <button title={t('cmd_enter')} onClick={analyzeLocation} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
+                    {loading ? t('smm_scouting') : t('smm_help_prepare')}
+                    {!loading && (
+                      <kbd aria-hidden="true"
+                        className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                        ⌘↵
+                      </kbd>
+                    )}
+                  </button>
+
+                  {selectedConcerns.length > 0 && (
+                    <div>
+                      {!showProfileForm ? (
+                        <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold ${c.accentTxt}`}>💾 {t('smm_save_as_profile')}</button>
+                      ) : (
+                        <div className={`p-3 rounded-xl ${c.cardAlt} border space-y-2`}>
+                          <label htmlFor="smm-profile-name" className="sr-only">{t('smm_profile_name_sr')}</label>
+                          <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
+                          <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder={t('smm_default_notes_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
+                          <div className="flex gap-2">
+                            <button onClick={saveProfile} disabled={!profileName.trim()} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('smm_save_profile')}</button>
+                            <button onClick={() => setShowProfileForm(false)} className={`py-2 px-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_cancel')}</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ════════ ROUTE FORM ════════ Mirrors the Place tab: no
+                  repeated "Prepare for a Route" heading (the tab above
+                  already says it), Recent before the blank inputs it fills
+                  in, same settled-facts-vs-observations split. */}
+              {view === 'route' && (
+                <>
+                  {recentRoutes.length > 0 && (
+                    <div>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
+                      <div className="space-y-2">
+                        {(showAllRecentRoutes ? recentRoutes : recentRoutes.slice(0, 3)).map(rec => (
+                          <button key={rec.id} onClick={() => pickRecentRoute(rec)}
+                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecentRoute?.id === rec.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0">
+                                <p className={`text-sm font-bold truncate ${c.text}`}>{travelModeIcon(rec.travelMode)} {rec.routeStart} → {rec.routeDestination}</p>
+                                <p className={`text-[10px] ${c.textMuteded}`}>{t('smm_last_used', { date: new Date(rec.lastVisit).toLocaleDateString() })} · {travelModeLabel(rec.travelMode)}</p>
+                                {rec.concerns?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-0.5 truncate`}>{rec.concerns.map(k => concernLabel(k)).join(' · ')}</p>}
+                              </div>
+                              <span className={`text-xs font-bold ${c.accentTxt} flex-shrink-0`}>{t('smm_use_again')} →</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      {!showAllRecentRoutes && recentRoutes.length > 3 && (
+                        <button onClick={() => setShowAllRecentRoutes(true)} className={`text-xs font-bold mt-2 ${c.accentTxt}`}>{t('smm_see_all_recent')}</button>
+                      )}
+                    </div>
+                  )}
+
+                  {selectedRecentRoute && (
+                    <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
+                      {selectedRecentRoute.knownInfo && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecentRoute.knownInfo}”</p>}
+                      <p className={`text-xs font-bold ${c.text}`}>{t('smm_still_relevant')}</p>
                       <div className="flex gap-2">
-                        <button onClick={saveProfile} disabled={!profileName.trim()} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('smm_save_profile')}</button>
-                        <button onClick={() => setShowProfileForm(false)} className={`py-2 px-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_cancel')}</button>
+                        <button onClick={useRecentRouteDetails} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary}`}>✓ {t('smm_use_these_again')}</button>
+                        <button onClick={dismissRecentRoute} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_start_fresh')}</button>
                       </div>
                     </div>
                   )}
-                </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
+                      <input type="text" value={routeStart}
+                        onChange={e => { setRouteStart(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeStart) setSelectedRecentRoute(null); }}
+                        className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+                    </div>
+                    <div>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
+                      <input type="text" value={routeDestination}
+                        onChange={e => { setRouteDestination(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeDestination) setSelectedRecentRoute(null); }}
+                        className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={c.required}>*</span></label>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {TRAVEL_MODES.map(tm => (
+                        <button key={tm.value} onClick={() => setTravelMode(tm.value)}
+                          className={`p-2 rounded-xl border text-center transition-all ${travelMode === tm.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                          <div className="text-lg">{tm.icon}</div>
+                          <div className={`text-[10px] font-semibold mt-0.5 ${c.textSecondary}`}>{t(tm.labelKey)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_care_about')}</label>
+                    <div className="flex flex-wrap gap-2">
+                      {CONCERNS.map(con => (
+                        <button key={con.key} onClick={() => toggleConcern(con.key)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${concerns[con.key] ? c.btnPrimary : c.btnSecondary}`}>{con.icon} {t(con.labelKey)}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    {/* Own key, distinct from smm_known_label (used by the main
+                        "Prepare for a Place" form) — reusing that key here said
+                        "the place" on a screen asking about a route. */}
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
+                  </div>
+                  <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                    {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🧭</span>}
+                    {routeLoading ? t('smm_planning') : t('smm_plan_route_btn')}
+                    {!routeLoading && (
+                      <kbd aria-hidden="true"
+                        className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                        ⌘↵
+                      </kbd>
+                    )}
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -665,7 +809,6 @@ function TripRecon({ tool }) {
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-5`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>❓ {t('smm_unknowns')}</p>
                 {results.unknowns_that_matter.map((u, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {u}</p>)}
-                <p className={`text-[10px] ${c.textMuteded} mt-2 italic`}>{t('smm_unknowns_note')}</p>
               </div>
             )}
 
@@ -794,65 +937,10 @@ function TripRecon({ tool }) {
           </div>
         )}
 
-        {/* ════════ ROUTE ════════ */}
-        {view === 'route' && (
-          <div className="space-y-5">
-            <div className={`${c.card} border ${c.border} rounded-2xl p-5 space-y-4`}>
-              <p className={`text-lg font-black ${c.text}`}>🧭 {t('smm_route_title')}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
-                  <input type="text" value={routeStart} onChange={e => setRouteStart(e.target.value)} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-                </div>
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
-                  <input type="text" value={routeDestination} onChange={e => setRouteDestination(e.target.value)} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-                </div>
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={c.required}>*</span></label>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  {TRAVEL_MODES.map(tm => (
-                    <button key={tm.value} onClick={() => setTravelMode(tm.value)}
-                      className={`p-2 rounded-xl border text-center transition-all ${travelMode === tm.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
-                      <div className="text-lg">{tm.icon}</div>
-                      <div className={`text-[10px] font-semibold mt-0.5 ${c.textSecondary}`}>{t(tm.labelKey)}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
-              </div>
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_care_about')}</label>
-                <div className="flex flex-wrap gap-2">
-                  {CONCERNS.map(con => (
-                    <button key={con.key} onClick={() => toggleConcern(con.key)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${concerns[con.key] ? c.btnPrimary : c.btnSecondary}`}>{con.icon} {t(con.labelKey)}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                {/* Own key, distinct from smm_known_label (used by the main
-                    "Prepare for a Place" form) — reusing that key here said
-                    "the place" on a screen asking about a route. */}
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
-              </div>
-              <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
-                {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🧭</span>}
-                {routeLoading ? t('smm_planning') : t('smm_plan_route_btn')}
-                {!routeLoading && (
-                  <kbd aria-hidden="true"
-                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                    ⌘↵
-                  </kbd>
-                )}
-              </button>
-            </div>
-
-            {routeResults && (
+        {/* ════════ ROUTE RESULTS ════════ The route form itself now lives
+            inside the shared tab panel above; this stays a separate
+            sibling, same as Place mode's results view. */}
+        {view === 'route' && routeResults && (
               <div className="space-y-4">
                 <div className={`${c.card} border-2 border-cyan-600/40 rounded-2xl p-5`}>
                   <h2 className={`text-lg font-black ${c.text}`}>{routeResults.route_summary?.heading}</h2>
@@ -890,8 +978,6 @@ function TripRecon({ tool }) {
                   </div>
                 )}
               </div>
-            )}
-          </div>
         )}
 
         {/* Fallback only: once Recent Places has anything, its cards
