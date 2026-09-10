@@ -45,52 +45,73 @@ const ANALYSIS_MODE = 'claim_analysis';
 
 // Fixed phrase list, not a judged rule — every one of these describes a
 // research process (a review, a dataset, a tracked history) that did not
-// happen. ENGLISH ONLY: withLanguage() translates the model's output into
-// the visitor's language, and this backstop does not follow it there — a
-// live German test during this pass produced correct, un-flaggable output
-// ("kein empirisch bewiesenes...", a NEGATION, exactly the allowed shape),
-// but that is the prompt-level SOURCE MODE rules holding on their own, not
-// this regex. If violations start showing up in a non-English language,
-// the fix is translating this list, not declaring the English case done.
-// Deliberately over-inclusive: a false positive here costs one
-// regeneration or one dropped item; a false negative reaches the visitor as
-// invented evidence.
+// happen. v1 of this list (verb-conjugation-specific, e.g. "evidence
+// shows/suggests/supports") missed 12 of 13 real violations from a live
+// parenting/screen-time test the very next round ("the evidence tends to
+// show," "observational research," "reviews of homework research,"
+// "researchers argue," "is associated with," "historically," "documented,"
+// "broadly recognized in ... literature") — narrow verb-matching does not
+// generalize across the many ways a model phrases "I reviewed a body of
+// evidence." This list is now WORD/PHRASE-LEVEL and deliberately broad.
+// ENGLISH ONLY: withLanguage() translates the model's output into the
+// visitor's language, and this backstop does not follow it there — see the
+// tool notes for what that does and doesn't cover. A false positive here
+// costs one field regeneration or one dropped item; a false negative
+// reaches the visitor as invented evidence, which is the worse failure.
 const CLAIM_MODE_BANNED_RE = new RegExp([
-  'evidence\\s+(?:shows?|suggests?|supports?|is\\s+consistent\\s+with|that)',
-  'is\\s+(?:some\\s+)?evidence\\s+that',
-  'stud(?:y|ies)\\s+(?:show|shows|find|finds|found|suggest|suggests|indicate|indicates)',
+  'evidence\\s+(?:\\w+\\s+){0,3}(?:shows?|suggests?|supports?|indicates?|demonstrates?|confirms?|treats?|is\\s+consistent\\s+with)',
+  'evidence\\s+(?:that|for|of|on|about|regarding)\\b',
+  '\\bevidence\\s+consistently\\b',
+  '\\bdisagreement\\s+among\\s+researchers\\b',
+  'research\\s+(?:\\w+\\s+){0,3}(?:shows?|suggests?|supports?|finds?|indicates?|confirms?)',
+  '\\bobservational\\s+(?:research|studies|comparisons?)\\b',
+  '\\bexperimental\\s+(?:research|studies|comparisons?)\\b',
+  '\\breviews?\\s+of\\s+\\w+',
+  '\\bliterature\\b',
+  '\\bresearchers?\\s+(?:argue|agree|disagree|report|found|conclude)',
+  'stud(?:y|ies)\\s+(?:show|shows|find|finds|found|suggest|suggests|indicate|indicates|report|reports)',
   'historical\\s+data\\s+(?:show|shows|suggest|suggests)',
   'historical\\s+\\w+\\s+comparisons?\\b',
+  '\\bdata\\s+(?:show|shows|suggest|suggests|indicate|indicates)\\b',
   'tracking\\s+of\\s+(?:fund\\s+)?returns',
   'persistent\\s+tracking',
   'documented\\s+(?:tendency|context|contexts|case|cases|advantage)',
-  'research\\s+(?:finds?|shows?|confirms?|indicates?)',
-  'empirical\\s+evidence',
-  'observational\\s+evidence',
+  '\\bhistorically\\b',
+  '\\bdocumented\\b',
+  'empirical\\s+(?:evidence|research|studies|data|findings|support)',
+  '\\bassociated\\s+with\\b',
+  '\\bassociation\\s+with\\b',
+  '\\beffect\\s+size\\b',
+  '\\bcausal\\s+direction\\b',
+  '\\bconsistently\\s+shown\\b',
+  '\\bbroadly\\s+recognized\\b',
+  'population[- ]level\\s+data',
   'controlled\\s+evidence',
   'multiple\\s+markets\\s+and\\s+asset\\s+classes',
   'multi[- ]decade',
   'evidence\\s+base',
   'track\\s+record',
-  'literature\\s+(?:shows?|suggests?|indicates?)',
   'the\\s+evidence\\s+covers',
   '(?:this|that|those|the)\\s+claim\\s+is\\s+(?:mostly\\s+)?supported\\s+by',
 ].join('|'), 'i');
 
 // The prompt explicitly permits describing MISSING evidence ("does not
 // provide evidence for," "would be needed to establish," "no evidence
-// that..."). Those legitimately contain words like "evidence that" or
-// "evidence for" — check a window around a raw match for a negation/
-// missing-evidence cue before treating it as a real violation, so the
-// allowed phrasing doesn't get silently regenerated or dropped.
-const ALLOWED_EXCEPTION_RE = /\b(?:no|not|n't|without|lacks?|absence of|does(?:n't| not) provide|would be needed to establish|to evaluate this empirically)\b/i;
+// that...," "that is an empirical question requiring evidence") — those
+// legitimately contain words like "evidence that" or "empirical" while
+// doing exactly what SOURCE MODE asks for. Check a window around a raw
+// match for a negation/missing-evidence cue before treating it as a real
+// violation, so the allowed phrasing doesn't get silently regenerated or
+// dropped.
+const ALLOWED_EXCEPTION_RE = /\b(?:no|not|n't|without|lacks?|absence of|does(?:n't| not) provide|would be needed to establish|to evaluate this empirically|is an empirical question|requiring evidence|remains an empirical question)\b/i;
 
 function findBannedPhrase(text) {
   if (typeof text !== 'string') return null;
   const m = text.match(CLAIM_MODE_BANNED_RE);
   if (!m) return null;
   const windowStart = Math.max(0, m.index - 60);
-  const window = text.slice(windowStart, m.index + m[0].length);
+  const windowEnd = Math.min(text.length, m.index + m[0].length + 40);
+  const window = text.slice(windowStart, windowEnd);
   if (ALLOWED_EXCEPTION_RE.test(window)) return null;
   return m[0];
 }
@@ -101,27 +122,67 @@ function scanForBannedLanguage(parsed) {
     .filter(x => x.hit);
 }
 
-// One call, checked, and — only if ANALYSIS_MODE actually gets a violation —
-// one regeneration with the exact offending phrase quoted back. This is the
-// enforcement item 15 of the spec asked for: not another judged rule, a
-// deterministic reject-and-regenerate.
-async function callClaimModeChecked({ prompt, userLanguage, locale, max_tokens, label }) {
-  const system = withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`;
-  let parsed = await callClaudeWithRetry({ model: MODELS.SMART, max_tokens, system, messages: [{ role: 'user', content: prompt }] }, { label });
-  if (ANALYSIS_MODE !== 'claim_analysis') return parsed;
-
-  const violations = scanForBannedLanguage(parsed);
-  if (violations.length) {
-    const correction = `\n\nYOUR DRAFT VIOLATED THE LEVEL 1 (CLAIM ANALYSIS) HARD RULE — see SOURCE MODE in the system prompt. It contained: ${violations.map(v => `"${v.hit}"`).join(', ')}. You have not been given sources. Rewrite EVERY field so it describes your reasoning as reasoning — never as a report of what evidence, research, data, tracking, or track record showed. Return the same JSON shape, same keys.`;
-    // Recomputed rather than reusing `system` above — keeps this a genuinely
-    // separate, independently-localized call, not a cached string reused
-    // across two Anthropic requests.
-    const retrySystem = withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`;
-    parsed = await callClaudeWithRetry({
-      model: MODELS.SMART, max_tokens, system: retrySystem,
-      messages: [{ role: 'user', content: prompt + correction }],
-    }, { label: `${label}:claim-mode-retry` });
+// Writes a value back into `parsed` at a dot/bracket path produced by
+// collectProseFields (e.g. "the_signal.items[0].basis"). Silently no-ops if
+// the path no longer resolves — defensive only, should never actually
+// trigger since we're writing back into the same object we just read.
+function setAtPath(obj, path, value) {
+  const parts = path.split(/\.|\[|\]/).filter(Boolean);
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const key = /^\d+$/.test(parts[i]) ? Number(parts[i]) : parts[i];
+    if (cur == null || typeof cur !== 'object') return;
+    cur = cur[key];
   }
+  if (cur == null || typeof cur !== 'object') return;
+  const lastKey = /^\d+$/.test(parts[parts.length - 1]) ? Number(parts[parts.length - 1]) : parts[parts.length - 1];
+  cur[lastKey] = value;
+}
+
+// PER-FIELD regeneration, not a whole-call retry. Rewriting the ONE
+// offending sentence (cheap, MODELS.FAST, no JSON schema to fill) preserves
+// everything the model got right and only reworks what's broken — a
+// whole-call regenerate risks trading one violation for a different one
+// somewhere else in a large response. If this still comes back violating
+// (rare), the existing structural filtering a few lines below already drops
+// any array item whose text still fails `clean()` — this function does not
+// need its own fallback logic, it only needs to try.
+async function regenerateField(originalText, userLanguage, label) {
+  try {
+    // withLanguage()'d even though the user message already quotes the
+    // original (already-localized) text back at the model — without an
+    // explicit instruction the rewrite is one inference away from silently
+    // drifting into English on a non-English response, which is exactly the
+    // kind of soft/implicit behavior this whole backstop exists to avoid.
+    const system = withLanguage('You rewrite one flagged sentence for a tool operating in CLAIM ANALYSIS mode — no sources were supplied or retrieved for this request. The sentence improperly implies a review of evidence, research, studies, or literature that never happened. Rewrite it to make the same substantive point using reasoning about the claim itself only: what follows logically, what the claim does or does not establish, what would need to be checked. Never say what "evidence," "research," "studies," "data," or "the literature" shows, supports, finds, or is associated with. Preserve the point and roughly the original length. Return ONLY valid JSON: {"rewritten": "..."}', userLanguage);
+    const result = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 300,
+      system,
+      messages: [{ role: 'user', content: `Rewrite this: "${originalText}"` }],
+    }, { label });
+    return typeof result?.rewritten === 'string' && result.rewritten.trim() ? result.rewritten.trim() : null;
+  } catch {
+    return null; // leave the original in place; final filtering will drop it if it's still a violation
+  }
+}
+
+// Scans the fully-merged response and fixes violations field-by-field. Runs
+// AFTER runOutputGuard (the guard's own repair pass can introduce or miss
+// things independently) and BEFORE the final structural filtering, so a
+// successfully-fixed field survives instead of being dropped unnecessarily.
+async function enforceClaimModeFields(parsed, userLanguage, label) {
+  if (ANALYSIS_MODE !== 'claim_analysis') return parsed;
+  const violations = scanForBannedLanguage(parsed);
+  if (!violations.length) return parsed;
+  // Cap concurrent fix-up calls — a maximally-noisy response shouldn't turn
+  // into a dozen extra round trips; the ones left unfixed still get dropped
+  // by the structural filtering, which is the correct fallback either way.
+  const toFix = violations.slice(0, 10);
+  const fixes = await Promise.all(toFix.map(v => regenerateField(v.text, userLanguage, `${label}:field-fix`)));
+  toFix.forEach((v, i) => {
+    if (fixes[i]) setAtPath(parsed, v.path, fixes[i]);
+  });
   return parsed;
 }
 
@@ -500,6 +561,20 @@ one that was. If the topic alone (with no specific claims supplied) needs
 general framing, that framing belongs in "framing," not as an extra
 signal/noise item standing in for a claim nobody made.
 
+Before writing any claim, question, or item, check it against this test:
+IS THIS TRACEABLE TO (a) a claim the visitor actually supplied, (b) a
+distinction genuinely necessary to analyze that claim, or (c) a source
+actually examined? If none of the three apply, do not write it. A visitor
+who supplied "screen time, intensive vs. permissive parenting styles, and
+homework" did not ask about free-range parenting — do not introduce
+"unstructured, child-directed play (the core of free-range parenting)" as
+a still_worth_verifying item just because it's adjacent and interesting.
+Likewise, do not manufacture a model-generated definition for a broad or
+contested label ("the core of X parenting is...") that nothing supplied
+actually established. Signal vs. Noise gets NARROWER as it analyzes a
+topic, not broader — every layer should sharpen the claims actually on the
+table, never add a new one to the table.
+
 22. NOISE-TYPE LABELS MUST DESCRIBE THE ACTUAL DEFECT.
 Use "cherry_picked" only when the supplied material, or evidence actually
 examined, selects favorable results while excluding relevant contrary
@@ -564,7 +639,36 @@ this up as an unresolved research question, and do not silently drop it
 either, since it's the one honest thing this tool can tell the visitor
 about their specific case.
 
-26. DEFTBRAIN_OUTPUT_STANDARD_V2
+26. THE SIGNAL DOES NOT NEED ONE ITEM PER DISPUTED CLAIM.
+Do not manufacture a matching empirical-sounding signal item for every noise
+item just to keep the sections symmetric. Sometimes the honest signal is
+simply that the claim needs a missing distinction: "'Homework helps' and
+'homework is harmful' are both incomplete claims unless they specify age,
+amount, type of work, and the outcome being judged" is a complete, useful
+signal item on its own — it does not need a companion item asserting what
+homework research has actually found. The same applies to noise items: the
+"what went wrong" for a broad claim ("screen time is destroying kids") is
+that it doesn't specify the activity, amount, age, outcome, or comparison —
+not a summary of what research on screens has supposedly found instead.
+
+Do not append a lesson, caution, or example the visitor's supplied claims
+didn't raise, however true or well-intentioned it is — "before-and-after
+comparisons or dramatic outcome stories" has no place in treat_skeptically
+unless an anecdote or before/after claim actually appeared in what the
+visitor supplied. General epistemic lessons like that belong in
+sources_of_noise (collapsed), if anywhere, not smuggled into the main
+analysis of THIS visitor's THIS claims.
+
+Do not invent an individual person to apply the analysis to. The visitor
+supplying a topic like "parenting styles" did not supply a specific child —
+"if you are trying to apply general findings to a specific child,
+individual circumstances, temperament, and context matter" invents both
+the child and the application. Prefer: "Applying a population-level claim
+to an individual case requires information this analysis does not have."
+Or omit the point entirely if it doesn't add anything the analysis hasn't
+already said.
+
+27. DEFTBRAIN_OUTPUT_STANDARD_V2
 Follow DeftBrain Output Standard V2:
 - grounded claims
 - explicit uncertainty
@@ -621,6 +725,11 @@ router.outputGuard = {
     'two_sided_evidence_debate_invented_with_no_sources_examined',
     'person_specific_question_misclassified_as_a_general_evidence_gap',
     'health_or_finance_item_defaulted_to_a_professional_referral_without_basis',
+    'claim_or_question_not_traceable_to_a_supplied_claim_a_necessary_distinction_or_an_examined_source',
+    'contested_label_given_a_model_generated_definition_not_supplied_or_sourced',
+    'signal_item_manufactured_merely_to_match_a_noise_item_one_for_one',
+    'unprompted_epistemic_lesson_or_anecdote_inserted_that_the_visitor_did_not_raise',
+    'individual_person_or_case_invented_to_apply_a_population_claim_to',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -797,8 +906,8 @@ RULES:
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const [signalPart, noisePart] = await Promise.all([
-      callClaimModeChecked({ prompt: signalPrompt, userLanguage, locale, max_tokens: 3000, label: 'signal-vs-noise:signal' }),
-      callClaimModeChecked({ prompt: noisePrompt, userLanguage, locale, max_tokens: 3000, label: 'signal-vs-noise:noise' }),
+      callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 3000, system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`, messages: [{ role: 'user', content: signalPrompt }] }, { label: 'signal-vs-noise:signal' }),
+      callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 3000, system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`, messages: [{ role: 'user', content: noisePrompt }] }, { label: 'signal-vs-noise:noise' }),
     ]);
     const parsed = { analysis_mode: ANALYSIS_MODE, sources_examined: [], ...noisePart, ...signalPart };
     if (!parsed?.the_signal || !parsed?.framing) {
@@ -814,13 +923,20 @@ RULES:
       userLanguage,
     });
 
-    // Structural validation, run AFTER the guard (the guard's own repair
-    // pass can leave a field incomplete despite being told not to — see
-    // ScamRadar/Sensory Scout for the same lesson learned earlier this
-    // session). nonBlank() so a whitespace-only string counts as missing.
-    // clean() ALSO drops any item that still contains banned claim-mode
-    // language after the one regeneration in callClaimModeChecked — this is
-    // the actual backstop: a violating item never reaches the user, it is
+    // Deterministic, per-field claim-mode enforcement — NOT a judged rule.
+    // Runs after the guard (whose own repair pass can introduce or miss
+    // things independently) and before the final structural filtering below,
+    // so a successfully-fixed field survives instead of being dropped for
+    // nothing. See CLAIM_MODE_BANNED_RE's comment for why this list is now
+    // broad word/phrase matching rather than narrow verb-conjugation
+    // patterns, and audit/tool-notes/SIGNALVSNOISE-NOTES.md for why this is
+    // a per-FIELD fix now, not a whole-call regenerate.
+    await enforceClaimModeFields(parsed, userLanguage, 'signal-vs-noise');
+
+    // Structural validation. nonBlank() so a whitespace-only string counts
+    // as missing. clean() ALSO drops any item that still contains banned
+    // claim-mode language after the per-field fix-up above — this is the
+    // actual backstop: a violating item never reaches the user, it is
     // silently omitted the same way an empty/manufactured item would be.
     const nonBlank = (v) => typeof v === 'string' && v.trim().length > 0;
     const clean = (v) => nonBlank(v) && !findBannedPhrase(v);

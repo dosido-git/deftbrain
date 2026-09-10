@@ -366,3 +366,95 @@ correctness was verified separately via 12 unit-style test cases run directly ag
 17. **`ALLOWED_EXCEPTION_RE`'s negation window** — removing it will cause the tool's OWN
     explicitly-taught allowed phrasing ("does not provide evidence for...") to trigger false-positive
     regenerations/drops on every response that correctly describes missing evidence.
+
+## V5 — broad phrase matching + per-field regen + traceability guard (2026-09-10, same day, 4th pass)
+
+V4's regex shipped locally but had NOT been deployed (`origin/main` was still 2 commits behind) when
+the owner ran the next live test — a parenting/screen-time/homework topic. That test genuinely
+exposed two real, separate problems, not just a stale-deployment artifact:
+
+**Problem 1 — the regex itself was too narrow.** V4's patterns were verb-conjugation-specific
+("evidence shows/suggests/supports/that"). Tested directly against the 13 new violating sentences
+from this live output, it caught only 1 of 13: "the evidence tends to show," "observational
+research," "reviews of homework research... broadly recognized in ... literature," "researchers
+argue," "is associated with," "historically," "documented," "the evidence on X is Y" all sailed
+through. **Lesson: narrow verb-matching does not generalize** — a model has many ways to phrase "I
+reviewed a body of evidence," and each new domain surfaces new ones. The fix is broad WORD/PHRASE
+matching (bare `literature`, `historically`, `documented`, `associated with`; `evidence`/`research` +
+up to 3 words + a wide verb set; `observational|experimental` + `research|studies|comparisons`, etc.),
+verified against all 13 new violations plus 7 legitimate ALLOWED sentences (0 false positives, 0
+false negatives) via a standalone test script before shipping — see the git history of this file's
+`CLAIM_MODE_BANNED_RE` for the exact before/after.
+
+**Problem 2 — scope creep, a different failure from evidence-language.** The same live output
+introduced "free-range parenting" into `still_worth_verifying` and invented "the core of free-range
+parenting" as a definition — the visitor supplied "screen time, intensive vs. permissive parenting
+styles, and homework," never free-range parenting as its own topic. This is NOT an evidence-
+provenance problem a phrase-ban can catch; it's the tool wandering onto an adjacent topic because it
+seemed interesting. Fixed with an explicit traceability test added to rule 21: before writing any
+claim/question, ask whether it's traceable to (A) a claim the visitor supplied, (B) a distinction
+necessary to analyze that claim, or (C) an examined source — if none apply, don't write it. Backed by
+5 new `outputGuard` entries (LLM-judged, since "is this topically related" is a semantic call a regex
+cannot make the way "does this phrase imply a literature review" can).
+
+**Architecture change — per-FIELD regeneration, not per-CALL.** V4's `callClaimModeChecked` retried
+the ENTIRE signal or noise half on any violation — wasteful, and risks trading one violation for a
+new one somewhere else in a large response it didn't need to touch. V5 replaces it with
+`enforceClaimModeFields()` / `regenerateField()` / `setAtPath()`: every violating field is identified
+by its exact path (e.g. `the_signal.items[0].basis`), rewritten individually via a small, cheap
+`MODELS.FAST` call (no JSON schema to fill, just `{"rewritten": "..."}`), and spliced back into the
+parsed object at that exact path. Everything the model got right elsewhere in the response is left
+untouched. A field that's still a violation after its one regeneration attempt is simply left as-is —
+the existing `clean()`-based structural filter (unchanged from V4) drops the enclosing array item,
+same fallback as before. `regenerateField` is `withLanguage()`'d on `userLanguage` even though the
+quoted original text is already in that language — without an explicit instruction the rewrite is one
+inference away from drifting into English on a non-English response.
+
+**Other fixes this pass:**
+- Reinforced rule 21 (STAY WITHIN WHAT WAS SUPPLIED) with the traceability test above.
+- New rule 26: the_signal does not need one item per noise item (sometimes the honest signal is that
+  a claim needs a missing distinction, not a matching empirical rebuttal); don't insert an unprompted
+  epistemic lesson ("before-and-after comparisons") the visitor's claims didn't raise; don't invent an
+  individual person/child to apply a population-level claim to (that belongs in
+  `what_general_claims_cant_decide`, addressed to "you," not smuggled into the general bottom line).
+- UI: a "CLAIM ANALYSIS" mode badge with a tooltip now renders under ANALYZING
+  (`svn_mode_claim_analysis` / `svn_mode_claim_analysis_tip`, 13 languages) — reinforces the boundary
+  for the visitor, not just internal bookkeeping. `source_analysis`/`verified_research` labels are
+  deliberately not built — this tool performs no live retrieval, so those modes are unreachable today;
+  build them only if that capability is ever added (see "NOT built this pass" below).
+- Catalog copy (`src/data/tools.js` `description`/`seoDescription`/`primer.get`) and `svn_tagline`
+  (13 languages) reworded away from "stronger evidence" / "genuinely unsettled" phrasing that implied
+  the tool always has access to an evidence base to sort — the tool's own promise needed to be true in
+  Claim Analysis mode too, which is the mode almost every request actually runs in.
+
+**NOT built this pass — flagged as a real decision, not defaulted on:** the owner's spec proposed a
+"Research These Claims" escalation button that would switch the tool into a genuine `verified_research`
+mode with live source retrieval and citations. This tool has no web-search/retrieval capability wired
+in today. Building it is a real product/infrastructure decision (cost per request, latency, a new
+external dependency, reliability) — not something to add silently as part of a prompt-correction pass.
+Left unbuilt pending an explicit decision to invest in that capability.
+
+**Live-tested against:** the exact parenting/screen-time/homework scenario from the owner's spec.
+0 banned-phrase hits, 0 free-range-parenting scope creep, 0 field-fix regenerations needed (the
+strengthened PERSONALITY got it right without needing the backstop this time — the backstop's own
+correctness was verified separately, via direct regex unit tests, not by hoping a live call would
+trigger it). Browser-verified the CLAIM ANALYSIS badge and its tooltip render. `npm run check:golden
+signal-vs-noise` → 3/3 PASS on the re-recorded golden (added a 3rd, parenting-domain case rather than
+replacing the 2 investing cases — this pass didn't change the schema, so the existing cases still
+validate it correctly).
+
+## DO NOT silently reverse (V5 additions)
+
+18. **`CLAIM_MODE_BANNED_RE` must stay broad word/phrase matching**, not narrow verb-conjugation
+    patterns — that specific narrowness is what let 12 of 13 violations through in the test that
+    triggered this pass. Any future addition to the list should default to the broader shape unless
+    there's a specific, tested reason to narrow it.
+19. **Per-field regeneration (`enforceClaimModeFields`/`regenerateField`/`setAtPath`), not a whole-call
+    retry.** Don't collapse this back into re-running the entire signal or noise prompt on any
+    violation — that's strictly worse (slower, and risks introducing a new violation while fixing the
+    old one) with no compensating benefit.
+20. **Rule 21's traceability test** — this is a different failure class from evidence-language
+    invention (scope creep vs. fabricated provenance) and needs its own defense; don't assume the
+    phrase-ban regex covers it, it doesn't and structurally can't.
+21. **The "CLAIM ANALYSIS" mode badge** — don't remove it as "just disclosure text"; the owner's
+    stated reasoning is that it reinforces the conceptual boundary for the visitor, not merely informs.

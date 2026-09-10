@@ -252,7 +252,20 @@ const SignalVsNoise = ({ tool }) => {
                   it had an answer. Same handler, same key, just reachable
                   from both states now. */}
               <div className="flex items-start justify-between gap-3 mb-1">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_analyzing')}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_analyzing')}</p>
+                  {/* Mode indicator (item 20) — not just disclosure, it reinforces
+                      the boundary for the visitor: this result reasons about the
+                      claims supplied, it did not review outside sources. Only
+                      claim_analysis exists today (this tool performs no live
+                      retrieval); source_analysis/verified_research labels would
+                      be added here if that capability is ever built. */}
+                  {results?.analysis_mode === 'claim_analysis' && (
+                    <span title={t('svn_mode_claim_analysis_tip')} className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border cursor-help ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>
+                      {t('svn_mode_claim_analysis')}
+                    </span>
+                  )}
+                </div>
                 <button onClick={() => { setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   {t('svn_new_topic')}
                 </button>

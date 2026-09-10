@@ -3,7 +3,8 @@
     "tool": "SignalVsNoise",
     "generated": "2026-09-10",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/signal-vs-noise, fans out to 2 parallel calls merged server-side)",
-    "baseline_commit": "signalvsnoise-v4 (hard-mode-switch pass, on top of v3/v2)",
+    "baseline_commit": "signalvsnoise-v5 (per-field enforcement + traceability guard, on top of v4/v3/v2)",
+    "v5_note": "v4's regex (CLAIM_MODE_BANNED_RE) was verb-conjugation-specific ('evidence shows/suggests/supports') and missed 12 of 13 real violations in the very next live test, a parenting/screen-time topic: 'the evidence tends to show,' 'observational research,' 'reviews of homework research... broadly recognized in ... literature,' 'researchers argue,' 'is associated with,' 'historically,' 'documented,' 'the evidence on X is Y.' Narrow verb-matching does not generalize across the many ways a model phrases 'I reviewed a body of evidence' — v5's list is now broad WORD/PHRASE matching (evidence/research + up to 3 words + a wide verb set, bare 'literature'/'historically'/'documented'/'associated with', etc.), verified against all 13 new violations plus 7 legitimate ALLOWED sentences (0 false positives, 0 false negatives) before shipping. ARCHITECTURE CHANGE: enforcement moved from a whole-CALL regenerate (v4) to PER-FIELD regenerate (v5) — enforceClaimModeFields()/regenerateField()/setAtPath() rewrite only the flagged sentence (cheap, MODELS.FAST, no JSON schema to fill), preserving everything the model got right instead of risking a whole-half regenerate trading one violation for a different one elsewhere. A field that still fails after its one regeneration attempt is left as-is and the EXISTING structural clean()-filter (unchanged) drops the enclosing item, same fallback as before. NEW: a traceability/scope-creep guard (rule 21 extended + 5 new outputGuard entries) — the same live test also introduced 'free-range parenting' and invented 'the core of free-range parenting' as a model-generated definition, neither of which the visitor raised (visitor supplied only screen time, tiger vs. free-range as a *label pair*, and homework — not a definition of any of them). Rule 21 now states an explicit traceability test (A: a supplied claim, B: a necessary distinction, C: an examined source — if none apply, don't write it). Also reinforced: rule 26 (new) — the_signal doesn't need one item per noise item, don't insert an unprompted epistemic lesson (e.g. 'before-and-after comparisons') the visitor didn't raise, don't invent an individual child/person to apply a population claim to (that belongs in what_general_claims_cant_decide, not the general bottom line). UI: a 'CLAIM ANALYSIS' mode badge with a tooltip now renders under ANALYZING (source_analysis/verified_research labels are unreachable today — this tool performs no live retrieval — and are not yet built; add them only if that capability is ever added). Catalog copy (src/data/tools.js description/seoDescription/primer.get) and svn_tagline reworded away from 'stronger evidence'/'genuinely unsettled' framing that implied the tool always has access to an evidence base, per the same principle as SOURCE MODE. Live-tested against the exact parenting/screen-time/homework scenario (0 banned-phrase hits, 0 field-fix regenerations needed — the strengthened prompt got it right without needing the backstop this time; the backstop's correctness was verified separately via 20 unit test cases against the regex directly). DO NOT revert to whole-call regeneration or narrow the banned-phrase list back to verb-conjugation matching — both were the specific gaps this pass closed.",
     "v4_note": "A THIRD 'final corrections' pass, same day as v3, found the identical literature-review-voice failure in a domain not yet tested — finance ('persistent tracking of fund returns... across multiple markets and asset classes,' 'the evidence covers funds that survived long enough to be measured,' a fabricated survivorship-bias limitation for a dataset never examined). Three prompt-only passes had not fully suppressed this, so v4 adds what they didn't have: a deterministic, ENGLISH-ONLY code-level backstop (see signal-vs-noise.js's CLAIM_MODE_BANNED_RE / findBannedPhrase / callClaimModeChecked) — every prose field is scanned against a fixed phrase list, a violating half is regenerated once with the exact offending phrase quoted back at it, and any array item that still violates after that is silently dropped rather than shown. The prompt still tries hard to get it right the first time (extensive new PERSONALITY rules, worked BAD/GOOD examples for the fee/valuation/real-estate/survivorship/professional-referral/ranking-against-unnamed-alternatives failures) — the regex is the guarantee, not a replacement for it. SCHEMA CHANGE: genuinely_debated (with nullable what_supports_one_view/another_view, introduced in v3) is REMOVED entirely and replaced by two separate top-level arrays: still_worth_verifying[] ({question, why_it_matters, what_would_help} — a genuinely unresolved GENERAL empirical question, never a fabricated two-sided debate) and what_general_claims_cant_decide[] (plain strings — person-specific questions a general analysis can never resolve, e.g. 'whether direct real estate fits your actual situation'). v3's null-views mechanism for person-dependent questions is superseded by this split, not extended. Response also gains analysis_mode ('claim_analysis', hard-locked in code, not model-self-reported) and sources_examined (always [] today — no source-paste feature exists). Caps changed: the_signal 4->3, still_worth_verifying capped at 2 (was genuinely_debated at 3), what_general_claims_cant_decide capped at 3, the_bottom_line.what_would_change_the_answer 2->3. i18n: svn_nuance reworded 'Limits:' -> \"What it doesn't establish:\"; svn_debated_header reworded 'Still Unsettled' -> 'Still Worth Verifying'; new keys svn_verify_why/svn_verify_would_help/svn_cant_decide_header; svn_one_view/svn_another_view/svn_why_unsettled are now orphaned (left in the locale files, no longer referenced in JSX — the two-sided-debate UI was removed, not relabeled). outputGuard.prohibit grew from 28 to 37 entries. DO NOT reverse the schema split or the code-level regex backstop — three prompt-only passes already proved insufficient on their own.",
     "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). v2 (2026-09-09) fixed the health-domain instances of the tool implying a literature review it never performed. v3 (2026-09-10) fixed the SAME failure mode recurring in a non-health (career/labor) domain — 'wage data shows,' an invented MBA-recruiting market map, an invented causal mechanism for job-switching pay, a strawmanned 'follow your passion' critique, an extra unrequested career-advice claim, two noise_type mislabels, an unsupported publicity/selection-bias claim used to rebut an overclaim with another overclaim, debate-club phrasing, and a STILL UNSETTLED section forced into a two-sided-evidence shape it didn't have for a person-dependent question. v4 (same day) is documented in v4_note above.",
     "prior_baseline_commit": "signalvsnoise-v2",
@@ -230,6 +231,111 @@
           "Ob Indexfonds oder aktiv verwaltete Fonds für deine konkrete Situation sinnvoller sind — das hängt von deinem Zeithorizont, der steuerlichen Behandlung in deinem Fall, verfügbaren Produkten und deinen tatsächlichen Kosten ab.",
           "Ob du in einer bestimmten Marktphase investiert bleiben, einsteigen oder abwarten solltest — das erfordert Informationen über deine Liquiditätssituation, deinen Anlagezeitraum und was du tatsächlich mit dem Kapital vorhast.",
           "Ob ein bestimmter aktiv verwalteter Fonds seine Mehrkosten durch Mehrrendite rechtfertigen kann — das lässt sich aus allgemeinen Thesen nicht ableiten und erfordert die Prüfung des konkreten Produkts."
+        ]
+      },
+      "optionalSections": [
+        "still_worth_verifying"
+      ]
+    },
+    {
+      "name": "en-parenting-screen-time-claim-mode",
+      "endpoint": "/api/signal-vs-noise",
+      "input": {
+        "userLanguage": "en",
+        "topic": "parenting approaches",
+        "conflictingAdvice": "Screen time is destroying kids vs. it depends on content, tiger parenting vs. free-range, homework helps vs. homework is harmful"
+      },
+      "output": {
+        "analysis_mode": "claim_analysis",
+        "sources_examined": [],
+        "the_noise": [
+          {
+            "claim": "Screen time is destroying kids.",
+            "noise_type": "too_broad",
+            "noise_label": "A verdict without a specification",
+            "what_the_evidence_supports_instead": "Screen time is not a single thing. Watching a video call with a grandparent, playing an open-ended puzzle game, and passively scrolling algorithmically curated short clips are different activities with different demands on attention, social engagement, and sleep. A claim about 'screen time' that does not specify the activity, the amount, the child's age, or the outcome being measured cannot be evaluated as written.",
+            "what_went_wrong": "The claim collapses a broad category of activities into one variable and assigns it a single causal verdict. That framing makes the claim look more settled than it is, because it bundles together cases that may differ substantially in what they do and do not affect.",
+            "kernel_of_truth": "Some uses of screens — particularly those that displace sleep, physical activity, or face-to-face interaction, or expose children to distressing or age-inappropriate content — plausibly carry real costs. That more specific concern is worth taking seriously."
+          },
+          {
+            "claim": "Tiger parenting produces successful children.",
+            "noise_type": "context_dependent",
+            "noise_label": "Parenting style label applied as a universal prescription",
+            "what_the_evidence_supports_instead": "High parental expectations and involvement can matter, but the outcomes of any parenting approach depend heavily on the specific practices involved, the child's temperament, the cultural and economic context, and what 'success' is being measured. A label like 'tiger parenting' bundles together high expectations, authoritarian control, emotional pressure, and intensive involvement — components that may not all work the same way or in the same direction, which means the label itself obscures which parts, if any, are actually driving the results someone observes.",
+            "what_went_wrong": "The claim converts a cultural observation or a parenting label into a transferable prescription. Even if high-achievement outcomes appear together with certain practices in certain contexts, noticing that pattern does not establish that the practices caused the outcomes, rather than both reflecting shared advantages, parental selection, family resources, or other conditions that might produce success independently.",
+            "kernel_of_truth": "Expectations and engaged parenting can matter. The problem is asserting that a specific cluster of demanding practices reliably produces success across children and contexts."
+          },
+          {
+            "claim": "Homework is harmful / homework helps.",
+            "noise_type": "oversimplified",
+            "noise_label": "Both sides of a debate stated as universals",
+            "what_the_evidence_supports_instead": "'Homework helps' and 'homework is harmful' are both incomplete as general claims. What homework does — if anything — depends on the age of the child, the subject, the amount assigned, whether the child has support to complete it, and what outcome is being measured (test scores, retention, stress, family conflict, or something else). A claim that does not specify these cannot be confirmed or refuted.",
+            "what_went_wrong": "Each side of this debate treats one pattern — if it is even a consistent pattern — as a universal rule. The claim's scope (all homework, all children, all outcomes) exceeds what any aggregate finding could responsibly support.",
+            "kernel_of_truth": "Whether a particular homework practice is useful or counterproductive is a real question. That question just cannot be answered for 'homework' in the abstract."
+          }
+        ],
+        "the_bottom_line": {
+          "supported_takeaways": [
+            "For screen time, content and context do the work that total-hours measurements cannot. Asking what a child is doing on a screen, and what it is displacing, is more useful than a blanket time limit.",
+            "For parenting style debates, the label ('tiger,' 'free-range') is less informative than the specific practices it refers to — and what those practices produce likely varies with the child's temperament and circumstances.",
+            "For homework, the general debate ('helps or harms') is less useful than the specific question: for this child, at this age, in this subject, is this amount of homework serving its intended purpose?"
+          ],
+          "treat_skeptically": [
+            "Any claim that assigns a single outcome — positive or negative — to 'screen time,' 'tiger parenting,' or 'homework' without specifying age, amount, type, and what outcome is being measured.",
+            "Parenting prescriptions that present a cultural pattern as a universally transferable formula, especially when the proposed mechanism (why it works) is not spelled out."
+          ],
+          "what_would_change_the_answer": [
+            "Knowing the specific studies or sources behind these claims would allow the claims they actually make — and the evidence they actually present — to be evaluated rather than the slogans alone."
+          ]
+        },
+        "sources_of_noise": [
+          {
+            "source_type": "Category labels applied to heterogeneous behaviors",
+            "how_it_distorts": "When a single label ('screen time,' 'tiger parenting,' 'homework') covers a wide range of distinct activities or practices, findings about one subset can be stated as if they apply to the whole category. The label does the work of unifying things that may not belong together.",
+            "how_to_recognize_it": "A claim uses a broad label but does not specify which version of the behavior, which age group, which outcomes, or which conditions the finding applies to."
+          },
+          {
+            "source_type": "Population averages presented as individual prescriptions",
+            "how_it_distorts": "Even a real pattern at the population level — if one exists — does not tell you what will happen with a specific child in a specific context. Parenting advice often moves from 'children in this group tended toward this outcome' to 'therefore you should do this,' skipping the step of establishing that the conditions generalize.",
+            "how_to_recognize_it": "The advice drops all qualifications and addresses 'your child' or 'all children' without naming the specific conditions under which the finding held."
+          },
+          {
+            "source_type": "Outcome selection in success stories",
+            "how_it_distorts": "Parenting approaches get credit for salient outcomes — high test scores, elite college admissions, professional achievement — while costs to other outcomes (stress, family relationships, intrinsic motivation, wellbeing) may receive less attention in the same account. This is a possibility to watch for, not an established pattern.",
+            "how_to_recognize_it": "A parenting claim is supported mainly by pointing to impressive outcomes in specific children, without addressing what was also present or absent in those cases, or what range of outcomes occurred across similar approaches."
+          }
+        ],
+        "topic_as_understood": "Whether popular parenting prescriptions — limits on screen time, authoritarian vs. permissive styles, and homework — are supported strongly enough to treat as reliable general rules",
+        "framing": "Each of these debates collapses a conditional question into a universal one. The useful work is identifying which conditions actually change the answer, rather than picking a side in the slogan version of each dispute.",
+        "the_signal": {
+          "items": [
+            {
+              "claim": "Screen time is not a single thing, and treating total hours as the only variable that matters omits conditions likely to change the outcome",
+              "basis": "By definition, 'screen time' covers passive consumption, interactive communication, creative production, and educational engagement — activities with different cognitive and social demands. A blanket hour-count treats these as equivalent, which the categories themselves do not support. Content, context (solo vs. with others), and what the screen time displaces are all distinct variables that the simple claim ignores.",
+              "limits": "This does not establish that unlimited or any particular kind of screen use is harmless. It only establishes that the claim 'screen time is destroying kids' is too coarse to be reliably actionable as stated."
+            },
+            {
+              "claim": "'Homework helps' and 'homework is harmful' are both incomplete claims unless they specify age, amount, type of work, and the outcome being measured",
+              "basis": "This follows from what the two claims are actually asserting. 'Helps' and 'harmful' both require specifying: helps or harms what outcome (test scores, interest in learning, family stress, sleep), for which age group, in what amount, and compared to what alternative use of that time. Without those conditions, the two slogans are not in disagreement about any specific proposition — they are just asserting opposite verdicts on an underspecified question.",
+              "limits": "This does not settle what the right amount or type of homework is at any particular age — it only identifies why the debate as framed cannot produce a useful answer."
+            },
+            {
+              "claim": "Consistent warmth and clear expectations are not in tension with each other as parenting features, and the tiger-vs.-free-range framing treats them as opposites when they are not",
+              "basis": "This follows from what each label is typically used to mean. 'Tiger parenting' emphasizes high demands; 'free-range' emphasizes autonomy and low control. Framing them as the two options implies that high expectations and high responsiveness are mutually exclusive, which the definitions do not require. A parent can hold high expectations while remaining responsive, or grant autonomy while remaining warm. The either/or presentation creates a false choice.",
+              "limits": "This does not establish which combination of warmth and structure produces the best outcomes, or how to define 'best outcomes' — those remain genuinely contested. It only identifies that the binary framing misrepresents the actual dimensions."
+            }
+          ]
+        },
+        "still_worth_verifying": [
+          {
+            "question": "Whether specific categories of screen content or use — for example, fast-paced passive video vs. interactive communication vs. creative tools — produce meaningfully different developmental outcomes, and whether those differences vary by age",
+            "why_it_matters": "If content type and age interact, that would give parents a more actionable basis for decisions than total-hour limits alone — but it would also make simple rules harder to apply",
+            "what_would_help": "Long-term studies comparing children with similar total screen exposure but different content mixes and use contexts, with outcomes measured beyond test scores to include sleep, attention, and social development"
+          }
+        ],
+        "what_general_claims_cant_decide": [
+          "Whether the amount and type of homework your child currently has is appropriate depends on their age, what subjects are involved, how much time it actually takes them, and what it is displacing — general population-level claims cannot answer that",
+          "Whether your child's current screen use is a concern depends on what they are doing, how it affects sleep and other activities, and your child's individual response — not on hours alone"
         ]
       },
       "optionalSections": [

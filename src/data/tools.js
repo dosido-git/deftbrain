@@ -690,10 +690,10 @@ export const tools = [
   primer: {
     when: "You've read five confident articles that contradict each other.",
     give: "The contested topic. One line.",
-    get: "What the evidence actually supports, what's noise and why, and where honest people still disagree.",
+    get: "What a claim reasonably supports, what's noise and why, and what's still worth digging into.",
     edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses.",
   },
-  seoDescription: "Sort the stronger evidence from claims that outrun it, on any health, finance, or productivity topic. Free: what holds up, what to treat skeptically, and what's still genuinely unsettled.",
+  seoDescription: "Separate what a claim reasonably supports from overstatement, on any health, finance, or productivity topic. Free: what holds up, what to treat skeptically, and what's still worth investigating.",
   seoTitle: "Evidence Checker: Signal vs. Noise",
   title: "Signal vs. Noise",
   tagline: "📡 Find what holds up — and what doesn't.",
@@ -701,7 +701,7 @@ export const tools = [
   icon: "📡",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Conflicting advice everywhere? Signal vs. Noise helps you sort stronger evidence from overstatement, weak claims, and questions that are still genuinely unsettled.",
+  description: "Conflicting advice everywhere? Signal vs. Noise helps you separate what a claim reasonably supports from overstatement, weak reasoning, and questions worth investigating further.",
   guide: {
       overview: "Signal vs. Noise is an evidence-calibration tool, not a literature review. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what's reasonably well supported, which popular claims outrun their evidence and why, and what remains genuinely unresolved. It does not invent citations, statistics, or motives to make an answer sound more authoritative than the evidence allows.",
       howToUse: [
