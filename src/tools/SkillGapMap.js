@@ -98,6 +98,9 @@ const SkillGapMap = ({ tool }) => {
   const [results, setResults] = usePersistentState('skillgapmap-result', null);
   const [, setSessionHistory] = usePersistentState('skillgapmap-history', []);
   const [exploreData, setExploreData] = useState(null);
+  const [exploreMoreLoading, setExploreMoreLoading] = useState(false);
+  const [showExploreRefine, setShowExploreRefine] = useState(false);
+  const [exploreRefinement, setExploreRefinement] = useState('');
 
   // ─── State: Expansion features (v1) ───
   const [timelineData, setTimelineData] = useState(null);
@@ -204,16 +207,29 @@ const SkillGapMap = ({ tool }) => {
     } catch (err) { setError(err.message || t('sgm_err_failed')); }
   };
 
-  const handleExplore = async () => {
+  // `more: true` asks for 2 additional, genuinely different directions and
+  // appends them rather than replacing the set — used by "Show 2 More
+  // Directions". A fresh search (Map My Skill Gaps / Regenerate) always
+  // replaces, and carries exploreRefinement as a steering constraint if the
+  // visitor opened "Tell Me What You're Looking For" and filled it in.
+  const handleExplore = async ({ more = false } = {}) => {
     if (!currentRole.trim()) { setError(t('sgm_err_current_role')); return; }
-    setError(''); clearResults();
+    setError('');
+    if (more) setExploreMoreLoading(true); else clearResults();
     try {
       const data = await callToolEndpoint('skill-gap-explore', {
         currentRole: currentRole.trim(), currentSkills: currentSkills.trim() || null,
         interests: interests.trim() || null, userLanguage: lang,
+        ...(more
+          ? { count: 2, excludeDirections: (exploreData?.directions || []).map(d => d.target_role) }
+          : {}),
+        ...(exploreRefinement.trim() ? { refinementNote: exploreRefinement.trim() } : {}),
       });
-      setExploreData(data);
+      setExploreData(prev => more && prev
+        ? { ...prev, directions: [...(prev.directions || []), ...(data.directions || [])] }
+        : data);
     } catch (err) { setError(err.message || t('sgm_err_failed')); }
+    finally { if (more) setExploreMoreLoading(false); }
   };
 
   const selectExploreDirection = (direction) => {
@@ -347,7 +363,7 @@ const SkillGapMap = ({ tool }) => {
     setMarketData(null); setCelebrateData(null); setNudgeData(null);
     setMentorData(null);
   };
-  const reset = () => { setCurrentRole(''); setTargetRole(''); setCurrentSkills(''); setInterests(''); clearResults(); setError(''); setExperienceText(''); setResumeText(''); setConstraints({}); setNewExperience(''); };
+  const reset = () => { setCurrentRole(''); setTargetRole(''); setCurrentSkills(''); setInterests(''); clearResults(); setError(''); setExperienceText(''); setResumeText(''); setConstraints({}); setNewExperience(''); setShowExploreRefine(false); setExploreRefinement(''); };
 
   // ─── Ordering ─── qualitative priority replaces v2's roi_score/impact/
   // effort sort — a fixed, meaningful order rather than a user-facing sort
@@ -559,8 +575,12 @@ const SkillGapMap = ({ tool }) => {
 
       {/* ═══════════════ EXPLORE RESULTS ═══════════════ Plausible
           directions, not one invented target scored against itself — no
-          salary_change, demand rating, or difficulty label; those implied a
-          market analysis this step never did. */}
+          salary_change, demand rating, difficulty label, or ranking; those
+          implied a market analysis or a verdict this step never performs.
+          Every card uses the same four-part structure (why it connects /
+          what the work may involve / worth learning more about / one way to
+          investigate) so "Map This" is always the same distance down the
+          card, and order here is presentation only — never a ranking. */}
       {exploreData && (
         <div className="space-y-5">
           <div className={`${c.card} rounded-xl shadow-sm p-4`}>
@@ -574,15 +594,57 @@ const SkillGapMap = ({ tool }) => {
                   <h4 className={`text-lg font-bold ${c.text} flex-1`}>{dir.target_role}</h4>
                   <button onClick={() => selectExploreDirection(dir)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnPrimary} flex-shrink-0`}>{t('sgm_map_this')}</button>
                 </div>
-                <p className={`text-xs ${c.accentTxt} mt-1`}>{dir.why_it_may_connect}</p>
-                <p className={`text-sm ${c.textSecondary} mt-2`}>{dir.what_the_work_involves}</p>
-                <div className={`p-2 rounded ${c.cardAlt} mt-2`}>
-                  <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_explore_learn_more')}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{dir.what_to_learn_more_about}</p>
+                <div className="mt-3 space-y-2">
+                  <div>
+                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_why_connects')}</p>
+                    <p className={`text-xs ${c.accentTxt}`}>{dir.why_it_connects}</p>
+                  </div>
+                  <div>
+                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_work_involves')}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{dir.what_the_work_involves}</p>
+                  </div>
+                  <div className={`p-2 rounded ${c.cardAlt}`}>
+                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_learn_more')}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{dir.worth_learning_more_about}</p>
+                  </div>
+                  {dir.one_way_to_investigate && (
+                    <div>
+                      <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_investigate')}</p>
+                      <p className={`text-xs ${c.textMuteded}`}>💡 {dir.one_way_to_investigate}</p>
+                    </div>
+                  )}
                 </div>
-                {dir.one_low_cost_way_to_investigate && <p className={`text-[10px] ${c.textMuteded} mt-2`}>💡 {dir.one_low_cost_way_to_investigate}</p>}
               </div>
             ))}
+          </div>
+
+          {/* Not a "load more results" pattern — exploration stays open-
+              ended rather than forcing a restart when the first set misses. */}
+          <div className={`${c.card} rounded-xl shadow-sm p-4 space-y-3`}>
+            <p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_explore_not_seeing_it')}</p>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => handleExplore({ more: true })} disabled={exploreMoreLoading}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>
+                {exploreMoreLoading ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🧭'}</span>{t('sgm_explore_loading_more')}</> : t('sgm_explore_show_more')}
+              </button>
+              <button onClick={() => setShowExploreRefine(s => !s)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>
+                {t('sgm_explore_tell_me')}
+              </button>
+            </div>
+            {showExploreRefine && (
+              <div className="pt-1">
+                <label className={`block text-xs font-semibold ${c.label} mb-1.5`}>{t('sgm_explore_whats_missing_label')}</label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input type="text" value={exploreRefinement} onChange={e => setExploreRefinement(e.target.value)}
+                    placeholder={t('sgm_explore_whats_missing_ph')}
+                    className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                  <button onClick={() => handleExplore()} disabled={loading}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold ${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white disabled:opacity-40 flex-shrink-0`}>
+                    {t('sgm_explore_regenerate')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

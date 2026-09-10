@@ -6,7 +6,8 @@
     "model": "claude-sonnet-4-6",
     "endpoint": "/api/skill-gap-* (22 endpoints)",
     "note": "V3 rewrite (2026-09-10, full owner-supplied spec) of the primary flow only. skill-gap-map's response SHAPE changed completely — the MAP and TIMELINE cases below were re-recorded; ECONOMICS was left byte-identical because that route's prompt/schema was NOT touched this pass. What changed and why: v2 assigned Impact/Effort/ROI (0-100 each), a Readiness percentage, current->target proficiency levels, hour estimates, and named commercial tools/certificates from two role descriptions and an optional skills paragraph — none of that has a defensible calculation behind it. V3 replaces skill_gaps' numeric fields with qualitative priority (start_here|important|useful|role_dependent) and effort (smaller_build|moderate_build|larger_build|null), adds status (evidence_you_have|some_related_evidence|not_established|needs_clarification) and relevance_basis (commonly_relevant|role_dependent|employer_dependent|verified_target) instead of current_level/target_level, and replaces overall_readiness/quick_wins/hidden_requirements with starting_point/transferable_strengths/start_here/next_move/role_expectations_to_check/transition_tasks/unknowns. skill-gap-explore ALSO changed shape (paths[] with salary_change/demand/difficulty -> directions[] with why_it_may_connect/what_the_work_involves, no market data at all — it no longer invents a target and maps against its own invention). skill-gap-timeline changed from total_weeks/phases/milestones with fabricated week numbers to first/then/later/plateau_note — hours_per_week sizes the plan, never a completion date. DO NOT silently reverse any of the above: the whole point of the rewrite was removing fabricated precision, not relabeling it. The 19 untouched secondary routes (Proof, Network, Reframe, Economics, Resume, Companies, Interview, Calibrate, Progress, DayLife, Outreach, Decode, Adjacency, Mock, Market, Celebrate, Nudge, Mentor, plus Explore's own downstream callers) still receive the old field shape via a frontend compatibility shim (toLegacyGaps()/legacyTransition in src/tools/SkillGapMap.js) — do not remove that shim without also rewriting those routes' prompts. See audit/tool-notes/SKILLGAPMAP-NOTES.md.",
-    "rate_limit_note": "Backend limits 4 req/min; the MAP case runs two parallel calls (primary 3000 tokens, secondary 2000 tokens) plus the v2 output guard — budget ~60-90s. check:golden runs the 3 cases sequentially."
+    "followup_2026_09_10b": "TWO further corrections landed the same day, after the note above was written: (1) MAIN's primary call truncated at max_tokens=3000 under real rich input (callClaudeWithRetry hard-throws on stop_reason==='max_tokens', so every truncation was a guaranteed 500) — raised to 5000 (secondary 2000->2500); this is the exact truncation v1 already hit and fixed once before, reintroduced by the v3 rewrite. (2) EXPLORE-specific corrections (owner spec 'SKILL GAP MAP — HELP ME EXPLORE — FINAL CORRECTIONS'): directions field names renamed (why_it_may_connect->why_it_connects, what_to_learn_more_about->worth_learning_more_about, one_low_cost_way_to_investigate->one_way_to_investigate — see the EXPLORE case below, not the stale names in the note above); default count is exactly 4, not 4-6, with near-duplicate role variants (e.g. two PM flavors) explicitly barred from the same batch; new count/excludeDirections params power 'Show 2 More Directions' (additive, not a replace); new refinementNote param powers 'Tell Me What You're Looking For'; removed natural-fit/aptitude/entry-path/named-company overreach; no ranking semantics anywhere (order is presentation only). DO NOT reverse the field renames or reintroduce a 4-6 range as the request default.",
+    "rate_limit_note": "Backend limits 4 req/min; the MAP case runs two parallel calls (primary 5000 tokens, secondary 2500 tokens) plus the v2 output guard — budget ~60-90s. check:golden runs the cases sequentially."
   },
   "cases": [
     {
@@ -168,6 +169,47 @@
           "Whether the dev coordination experience involved the visitor making or influencing product decisions, or was primarily logistical handoff work — this distinction materially affects how much of that experience is transferable as PM evidence",
           "What industry or product domain the visitor is targeting, which affects both which PM roles are reachable and whether the marketing background reads as relevant or unrelated",
           "Whether the visitor has any artifacts — a brief, a spec, a launch retrospective, a dashboard they built — that could demonstrate product-adjacent thinking concretely, or whether the transition argument rests entirely on job title and description"
+        ]
+      }
+    },
+    {
+      "name": "explore-swe-to-adjacent-directions",
+      "endpoint": "/api/skill-gap-explore",
+      "input": {
+        "currentRole": "Software engineer, 5 years backend Python/APIs. No management experience.",
+        "currentSkills": "Backend Python and API architecture, system design, wrote specs, cross-functional collaboration with product and design, ran one user interview, comfortable with SQL",
+        "interests": "User research, strategy and business impact"
+      },
+      "output": {
+        "directions": [
+          {
+            "target_role": "Product Manager, technical products",
+            "why_it_connects": "You supplied experience writing specs, collaborating cross-functionally with product and design, and a stated interest in strategy and business impact — these are directly relevant to how product management work is commonly described.",
+            "what_the_work_involves": "Product managers commonly define what gets built and why, working across engineering, design, and business stakeholders to shape roadmaps and decisions. The balance between technical depth, user understanding, and business framing varies considerably by organization and product type.",
+            "worth_learning_more_about": "Would you want to make decisions about what gets built without being the one who builds it — and would you find the influence-without-authority dynamic of the role satisfying day to day?",
+            "one_way_to_investigate": "Read first-person accounts from engineers who moved into product management — search for these on personal blogs or LinkedIn posts — and look at a range of product manager job postings to see how much technical depth different organizations expect."
+          },
+          {
+            "target_role": "UX researcher",
+            "why_it_connects": "You stated an interest in user research and supplied that you ran a user interview, which gives you at least some direct exposure to the practice.",
+            "what_the_work_involves": "UX researchers plan and conduct studies — interviews, usability tests, surveys — to understand how people think about and use products, then synthesize findings to inform design and product decisions. The scope and methods used vary considerably by team size and maturity.",
+            "worth_learning_more_about": "Would you want to spend a large portion of your time in the study-design and synthesis cycle, rather than in building systems — and does the pace of research-driven work match what you are looking for?",
+            "one_way_to_investigate": "Look for job postings for UX researcher roles and note what methods and deliverables they list, then find first-person writing from researchers about what a typical project actually looks like week to week."
+          },
+          {
+            "target_role": "Developer tools or API strategy role",
+            "why_it_connects": "You supplied five years of backend Python and API architecture work, which is directly relevant to work focused on developer-facing products or API strategy — areas where deep technical context shapes the work.",
+            "what_the_work_involves": "Some organizations have roles — sometimes called developer advocate, developer experience, or technical product roles — focused on shaping or communicating APIs and tools for external or internal developers. The mix of writing, research, strategy, and building varies widely by organization.",
+            "worth_learning_more_about": "Would you want your technical background to remain central to your day-to-day work, or are you looking to move toward roles where it is more of a background asset than the primary focus?",
+            "one_way_to_investigate": "Search job postings for 'developer experience,' 'API product,' and 'developer advocate' to see the range of what these roles involve, and look for first-person accounts from people in them about where they spend their time."
+          },
+          {
+            "target_role": "Strategy or operations analyst",
+            "why_it_connects": "You stated an interest in strategy and business impact, and supplied experience with SQL and cross-functional collaboration — capabilities that are commonly relevant to strategy and operations work that involves data and stakeholder coordination.",
+            "what_the_work_involves": "Strategy and operations roles commonly involve analyzing data, framing business problems, and working across teams to drive decisions or improvements. These roles exist in many forms — inside product companies, consulting, or business operations — and the technical depth expected varies considerably.",
+            "worth_learning_more_about": "Would you want to work primarily on business and organizational problems rather than product or user problems — and does the idea of influencing decisions through analysis and communication, rather than through building, appeal to you?",
+            "one_way_to_investigate": "Look at job postings for 'strategy and operations,' 'business operations analyst,' and 'go-to-market strategy' roles at companies whose products interest you, and compare what each actually lists as day-to-day responsibilities."
+          }
         ]
       }
     },

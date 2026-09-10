@@ -164,6 +164,12 @@ const OUTPUT_GUARD = {
     'duplicate_or_near_duplicate_skill_gap_not_merged',
     'unnamed_candidates_used_as_a_favorable_comparison',
     'coworker_or_interviewer_reaction_predicted',
+    'unsupported_natural_fit_or_person_role_compatibility_claimed',
+    'unsupported_career_transition_pattern_or_entry_path_claimed',
+    'specific_company_named_without_visitor_supplied_or_verified_basis',
+    'personal_preference_or_enjoyment_assumed_as_established',
+    'general_role_description_elevated_into_a_universal_requirement',
+    'plausible_direction_treated_as_a_recommended_career_or_ranked_by_fit',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -1112,38 +1118,65 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 router.post('/skill-gap-explore', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { currentRole, currentSkills, interests, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+    const {
+      currentRole, currentSkills, interests, userLanguage, userLocale, userCurrency, userRegion,
+      excludeDirections, refinementNote, count,
+    } = req.body;
 
     if (!currentRole?.trim()) {
       return res.status(400).json({ error: 'Describe your current role.' });
     }
 
-    const prompt = section(`This visitor knows they want a change but hasn't picked a target yet.
-Suggest 4-6 plausible directions from what they've supplied — do not invent
-a single "correct" target and analyze against it.
+    // "Show N More Directions" passes count:2 + excludeDirections (the
+    // target_roles already shown) so the second batch is genuinely new, not
+    // a near-duplicate of the first. Default is 4, not 4-6 — see rule 3
+    // below; the ceiling here is a safety bound, not the target.
+    const wantCount = Number.isInteger(count) && count > 0 && count <= 6 ? count : 4;
+    const excludeList = Array.isArray(excludeDirections)
+      ? excludeDirections.filter(x => typeof x === 'string' && x.trim()).slice(0, 12)
+      : [];
+
+    const prompt = section(`HELP ME EXPLORE
+
+This visitor knows they want a change but hasn't picked a target yet. Your
+job is NOT to decide what career they should pursue. Your job is to
+generate a small, varied set of plausible directions traceable to what they
+actually supplied, so they can choose one to investigate further — not to
+rank, score, or recommend one over the others.
 
 CURRENT ROLE: "${currentRole.trim()}"
 ${currentSkills?.trim() ? `EXPERIENCE SUPPLIED: "${currentSkills.trim()}"` : 'EXPERIENCE SUPPLIED: none — do not invent any.'}
-${interests?.trim() ? `INTERESTS SUPPLIED: "${interests.trim()}"` : ''}
+${interests?.trim() ? `INTERESTS SUPPLIED: "${interests.trim()}"` : 'INTERESTS SUPPLIED: none.'}
+${excludeList.length ? `\nALREADY SHOWN TO THE VISITOR — do not repeat any of these, and do not produce a near-duplicate variant of one of them (e.g. a second flavor of the same underlying role):\n${excludeList.map(d => `- ${d}`).join('\n')}` : ''}
+${refinementNote?.trim() ? `\nTHE VISITOR ADDED THIS CONSTRAINT — apply it to every direction you generate: "${refinementNote.trim()}"` : ''}
 
 Return ONLY valid JSON. Your response MUST contain the top-level key: directions.
 {
   "directions": [
     {
       "target_role": "A specific, plausible direction — 3-6 words",
-      "why_it_may_connect": "Why this connects to what the visitor actually supplied — one sentence, traceable to their evidence",
-      "what_the_work_involves": "What the work generally involves — one or two sentences, general knowledge about the field, not a claim about a specific employer",
-      "what_to_learn_more_about": "The main thing worth investigating before committing — one sentence",
-      "one_low_cost_way_to_investigate": "A specific, feasible first step that doesn't assume a job, access, or budget — one sentence"
+      "why_it_connects": "Why this connects to what the visitor actually supplied — one sentence, traceable to their evidence. Do not claim the visitor's experience establishes something it only makes them familiar with (e.g. backend/API work gives familiarity with technical problems a product addresses — it does not make them 'the kind of user' that product serves)",
+      "what_the_work_involves": "What the work generally involves — one or two sentences, general knowledge about the field, calibrated because roles vary considerably by organization. Never state a general role description as a universal requirement ('a core part of how this work gets done') — describe what the work commonly involves instead",
+      "worth_learning_more_about": "The single most important uncertainty about whether this direction matches what the visitor wants — one sentence. Frame it as a question for the VISITOR to investigate (would you enjoy X, would you want Y), never as something the tool has determined about them. Do not use 'genuinely' before a personal-fit question",
+      "one_way_to_investigate": "One specific, low-cost, feasible step that doesn't assume a job, access, or budget — one sentence. Point at primary sources (job postings, first-person accounts, a direct question to someone doing the work) rather than naming a specific company, unless the visitor themselves supplied that company or interest"
     }
   ]
 }
 
 RULES:
-- 4-6 directions, ranging from close/lateral to more ambitious.
-- Do not assign a salary figure, salary change percentage, demand rating, difficulty score, or timeline — this step is about plausible directions, not a market analysis.
-- Every "why_it_may_connect" must trace to something actually supplied, not a generic compliment.
-- Include at least one direction that isn't the obvious first guess, if one genuinely fits.`, userLanguage);
+- Return exactly ${wantCount} directions — not a range, not padded, not trimmed.
+- Maximize genuine difference between directions. Do not include two directions that are close variants of the same underlying role (e.g. "Technical Product Manager" and "Product Manager, Developer Tools" both competing for a slot) — pick the one that best fits, and note in one_way_to_investigate that variants can be compared once the visitor has chosen a general direction.
+- Every "why_it_connects" must trace to something actually supplied (experience or stated interest), not a generic compliment.
+- Do not assign a salary figure, salary change, demand rating, difficulty score, training time, or timeline anywhere — this step is about plausible directions, not a market or readiness analysis.
+- Do not present directions as ordered by fit, likelihood, or strength. Whatever order you return them in carries no ranking meaning.
+- Do not name specific companies as examples of who does this work, unless the visitor's own current role or interests already named that company or a very similar one. Point at job postings and first-person accounts instead of a curated company list.
+- Do not claim a common entry path, typical background, easiest transition, growing field, or hiring demand ("many people come from X background," "strong hiring demand," "common transition path") — none of that has been verified for this request.
+- Do not infer or imply: personality, aptitude, passion, natural fit, likelihood of success, employability, market demand, salary, transition difficulty, hiring probability, a hidden strength, or what the visitor will enjoy. These are for the visitor to discover, not for you to determine from a role and a skills paragraph.
+- Never promote INTEREST into APTITUDE, EXPOSURE into PROFICIENCY, RELATED EXPERIENCE into QUALIFICATION, or a PLAUSIBLE DIRECTION into a RECOMMENDED CAREER.
+${excludeList.length ? '- These are ADDITIONAL directions on top of ones already shown — return only new ones, never repeats.' : '- Include at least one direction that is not the obvious first guess, if one genuinely fits the supplied evidence.'}
+
+NORTH STAR:
+OPEN DOORS. DON'T CHOOSE ONE FOR THEM.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -1160,14 +1193,14 @@ RULES:
       label: 'skill-gap-explore',
       fields: collectProseFields(parsed),
       supplied: prompt,
-      promise: 'Suggest plausible career directions traceable to supplied experience, without inventing a target role\'s market data.',
+      promise: 'Suggest a small, varied set of plausible directions traceable to supplied experience and interests, without ranking them, inventing market data, or claiming fit, aptitude, or enjoyment the evidence cannot establish.',
       guard: router.outputGuard,
       userLanguage,
     });
 
     const nonBlank = (v) => typeof v === 'string' && v.trim().length > 0;
     parsed.directions = Array.isArray(parsed.directions)
-      ? parsed.directions.filter(x => nonBlank(x?.target_role) && nonBlank(x?.why_it_may_connect)).slice(0, 6)
+      ? parsed.directions.filter(x => nonBlank(x?.target_role) && nonBlank(x?.why_it_connects)).slice(0, 6)
       : [];
 
     res.json(parsed);
