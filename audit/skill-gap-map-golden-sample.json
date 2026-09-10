@@ -8,7 +8,8 @@
     "note": "V3 rewrite (2026-09-10, full owner-supplied spec) of the primary flow only. skill-gap-map's response SHAPE changed completely — the MAP and TIMELINE cases below were re-recorded; ECONOMICS was left byte-identical because that route's prompt/schema was NOT touched this pass. What changed and why: v2 assigned Impact/Effort/ROI (0-100 each), a Readiness percentage, current->target proficiency levels, hour estimates, and named commercial tools/certificates from two role descriptions and an optional skills paragraph — none of that has a defensible calculation behind it. V3 replaces skill_gaps' numeric fields with qualitative priority (start_here|important|useful|role_dependent) and effort (smaller_build|moderate_build|larger_build|null), adds status (evidence_you_have|some_related_evidence|not_established|needs_clarification) and relevance_basis (commonly_relevant|role_dependent|employer_dependent|verified_target) instead of current_level/target_level, and replaces overall_readiness/quick_wins/hidden_requirements with starting_point/transferable_strengths/start_here/next_move/role_expectations_to_check/transition_tasks/unknowns. skill-gap-explore ALSO changed shape (paths[] with salary_change/demand/difficulty -> directions[] with why_it_may_connect/what_the_work_involves, no market data at all — it no longer invents a target and maps against its own invention). skill-gap-timeline changed from total_weeks/phases/milestones with fabricated week numbers to first/then/later/plateau_note — hours_per_week sizes the plan, never a completion date. DO NOT silently reverse any of the above: the whole point of the rewrite was removing fabricated precision, not relabeling it. The 19 untouched secondary routes (Proof, Network, Reframe, Economics, Resume, Companies, Interview, Calibrate, Progress, DayLife, Outreach, Decode, Adjacency, Mock, Market, Celebrate, Nudge, Mentor, plus Explore's own downstream callers) still receive the old field shape via a frontend compatibility shim (toLegacyGaps()/legacyTransition in src/tools/SkillGapMap.js) — do not remove that shim without also rewriting those routes' prompts. See audit/tool-notes/SKILLGAPMAP-NOTES.md.",
     "followup_2026_09_10b": "TWO further corrections landed the same day, after the note above was written: (1) MAIN's primary call truncated at max_tokens=3000 under real rich input (callClaudeWithRetry hard-throws on stop_reason==='max_tokens', so every truncation was a guaranteed 500) — raised to 5000 (secondary 2000->2500); this is the exact truncation v1 already hit and fixed once before, reintroduced by the v3 rewrite. (2) EXPLORE-specific corrections (owner spec 'SKILL GAP MAP — HELP ME EXPLORE — FINAL CORRECTIONS'): directions field names renamed (why_it_may_connect->why_it_connects, what_to_learn_more_about->worth_learning_more_about, one_low_cost_way_to_investigate->one_way_to_investigate — see the EXPLORE case below, not the stale names in the note above); default count is exactly 4, not 4-6, with near-duplicate role variants (e.g. two PM flavors) explicitly barred from the same batch; new count/excludeDirections params power 'Show 2 More Directions' (additive, not a replace); new refinementNote param powers 'Tell Me What You're Looking For'; removed natural-fit/aptitude/entry-path/named-company overreach; no ranking semantics anywhere (order is presentation only). DO NOT reverse the field renames or reintroduce a 4-6 range as the request default.",
     "rate_limit_note": "Backend limits 4 req/min; the MAP case runs two parallel calls (primary 5000 tokens, secondary 2500 tokens) plus the v2 output guard — budget ~60-90s. check:golden runs the cases sequentially.",
-    "followup_2026_09_10c": "A third same-day pass, MAIN-specific (owner spec 'SKILL GAP MAP — LATEST OUTPUT CORRECTIONS'), tested against a UX Researcher scenario and found the tool still writing universal profession descriptions ('UX researchers regularly...', 'standard UX deliverables') instead of possibilities, upgrading single supplied skills into unestablished technical scope ('data analysis in Excel' -> 'research-data analysis'), presenting start_here as an objective priority rather than a suggested one, describing hypothetical practice exercises as though real research had occurred, suggesting employer-confidential/recorded-user-session access as a practice source, naming specific tool brands and an employer-type taxonomy, and saying 'the visitor' throughout instead of 'you'. SCHEMA CHANGES: starting_point.important_unknown (string) -> important_unknowns (array, 1-3 items) and now absorbs what the secondary call's removed unknowns[] used to hold — the secondary /skill-gap-map call's response no longer has an unknowns key at all; skill_gaps[].effort field removed entirely (priority is the only prioritization signal now — no build-size/hour estimate of any kind); transferable_strengths[] gained a confidence field ('direct' | 'partial') powering a compact ✓/~ checklist. UI: the old 5-big-card Transferable Strengths section is now a compact checklist with a 'Why these may transfer ▾' expand (item 22); 'Start here' relabeled 'One place to start' with a new 'Why this one' eyebrow on the reasoning line; the separate 'Other Things We Can't Tell Yet' card is gone — its content now lives in starting_point's bulleted unknowns, shown once, not twice; 'Transition Tasks' only renders when the model actually returned tasks (no more visible '(0)' disclosures) and its Network/Outreach/Resume/Reframe buttons moved into 'More Ways to Prepare' so they stay reachable either way. DO NOT reintroduce the effort field, the important_unknown singular string, the duplicate unknowns section, or an always-rendered empty Transition Tasks disclosure. Full detail in audit/tool-notes/SKILLGAPMAP-NOTES.md."
+    "followup_2026_09_10c": "A third same-day pass, MAIN-specific (owner spec 'SKILL GAP MAP — LATEST OUTPUT CORRECTIONS'), tested against a UX Researcher scenario and found the tool still writing universal profession descriptions ('UX researchers regularly...', 'standard UX deliverables') instead of possibilities, upgrading single supplied skills into unestablished technical scope ('data analysis in Excel' -> 'research-data analysis'), presenting start_here as an objective priority rather than a suggested one, describing hypothetical practice exercises as though real research had occurred, suggesting employer-confidential/recorded-user-session access as a practice source, naming specific tool brands and an employer-type taxonomy, and saying 'the visitor' throughout instead of 'you'. SCHEMA CHANGES: starting_point.important_unknown (string) -> important_unknowns (array, 1-3 items) and now absorbs what the secondary call's removed unknowns[] used to hold — the secondary /skill-gap-map call's response no longer has an unknowns key at all; skill_gaps[].effort field removed entirely (priority is the only prioritization signal now — no build-size/hour estimate of any kind); transferable_strengths[] gained a confidence field ('direct' | 'partial') powering a compact ✓/~ checklist. UI: the old 5-big-card Transferable Strengths section is now a compact checklist with a 'Why these may transfer ▾' expand (item 22); 'Start here' relabeled 'One place to start' with a new 'Why this one' eyebrow on the reasoning line; the separate 'Other Things We Can't Tell Yet' card is gone — its content now lives in starting_point's bulleted unknowns, shown once, not twice; 'Transition Tasks' only renders when the model actually returned tasks (no more visible '(0)' disclosures) and its Network/Outreach/Resume/Reframe buttons moved into 'More Ways to Prepare' so they stay reachable either way. DO NOT reintroduce the effort field, the important_unknown singular string, the duplicate unknowns section, or an always-rendered empty Transition Tasks disclosure. Full detail in audit/tool-notes/SKILLGAPMAP-NOTES.md.",
+    "followup_2026_09_10d": "A follow-up correction pass compared MAP against EXPLORE and found MAP nearly ready but EXPLORE still leaking unsupported occupational generalizations that the global epistemic rule (see epistemics.js) should catch but wasn't yet specific enough about for this tool's shape of the problem. THREE fixes to the MAP prompt (primaryPrompt): (1) start_here.capability must not invent a more specific named sub-skill/methodology than supplied evidence supports — 'customer interviews' does not license 'structured UX interview facilitation'; name the adjacent AREA instead. (2) new rule banning 'general field knowledge -> checklist of professional conventions' — naming specific techniques ('think-aloud prompting', 'neutrality practices') or asserting 'published frameworks'/'research conventions' implies a canonical practice nothing supplied establishes; point at comparing real practice instead. (3) removed the portfolio assumption from next_move.proof — 'use as the start of a portfolio piece' assumed this target role expects a portfolio; replaced with 'review, improve, and potentially use to demonstrate your thinking where appropriate'. TWO fixes to the EXPLORE prompt: a new intro block ('EXPLORATION HYPOTHESIS, not a finding...') banning unsupported occupational-fact justifications in why_it_connects ('these are the primary methods...', 'these are the core activities...', 'this field draws on...') — explicitly extended to ban the PARAPHRASE too after a live test showed the model rephrasing around the banned exact words ('covers the core activities of many market research roles') while committing the identical error, and a rework of worth_learning_more_about to ask about a DIMENSION OF THE WORK ('how much influence does this role have over its output') rather than predict an emotional reaction ('would you find it frustrating if...', 'do you prefer a shorter feedback loop'). GLOBAL ADDITION: epistemics.js gained a 'ROLE, PROFESSION, AND DOMAIN KNOWLEDGE' section (ORIENT; DO NOT CERTIFY) applied to every tool, not just this one — general knowledge about a profession/industry/market may suggest possibilities and vocabulary but must not silently establish what a role requires, what's core/primary/standard, or what will suit the visitor. Both re-recorded golden cases (map-marketing-to-ux-researcher, explore-swe-to-adjacent-directions) verified 0 hits for the specific violating phrases across 3 live regenerations each after the fix (the explore case needed the paraphrase-ban rewrite to reach 0/3; the first version of the fix still hit once in 1 run)."
   },
   "cases": [
     {
@@ -26,164 +27,153 @@
           "target": "UX Researcher"
         },
         "starting_point": {
-          "summary": "You have direct experience with survey design, customer interviews, and stakeholder communication — three activities that commonly appear in UX research work. Your data analysis and writing experience may also carry over, though how much depends on what kind of data you have worked with and what the specific role requires.",
+          "summary": "Several things you have done in your marketing coordinator role overlap with activities in UX research work, particularly customer interviews, survey design, and stakeholder communication. The question is not whether these transfer at all, but how closely your specific experience matches what a given employer is looking for.",
           "important_unknowns": [
-            "What an actual job posting would require — without one, everything here describes what commonly matters in this kind of role, not what a specific employer needs from you.",
-            "What your customer interviews and survey design were directed at — the context and methods matter for assessing how directly they transfer to a UX research setting.",
-            "What kind of data your Excel analysis covered — 'data analysis in Excel' does not establish whether you have worked with research data specifically, which affects how much that experience carries over."
+            "What kind of work a specific target role actually requires — this varies enough by company, team, and seniority that an actual job posting would replace these general observations with that employer's specifics.",
+            "What your data analysis in Excel involved — the type of data, the purpose, and the depth of analysis are not established by what you supplied, so how well it transfers to research analysis is unclear.",
+            "Whether your customer interviews were conducted in a way that resembles UX research interviewing — the context, goals, and methods you used are not described, so the degree of overlap is uncertain."
           ]
         },
         "transferable_strengths": [
           {
             "strength": "Customer interview experience",
-            "evidence": "You supplied customer interviews as part of your experience.",
-            "transfer": "Conducting interviews with customers may carry over to UX research, where one-on-one interviews are a commonly used method — though the framing, objectives, and analysis approach in a research context may differ from what you have done.",
+            "evidence": "You supplied that you have conducted customer interviews in your marketing coordinator role.",
+            "transfer": "Experience conducting customer interviews may carry over to UX research interviewing, particularly in comfort with conversation, question preparation, and drawing out responses — though how closely your approach resembles research-oriented interviewing depends on specifics you have not described.",
             "confidence": "partial"
           },
           {
             "strength": "Survey design experience",
-            "evidence": "You supplied survey design as part of your experience.",
-            "transfer": "Survey design is a method that appears in UX research, so this experience may carry over — how directly depends on what those surveys were trying to learn and how they were structured.",
-            "confidence": "partial"
-          },
-          {
-            "strength": "Stakeholder communication",
-            "evidence": "You supplied stakeholder communication as part of your four years in a B2B SaaS environment.",
-            "transfer": "Communicating findings or recommendations to stakeholders is commonly relevant in UX research roles, and your existing experience in this area may transfer.",
-            "confidence": "partial"
-          },
-          {
-            "strength": "Writing experience",
-            "evidence": "You supplied writing as part of your experience.",
-            "transfer": "Research roles often involve written deliverables such as research plans, discussion guides, and reports — your writing experience may carry over to those forms, though the specific formats would be new.",
+            "evidence": "You supplied that survey design is part of your experience.",
+            "transfer": "Survey design is a method used in UX research, so this experience may carry over — though the extent depends on what types of questions you wrote, what the surveys were intended to measure, and how results were used.",
             "confidence": "partial"
           },
           {
             "strength": "Data analysis in Excel",
             "evidence": "You supplied data analysis in Excel as part of your experience.",
-            "transfer": "Working with data is relevant to UX research, but what kind of data you have analyzed is not established by what you supplied — the transfer depends on whether the target role involves quantitative survey analysis or other work that overlaps with what you have done.",
+            "transfer": "Familiarity with organizing and analyzing data may carry over to research analysis tasks, though what kinds of data and analysis you have done is not established, so the degree of transfer is unclear.",
+            "confidence": "partial"
+          },
+          {
+            "strength": "Stakeholder communication",
+            "evidence": "You supplied stakeholder communication as part of your four years in a B2B SaaS marketing role.",
+            "transfer": "Experience communicating across stakeholders may carry over to presenting or discussing research findings with product, design, or business partners, depending on what those roles expect.",
+            "confidence": "partial"
+          },
+          {
+            "strength": "Writing experience",
+            "evidence": "You supplied writing as part of your experience.",
+            "transfer": "Writing experience may carry over to research documentation, discussion guides, and presenting findings in written form — the specific application would depend on what the role requires.",
             "confidence": "partial"
           }
         ],
         "start_here": {
-          "capability": "Structuring and analyzing research findings",
-          "why_it_matters": "This is a reasonable place to start because it sits at the intersection of things you already have some evidence for — interviewing, surveys, data analysis, and writing — and a capability that commonly runs through UX research work. Building here lets you develop something adjacent to your existing experience rather than starting from scratch, and it produces an artifact you can show.",
-          "current_evidence": "You have experience with customer interviews, survey design, and data analysis in Excel, but what you supplied does not establish how you have synthesized or structured findings from those activities into research outputs.",
-          "gap": "The difference is between conducting research activities and producing a structured analysis — identifying patterns, drawing defensible observations, and communicating what the data does and does not show.",
-          "next_move": "Draft a research analysis document using interview notes or survey data you already have, or plan one using a self-contained exercise if you do not.",
-          "proof": "A written document that moves from raw notes or data to organized observations and clear takeaways — even a draft version demonstrates the thinking."
+          "capability": "UX research interviewing approach",
+          "why_it_matters": "You have customer interview experience, which means this is an adjacent area rather than a blank starting point. Comparing your current approach against what UX research roles ask for gives you something concrete to build from and compare against.",
+          "current_evidence": "You supplied that you have conducted customer interviews, but what goals guided them, how you structured them, and what you did with the findings is not established.",
+          "gap": "UX research interviewing may involve specific orientations around uncovering behavior, needs, or mental models rather than marketing objectives — whether your interview approach already reflects any of this is not established by what you supplied.",
+          "next_move": "Compare how you currently structure and conduct interviews against descriptions of research-oriented interviewing in several credible sources or real job postings.",
+          "proof": "A written comparison of your current interview approach against what you find in role descriptions or credible sources — noting where your practice overlaps and where it differs — that you can revisit as you apply to specific roles."
         },
         "next_move": {
-          "primary": "If you have notes or data from a past customer interview or survey you conducted, write up a short analysis: what patterns you saw, what remained unclear, and what you would have done differently with a clearer research question. If you have not done this kind of structured synthesis before, draft a research plan for a small self-contained interview study — define the question, who you would talk to, what you would ask, and how you would analyze what you heard.",
-          "why": "Either version builds the synthesis and planning capability that is not yet established by what you supplied, and produces a concrete artifact you can revise or use as a portfolio starting point.",
-          "proof": "A written document — either an analysis of real notes or a research plan — that you can continue developing as your understanding of the role grows.",
+          "primary": "If you have not documented how you conduct customer interviews, write a short description of what you typically do — how you prepare, what kinds of questions you ask, and what you do with what you learn. Then compare that description against three to five UX researcher job postings to see where the language and expectations overlap with your experience and where they do not.",
+          "why": "This gives you a concrete artifact grounded in your actual experience to compare against real role requirements, which is more actionable than studying the field in the abstract.",
+          "proof": "A written description of your interview approach alongside notes on where it aligns with and diverges from the postings you reviewed — a document you can refine and refer back to.",
           "alternatives": [
-            "If you have access to a product or service you use regularly, draft a brief research plan for a usability question about it — this keeps the exercise self-contained and avoids any access or consent questions.",
-            "If your current role involves gathering customer feedback, document one recent instance in research terms: what the question was, how you gathered input, what you observed, and what a reasonable next step would have been — framing existing work in research language is a concrete step you can take without new access."
+            "If you have a past survey you designed, review it against the goals and structure described in UX research resources and note what you would change — this surfaces your current instincts and where they may need development.",
+            "If you have written reports or summaries based on customer data, document one example of your analytical process and output, then compare it to examples of research readouts described or shown in public UX research resources."
           ]
         },
         "skill_gaps": [
           {
-            "capability": "Research question framing",
-            "target_relevance": "UX research commonly begins with defining a clear, appropriately scoped research question — some roles place significant weight on this as a distinct skill.",
+            "capability": "Research synthesis and insight development",
+            "target_relevance": "May be relevant to UX researcher roles that involve moving from raw interview or survey data to patterns, themes, or findings that inform decisions.",
             "relevance_basis": "commonly_relevant",
-            "current_evidence": "You supplied customer interviews and survey design, which both involve some form of question development, but what you supplied does not establish how you have defined or scoped research questions.",
-            "status": "some_related_evidence",
-            "gap": "The difference between writing survey or interview questions and framing a research question that guides method choice, scope, and analysis is not established by what you supplied.",
-            "next_move": "Practice writing research questions for scenarios you are familiar with, then note what method each would call for and why.",
-            "proof": "A short written exercise pairing a research question with a method rationale — a reusable reference you can build on.",
+            "current_evidence": "You supplied data analysis in Excel and writing, which may involve some form of synthesis, but the nature of that work is not established.",
+            "status": "needs_clarification",
+            "gap": "Whether your analysis and writing experience extends to identifying patterns across qualitative data and articulating them as research findings is not established.",
+            "next_move": "Review public examples of UX research readouts or synthesis artifacts and compare them to the kinds of outputs you have produced — note the differences in structure and reasoning.",
+            "proof": "A written synthesis of a small set of interview notes or survey responses — even from a past project — organized into themes with a short explanation of what they suggest.",
             "priority": "important"
           },
           {
-            "capability": "Usability testing methods",
-            "target_relevance": "Usability testing is a method that commonly appears in UX research roles, though how central it is varies by role and team.",
+            "capability": "Research planning and scoping",
+            "target_relevance": "May be relevant where UX researcher roles involve scoping a research effort — defining questions, choosing methods, and planning logistics — before any data is collected.",
             "relevance_basis": "role_dependent",
-            "current_evidence": "None supplied.",
+            "current_evidence": "You supplied survey design experience, which may include some planning, but the extent to which you have scoped a research effort from the question-definition stage is not established.",
             "status": "not_established",
-            "gap": "Your supplied experience does not establish familiarity with planning, facilitating, or analyzing usability tests.",
-            "next_move": "Read methodological overviews of moderated and unmoderated usability testing, then draft a simple test plan for a product you use.",
-            "proof": "A written test plan — scenario, tasks, what you would observe and why — that shows you understand the method's structure.",
+            "gap": "Defining a research question, selecting an appropriate method, and planning a study end-to-end may go beyond what your supplied experience establishes.",
+            "next_move": "Draft a research plan for a question you are genuinely curious about — one that specifies the question, the method you would use, and why.",
+            "proof": "A written research plan document you can review, critique, and potentially show as an example of your thinking.",
             "priority": "important"
           },
           {
-            "capability": "Choosing and justifying research methods",
-            "target_relevance": "Some UX research roles require the ability to recommend a method based on the research question and constraints — not just execute a method someone else selected.",
+            "capability": "Communicating research findings to stakeholders",
+            "target_relevance": "May be relevant where researchers present findings in a way that informs decisions by product, design, or business partners.",
+            "relevance_basis": "commonly_relevant",
+            "current_evidence": "You supplied stakeholder communication experience in a B2B SaaS marketing role, which is related, but whether it involved presenting data-driven findings in a structured format is not established.",
+            "status": "some_related_evidence",
+            "gap": "Presenting research findings — structuring what you learned, what it means, and what it suggests — may differ from the stakeholder communication you have done, depending on its nature.",
+            "next_move": "Take one past customer insight or data point from your marketing work and write it up as if you were presenting it to a product team — what the finding was, what it suggests, and what you are uncertain about.",
+            "proof": "A short written or slide-based findings summary grounded in something you have actually observed or analyzed.",
+            "priority": "important"
+          },
+          {
+            "capability": "Qualitative research methods familiarity",
+            "target_relevance": "May be relevant if your target roles involve methods beyond interviewing and surveying — such as usability studies, diary studies, or observational research.",
             "relevance_basis": "role_dependent",
-            "current_evidence": "You supplied experience with two specific methods — interviews and surveys — but what you supplied does not establish whether you have selected or justified methods in response to a defined question.",
-            "status": "some_related_evidence",
-            "gap": "Having used two methods is different from being able to compare methods and explain why one fits a given question better than another.",
-            "next_move": "Practice writing brief rationales: given a research question, which method would you use, what would it tell you, and what would it miss?",
-            "proof": "A short written comparison of two methods applied to one question — a format you can reuse across different questions.",
-            "priority": "important"
-          },
-          {
-            "capability": "Synthesizing qualitative research data",
-            "target_relevance": "Identifying patterns across qualitative data — interviews, open-ended responses, observational notes — is commonly relevant in UX research roles.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "You supplied customer interviews and data analysis in Excel, but neither establishes experience synthesizing qualitative research data specifically — the type and method of your past analysis is not established.",
-            "status": "some_related_evidence",
-            "gap": "The difference is between working with data you have and systematically coding, grouping, and interpreting qualitative responses to answer a research question.",
-            "next_move": "Take a set of open-ended text responses — from a past survey or a public dataset — and practice grouping themes, labeling them, and writing one or two observations that the groupings support.",
-            "proof": "A documented set of labeled themes with a short written summary of what they show and what remains unclear.",
-            "priority": "start_here"
-          },
-          {
-            "capability": "Communicating research findings in a research format",
-            "target_relevance": "Presenting research findings to product, design, or business audiences is commonly part of UX research work — the format and conventions differ from general stakeholder communication.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "You supplied stakeholder communication and writing experience, which suggests familiarity with communicating to internal audiences, but does not establish experience with research-specific output formats.",
-            "status": "some_related_evidence",
-            "gap": "General stakeholder communication does not establish the ability to structure a research report or readout — showing what was studied, how, what was found, and what is recommended or uncertain.",
-            "next_move": "Draft a short research readout using any real or practice findings you have, following the structure: question, method, observations, open questions.",
-            "proof": "A written or slide-based readout document — even a single example demonstrates familiarity with the format.",
+            "current_evidence": "You supplied customer interviews and survey design, which are two qualitative and mixed methods — other methods are not established.",
+            "status": "not_established",
+            "gap": "Awareness of a broader range of research methods and the reasoning behind choosing one over another is not established by what you supplied.",
+            "next_move": "Read through the methods sections of several UX researcher job postings and identify which methods appear most often, then investigate what each involves.",
+            "proof": "A personal reference document listing the methods you encountered, a plain-language description of each, and notes on which ones appear in roles you are considering.",
             "priority": "useful"
           },
           {
-            "capability": "Applying ethical and consent considerations in research",
-            "target_relevance": "Informed consent, participant privacy, and ethical handling of research data are considerations that commonly arise when working directly with research participants.",
-            "relevance_basis": "commonly_relevant",
-            "current_evidence": "You supplied customer interviews, which may have involved some form of consent process, but what you supplied does not establish whether this was handled in a research context or how.",
-            "status": "needs_clarification",
-            "gap": "Research ethics and consent practices in a UX context — including what participants need to know and how their data should be handled — are not established by what you supplied.",
-            "next_move": "Read an overview of research ethics in a UX or applied research context, focusing on informed consent and data handling.",
-            "proof": "A short written summary of consent considerations you would apply to a simple interview study — shows you have engaged with the topic concretely.",
+            "capability": "Translating business questions into research questions",
+            "target_relevance": "May be relevant if your target roles expect researchers to take a business or product question and reframe it into something researchable — a distinct reasoning step.",
+            "relevance_basis": "role_dependent",
+            "current_evidence": "You supplied four years in B2B SaaS marketing with stakeholder communication and writing, which may involve translating business context — but whether this extends to research question framing is not established.",
+            "status": "not_established",
+            "gap": "Reframing a product or business question into a specific, answerable research question is not established by what you supplied.",
+            "next_move": "Pick a real business question from your current role and write two versions of it — one as a business goal and one reframed as a question you could answer through interviews or a survey.",
+            "proof": "A written pair of statements showing the original business question and your research reframe, with a short note on how you made the translation.",
             "priority": "useful"
           }
         ],
         "role_expectations_to_check": [
           {
-            "question": "Worth verifying whether the role expects a formal research portfolio with documented study artifacts — screener guides, discussion guides, synthesis deliverables — or whether demonstrated experience and examples discussed in interview are sufficient.",
-            "why_it_matters": "If a portfolio is expected, building one from your existing interview and survey work becomes a concrete pre-application task rather than an optional step.",
-            "how_to_verify": "Check several current postings for this title and look for explicit language around portfolio, work samples, or case studies in the application or requirements section."
+            "question": "Worth verifying: whether the role expects a formal UX research portfolio with documented case studies, or whether demonstrated research outputs in another form are acceptable.",
+            "why_it_matters": "If a portfolio is a hard requirement, building one becomes a prerequisite before applying, which materially shapes where your time goes first.",
+            "how_to_verify": "Check several active job postings for UX Researcher roles at your target company size and stage, and look specifically for what application materials are requested."
           },
           {
-            "question": "Worth verifying whether the role is embedded in a product team — working alongside designers and PMs daily — or operates as a centralized research function serving multiple teams on request.",
-            "why_it_matters": "The embedded model tends to require faster, lighter-weight research cycles; the centralized model often involves more formal study design and longer timelines — these call for different preparation emphasis.",
-            "how_to_verify": "Look for phrases like 'partner with product and design' versus 'research team' or 'research practice' in postings, and look at org structure if the company is large enough to have public team pages."
+            "question": "Worth verifying: how much of the role is generative research (discovery, concept testing) versus evaluative research (usability testing), since the balance varies significantly across teams.",
+            "why_it_matters": "Your supplied experience maps more directly to generative methods; a role weighted toward usability testing may involve methods you have less direct experience with.",
+            "how_to_verify": "Job postings that list specific study types or deliverables will tell you more than generic descriptions — look for phrases like 'usability testing,' 'concept validation,' or 'diary studies.'"
           },
           {
-            "question": "Worth verifying what level of quantitative analysis the role expects — whether basic survey analysis suffices or whether statistical fluency, significance testing, or experience with specialized analysis software is listed.",
-            "why_it_matters": "Your Excel-based analysis may be sufficient for some roles and may fall short for others that expect more formal quantitative research methods.",
-            "how_to_verify": "Look at the required versus preferred skills sections of several postings and note whether quantitative methods or specific analytical capabilities appear there."
+            "question": "Worth verifying: whether familiarity with particular research planning, synthesis, or testing tools is expected, since the specific tools vary by team and are often listed in postings.",
+            "why_it_matters": "If specific tools appear consistently across postings you are targeting, knowing which ones lets you decide whether to get hands-on experience before applying.",
+            "how_to_verify": "Scan the tools or software sections of multiple postings for the same role title across different companies and note which names recur."
           },
           {
-            "question": "Worth verifying whether the role expects prior experience in a specific domain — enterprise software, fintech, healthcare, consumer — or is open to candidates with transferable B2B research exposure.",
-            "why_it_matters": "Your B2B SaaS background is relevant context, but some employers weight domain-specific user knowledge heavily in early screening.",
-            "how_to_verify": "Check whether postings list industry background as required or preferred, and look at the LinkedIn profiles of people currently in this role at target companies to see how varied their backgrounds are."
+            "question": "Worth verifying: whether the role sits embedded in a product team, in a central research function, or as a consultant to multiple teams, since this affects the degree of autonomy and the type of stakeholder relationships involved.",
+            "why_it_matters": "Your stakeholder communication experience is more directly relevant if the role requires ongoing cross-functional collaboration; a more isolated research function would draw on different parts of that background.",
+            "how_to_verify": "Look for language like 'embedded,' 'centralized,' 'research ops,' or 'partner with product and design' in the responsibilities section of postings."
           }
         ],
         "transition_tasks": [
           {
-            "task": "Reframe your existing work — customer interviews, survey projects, stakeholder presentations — into research case study narratives that describe the question you were investigating, your method, what you found, and what decision it informed.",
-            "why": "UX Research hiring often evaluates how you think through a research problem, not just whether you have done interviews; your existing experience becomes more legible in this framing."
+            "task": "Identify UX researchers, including those working in B2B SaaS if possible, and ask about how the role is structured in their companies and what preparation they found valuable before starting.",
+            "why": "Your background is specifically B2B SaaS, and researchers in that context may have useful perspective on how your marketing and customer interview experience is typically received."
           },
           {
-            "task": "Identify and connect with people currently working as UX Researchers, particularly those who came from non-design backgrounds, to learn how they describe the transition and what they wish they had prepared.",
-            "why": "People who made a similar move can surface role realities and unwritten expectations that postings do not capture, and may surface opportunities before they are posted."
+            "task": "Gather and document any work samples from your marketing role — survey materials, notes from interview processes, or analysis you have done — and review them against the kinds of artifacts described in UX researcher job postings to see where your work aligns and where it differs.",
+            "why": "You have supplied experience that may already constitute research evidence; making it legible in UX research terms addresses the portfolio question before you have completed new projects."
           },
           {
-            "task": "Update your resume and any public professional profile to foreground the research-relevant elements of your marketing work — study design, interview facilitation, insight synthesis, stakeholder communication — rather than leading with marketing outcomes.",
-            "why": "Hiring reviewers for a research role may not read far enough to find relevant experience if the framing signals 'marketer' before 'researcher.'"
+            "task": "Collect and compare at least five active job postings for UX Researcher roles that match your target company type, and note which requirements appear consistently versus occasionally.",
+            "why": "With limited hours per week, knowing which capabilities appear across most postings versus only some helps you direct effort toward the gaps most likely to matter for the roles you will actually pursue."
           }
         ]
       },
@@ -202,32 +192,32 @@
       "output": {
         "directions": [
           {
-            "target_role": "Product Manager, technical products",
-            "why_it_connects": "You supplied experience writing specs, collaborating cross-functionally with product and design, and a stated interest in strategy and business impact — these are directly relevant to how product management work is commonly described.",
-            "what_the_work_involves": "Product managers commonly define what gets built and why, working across engineering, design, and business stakeholders to shape roadmaps and decisions. The balance between technical depth, user understanding, and business framing varies considerably by organization and product type.",
-            "worth_learning_more_about": "Would you want to make decisions about what gets built without being the one who builds it — and would you find the influence-without-authority dynamic of the role satisfying day to day?",
-            "one_way_to_investigate": "Read first-person accounts from engineers who moved into product management — search for these on personal blogs or LinkedIn posts — and look at a range of product manager job postings to see how much technical depth different organizations expect."
+            "target_role": "User Researcher",
+            "why_it_connects": "The visitor has run a user interview and listed user research as an explicit interest, and their cross-functional collaboration with product and design means they have worked alongside this function from the engineering side.",
+            "what_the_work_involves": "Depending on the organization, this kind of role can involve planning and conducting interviews, usability studies, or surveys, synthesizing findings into insights, and presenting those to product and design teams to inform decisions. Some versions are embedded in product teams; others sit in a centralized research function.",
+            "worth_learning_more_about": "How much of this role, in the kinds of organizations you are considering, involves designing and running studies versus synthesizing and communicating findings to stakeholders who then act on them independently?",
+            "one_way_to_investigate": "Read 10-15 current job postings for 'UX researcher' and 'user researcher' across different company sizes, and note what methods, deliverables, and collaboration structures they describe — the variation will tell you more than any general overview."
           },
           {
-            "target_role": "UX researcher",
-            "why_it_connects": "You stated an interest in user research and supplied that you ran a user interview, which gives you at least some direct exposure to the practice.",
-            "what_the_work_involves": "UX researchers plan and conduct studies — interviews, usability tests, surveys — to understand how people think about and use products, then synthesize findings to inform design and product decisions. The scope and methods used vary considerably by team size and maturity.",
-            "worth_learning_more_about": "Would you want to spend a large portion of your time in the study-design and synthesis cycle, rather than in building systems — and does the pace of research-driven work match what you are looking for?",
-            "one_way_to_investigate": "Look for job postings for UX researcher roles and note what methods and deliverables they list, then find first-person writing from researchers about what a typical project actually looks like week to week."
+            "target_role": "Technical Product Manager",
+            "why_it_connects": "The visitor has written specs, collaborated cross-functionally with product and design, and stated an interest in strategy and business impact — all directly relevant to what technical PM roles involve on the coordination and scoping side — and their backend API and system design background means they can engage with engineering trade-offs from first-hand experience.",
+            "what_the_work_involves": "This kind of role can involve defining what gets built and why, working with engineers on feasibility, writing requirements or product briefs, and connecting technical decisions to business outcomes. Some versions are heavily engineering-facing; others split time between customers, stakeholders, and the development team.",
+            "worth_learning_more_about": "In the specific types of products and organizations you are drawn to, how much influence does the PM role have over strategic direction versus translating a strategy that others have set?",
+            "one_way_to_investigate": "Find first-person accounts from engineers who moved into technical PM roles — blog posts, forum threads, or short conversations — and ask specifically about what day-to-day decision authority looks like versus what they expected going in."
           },
           {
-            "target_role": "Developer tools or API strategy role",
-            "why_it_connects": "You supplied five years of backend Python and API architecture work, which is directly relevant to work focused on developer-facing products or API strategy — areas where deep technical context shapes the work.",
-            "what_the_work_involves": "Some organizations have roles — sometimes called developer advocate, developer experience, or technical product roles — focused on shaping or communicating APIs and tools for external or internal developers. The mix of writing, research, strategy, and building varies widely by organization.",
-            "worth_learning_more_about": "Would you want your technical background to remain central to your day-to-day work, or are you looking to move toward roles where it is more of a background asset than the primary focus?",
-            "one_way_to_investigate": "Search job postings for 'developer experience,' 'API product,' and 'developer advocate' to see the range of what these roles involve, and look for first-person accounts from people in them about where they spend their time."
+            "target_role": "Solutions Engineer / Sales Engineer",
+            "why_it_connects": "The visitor's backend Python, API, and system design experience gives them direct technical grounding in the kinds of integrations and architecture questions this role addresses, and their cross-functional collaboration and spec-writing suggest comfort translating between technical and non-technical stakeholders.",
+            "what_the_work_involves": "This kind of role can involve working with prospective or existing customers to understand their technical environment, demonstrating how a product fits their needs, building proof-of-concept integrations, and acting as a bridge between the sales or customer-facing side and the engineering team. The balance between customer interaction and hands-on technical work varies considerably by company.",
+            "worth_learning_more_about": "How much of this role, at the organizations you would consider, involves independent technical work versus being present in and responsive to a sales cycle driven by others?",
+            "one_way_to_investigate": "Look at job postings for 'solutions engineer' and 'sales engineer' at companies whose products you already use or understand technically, and compare what each lists as day-to-day responsibilities versus success metrics."
           },
           {
-            "target_role": "Strategy or operations analyst",
-            "why_it_connects": "You stated an interest in strategy and business impact, and supplied experience with SQL and cross-functional collaboration — capabilities that are commonly relevant to strategy and operations work that involves data and stakeholder coordination.",
-            "what_the_work_involves": "Strategy and operations roles commonly involve analyzing data, framing business problems, and working across teams to drive decisions or improvements. These roles exist in many forms — inside product companies, consulting, or business operations — and the technical depth expected varies considerably.",
-            "worth_learning_more_about": "Would you want to work primarily on business and organizational problems rather than product or user problems — and does the idea of influencing decisions through analysis and communication, rather than through building, appeal to you?",
-            "one_way_to_investigate": "Look at job postings for 'strategy and operations,' 'business operations analyst,' and 'go-to-market strategy' roles at companies whose products interest you, and compare what each actually lists as day-to-day responsibilities."
+            "target_role": "Strategy or Operations Analyst",
+            "why_it_connects": "The visitor has stated an explicit interest in strategy and business impact, and their SQL experience and system design background both point toward comfort with structured data and reasoning about how systems connect — capabilities that can be relevant to analytical and operational roles focused on business problems.",
+            "what_the_work_involves": "Depending on the organization, this kind of work can involve analyzing operational or business data to surface insights, building models or frameworks to support decisions, and working with leadership or cross-functional partners on how to act on findings. Some versions are heavily quantitative; others center on synthesizing qualitative information and facilitating decisions.",
+            "worth_learning_more_about": "In the kinds of organizations and functions you are drawn to, how directly does someone in this role influence the decisions their analysis is meant to inform, and over what time horizon do those decisions play out?",
+            "one_way_to_investigate": "Search job postings for 'strategy analyst,' 'business operations analyst,' and 'growth analyst' at companies in an industry that interests you, and note how they describe the relationship between the analysis work and actual decision-making authority."
           }
         ]
       }
@@ -320,11 +310,26 @@
           "target": "product manager"
         },
         "skillGaps": [
-          { "capability": "User research and discovery", "priority": "important" },
-          { "capability": "Structuring product decisions with tradeoffs", "priority": "important" },
-          { "capability": "Working with engineering on scope and feasibility", "priority": "important" },
-          { "capability": "Defining and tracking product metrics", "priority": "useful" },
-          { "capability": "Communicating product strategy to varied audiences", "priority": "useful" }
+          {
+            "capability": "User research and discovery",
+            "priority": "important"
+          },
+          {
+            "capability": "Structuring product decisions with tradeoffs",
+            "priority": "important"
+          },
+          {
+            "capability": "Working with engineering on scope and feasibility",
+            "priority": "important"
+          },
+          {
+            "capability": "Defining and tracking product metrics",
+            "priority": "useful"
+          },
+          {
+            "capability": "Communicating product strategy to varied audiences",
+            "priority": "useful"
+          }
         ],
         "hoursPerWeek": 5
       },

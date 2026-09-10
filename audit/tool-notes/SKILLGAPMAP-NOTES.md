@@ -180,3 +180,102 @@ skill-gap-map` → 4/4 PASS on the re-recorded golden.
 schema change (and the secondary call's `unknowns` key removal), the `confidence` field, the "start_here
 is suggested, not objective" framing, the hedged-both-cases proof/next_move language, or the
 Transition-Tasks-only-when-non-empty rendering.
+
+## V4 — MAP vs. EXPLORE comparison pass (both prompts + global epistemics)
+
+The owner directly compared MAP against EXPLORE after the V3 pass and approved MAP's overall
+structure with three small corrections, but found EXPLORE still leaking unsupported occupational
+generalizations — the exact failure class the just-shipped global epistemic rule (`epistemics.js`)
+should catch, but wasn't specific enough about for what this tool's version of the problem looks
+like. Three MAP fixes, two EXPLORE fixes, and one genuinely global addition:
+
+**MAP fixes (`primaryPrompt`):**
+1. `start_here.capability` must not invent a more specific named sub-skill or methodology than the
+   supplied evidence supports — "customer interviews" does not license "structured UX interview
+   facilitation." Name the adjacent AREA ("UX research interviewing"), not a specific technique
+   within it nothing supplied establishes as the target.
+2. New rule: GENERAL FIELD KNOWLEDGE → A CHECKLIST OF PROFESSIONAL CONVENTIONS is now banned
+   alongside the existing "never turn" list. Naming specific techniques ("think-aloud prompting,"
+   "probing for behavior," "neutrality practices") or asserting "published frameworks" / "research
+   conventions" implies one canonical, settled practice that nothing supplied establishes. The fix
+   points at comparing real practice instead: "compare your approach with several credible resources
+   and with what roles you're considering actually ask for."
+3. Removed the portfolio assumption from `next_move.proof` — "use as the start of a portfolio piece"
+   assumed the target role expects a portfolio at all. Replaced with "review, improve, and
+   potentially use to demonstrate your thinking where appropriate."
+
+**EXPLORE fixes (the `/skill-gap-explore` prompt):**
+4. New intro block: "A proposed direction is an EXPLORATION HYPOTHESIS, not a finding about the
+   visitor and not a verified description of an occupation." `why_it_connects` may use only supplied
+   experience/interests and reasonable semantic connections — never an unsupported occupational fact
+   doing the justifying work ("these are the primary methods...", "these are the core activities...",
+   "this field draws on...", "a basis in the [field]'s work in general"). **Live-tested and hit a
+   real gap on the first version of this fix**: the model paraphrased around the banned exact
+   wording — "your experience... covers the core activities of many market research roles" commits
+   the identical error without using any of the flagged phrases. Fixed by explicitly banning the
+   paraphrase, not just the wording: "describing what the ROLE is or does in general, then using
+   that description to justify the connection" is the actual violation, regardless of phrasing — the
+   connection must run FROM the visitor's specific evidence TO the direction, never through a claim
+   about the occupation in general. Verified 0/3 hits after this second version, where the first
+   version had hit once in an earlier run.
+5. `worth_learning_more_about` was subtly predicting the visitor's emotional reaction instead of
+   asking about the work itself — "would you find it frustrating if research findings were acted on
+   slowly," "do you prefer a shorter feedback loop" are mind-reading dressed as a question. Reworked
+   to ask about a DIMENSION OF THE WORK that a job posting or a person doing the work could actually
+   answer ("how much influence does this role have over what happens with its output," "how long do
+   projects tend to run, and how quickly does the work produce something you can evaluate or act
+   on"), letting the visitor decide afterward whether the answer appeals to them.
+
+**GLOBAL ADDITION (not tool-specific — see `backend/lib/epistemics.js`):** a new "ROLE, PROFESSION,
+AND DOMAIN KNOWLEDGE" section was added to `DEFTBRAIN_EPISTEMIC_RULES`, the contract wrapped into
+every model call in the product. ORIENT; DO NOT CERTIFY — general knowledge about a profession,
+industry, market, or similar variable real-world domain may suggest possibilities, vocabulary, and
+questions to investigate, but must not silently establish what a role requires, what's core/primary/
+standard, what career paths are common, or what will suit the visitor. This generalizes what MAP and
+EXPLORE both needed into the layer every tool already inherits, rather than piling more tool-specific
+prohibitions into this one file. See `SIGNALVSNOISE-NOTES.md`'s V6 section and `epistemics.js` itself
+for the parallel, tool-specific version of this same idea (rule 27, "WHAT AUTHORIZES THIS SENTENCE?")
+that this addition generalizes from.
+
+New `OUTPUT_GUARD.prohibit` entries (shared across the whole route file — MAP, EXPLORE, and every
+other endpoint in `skill-gap-map.js` all reference the same `OUTPUT_GUARD` object):
+`invented_subskill_or_named_methodology_more_specific_than_supplied_evidence`,
+`general_field_knowledge_presented_as_a_canonical_checklist_of_conventions`,
+`portfolio_or_specific_deliverable_destination_assumed_without_basis`,
+`unsupported_occupational_generalization_used_to_justify_an_explore_direction`,
+`emotional_reaction_or_preference_predicted_instead_of_asked_as_a_dimension`,
+`unearned_occupational_authority_claimed_from_limited_supplied_experience`.
+
+**Live-tested against:** the exact marketing-coordinator → UX Researcher (MAP) and software-engineer
+→ adjacent-directions (EXPLORE) scenarios from the owner's spec, plus a survey-researcher → human-
+behavior scenario chosen to be likely to surface a Behavioral-Insights-style direction (the owner's
+specific worked example). 0 hits for every flagged phrase and its paraphrase across 3 consecutive
+live regenerations of each scenario post-fix. `npm run check:golden skill-gap-map` → 4/4 PASS on the
+re-recorded golden (map + explore cases re-recorded; economics + timeline cases untouched by this
+pass, still validate). **Note for future debugging:** mid-verification, all 4 golden cases briefly
+failed with HTTP 500 ("Something went wrong") on one run — traced to transient Anthropic API
+overload from the burst of live-test calls in this session, not a code regression (confirmed via a
+manual retest that succeeded in ~42s, then a clean 4/4 re-run minutes later). Don't assume a golden
+failure is a real regression without ruling this out first — see the established "flaky golden"
+verification protocol in this file's earlier notes and in `SIGNALVSNOISE-NOTES.md`.
+
+**DO NOT silently reverse (V4 additions):**
+25. **`start_here.capability` must name the adjacent AREA, not a specific technique/methodology**
+    the supplied evidence doesn't establish — this is a live-tested, owner-flagged failure
+    ("structured UX interview facilitation" from "customer interviews").
+26. **No checklist of "professional conventions"** — specific technique names and "published
+    frameworks" language imply a canonical practice; point at comparing real practice instead.
+27. **No portfolio assumption in `next_move.proof`** — a target role's expectation of a portfolio
+    is never established by default; `role_expectations_to_check` already has "portfolio
+    expectations" as something to VERIFY, which is the correct place for it.
+28. **EXPLORE's `why_it_connects` ban covers the paraphrase, not just the listed phrases** — this
+    was proven necessary by a live test where the model got around the literal wording while
+    committing the identical error. Any future tightening of this rule should keep testing against
+    paraphrases, not just the flagged words.
+29. **`worth_learning_more_about` asks about a dimension of the work, never predicts an emotional
+    reaction** — "would you find X frustrating" is mind-reading; "how much of X exists in this kind
+    of role" is a question the visitor can go verify.
+30. **The "ROLE, PROFESSION, AND DOMAIN KNOWLEDGE" global rule lives in `epistemics.js`, not here** —
+    don't re-litigate or duplicate it into this file's own prompt; if a future gap in this tool needs
+    a NEW distinction the global rule doesn't cover, add it here specifically, but check the global
+    rule first.

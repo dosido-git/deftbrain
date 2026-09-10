@@ -180,6 +180,12 @@ const OUTPUT_GUARD = {
     'generic_tool_familiarity_classified_as_a_skill_gap_instead_of_a_role_expectation',
     'unsupplied_detail_invented_about_the_purpose_or_audience_of_past_experience',
     'single_supplied_skill_upgraded_into_an_unestablished_technical_scope',
+    'invented_subskill_or_named_methodology_more_specific_than_supplied_evidence',
+    'general_field_knowledge_presented_as_a_canonical_checklist_of_conventions',
+    'portfolio_or_specific_deliverable_destination_assumed_without_basis',
+    'unsupported_occupational_generalization_used_to_justify_an_explore_direction',
+    'emotional_reaction_or_preference_predicted_instead_of_asked_as_a_dimension',
+    'unearned_occupational_authority_claimed_from_limited_supplied_experience',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -249,6 +255,19 @@ RELATED EXPERIENCE → PROFICIENCY
 A PLAUSIBLE GAP → THE MOST IMPORTANT GAP
 A PRACTICE EXERCISE → REAL EXPERIENCE
 A TOOL CATEGORY → CORE PROFESSIONAL SKILL
+GENERAL FIELD KNOWLEDGE → A CHECKLIST OF PROFESSIONAL CONVENTIONS
+
+Do not name specific techniques, named methodologies, or named frameworks
+as though the field has one settled set of conventions — "structured
+interview facilitation," "published UX interview frameworks," "think-aloud
+prompting," "probing for behavior," "neutrality practices" and similar
+technique lists assert a canon of professional practice nothing supplied
+establishes. Where naming the general skill area is useful, name it at
+that level ("interviewing technique," "research facilitation") and point
+at investigating real practice instead: "compare your approach with
+several credible resources and with what roles you're considering
+actually ask for" — never assert what the practice is, only that it's
+worth comparing against.
 
 Do not invent what the visitor's past experience was FOR, ABOUT, or
 DIRECTED AT beyond what they actually said — if they supplied "survey
@@ -286,8 +305,8 @@ starting_point, transferable_strengths, start_here, next_move, skill_gaps.
     }
   ],
   "start_here": {
-    "capability": "A capability worth investigating first — 3-6 words. This is a SUGGESTED starting point, not an objectively-ranked priority, unless a supplied job posting or a clear dependency between capabilities justifies calling it the priority",
-    "why_it_matters": "Why THIS one is worth investigating first — normally because it's adjacent to evidence you already have, not because it's asserted to be the most important gap. If a supplied job posting or a clear dependency between capabilities justifies a stronger claim, say so specifically; otherwise frame it as one reasonable place to start, not the correct answer",
+    "capability": "A capability worth investigating first — 3-6 words. This is a SUGGESTED starting point, not an objectively-ranked priority, unless a supplied job posting or a clear dependency between capabilities justifies calling it the priority. Do not invent a more specific sub-skill or named methodology than the supplied evidence supports — if the visitor supplied 'customer interviews,' name the adjacent AREA ('UX research interviewing'), not a specific technique within it ('structured UX interview facilitation') that nothing they said establishes as the target",
+    "why_it_matters": "Why THIS one is worth investigating first — normally because it's adjacent to evidence you already have, not because it's asserted to be the most important gap. If a supplied job posting or a clear dependency between capabilities justifies a stronger claim, say so specifically; otherwise frame it as one reasonable place to start, not the correct answer. Phrase it as an adjacent area worth comparing against roles you're considering, not as a verified priority",
     "current_evidence": "What the visitor's supplied experience does or doesn't establish about this — one sentence",
     "gap": "The specific difference between supplied evidence and the capability — one sentence",
     "next_move": "One short line naming how to build or demonstrate it — the full version is the top-level next_move below",
@@ -296,7 +315,7 @@ starting_point, transferable_strengths, start_here, next_move, skill_gaps.
   "next_move": {
     "primary": "ONE feasible move, described concretely enough to act on today — assumes no special access, authority, or permission the visitor didn't mention. If it depends on whether the visitor has already done the underlying activity, cover both cases explicitly ('If you haven't run one yet, draft a plan for X. If you have, document what you did and learned.') rather than blending hypothetical-plan and already-happened language in a way that implies research occurred when it may not have",
     "why": "Why this move specifically, tied to start_here — one sentence",
-    "proof": "What you'd have afterward — a concrete artifact you can revise, discuss, or use as the start of a portfolio piece — one sentence, consistent with whichever case (plan or documentation) actually applies",
+    "proof": "What you'd have afterward — a concrete artifact you can review, improve, and potentially use to demonstrate your thinking where appropriate — one sentence, consistent with whichever case (plan or documentation) actually applies. Do not assume the target role expects this specifically in a portfolio",
     "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed. Never suggest accessing an employer's confidential systems, internal user recordings, or anything requiring special permission or raising consent/privacy questions the visitor didn't ask about — prefer a self-contained exercise or something the visitor has clear, legitimate access to"]
   },
   "skill_gaps": [
@@ -1208,6 +1227,39 @@ generate a small, varied set of plausible directions traceable to what they
 actually supplied, so they can choose one to investigate further — not to
 rank, score, or recommend one over the others.
 
+A proposed direction is an EXPLORATION HYPOTHESIS, not a finding about the
+visitor and not a verified description of an occupation.
+
+For "why_it_connects", use only: experience the visitor supplied, interests
+the visitor supplied, and reasonable semantic connections between those and
+the proposed direction. Do not justify a direction by asserting unsupported
+occupational facts — "these are the primary methods...", "these are the
+core activities...", "people in this role typically...", "this field draws
+on...", "this role frequently...", "this work commonly requires..." are all
+the same error: an unverified occupational claim doing the justifying work
+that only the visitor's own supplied evidence is allowed to do here. THIS
+BANS THE PARAPHRASE, NOT JUST THESE EXACT WORDS — "your experience covers
+the core activities of many X roles," "reflects what this kind of role
+often does," "matches what this field generally involves" commit the
+identical error without the flagged words: describing what the ROLE is or
+does in general, then using that description to justify the connection.
+The connection must run the other direction — from the visitor's specific
+supplied experience or interest to the direction — never through a claim
+about what the occupation is like in general. Do not describe supplied
+experience as giving the visitor "a basis in" a field's work in general —
+name the specific concrete reasons the supplied evidence and interests
+point at this direction, nothing broader.
+
+For "what_the_work_involves", general occupational knowledge may orient but
+must preserve variation, not assert a settled job description: "this kind
+of role can involve...", "depending on the organization, the work may
+include...", "some versions of this role involve..." — never present
+remembered occupational knowledge as verified.
+
+The purpose of "one_way_to_investigate" is precisely to replace this
+general orientation with evidence about actual roles — that's where the
+verification happens, not in why_it_connects or what_the_work_involves.
+
 CURRENT ROLE: "${currentRole.trim()}"
 ${currentSkills?.trim() ? `EXPERIENCE SUPPLIED: "${currentSkills.trim()}"` : 'EXPERIENCE SUPPLIED: none — do not invent any.'}
 ${interests?.trim() ? `INTERESTS SUPPLIED: "${interests.trim()}"` : 'INTERESTS SUPPLIED: none.'}
@@ -1221,7 +1273,7 @@ Return ONLY valid JSON. Your response MUST contain the top-level key: directions
       "target_role": "A specific, plausible direction — 3-6 words",
       "why_it_connects": "Why this connects to what the visitor actually supplied — one sentence, traceable to their evidence. Do not claim the visitor's experience establishes something it only makes them familiar with (e.g. backend/API work gives familiarity with technical problems a product addresses — it does not make them 'the kind of user' that product serves)",
       "what_the_work_involves": "What the work generally involves — one or two sentences, general knowledge about the field, calibrated because roles vary considerably by organization. Never state a general role description as a universal requirement ('a core part of how this work gets done') — describe what the work commonly involves instead",
-      "worth_learning_more_about": "The single most important uncertainty about whether this direction matches what the visitor wants — one sentence. Frame it as a question for the VISITOR to investigate (would you enjoy X, would you want Y), never as something the tool has determined about them. Do not use 'genuinely' before a personal-fit question",
+      "worth_learning_more_about": "The single most important uncertainty about whether this direction matches what the visitor wants — one sentence, framed as a DIMENSION OF THE WORK to go find out about, not an imagined emotional reaction. Not 'would you find it frustrating if your work were acted on slowly' or 'do you prefer a shorter feedback loop' — those predict the visitor's reaction before they've seen any real information. Ask about the dimension itself instead, in a form job postings or people doing the work could actually answer — e.g. 'how much influence does this role have over what happens with its output, in the kinds of organizations you're considering', 'how long do projects tend to run, and how quickly does the work produce something you can evaluate or act on'. Let the visitor decide afterward whether the answer appeals to them. Do not use 'genuinely' before a personal-fit question",
       "one_way_to_investigate": "One specific, low-cost, feasible step that doesn't assume a job, access, or budget — one sentence. Point at primary sources (job postings, first-person accounts, a direct question to someone doing the work) rather than naming a specific company, unless the visitor themselves supplied that company or interest"
     }
   ]
