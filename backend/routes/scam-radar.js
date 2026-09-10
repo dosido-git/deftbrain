@@ -231,6 +231,24 @@ Write: "This combination is consistent with a well-known phishing pattern."
 
 Do not imply: "We know this sender is following that phishing script."
 
+The same worked example, sorted into the three buckets that matter for what
+you're allowed to assert:
+
+OBSERVED — directly in the material:
+The domain is paypa1-alerts.net. The domain is not paypal.com.
+
+REASONABLE PATTERN MATCH — a general pattern applied to what's observed,
+stated as a pattern, not a fact:
+The "1" substitution visually resembles the PayPal name and is consistent
+with a lookalike-domain technique used in phishing.
+
+NOT ESTABLISHED WITHOUT EXTERNAL VERIFICATION — do not assert these:
+Who registered or controls the domain. Who actually sent the message.
+Whether PayPal has any relationship with that domain.
+
+The tool does not need those unknowns resolved to recommend avoiding the
+message when the observable evidence already supports that action.
+
 
 ==================================================
 DOMAIN AND LINK ANALYSIS
@@ -251,12 +269,23 @@ Supported:
 
 "The link shown uses secure-paypa1-verify.com rather than paypal.com."
 
+"It is not paypal.com" is acceptable when it refers literally to the domain
+string. Do not silently strengthen a literal domain observation into a claim
+about the brand itself:
+
 Not supported without verification:
 
 "This domain is spoofed."
 "This domain has no affiliation with PayPal."
 "This website is fraudulent."
 "This domain was registered by scammers."
+"It is not PayPal."
+"PayPal does not own this domain."
+
+Preferred, combining the literal observation with the pattern it fits:
+
+"The sender domain is not paypal.com and visually resembles the PayPal name
+through a character substitution."
 
 
 Prefer observable wording.
@@ -395,6 +424,39 @@ you obtain independently."
 
 Do not claim that a particular company necessarily displays a particular
 kind of notice unless that behavior has been verified.
+
+BAD:
+
+"If your account has a genuine problem, it will be reflected there."
+
+GOOD:
+
+"Check for any matching suspension notice, restriction, or security alert.
+If you do not find one, do not treat that alone as proof that the message
+is fake; contact PayPal through a channel you obtained independently if
+you still need to verify the issue."
+
+BAD:
+
+"If your account appears normal there, that is additional reason to treat
+this message as fraudulent."
+
+GOOD:
+
+"If your account shows no matching alert or restriction, that gives you
+less reason to trust the message, but you can verify further through
+PayPal's independently obtained support channels if needed."
+
+A well-supported LIKELY_SCAM verdict does not need this check to come back
+positive — do not weaken the verdict on the strength of an absent account
+alert either. It has its own strong, independently observable grounds; the
+account check is one more thing the visitor can do, not what the verdict
+rests on.
+
+GENERAL RULE:
+
+Absence of corroboration is useful evidence, but do not automatically
+convert it into proof that the claimed event did not occur.
 
 
 ==================================================
@@ -941,10 +1003,14 @@ pattern as a confirmed fact about this sender; promise a bank, platform, or
 authority will take a specific action; call the message safe merely
 because you found no obvious scam signs; treat an absent account alert as
 proof of who sent a message (or its absence as proof the message was
-genuine); assert what a company's notifications normally, typically,
-never, or always look like without a verified source; or weaken a
-well-supported LIKELY_SCAM verdict merely because the sender's identity
-isn't independently proven. Revise if any answer reveals overreach.
+genuine); treat a clean account check as proof that a claimed problem never
+existed, or a normal-looking account as extra proof of fraud; deny a brand's
+ownership of or affiliation with a domain as verified fact rather than
+observing that the domain string itself doesn't match; assert what a
+company's notifications normally, typically, never, or always look like
+without a verified source; or weaken a well-supported LIKELY_SCAM verdict
+merely because the sender's identity isn't independently proven. Revise if
+any answer reveals overreach.
 
 NORTH STAR:
 
@@ -974,6 +1040,8 @@ router.outputGuard = {
     'empty_bullet_placeholder_or_blank_list_item_rendered',
     'checkbox_selection_trusted_over_contradicting_pasted_evidence',
     'absence_or_presence_of_an_account_alert_treated_as_proof_of_sender_identity',
+    'absence_of_an_account_alert_treated_as_proof_the_claimed_problem_doesnt_exist',
+    'domain_ownership_or_brand_affiliation_denied_as_verified_fact',
   ],
   require: ['fulfills_tool_promise'],
 };
