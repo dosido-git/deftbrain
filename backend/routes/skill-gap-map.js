@@ -296,16 +296,25 @@ RULES:
 - Label every expectation as something to VERIFY, never as a known fact about the target.
 - No numeric scores anywhere in this response.`, userLanguage);
 
+    // primary max_tokens: this exact schema (up to 7 skill_gaps x 10 fields,
+    // plus transferable_strengths x5, start_here, next_move) truncated at
+    // 3000 under real, richly-supplied input — the same failure v1 already
+    // hit and fixed by raising 3000->5000 (see audit/tool-notes and
+    // deftbrain-skillgapmap-architecture memory). The v3 rewrite
+    // reintroduced the old limit; callClaudeWithRetry hard-throws on
+    // stop_reason==='max_tokens' rather than returning partial JSON, so a
+    // truncation here is a guaranteed 500 ("Could not map your skill
+    // gaps."), not a degraded-but-usable answer.
     const [primaryPart, secondaryPart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 3000,
+        max_tokens: 5000,
         system: withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: primaryPrompt }],
       }, { label: 'SkillGapMap:primary' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 2000,
+        max_tokens: 2500,
         system: withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: secondaryPrompt }],
       }, { label: 'SkillGapMap:secondary' }),

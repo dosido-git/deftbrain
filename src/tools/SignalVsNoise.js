@@ -227,7 +227,7 @@ const SignalVsNoise = ({ tool }) => {
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
             <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !topic.trim()}
               className={`relative w-full py-3 rounded-xl font-bold ${(!topic.trim()) ? c.btnIdle : c.btnPrimary}`}>
-              {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
+              {loading ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
