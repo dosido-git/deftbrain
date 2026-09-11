@@ -7,13 +7,16 @@
 // markets and asset classes," "the evidence covers funds that survived long
 // enough to be measured") — proving prompt language alone was not going to
 // hold across every domain visitors bring. This pass adds what the previous
-// three didn't have: a deterministic, code-level backstop. Every prose field
-// is scanned against a fixed phrase list; a violating half is regenerated
-// once with the exact offending phrase quoted back at it; anything that
-// still violates after that is dropped from its array rather than shown.
-// The prompt still tries hard to get it right the first time — the backstop
-// is what guarantees the user never sees the failure, not a replacement for
-// good prompting. See audit/tool-notes/SIGNALVSNOISE-NOTES.md.
+// three didn't have: a deterministic, code-level backstop. V7 (same week)
+// widened it from a phrase list into a five-stage pipeline — regex, a
+// judged empirical-resolution check per field, one per-field rewrite, a
+// revalidation, and a fixed localized fallback — after a nutrition test
+// showed the model routing around the phrase list with bare and hedged
+// premises ("hormones regulate appetite", "meal timing may interact with
+// circadian rhythms"). The prompt still tries hard to get it right the first
+// time — the pipeline is what guarantees the user never sees the failure,
+// not a replacement for good prompting. See CLAIM ANALYSIS VALIDATION
+// PIPELINE below and audit/tool-notes/SIGNALVSNOISE-NOTES.md.
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
@@ -139,50 +142,439 @@ function setAtPath(obj, path, value) {
   cur[lastKey] = value;
 }
 
-// PER-FIELD regeneration, not a whole-call retry. Rewriting the ONE
-// offending sentence (cheap, MODELS.FAST, no JSON schema to fill) preserves
-// everything the model got right and only reworks what's broken — a
-// whole-call regenerate risks trading one violation for a different one
-// somewhere else in a large response. If this still comes back violating
-// (rare), the existing structural filtering a few lines below already drops
-// any array item whose text still fails `clean()` — this function does not
-// need its own fallback logic, it only needs to try.
-async function regenerateField(originalText, userLanguage, label) {
+// ── CLAIM ANALYSIS VALIDATION PIPELINE ──────────────────────────────────
+//
+//   1. REGEX CHECK       — CLAIM_MODE_BANNED_RE, cheap, catches research-voice
+//                          ("studies show", "the literature", "associated with").
+//   2. SEMANTIC CHECK    — one narrow judged question per field: does it rely
+//                          on a real-world premise that was not supplied, not
+//                          sourced, and materially helps decide the claim?
+//   3. REGENERATE        — the offending FIELD only, once.
+//   4. REVALIDATE        — regex + semantic again, on the rewrites only.
+//   5. SAFE FALLBACK     — a fixed, localized sentence for that field type.
+//                          Never a second regeneration.
+//
+// Why the regex was demoted from "the whole job" to stage 1: five rounds of
+// prompt tightening (tool-level rules 14/27-29, then the global epistemics
+// contract, twice) all failed the same live nutrition test the same way —
+// the model stopped saying "research shows" and started saying "hormones
+// regulate appetite and energy expenditure" as bare fact, or "meal timing
+// may interact with circadian rhythms" as a hedge. A bare or hedged
+// empirical premise has no stable lexical marker; a phrase list cannot see
+// it. Only a judged question can, and a judged question needs a
+// deterministic answer to what happens when it says FAIL — which is what
+// stages 3-5 are.
+//
+// Why the fallback is fixed text and not "try again": a validator/regenerator
+// loop is exactly how the model finds new vocabulary for the same assertion.
+// One rewrite attempt, then a sentence that cannot smuggle anything because
+// it asserts nothing about the world.
+
+const SEMANTIC_CHECK_MS = Number(process.env.CLAIM_MODE_SEMANTIC_MS || 45_000);
+const MAX_FIELD_REWRITES = 12;
+// Fields per judge call. Measured on a real 48-field response: one call over
+// all 48 flagged 3 and missed both of the plainest violations ("meal timing
+// can affect hunger..."); the same two fields alone were both flagged in
+// under two seconds. Recall falls off with batch size, so the batch is kept
+// small and the calls run in parallel — eight calls of six cost about the
+// same wall-clock as one call of forty-eight.
+const SEMANTIC_BATCH_SIZE = 6;
+
+// Resolves to `fallback` if `promise` has not settled in `ms` — same shape as
+// lib/outputGuard's deadline: a slightly less polished answer beats a 502.
+function withDeadline(promise, ms, fallback, label, stage) {
+  let timer;
+  const bail = new Promise(resolve => {
+    timer = setTimeout(() => {
+      console.log(`[${label}] claim-mode: ${stage} exceeded ${ms}ms — skipped`);
+      resolve(fallback);
+    }, ms);
+    timer.unref?.();
+  });
+  return Promise.race([promise, bail]).finally(() => clearTimeout(timer));
+}
+
+// Fields the semantic check never judges: they restate what the visitor
+// supplied, so of course they contain the disputed empirical proposition.
+const SEMANTIC_SKIP_RE = /^(?:topic_as_understood|the_noise\[\d+\]\.claim)$/;
+
+const SEMANTIC_CHECK_SYSTEM = `You validate fields from a CLAIM ANALYSIS result. No outside sources were examined in this run. For each field, answer ONE narrow question:
+
+Does this text assert or rely on any real-world factual proposition that:
+1. was not supplied in the visitor's input, AND
+2. was not supported by a source examined in this run (none were), AND
+3. materially helps decide the empirical claim being analyzed?
+
+Ignore statements that merely: define terms; analyze wording; identify logical requirements; identify missing information; say that evidence is needed; identify an undefined comparison, overbreadth, universalization, or a missing premise; distinguish what follows from what does not follow.
+
+The presence of "may," "can," "could," "often," "generally," "typically," "tends to," or "depends on" does NOT turn a FAIL into a PASS. A hedged empirical proposition is still an empirical proposition. Nor does narrowing it to a subgroup: "some people find X practical," "X is workable for some people," "X works for many" are claims about what happens to real people and FAIL just the same.
+
+A definitional or accounting identity — something true by how its terms are defined, independent of any measurement (e.g. that a total changes only if what goes in and what goes out differ) — is background, not empirical resolution. But judge every sentence on its own. A field that opens with "this follows from the structure / definition / logic of the claim" and then states what a real-world factor does ("X influences A, B and C, which are inputs to that relationship") has NOT authorized that statement — the identity says nothing about which factor moves the quantities, and the framing sentence is not evidence. Flag the factual sentence regardless of how the field introduces it.
+
+Examples that MUST fail:
+"Hormones regulate appetite and energy expenditure."
+"Hormones influence hunger and expenditure."
+"Meal timing may interact with circadian rhythms."
+"Processed foods tend to increase intake."
+"Breakfast works better for some people."
+"People respond differently to fasting."
+"Some people find time-restricted eating a practical way to manage intake."
+"Metabolism involves multiple interacting systems."
+"This follows from the accounting structure: hormonal signals influence appetite, satiety, and energy expenditure, which are inputs to that relationship."
+
+Return ONLY valid JSON, no markdown:
+{"failures":[{"path":"<field path exactly as given>","sentence":"<the exact offending sentence, quoted verbatim>"}]}
+Return {"failures":[]} when every field passes. Do not rewrite anything. Do not comment on style.`;
+
+// One judge call over one small batch of [path, text] pairs → Map(path →
+// offending sentence), or null if the call failed or came back unparseable.
+async function judgeBatch(batch, supplied, userLanguage, label) {
+  const body = `VISITOR INPUT — the complete set of supplied claims and context:
+${supplied}
+
+FIELDS TO VALIDATE:
+${batch.map(([path, text]) => `${path}:\n${text}`).join('\n\n')}`;
   try {
-    // withLanguage()'d even though the user message already quotes the
-    // original (already-localized) text back at the model — without an
-    // explicit instruction the rewrite is one inference away from silently
-    // drifting into English on a non-English response, which is exactly the
-    // kind of soft/implicit behavior this whole backstop exists to avoid.
-    const system = withLanguage('You rewrite one flagged sentence for a tool operating in CLAIM ANALYSIS mode — no sources were supplied or retrieved for this request. The sentence improperly implies a review of evidence, research, studies, or literature that never happened. Rewrite it to make the same substantive point using reasoning about the claim itself only: what follows logically, what the claim does or does not establish, what would need to be checked. Never say what "evidence," "research," "studies," "data," or "the literature" shows, supports, finds, or is associated with. Preserve the point and roughly the original length. Return ONLY valid JSON: {"rewritten": "..."}', userLanguage);
+    // withLanguage()'d like lib/outputGuard's judge: the quoted `sentence`
+    // comes back in the visitor's language, and `path` is copied verbatim
+    // per the system prompt either way.
     const result = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 300,
-      system,
-      messages: [{ role: 'user', content: `Rewrite this: "${originalText}"` }],
-    }, { label });
-    return typeof result?.rewritten === 'string' && result.rewritten.trim() ? result.rewritten.trim() : null;
+      model: MODELS.SMART,
+      max_tokens: 800,
+      system: withLanguage(SEMANTIC_CHECK_SYSTEM, userLanguage),
+      messages: [{ role: 'user', content: body }],
+    }, { label, maxRetries: 1 });
+    if (!result || !Array.isArray(result.failures)) return null;
+    const known = new Set(batch.map(([p]) => p));
+    const out = new Map();
+    for (const f of result.failures) {
+      if (f && typeof f.path === 'string' && known.has(f.path)) out.set(f.path, typeof f.sentence === 'string' ? f.sentence : '');
+    }
+    return out;
   } catch {
-    return null; // leave the original in place; final filtering will drop it if it's still a violation
+    return null;
   }
 }
 
-// Scans the fully-merged response and fixes violations field-by-field. Runs
-// AFTER runOutputGuard (the guard's own repair pass can introduce or miss
-// things independently) and BEFORE the final structural filtering, so a
-// successfully-fixed field survives instead of being dropped unnecessarily.
-async function enforceClaimModeFields(parsed, userLanguage, label) {
-  if (ANALYSIS_MODE !== 'claim_analysis') return parsed;
-  const violations = scanForBannedLanguage(parsed);
-  if (!violations.length) return parsed;
-  // Cap concurrent fix-up calls — a maximally-noisy response shouldn't turn
-  // into a dozen extra round trips; the ones left unfixed still get dropped
-  // by the structural filtering, which is the correct fallback either way.
-  const toFix = violations.slice(0, 10);
-  const fixes = await Promise.all(toFix.map(v => regenerateField(v.text, userLanguage, `${label}:field-fix`)));
-  toFix.forEach((v, i) => {
-    if (fixes[i]) setAtPath(parsed, v.path, fixes[i]);
+// Stage 2 / stage 4. Judges `fields` in parallel batches under one deadline,
+// TWICE — the second pass shifts the batch boundaries by half a batch so
+// every field is judged in two different neighborhoods — and unions the
+// verdicts. Measured: a field flagged 3/3 in one neighborhood could go 1/2
+// in another; two passes close most of that variance at no wall-clock cost.
+// Returns
+//   { failures: Map(path → sentence), unchecked: Set(path) }
+// where `unchecked` holds every path that NEITHER pass managed to judge
+// (timeout, API error, unparseable). Callers decide what unknown means: the
+// first check lets an unchecked field through (nothing to act on); the
+// revalidation treats it as failed (a rewrite nobody verified is not kept).
+async function semanticEmpiricalCheck(fields, supplied, userLanguage, label, batchSize = SEMANTIC_BATCH_SIZE) {
+  const failures = new Map();
+  const unchecked = new Set();
+  if (!fields.length) return { failures, unchecked };
+  const passes = [];
+  for (const offset of [0, Math.floor(batchSize / 2)]) {
+    const batches = [];
+    if (offset > 0 && offset < fields.length) batches.push(fields.slice(0, offset));
+    for (let i = offset; i < fields.length; i += batchSize) batches.push(fields.slice(i, i + batchSize));
+    passes.push(batches.filter(b => b.length));
+  }
+  const all = passes.flat();
+  const results = await withDeadline(
+    Promise.all(all.map(b => judgeBatch(b, supplied, userLanguage, label))),
+    SEMANTIC_CHECK_MS, null, label, 'semantic check');
+  const judged = new Set();
+  all.forEach((batch, i) => {
+    const r = results ? results[i] : null;
+    if (!r) return;
+    for (const [p] of batch) judged.add(p);
+    for (const [p, s] of r) if (!failures.has(p)) failures.set(p, s);
   });
+  for (const [p] of fields) if (!judged.has(p)) unchecked.add(p);
+  return { failures, unchecked };
+}
+
+// Stage 3. Rewrite ONE field. Returns the replacement or null. The system
+// prompt is withLanguage()'d even though the quoted original is already in
+// the visitor's language — without the explicit instruction the rewrite is
+// one inference away from drifting into English on a non-English response.
+async function rewriteFlaggedField(originalText, reason, supplied, userLanguage, label) {
+  try {
+    const system = withLanguage(`You are rewriting one field from a CLAIM ANALYSIS result.
+
+No outside evidence was reviewed.
+
+The previous field failed because ${reason}.
+
+Rewrite using ONLY:
+- the visitor's supplied claims;
+- definitions already established in the input;
+- logical relationships that require no additional empirical premise;
+- identification of missing definitions, assumptions, comparisons, or evidence.
+
+You may say that an empirical proposition needs verification.
+
+Do NOT replace the disputed claim with your own account of what actually happens in the world. Do not say what "evidence," "research," "studies," "data," or "the literature" shows, finds, or is associated with. Keep roughly the original length.
+
+Return ONLY valid JSON: {"rewritten": "<the replacement field>"}`, userLanguage);
+    const result = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 400,
+      system,
+      messages: [{ role: 'user', content: `VISITOR INPUT:\n${supplied}\n\nPREVIOUS FIELD:\n${originalText}` }],
+    }, { label, maxRetries: 1 });
+    return typeof result?.rewritten === 'string' && result.rewritten.trim() ? result.rewritten.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+// Stage 5. Fixed text per field type, in the visitor's language. These assert
+// nothing about the world, so nothing can be smuggled through them. Keys map
+// to the on-screen labels: holds_up_instead = "What holds up instead",
+// what_went_wrong, kernel_of_truth, why_holds_up = a signal item's basis,
+// doesnt_establish = a signal item's limits, bottom_line = any bottom-line
+// item, framing = the opening framing line, noise_label = a noise card's
+// short label. A field with no entry here (a signal item's claim, a
+// still_worth_verifying question, a sources_of_noise field, a person-specific
+// item) is blanked instead, and the structural filter below drops its item.
+const CLAIM_MODE_FALLBACKS = {
+  en: {
+    holds_up_instead: 'The claim as written goes beyond what the information available here establishes.',
+    what_went_wrong: 'The conclusion depends on a real-world premise that has not been established in this analysis. Evidence would be needed to determine whether that premise is true and under what conditions.',
+    kernel_of_truth: 'There may be a narrower version of this claim worth investigating, but the available information does not establish what that version should be.',
+    why_holds_up: 'This follows from the structure of the claim rather than from an outside empirical finding.',
+    doesnt_establish: 'This analysis does not determine what happens in practice. That requires evidence.',
+    bottom_line: 'The claim contains an empirical question that cannot be resolved from the information supplied here.',
+    framing: 'These claims can be examined for what they establish and what they assume. What actually happens in practice requires evidence that was not reviewed here.',
+    noise_label: 'Goes beyond what is established here',
+  },
+  es: {
+    holds_up_instead: 'La afirmación, tal como está formulada, va más allá de lo que establece la información disponible aquí.',
+    what_went_wrong: 'La conclusión depende de una premisa sobre el mundo real que no se ha establecido en este análisis. Haría falta evidencia para determinar si esa premisa es cierta y en qué condiciones.',
+    kernel_of_truth: 'Puede existir una versión más acotada de esta afirmación que valga la pena investigar, pero la información disponible no establece cuál debería ser.',
+    why_holds_up: 'Esto se desprende de la estructura de la afirmación, no de un hallazgo empírico externo.',
+    doesnt_establish: 'Este análisis no determina qué ocurre en la práctica. Eso requiere evidencia.',
+    bottom_line: 'La afirmación contiene una cuestión empírica que no puede resolverse con la información proporcionada aquí.',
+    framing: 'Estas afirmaciones pueden examinarse por lo que establecen y por lo que suponen. Lo que ocurre realmente en la práctica requiere evidencia que no se revisó aquí.',
+    noise_label: 'Va más allá de lo que se establece aquí',
+  },
+  zh: {
+    holds_up_instead: '这条说法按其原文，已经超出了此处可用信息所能确立的范围。',
+    what_went_wrong: '这个结论依赖于一个现实世界的前提，而该前提在本次分析中并未得到确立。需要证据才能判断该前提是否成立、在什么条件下成立。',
+    kernel_of_truth: '这条说法可能存在一个更窄、值得研究的版本，但现有信息无法确定那个版本应该是什么。',
+    why_holds_up: '这一点来自说法本身的结构，而不是来自外部的实证发现。',
+    doesnt_establish: '本次分析不能判断实际情况如何。那需要证据。',
+    bottom_line: '这条说法包含一个实证问题，无法仅凭此处提供的信息解决。',
+    framing: '可以就这些说法确立了什么、又假设了什么进行审视。实际情况如何，需要此处未审阅的证据。',
+    noise_label: '超出了此处所能确立的范围',
+  },
+  hi: {
+    holds_up_instead: 'यह दावा, जैसा लिखा गया है, यहाँ उपलब्ध जानकारी से जो स्थापित होता है उससे आगे जाता है।',
+    what_went_wrong: 'यह निष्कर्ष वास्तविक दुनिया की एक ऐसी पूर्वधारणा पर टिका है जो इस विश्लेषण में स्थापित नहीं हुई है। यह तय करने के लिए प्रमाण चाहिए कि वह पूर्वधारणा सही है या नहीं, और किन परिस्थितियों में।',
+    kernel_of_truth: 'इस दावे का कोई सीमित रूप जाँच के लायक हो सकता है, लेकिन उपलब्ध जानकारी यह स्थापित नहीं करती कि वह रूप क्या होना चाहिए।',
+    why_holds_up: 'यह दावे की बनावट से निकलता है, किसी बाहरी अनुभवजन्य निष्कर्ष से नहीं।',
+    doesnt_establish: 'यह विश्लेषण यह तय नहीं करता कि व्यवहार में क्या होता है। उसके लिए प्रमाण चाहिए।',
+    bottom_line: 'इस दावे में एक अनुभवजन्य प्रश्न है जिसे यहाँ दी गई जानकारी से हल नहीं किया जा सकता।',
+    framing: 'इन दावों की जाँच इस आधार पर की जा सकती है कि वे क्या स्थापित करते हैं और क्या मान लेते हैं। व्यवहार में असल में क्या होता है, इसके लिए ऐसे प्रमाण चाहिए जिनकी यहाँ समीक्षा नहीं हुई।',
+    noise_label: 'यहाँ जो स्थापित है उससे आगे जाता है',
+  },
+  ar: {
+    holds_up_instead: 'الادعاء بصيغته الحالية يتجاوز ما تثبته المعلومات المتاحة هنا.',
+    what_went_wrong: 'تعتمد هذه النتيجة على مقدمة واقعية لم تُثبَت في هذا التحليل. يلزم وجود أدلة لتحديد ما إذا كانت تلك المقدمة صحيحة وفي أي ظروف.',
+    kernel_of_truth: 'قد توجد صيغة أضيق من هذا الادعاء تستحق البحث، لكن المعلومات المتاحة لا تحدد ما ينبغي أن تكون عليه تلك الصيغة.',
+    why_holds_up: 'هذا يترتب على بنية الادعاء نفسه، لا على نتيجة تجريبية خارجية.',
+    doesnt_establish: 'لا يحدد هذا التحليل ما يحدث فعليًا في الواقع. ذلك يتطلب أدلة.',
+    bottom_line: 'يتضمن الادعاء مسألة تجريبية لا يمكن حسمها من المعلومات المقدمة هنا.',
+    framing: 'يمكن فحص هذه الادعاءات من حيث ما تثبته وما تفترضه. أما ما يحدث فعليًا في الواقع فيتطلب أدلة لم تُراجَع هنا.',
+    noise_label: 'يتجاوز ما هو ثابت هنا',
+  },
+  pt: {
+    holds_up_instead: 'A afirmação, tal como está escrita, vai além do que a informação disponível aqui estabelece.',
+    what_went_wrong: 'A conclusão depende de uma premissa sobre o mundo real que não foi estabelecida nesta análise. Seriam necessárias evidências para determinar se essa premissa é verdadeira e em que condições.',
+    kernel_of_truth: 'Pode haver uma versão mais restrita desta afirmação que valha a pena investigar, mas a informação disponível não estabelece qual deveria ser essa versão.',
+    why_holds_up: 'Isto decorre da estrutura da afirmação, não de uma constatação empírica externa.',
+    doesnt_establish: 'Esta análise não determina o que acontece na prática. Isso exige evidências.',
+    bottom_line: 'A afirmação contém uma questão empírica que não pode ser resolvida com a informação fornecida aqui.',
+    framing: 'Estas afirmações podem ser examinadas pelo que estabelecem e pelo que pressupõem. O que acontece de fato na prática exige evidências que não foram revisadas aqui.',
+    noise_label: 'Vai além do que está estabelecido aqui',
+  },
+  fr: {
+    holds_up_instead: "L'affirmation, telle qu'elle est formulée, va au-delà de ce qu'établissent les informations disponibles ici.",
+    what_went_wrong: "La conclusion repose sur une prémisse concernant le monde réel qui n'a pas été établie dans cette analyse. Des preuves seraient nécessaires pour déterminer si cette prémisse est vraie et dans quelles conditions.",
+    kernel_of_truth: "Il existe peut-être une version plus restreinte de cette affirmation qui mériterait d'être examinée, mais les informations disponibles ne permettent pas d'établir laquelle.",
+    why_holds_up: "Cela découle de la structure de l'affirmation, et non d'un constat empirique extérieur.",
+    doesnt_establish: "Cette analyse ne détermine pas ce qui se passe en pratique. Cela exige des preuves.",
+    bottom_line: "L'affirmation contient une question empirique qui ne peut pas être tranchée à partir des informations fournies ici.",
+    framing: "Ces affirmations peuvent être examinées pour ce qu'elles établissent et ce qu'elles présupposent. Ce qui se passe réellement en pratique exige des preuves qui n'ont pas été examinées ici.",
+    noise_label: "Va au-delà de ce qui est établi ici",
+  },
+  de: {
+    holds_up_instead: 'Die Behauptung geht in dieser Form über das hinaus, was die hier verfügbaren Informationen belegen.',
+    what_went_wrong: 'Die Schlussfolgerung stützt sich auf eine Annahme über die reale Welt, die in dieser Analyse nicht belegt wurde. Es bräuchte Belege, um festzustellen, ob diese Annahme zutrifft und unter welchen Bedingungen.',
+    kernel_of_truth: 'Es könnte eine engere Fassung dieser Behauptung geben, die sich zu prüfen lohnt, aber die verfügbaren Informationen legen nicht fest, wie diese Fassung lauten müsste.',
+    why_holds_up: 'Das ergibt sich aus dem Aufbau der Behauptung selbst, nicht aus einem externen empirischen Befund.',
+    doesnt_establish: 'Diese Analyse legt nicht fest, was in der Praxis geschieht. Dafür braucht es Belege.',
+    bottom_line: 'Die Behauptung enthält eine empirische Frage, die sich aus den hier vorliegenden Informationen nicht klären lässt.',
+    framing: 'Diese Behauptungen lassen sich daraufhin prüfen, was sie belegen und was sie voraussetzen. Was in der Praxis tatsächlich geschieht, erfordert Belege, die hier nicht geprüft wurden.',
+    noise_label: 'Geht über das hier Belegte hinaus',
+  },
+  ja: {
+    holds_up_instead: 'この主張は、書かれている形のままでは、ここで利用できる情報が裏づける範囲を超えています。',
+    what_went_wrong: 'この結論は、今回の分析では確認されていない現実世界の前提に依存しています。その前提が正しいのか、どのような条件で成り立つのかを判断するには証拠が必要です。',
+    kernel_of_truth: 'この主張には、調べる価値のあるより限定的な形があるかもしれませんが、手元の情報からはそれがどのような形であるべきかは確認できません。',
+    why_holds_up: 'これは外部の実証的な知見ではなく、主張そのものの構造から導かれます。',
+    doesnt_establish: 'この分析は、実際に何が起きるかを判断するものではありません。それには証拠が必要です。',
+    bottom_line: 'この主張には、ここで示された情報だけでは解決できない実証的な問いが含まれています。',
+    framing: 'これらの主張は、何を裏づけ、何を前提にしているかという観点から検討できます。実際に何が起きるかは、ここでは確認していない証拠を必要とします。',
+    noise_label: 'ここで確認できる範囲を超えている',
+  },
+  ko: {
+    holds_up_instead: '이 주장은 쓰인 그대로라면, 여기서 이용 가능한 정보가 뒷받침하는 범위를 넘어섭니다.',
+    what_went_wrong: '이 결론은 이번 분석에서 확인되지 않은 현실 세계의 전제에 기대고 있습니다. 그 전제가 참인지, 어떤 조건에서 성립하는지 판단하려면 증거가 필요합니다.',
+    kernel_of_truth: '이 주장에는 살펴볼 만한 더 좁은 형태가 있을 수 있지만, 이용 가능한 정보로는 그 형태가 무엇이어야 하는지 확인할 수 없습니다.',
+    why_holds_up: '이는 외부의 실증적 발견이 아니라 주장 자체의 구조에서 따라 나옵니다.',
+    doesnt_establish: '이 분석은 실제로 무슨 일이 일어나는지를 판단하지 않습니다. 그것은 증거가 필요합니다.',
+    bottom_line: '이 주장에는 여기서 제공된 정보만으로는 해결할 수 없는 실증적 질문이 담겨 있습니다.',
+    framing: '이 주장들은 무엇을 뒷받침하고 무엇을 전제하는지의 관점에서 검토할 수 있습니다. 실제로 무슨 일이 일어나는지는 여기서 검토하지 않은 증거를 필요로 합니다.',
+    noise_label: '여기서 확인된 범위를 넘어섬',
+  },
+  ru: {
+    holds_up_instead: 'Утверждение в том виде, в каком оно сформулировано, выходит за рамки того, что подтверждает доступная здесь информация.',
+    what_went_wrong: 'Вывод опирается на предпосылку о реальном мире, которая в этом анализе не была установлена. Чтобы определить, верна ли эта предпосылка и при каких условиях, нужны доказательства.',
+    kernel_of_truth: 'Возможно, существует более узкая версия этого утверждения, которую стоит изучить, но доступная информация не позволяет установить, какой она должна быть.',
+    why_holds_up: 'Это следует из структуры самого утверждения, а не из внешнего эмпирического вывода.',
+    doesnt_establish: 'Этот анализ не определяет, что происходит на практике. Для этого нужны доказательства.',
+    bottom_line: 'Утверждение содержит эмпирический вопрос, который нельзя разрешить на основе представленной здесь информации.',
+    framing: 'Эти утверждения можно рассмотреть с точки зрения того, что они подтверждают и что предполагают. Что происходит на практике — требует доказательств, которые здесь не рассматривались.',
+    noise_label: 'Выходит за рамки установленного здесь',
+  },
+  th: {
+    holds_up_instead: 'ข้อกล่าวอ้างตามที่เขียนไว้ ไปไกลกว่าสิ่งที่ข้อมูลที่มีอยู่ตรงนี้ยืนยันได้',
+    what_went_wrong: 'ข้อสรุปนี้ขึ้นอยู่กับสมมติฐานเกี่ยวกับโลกจริงที่ยังไม่ได้รับการยืนยันในการวิเคราะห์นี้ จำเป็นต้องมีหลักฐานเพื่อตัดสินว่าสมมติฐานนั้นเป็นจริงหรือไม่ และภายใต้เงื่อนไขใด',
+    kernel_of_truth: 'อาจมีข้อกล่าวอ้างในรูปแบบที่แคบกว่านี้ที่ควรค่าแก่การตรวจสอบ แต่ข้อมูลที่มีอยู่ไม่สามารถระบุได้ว่ารูปแบบนั้นควรเป็นอย่างไร',
+    why_holds_up: 'ข้อนี้มาจากโครงสร้างของข้อกล่าวอ้างเอง ไม่ใช่จากข้อค้นพบเชิงประจักษ์ภายนอก',
+    doesnt_establish: 'การวิเคราะห์นี้ไม่ได้ตัดสินว่าในทางปฏิบัติเกิดอะไรขึ้น สิ่งนั้นต้องอาศัยหลักฐาน',
+    bottom_line: 'ข้อกล่าวอ้างนี้มีคำถามเชิงประจักษ์ที่ไม่สามารถหาคำตอบได้จากข้อมูลที่ให้มาตรงนี้',
+    framing: 'ข้อกล่าวอ้างเหล่านี้สามารถพิจารณาได้ว่ายืนยันอะไรและตั้งอยู่บนสมมติฐานอะไร ส่วนสิ่งที่เกิดขึ้นจริงในทางปฏิบัติต้องอาศัยหลักฐานที่ไม่ได้ตรวจสอบตรงนี้',
+    noise_label: 'ไปไกลกว่าสิ่งที่ยืนยันได้ตรงนี้',
+  },
+  vi: {
+    holds_up_instead: 'Tuyên bố như đang được viết đã vượt quá những gì thông tin có sẵn ở đây xác lập được.',
+    what_went_wrong: 'Kết luận này dựa trên một tiền đề về thế giới thực chưa được xác lập trong phân tích này. Cần có bằng chứng để xác định tiền đề đó có đúng hay không và trong những điều kiện nào.',
+    kernel_of_truth: 'Có thể tồn tại một phiên bản hẹp hơn của tuyên bố này đáng để tìm hiểu, nhưng thông tin có sẵn không xác lập được phiên bản đó nên là gì.',
+    why_holds_up: 'Điều này suy ra từ cấu trúc của chính tuyên bố, chứ không phải từ một phát hiện thực nghiệm bên ngoài.',
+    doesnt_establish: 'Phân tích này không xác định điều gì xảy ra trong thực tế. Điều đó cần bằng chứng.',
+    bottom_line: 'Tuyên bố này chứa một câu hỏi thực nghiệm không thể giải quyết từ thông tin được cung cấp ở đây.',
+    framing: 'Có thể xem xét các tuyên bố này ở khía cạnh chúng xác lập điều gì và giả định điều gì. Điều thực sự xảy ra trong thực tế cần đến bằng chứng chưa được xem xét ở đây.',
+    noise_label: 'Vượt quá những gì được xác lập ở đây',
+  },
+};
+
+// path → fallback key, or null for "blank it and let the structural filter
+// drop the enclosing item".
+function fallbackKeyFor(path) {
+  if (/^the_noise\[\d+\]\.what_the_evidence_supports_instead$/.test(path)) return 'holds_up_instead';
+  if (/^the_noise\[\d+\]\.what_went_wrong$/.test(path)) return 'what_went_wrong';
+  if (/^the_noise\[\d+\]\.kernel_of_truth$/.test(path)) return 'kernel_of_truth';
+  if (/^the_noise\[\d+\]\.noise_label$/.test(path)) return 'noise_label';
+  if (/^the_signal\.items\[\d+\]\.basis$/.test(path)) return 'why_holds_up';
+  if (/^the_signal\.items\[\d+\]\.limits$/.test(path)) return 'doesnt_establish';
+  if (/^the_bottom_line\.\w+\[\d+\]$/.test(path)) return 'bottom_line';
+  if (path === 'framing') return 'framing';
+  return null;
+}
+
+function fallbackTextFor(path, userLanguage) {
+  const key = fallbackKeyFor(path);
+  if (!key) return '';
+  const lang = String(userLanguage || 'en').toLowerCase().split('-')[0];
+  const table = CLAIM_MODE_FALLBACKS[lang] || CLAIM_MODE_FALLBACKS.en;
+  return table[key] || CLAIM_MODE_FALLBACKS.en[key];
+}
+
+// The pipeline. Runs AFTER runOutputGuard (its repair pass can introduce or
+// miss things independently) and BEFORE the structural filtering, which is
+// what turns a blanked field into a dropped item. Mutates `parsed` in place.
+async function enforceClaimModeFields(parsed, userLanguage, supplied, label) {
+  if (ANALYSIS_MODE !== 'claim_analysis') return parsed;
+
+  // 1 + 2: collect every failing path with a reason for the rewrite prompt.
+  const reasons = new Map();
+  for (const v of scanForBannedLanguage(parsed)) {
+    reasons.set(v.path, `it implied a review of evidence, research, studies, or literature that never happened (flagged phrase: "${v.hit}")`);
+  }
+  const eligible = collectProseFields(parsed).filter(([p]) => !SEMANTIC_SKIP_RE.test(p));
+  const regexHits = reasons.size;
+  const semantic = await semanticEmpiricalCheck(eligible, supplied, userLanguage, `${label}:semantic`);
+  for (const [path, sentence] of semantic.failures) {
+    if (!reasons.has(path)) {
+      reasons.set(path, `it used remembered real-world knowledge to help resolve the empirical claim${sentence ? ` (flagged: "${sentence}")` : ''}`);
+    }
+  }
+  const semanticNote = semantic.unchecked.size ? ` unchecked=${semantic.unchecked.size}` : '';
+  if (!reasons.size) {
+    console.log(`[${label}] claim-mode: regex=0 semantic=0${semanticNote} — clean`);
+    return parsed;
+  }
+
+  // 3: one rewrite per failing field, capped. Beyond the cap → straight to
+  // the fallback; that is the deterministic branch, not the lossy one.
+  const textAt = new Map(collectProseFields(parsed));
+  const failing = [...reasons.keys()];
+  const toRewrite = failing.slice(0, MAX_FIELD_REWRITES);
+  const overflow = failing.slice(MAX_FIELD_REWRITES);
+  const rewrites = await Promise.all(toRewrite.map(path =>
+    rewriteFlaggedField(textAt.get(path) || '', reasons.get(path), supplied, userLanguage, `${label}:rewrite`)));
+
+  // 4: revalidate the rewrites only — regex locally, semantic one field per
+  // call. There are at most MAX_FIELD_REWRITES of them, and this is the
+  // last judgment before the text reaches the visitor, so it gets the
+  // smallest batch the judge can have.
+  const candidates = [];
+  toRewrite.forEach((path, i) => { if (rewrites[i]) candidates.push([path, rewrites[i]]); });
+  const recheckable = candidates.filter(([, text]) => !findBannedPhrase(text));
+  const recheck = await semanticEmpiricalCheck(recheckable, supplied, userLanguage, `${label}:revalidate`, 1);
+
+  // 5: apply. A rewrite survives only if it passed regex AND the semantic
+  // recheck actually ran on it and passed it. Unchecked (judge unavailable
+  // for that batch) is treated as fail here — this stage exists to guarantee
+  // the field, not to hope about it.
+  let kept = 0, fellBack = 0, blanked = 0;
+  const fellBackPaths = new Set();
+  const apply = (path, text) => {
+    setAtPath(parsed, path, text);
+    fellBackPaths.add(path);
+    if (text) fellBack++; else blanked++;
+  };
+  toRewrite.forEach((path, i) => {
+    const text = rewrites[i];
+    const passed = text && !findBannedPhrase(text) && !recheck.failures.has(path) && !recheck.unchecked.has(path);
+    if (passed) { setAtPath(parsed, path, text); kept++; }
+    else apply(path, fallbackTextFor(path, userLanguage));
+  });
+  for (const path of overflow) apply(path, fallbackTextFor(path, userLanguage));
+
+  // 5b: a signal item's claim IS the tool's own assertion. When its basis
+  // could not be authorized (fell back), the fixed basis text would sit
+  // under that claim and lend it exactly the logical veneer this pipeline
+  // exists to remove — so the claim is re-judged on its own, and blanked
+  // (the structural filter then drops the card) unless it passes cleanly.
+  const orphanClaims = [];
+  (Array.isArray(parsed?.the_signal?.items) ? parsed.the_signal.items : []).forEach((item, i) => {
+    if (!fellBackPaths.has(`the_signal.items[${i}].basis`)) return;
+    if (typeof item?.claim === 'string' && item.claim.trim()) orphanClaims.push([`the_signal.items[${i}].claim`, item.claim]);
+  });
+  let orphanDropped = 0;
+  if (orphanClaims.length) {
+    const claimCheck = await semanticEmpiricalCheck(orphanClaims, supplied, userLanguage, `${label}:signal-claim`, 1);
+    for (const [path] of orphanClaims) {
+      if (claimCheck.failures.has(path) || claimCheck.unchecked.has(path)) { setAtPath(parsed, path, ''); orphanDropped++; }
+    }
+  }
+
+  const recheckNote = recheck.unchecked.size ? ` revalidation-unchecked=${recheck.unchecked.size} (those rewrites not trusted)` : '';
+  const orphanNote = orphanClaims.length ? ` signal-claims-rejudged=${orphanClaims.length} dropped=${orphanDropped}` : '';
+  console.log(`[${label}] claim-mode: regex=${regexHits} semantic=${semantic.failures.size}${semanticNote} rewritten=${kept} fallback=${fellBack} blanked=${blanked}${orphanNote}${recheckNote}`);
   return parsed;
 }
 
@@ -1011,15 +1403,19 @@ RULES:
       userLanguage,
     });
 
-    // Deterministic, per-field claim-mode enforcement — NOT a judged rule.
-    // Runs after the guard (whose own repair pass can introduce or miss
-    // things independently) and before the final structural filtering below,
-    // so a successfully-fixed field survives instead of being dropped for
-    // nothing. See CLAIM_MODE_BANNED_RE's comment for why this list is now
-    // broad word/phrase matching rather than narrow verb-conjugation
-    // patterns, and audit/tool-notes/SIGNALVSNOISE-NOTES.md for why this is
-    // a per-FIELD fix now, not a whole-call regenerate.
-    await enforceClaimModeFields(parsed, userLanguage, 'signal-vs-noise');
+    // Claim-mode validation pipeline: regex → semantic check → per-field
+    // rewrite → revalidate → fixed fallback. Runs after the guard (whose own
+    // repair pass can introduce or miss things independently) and before the
+    // structural filtering below, which is what turns a blanked field into a
+    // dropped item. `supplied` is only what the visitor typed — not `brief`,
+    // which also carries task instructions the judge must not mistake for
+    // visitor-supplied premises.
+    const supplied = [
+      `TOPIC: ${topic.trim()}`,
+      conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE: ${conflictingAdvice.trim()}` : '',
+      userContext?.trim() ? `VISITOR CONTEXT: ${userContext.trim()}` : '',
+    ].filter(Boolean).join('\n');
+    await enforceClaimModeFields(parsed, userLanguage, supplied, 'signal-vs-noise');
 
     // Structural validation. nonBlank() so a whitespace-only string counts
     // as missing. clean() ALSO drops any item that still contains banned

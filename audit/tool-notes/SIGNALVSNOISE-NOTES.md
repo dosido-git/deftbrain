@@ -555,3 +555,100 @@ correctly against it.
     quietly upgrade it into fetching or verifying anything without the explicit infra decision noted
     above — that changes this tool's cost/latency/reliability profile in a way a UI pass shouldn't
     decide unilaterally.
+
+## V7 — the claim-mode validation pipeline (code, not prompt)
+
+**Why this exists.** After V6, the owner ran the same nutrition test ("hormones matter more than
+calories", skipping breakfast, intermittent fasting, processed foods) against two successive rounds
+of the global epistemics contract (`backend/lib/epistemics.js`, commits e915b0e7 and 60cc93d5). Both
+rounds were acknowledged by the model and neither materially changed the output. Five prompt-only
+passes in total had now failed the same test the same way: the model stopped writing "research
+shows" and started stating the premise as bare fact ("hormones regulate appetite and energy
+expenditure"), as a hedge ("meal timing may interact with circadian rhythms", "workable for some
+people"), or laundered through logic ("this follows from the accounting relationship: hormonal
+signals influence appetite, satiety, and energy expenditure…"). None of those has a lexical marker.
+`CLAIM_MODE_BANNED_RE` structurally cannot see them. The owner's conclusion, which this pass
+implements: *a logical inference inherits the epistemic requirements of its premises*, and the only
+thing that can check that is a judged question with a deterministic consequence for FAIL.
+
+**The pipeline** (`enforceClaimModeFields` in `backend/routes/signal-vs-noise.js`, runs after
+`runOutputGuard`, before the structural filter):
+
+1. **REGEX** — `CLAIM_MODE_BANNED_RE` kept, demoted to cheap first-pass detection.
+2. **SEMANTIC EMPIRICAL-RESOLUTION CHECK** — `semanticEmpiricalCheck` asks ONE narrow question per
+   field: does this text assert or rely on a real-world proposition that was not supplied by the
+   visitor, not supported by a source examined in this run (none are), and materially helps decide
+   the claim? Ignores definitions, wording analysis, logical requirements, missing-information and
+   evidence-needed statements. Hedges and subgroup narrowing ("for some people") do not convert
+   FAIL to PASS. Skips `topic_as_understood` and `the_noise[].claim` (restatements of what the
+   visitor supplied).
+3. **REWRITE** — `rewriteFlaggedField`, the owner's exact rewrite prompt, one attempt per field,
+   `MODELS.SMART`, capped at `MAX_FIELD_REWRITES = 12`; overflow goes straight to stage 5.
+4. **REVALIDATE** — regex locally, then the judge again on each rewrite *alone* (batch size 1).
+5. **SAFE FALLBACK** — `CLAIM_MODE_FALLBACKS`, fixed text per field type in all 13 languages
+   (`holds_up_instead`, `what_went_wrong`, `kernel_of_truth`, `why_holds_up`, `doesnt_establish`,
+   `bottom_line`, `framing`, `noise_label`). A rewrite that fails regex, fails its recheck, or whose
+   recheck could not run is replaced — never regenerated again. Fields with no fallback (a signal
+   item's `claim`, `still_worth_verifying.*`, `sources_of_noise.*`, `what_general_claims_cant_decide[]`)
+   are blanked, and the existing structural filter drops the item.
+   - **5b** — a signal item whose `basis` fell back gets its `claim` re-judged alone and blanked
+     unless it passes. The claim *is* the tool's assertion; a fixed basis under an unlicensed claim
+     would lend it exactly the logical veneer the pipeline removes (seen live in run 3: "hormonal
+     factors operate within that relationship" sitting on "this follows from the structure…").
+
+**Three things measured during the build, each of which changed the design:**
+- **Judge recall collapses with batch size.** One call over a real 48-field response flagged 3 and
+  missed the two plainest violations ("meal timing can affect hunger…"); the same two fields alone
+  were both flagged in 1.7s. → `SEMANTIC_BATCH_SIZE = 6`, batches run in parallel (eight calls of
+  six cost about the same wall-clock as one call of forty-eight: 6.5s vs 4.2s).
+- **The judge is consistent but neighborhood-sensitive.** 3/3 on what it flags in one batching, 1/2
+  on the same sentence in another. → stage 2 runs two passes with batch boundaries offset by half
+  a batch and unions the verdicts; the recheck judges each rewrite solo.
+- **The judge gets laundered too.** With the definitional-identity exemption phrased loosely, it
+  passed "this follows from the accounting structure: hormonal signals influence appetite, satiety,
+  and energy expenditure" 0/2 — the same trick that worked on the generator. → the judge is told to
+  judge every sentence on its own; the framing sentence is not authority.
+
+**Verification.** Standalone replay of a leaked live response through the finished pipeline (the
+`pipeline_diag` harness slices the route source, since the module only exports the router):
+`regex=0 semantic=9 rewritten=6 fallback=2 blanked=1`, and a fresh judge pass over the result found
+the flagship leaks gone. Four consecutive live runs of the nutrition scenario: fallbacks fired 1–5
+times per run, route time 58–68s (was 50–61s in V6 — the judge calls are parallel), all
+`check:golden` cases passing. **Cost:** roughly 20–35 small `MODELS.SMART` calls per request on a
+leaky response, near zero on a clean one. That is a deliberate trade for a tool whose entire promise
+is this discipline; it is not a pattern to copy into a tool that isn't making that promise.
+
+**What this does NOT fix, honestly:** the independent judge tally on a finished response still
+finds 2–3 borderline flags per run — a definitional identity the judge reads as empirical ("energy
+balance is part of what determines whether body mass changes"), a person-specific
+`what_general_claims_cant_decide` item ("depends on your schedule, hunger patterns…"), a takeaway
+that presupposes a mild premise. These are the residue of an LLM judge, not gaps in the pipeline
+logic; closing them would mean either more judge passes (cost) or exempting whole sections (a hole).
+Left as is, documented here, for the owner to weigh.
+
+**Golden:** schema unchanged. `sources_of_noise` and `what_general_claims_cant_decide` are now
+`optionalSections` on every case (alongside `still_worth_verifying`) because the pipeline
+legitimately empties them — their fields have no fallback text, so a flagged item drops. The
+frontend already renders each of those sections only when non-empty.
+
+## DO NOT silently reverse (V7 additions)
+
+25. **The five-stage pipeline stays a pipeline.** Do not collapse it back to "regex + one regen" —
+    five prompt-only passes and one regex-only pass are the documented evidence that neither
+    suffices. If a future domain leaks, the first question is which *stage* let it through, measured
+    the way this pass measured it — not another prompt rule.
+26. **Small judge batches, two offset passes, solo recheck.** Each of the three was forced by a
+    measurement above; undoing any one of them re-opens a measured hole. If cost has to come down,
+    the honest lever is fewer eligible fields, not bigger batches.
+27. **One rewrite, then fixed text.** Never a second regeneration. A validator/regenerator loop is
+    exactly how the model finds new vocabulary for the same assertion.
+28. **A rewrite whose recheck could not run is not kept.** Unknown means fail at stage 4. The
+    first-pass check treats unknown as pass only because there is nothing to act on yet.
+29. **Fallbacks stay content-free and localized.** They assert nothing about the world, which is
+    the whole point; do not "improve" them with domain content, and do not let them go English-only
+    — `CLAIM_MODE_FALLBACKS` has all 13 catalog languages on purpose.
+30. **No fallback for `still_worth_verifying`, `sources_of_noise`, `what_general_claims_cant_decide`,
+    or a signal item's `claim`.** Fixed text in those slots would be filler; dropping the item is the
+    honest outcome, and the goldens now allow it.
+31. **`the_noise[].claim` and `topic_as_understood` stay out of the judge.** They restate what the
+    visitor typed; judging them produces guaranteed false FAILs on the very claims under analysis.
