@@ -151,6 +151,21 @@ get all 13 languages at once (Gate 5 requires it).
 | 121 | WaitingModeLiberator | inline | — | 2 (medical types) | 5 (+ social first-date, admin DMV appointment, a multi-event errand run; covers 4 of 7 appointment types and the low/high ends of both energy and anxiety) | ✅ 2026-09-11 |
 | 122 | WardrobeChaosHelper | inline | — | 2 (work/casual, event/date) | 5 (+ freezing-weather work meeting, hot/humid workout-to-errands, mild comfort day at home; covers 5 of 7 activity types and cold/hot/mild weather) | ✅ 2026-09-11 |
 | 123 | WhatsMyVibe | inline | — | 2 (texts, emails) | 5 (+ social-media captions, dating-app opener, work Slack messages; covers 5 of 6 source types) | ✅ 2026-09-11 |
+| 124 | WhereDidTheTimeGo | inline | 4 timeframes | 1 (today only) | 5, one per timeframe option plus a second 'today' variant: a wasted 'yesterday', a full 'this week' overview, a 'this past weekend' recap, and a caregiver-day 'today' distinct in context from the original office-worker 'today' | ✅ 2026-09-11 |
+| 125 | WhichLife (route: /contrast-report) | i18n | — | 6 | ✅ pre-existing (already had `EXAMPLE_DECISIONS` spanning career, relationship, and education dilemmas across all 4 timeframes) | ✅ 2026-09-11 |
+| 126 | WrongAnswersOnly | i18n | — | 3 (all science) | 5 (+ a culture/history question on driving side, a psychology question on time perception; broadens beyond pure biology; 2 keys ×13) | ✅ 2026-09-11 |
+
+## Campaign complete — 126/126 tools at 5+ examples
+
+Every tool in the catalog now carries a 5-item (or larger, or per-mode)
+`pickExample` rotation designed to exercise its actual enum/field range,
+not five near-duplicates of the same happy path. Where a tool's mechanism
+couldn't support that (single-object-per-mode, mode-blind loaders), the
+underlying `loadExample` was restructured rather than worked around — see
+NameStorm, PlantRescue, PlotHoleFinder (earlier batches), SpiralStopper,
+TheFinalWord, and TheRunthrough (this pass) for the pattern. A handful of
+tools were found already at or above 5 and are noted `✅ pre-existing`
+rather than re-touched.
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

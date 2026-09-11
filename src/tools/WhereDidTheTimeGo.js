@@ -24,6 +24,26 @@ const EXAMPLES = [
     perceivedBreakdown: "I feel like I worked 8 solid hours but I honestly couldn't tell you what I produced",
     timeframe: 'today',
   },
+  {
+    dayDescription: "Woke up around 9 since I didn't set an alarm. Made coffee, sat on the porch for a while just thinking. Ran two errands — bank and pharmacy, maybe an hour total with driving. Napped for what I thought was 20 minutes but it was almost 2 hours. Cooked dinner, which took forever because I kept getting distracted. Watched three episodes of a show I don't even really like. In bed by 11 but scrolled until 1am.",
+    perceivedBreakdown: "I feel like I did nothing all day, but I was also never actually sitting still doing nothing — every hour had something in it",
+    timeframe: 'yesterday',
+  },
+  {
+    dayDescription: "Worked Monday through Friday, roughly 9-6 each day, but at least two of those days had a 'wasted' afternoon where I was technically at my desk but not really working. Went to the gym twice instead of my usual four times. Had dinner with a friend Wednesday, cancelled plans Thursday because I was too tired. Weekend errands somehow ran over into Monday morning. Can't point to one big thing I accomplished outside of my actual job.",
+    perceivedBreakdown: "I feel like the whole week disappeared and I have nothing to show for the parts that weren't work",
+    timeframe: 'this week',
+  },
+  {
+    dayDescription: "Saturday: slept in, meant to clean the apartment, ended up doing about 20% of it before getting distracted by a project I wasn't even planning to start. Went out for dinner with friends, out until 1am. Sunday: recovery day, didn't leave the house until 4pm, ran the one errand I needed to, meal-prepped for maybe an hour, rest was TV and dreading Monday.",
+    perceivedBreakdown: "I feel like I need a weekend to recover from my weekend",
+    timeframe: 'this past weekend',
+  },
+  {
+    dayDescription: "Up at 6am with the kids, breakfast and getting everyone dressed took until 8. School drop-off and back by 9. Tried to do a work call from home but got interrupted twice by the daycare calling about the toddler's fever. Picked up my sick kid at 11, rest of the day was doctor's office, pharmacy, and comforting a cranky toddler. Managed maybe 40 minutes of actual work squeezed into naptime. Dinner, bath, bedtime routine took until 8pm. Collapsed on the couch after.",
+    perceivedBreakdown: "I feel like I was busy every single second but got almost none of my actual job done",
+    timeframe: 'today',
+  },
 ];
 const WhereDidTheTimeGo = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

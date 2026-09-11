@@ -46,6 +46,8 @@ const WrongAnswersOnly = ({ tool }) => {
     { question: t('wao_ex_yawn'), category: 'science' },
     { question: t('wao_ex_gray'), category: 'science' },
     { question: t('wao_ex_dream'), category: 'science' },
+    { question: t('wao_ex4'), category: 'culture' },
+    { question: t('wao_ex5'), category: 'psychology' },
   ];
 
   const c = {
