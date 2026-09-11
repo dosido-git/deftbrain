@@ -19,6 +19,9 @@ const MECHANISM_CONFIG = {
   compound: { icon: '⚡', labelKey: 'lks_mech_compound', color: (d) => d ? 'bg-[rgb(61,54,48)]/60 text-[rgb(200,195,185)] border-[rgb(61,54,48)]' : 'bg-[rgb(240,236,229)] text-[rgb(61,57,53)] border-[rgb(213,202,184)]' },
 };
 
+// Five, rotated: an invisible-at-work engineer, a referral-only freelancer,
+// a PhD student overshadowed by an advisor, a nurse isolated by shift work
+// in a new city, and a small-business owner whose growth has plateaued.
 const EXAMPLES = [
   {
     desc: 'Software engineer, WFH, same team for 3 years. Live in Denver. Go to the gym, cook, watch TV. Small tight friend group. Work is fine but I feel invisible professionally.',
@@ -27,6 +30,18 @@ const EXAMPLES = [
   {
     desc: 'Freelance designer, mostly work through referrals from 2 clients. Active on Instagram but not professionally. Go to the same coffee shop every day. Haven\'t been to an industry event in 2 years.',
     goals: 'More and better clients, creative collaborators, maybe an agent or gallery connection',
+  },
+  {
+    desc: 'PhD student in year 4, published two papers with my advisor as lead author, none under my own name yet. Attend my department seminar every week but rarely speak up. No presence outside my university.',
+    goals: 'Recognition for my own contributions, invitations to speak or collaborate, a shot at postdoc positions that are not just my advisor\'s connections',
+  },
+  {
+    desc: 'Just moved to a new city for a nursing job, know nobody outside my ward. Work three 12-hour shifts a week, spend the rest of the week mostly alone. Used to have a strong friend group back home.',
+    goals: 'A social circle that actually fits my schedule, maybe eventually a specialty mentor, honestly just feeling less invisible in a new place',
+  },
+  {
+    desc: 'Run a small pottery studio, been doing it 6 years, decent local following but sales have plateaued. Post on Instagram sporadically. Have never done a market or collaborated with anyone else.',
+    goals: 'Wholesale relationships with shops, a collaboration that reaches a different audience, honestly just more people who are not already my existing customers',
   },
 ];
 

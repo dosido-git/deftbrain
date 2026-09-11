@@ -78,6 +78,10 @@ const VERSION_ICONS = { narrative: '📖', structured: '📋', concise: '⚡' };
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+// Five, rotated across every letter type and formality level: a job
+// reference, a grad-school recommendation, a casual LinkedIn endorsement,
+// a scholarship letter for a student with less time than his peers, and a
+// rental reference — two deliberately leave the optional fields blank.
 const EXAMPLES = [
   {
     recipientName: 'Jordan Kim',
@@ -92,6 +96,62 @@ const EXAMPLES = [
     whyRecommending: "She grew into the job faster than anyone I've managed, and her resume undersells her badly.",
     oneThingRemembered: 'She makes the people around her better without ever making it about herself.',
     additionalContext: 'Known for staying calm in crises and never missing a deadline',
+  },
+  {
+    recipientName: 'Marcus Webb',
+    pronouns: 'he/him',
+    yourRelationship: 'Undergraduate research advisor for 2 years',
+    whatFor: "PhD program in computational biology",
+    letterType: 'grad-school',
+    formalityLevel: 'formal',
+    qualities: ['Analytical rigor', 'Independence', 'Intellectual curiosity', 'Perseverance'],
+    anecdotes: ['Spent a summer independently debugging a simulation pipeline that had stumped two prior students', 'Found an error in a published methods paper we were building on and worked out the correction himself'],
+    duration: '2 years',
+    whyRecommending: 'He asks the questions that the rest of the lab wishes it had asked first, and he does the unglamorous work without being told to.',
+    oneThingRemembered: 'He came back from a failed experiment with three new hypotheses instead of an excuse.',
+    additionalContext: 'One of the top two undergraduates I have supervised in fifteen years',
+  },
+  {
+    recipientName: 'Aisha Bello',
+    pronouns: 'she/her',
+    yourRelationship: 'We worked together on the same product team for 18 months',
+    whatFor: 'A LinkedIn recommendation for her open-to-work profile',
+    letterType: 'linkedin',
+    formalityLevel: 'casual',
+    qualities: ['Cross-functional collaboration', 'Data-driven thinking', 'Mentorship'],
+    anecdotes: ['Rebuilt our onboarding funnel using her own churn analysis, no one asked her to', 'Onboarded three junior PMs informally while doing her own job'],
+    duration: '18 months',
+    whyRecommending: 'She was the person new hires got quietly pointed to before they even asked.',
+    oneThingRemembered: '',
+    additionalContext: '',
+  },
+  {
+    recipientName: 'Diego Fuentes',
+    pronouns: 'he/him',
+    yourRelationship: 'His high school chemistry teacher',
+    whatFor: 'A need-based college scholarship application',
+    letterType: 'scholarship',
+    formalityLevel: 'formal',
+    qualities: ['Resilience', 'Work ethic', 'Curiosity'],
+    anecdotes: ['Worked a 20-hour-a-week job through junior and senior year while maintaining a 3.9 GPA', 'Stayed after class most weeks just to keep talking about the material, not for extra credit'],
+    duration: '2 years',
+    whyRecommending: "He has less time than any other student I teach and still shows up more prepared than most of them.",
+    oneThingRemembered: 'He once stayed forty minutes after the bell just to finish an argument about entropy.',
+    additionalContext: 'First in his family likely to attend a four-year university',
+  },
+  {
+    recipientName: 'Sam and Lee Ortiz',
+    pronouns: 'they/them',
+    yourRelationship: 'My tenants for the past three years, moving to a new city',
+    whatFor: 'A rental reference for their next landlord',
+    letterType: 'rental',
+    formalityLevel: 'professional',
+    qualities: ['Reliability', 'Communication', 'Care for the property'],
+    anecdotes: ['Reported a slow leak under the sink the same day it started, before it became real damage', 'Never once late on rent in three years, always paid a few days early'],
+    duration: '3 years',
+    whyRecommending: 'I would rent to them again without hesitation and told them so.',
+    oneThingRemembered: '',
+    additionalContext: 'Left the unit in better condition than they found it',
   },
 ];
 const GhostWriter = ({ tool }) => {
