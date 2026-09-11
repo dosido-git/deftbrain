@@ -194,9 +194,15 @@ const DecoderRing = ({ tool }) => {
   }, [message, source, relationship, additionalContext, whatsConfusing, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = () => {
+    // Five, rotated: text, email, Slack, a dating app, and a landlord's
+    // letter — the sources and relationships that carry the most reading-
+    // between-the-lines.
     const examples = [
       { message: t('dr_ex1_message'), source: 'text', relationship: 'partner', additionalContext: t('dr_ex1_context') },
       { message: t('dr_ex2_message'), source: 'email', relationship: 'coworker', additionalContext: t('dr_ex2_context') },
+      { message: t('dr_ex3_message'), source: 'slack', relationship: 'boss', additionalContext: t('dr_ex3_context') },
+      { message: t('dr_ex4_message'), source: 'dating', relationship: 'crush', additionalContext: t('dr_ex4_context') },
+      { message: t('dr_ex5_message'), source: 'letter', relationship: 'landlord', additionalContext: t('dr_ex5_context') },
     ];
     const ex = pickExample('DecoderRing', examples);
     setMessage(ex.message);

@@ -48,6 +48,7 @@ const EXAMPLES = [
   { qk: 'dc_ex2_q',       ck: 'dc_ex2_c',     category: 'task',     constraints: ['low_effort'],         capacity: 'overwhelmed' },
   { qk: 'dc_ex3_q',       ck: 'dc_ex3_c',     category: 'purchase', constraints: ['cheap'],              capacity: 'medium' },
   { qk: 'dc_ex4_q',       ck: 'dc_ex4_c',     category: 'activity', constraints: ['low_effort', 'solo'], capacity: 'low' },
+  { qk: 'dc_ex5_q',       ck: 'dc_ex5_c',     category: 'other',    constraints: ['quiet', 'no_screens'], capacity: 'medium' },
 ];
 
 // ════════════════════════════════════════════════════════════

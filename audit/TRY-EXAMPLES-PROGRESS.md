@@ -58,6 +58,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 28 | CrowdWisdom | i18n | — | already 5 (cw_ex1–5) | — | ✅ pre-existing |
 | 29 | CultureBriefing | inline | 6 trip purposes | 2 (business, family) | 5 (+ tourism, a full relocation with family, a student exchange with a host family) | ✅ 2026-09-11 |
 | 30 | DateNight | inline | 6 date types (shared location/last-time/restrictions across the rotation) | 2 (anniversary, stay_in) | 5 (+ big-budget adventurous 1yr in, cheap-and-short first date, long casual afternoon; $25–$350, 0–11 years) | ✅ 2026-09-11 |
+| 31 | DecisionCoach | i18n | 5 categories | 4 | 5 (+ 'other' category, quiet/no_screens; 2 keys ×13) | ✅ 2026-09-11 |
+| 32 | DecisionPrism (PlotTwist) | i18n | 8 stuck-reasons | 2 (fear_of_regret, people_pleasing) | 5 (+ analysis_paralysis on a second child, fear_of_unknown on a career leap, sunk_cost on an old friendship; 9 keys ×13) | ✅ 2026-09-11 |
+| 33 | DecoderRing | i18n | 7 sources × 10 relationships | 2 (text/partner, email/coworker) | 5 (+ slack/boss, dating/crush, letter/landlord; 6 keys ×13; fixed zh 您 and fr tu findings) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

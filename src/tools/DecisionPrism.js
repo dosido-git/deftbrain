@@ -224,11 +224,20 @@ const DecisionPrism = ({ tool }) => {
   }, [setResults]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated across the harder stuck-reasons too: fear of regret,
+    // people-pleasing, analysis paralysis on a second child, fear of the
+    // unknown on a career leap, and sunk cost on an old friendship.
     const ex = pickExample('PlotTwist', [
       { d: 'ptw_ex_decision',  a: 'ptw_ex_opt1',  b: 'ptw_ex_opt2',
         values: ['Career growth', 'Financial security', 'Family / relationships'], stuck: 'fear_of_regret' },
       { d: 'ptw_ex2_decision', a: 'ptw_ex2_opt1', b: 'ptw_ex2_opt2',
         values: ['Family / relationships', 'Health / wellbeing', 'Stability'], stuck: 'people_pleasing' },
+      { d: 'ptw_ex3_decision', a: 'ptw_ex3_opt1', b: 'ptw_ex3_opt2',
+        values: ['Family / relationships', 'Financial security', 'Health / wellbeing'], stuck: 'analysis_paralysis' },
+      { d: 'ptw_ex4_decision', a: 'ptw_ex4_opt1', b: 'ptw_ex4_opt2',
+        values: ['Career growth', 'Financial security', 'Adventure / novelty'], stuck: 'fear_of_unknown' },
+      { d: 'ptw_ex5_decision', a: 'ptw_ex5_opt1', b: 'ptw_ex5_opt2',
+        values: ['Family / relationships', 'Purpose / meaning'], stuck: 'sunk_cost' },
     ]);
     setDecision(t(ex.d));
     setOptions([t(ex.a), t(ex.b)]);
