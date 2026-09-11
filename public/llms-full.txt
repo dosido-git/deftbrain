@@ -2150,33 +2150,32 @@ Output: You get 30+ names across Nature/Organic ('Loam', 'Selva'), Minimal ('Ver
 ### Skill Gap Map
 
 URL: https://deftbrain.com/SkillGapMap
-Tagline: Your GPS from current role to dream job
+Tagline: 🗺 See what carries over. Find what to build next.
 Categories: Pursuits, Veer
 
-Map the exact skill gap between your current role and your target — then close the gap. 22 tools covering every stage of a career transition: skill gap analysis, learning timeline, proof-of-skill projects, job posting decoder, mock interviews, resume audit, target company finder, day-in-the-life simulations, market pulse, salary economics, mentor matching, networking scripts, weekly nudges, and progress tracking with milestone celebrations.
+Thinking about a career move? Skill Gap Map compares what you already know with what your target role is likely to require, then shows you which gaps are worth working on first.
 
-**What it does.** Skill Gap Map is a 22-feature career transition engine. Start by exploring roles or mapping your gap — then unlock a full pipeline: day-in-the-life reality checks, optimal learning sequences, salary economics, proof-of-skill projects, networking strategy with outreach drafts, resume audits, company targeting, job posting decoders, mock interviews with AI, market demand tracking, weekly assignments, milestone celebrations, and mentor matching. It remembers your progress across sessions and adapts as you grow.
+**What it does.** Skill Gap Map starts from your own supplied experience, not a guess at your proficiency. Tell it your current role and target role (or your interests, if you haven't picked a target) and it separates what genuinely carries over from what isn't established yet, then gives you one place to start and one concrete next move. A handful of optional deeper tools — a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, and more — stay tucked behind a disclosure so the first thing you see is the answer, not a dashboard.
 
 **How to use it.**
 
-1. 🔍 Explore Mode: Enter your interests to discover matching roles with difficulty ratings, salary ranges, and surprise suggestions — or skip straight to Map Mode if you know your target
-2. 🗺️ Map Mode: Enter your current role, target role, and existing skills → get a prioritized gap analysis with effort estimates, urgency ratings, and a visual progress tracker
-3. 📅 Unlock Depth: Click any skill gap for a deep dive (resources, projects, time estimates), then expand into Timeline, Proof Projects, Networking, Economics, and Resume Audit panels
-4. 🎯 Prepare: Use Job Posting Decoder to analyze real listings, Mock Interview for AI-powered practice rounds, and Company Targets to find where to apply
-5. 📈 Stay on Track: Check your progress tracker, trigger milestone celebrations, get weekly nudge assignments, and find your ideal mentor profile
+1. 🔍 Help Me Explore: Enter your current role and interests to see plausible directions worth investigating — not a single invented target scored against itself
+2. 🗺️ I Know My Target: Enter your current role, target role, and whatever experience you want considered → see what transfers, the one gap worth starting with, and the fuller list worth checking
+3. ✅ Act on it: Take the suggested next move, or open any skill gap for what would demonstrate it
+4. 📂 Go deeper (optional): Open the collapsed sections for a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, resume feedback, and more — none of it required to get value from the first screen
 
 **Tips.**
 
-- Start with Explore Mode if you're unsure about your target — the surprise suggestions often surface roles you hadn't considered that match your existing strengths
-- Use Day in Life before committing to a career switch — the hour-by-hour schedule and frustration scenarios reveal whether you'd actually enjoy the daily reality
-- Run Job Posting Decoder on 3-5 real listings to calibrate which gaps matter most in the actual market versus theoretical skill lists
-- The Weekly Nudge gives you one specific assignment with a deliverable — treat it like homework to maintain momentum between big planning sessions
+- Use Help Me Explore if you're unsure about your target — it suggests directions traceable to what you've actually done, not a single confident guess
+- The 'Add trip details'-style disclosures (Timeline, Proof to Build, Economics, and the rest) are genuinely optional — the first screen is designed to stand on its own
+- A real job posting is the best way to replace this tool's general role expectations with the actual requirements of one specific job — the Job Posting Decoder panel is built for exactly that
+- "Not established yet" means the evidence you supplied doesn't show it — not that you lack it. Add more detail if a gap looks off, and it'll reassess
 
 **Example.**
 
 Input: You're a marketing coordinator who wants to become a product manager. You have project management and analytics skills but no technical background.
 
-Output: You get 6 prioritized skill gaps (SQL, wireframing, A/B testing, technical communication, roadmapping, user research) with effort bars and urgency ratings. Expand SQL for a deep dive with free courses and a portfolio project. Generate a 6-month timeline. Click Day in Life to see what a PM's Tuesday actually looks like. Decode a real PM job posting to see you're already 65% qualified. Run a mock interview round where the AI asks 'How would you prioritize these three features?' and coaches your answer.
+Output: You see what carries over (stakeholder communication, structured project work), the one gap worth starting with (translating data into a product decision, not just reporting it), and a next move you can do today — like writing a one-page brief on a decision you'd make with data you already have access to. The fuller list below adds a few more gaps worth checking, each labeled by how well your supplied experience actually establishes it, not a score.
 
 ### The Run-Through
 
@@ -3461,23 +3460,24 @@ URL: https://deftbrain.com/SignalVsNoise
 Tagline: 📡 Find what holds up — and what doesn't.
 Categories: Go Deep!
 
-Conflicting advice everywhere? Signal vs. Noise helps you sort stronger evidence from overstatement, weak claims, and questions that are still genuinely unsettled.
+Conflicting advice everywhere? Signal vs. Noise checks real sources on the claims you paste in, then separates what the evidence supports from overstatement — and shows you the sources it used.
 
-**What it does.** Signal vs. Noise is an evidence-calibration tool, not a literature review. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what's reasonably well supported, which popular claims outrun their evidence and why, and what remains genuinely unresolved. It does not invent citations, statistics, or motives to make an answer sound more authoritative than the evidence allows.
+**What it does.** Signal vs. Noise researches first, then judges. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and it runs a bounded web search across reviews, primary studies, official data and professional bodies, then gives you a structured breakdown: what those sources support, which popular claims outrun them and why, and what remains genuinely mixed or unresolved. Every Signal and Noise conclusion carries the sources behind it, and only sources it actually used are shown. It is a targeted source check, not a systematic review — and it says so rather than overstating what it searched.
 
 **How to use it.**
 
 1. Enter any health, finance, productivity, or lifestyle topic you've seen conflicting advice about
-2. Review The Signal — conclusions calibrated to what the evidence actually supports, with their limits
-3. Review The Noise — where popular claims are stronger, broader, or more certain than their evidence
-4. Check Still Unsettled — genuinely open questions, not manufactured both-sides debates
-5. Use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer
+2. Review The Signal — conclusions the checked sources actually support, each with its source chips and limits
+3. Review The Noise — where popular claims are stronger, broader, or more certain than the sources allow
+4. Check Still Worth Verifying — questions the sources leave genuinely mixed or unresolved, not manufactured both-sides debates
+5. Open Sources checked to read what it relied on, and use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer
 
 **Tips.**
 
 - Works best on topics where you've seen contradictory headlines or advice
 - "How the Noise Gets Made" describes general mechanisms of distortion — marketing, media simplification — never named companies or motives unless you supplied that evidence yourself
-- Still Unsettled is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap
+- Still Worth Verifying is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap
+- The first run on a new topic takes longer because it is actually searching; the same topic asked again within a day answers from the cached research
 - Use this before making any significant health, financial, or lifestyle decision — and treat the Bottom Line as a starting point for a clinician or advisor conversation, not a substitute for one
 
 **Example.**
@@ -7407,7 +7407,7 @@ By 3 p.m., the work you can do is qualitatively different from the work you coul
 ### How to figure out what career to switch to
 
 URL: https://deftbrain.com/guides/workplace/how-to-figure-out-what-career-to-switch-to
-Updated: 2026-04-29
+Updated: 2026-09-10
 
 A method for narrowing the field when you know you want to leave your current career but have no idea what to leave it for.
 

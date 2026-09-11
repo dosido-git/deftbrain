@@ -86,7 +86,7 @@
 - [Leverage Logic](https://deftbrain.com/LeverageLogic): Know where you stand before you negotiate
 - [Name Audit](https://deftbrain.com/NameAudit): Stress-test any name before you commit
 - [Name Storm](https://deftbrain.com/NameStorm): Name anything. Know it works before you commit.
-- [Skill Gap Map](https://deftbrain.com/SkillGapMap): Your GPS from current role to dream job
+- [Skill Gap Map](https://deftbrain.com/SkillGapMap): 🗺 See what carries over. Find what to build next.
 - [The Run-Through](https://deftbrain.com/TheRunthrough): Presentation coach in your pocket.
 - [The Whole Story](https://deftbrain.com/TheWholeStory): Frame your real story for any audience — honest but strategic
 

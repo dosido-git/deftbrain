@@ -32,7 +32,15 @@ export const useClaudeAPI = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Server error: ${response.status}`);
+        const err = new Error(errorData.error || `Server error: ${response.status}`);
+        // A route can name WHY it failed (e.g. signal-vs-noise's
+        // `research_unavailable` while a cold research fetch is still
+        // running). Carry the status and that code so a tool can react —
+        // retry, or show a specific state — instead of matching on message
+        // text. Existing callers only read .message and are unaffected.
+        err.status = response.status;
+        if (typeof errorData.code === 'string') err.code = errorData.code;
+        throw err;
       }
 
       const json = await response.json();

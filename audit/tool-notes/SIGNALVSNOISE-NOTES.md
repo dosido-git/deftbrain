@@ -695,3 +695,103 @@ frontend already renders each of those sections only when non-empty.
     honest outcome, and the goldens now allow it.
 31. **`the_noise[].claim` and `topic_as_understood` stay out of the judge.** They restate what the
     visitor typed; judging them produces guaranteed false FAILs on the very claims under analysis.
+
+## V8 — researched architecture (owner-supplied rebuild, 2026-09-11)
+
+**Everything in V4–V7.2 above is superseded, not reversed.** The owner's conclusion after seven
+iterations of the source-free design: a tool that must decide what holds up while forbidding itself
+from using any empirical knowledge as evidence was the wrong architecture, not a badly-tuned one. The
+supplied rebuild (`SignalVsNoise_research_rebuild.zip`) replaces it with research-first:
+
+```
+visitor claims → cached web-search research pass (lib/claimResearch.js, via the production
+groundedFacts helper) → structured evidence packet → search-free synthesis (one MODELS.SMART call,
+no tools) → source-ID validation (sanitizeResult) → cited Signal / Noise / unresolved result
+```
+
+- `lib/claimResearch.js` (new): decomposes the visitor's actual claims, runs a bounded Anthropic
+  `web_search` pre-pass (`SIGNAL_RESEARCH_MAX_USES`, default 6) with a source-quality policy
+  (reviews/primary → official/regulator → professional bodies → high-quality secondary), returns a
+  packet `{researched_at, claims[{claim, assessment, findings[{text, source_ids}], limits}],
+  sources[{id, title, publisher, url, date, source_type}]}`, cached 24h stale-while-revalidate.
+- `lib/groundedFacts.js`: one additive option, `maxUses` (default stays 3 — every existing consumer
+  unchanged).
+- Route: the synthesis call receives ONLY visitor input + packet; every Signal/Noise item must carry
+  `source_ids` that exist in the packet, invalid IDs are stripped, items with none surviving are
+  dropped, and `sources_examined` is pruned to sources actually referenced. `analysis_mode` is
+  `verified_research`; `research_status: 'complete'`; `researched_at` surfaces the packet date.
+  `runOutputGuard` runs with the packet included in `supplied` so packet-sourced facts are not
+  flagged as invented; `sanitizeResult` runs again after the guard because source IDs are
+  code-owned.
+- **Cold-cache behaviour is a product decision, stated in the README:** a researched answer is the
+  product, so a cold request waits up to `SIGNAL_RESEARCH_COLD_WAIT_MS` (default 60s) for the
+  search, then returns **HTTP 503 `code: research_unavailable`** rather than an unresearched
+  answer. The background fetch continues and warms the cache for the next attempt.
+- **Removed:** `ANALYSIS_MODE = 'claim_analysis'`, `CLAIM_MODE_BANNED_RE` + `ALLOWED_EXCEPTION_RE`,
+  the semantic judge (`SEMANTIC_CHECK_SYSTEM`, `judgeBatch`, `semanticEmpiricalCheck`), per-field
+  rewrite, `CLAIM_MODE_FALLBACKS` (all 13 languages), `collapseBottomLineFallbacks`, the 30-rule
+  PERSONALITY and its 40-entry guard list, the "No outside sources reviewed" label and the
+  search-link "Research These Claims" disclosure. The i18n keys those used (`svn_mode_claim_analysis*`,
+  `svn_no_sources_reviewed`, `svn_research_*`, `svn_search_this`) are now orphaned in the catalog,
+  same treatment as `svn_one_view` after V4 — left, not deleted.
+
+**Installed per `audit/REWRITE-INSTALL-KIT.md`; what the repo required on top of the supplied files:**
+- §3 i18n: the frontend shipped a 13-language `researchUi` map inline and a hardcoded `SOURCES`
+  copy header. Both moved into the catalog — `svn_mode_research`, `svn_sources_checked` (`{{n}}`),
+  `svn_sources_list_header`, `svn_source_generic`, `svn_copy_sources`, 13 languages each, using the
+  supplied translations. Inline maps bypass Gate 5 and the convention audit.
+- §9 persisted key bumped `signalvsnoise-result` → `signalvsnoise-result-v2` (shape changed).
+- §6 supplied bug: an unused `sourceBacked` helper in `sanitizeResult` — one warning against the
+  `--max-warnings=0` gate. Removed.
+- §13 copy: `src/data/tools.js` description / seoDescription / primer / guide overview / howToUse /
+  tips still promised "not a literature review… does not invent citations." Rewritten for a tool that
+  checks and shows sources, and honest about scope ("a targeted source check, not a systematic
+  review"). `public/llms*.txt` regenerated. The five guides that reference the tool do so only by id
+  (no CTA prose to update). `svn_tagline` ("Separate what a claim supports from what outruns it") is
+  still true and kept.
+- Goldens re-recorded against the new shape; `the_noise` added to `optionalSections` (an item with
+  no surviving source ID is dropped, so the list can legitimately be empty).
+
+**Cost profile (new):** a cold run pays up to 6 web searches (~$0.06 at list) plus a ~6.5k-token
+research generation and a 6k-token synthesis; a warm run pays synthesis only. Per-tool cost is now
+visible in the metrics dashboard's "LLM usage by route" section (shipped the same day).
+
+**Measured on install (nutrition scenario, local):** the research pre-pass lands at **~80–100s**;
+synthesis adds **~50–80s**. With the default 60s cold wait, **the first-ever request on any topic
+always 503s**, and the second request (which joins the in-flight fetch) returns the researched
+answer — 200 at +158s from the first click; 17 sources, 3 Signal, 3 Noise, 2 Still Worth Verifying.
+That is the route's honest behaviour, but as shipped it put an error screen in front of every first
+visitor to a topic. **Fix installed on the client side, route untouched:** `useClaudeAPI` now attaches
+`err.status` and `err.code` to a non-2xx error (backward compatible — existing callers read
+`.message` only), and SignalVsNoise retries on `code === 'research_unavailable'` up to 6 times, 8s
+apart, showing `svn_research_warming` ("First run on this topic — checking sources takes a minute
+or two") while it waits, and `svn_research_unavailable` only if all retries fail. No single HTTP
+request runs longer than the route's own cold wait + synthesis. Keys `svn_research_running`,
+`svn_research_warming`, `svn_research_unavailable` — 13 languages.
+
+**Cache persistence — read before trusting a golden run.** `groundedFacts` is in-memory, plus an
+optional runtime file at `GROUNDED_CACHE_PATH` and the committed venue seed. Locally
+`GROUNDED_CACHE_PATH` is unset, so **every nodemon restart empties the research cache** and every
+golden case 503s again until re-warmed. The pre-push hook's `check:golden` therefore only passes if
+the four cases were warmed after the last backend edit — warm, record, commit, push, in that order,
+with no backend edits in between. On Railway, confirm `GROUNDED_CACHE_PATH` points at the mounted
+volume, or every deploy makes every topic cold again (the 5 "Try Example" topics would be the ones
+to pre-warm if that ever matters).
+
+**Source policy observation for the owner:** the research pass admitted a Medium blog post as
+`high_quality_secondary` (S13 on the nutrition run) alongside the BMJ, Lancet and NIH sources.
+The policy allows secondary sources "only when stronger primary material is not available"; it was
+not needed here. Tightening that (exclude blog platforms outright, or cap secondary sources at one)
+is a prompt change in `claimResearch.js`, and a policy call — not made in this install.
+
+## DO NOT silently reverse (V8)
+
+32. **Research-first is the architecture now.** Do not reintroduce a source-free "claim analysis"
+    path, the phrase-list regex, the semantic judge, or fixed-text fallbacks into this route — seven
+    iterations established that they cannot make remembered premises safe; the packet + source-ID
+    validation is what replaced them.
+33. **A cold cache 503s by design.** Do not make the route answer unresearched when the search does
+    not land; the client retry is the UX, not a silent fallback.
+34. **Source IDs are code-owned.** `sanitizeResult` runs after the guard on purpose; keep it there.
+35. **`groundedFacts.maxUses` defaults to 3.** Only this tool passes 6; do not raise the default.
+36. **Warm before golden.** See "Cache persistence" above.

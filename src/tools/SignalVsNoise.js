@@ -74,6 +74,8 @@ const SignalVsNoise = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
+
+
   // Example topics — localized; loaded into the form by loadExample().
   const EXAMPLE_TOPICS = [
     { topic: t('svn_ex1_topic'), conflict: t('svn_ex1_conflict') },
@@ -86,9 +88,46 @@ const SignalVsNoise = ({ tool }) => {
   const [topic, setTopic] = useState('');
   const [conflictingAdvice, setConflictingAdvice] = useState('');
   const [userContext, setUserContext] = useState('');
-  const [results, setResults] = usePersistentState('signalvsnoise-result', null);
+  // v2: the researched shape (sources_examined as objects, source_ids on
+  // items). A claim-analysis result restored into this renderer would show
+  // no mode badge and no sources — not a crash, but a result silently
+  // presented without the provenance this version promises.
+  const [results, setResults] = usePersistentState('signalvsnoise-result-v2', null);
+  const sourceById = Object.fromEntries((results?.sources_examined || []).map(src => [String(src.id || '').toUpperCase(), src]));
+  const SourceRefs = ({ ids }) => {
+    const refs = (Array.isArray(ids) ? ids : []).map(id => sourceById[String(id || '').toUpperCase()]).filter(Boolean);
+    if (!refs.length) return null;
+    return (
+      <div className="flex flex-wrap gap-1.5 mt-2">
+        {refs.map(src => (
+          <a
+            key={src.id}
+            href={src.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={src.title || src.publisher || src.url}
+            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-zinc-600 bg-zinc-800 text-cyan-300 hover:border-cyan-600' : 'border-gray-300 bg-white text-cyan-700 hover:border-cyan-500'}`}
+          >
+            {src.id} · {src.publisher || (() => { try { return new URL(src.url).hostname.replace(/^www\./, ''); } catch { return t('svn_source_generic'); } })()} ↗
+          </a>
+        ))}
+      </div>
+    );
+  };
   const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-history', []);
   const [error, setError] = useState('');
+  // The first request on a topic is a cold research fetch. The route waits
+  // up to its cold-wait window (60s by default) and then answers 503
+  // `research_unavailable` rather than an unresearched result — measured
+  // live, the research itself lands at ~80–100s, so a cold topic ALWAYS
+  // 503s once. That is the route's honest behaviour; it is not a visitor's
+  // job to know they should try again. While warming, this shows a
+  // specific state and retries; each retry is cheap server-side (it joins
+  // the in-flight fetch) and the second attempt normally returns the
+  // researched answer.
+  const [warming, setWarming] = useState(false);
+  const WARM_RETRIES = 6;
+  const WARM_RETRY_DELAY_MS = 8000;
   // "sources" (HOW THE NOISE GETS MADE) and "verify" (STILL WORTH
   // VERIFYING) are collapsed by default — the target layout keeps the main
   // answer to signal/noise/bottom-line, with the rest one click away.
@@ -98,18 +137,33 @@ const SignalVsNoise = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!topic.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setWarming(false);
+    const payload = {
+      topic: topic.trim(),
+      conflictingAdvice: conflictingAdvice.trim() || undefined,
+      userContext: userContext.trim() || undefined,
+      userLocale, userCurrency, userRegion,
+    };
     try {
-      const data = await callToolEndpoint('signal-vs-noise', {
-        topic: topic.trim(),
-        conflictingAdvice: conflictingAdvice.trim() || undefined,
-        userContext: userContext.trim() || undefined,
-        userLocale, userCurrency, userRegion,
-      });
+      let data = null;
+      for (let attempt = 0; attempt <= WARM_RETRIES; attempt++) {
+        try {
+          data = await callToolEndpoint('signal-vs-noise', payload);
+          break;
+        } catch (e) {
+          if (e?.code !== 'research_unavailable' || attempt === WARM_RETRIES) throw e;
+          setWarming(true);
+          await new Promise(r => setTimeout(r, WARM_RETRY_DELAY_MS));
+        }
+      }
+      setWarming(false);
       setResults(data);
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (topic || '').slice(0, 40) }, ...prev].slice(0, 6));
-    } catch (e) { setError(e.message || t('svn_error')); }
+    } catch (e) {
+      setWarming(false);
+      setError(e?.code === 'research_unavailable' ? t('svn_research_unavailable') : (e.message || t('svn_error')));
+    }
   };
 
   const loadExample = () => {
@@ -125,13 +179,13 @@ const SignalVsNoise = ({ tool }) => {
     if (results?.framing) out += `${t('svn_copy_why_noisy')}\n${results.framing}\n\n`;
     if (results?.the_signal?.items?.length) {
       out += `${t('svn_copy_signal')}\n`;
-      results.the_signal.items.forEach(s => { out += `• ${s.claim}\n  ${t('svn_copy_why_know')} ${s.basis}\n`; });
+      results.the_signal.items.forEach(s => { out += `• ${s.claim} ${s.source_ids?.length ? '[' + s.source_ids.join(', ') + ']' : ''}\n  ${t('svn_copy_why_know')} ${s.basis}\n`; });
       out += '\n';
     }
     if (results?.the_noise?.length) {
       out += `${t('svn_copy_noise')}\n`;
       results.the_noise.forEach(n => {
-        out += `• ${n.claim} [${n.noise_label}]\n  ${t('svn_went_wrong')} ${n.what_went_wrong}\n  ${t('svn_holds_up_instead')} ${n.what_the_evidence_supports_instead}\n`;
+        out += `• ${n.claim} [${n.noise_label}] ${n.source_ids?.length ? '[' + n.source_ids.join(', ') + ']' : ''}\n  ${t('svn_went_wrong')} ${n.what_went_wrong}\n  ${t('svn_holds_up_instead')} ${n.what_the_evidence_supports_instead}\n`;
       });
       out += '\n';
     }
@@ -147,6 +201,10 @@ const SignalVsNoise = ({ tool }) => {
       if (bl.supported_takeaways?.length) { out += `${t('svn_copy_do')}\n`; bl.supported_takeaways.forEach(x => { out += `• ${x}\n`; }); }
       if (bl.treat_skeptically?.length) { out += `${t('svn_copy_ignore')}\n`; bl.treat_skeptically.forEach(x => { out += `• ${x}\n`; }); }
       if (bl.what_would_change_the_answer?.length) { out += `${t('svn_copy_change_answer')}\n`; bl.what_would_change_the_answer.forEach(x => { out += `• ${x}\n`; }); }
+    }
+    if (results?.sources_examined?.length) {
+      out += `\n${t('svn_copy_sources')}\n`;
+      results.sources_examined.forEach(src => { out += `${src.id} · ${src.title || src.publisher || src.url} · ${src.url}\n`; });
     }
     return out + BRAND;
   }, [results, t]);
@@ -227,9 +285,12 @@ const SignalVsNoise = ({ tool }) => {
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
-            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !topic.trim()}
+            {(loading || warming) && (
+              <p className={`text-xs ${c.textMuted}`}>{warming ? t('svn_research_warming') : t('svn_research_running')}</p>
+            )}
+            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || warming || !topic.trim()}
               className={`relative w-full py-3 rounded-xl font-bold ${(!topic.trim()) ? c.btnIdle : c.btnPrimary}`}>
-              {loading ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
+              {(loading || warming) ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -254,18 +315,14 @@ const SignalVsNoise = ({ tool }) => {
               <div className="flex items-start justify-between gap-3 mb-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_analyzing')}</p>
-                  {/* Mode indicator (item 20) — not just disclosure, it reinforces
-                      the boundary for the visitor: this result reasons about the
-                      claims supplied, it did not review outside sources. Only
-                      claim_analysis exists today (this tool performs no live
-                      retrieval); source_analysis/verified_research labels would
-                      be added here if that capability is ever built. */}
-                  {results?.analysis_mode === 'claim_analysis' && (
+                  {results?.analysis_mode === 'verified_research' && (
                     <>
-                      <span title={t('svn_mode_claim_analysis_tip')} className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border cursor-help ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>
-                        {t('svn_mode_claim_analysis')}
+                      <span className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
+                        {t('svn_mode_research')}
                       </span>
-                      <span className={`text-[10px] ${c.textMuted}`}>{t('svn_no_sources_reviewed')}</span>
+                      <span className={`text-[10px] ${c.textMuted}`}>
+                        {t('svn_sources_checked', { n: results?.sources_examined?.length || 0 })}
+                      </span>
                     </>
                   )}
                 </div>
@@ -296,6 +353,7 @@ const SignalVsNoise = ({ tool }) => {
                       {item.limits && (
                         <p className={`text-xs italic mt-1 ${c.textMuted}`}><span className="font-semibold">{t('svn_nuance')}</span> {item.limits}</p>
                       )}
+                      <SourceRefs ids={item.source_ids} />
                     </div>
                   ))}
                 </div>
@@ -326,6 +384,7 @@ const SignalVsNoise = ({ tool }) => {
                           {item.kernel_of_truth && (
                             <p className={`text-xs mt-2 ${c.textMuted}`}><span className="font-semibold">{t('svn_kernel')}</span> {item.kernel_of_truth}</p>
                           )}
+                          <SourceRefs ids={item.source_ids} />
                         </div>
                       );
                     })}
@@ -361,6 +420,7 @@ const SignalVsNoise = ({ tool }) => {
                         {item.what_would_help && (
                           <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_would_help')}</span> {item.what_would_help}</p>
                         )}
+                        <SourceRefs ids={item.source_ids} />
                       </div>
                     ))}
                     {results?.what_general_claims_cant_decide?.length > 0 && (
@@ -447,47 +507,32 @@ const SignalVsNoise = ({ tool }) => {
               </div>
             )}
 
-            {/* Research These Claims — this tool has no live-retrieval
-                capability (item 15 of the sleep-domain corrections asked to
-                "finish the idea," but a real research mode needing external
-                lookups is an infra decision, not a prompt fix). What ships
-                here is honest about that: it hands the visitor ready-made
-                search links built from the claims already surfaced above,
-                it does not claim DeftBrain went and checked anything. */}
-            {(() => {
-              const items = results?.still_worth_verifying?.length > 0
-                ? results.still_worth_verifying
-                : (results?.the_bottom_line?.what_would_change_the_answer || []).map(x => ({ question: x }));
-              if (!items.length) return null;
-              return (
-                <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                  <button onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                    <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔎 {t('svn_research_these_claims')}</p>
-                    <Caret open={expanded.research} />
-                  </button>
-                  {expanded.research && (
-                    <div className={`border-t ${c.border} px-5 py-4 space-y-3`}>
-                      <p className={`text-xs ${c.textMuted}`}>{t('svn_research_intro')}</p>
-                      <ul className="space-y-2">
-                        {items.map((item, i) => (
-                          <li key={i} className={`flex items-start justify-between gap-3 text-sm ${c.textSecondary}`}>
-                            <span>• {item.question}</span>
-                            <a
-                              href={'https://www.google.com/search?q=' + encodeURIComponent(item.question)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`text-xs font-semibold whitespace-nowrap ${linkStyle}`}
-                            >
-                              {t('svn_search_this')} ↗
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
+            {/* SOURCES — only sources whose IDs survived into the rendered analysis. */}
+            {results?.sources_examined?.length > 0 && (
+              <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
+                <button onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔎 {t('svn_sources_list_header')}</p>
+                  <Caret open={expanded.research} />
+                </button>
+                {expanded.research && (
+                  <div className={`border-t ${c.border} px-5 py-4 space-y-3`}>
+                    {results.sources_examined.map((src) => (
+                      <div key={src.id} className="flex items-start gap-3">
+                        <span className={`text-[10px] font-bold mt-0.5 ${c.accentTxt}`}>{src.id}</span>
+                        <div className="min-w-0">
+                          <a href={src.url} target="_blank" rel="noopener noreferrer" className={`text-sm font-semibold ${linkStyle}`}>
+                            {src.title || src.publisher || src.url} ↗
+                          </a>
+                          <p className={`text-xs ${c.textMuted}`}>
+                            {[src.publisher, src.date, src.source_type?.replaceAll('_', ' ')].filter(Boolean).join(' · ')}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Cross-references */}
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>

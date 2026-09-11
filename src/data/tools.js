@@ -683,17 +683,17 @@ export const tools = [
 },
 
 {
-  modified: "2026-09-09",
+  modified: "2026-09-11",
   id: "SignalVsNoise",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You've read five confident articles that contradict each other.",
     give: "The contested topic. One line.",
-    get: "What a claim reasonably supports, what's noise and why, and what's still worth digging into.",
-    edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses.",
+    get: "What the sources it checked actually support, what's noise and why, and what's still unresolved — with the sources listed.",
+    edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses — and shows you which source says what.",
   },
-  seoDescription: "Separate what a claim reasonably supports from overstatement, on any health, finance, or productivity topic. Free: what holds up, what to treat skeptically, and what's still worth investigating.",
+  seoDescription: "Checks real sources on any contested health, finance, or productivity claim. Free: what the evidence supports, what to treat skeptically, what's still unresolved — with the sources it used.",
   seoTitle: "Evidence Checker: Signal vs. Noise",
   title: "Signal vs. Noise",
   tagline: "📡 Find what holds up — and what doesn't.",
@@ -701,15 +701,15 @@ export const tools = [
   icon: "📡",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Conflicting advice everywhere? Signal vs. Noise helps you separate what a claim reasonably supports from overstatement, weak reasoning, and questions worth investigating further.",
+  description: "Conflicting advice everywhere? Signal vs. Noise checks real sources on the claims you paste in, then separates what the evidence supports from overstatement — and shows you the sources it used.",
   guide: {
-      overview: "Signal vs. Noise is an evidence-calibration tool, not a literature review. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and get a structured breakdown of what's reasonably well supported, which popular claims outrun their evidence and why, and what remains genuinely unresolved. It does not invent citations, statistics, or motives to make an answer sound more authoritative than the evidence allows.",
+      overview: "Signal vs. Noise researches first, then judges. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and it runs a bounded web search across reviews, primary studies, official data and professional bodies, then gives you a structured breakdown: what those sources support, which popular claims outrun them and why, and what remains genuinely mixed or unresolved. Every Signal and Noise conclusion carries the sources behind it, and only sources it actually used are shown. It is a targeted source check, not a systematic review — and it says so rather than overstating what it searched.",
       howToUse: [
         "Enter any health, finance, productivity, or lifestyle topic you've seen conflicting advice about",
-        "Review The Signal — conclusions calibrated to what the evidence actually supports, with their limits",
-        "Review The Noise — where popular claims are stronger, broader, or more certain than their evidence",
-        "Check Still Unsettled — genuinely open questions, not manufactured both-sides debates",
-        "Use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer"
+        "Review The Signal — conclusions the checked sources actually support, each with its source chips and limits",
+        "Review The Noise — where popular claims are stronger, broader, or more certain than the sources allow",
+        "Check Still Worth Verifying — questions the sources leave genuinely mixed or unresolved, not manufactured both-sides debates",
+        "Open Sources checked to read what it relied on, and use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer"
       ],
       example: {
         scenario: "Is creatine actually worth taking for fitness?",
@@ -719,7 +719,8 @@ export const tools = [
       tips: [
         "Works best on topics where you've seen contradictory headlines or advice",
         "\"How the Noise Gets Made\" describes general mechanisms of distortion — marketing, media simplification — never named companies or motives unless you supplied that evidence yourself",
-        "Still Unsettled is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap",
+        "Still Worth Verifying is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap",
+        "The first run on a new topic takes longer because it is actually searching; the same topic asked again within a day answers from the cached research",
         "Use this before making any significant health, financial, or lifestyle decision — and treat the Bottom Line as a starting point for a clinician or advisor conversation, not a substitute for one"
       ]
     }
