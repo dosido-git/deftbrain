@@ -109,6 +109,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 79 | PaperworkPath | i18n | 8 life events | 2 (move, death) | 5 (+ new baby, divorce, retiring; 6 keys ×13) | ✅ 2026-09-11 |
 | 80 | PartyArchitect | inline | 5 vibes × 4 durations | 2 (both chill) | 5 (+ energetic kids' party, elegant engagement merging two families, retirement party that must not feel like a funeral) | ✅ 2026-09-11 |
 | 81 | PetBehaviorDecoder | inline | 5 pet types × 5 durations × 5 frequencies | 2 (cat, dog) | 5 (+ bird plucking feathers, rabbit's intermittent months-long hunching, cat's sudden constant thirst; covers every pet type) | ✅ 2026-09-11 |
+| 82 | PlainTalk | i18n | 10 text types | 3 (legal, medical, academic) | 5 (+ financial disclosure, bureaucratic form; new shared-constant samples, deliberately English across all languages like the other three; fixed es/pt gender-hedge false positive) | ✅ 2026-09-11 |
+| 83 | PlantRescue | inline | 3 modes (rescue/identify/care — identify needs a photo, not seedable) | 2 (rescue only) | 5 (+ overwatered succulent, outdoor rose with powdery mildew, a care-mode monstera; loader now handles care mode) | ✅ 2026-09-11 |
+| 84 | PlotHoleFinder | inline | find/defend × 4 media types | 2 (find only) | 5 (+ book, game, and a defend-mode example pushing back on an alleged hole; loader now handles defend mode) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

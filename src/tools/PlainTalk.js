@@ -71,10 +71,14 @@ const SPECIALIST_TOOLS = {
 };
 
 // Sample texts — emoji + i18n label/text keys (text bodies are invariant content samples).
+// Five, rotated: legal, medical, academic, financial and bureaucratic —
+// covering the density of jargon this tool is actually built to cut through.
 const SAMPLE_TEXTS = [
   { emoji: '⚖️', labelKey: 'plt_sample_lease', textKey: 'plt_sample_lease_text', type: 'legal' },
   { emoji: '🏥', labelKey: 'plt_sample_lab', textKey: 'plt_sample_lab_text', type: 'medical' },
   { emoji: '🎓', labelKey: 'plt_sample_abstract', textKey: 'plt_sample_abstract_text', type: 'academic' },
+  { emoji: '💰', labelKey: 'plt_sample_financial', textKey: 'plt_sample_financial_text', type: 'financial' },
+  { emoji: '📋', labelKey: 'plt_sample_bureaucratic', textKey: 'plt_sample_bureaucratic_text', type: 'bureaucratic' },
 ];
 
 // ════════════════════════════════════════════════════════════

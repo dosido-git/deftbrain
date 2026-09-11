@@ -8,6 +8,8 @@
 const SAMPLE_LEASE = `Tenant shall be liable for and shall indemnify and hold harmless Landlord from and against any and all claims, actions, damages, liability and expense in connection with loss of life, personal injury or damage to property arising from or out of any occurrence in, upon or at the Premises, or the occupancy or use by Tenant of the Premises or any part thereof, or occasioned wholly or in part by any act or omission of Tenant, its agents, contractors, employees, servants, invitees, licensees or concessionaires.`;
 const SAMPLE_LAB = `Hemoglobin A1c: 6.8% (Reference: <5.7% normal, 5.7-6.4% prediabetes, ≥6.5% diabetes). Fasting glucose: 142 mg/dL (Reference: 70-100 mg/dL). eGFR: 62 mL/min/1.73m² (Reference: >90 normal, 60-89 mildly decreased). TSH: 2.4 mIU/L (Reference: 0.4-4.0 mIU/L). Recommend endocrinology referral for glycemic management optimization. Continue current ACE inhibitor for renal protective effect. Recheck in 3 months with comprehensive metabolic panel.`;
 const SAMPLE_ABSTRACT = `We demonstrate that autoregressive language models exhibit emergent few-shot learning capabilities that scale predictably with model size. Specifically, we find that performance on downstream NLP tasks follows a power-law relationship with compute budget, suggesting that continued scaling will yield further improvements. However, we observe that this relationship exhibits phase transitions at certain scale thresholds, where qualitatively new capabilities appear discontinuously. These findings have significant implications for the allocation of research resources and the development of AI safety frameworks.`;
+const SAMPLE_FINANCIAL = `The Fund's total expense ratio of 0.94% reflects a weighted blend of underlying fund fees and the Adviser's management fee, net of the contractual fee waiver in effect through at least March 1, 2027, absent which gross expenses would be 1.31%. Past performance shown reflects reinvestment of dividends and capital gains distributions and does not guarantee future results; an investor's shares, when redeemed, may be worth more or less than their original cost. The Fund may invest up to 20% of net assets in below-investment-grade securities, which carry heightened credit and liquidity risk relative to the Fund's benchmark.`;
+const SAMPLE_BUREAUCRATIC = `Applicants must submit Form 27B-6 in triplicate, accompanied by supporting documentation as enumerated in Schedule C, no later than thirty (30) calendar days prior to the effective date sought, provided that where the effective date sought falls within a period for which the applicable filing window has already closed pursuant to subsection 4(i)(ii), the applicant shall instead be subject to the provisions of subsection 4(iii), notwithstanding any representation to the contrary made by an agency representative.`;
 
 export const plainTalk = {
   en: {
@@ -165,6 +167,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Side-by-Side",
     plt_tab_compare: "Compare",
     plt_sample_lease: "Lease clause",
+    plt_sample_financial: "Financial disclosure",
+    plt_sample_bureaucratic: "Government form",
     plt_sample_lab: "Lab result",
     plt_sample_abstract: "Abstract",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -191,6 +195,8 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   es: {
     plt_title: "Plain Talk — Analista de Documentos",
@@ -347,6 +353,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Lado a lado",
     plt_tab_compare: "Comparar",
     plt_sample_lease: "Cláusula de arrendamiento",
+    plt_sample_financial: "Divulgación financiera",
+    plt_sample_bureaucratic: "Formulario gubernamental",
     plt_sample_lab: "Resultado de laboratorio",
     plt_sample_abstract: "Resumen académico",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -373,6 +381,8 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   zh: {
     plt_title: "Plain Talk — 文档分析师",
@@ -529,6 +539,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "并排",
     plt_tab_compare: "比较",
     plt_sample_lease: "租约条款",
+    plt_sample_financial: "财务披露",
+    plt_sample_bureaucratic: "政府表格",
     plt_sample_lab: "化验结果",
     plt_sample_abstract: "论文摘要",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -555,6 +567,8 @@ export const plainTalk = {
     plt_sample_lease_text: `承租人应承担责任，并应就因房屋内、房屋上或房屋处发生的任何事件，或承租人对房屋或其任何部分的占用或使用，或全部或部分由承租人及其代理人、承包商、雇员、佣人、受邀人、被许可人或特许经营人的任何作为或不作为所引起的、与生命损失、人身伤害或财产损害有关的任何及所有索赔、诉讼、损害、责任和费用，向出租人作出赔偿并使其免受损害。`,
     plt_sample_lab_text: `糖化血红蛋白 A1c：6.8%（参考值：<5.7% 正常，5.7-6.4% 糖尿病前期，≥6.5% 糖尿病）。空腹血糖：142 mg/dL（参考值：70-100 mg/dL）。eGFR：62 mL/min/1.73m²（参考值：>90 正常，60-89 轻度下降）。促甲状腺激素（TSH）：2.4 mIU/L（参考值：0.4-4.0 mIU/L）。建议转诊内分泌科以优化血糖管理。继续服用当前的 ACE 抑制剂以保护肾脏。3 个月后复查综合代谢检查。`,
     plt_sample_abstract_text: `我们证明，自回归语言模型表现出随模型规模可预测扩展的涌现式少样本学习能力。具体而言，我们发现下游 NLP 任务的性能与算力预算遵循幂律关系，这表明持续扩展将带来进一步的改进。然而，我们观察到这种关系在某些规模阈值处会出现相变，届时全新的能力会不连续地涌现。这些发现对研究资源的配置和 AI 安全框架的发展具有重要意义。`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   hi: {
     plt_title: "Plain Talk — दस्तावेज़ विश्लेषक",
@@ -711,6 +725,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "साथ-साथ",
     plt_tab_compare: "तुलना",
     plt_sample_lease: "पट्टा खंड",
+    plt_sample_financial: "वित्तीय प्रकटीकरण",
+    plt_sample_bureaucratic: "सरकारी फ़ॉर्म",
     plt_sample_lab: "लैब परिणाम",
     plt_sample_abstract: "सारांश",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -737,6 +753,8 @@ export const plainTalk = {
     plt_sample_lease_text: `किरायेदार परिसर में, परिसर पर या परिसर में होने वाली किसी भी घटना से, या किरायेदार द्वारा परिसर या उसके किसी भाग के उपयोग या कब्जे से, या किरायेदार, उसके एजेंटों, ठेकेदारों, कर्मचारियों, सेवकों, आमंत्रितों, लाइसेंसधारकों या रियायतग्राहियों के किसी कार्य या चूक से पूर्णतः या आंशिक रूप से उत्पन्न जीवन-हानि, व्यक्तिगत चोट या संपत्ति को नुकसान से जुड़े किसी भी और सभी दावों, कार्रवाइयों, क्षतियों, देयता और व्यय के लिए उत्तरदायी होगा और मकान मालिक को क्षतिपूर्ति देगा तथा हानिरहित रखेगा।`,
     plt_sample_lab_text: `हीमोग्लोबिन A1c: 6.8% (संदर्भ: <5.7% सामान्य, 5.7-6.4% प्री-डायबिटीज़, ≥6.5% डायबिटीज़)। उपवास ग्लूकोज़: 142 mg/dL (संदर्भ: 70-100 mg/dL)। eGFR: 62 mL/min/1.73m² (संदर्भ: >90 सामान्य, 60-89 हल्का घटा हुआ)। TSH: 2.4 mIU/L (संदर्भ: 0.4-4.0 mIU/L)। ग्लाइसेमिक प्रबंधन के अनुकूलन हेतु एंडोक्रिनोलॉजी रेफ़रल की सलाह। गुर्दे की सुरक्षा के लिए वर्तमान ACE अवरोधक जारी रखें। 3 महीने बाद व्यापक मेटाबॉलिक पैनल के साथ पुनः जाँच करें।`,
     plt_sample_abstract_text: `हम यह दर्शाते हैं कि ऑटोरिग्रेसिव भाषा मॉडल ऐसी उभरती हुई फ़्यू-शॉट लर्निंग क्षमताएँ प्रदर्शित करते हैं जो मॉडल आकार के साथ पूर्वानुमेय रूप से बढ़ती हैं। विशेष रूप से, हम पाते हैं कि डाउनस्ट्रीम NLP कार्यों पर प्रदर्शन कंप्यूट बजट के साथ एक पावर-लॉ संबंध का अनुसरण करता है, जिससे संकेत मिलता है कि निरंतर स्केलिंग से और सुधार होंगे। हालाँकि, हम देखते हैं कि यह संबंध कुछ स्केल सीमाओं पर फ़ेज़ ट्रांज़िशन दिखाता है, जहाँ गुणात्मक रूप से नई क्षमताएँ असातत्यपूर्ण ढंग से प्रकट होती हैं। इन निष्कर्षों का अनुसंधान संसाधनों के आवंटन और AI सुरक्षा ढाँचों के विकास पर महत्वपूर्ण प्रभाव है।`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   ar: {
     plt_title: "Plain Talk — محلّل المستندات",
@@ -893,6 +911,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "جنباً إلى جنب",
     plt_tab_compare: "مقارنة",
     plt_sample_lease: "بند إيجار",
+    plt_sample_financial: "إفصاح مالي",
+    plt_sample_bureaucratic: "نموذج حكومي",
     plt_sample_lab: "نتيجة مختبر",
     plt_sample_abstract: "ملخّص بحثي",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -919,6 +939,8 @@ export const plainTalk = {
     plt_sample_lease_text: `يكون المستأجر مسؤولاً عن، ويعوّض المالك ويبرّئه من أي وكل المطالبات والدعاوى والأضرار والمسؤولية والنفقات المتعلقة بفقدان الحياة أو الإصابة الشخصية أو الأضرار بالممتلكات الناشئة عن أي حادث يقع في العقار أو عليه أو فيه، أو عن إشغال المستأجر للعقار أو أي جزء منه أو استخدامه له، أو الناتجة كلياً أو جزئياً عن أي فعل أو إهمال من المستأجر أو وكلائه أو مقاوليه أو موظفيه أو خدمه أو مدعويه أو المرخّص لهم أو أصحاب الامتياز.`,
     plt_sample_lab_text: `الهيموغلوبين السكري A1c: 6.8% (المرجع: <5.7% طبيعي، 5.7-6.4% ما قبل السكري، ≥6.5% سكري). سكر الدم الصائم: 142 mg/dL (المرجع: 70-100 mg/dL). معدل الترشيح الكبيبي eGFR: 62 mL/min/1.73m² (المرجع: >90 طبيعي، 60-89 انخفاض طفيف). الهرمون المنبّه للغدة الدرقية TSH: 2.4 mIU/L (المرجع: 0.4-4.0 mIU/L). يُوصى بالإحالة إلى الغدد الصماء لتحسين ضبط سكر الدم. الاستمرار في مثبّط الإنزيم المحوّل للأنجيوتنسين الحالي لحماية الكلى. إعادة الفحص بعد 3 أشهر مع تحليل أيضي شامل.`,
     plt_sample_abstract_text: `نُثبت أن نماذج اللغة ذاتية الانحدار تُظهر قدرات ناشئة على التعلّم من أمثلة قليلة تتوسّع بشكل يمكن التنبؤ به مع حجم النموذج. وعلى وجه التحديد، نجد أن الأداء في مهام معالجة اللغة الطبيعية اللاحقة يتبع علاقة قانون القوى مع ميزانية الحوسبة، مما يشير إلى أن مواصلة التوسّع ستحقق مزيداً من التحسينات. ومع ذلك، نلاحظ أن هذه العلاقة تُظهر انتقالات طورية عند عتبات حجم معينة، حيث تظهر قدرات جديدة نوعياً بشكل غير متصل. ولهذه النتائج آثار مهمة على تخصيص موارد البحث وتطوير أطر سلامة الذكاء الاصطناعي.`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   pt: {
     plt_title: "Plain Talk — Analista de Documentos",
@@ -1075,6 +1097,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Lado a lado",
     plt_tab_compare: "Comparar",
     plt_sample_lease: "Cláusula de aluguel",
+    plt_sample_financial: "Divulgação financeira",
+    plt_sample_bureaucratic: "Formulário governamental",
     plt_sample_lab: "Resultado de exame",
     plt_sample_abstract: "Resumo acadêmico",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -1101,6 +1125,8 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   fr: {
     plt_title: "Plain Talk — Analyste de Documents",
@@ -1257,6 +1283,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Côte à côte",
     plt_tab_compare: "Comparer",
     plt_sample_lease: "Clause de bail",
+    plt_sample_financial: "Divulgation financière",
+    plt_sample_bureaucratic: "Formulaire administratif",
     plt_sample_lab: "Résultat de laboratoire",
     plt_sample_abstract: "Résumé d'article",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -1283,6 +1311,8 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   de: {
     plt_title: "Plain Talk — Dokumentenanalyst",
@@ -1439,6 +1469,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Nebeneinander",
     plt_tab_compare: "Vergleichen",
     plt_sample_lease: "Mietklausel",
+    plt_sample_financial: "Finanzoffenlegung",
+    plt_sample_bureaucratic: "Behördenformular",
     plt_sample_lab: "Laborergebnis",
     plt_sample_abstract: "Abstract",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -1465,6 +1497,8 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   ja: {
     plt_title: "Plain Talk — 文書アナリスト",
@@ -1621,6 +1655,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "横並び",
     plt_tab_compare: "比較",
     plt_sample_lease: "賃貸条項",
+    plt_sample_financial: "財務開示",
+    plt_sample_bureaucratic: "行政書式",
     plt_sample_lab: "検査結果",
     plt_sample_abstract: "論文要旨",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -1647,6 +1683,8 @@ export const plainTalk = {
     plt_sample_lease_text: `賃借人は、本物件内・本物件上・本物件における一切の出来事、または賃借人による本物件もしくはその一部の占有もしくは使用、または賃借人およびその代理人・請負業者・従業員・使用人・招待者・被許諾者・営業権者の作為もしくは不作為に全部または一部起因して生じる、生命の喪失・人身傷害・財産への損害に関連するあらゆる請求・訴訟・損害・責任・費用について責任を負い、賃貸人を補償し、損害を被らせないものとする。`,
     plt_sample_lab_text: `ヘモグロビン A1c：6.8%（基準：<5.7% 正常、5.7-6.4% 糖尿病予備群、≥6.5% 糖尿病）。空腹時血糖：142 mg/dL（基準：70-100 mg/dL）。eGFR：62 mL/min/1.73m²（基準：>90 正常、60-89 軽度低下）。TSH：2.4 mIU/L（基準：0.4-4.0 mIU/L）。血糖管理の最適化のため内分泌科への紹介を推奨。腎保護のため現在の ACE 阻害薬を継続。3か月後に総合代謝パネルで再検査。`,
     plt_sample_abstract_text: `我々は、自己回帰型言語モデルがモデル規模に応じて予測可能に拡張する創発的な少数ショット学習能力を示すことを実証する。具体的には、下流の NLP タスクにおける性能が計算予算とべき乗則の関係に従うことを見いだし、継続的なスケーリングがさらなる改善をもたらすことを示唆する。しかし、この関係は特定の規模の閾値で相転移を示し、そこでは質的に新しい能力が不連続に出現することを観察した。これらの知見は、研究資源の配分と AI 安全性の枠組みの開発に重要な意味を持つ。`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   ko: {
     plt_title: "Plain Talk — 문서 분석가",
@@ -1803,6 +1841,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "나란히",
     plt_tab_compare: "비교",
     plt_sample_lease: "임대 조항",
+    plt_sample_financial: "금융 공시",
+    plt_sample_bureaucratic: "행정 서식",
     plt_sample_lab: "검사 결과",
     plt_sample_abstract: "논문 초록",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -1829,6 +1869,8 @@ export const plainTalk = {
     plt_sample_lease_text: `임차인은 본 건물 내·위 또는 본 건물에서 발생한 모든 사건, 또는 임차인의 본 건물이나 그 일부의 점유 또는 사용, 또는 임차인과 그 대리인·도급인·직원·사용인·초청자·피허가자·영업권자의 작위 또는 부작위로 전부 또는 일부 발생한, 생명 상실·신체 상해 또는 재산 손해와 관련된 모든 청구·소송·손해·책임 및 비용에 대해 책임을 지며, 임대인에게 배상하고 임대인을 면책시켜야 한다.`,
     plt_sample_lab_text: `당화혈색소 A1c: 6.8% (참고치: <5.7% 정상, 5.7-6.4% 당뇨 전단계, ≥6.5% 당뇨). 공복 혈당: 142 mg/dL (참고치: 70-100 mg/dL). eGFR: 62 mL/min/1.73m² (참고치: >90 정상, 60-89 경도 저하). TSH: 2.4 mIU/L (참고치: 0.4-4.0 mIU/L). 혈당 관리 최적화를 위해 내분비내과 의뢰를 권장함. 신장 보호 효과를 위해 현재의 ACE 억제제를 유지. 3개월 후 종합 대사 검사로 재검할 것.`,
     plt_sample_abstract_text: `우리는 자기회귀 언어 모델이 모델 크기에 따라 예측 가능하게 확장되는 창발적 퓨샷 학습 능력을 보인다는 것을 입증한다. 구체적으로, 다운스트림 NLP 작업의 성능이 연산 예산과 멱법칙 관계를 따른다는 것을 발견했으며, 이는 지속적인 스케일링이 추가적인 개선을 가져올 것임을 시사한다. 그러나 이 관계는 특정 규모 임계값에서 상전이를 보이며, 그 지점에서 질적으로 새로운 능력이 불연속적으로 나타나는 것을 관찰했다. 이러한 발견은 연구 자원의 배분과 AI 안전 프레임워크의 개발에 중요한 함의를 가진다.`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   ru: {
     plt_title: "Plain Talk — Аналитик документов",
@@ -1985,6 +2027,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Бок о бок",
     plt_tab_compare: "Сравнить",
     plt_sample_lease: "Пункт договора аренды",
+    plt_sample_financial: "Финансовое раскрытие",
+    plt_sample_bureaucratic: "Государственная форма",
     plt_sample_lab: "Результат анализа",
     plt_sample_abstract: "Аннотация",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -2011,6 +2055,8 @@ export const plainTalk = {
     plt_sample_lease_text: `Арендатор несёт ответственность и обязуется возместить ущерб Арендодателю и оградить его от любых и всех претензий, исков, убытков, ответственности и расходов, связанных с гибелью людей, телесными повреждениями или ущербом имуществу, возникающих из любого происшествия в Помещении, на нём или при нём, либо из занятия или использования Арендатором Помещения или любой его части, либо вызванных полностью или частично любым действием или бездействием Арендатора, его агентов, подрядчиков, работников, служащих, приглашённых лиц, лицензиатов или концессионеров.`,
     plt_sample_lab_text: `Гликированный гемоглобин A1c: 6,8% (норма: <5,7% норма, 5,7-6,4% преддиабет, ≥6,5% диабет). Глюкоза натощак: 142 мг/дл (норма: 70-100 мг/дл). СКФ (eGFR): 62 мл/мин/1,73м² (норма: >90 норма, 60-89 умеренно снижена). ТТГ: 2,4 мМЕ/л (норма: 0,4-4,0 мМЕ/л). Рекомендуется направление к эндокринологу для оптимизации контроля гликемии. Продолжить приём текущего ингибитора АПФ для защиты почек. Повторное обследование через 3 месяца с комплексной метаболической панелью.`,
     plt_sample_abstract_text: `Мы показываем, что авторегрессионные языковые модели проявляют эмерджентные способности к обучению на малом числе примеров, которые предсказуемо масштабируются с размером модели. В частности, мы обнаруживаем, что производительность на последующих задачах NLP подчиняется степенной зависимости от вычислительного бюджета, что предполагает дальнейшие улучшения при продолжении масштабирования. Однако мы наблюдаем, что эта зависимость демонстрирует фазовые переходы при определённых пороговых значениях масштаба, где качественно новые способности возникают скачкообразно. Эти выводы имеют важное значение для распределения исследовательских ресурсов и развития систем безопасности ИИ.`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   th: {
     plt_title: "Plain Talk — นักวิเคราะห์เอกสาร",
@@ -2167,6 +2213,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "เคียงข้างกัน",
     plt_tab_compare: "เปรียบเทียบ",
     plt_sample_lease: "ข้อสัญญาเช่า",
+    plt_sample_financial: "การเปิดเผยข้อมูลทางการเงิน",
+    plt_sample_bureaucratic: "แบบฟอร์มราชการ",
     plt_sample_lab: "ผลแล็บ",
     plt_sample_abstract: "บทคัดย่อ",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -2193,6 +2241,8 @@ export const plainTalk = {
     plt_sample_lease_text: `ผู้เช่าจะต้องรับผิดชอบ และจะต้องชดใช้ค่าเสียหายและปกป้องผู้ให้เช่าให้พ้นจากการเรียกร้อง การฟ้องร้อง ความเสียหาย ความรับผิด และค่าใช้จ่ายใด ๆ ทั้งปวงที่เกี่ยวข้องกับการสูญเสียชีวิต การบาดเจ็บส่วนบุคคล หรือความเสียหายต่อทรัพย์สิน อันเกิดจากเหตุการณ์ใด ๆ ในหรือบนหรือ ณ สถานที่เช่า หรือจากการครอบครองหรือใช้สถานที่เช่าหรือส่วนใดส่วนหนึ่งโดยผู้เช่า หรือที่เกิดขึ้นทั้งหมดหรือบางส่วนจากการกระทำหรือการละเว้นใด ๆ ของผู้เช่า ตัวแทน ผู้รับเหมา ลูกจ้าง คนรับใช้ ผู้ได้รับเชิญ ผู้รับอนุญาต หรือผู้รับสัมปทานของผู้เช่า`,
     plt_sample_lab_text: `ฮีโมโกลบิน A1c: 6.8% (ค่าอ้างอิง: <5.7% ปกติ, 5.7-6.4% ก่อนเบาหวาน, ≥6.5% เบาหวาน) น้ำตาลในเลือดขณะอดอาหาร: 142 mg/dL (ค่าอ้างอิง: 70-100 mg/dL) eGFR: 62 mL/min/1.73m² (ค่าอ้างอิง: >90 ปกติ, 60-89 ลดลงเล็กน้อย) TSH: 2.4 mIU/L (ค่าอ้างอิง: 0.4-4.0 mIU/L) แนะนำให้ส่งต่อแผนกต่อมไร้ท่อเพื่อปรับการควบคุมระดับน้ำตาล ให้ใช้ยายับยั้ง ACE ตัวเดิมต่อไปเพื่อปกป้องไต ตรวจซ้ำใน 3 เดือนพร้อมแผงตรวจเมแทบอลิกแบบครบถ้วน`,
     plt_sample_abstract_text: `เราแสดงให้เห็นว่าโมเดลภาษาแบบออโตรีเกรสซีฟมีความสามารถในการเรียนรู้แบบไม่กี่ตัวอย่างที่อุบัติขึ้นและขยายขนาดได้อย่างคาดการณ์ได้ตามขนาดของโมเดล โดยเฉพาะอย่างยิ่ง เราพบว่าประสิทธิภาพในงาน NLP ปลายทางเป็นไปตามความสัมพันธ์แบบกฎกำลังกับงบประมาณการคำนวณ ซึ่งบ่งชี้ว่าการขยายขนาดต่อไปจะให้ผลที่ดีขึ้น อย่างไรก็ตาม เราสังเกตว่าความสัมพันธ์นี้แสดงการเปลี่ยนเฟสที่ค่าขีดเริ่มบางระดับ ซึ่งความสามารถใหม่เชิงคุณภาพปรากฏขึ้นอย่างไม่ต่อเนื่อง การค้นพบเหล่านี้มีนัยสำคัญต่อการจัดสรรทรัพยากรการวิจัยและการพัฒนากรอบความปลอดภัยของ AI`,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
   vi: {
     plt_title: "Plain Talk — Chuyên gia Phân tích Tài liệu",
@@ -2349,6 +2399,8 @@ export const plainTalk = {
     plt_tab_sidebyside: "Song song",
     plt_tab_compare: "So sánh",
     plt_sample_lease: "Điều khoản thuê",
+    plt_sample_financial: "Công bố tài chính",
+    plt_sample_bureaucratic: "Biểu mẫu hành chính",
     plt_sample_lab: "Kết quả xét nghiệm",
     plt_sample_abstract: "Tóm tắt",
     plt_xref_jargonassassin: "Jargon Assassin",
@@ -2375,5 +2427,7 @@ export const plainTalk = {
     plt_sample_lease_text: SAMPLE_LEASE,
     plt_sample_lab_text: SAMPLE_LAB,
     plt_sample_abstract_text: SAMPLE_ABSTRACT,
+    plt_sample_financial_text: SAMPLE_FINANCIAL,
+    plt_sample_bureaucratic_text: SAMPLE_BUREAUCRATIC,
   },
 };
