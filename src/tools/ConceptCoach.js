@@ -28,16 +28,32 @@ const FOCUS_AREAS = [
   { id: 'regulation',  labelKey: 'ia_focus_regulation' },
 ];
 
+// Five, rotated: pre-idea with zero validation, a launched product with
+// real traction and real churn, and three more stages/focus combinations
+// below — each with its own description, evidence and founder-context keys
+// so the rotation is not just the same story with a different stage label.
 const EXAMPLES = [
   {
   ideaStage: 'exploring',
   focusAreas: ['market', 'competition', 'business', 'execution'],
+  descKey: 'ia_ex_desc', evidenceKey: 'ia_ex_evidence', founderKey: 'ia_ex_founder',
 },
   {
   ideaStage: 'launched',
   focusAreas: ['market', 'timing', 'founder', 'next'],
+  descKey: 'ia_ex2_desc', evidenceKey: 'ia_ex2_evidence', founderKey: 'ia_ex2_founder',
 },
-];;
+  {
+  ideaStage: 'idea',
+  focusAreas: ['market', 'competition'],
+  descKey: 'ia_ex3_desc', evidenceKey: 'ia_ex3_evidence', founderKey: 'ia_ex3_founder',
+},
+  {
+  ideaStage: 'building',
+  focusAreas: ['business', 'execution', 'moat', 'founder'],
+  descKey: 'ia_ex4_desc', evidenceKey: 'ia_ex4_evidence', founderKey: 'ia_ex4_founder',
+},
+];
 
 const RISK_LEVELS = {
   critical: { icon: '🔴', labelKey: 'ia_risk_critical', bg: isDark => isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-300', txt: isDark => isDark ? 'text-red-300' : 'text-red-800' },
@@ -121,9 +137,9 @@ function ConceptCoach({ tool }) {
   const loadExample = useCallback(() => {
     const ex = pickExample('IdeaAutopsy', EXAMPLES);
     setIdeaStage(ex.ideaStage);
-    setIdeaDescription(t('ia_ex_desc'));
-    setEvidenceSoFar(t('ia_ex_evidence'));
-    setFounderContext(t('ia_ex_founder', { sym }));
+    setIdeaDescription(t(ex.descKey));
+    setEvidenceSoFar(t(ex.evidenceKey));
+    setFounderContext(t(ex.founderKey, { sym }));
     setFocusAreas(ex.focusAreas);
     setResults(null);
     setError('');

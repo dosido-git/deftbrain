@@ -26,6 +26,24 @@ const ConflictCoach = ({ tool }) => {
       relationship: 'Partner',
       emotional: { angry: false, hurt: true, defensive: false, frustrated: false, calm: false, confused: true },
     },
+    // Three more: cc'ing a manager (workplace escalation), a family
+    // grievance that isn't really about the guest list, and a customer
+    // complaint with no personal relationship at all.
+    {
+      receivedMessage: t('cc_ex3_msg'),
+      relationship: 'Coworker',
+      emotional: { angry: true, hurt: false, defensive: true, frustrated: true, calm: false, confused: false },
+    },
+    {
+      receivedMessage: t('cc_ex4_msg'),
+      relationship: 'Family',
+      emotional: { angry: false, hurt: true, defensive: false, frustrated: true, calm: false, confused: false },
+    },
+    {
+      receivedMessage: t('cc_ex5_msg'),
+      relationship: 'Customer',
+      emotional: { angry: false, hurt: false, defensive: true, frustrated: false, calm: true, confused: false },
+    },
   ];
 
   // ─── Standard c object ───

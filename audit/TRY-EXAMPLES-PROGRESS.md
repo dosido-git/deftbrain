@@ -49,6 +49,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 19 | ChaosPilot | inline | — | 3 | 5 (+ parental leave with no work in it; night shifts with no daytime and an empty "stuck") | ✅ 2026-09-11 |
 | 20 | ColdOpenCraft | i18n | 5 channels | 2 (both email) | 5 (email ×2, linkedin, instagram_dm, text; 12 keys ×13) | ✅ 2026-09-11 |
 | 21 | ComebackCooker | inline | 4 moods | 2 (witty, dignified) | 5 (all four moods; a jab from a friend, a kindness from a stranger, a cruelty from a child) | ✅ 2026-09-11 |
+| 22 | ComplaintEscalationWriter | inline | 12 industries | 2 | 5 (airline, contractor, telecom rate dispute, healthcare billing-code error, subscription still-charging) | ✅ 2026-09-11 |
+| 23 | ConceptCoach (IdeaAutopsy) | i18n | 4 stages × 8 focus areas | 2 (shared desc/evidence/founder text — stage was the only thing that changed) | 5 — each with its own desc/evidence/founder keys (idea/exploring/building/launched, zero-validation to real-traction-with-churn; 9 keys ×13) | ✅ 2026-09-11 |
+| 24 | ConflictCoach | i18n | 7 relationships | 2 (Roommate, Partner) | 5 (+ Coworker cc'ing a manager, Family at Christmas, Customer complaint; 3 keys ×13; fixed 8 banned-pronoun findings in ja/hi/ru/fr) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
