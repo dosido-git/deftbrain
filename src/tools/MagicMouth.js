@@ -37,14 +37,22 @@ const MagicMouth = ({ tool }) => {
 
   // Try an example used to fill the Ask form whatever tab you were on, so on the
   // other two it did nothing visible.
+  // Five per mode, rotated (each filtered so a repeat click never lands on
+  // the same issue/problem twice in a row).
   const EXAMPLE_PHONE = [
     { company: t('mm_pex1_company'), issue: t('mm_pex1_issue'), goal: t('mm_pex1_goal') },
     { company: t('mm_pex2_company'), issue: t('mm_pex2_issue'), goal: t('mm_pex2_goal') },
+    { company: t('mm_pex3_company'), issue: t('mm_pex3_issue'), goal: t('mm_pex3_goal') },
+    { company: t('mm_pex4_company'), issue: t('mm_pex4_issue'), goal: t('mm_pex4_goal') },
+    { company: t('mm_pex5_company'), issue: t('mm_pex5_issue'), goal: t('mm_pex5_goal') },
   ];
 
   const EXAMPLE_NUCLEAR = [
     { company: t('mm_nex1_company'), problem: t('mm_nex1_problem'), tried: t('mm_nex1_tried'), goal: t('mm_nex1_goal') },
     { company: t('mm_nex2_company'), problem: t('mm_nex2_problem'), tried: t('mm_nex2_tried'), goal: t('mm_nex2_goal') },
+    { company: t('mm_nex3_company'), problem: t('mm_nex3_problem'), tried: t('mm_nex3_tried'), goal: t('mm_nex3_goal') },
+    { company: t('mm_nex4_company'), problem: t('mm_nex4_problem'), tried: t('mm_nex4_tried'), goal: t('mm_nex4_goal') },
+    { company: t('mm_nex5_company'), problem: t('mm_nex5_problem'), tried: t('mm_nex5_tried'), goal: t('mm_nex5_goal') },
   ];
 
   const c = {

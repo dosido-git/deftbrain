@@ -67,6 +67,10 @@ const FRAMEWORKS = [
   { value: 'Other', labelKey: 'mhp_fw_other' },
 ];
 
+// Five, rotated across five of the eight meeting types: a decision with
+// invested stakeholders, a difficult on-call split, a hybrid brainstorm
+// where remote voices go quiet, a retro that turned into blame last time,
+// and a harder-than-usual 1:1.
 const EXAMPLES = [
   {
     meetingGoal: 'Decide which two of the four proposals move forward to the design phase.',
@@ -84,6 +88,30 @@ const EXAMPLES = [
     challenges: { interrupt: true, undecided: true, no_next_step: true },
     decisionFramework: 'Disagree & commit',
     extraContext: 'The two teams disagreed about this last quarter and it was never resolved.',
+  },
+  {
+    meetingGoal: 'Generate as many ideas as possible for the Q2 campaign theme, no filtering yet.',
+    duration: 45, participantCount: '10', participantNotes: '',
+    format: 'Hybrid', platform: 'Zoom', meetingType: 'Brainstorming',
+    challenges: { airtime: true, wanders: false },
+    decisionFramework: 'Not sure',
+    extraContext: 'Half the room is in person and half is remote, and the remote half tends to go quiet.',
+  },
+  {
+    meetingGoal: 'Work out what went wrong with the launch and what we change before the next one.',
+    duration: 60, participantCount: '8', participantNotes: 'The engineer whose change caused the delay is in the room.',
+    format: 'In person', platform: '', meetingType: 'Retrospective',
+    challenges: { no_next_step: true },
+    decisionFramework: 'Leader decides after input',
+    extraContext: 'Last retro turned into blame instead of process fixes, and I want this one to land differently.',
+  },
+  {
+    meetingGoal: 'Give feedback on a rough patch in performance and agree on what changes over the next month.',
+    duration: 30, participantCount: '2', participantNotes: '',
+    format: 'Virtual', platform: 'Google Meet', meetingType: 'One-on-one',
+    challenges: { undecided: true },
+    decisionFramework: 'Not sure',
+    extraContext: 'This is a harder conversation than our usual 1:1s and I want to be direct without it feeling like an ambush.',
   },
 ];
 

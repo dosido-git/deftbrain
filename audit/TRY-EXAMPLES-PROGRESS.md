@@ -91,6 +91,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 61 | LazyWorkoutAdapter | i18n | 5 modes (right-now/micro/body/stack/recovery) | 2 each | 5 each (25 total), each mode's five spanning its full enum range; 7 new keys ×13 | ✅ 2026-09-11 |
 | 62 | LeaseTrapDetector | inline | 5 lease types | 2 (residential, commercial) | 5 (+ house shifting maintenance to tenant, room rental with master key + 14-day notice, sublease with no landlord consent) | ✅ 2026-09-11 |
 | 63 | LeverageLogic | i18n | 8 negotiation types | 2 (freelance, salary) | 5 (+ vendor price hike, lease renewal, car purchase; 12 keys ×13) | ✅ 2026-09-11 |
+| 64 | MagicMouth | i18n | 3 modes (ask/phone/nuclear) | ask already 8; phone 2; nuclear 2 | ask unchanged; phone 5, nuclear 5 (+ mobile carrier, gym, electric co, online retailer, delivery, moving co; keys ×13) | ✅ 2026-09-11 |
+| 65 | MarkupDetective | i18n | — | already 6 | — | ✅ pre-existing |
+| 66 | MeetingHijackStopper | inline | 8 meeting types | 2 (Decision, Difficult discussion) | 5 (+ hybrid brainstorm with quiet remote half, blame-prone retro, harder-than-usual 1:1) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
