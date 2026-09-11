@@ -155,6 +155,28 @@ get all 13 languages at once (Gate 5 requires it).
 | 125 | WhichLife (route: /contrast-report) | i18n | — | 6 | ✅ pre-existing (already had `EXAMPLE_DECISIONS` spanning career, relationship, and education dilemmas across all 4 timeframes) | ✅ 2026-09-11 |
 | 126 | WrongAnswersOnly | i18n | — | 3 (all science) | 5 (+ a culture/history question on driving side, a psychology question on time perception; broadens beyond pure biology; 2 keys ×13) | ✅ 2026-09-11 |
 
+## Post-campaign audit (2026-09-11) — 4 gaps found and fixed
+
+The user reported SkillGapMap showing only 2 examples (a stale-cache/pre-deploy
+symptom — verified live on deftbrain.com afterward, all 5 rotate correctly).
+That prompted a full script-based scan of every `pickExample(...)` call across
+`src/tools/*.js` to check for any tool the 42-batch campaign missed. Found and
+fixed 4 tools that were **short by one example, all predating this campaign**
+(from earlier sessions, before the 126-tool sweep began):
+
+| Tool | Mode | Before | After |
+| --- | --- | --- | --- |
+| ConceptCoach (i18n file: idea-autopsy.js) | — | 4 | 5 (+ a cold-storage-rental idea in 'building' stage testing the 'regulation' focus area; also fixed an invalid `'next'` focus-area value in example 2 that matched no chip) |
+| CrisisPrioritizer | — | 4 | 5 (+ a moving-day scenario with a task dependency chain and two same-day deadlines) |
+| FinalWish | — | 4 profiles | 5 (+ Eleanor Whitfield: a retired widow with two adult children, physical/safety-deposit-box delivery — the first example using `deliveryLocation: 'deposit'`) |
+| JustifyMyMeeting | week (of 4 modes; judge/zombie/rescue were already at 5) | 4 | 5 (+ a cross-functional external-facing week: APAC sync, customer advisory board, budget reconciliation, offsite planning) |
+
+All 4 were inline (no i18n) except ConceptCoach, which needed 3 new keys
+(`ia_ex5_desc/evidence/founder`) across 13 languages. Full gate sequence
+(syntax, ESLint, guard-keys, differential audit, localization, convention
+audit) passed clean; all 4 fixes verified live in-browser via `pickExample`
+rotation before push. Catalog now genuinely 126/126 with no known gaps.
+
 ## Campaign complete — 126/126 tools at 5+ examples
 
 Every tool in the catalog now carries a 5-item (or larger, or per-mode)

@@ -40,7 +40,7 @@ const EXAMPLES = [
 },
   {
   ideaStage: 'launched',
-  focusAreas: ['market', 'timing', 'founder', 'next'],
+  focusAreas: ['market', 'timing', 'founder', 'regulation'],
   descKey: 'ia_ex2_desc', evidenceKey: 'ia_ex2_evidence', founderKey: 'ia_ex2_founder',
 },
   {
@@ -52,6 +52,11 @@ const EXAMPLES = [
   ideaStage: 'building',
   focusAreas: ['business', 'execution', 'moat', 'founder'],
   descKey: 'ia_ex4_desc', evidenceKey: 'ia_ex4_evidence', founderKey: 'ia_ex4_founder',
+},
+  {
+  ideaStage: 'building',
+  focusAreas: ['moat', 'regulation', 'timing'],
+  descKey: 'ia_ex5_desc', evidenceKey: 'ia_ex5_evidence', founderKey: 'ia_ex5_founder',
 },
 ];
 

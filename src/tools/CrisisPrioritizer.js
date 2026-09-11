@@ -197,6 +197,19 @@ export default function CrisisPrioritizer() {
         hours: 'less than 30 minutes', energy: 'low',
         context: 'Nothing here is actually urgent. I just want to feel like I did something.',
       },
+      // A dependency chain and two things both nominally "today" — the
+      // failure mode here isn't too many fires, it's bouncing between
+      // tasks without finishing any of them.
+      {
+        tasks: [
+          { task: 'Call the moving company to confirm the truck time', deadline: 'today', who_waiting: '', consequence: 'they might give the slot to someone else', depends_on: '', context: '' },
+          { task: 'Finish packing the kitchen', deadline: 'tomorrow morning', who_waiting: '', consequence: '', depends_on: '', context: '' },
+          { task: 'Return the extra moving boxes', deadline: '', who_waiting: '', consequence: '', depends_on: 'finishing the kitchen packing', context: '' },
+          { task: 'Text the new landlord about parking for the truck', deadline: 'today', who_waiting: 'the landlord', consequence: '', depends_on: '', context: '' },
+        ],
+        hours: 'about 1 hour', energy: 'okay',
+        context: 'Moving day is tomorrow and I keep bouncing between tasks without finishing any of them.',
+      },
     ]);
     setTasks(ex.tasks.map(x => ({ ...blankTask(), ...x })));
     setHours(ex.hours); setEnergy(ex.energy); setContext(ex.context);

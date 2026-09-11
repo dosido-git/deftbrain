@@ -365,6 +365,12 @@ const JustifyMyMeeting = ({ tool }) => {
           { name: 'Skip-level 1:1s', duration: '2', attendees: '8', recurring: false, purpose: 'Get a read on morale after the reorg' },
           { name: 'Vendor renewal call', duration: '0.5', attendees: '4', recurring: false, purpose: 'Decide whether to renew or switch providers' },
         ] },
+        { meetings: [
+          { name: 'Cross-timezone sync with the APAC team', duration: '1', attendees: '9', recurring: true, purpose: '' },
+          { name: 'Customer advisory board call', duration: '1.5', attendees: '12', recurring: false, purpose: 'Get feedback on the roadmap before we lock Q1' },
+          { name: 'Budget reconciliation with finance', duration: '1', attendees: '3', recurring: false, purpose: 'Explain the variance from last quarter' },
+          { name: 'Team offsite planning call', duration: '0.5', attendees: '5', recurring: false, purpose: '' },
+        ] },
       ]);
       setWeekMeetings(ex.meetings.map(m => ({ ...m })));
       setWeekResults(null);
