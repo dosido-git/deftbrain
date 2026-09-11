@@ -356,165 +356,258 @@ Return ONLY valid JSON: {"rewritten": "<the replacement field>"}`, userLanguage)
 // Stage 5. Fixed text per field type, in the visitor's language. These assert
 // nothing about the world, so nothing can be smuggled through them. Keys map
 // to the on-screen labels: holds_up_instead = "What holds up instead",
-// what_went_wrong, kernel_of_truth, why_holds_up = a signal item's basis,
-// doesnt_establish = a signal item's limits, bottom_line = any bottom-line
-// item, framing = the opening framing line, noise_label = a noise card's
-// short label. A field with no entry here (a signal item's claim, a
-// still_worth_verifying question, a sources_of_noise field, a person-specific
-// item) is blanked instead, and the structural filter below drops its item.
+// what_went_wrong, why_holds_up = a signal item's basis, framing = the
+// opening framing line, noise_label = a noise card's short label. The three
+// bottom-line lists each have their OWN wording (takeaway / skeptical /
+// would_help) plus a `_many` variant used when several items in the same
+// list failed — they are collapsed into that one bullet rather than
+// repeated (see collapseBottomLineFallbacks). Optional sub-fields
+// (kernel_of_truth, a signal item's limits) are OMITTED on failure, not
+// replaced — the UI renders them only when present, and a third copy of the
+// same limitation under three cards is repetition, not honesty. A field with
+// no entry here (a signal item's claim, a still_worth_verifying question, a
+// sources_of_noise field, a person-specific item) is blanked instead, and
+// the structural filter below drops its item.
+//
+// DE-DUPLICATE THE LIMITATION, NOT THE EPISTEMIC STANDARD. Surviving analysis
+// is never merged or dropped for sharing a fallback reason, and nothing
+// here asks the model to make failed content "more varied."
 const CLAIM_MODE_FALLBACKS = {
   en: {
     holds_up_instead: 'The claim as written goes beyond what the information available here establishes.',
     what_went_wrong: 'The conclusion depends on a real-world premise that has not been established in this analysis. Evidence would be needed to determine whether that premise is true and under what conditions.',
-    kernel_of_truth: 'There may be a narrower version of this claim worth investigating, but the available information does not establish what that version should be.',
     why_holds_up: 'This follows from the structure of the claim rather than from an outside empirical finding.',
-    doesnt_establish: 'This analysis does not determine what happens in practice. That requires evidence.',
-    bottom_line: 'The claim contains an empirical question that cannot be resolved from the information supplied here.',
+    takeaway: "The claim contains an empirical question that cannot be resolved from the information supplied here.",
+    takeaway_many: "Several of these claims depend on real-world effects that cannot be determined from the claims alone. They need evidence to resolve.",
+    skeptical: "Any version of this claim that states what actually happens in practice — the information supplied here does not establish it.",
+    skeptical_many: "Any version of these claims that states what actually happens in practice. Nothing supplied here establishes those effects; treat them as open until there is evidence.",
+    would_help: "What actually happens in practice would have to be shown by evidence — the claim itself cannot settle it.",
+    would_help_many: "What actually happens in practice, for each of these claims, would have to be shown by evidence. None of them can be settled from the claims alone.",
     framing: 'These claims can be examined for what they establish and what they assume. What actually happens in practice requires evidence that was not reviewed here.',
     noise_label: 'Goes beyond what is established here',
   },
   es: {
     holds_up_instead: 'La afirmación, tal como está formulada, va más allá de lo que establece la información disponible aquí.',
     what_went_wrong: 'La conclusión depende de una premisa sobre el mundo real que no se ha establecido en este análisis. Haría falta evidencia para determinar si esa premisa es cierta y en qué condiciones.',
-    kernel_of_truth: 'Puede existir una versión más acotada de esta afirmación que valga la pena investigar, pero la información disponible no establece cuál debería ser.',
     why_holds_up: 'Esto se desprende de la estructura de la afirmación, no de un hallazgo empírico externo.',
-    doesnt_establish: 'Este análisis no determina qué ocurre en la práctica. Eso requiere evidencia.',
-    bottom_line: 'La afirmación contiene una cuestión empírica que no puede resolverse con la información proporcionada aquí.',
+    takeaway: "La afirmación contiene una cuestión empírica que no puede resolverse con la información proporcionada aquí.",
+    takeaway_many: "Varias de estas afirmaciones dependen de efectos reales que no pueden determinarse a partir de las afirmaciones por sí solas. Hace falta evidencia para resolverlas.",
+    skeptical: "Cualquier versión de esta afirmación que diga lo que ocurre realmente en la práctica: la información disponible aquí no lo establece.",
+    skeptical_many: "Cualquier versión de estas afirmaciones que diga lo que ocurre realmente en la práctica. Nada de lo aportado aquí establece esos efectos; conviene tratarlos como cuestiones abiertas hasta que haya evidencia.",
+    would_help: "Evidencia sobre lo que ocurre realmente en la práctica: la afirmación por sí sola no puede resolverlo.",
+    would_help_many: "Evidencia sobre lo que ocurre realmente en la práctica para cada una de estas afirmaciones. Ninguna puede resolverse a partir de las afirmaciones por sí solas.",
     framing: 'Estas afirmaciones pueden examinarse por lo que establecen y por lo que suponen. Lo que ocurre realmente en la práctica requiere evidencia que no se revisó aquí.',
     noise_label: 'Va más allá de lo que se establece aquí',
   },
   zh: {
     holds_up_instead: '这条说法按其原文，已经超出了此处可用信息所能确立的范围。',
     what_went_wrong: '这个结论依赖于一个现实世界的前提，而该前提在本次分析中并未得到确立。需要证据才能判断该前提是否成立、在什么条件下成立。',
-    kernel_of_truth: '这条说法可能存在一个更窄、值得研究的版本，但现有信息无法确定那个版本应该是什么。',
     why_holds_up: '这一点来自说法本身的结构，而不是来自外部的实证发现。',
-    doesnt_establish: '本次分析不能判断实际情况如何。那需要证据。',
-    bottom_line: '这条说法包含一个实证问题，无法仅凭此处提供的信息解决。',
+    takeaway: "这条说法包含一个实证问题，无法仅凭此处提供的信息解决。",
+    takeaway_many: "这些说法中有几条取决于现实中的实际效果，而这无法仅凭说法本身判断。需要证据才能解决。",
+    skeptical: "这条说法中任何断言实际情况如何的版本——此处可用的信息并不能确立它。",
+    skeptical_many: "这些说法中任何断言实际情况如何的版本。此处提供的信息都不能确立那些效果；在有证据之前，应将其视为未决问题。",
+    would_help: "关于实际情况如何的证据——说法本身无法解决这一点。",
+    would_help_many: "关于这些说法各自在实际中如何的证据。没有一条能仅凭说法本身得到解决。",
     framing: '可以就这些说法确立了什么、又假设了什么进行审视。实际情况如何，需要此处未审阅的证据。',
     noise_label: '超出了此处所能确立的范围',
   },
   hi: {
     holds_up_instead: 'यह दावा, जैसा लिखा गया है, यहाँ उपलब्ध जानकारी से जो स्थापित होता है उससे आगे जाता है।',
     what_went_wrong: 'यह निष्कर्ष वास्तविक दुनिया की एक ऐसी पूर्वधारणा पर टिका है जो इस विश्लेषण में स्थापित नहीं हुई है। यह तय करने के लिए प्रमाण चाहिए कि वह पूर्वधारणा सही है या नहीं, और किन परिस्थितियों में।',
-    kernel_of_truth: 'इस दावे का कोई सीमित रूप जाँच के लायक हो सकता है, लेकिन उपलब्ध जानकारी यह स्थापित नहीं करती कि वह रूप क्या होना चाहिए।',
     why_holds_up: 'यह दावे की बनावट से निकलता है, किसी बाहरी अनुभवजन्य निष्कर्ष से नहीं।',
-    doesnt_establish: 'यह विश्लेषण यह तय नहीं करता कि व्यवहार में क्या होता है। उसके लिए प्रमाण चाहिए।',
-    bottom_line: 'इस दावे में एक अनुभवजन्य प्रश्न है जिसे यहाँ दी गई जानकारी से हल नहीं किया जा सकता।',
+    takeaway: "इस दावे में एक अनुभवजन्य प्रश्न है जिसे यहाँ दी गई जानकारी से हल नहीं किया जा सकता।",
+    takeaway_many: "इनमें से कई दावे वास्तविक दुनिया के ऐसे प्रभावों पर टिके हैं जिन्हें केवल दावों से तय नहीं किया जा सकता। इन्हें हल करने के लिए प्रमाण चाहिए।",
+    skeptical: "इस दावे का कोई भी ऐसा रूप जो बताए कि व्यवहार में असल में क्या होता है - यहाँ उपलब्ध जानकारी उसे स्थापित नहीं करती।",
+    skeptical_many: "इन दावों का कोई भी ऐसा रूप जो बताए कि व्यवहार में असल में क्या होता है। यहाँ दी गई कोई भी जानकारी उन प्रभावों को स्थापित नहीं करती; प्रमाण मिलने तक इन्हें खुला प्रश्न मानें।",
+    would_help: "इस बात के प्रमाण कि व्यवहार में असल में क्या होता है - दावा अपने आप में इसे तय नहीं कर सकता।",
+    would_help_many: "इनमें से हर दावे के लिए इस बात के प्रमाण कि व्यवहार में असल में क्या होता है। इनमें से कोई भी केवल दावों से हल नहीं किया जा सकता।",
     framing: 'इन दावों की जाँच इस आधार पर की जा सकती है कि वे क्या स्थापित करते हैं और क्या मान लेते हैं। व्यवहार में असल में क्या होता है, इसके लिए ऐसे प्रमाण चाहिए जिनकी यहाँ समीक्षा नहीं हुई।',
     noise_label: 'यहाँ जो स्थापित है उससे आगे जाता है',
   },
   ar: {
     holds_up_instead: 'الادعاء بصيغته الحالية يتجاوز ما تثبته المعلومات المتاحة هنا.',
     what_went_wrong: 'تعتمد هذه النتيجة على مقدمة واقعية لم تُثبَت في هذا التحليل. يلزم وجود أدلة لتحديد ما إذا كانت تلك المقدمة صحيحة وفي أي ظروف.',
-    kernel_of_truth: 'قد توجد صيغة أضيق من هذا الادعاء تستحق البحث، لكن المعلومات المتاحة لا تحدد ما ينبغي أن تكون عليه تلك الصيغة.',
     why_holds_up: 'هذا يترتب على بنية الادعاء نفسه، لا على نتيجة تجريبية خارجية.',
-    doesnt_establish: 'لا يحدد هذا التحليل ما يحدث فعليًا في الواقع. ذلك يتطلب أدلة.',
-    bottom_line: 'يتضمن الادعاء مسألة تجريبية لا يمكن حسمها من المعلومات المقدمة هنا.',
+    takeaway: "يتضمن الادعاء مسألة تجريبية لا يمكن حسمها من المعلومات المقدمة هنا.",
+    takeaway_many: "تعتمد عدة ادعاءات هنا على آثار واقعية لا يمكن تحديدها من الادعاءات وحدها. وهي تحتاج إلى أدلة لحسمها.",
+    skeptical: "أي صيغة من هذا الادعاء تقرر ما يحدث فعليًا في الواقع؛ فالمعلومات المتاحة هنا لا تثبت ذلك.",
+    skeptical_many: "أي صيغة من هذه الادعاءات تقرر ما يحدث فعليًا في الواقع. لا شيء مما قُدّم هنا يثبت تلك الآثار؛ فلتُعامَل على أنها مسائل مفتوحة إلى أن تتوفر أدلة.",
+    would_help: "أدلة على ما يحدث فعليًا في الواقع؛ فالادعاء وحده لا يمكنه حسم ذلك.",
+    would_help_many: "أدلة على ما يحدث فعليًا في الواقع لكل ادعاء من هذه الادعاءات. لا يمكن حسم أي منها من الادعاءات وحدها.",
     framing: 'يمكن فحص هذه الادعاءات من حيث ما تثبته وما تفترضه. أما ما يحدث فعليًا في الواقع فيتطلب أدلة لم تُراجَع هنا.',
     noise_label: 'يتجاوز ما هو ثابت هنا',
   },
   pt: {
     holds_up_instead: 'A afirmação, tal como está escrita, vai além do que a informação disponível aqui estabelece.',
     what_went_wrong: 'A conclusão depende de uma premissa sobre o mundo real que não foi estabelecida nesta análise. Seriam necessárias evidências para determinar se essa premissa é verdadeira e em que condições.',
-    kernel_of_truth: 'Pode haver uma versão mais restrita desta afirmação que valha a pena investigar, mas a informação disponível não estabelece qual deveria ser essa versão.',
     why_holds_up: 'Isto decorre da estrutura da afirmação, não de uma constatação empírica externa.',
-    doesnt_establish: 'Esta análise não determina o que acontece na prática. Isso exige evidências.',
-    bottom_line: 'A afirmação contém uma questão empírica que não pode ser resolvida com a informação fornecida aqui.',
+    takeaway: "A afirmação contém uma questão empírica que não pode ser resolvida com a informação fornecida aqui.",
+    takeaway_many: "Várias dessas afirmações dependem de efeitos no mundo real que não podem ser determinados a partir das afirmações por si sós. Elas precisam de evidências para serem resolvidas.",
+    skeptical: "Qualquer versão desta afirmação que diga o que de fato acontece na prática — a informação disponível aqui não estabelece isso.",
+    skeptical_many: "Qualquer versão dessas afirmações que diga o que de fato acontece na prática. Nada do que foi fornecido aqui estabelece esses efeitos; trate-os como questões em aberto até que haja evidências.",
+    would_help: "Evidências sobre o que de fato acontece na prática — a afirmação por si só não pode resolver isso.",
+    would_help_many: "Evidências sobre o que de fato acontece na prática para cada uma dessas afirmações. Nenhuma delas pode ser resolvida a partir das afirmações por si sós.",
     framing: 'Estas afirmações podem ser examinadas pelo que estabelecem e pelo que pressupõem. O que acontece de fato na prática exige evidências que não foram revisadas aqui.',
     noise_label: 'Vai além do que está estabelecido aqui',
   },
   fr: {
     holds_up_instead: "L'affirmation, telle qu'elle est formulée, va au-delà de ce qu'établissent les informations disponibles ici.",
     what_went_wrong: "La conclusion repose sur une prémisse concernant le monde réel qui n'a pas été établie dans cette analyse. Des preuves seraient nécessaires pour déterminer si cette prémisse est vraie et dans quelles conditions.",
-    kernel_of_truth: "Il existe peut-être une version plus restreinte de cette affirmation qui mériterait d'être examinée, mais les informations disponibles ne permettent pas d'établir laquelle.",
     why_holds_up: "Cela découle de la structure de l'affirmation, et non d'un constat empirique extérieur.",
-    doesnt_establish: "Cette analyse ne détermine pas ce qui se passe en pratique. Cela exige des preuves.",
-    bottom_line: "L'affirmation contient une question empirique qui ne peut pas être tranchée à partir des informations fournies ici.",
+    takeaway: "L'affirmation contient une question empirique qui ne peut pas être tranchée à partir des informations fournies ici.",
+    takeaway_many: "Plusieurs de ces affirmations dépendent d'effets réels que les affirmations seules ne permettent pas de déterminer. Il faut des preuves pour les trancher.",
+    skeptical: "Toute version de cette affirmation qui dit ce qui se passe réellement en pratique — les informations disponibles ici ne l'établissent pas.",
+    skeptical_many: "Toute version de ces affirmations qui dit ce qui se passe réellement en pratique. Rien de ce qui a été fourni ici n'établit ces effets ; il faut les considérer comme des questions ouvertes tant qu'il n'y a pas de preuves.",
+    would_help: "Des preuves de ce qui se passe réellement en pratique — l'affirmation seule ne peut pas le trancher.",
+    would_help_many: "Des preuves de ce qui se passe réellement en pratique pour chacune de ces affirmations. Aucune ne peut être tranchée à partir des affirmations seules.",
     framing: "Ces affirmations peuvent être examinées pour ce qu'elles établissent et ce qu'elles présupposent. Ce qui se passe réellement en pratique exige des preuves qui n'ont pas été examinées ici.",
     noise_label: "Va au-delà de ce qui est établi ici",
   },
   de: {
     holds_up_instead: 'Die Behauptung geht in dieser Form über das hinaus, was die hier verfügbaren Informationen belegen.',
     what_went_wrong: 'Die Schlussfolgerung stützt sich auf eine Annahme über die reale Welt, die in dieser Analyse nicht belegt wurde. Es bräuchte Belege, um festzustellen, ob diese Annahme zutrifft und unter welchen Bedingungen.',
-    kernel_of_truth: 'Es könnte eine engere Fassung dieser Behauptung geben, die sich zu prüfen lohnt, aber die verfügbaren Informationen legen nicht fest, wie diese Fassung lauten müsste.',
     why_holds_up: 'Das ergibt sich aus dem Aufbau der Behauptung selbst, nicht aus einem externen empirischen Befund.',
-    doesnt_establish: 'Diese Analyse legt nicht fest, was in der Praxis geschieht. Dafür braucht es Belege.',
-    bottom_line: 'Die Behauptung enthält eine empirische Frage, die sich aus den hier vorliegenden Informationen nicht klären lässt.',
+    takeaway: "Die Behauptung enthält eine empirische Frage, die sich aus den hier vorliegenden Informationen nicht klären lässt.",
+    takeaway_many: "Mehrere dieser Behauptungen hängen von realen Wirkungen ab, die sich aus den Behauptungen allein nicht bestimmen lassen. Um sie zu klären, braucht es Belege.",
+    skeptical: "Jede Fassung dieser Behauptung, die sagt, was in der Praxis tatsächlich geschieht — die hier verfügbaren Informationen belegen das nicht.",
+    skeptical_many: "Jede Fassung dieser Behauptungen, die sagt, was in der Praxis tatsächlich geschieht. Nichts von dem, was hier vorliegt, belegt diese Wirkungen; bis es Belege gibt, bleiben sie offene Fragen.",
+    would_help: "Belege dafür, was in der Praxis tatsächlich geschieht — die Behauptung allein kann das nicht klären.",
+    would_help_many: "Belege dafür, was bei jeder dieser Behauptungen in der Praxis tatsächlich geschieht. Keine davon lässt sich aus den Behauptungen allein klären.",
     framing: 'Diese Behauptungen lassen sich daraufhin prüfen, was sie belegen und was sie voraussetzen. Was in der Praxis tatsächlich geschieht, erfordert Belege, die hier nicht geprüft wurden.',
     noise_label: 'Geht über das hier Belegte hinaus',
   },
   ja: {
     holds_up_instead: 'この主張は、書かれている形のままでは、ここで利用できる情報が裏づける範囲を超えています。',
     what_went_wrong: 'この結論は、今回の分析では確認されていない現実世界の前提に依存しています。その前提が正しいのか、どのような条件で成り立つのかを判断するには証拠が必要です。',
-    kernel_of_truth: 'この主張には、調べる価値のあるより限定的な形があるかもしれませんが、手元の情報からはそれがどのような形であるべきかは確認できません。',
     why_holds_up: 'これは外部の実証的な知見ではなく、主張そのものの構造から導かれます。',
-    doesnt_establish: 'この分析は、実際に何が起きるかを判断するものではありません。それには証拠が必要です。',
-    bottom_line: 'この主張には、ここで示された情報だけでは解決できない実証的な問いが含まれています。',
+    takeaway: "この主張には、ここで示された情報だけでは解決できない実証的な問いが含まれています。",
+    takeaway_many: "これらの主張のいくつかは、主張そのものからは判断できない現実の効果に依存しています。解決には証拠が必要です。",
+    skeptical: "この主張のうち、実際に何が起きるかを断定している部分。ここで利用できる情報はそれを裏づけていません。",
+    skeptical_many: "これらの主張のうち、実際に何が起きるかを断定している部分。ここで示された情報はどれもその効果を裏づけていません。証拠が出るまでは未解決の問いとして扱うべきです。",
+    would_help: "実際に何が起きるかについての証拠。主張そのものではそれを解決できません。",
+    would_help_many: "これらの主張それぞれについて、実際に何が起きるかを示す証拠。どれも主張そのものからは解決できません。",
     framing: 'これらの主張は、何を裏づけ、何を前提にしているかという観点から検討できます。実際に何が起きるかは、ここでは確認していない証拠を必要とします。',
     noise_label: 'ここで確認できる範囲を超えている',
   },
   ko: {
     holds_up_instead: '이 주장은 쓰인 그대로라면, 여기서 이용 가능한 정보가 뒷받침하는 범위를 넘어섭니다.',
     what_went_wrong: '이 결론은 이번 분석에서 확인되지 않은 현실 세계의 전제에 기대고 있습니다. 그 전제가 참인지, 어떤 조건에서 성립하는지 판단하려면 증거가 필요합니다.',
-    kernel_of_truth: '이 주장에는 살펴볼 만한 더 좁은 형태가 있을 수 있지만, 이용 가능한 정보로는 그 형태가 무엇이어야 하는지 확인할 수 없습니다.',
     why_holds_up: '이는 외부의 실증적 발견이 아니라 주장 자체의 구조에서 따라 나옵니다.',
-    doesnt_establish: '이 분석은 실제로 무슨 일이 일어나는지를 판단하지 않습니다. 그것은 증거가 필요합니다.',
-    bottom_line: '이 주장에는 여기서 제공된 정보만으로는 해결할 수 없는 실증적 질문이 담겨 있습니다.',
+    takeaway: "이 주장에는 여기서 제공된 정보만으로는 해결할 수 없는 실증적 질문이 담겨 있습니다.",
+    takeaway_many: "이 주장들 중 여럿은 주장만으로는 판단할 수 없는 현실 세계의 효과에 달려 있습니다. 해결하려면 증거가 필요합니다.",
+    skeptical: "이 주장 가운데 실제로 무슨 일이 일어나는지를 단정하는 모든 형태. 여기서 이용 가능한 정보는 그것을 뒷받침하지 않습니다.",
+    skeptical_many: "이 주장들 가운데 실제로 무슨 일이 일어나는지를 단정하는 모든 형태. 여기서 제공된 어떤 정보도 그 효과를 뒷받침하지 않으므로, 증거가 나올 때까지 미해결 질문으로 다루어야 합니다.",
+    would_help: "실제로 무슨 일이 일어나는지에 대한 증거. 주장 자체로는 그것을 해결할 수 없습니다.",
+    would_help_many: "이 주장들 각각에 대해 실제로 무슨 일이 일어나는지를 보여주는 증거. 어느 것도 주장만으로는 해결할 수 없습니다.",
     framing: '이 주장들은 무엇을 뒷받침하고 무엇을 전제하는지의 관점에서 검토할 수 있습니다. 실제로 무슨 일이 일어나는지는 여기서 검토하지 않은 증거를 필요로 합니다.',
     noise_label: '여기서 확인된 범위를 넘어섬',
   },
   ru: {
     holds_up_instead: 'Утверждение в том виде, в каком оно сформулировано, выходит за рамки того, что подтверждает доступная здесь информация.',
     what_went_wrong: 'Вывод опирается на предпосылку о реальном мире, которая в этом анализе не была установлена. Чтобы определить, верна ли эта предпосылка и при каких условиях, нужны доказательства.',
-    kernel_of_truth: 'Возможно, существует более узкая версия этого утверждения, которую стоит изучить, но доступная информация не позволяет установить, какой она должна быть.',
     why_holds_up: 'Это следует из структуры самого утверждения, а не из внешнего эмпирического вывода.',
-    doesnt_establish: 'Этот анализ не определяет, что происходит на практике. Для этого нужны доказательства.',
-    bottom_line: 'Утверждение содержит эмпирический вопрос, который нельзя разрешить на основе представленной здесь информации.',
+    takeaway: "Утверждение содержит эмпирический вопрос, который нельзя разрешить на основе представленной здесь информации.",
+    takeaway_many: "Несколько из этих утверждений зависят от реальных эффектов, которые нельзя определить из самих утверждений. Чтобы их разрешить, нужны доказательства.",
+    skeptical: "Любая версия этого утверждения, которая говорит, что происходит на практике, — доступная здесь информация этого не подтверждает.",
+    skeptical_many: "Любая версия этих утверждений, которая говорит, что происходит на практике. Ничто из представленного здесь не подтверждает эти эффекты; пока нет доказательств, их следует считать открытыми вопросами.",
+    would_help: "Доказательства того, что происходит на практике, — само утверждение этого разрешить не может.",
+    would_help_many: "Доказательства того, что происходит на практике, для каждого из этих утверждений. Ни одно из них нельзя разрешить на основе одних лишь утверждений.",
     framing: 'Эти утверждения можно рассмотреть с точки зрения того, что они подтверждают и что предполагают. Что происходит на практике — требует доказательств, которые здесь не рассматривались.',
     noise_label: 'Выходит за рамки установленного здесь',
   },
   th: {
     holds_up_instead: 'ข้อกล่าวอ้างตามที่เขียนไว้ ไปไกลกว่าสิ่งที่ข้อมูลที่มีอยู่ตรงนี้ยืนยันได้',
     what_went_wrong: 'ข้อสรุปนี้ขึ้นอยู่กับสมมติฐานเกี่ยวกับโลกจริงที่ยังไม่ได้รับการยืนยันในการวิเคราะห์นี้ จำเป็นต้องมีหลักฐานเพื่อตัดสินว่าสมมติฐานนั้นเป็นจริงหรือไม่ และภายใต้เงื่อนไขใด',
-    kernel_of_truth: 'อาจมีข้อกล่าวอ้างในรูปแบบที่แคบกว่านี้ที่ควรค่าแก่การตรวจสอบ แต่ข้อมูลที่มีอยู่ไม่สามารถระบุได้ว่ารูปแบบนั้นควรเป็นอย่างไร',
     why_holds_up: 'ข้อนี้มาจากโครงสร้างของข้อกล่าวอ้างเอง ไม่ใช่จากข้อค้นพบเชิงประจักษ์ภายนอก',
-    doesnt_establish: 'การวิเคราะห์นี้ไม่ได้ตัดสินว่าในทางปฏิบัติเกิดอะไรขึ้น สิ่งนั้นต้องอาศัยหลักฐาน',
-    bottom_line: 'ข้อกล่าวอ้างนี้มีคำถามเชิงประจักษ์ที่ไม่สามารถหาคำตอบได้จากข้อมูลที่ให้มาตรงนี้',
+    takeaway: "ข้อกล่าวอ้างนี้มีคำถามเชิงประจักษ์ที่ไม่สามารถหาคำตอบได้จากข้อมูลที่ให้มาตรงนี้",
+    takeaway_many: "ข้อกล่าวอ้างหลายข้อในที่นี้ขึ้นอยู่กับผลที่เกิดขึ้นจริงในโลกซึ่งไม่สามารถตัดสินได้จากตัวข้อกล่าวอ้างเพียงอย่างเดียว จำเป็นต้องมีหลักฐานจึงจะหาข้อสรุปได้",
+    skeptical: "ข้อกล่าวอ้างนี้ในรูปแบบใดก็ตามที่ระบุว่าในทางปฏิบัติเกิดอะไรขึ้นจริง — ข้อมูลที่มีอยู่ตรงนี้ไม่ได้ยืนยันเช่นนั้น",
+    skeptical_many: "ข้อกล่าวอ้างเหล่านี้ในรูปแบบใดก็ตามที่ระบุว่าในทางปฏิบัติเกิดอะไรขึ้นจริง ไม่มีสิ่งใดที่ให้มาตรงนี้ยืนยันผลเหล่านั้น ควรถือเป็นคำถามที่ยังเปิดอยู่จนกว่าจะมีหลักฐาน",
+    would_help: "หลักฐานว่าในทางปฏิบัติเกิดอะไรขึ้นจริง — ตัวข้อกล่าวอ้างเองไม่สามารถตัดสินเรื่องนี้ได้",
+    would_help_many: "หลักฐานว่าในทางปฏิบัติเกิดอะไรขึ้นจริงสำหรับข้อกล่าวอ้างแต่ละข้อ ไม่มีข้อใดที่ตัดสินได้จากตัวข้อกล่าวอ้างเพียงอย่างเดียว",
     framing: 'ข้อกล่าวอ้างเหล่านี้สามารถพิจารณาได้ว่ายืนยันอะไรและตั้งอยู่บนสมมติฐานอะไร ส่วนสิ่งที่เกิดขึ้นจริงในทางปฏิบัติต้องอาศัยหลักฐานที่ไม่ได้ตรวจสอบตรงนี้',
     noise_label: 'ไปไกลกว่าสิ่งที่ยืนยันได้ตรงนี้',
   },
   vi: {
     holds_up_instead: 'Tuyên bố như đang được viết đã vượt quá những gì thông tin có sẵn ở đây xác lập được.',
     what_went_wrong: 'Kết luận này dựa trên một tiền đề về thế giới thực chưa được xác lập trong phân tích này. Cần có bằng chứng để xác định tiền đề đó có đúng hay không và trong những điều kiện nào.',
-    kernel_of_truth: 'Có thể tồn tại một phiên bản hẹp hơn của tuyên bố này đáng để tìm hiểu, nhưng thông tin có sẵn không xác lập được phiên bản đó nên là gì.',
     why_holds_up: 'Điều này suy ra từ cấu trúc của chính tuyên bố, chứ không phải từ một phát hiện thực nghiệm bên ngoài.',
-    doesnt_establish: 'Phân tích này không xác định điều gì xảy ra trong thực tế. Điều đó cần bằng chứng.',
-    bottom_line: 'Tuyên bố này chứa một câu hỏi thực nghiệm không thể giải quyết từ thông tin được cung cấp ở đây.',
+    takeaway: "Tuyên bố này chứa một câu hỏi thực nghiệm không thể giải quyết từ thông tin được cung cấp ở đây.",
+    takeaway_many: "Một số tuyên bố trong đây phụ thuộc vào những tác động thực tế mà không thể xác định chỉ từ bản thân các tuyên bố. Cần có bằng chứng để giải quyết chúng.",
+    skeptical: "Bất kỳ phiên bản nào của tuyên bố này khẳng định điều thực sự xảy ra trong thực tế — thông tin có sẵn ở đây không xác lập điều đó.",
+    skeptical_many: "Bất kỳ phiên bản nào của các tuyên bố này khẳng định điều thực sự xảy ra trong thực tế. Không có gì được cung cấp ở đây xác lập những tác động đó; hãy xem chúng là câu hỏi còn bỏ ngỏ cho đến khi có bằng chứng.",
+    would_help: "Bằng chứng về điều thực sự xảy ra trong thực tế — bản thân tuyên bố không thể giải quyết điều đó.",
+    would_help_many: "Bằng chứng về điều thực sự xảy ra trong thực tế cho từng tuyên bố này. Không tuyên bố nào có thể được giải quyết chỉ từ bản thân các tuyên bố.",
     framing: 'Có thể xem xét các tuyên bố này ở khía cạnh chúng xác lập điều gì và giả định điều gì. Điều thực sự xảy ra trong thực tế cần đến bằng chứng chưa được xem xét ở đây.',
     noise_label: 'Vượt quá những gì được xác lập ở đây',
   },
 };
 
-// path → fallback key, or null for "blank it and let the structural filter
+// Which bottom-line list a path belongs to → its fallback wording key.
+const BOTTOM_LINE_FALLBACK_KEYS = {
+  supported_takeaways: 'takeaway',
+  treat_skeptically: 'skeptical',
+  what_would_change_the_answer: 'would_help',
+};
+
+// path → fallback key; 'OMIT' for an optional sub-field that is dropped
+// rather than replaced; null for "blank it and let the structural filter
 // drop the enclosing item".
 function fallbackKeyFor(path) {
   if (/^the_noise\[\d+\]\.what_the_evidence_supports_instead$/.test(path)) return 'holds_up_instead';
   if (/^the_noise\[\d+\]\.what_went_wrong$/.test(path)) return 'what_went_wrong';
-  if (/^the_noise\[\d+\]\.kernel_of_truth$/.test(path)) return 'kernel_of_truth';
+  if (/^the_noise\[\d+\]\.kernel_of_truth$/.test(path)) return 'OMIT';
   if (/^the_noise\[\d+\]\.noise_label$/.test(path)) return 'noise_label';
   if (/^the_signal\.items\[\d+\]\.basis$/.test(path)) return 'why_holds_up';
-  if (/^the_signal\.items\[\d+\]\.limits$/.test(path)) return 'doesnt_establish';
-  if (/^the_bottom_line\.\w+\[\d+\]$/.test(path)) return 'bottom_line';
+  if (/^the_signal\.items\[\d+\]\.limits$/.test(path)) return 'OMIT';
+  const bl = path.match(/^the_bottom_line\.(\w+)\[\d+\]$/);
+  if (bl) return BOTTOM_LINE_FALLBACK_KEYS[bl[1]] || null;
   if (path === 'framing') return 'framing';
   return null;
 }
 
+function fallbackByKey(key, userLanguage) {
+  const lang = String(userLanguage || 'en').toLowerCase().split('-')[0];
+  const table = CLAIM_MODE_FALLBACKS[lang] || CLAIM_MODE_FALLBACKS.en;
+  return table[key] || CLAIM_MODE_FALLBACKS.en[key] || '';
+}
+
+// Returns the replacement text, `null` to omit the (optional) field, or ''
+// to blank it so its item drops.
 function fallbackTextFor(path, userLanguage) {
   const key = fallbackKeyFor(path);
   if (!key) return '';
-  const lang = String(userLanguage || 'en').toLowerCase().split('-')[0];
-  const table = CLAIM_MODE_FALLBACKS[lang] || CLAIM_MODE_FALLBACKS.en;
-  return table[key] || CLAIM_MODE_FALLBACKS.en[key];
+  if (key === 'OMIT') return null;
+  return fallbackByKey(key, userLanguage);
+}
+
+// Within each bottom-line list: keep every surviving item untouched, and
+// fold ALL fallback items into at most one bullet — the list's own wording
+// when one item failed, the `_many` wording when several did — placed last,
+// after the substance. Five failed candidates out of eight is a three- or
+// four-bullet Bottom Line plus one limitation, not eight bullets of which
+// five say the same thing. Compares against the fallback strings in every
+// language, so a language-mismatched fallback still collapses.
+function collapseBottomLineFallbacks(parsed, userLanguage) {
+  const bl = parsed?.the_bottom_line;
+  if (!bl || typeof bl !== 'object') return 0;
+  let collapsed = 0;
+  for (const [list, key] of Object.entries(BOTTOM_LINE_FALLBACK_KEYS)) {
+    if (!Array.isArray(bl[list])) continue;
+    const isFallback = new Set();
+    for (const table of Object.values(CLAIM_MODE_FALLBACKS)) {
+      if (table[key]) isFallback.add(table[key]);
+      if (table[`${key}_many`]) isFallback.add(table[`${key}_many`]);
+    }
+    const survivors = bl[list].filter(x => !isFallback.has(x));
+    const failed = bl[list].length - survivors.length;
+    if (failed === 0) continue;
+    collapsed += failed;
+    survivors.push(fallbackByKey(failed === 1 ? key : `${key}_many`, userLanguage));
+    bl[list] = survivors;
+  }
+  return collapsed;
 }
 
 // The pipeline. Runs AFTER runOutputGuard (its repair pass can introduce or
@@ -564,12 +657,14 @@ async function enforceClaimModeFields(parsed, userLanguage, supplied, label) {
   // recheck actually ran on it and passed it. Unchecked (judge unavailable
   // for that batch) is treated as fail here — this stage exists to guarantee
   // the field, not to hope about it.
-  let kept = 0, fellBack = 0, blanked = 0;
+  let kept = 0, fellBack = 0, blanked = 0, omitted = 0;
   const fellBackPaths = new Set();
   const apply = (path, text) => {
     setAtPath(parsed, path, text);
     fellBackPaths.add(path);
-    if (text) fellBack++; else blanked++;
+    if (text === null) omitted++;
+    else if (text) fellBack++;
+    else blanked++;
   };
   toRewrite.forEach((path, i) => {
     const text = rewrites[i];
@@ -597,9 +692,14 @@ async function enforceClaimModeFields(parsed, userLanguage, supplied, label) {
     }
   }
 
+  // 5c: presentation. Several failed bottom-line items collapse into one
+  // limitation bullet per list; surviving analysis is untouched.
+  const collapsed = collapseBottomLineFallbacks(parsed, userLanguage);
+
   const recheckNote = recheck.unchecked.size ? ` revalidation-unchecked=${recheck.unchecked.size} (those rewrites not trusted)` : '';
   const orphanNote = orphanClaims.length ? ` signal-claims-rejudged=${orphanClaims.length} dropped=${orphanDropped}` : '';
-  console.log(`[${label}] claim-mode: regex=${regexHits} semantic=${semantic.failures.size}${semanticNote} rewritten=${kept} fallback=${fellBack} blanked=${blanked}${orphanNote}${recheckNote}`);
+  const collapseNote = collapsed ? ` bottom-line-collapsed=${collapsed}` : '';
+  console.log(`[${label}] claim-mode: regex=${regexHits} semantic=${semantic.failures.size}${semanticNote} rewritten=${kept} fallback=${fellBack} omitted=${omitted} blanked=${blanked}${orphanNote}${collapseNote}${recheckNote}`);
   return parsed;
 }
 

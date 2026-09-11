@@ -637,6 +637,30 @@ That is the rule applied faithfully ("empty or epistemically limited is better t
 completeness"); how much boilerplate density is acceptable is a product judgment for the owner,
 recorded here so it is made deliberately rather than discovered.
 
+**Fallback presentation (V7.2, same day).** Twelve fallbacks in one run meant enforcement was working
+and presentation wasn't: the Bottom Line rendered the same sentence three times. Owner's rule —
+DE-DUPLICATE THE LIMITATION, NOT THE EPISTEMIC STANDARD — implemented as three levers, the judge
+untouched:
+1. **Per-list wording.** The single `bottom_line` fallback became `takeaway` / `skeptical` /
+   `would_help`, each with a `_many` variant, in all 13 languages.
+2. **Omit optional sub-fields.** A failed `kernel_of_truth` or signal `limits` is now omitted (set
+   `null`) rather than replaced — the UI renders them only when present, and "There may be a
+   narrower version…" under three cards was repetition, not honesty. Required fields
+   (`what_the_evidence_supports_instead`, `what_went_wrong`, `basis`, `framing`, `noise_label`) keep
+   their fixed text, because dropping them drops the card.
+3. **Collapse per list** (`collapseBottomLineFallbacks`, stage 5c). Surviving items are never
+   touched; all fallback items in one list fold into at most one bullet, placed last — the list's
+   own wording when one item failed, the `_many` wording when several did. Five failed candidates
+   out of eight is a three-bullet Bottom Line plus one limitation, not eight bullets. Compares
+   against every language's strings, so a language-mismatched fallback still collapses. Nothing asks
+   the model to make failed content "more varied."
+   Live: run 7 rendered one collapsed "Several of these claims depend on real-world effects…"
+   bullet, last; kernels 3/4 present, the fourth omitted; no repeated fallback anywhere. **Bug the
+   unit test caught before it shipped:** the English `would_help` fallbacks began "Evidence about…",
+   which matches `CLAIM_MODE_BANNED_RE` — the structural filter would have silently dropped the very
+   limitation bullet the collapse had just written. Reworded; `test_fallbacks.js` now checks every
+   fallback string in every language against the regex for exactly this reason.
+
 **What this does NOT fix, honestly:** the independent judge tally on a finished response still
 finds 2–3 borderline flags per run — a definitional identity the judge reads as empirical ("energy
 balance is part of what determines whether body mass changes"), a person-specific
