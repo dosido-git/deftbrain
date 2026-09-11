@@ -38,6 +38,8 @@ const EXAMPLES = [
   { dishKey: 'rcs_ex1_dish', problemKey: 'rcs_ex1_problem' },
   { dishKey: 'rcs_ex2_dish', problemKey: 'rcs_ex2_problem' },
   { dishKey: 'rcs_ex3_dish', problemKey: 'rcs_ex3_problem' },
+  { dishKey: 'rcs_ex4_dish', problemKey: 'rcs_ex4_problem' },
+  { dishKey: 'rcs_ex5_dish', problemKey: 'rcs_ex5_problem' },
 ];
 
 // Qualitative bands only — never a number. Badge color leans on the same

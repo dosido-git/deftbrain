@@ -570,9 +570,13 @@ const ReadTheRoom = ({ tool }) => {
   const loadExample = useCallback(() => {
     handleReset();
     setGroup('prepare'); setSub('event'); setSubConfirmed(true);
+    // Five, rotated across every comfort level.
     const ex = pickExample('ReadTheRoom', [
       { type: 'work_happy_hour', details: 'rr_example_event_details',  people: 'rr_example_people',  worry: 'rr_example_concerns',  comfort: 'nervous' },
       { type: 'family_holiday',  details: 'rr_example2_event_details', people: 'rr_example2_people', worry: 'rr_example2_concerns', comfort: 'panicking' },
+      { type: 'first_date',      details: 'rr_example3_event_details', people: 'rr_example3_people', worry: 'rr_example3_concerns', comfort: 'slightly_awkward' },
+      { type: 'networking',      details: 'rr_example4_event_details', people: 'rr_example4_people', worry: 'rr_example4_concerns', comfort: 'nervous' },
+      { type: 'new_job',         details: 'rr_example5_event_details', people: 'rr_example5_people', worry: 'rr_example5_concerns', comfort: 'fine' },
     ]);
     setEventType(ex.type);
     setEventDetails(t(ex.details));
