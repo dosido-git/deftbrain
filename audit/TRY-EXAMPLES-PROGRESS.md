@@ -37,9 +37,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 7 | BeforeTheCrash | inline | check-in (patterns reads the saved log — no seed) | 2 | 5 (sliding / good / marked crash / wired + wearable numbers / flat-withdrawn) | ✅ 2026-09-11 |
 | 8 | BeliefStressTest | i18n | — | 8 bare beliefs | 5 rotated pairs, 3 with the optional context (3 keys ×13); 8 chips kept | ✅ 2026-09-11 |
 | 9 | BikeMedic | i18n | 10 problems (loadExample seeds the interpreter or a tree) | 2 | 5 (shifting / noise / repeat flat / hydraulic brakes / 'custom' vague fault; 3 keys ×13; custom no longer routed to a tree that does not exist) | ✅ 2026-09-11 |
-| 10 | BillRescue | inline | 8 bill types / 7 letter types | ? | | |
-| 11 | Bookmark | none | 4 media types | 0 | | |
-| 12 | BragSheetBuilder | inline | tabs | 2 | | |
+| 10 | BillRescue | i18n | rescue / letters (quick, triage, rehearse, tracker take no free input) | 2 (rescue) | 5 + 5 (rescue: 5 bill types × 5 statuses; letters: 5 letter types, 2 with context; 10 keys ×13; fixed dead 'dispute' reason value) | ✅ 2026-09-11 |
+| 11 | Bookmark | i18n | show / book / game / sports | 1 per type, no rotation | 5 per type via pickExample('Bookmark:<type>') — precise vs vague stopping points, one per type with nothing remembered (44 keys ×13) | ✅ 2026-09-11 |
+| 12 | BragSheetBuilder | inline | transform (other tabs consume results) | 2 | 5 (senior tech / mid nonprofit / entry retail / executive finance / student, 3 lines) — role, years, purposes, tone now travel with each | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

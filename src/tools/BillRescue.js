@@ -631,12 +631,34 @@ const BillRescue = ({ tool }) => {
     setResults(null); setError('');
   }, [setBillType, setResults]);
 
+  // Five per view, rotated. Rescue: too big to pay, simply wrong, already in
+  // collections, rent a few weeks late, and a loan nobody can explain — five
+  // different verdicts. Letters: one seed per kind of letter people actually
+  // send, two with the optional context filled.
   const loadExample = useCallback(() => {
-    // A bill too big to pay, and a bill that is simply wrong — two different
-    // asks, and the letter the tool writes is not the same one.
+    if (view === 'letters') {
+      const ex = pickExample('BillRescue:letters', [
+        { type: 'hardship',        billType: 'medical',        amount: '3800', situationKey: 'br_lt_ex1_situation' },
+        { type: 'dispute',         billType: 'phone_internet', amount: '212',  situationKey: 'br_lt_ex2_situation', contextKey: 'br_lt_ex2_context' },
+        { type: 'goodwill',        billType: 'credit_card',    amount: '',     situationKey: 'br_lt_ex3_situation' },
+        { type: 'cease_desist',    billType: 'other',          amount: '1150', situationKey: 'br_lt_ex4_situation', contextKey: 'br_lt_ex4_context' },
+        { type: 'payment_confirm', billType: 'auto',           amount: '640',  situationKey: 'br_lt_ex5_situation' },
+      ]);
+      setLtType(ex.type);
+      setLtBillType(ex.billType);
+      setLtAmount(ex.amount);
+      setLtSituation(t(ex.situationKey));
+      setLtContext(ex.contextKey ? t(ex.contextKey) : '');
+      setLtResults(null);
+      setError('');
+      return;
+    }
     const ex = pickExample('BillRescue', [
-      { billType: 'medical',   amount: '2400', overdue: '60_days', reason: ['cant_afford', 'dont_understand'], detailsKey: 'br_example_details' },
-      { billType: 'utilities', amount: '486',  overdue: 'current', reason: ['dont_understand', 'dispute'],     detailsKey: 'br_example2_details' },
+      { billType: 'medical',       amount: '2400',  overdue: '60_days',     reason: ['cant_afford', 'dont_understand'], detailsKey: 'br_example_details' },
+      { billType: 'utilities',     amount: '486',   overdue: 'current',     reason: ['dont_understand', 'disputing'],   detailsKey: 'br_example2_details' },
+      { billType: 'credit_card',   amount: '7300',  overdue: 'collections', reason: ['too_scared', 'lost_job'],         detailsKey: 'br_example3_details' },
+      { billType: 'rent',          amount: '1650',  overdue: '30_days',     reason: ['reduced_hours', 'cant_afford'],   detailsKey: 'br_example4_details' },
+      { billType: 'student_loans', amount: '41000', overdue: 'unknown',     reason: ['forgot', 'dont_understand'],      detailsKey: 'br_example5_details' },
     ]);
     setBillType(ex.billType);
     setAmount(ex.amount);
@@ -644,7 +666,7 @@ const BillRescue = ({ tool }) => {
     setReason(ex.reason);
     setDetails(t(ex.detailsKey));
     setError('');
-  }, [setBillType, t]);
+  }, [view, setBillType, t]);
 
   // ── Build text for copy/print ──
   const buildPlanText = useCallback(() => {

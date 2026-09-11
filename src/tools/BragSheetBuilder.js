@@ -39,7 +39,57 @@ const EXAMPLES = [
   ],
   currentEntry: '',
 },
-];;
+  // Five, rotated: senior tech, mid nonprofit, and below — an entry-level
+  // retail supervisor whose wins sound small, an executive whose wins are
+  // all numbers and need restraint, and a student with three thin lines and
+  // no job title at all. Purpose and tone travel with each.
+  {
+  industry: 'retail',
+  level: 'entry',
+  roleTitle: 'Shift supervisor',
+  yearsExp: '2',
+  purposes: ['resume', 'interview'],
+  tone: 'confident',
+  accomplishments: [
+    'Covered the closing shift alone for three months when we were short-staffed. Till was never out by more than a couple of dollars.',
+    'Figured out that the Sunday delivery kept arriving before anyone was in, so I moved the rota by an hour. Stopped the stock sitting on the pavement.',
+    'Trained six new starters on the till and the returns process. Two of them are now key-holders.',
+    'Got picked to run the store when the manager was on leave for two weeks. Nothing went wrong, which I am told is the point.',
+  ],
+  currentEntry: '',
+},
+  {
+  industry: 'finance',
+  level: 'executive',
+  roleTitle: 'VP Operations',
+  yearsExp: '18',
+  purposes: ['linkedin'],
+  tone: 'understated',
+  accomplishments: [
+    'Took operating cost from 41% of revenue to 33% over three years without a layoff round, mostly by consolidating four regional back offices into one shared-services centre.',
+    'Led the integration of a 600-person acquisition; retained 94% of the acquired leadership at the twelve-month mark against a plan of 80%.',
+    'Built the risk and compliance function from two people to a 40-person team that passed three regulator examinations with no material findings.',
+    'Sponsored the payments platform replacement — $28M budget, delivered at $26.1M, cut settlement time from T+2 to same-day.',
+    'Reduced voluntary attrition in operations from 22% to 11% in two years. The exit-interview data pointed at scheduling, so we changed scheduling.',
+  ],
+  currentEntry: '',
+},
+  {
+  industry: 'education',
+  level: 'student',
+  roleTitle: '',
+  yearsExp: '0',
+  purposes: ['other'],
+  purposeOther: 'Scholarship application',
+  tone: 'balanced',
+  accomplishments: [
+    'Tutored two younger students in maths every week for a year. Both passed.',
+    'Organised the food bank collection at school. We got about twice what the year before got.',
+    'Worked Saturdays at a garden centre the whole of sixth form.',
+  ],
+  currentEntry: '',
+},
+];
 const BragSheetBuilder = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -264,7 +314,12 @@ const BragSheetBuilder = ({ tool }) => {
     setLevel(ex.level);
     setAccomplishments(ex.accomplishments);
     setCurrentEntry(ex.currentEntry);
-  }, [setIndustry, setLevel, setAccomplishments, setCurrentEntry]);
+    setRoleTitle(ex.roleTitle ?? '');
+    setYearsExp(ex.yearsExp ?? '');
+    setPurposes(ex.purposes ?? ['resume']);
+    setPurposeOther(ex.purposeOther ?? '');
+    setTone(ex.tone ?? 'balanced');
+  }, [setIndustry, setLevel, setAccomplishments, setCurrentEntry, setRoleTitle, setYearsExp, setPurposes, setPurposeOther, setTone]);
 
   const handleTweak = async (idx, instruction) => {
     const tr = getDisplayTransformations()[idx];
