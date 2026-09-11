@@ -50,6 +50,24 @@ const EXAMPLES = [
     goal: 'behavior_change',
     power: 'neutral',
   },
+  {
+    draft: "You keep messaging me on Slack at 10pm expecting an instant reply and honestly I'm exhausted. I have a life outside of this job and I'm not getting paid enough to be on call 24/7. This needs to stop.",
+    relationship: 'boss',
+    goal: 'set_boundary',
+    power: 'they_have_power',
+  },
+  {
+    draft: "You've had three weeks to fix the broken heater and it's still not fixed. I've been freezing every night and I am not paying full rent for a unit that's basically unlivable in December. I want a rent credit for every day this has been broken.",
+    relationship: 'landlord',
+    goal: 'compensation',
+    power: 'i_have_leverage',
+  },
+  {
+    draft: "I can't believe you told everyone at the party about what I told you in confidence. That was humiliating and you knew it was private. I need you to actually apologize instead of just saying 'sorry you feel that way'.",
+    relationship: 'friend',
+    goal: 'apology',
+    power: 'neutral',
+  },
 ];
 const VelvetHammer = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

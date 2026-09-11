@@ -79,6 +79,9 @@ const UpsellShield = ({ tool }) => {
     const ex = pickExample('UpsellShield', [
       { sit: 'us_ex_situation',  want: 'us_ex_want',  budget: 'us_ex_budget',  worry: 'us_ex_concerns' },
       { sit: 'us_ex2_situation', want: 'us_ex2_want', budget: 'us_ex2_budget', worry: 'us_ex2_concerns' },
+      { sit: 'us_ex3_situation', want: 'us_ex3_want', budget: 'us_ex3_budget', worry: 'us_ex3_concerns' },
+      { sit: 'us_ex4_situation', want: 'us_ex4_want', budget: 'us_ex4_budget', worry: 'us_ex4_concerns' },
+      { sit: 'us_ex5_situation', want: 'us_ex5_want', budget: 'us_ex5_budget', worry: 'us_ex5_concerns' },
     ]);
     setSituation(t(ex.sit));
     setWhatYouWant(t(ex.want));

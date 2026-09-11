@@ -131,6 +131,33 @@ const EXAMPLES = [
     goalsKey: 'vbd_ex2_goals',
     sessionMode: 'default',
   },
+  {
+    taskKey: 'vbd_ex3_task',
+    duration: 20,
+    checkInFreq: 10,
+    environmentKey: 'vbd_ex3_environment',
+    moodKey: 'vbd_ex3_mood',
+    goalsKey: 'vbd_ex3_goals',
+    sessionMode: 'sprint',
+  },
+  {
+    taskKey: 'vbd_ex4_task',
+    duration: 45,
+    checkInFreq: 20,
+    environmentKey: 'vbd_ex4_environment',
+    moodKey: 'vbd_ex4_mood',
+    goalsKey: 'vbd_ex4_goals',
+    sessionMode: 'creative',
+  },
+  {
+    taskKey: 'vbd_ex5_task',
+    duration: 15,
+    checkInFreq: 15,
+    environmentKey: 'vbd_ex5_environment',
+    moodKey: 'vbd_ex5_mood',
+    goalsKey: 'vbd_ex5_goals',
+    sessionMode: 'avoidance_buster',
+  },
 ];
 const VirtualBodyDouble = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

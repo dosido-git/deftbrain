@@ -145,6 +145,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 115 | ToolFinder | i18n | — | 3 | 5 (+ a friendship-repair dilemma, a two-job-offers decision-paralysis problem; 2 keys ×13) | ✅ 2026-09-11 |
 | 116 | TripRecon (i18n file: sensory-minefield-mapper.js) | i18n | — | 2 (grocery/hospital) | 5 (+ airport departures, opening-night movie theater, an outdoor wedding reception testing the 'other' concern with free-text notes; 7 keys ×13) | ✅ 2026-09-11 |
 | 117 | TruthBomb | i18n | — | 2 (friend, sibling) | 5 (+ a romantic partner/kids disagreement, a 20-year unspoken issue with a parent, an underleveled-and-underpaid conversation with a manager; 12 keys ×13) | ✅ 2026-09-11 |
+| 118 | UpsellShield | i18n | — | 2 (car dealership, funeral home) | 5 (+ phone-carrier plan, wedding photographer contract, HVAC furnace-replacement quote; 12 keys ×13) | ✅ 2026-09-11 |
+| 119 | VelvetHammer | inline | — | 2 (both behavior_change goal) | 5 (+ set_boundary with a boss, compensation from a landlord, apology from a friend; covers 4 of 6 goals and all 3 power dynamics) | ✅ 2026-09-11 |
+| 120 | VirtualBodyDouble | i18n | 6 session modes | 2 (both 'default' mode) | 5 (+ sprint-mode inbox cleanup, creative-mode logo sketching, avoidance_buster-mode dreaded phone call; covers 4 of 6 modes; 12 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
