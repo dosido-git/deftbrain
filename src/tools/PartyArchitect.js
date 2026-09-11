@@ -149,6 +149,10 @@ const PartyArchitect = ({ tool }) => {
   }, [occasion, guestCount, whoIsComing, space, budget, vibe, duration, constraints, callToolEndpoint, setResults, setPlans, t, userLocale, userCurrency, userRegion]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated across vibe, duration and budget: a chill backyard 40th,
+    // a tight housewarming with a noise curfew, an energetic kids' party,
+    // an elegant engagement bringing two families together, and a
+    // retirement party that must not feel like a funeral.
     const ex = pickExample('PartyArchitect', [
       { occasion: '40th birthday', guests: '22', vibe: 'chill', duration: '4_hours', budget: 900,
         mix: "Mostly close friends from the last 15 years, a few work people, 3 kids under 10. About a third haven't met each other.",
@@ -158,6 +162,18 @@ const PartyArchitect = ({ tool }) => {
         mix: 'Three couples from my old job, my brother, and the neighbours from downstairs who I have spoken to twice. Nobody knows anybody outside their own pair.',
         space: 'One-bed flat. Living room seats five if two people take the floor. Kitchen is a corridor. No outdoor space.',
         constraints: 'Building has a noise rule after 10pm and thin floors. Nine people is already more than the room comfortably holds.' },
+      { occasion: "Kid's 6th birthday party", guests: '18', vibe: 'fun', duration: '2_hours', budget: 250,
+        mix: '10 kids from her class, most parents staying, a couple of younger siblings who will need something to do too.',
+        space: 'Local park pavilion, booked for the slot. Grass field next to it. Rain plan is unclear.',
+        constraints: 'Two kids have severe nut allergies. One parent has asked that there be no screens/devices as part of the entertainment.' },
+      { occasion: 'Engagement party', guests: '45', vibe: 'elegant', duration: 'all_day', budget: 3000,
+        mix: 'Both families meeting for the first time, a mix of ages from 8 to 80, and two very different friend groups who have never overlapped.',
+        space: 'Rented event space with a small stage, seats 40, standing room for more. Caterer required, no outside food allowed.',
+        constraints: 'One family is very traditional and expects a formal toast structure; the couple wants it to not feel stiff.' },
+      { occasion: 'Retirement party', guests: '30', vibe: 'chill', duration: '3_hours', budget: 400,
+        mix: '30 years of coworkers across three different eras of the company, several of whom have not spoken in a decade.',
+        space: 'Office break room and adjoining conference room after hours. No outdoor access.',
+        constraints: 'Guest of honor does not want speeches longer than two minutes each, and specifically does not want it to feel like a funeral.' },
     ]);
     setOccasion(ex.occasion);
     setGuestCount(ex.guests);

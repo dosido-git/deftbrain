@@ -6,6 +6,12 @@ export const paperworkPath = {
   en: {
     pwp_example2_situation: "My mother died six weeks ago. I am the executor. There is a will, a house with a mortgage still on it, two bank accounts, a pension I know nothing about, and a car in her name. I have no idea what order any of this goes in.",
     pwp_example2_location: "Manchester, England, UK",
+    pwp_example3_situation: "Our first baby is due in six weeks. Trying to get ahead of the paperwork before we're too sleep-deprived to think straight.",
+    pwp_example3_location: "Denver, Colorado, USA",
+    pwp_example4_situation: "Divorce was finalized last month. Need to work out what still needs to change — name, accounts, beneficiaries — that we never got around to.",
+    pwp_example4_location: "Sydney, Australia",
+    pwp_example5_situation: "Retiring at the end of this year after 30 years at the same company. Not sure what paperwork actually needs doing versus what I'm assuming.",
+    pwp_example5_location: "Dublin, Ireland",
     pwp_title: "Paperwork Path",
     pwp_tagline: "The documents you need — and the order to handle them",
 
@@ -57,6 +63,12 @@ export const paperworkPath = {
   es: {
     pwp_example2_situation: "Mi madre murió hace seis semanas. Soy el albacea. Hay testamento, una casa con hipoteca todavía, dos cuentas bancarias, una pensión de la que no sé nada y un coche a su nombre. No tengo ni idea de en qué orden va todo esto.",
     pwp_example2_location: "Mánchester, Inglaterra, Reino Unido",
+    pwp_example3_situation: "Nuestro primer bebé nace en seis semanas. Intentando adelantar el papeleo antes de estar demasiado dormidos para pensar con claridad.",
+    pwp_example3_location: "Denver, Colorado, EE. UU.",
+    pwp_example4_situation: "El divorcio se finalizó el mes pasado. Necesito averiguar qué falta por cambiar —nombre, cuentas, beneficiarios— que nunca llegamos a hacer.",
+    pwp_example4_location: "Sídney, Australia",
+    pwp_example5_situation: "Me jubilo a finales de este año tras 30 años en la misma empresa. No sé qué papeleo hace falta de verdad frente a lo que solo supongo.",
+    pwp_example5_location: "Dublín, Irlanda",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Los documentos que necesitas — y el orden para gestionarlos",
 
@@ -108,6 +120,12 @@ export const paperworkPath = {
   zh: {
     pwp_example2_situation: "我母亲六周前去世了。我是遗嘱执行人。有遗嘱、一套还在还贷的房子、两个银行账户、一份我完全不了解的养老金，还有一辆登记在她名下的车。这些事该按什么顺序办，我完全没有头绪。",
     pwp_example2_location: "英国英格兰曼彻斯特",
+    pwp_example3_situation: "我们的第一个孩子六周后就要出生了。想在睡眠不足到无法思考之前把手续都办好。",
+    pwp_example3_location: "美国科罗拉多州丹佛市",
+    pwp_example4_situation: "离婚上个月正式生效了。需要理清哪些还没改——姓名、账户、受益人——一直没顾上处理的那些。",
+    pwp_example4_location: "澳大利亚悉尼",
+    pwp_example5_situation: "在同一家公司干了30年，今年年底退休。不确定到底需要办哪些手续，还是只是我自己以为要办。",
+    pwp_example5_location: "爱尔兰都柏林",
     pwp_title: "Paperwork Path",
     pwp_tagline: "你需要的文件——以及处理它们的顺序",
 
@@ -159,6 +177,12 @@ export const paperworkPath = {
   hi: {
     pwp_example2_situation: "मेरी माँ का छह हफ़्ते पहले देहांत हो गया। मैं निष्पादक हूँ। वसीयत है, एक घर जिस पर अब भी लोन है, दो बैंक खाते, एक पेंशन जिसके बारे में मुझे कुछ नहीं पता, और उनके नाम पर एक गाड़ी। किस क्रम में क्या करना है, कुछ समझ नहीं आ रहा।",
     pwp_example2_location: "मैनचेस्टर, इंग्लैंड, यूके",
+    pwp_example3_situation: "हमारा पहला बच्चा छह हफ़्तों में होने वाला है। नींद की कमी से सोचना मुश्किल हो, उससे पहले कागज़ी काम निपटाने की कोशिश कर रहे हैं।",
+    pwp_example3_location: "डेनवर, कोलोराडो, अमेरिका",
+    pwp_example4_situation: "पिछले महीने तलाक पूरा हुआ। पता लगाना है कि अभी क्या-क्या बदलना बाकी है - नाम, खाते, लाभार्थी - जो कभी हो ही नहीं पाया।",
+    pwp_example4_location: "सिडनी, ऑस्ट्रेलिया",
+    pwp_example5_situation: "इसी कंपनी में 30 साल के बाद इस साल के अंत में रिटायर हो रहा हूँ। पक्का नहीं कि असल में कौन-सा कागज़ी काम करना है और क्या सिर्फ़ मेरा अंदाज़ा है।",
+    pwp_example5_location: "डबलिन, आयरलैंड",
     pwp_title: "Paperwork Path",
     pwp_tagline: "ज़रूरी दस्तावेज़ — और उन्हें निपटाने का सही क्रम",
 
@@ -210,6 +234,12 @@ export const paperworkPath = {
   ar: {
     pwp_example2_situation: "توفيت والدتي قبل ستة أسابيع، وأنا المنفّذ للوصية. هناك وصية، وبيت ما زال عليه قرض، وحسابان بنكيان، ومعاش لا أعرف عنه شيئاً، وسيارة باسمها. لا أعرف بأي ترتيب أبدأ بأي من هذا.",
     pwp_example2_location: "مانشستر، إنجلترا، المملكة المتحدة",
+    pwp_example3_situation: "مولودنا الأول بعد ستة أسابيع. أحاول إنجاز الأوراق قبل أن يمنعنا قلة النوم من التفكير بوضوح.",
+    pwp_example3_location: "دنفر، كولورادو، الولايات المتحدة",
+    pwp_example4_situation: "انتهى الطلاق رسمياً الشهر الماضي. أحتاج معرفة ما تبقى تغييره - الاسم، الحسابات، المستفيدون - وهو ما لم نصل إليه أبداً.",
+    pwp_example4_location: "سيدني، أستراليا",
+    pwp_example5_situation: "سأتقاعد في نهاية هذا العام بعد 30 عاماً في الشركة نفسها. لست متأكداً من الأوراق المطلوبة فعلاً مقابل ما أفترضه فقط.",
+    pwp_example5_location: "دبلن، أيرلندا",
     pwp_title: "Paperwork Path",
     pwp_tagline: "المستندات التي تحتاجها — وترتيب إنجازها",
 
@@ -261,6 +291,12 @@ export const paperworkPath = {
   pt: {
     pwp_example2_situation: "A minha mãe morreu há seis semanas. Sou o cabeça de casal. Há testamento, uma casa ainda com crédito, duas contas bancárias, uma pensão de que nada sei e um carro em nome dela. Não faço ideia da ordem por que isto se faz.",
     pwp_example2_location: "Manchester, Inglaterra, Reino Unido",
+    pwp_example3_situation: "Nosso primeiro bebê nasce em seis semanas. Tentando adiantar a papelada antes de ficarmos privados de sono demais para pensar direito.",
+    pwp_example3_location: "Denver, Colorado, EUA",
+    pwp_example4_situation: "O divórcio foi finalizado mês passado. Preciso descobrir o que ainda falta mudar — nome, contas, beneficiários — que nunca fizemos.",
+    pwp_example4_location: "Sydney, Austrália",
+    pwp_example5_situation: "Vou me aposentar no fim deste ano depois de 30 anos na mesma empresa. Não tenho certeza da papelada que realmente preciso fazer versus o que estou só supondo.",
+    pwp_example5_location: "Dublin, Irlanda",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Os documentos de que você precisa — e a ordem para resolvê-los",
 
@@ -312,6 +348,12 @@ export const paperworkPath = {
   fr: {
     pwp_example2_situation: "Ma mère est morte il y a six semaines. Je suis l'exécuteur testamentaire. Il y a un testament, une maison encore sous prêt, deux comptes bancaires, une retraite dont je ne sais rien, et une voiture à son nom. Je n'ai aucune idée de l'ordre dans lequel tout cela se fait.",
     pwp_example2_location: "Manchester, Angleterre, Royaume-Uni",
+    pwp_example3_situation: "Notre premier bébé arrive dans six semaines. On essaie de prendre de l'avance sur la paperasse avant d'être trop privés de sommeil pour réfléchir clairement.",
+    pwp_example3_location: "Denver, Colorado, États-Unis",
+    pwp_example4_situation: "Le divorce a été finalisé le mois dernier. Je dois déterminer ce qu'il reste à changer — nom, comptes, bénéficiaires — qu'on n'a jamais fait.",
+    pwp_example4_location: "Sydney, Australie",
+    pwp_example5_situation: "Je pars à la retraite fin d'année après 30 ans dans la même entreprise. Pas sûr des démarches réellement nécessaires par rapport à ce que je suppose seulement.",
+    pwp_example5_location: "Dublin, Irlande",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Les documents qu'il vous faut — et l'ordre pour les traiter",
 
@@ -363,6 +405,12 @@ export const paperworkPath = {
   de: {
     pwp_example2_situation: "Meine Mutter ist vor sechs Wochen gestorben. Ich bin Nachlassverwalter. Es gibt ein Testament, ein Haus mit laufendem Kredit, zwei Bankkonten, eine Rente, von der ich nichts weiß, und ein Auto auf ihren Namen. Ich habe keine Ahnung, in welcher Reihenfolge das alles läuft.",
     pwp_example2_location: "Manchester, England, Vereinigtes Königreich",
+    pwp_example3_situation: "Unser erstes Baby kommt in sechs Wochen. Versuche, dem Papierkram voraus zu sein, bevor wir zu übermüdet zum klaren Denken sind.",
+    pwp_example3_location: "Denver, Colorado, USA",
+    pwp_example4_situation: "Die Scheidung wurde letzten Monat rechtskräftig. Muss herausfinden, was noch geändert werden muss — Name, Konten, Begünstigte — wozu wir nie kamen.",
+    pwp_example4_location: "Sydney, Australien",
+    pwp_example5_situation: "Gehe Ende dieses Jahres nach 30 Jahren in derselben Firma in Rente. Bin unsicher, welcher Papierkram wirklich nötig ist gegenüber dem, was ich nur annehme.",
+    pwp_example5_location: "Dublin, Irland",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Die Dokumente, die du brauchst — und die richtige Reihenfolge",
 
@@ -414,6 +462,12 @@ export const paperworkPath = {
   ja: {
     pwp_example2_situation: "六週間前に母が亡くなりました。私が遺言執行者です。遺言書があり、住宅ローンの残る家、銀行口座が二つ、内容をまったく知らない年金、そして母名義の車があります。何をどの順番で進めればいいのか、まるで見当がつきません。",
     pwp_example2_location: "イギリス、イングランド、マンチェスター",
+    pwp_example3_situation: "初めての赤ちゃんが6週間後に生まれます。寝不足でまともに考えられなくなる前に手続きを先に済ませたいです。",
+    pwp_example3_location: "米国コロラド州デンバー",
+    pwp_example4_situation: "先月離婚が成立しました。名前、口座、受取人など、まだ変更していないことを整理する必要があります。",
+    pwp_example4_location: "オーストラリア シドニー",
+    pwp_example5_situation: "同じ会社に30年勤めて今年末に退職します。本当に必要な手続きと、自分の思い込みの区別がつきません。",
+    pwp_example5_location: "アイルランド ダブリン",
     pwp_title: "Paperwork Path",
     pwp_tagline: "必要な書類と、片づける順番",
 
@@ -465,6 +519,12 @@ export const paperworkPath = {
   ko: {
     pwp_example2_situation: "6주 전에 어머니가 돌아가셨습니다. 제가 유언 집행자입니다. 유언장이 있고, 아직 대출이 남은 집, 은행 계좌 두 개, 제가 전혀 모르는 연금, 그리고 어머니 명의의 차가 있습니다. 무엇을 어떤 순서로 해야 할지 전혀 모르겠습니다.",
     pwp_example2_location: "영국 잉글랜드 맨체스터",
+    pwp_example3_situation: "첫 아기가 6주 후에 태어나요. 잠이 부족해서 제대로 생각 못 하기 전에 서류 준비를 미리 해두려고 해요.",
+    pwp_example3_location: "미국 콜로라도주 덴버",
+    pwp_example4_situation: "지난달에 이혼이 확정됐어요. 이름, 계좌, 수익자 등 아직 못 바꾼 게 뭔지 정리해야 해요.",
+    pwp_example4_location: "호주 시드니",
+    pwp_example5_situation: "같은 회사에서 30년 근무하고 올해 말에 은퇴해요. 실제로 필요한 서류와 제가 그냥 짐작하는 것을 구분 못하겠어요.",
+    pwp_example5_location: "아일랜드 더블린",
     pwp_title: "Paperwork Path",
     pwp_tagline: "필요한 서류와 처리 순서",
 
@@ -516,6 +576,12 @@ export const paperworkPath = {
   ru: {
     pwp_example2_situation: "Мама умерла шесть недель назад. Я душеприказчик. Есть завещание, дом с непогашенной ипотекой, два банковских счёта, пенсия, о которой я ничего не знаю, и машина на её имя. Я совершенно не понимаю, в каком порядке всё это делается.",
     pwp_example2_location: "Манчестер, Англия, Великобритания",
+    pwp_example3_situation: "Наш первый ребёнок родится через шесть недель. Пытаюсь заранее разобраться с документами, пока не стало слишком не до этого от недосыпа.",
+    pwp_example3_location: "Денвер, Колорадо, США",
+    pwp_example4_situation: "Развод оформлен окончательно в прошлом месяце. Нужно понять, что ещё требует изменений — имя, счета, бенефициары — до чего руки так и не дошли.",
+    pwp_example4_location: "Сидней, Австралия",
+    pwp_example5_situation: "Выхожу на пенсию в конце этого года после 30 лет в одной компании. Не уверен, какие документы реально нужны, а что я просто предполагаю.",
+    pwp_example5_location: "Дублин, Ирландия",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Нужные документы — и порядок, в котором их оформлять",
 
@@ -567,6 +633,12 @@ export const paperworkPath = {
   th: {
     pwp_example2_situation: "แม่ผมเสียไปเมื่อหกสัปดาห์ก่อน ผมเป็นผู้จัดการมรดก มีพินัยกรรม บ้านที่ยังผ่อนไม่หมด บัญชีธนาคารสองบัญชี เงินบำนาญที่ผมไม่รู้อะไรเลย และรถที่อยู่ในชื่อแม่ ผมไม่รู้เลยว่าต้องทำอะไรก่อนหลัง",
     pwp_example2_location: "แมนเชสเตอร์ อังกฤษ สหราชอาณาจักร",
+    pwp_example3_situation: "ลูกคนแรกของเราจะเกิดในอีกหกสัปดาห์ กำลังพยายามจัดการเอกสารล่วงหน้าก่อนที่จะนอนไม่พอจนคิดอะไรไม่ออก",
+    pwp_example3_location: "เดนเวอร์ โคโลราโด สหรัฐอเมริกา",
+    pwp_example4_situation: "การหย่าเสร็จสิ้นเมื่อเดือนที่แล้ว ต้องหาว่ายังมีอะไรต้องเปลี่ยนอีก — ชื่อ บัญชี ผู้รับผลประโยชน์ — ที่ยังไม่เคยจัดการ",
+    pwp_example4_location: "ซิดนีย์ ออสเตรเลีย",
+    pwp_example5_situation: "จะเกษียณสิ้นปีนี้หลังทำงานบริษัทเดิมมา 30 ปี ไม่แน่ใจว่าเอกสารที่ต้องทำจริง ๆ มีอะไรบ้าง ต่างจากที่ตัวเองคิดเอาเอง",
+    pwp_example5_location: "ดับลิน ไอร์แลนด์",
     pwp_title: "Paperwork Path",
     pwp_tagline: "เอกสารที่คุณต้องใช้ — และลำดับการจัดการ",
 
@@ -618,6 +690,12 @@ export const paperworkPath = {
   vi: {
     pwp_example2_situation: "Mẹ tôi mất cách đây sáu tuần. Tôi là người thi hành di chúc. Có di chúc, một căn nhà vẫn còn nợ vay, hai tài khoản ngân hàng, một khoản lương hưu tôi hoàn toàn không biết gì, và một chiếc xe đứng tên mẹ. Tôi không biết phải làm theo thứ tự nào.",
     pwp_example2_location: "Manchester, Anh, Vương quốc Anh",
+    pwp_example3_situation: "Con đầu lòng của chúng tôi sẽ chào đời trong sáu tuần nữa. Đang cố lo giấy tờ trước khi mất ngủ đến mức không suy nghĩ rõ ràng được.",
+    pwp_example3_location: "Denver, Colorado, Hoa Kỳ",
+    pwp_example4_situation: "Ly hôn đã hoàn tất tháng trước. Cần tìm hiểu xem còn gì cần đổi — tên, tài khoản, người thụ hưởng — mà chúng tôi chưa từng làm.",
+    pwp_example4_location: "Sydney, Úc",
+    pwp_example5_situation: "Sẽ nghỉ hưu vào cuối năm nay sau 30 năm làm cùng một công ty. Không chắc giấy tờ nào thực sự cần làm so với những gì tôi chỉ đang phỏng đoán.",
+    pwp_example5_location: "Dublin, Ireland",
     pwp_title: "Paperwork Path",
     pwp_tagline: "Giấy tờ bạn cần — và thứ tự xử lý",
 

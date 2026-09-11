@@ -106,6 +106,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 76 | NerveCheck | i18n | 3 sub-modes (main/debrief/coach) | 2 each | 5 each (15 total): presentation/date/medical; debrief spanning the readiness range; coach covering every relation and both non-adult ages; keys ×13 | ✅ 2026-09-11 |
 | 77 | NotSoFast (RulebookBreaker) | i18n | — | already 5 | — | ✅ pre-existing |
 | 78 | PEP | i18n | 7 moods × 5 environments | 2 | 5 (+ anxious pre-presentation spike, numb do-nothing day, overstimulated commute; 3 keys ×13) | ✅ 2026-09-11 |
+| 79 | PaperworkPath | i18n | 8 life events | 2 (move, death) | 5 (+ new baby, divorce, retiring; 6 keys ×13) | ✅ 2026-09-11 |
+| 80 | PartyArchitect | inline | 5 vibes × 4 durations | 2 (both chill) | 5 (+ energetic kids' party, elegant engagement merging two families, retirement party that must not feel like a funeral) | ✅ 2026-09-11 |
+| 81 | PetBehaviorDecoder | inline | 5 pet types × 5 durations × 5 frequencies | 2 (cat, dog) | 5 (+ bird plucking feathers, rabbit's intermittent months-long hunching, cat's sudden constant thirst; covers every pet type) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

@@ -88,9 +88,13 @@ const PaperworkPath = ({ tool }) => {
 
   const loadExample = useCallback(() => {
     // An interstate move, and the paperwork nobody plans for.
+    // Five, rotated across five of the eight life events.
     const ex = pickExample('PaperworkPath', [
       { event: EVENTS[0].value, sit: 'pwp_example_situation',  loc: 'pwp_example_location' },
       { event: EVENTS[5].value, sit: 'pwp_example2_situation', loc: 'pwp_example2_location' },
+      { event: EVENTS[1].value, sit: 'pwp_example3_situation', loc: 'pwp_example3_location' },
+      { event: EVENTS[4].value, sit: 'pwp_example4_situation', loc: 'pwp_example4_location' },
+      { event: EVENTS[7].value, sit: 'pwp_example5_situation', loc: 'pwp_example5_location' },
     ]);
     setLifeEvent(ex.event);
     setSituation(t(ex.sit));
