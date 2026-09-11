@@ -79,6 +79,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 49 | GetNoticed | inline | — | 2 | 5 (+ overshadowed PhD student, isolated new-city nurse, plateaued small-business owner) | ✅ 2026-09-11 |
 | 50 | GhostWriter | inline | 7 letter types × 3 formality levels | 1 | 5 (grad-school, casual LinkedIn, scholarship, rental join job reference; two leave optional fields blank) | ✅ 2026-09-11 |
 | 51 | Giftology | i18n | — | already 6 | — | ✅ pre-existing |
+| 52 | GratitudeDebtClearer | inline | 5 relationships | 2 | 5 (+ a parent, a neighbor, a friend who lent money without making it awkward) | ✅ 2026-09-11 |
+| 53 | GriefGuide | i18n | 10 loss types × 5 timelines × myself/helping | 3 | 5 (+ a sudden pet death, helping a brother 8 months into job-loss identity grief; 2 keys ×13) | ✅ 2026-09-11 |
+| 54 | HecklerPrep | i18n | 3 stakes levels | 2 (both high) | 5 (+ moderate HOA parking fee, low-stakes tool switch, high-stakes school board proposal; 12 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

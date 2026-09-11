@@ -35,6 +35,8 @@ const EXAMPLES = [
   { mode: 'myself',  lossType: 'death_person', timeline: 'weeks',  freeformKey: 'gg2_ex1', country: '' },
   { mode: 'myself',  lossType: 'health',       timeline: 'months', freeformKey: 'gg2_ex2', country: '' },
   { mode: 'helping', lossType: 'death_person', timeline: 'days',   freeformKey: 'gg2_ex3', country: '' },
+  { mode: 'myself',  lossType: 'death_pet',    timeline: 'just',   freeformKey: 'gg2_ex4', country: '' },
+  { mode: 'helping', lossType: 'job',          timeline: 'years',  freeformKey: 'gg2_ex5', country: '' },
 ];
 
 function GriefGuide({ tool }) {

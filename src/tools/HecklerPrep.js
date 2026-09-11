@@ -17,11 +17,21 @@ const HecklerPrep = ({ tool }) => {
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
+  // Five, rotated across all three stakes levels: a budget pitch to
+  // executives, a library closure consultation, an HOA parking fee, a
+  // low-stakes tool switch nobody asked for, and a school board proposal
+  // with committed public speakers.
   const EXAMPLES = [
     { topic: t('hp_ex_topic'), audience: t('hp_ex_audience'), proposal: t('hp_ex_proposal', { sym }),
       knownObjections: t('hp_ex_objections'), stakes: 'high' },
     { topic: t('hp_ex2_topic'), audience: t('hp_ex2_audience'), proposal: t('hp_ex2_proposal'),
       knownObjections: t('hp_ex2_objections'), stakes: 'high' },
+    { topic: t('hp_ex3_topic'), audience: t('hp_ex3_audience'), proposal: t('hp_ex3_proposal', { sym }),
+      knownObjections: t('hp_ex3_objections'), stakes: 'moderate' },
+    { topic: t('hp_ex4_topic'), audience: t('hp_ex4_audience'), proposal: t('hp_ex4_proposal'),
+      knownObjections: t('hp_ex4_objections'), stakes: 'low' },
+    { topic: t('hp_ex5_topic'), audience: t('hp_ex5_audience'), proposal: t('hp_ex5_proposal'),
+      knownObjections: t('hp_ex5_objections'), stakes: 'high' },
   ];
   const STAKES_LEVELS = [
     { value: 'low', label: t('hp_stakes_low_label'), emoji: '😌', desc: t('hp_stakes_low_desc') },
