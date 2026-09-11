@@ -112,6 +112,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 82 | PlainTalk | i18n | 10 text types | 3 (legal, medical, academic) | 5 (+ financial disclosure, bureaucratic form; new shared-constant samples, deliberately English across all languages like the other three; fixed es/pt gender-hedge false positive) | ✅ 2026-09-11 |
 | 83 | PlantRescue | inline | 3 modes (rescue/identify/care — identify needs a photo, not seedable) | 2 (rescue only) | 5 (+ overwatered succulent, outdoor rose with powdery mildew, a care-mode monstera; loader now handles care mode) | ✅ 2026-09-11 |
 | 84 | PlotHoleFinder | inline | find/defend × 4 media types | 2 (find only) | 5 (+ book, game, and a defend-mode example pushing back on an alleged hole; loader now handles defend mode) | ✅ 2026-09-11 |
+| 85 | ProcedureProbe | i18n | 3 urgency levels | 2 (soon, elective) | 5 (+ emergency appendectomy, root canal follow-up crown, elective knee arthroscopy; 12 keys ×13) | ✅ 2026-09-11 |
+| 86 | PronounceItRight | inline | — | already 8 | — | ✅ pre-existing |
+| 87 | QuoteCheck | i18n | 3 repair types | 2 (appliance, car) | 5 (+ water heater replacement, car diagnostic upsell, full roof tear-off; covers 'other' type; 15 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

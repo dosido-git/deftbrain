@@ -17,11 +17,15 @@ const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 // audit/tool-notes/QUOTECHECK-NOTES.md.
 const VERDICTS = ['LOOKS_STRAIGHTFORWARD', 'NEEDS_CLARIFICATION', 'HARD_TO_COMPARE', 'SPECIFIC_CONCERNS_FOUND', 'NOT_ENOUGH_INFORMATION'];
 
+// Five, rotated across appliance, car, and 'other' repair types.
 const EXAMPLES = [
   { repairType: 'appliance', quotedPrice: '450', n: '' },
   // Itemised to the last bolt — here the question is not what they are hiding
   // but how much of it actually needed doing today.
   { repairType: 'car',       quotedPrice: '1290', n: '2' },
+  { repairType: 'other',     quotedPrice: '1850', n: '3' },
+  { repairType: 'car',       quotedPrice: '620',  n: '4' },
+  { repairType: 'other',     quotedPrice: '8900', n: '5' },
 ];
 
 function QuoteCheck({ tool }) {

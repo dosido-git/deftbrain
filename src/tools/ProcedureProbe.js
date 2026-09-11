@@ -126,9 +126,13 @@ const ProcedureProbe = ({ tool }) => {
   }, [procedure, quote, insurance, concerns, urgency, scheduled, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated across all three urgency levels.
     const ex = pickExample('ProcedureProbe', [
       { n: '',  urgency: 'soon' },
       { n: '2', urgency: 'elective' },
+      { n: '3', urgency: 'emergency' },
+      { n: '4', urgency: 'soon' },
+      { n: '5', urgency: 'elective' },
     ]);
     const k = f => `pp_ex${ex.n}_${f}`;
     setProcedure(t(k('procedure')));
