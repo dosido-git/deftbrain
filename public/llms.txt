@@ -138,7 +138,7 @@
 - [Plain Talk](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
 - [Research Decoder](https://deftbrain.com/ResearchDecoder): Understand the research without becoming a researcher.
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): 📡 Find what holds up — and what doesn't.
-- [Someone Said It Better](https://deftbrain.com/SomeoneSaidItBetter): Whatever you're facing, someone may have found the words.
+- [Someone Said It Better](https://deftbrain.com/SomeoneSaidItBetter): The words you needed, already said.
 - [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
 
 ## Diversions

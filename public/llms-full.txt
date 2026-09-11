@@ -3489,10 +3489,10 @@ Output: Signal: evidence from controlled studies supports strength and power ben
 ### Someone Said It Better
 
 URL: https://deftbrain.com/SomeoneSaidItBetter
-Tagline: Whatever you're facing, someone may have found the words.
+Tagline: The words you needed, already said.
 Categories: Go Deep!, Me
 
-Tell it what you're facing — in your own words. Someone Said It Better researches real, verified quotations that fit the moment, checks the wording and attribution against an actual source before showing you anything, and explains why each one may be worth sitting with. No source, no quote — it will never invent one to fill the gap.
+Tell us what you're facing in your own words. Someone Said It Better discovers documented real quotations that fit the moment — words of wisdom, comfort, perspective, wit, or hard-earned truth from people who found a way to say it better.
 
 **What it does.** Someone Said It Better is built around one rule: quotation text is never generated. It researches candidate quotations with live web search, verifies the exact wording and attribution against a source it actually visits, and only then picks 2-3 that genuinely fit your situation from that verified set — explaining the connection without inventing your feelings, history, or circumstances. If it can't verify enough quotations to feel confident, it tells you that plainly instead of quietly lowering its standards.
 

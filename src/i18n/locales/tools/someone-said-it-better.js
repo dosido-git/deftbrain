@@ -5,7 +5,7 @@
 export const someoneSaidItBetter = {
   en: {
     ssib_title: "Someone Said It Better",
-    ssib_tagline: "Whatever you're facing, someone may have found the words.",
+    ssib_tagline: "The words you needed, already said.",
     ssib_situation_label: "What's going on?",
     ssib_situation_ph: "Tell me the situation in your own words.",
     ssib_need_label: "What would help right now?",
@@ -46,7 +46,7 @@ export const someoneSaidItBetter = {
   },
   es: {
     ssib_title: "Alguien lo dijo mejor",
-    ssib_tagline: "Sea lo que sea que enfrentes, alguien puede haber encontrado las palabras.",
+    ssib_tagline: "Las palabras que necesitabas, ya dichas.",
     ssib_situation_label: "¿Qué está pasando?",
     ssib_situation_ph: "Cuéntame la situación con tus propias palabras.",
     ssib_need_label: "¿Qué te ayudaría ahora mismo?",
@@ -87,7 +87,7 @@ export const someoneSaidItBetter = {
   },
   zh: {
     ssib_title: "有人说得更好",
-    ssib_tagline: "无论你面对什么,可能已经有人找到了合适的话。",
+    ssib_tagline: "你需要的话,早已有人说过。",
     ssib_situation_label: "发生了什么?",
     ssib_situation_ph: "用你自己的话告诉我这个情况。",
     ssib_need_label: "现在什么能帮到你?",
@@ -128,7 +128,7 @@ export const someoneSaidItBetter = {
   },
   hi: {
     ssib_title: "किसी ने इसे बेहतर कहा",
-    ssib_tagline: "आप जो भी झेल रहे हों, हो सकता है किसी ने पहले ही सही शब्द खोज लिए हों।",
+    ssib_tagline: "जो शब्द आपको चाहिए थे, वे पहले ही कहे जा चुके हैं।",
     ssib_situation_label: "क्या हो रहा है?",
     ssib_situation_ph: "अपनी स्थिति अपने शब्दों में बताएँ।",
     ssib_need_label: "अभी क्या मदद करेगा?",
@@ -169,7 +169,7 @@ export const someoneSaidItBetter = {
   },
   ar: {
     ssib_title: "قال أحدهم ذلك بشكل أفضل",
-    ssib_tagline: "أياً كان ما تواجهه، ربما يكون شخص ما قد وجد الكلمات المناسبة له.",
+    ssib_tagline: "الكلمات التي كنت بحاجة إليها، قيلت بالفعل.",
     ssib_situation_label: "ما الذي يحدث؟",
     ssib_situation_ph: "أخبرني بالموقف بكلماتك الخاصة.",
     ssib_need_label: "ما الذي قد يساعد الآن؟",
@@ -210,7 +210,7 @@ export const someoneSaidItBetter = {
   },
   pt: {
     ssib_title: "Alguém disse melhor",
-    ssib_tagline: "Seja lá o que você esteja enfrentando, alguém pode ter encontrado as palavras.",
+    ssib_tagline: "As palavras que você precisava, já ditas.",
     ssib_situation_label: "O que está acontecendo?",
     ssib_situation_ph: "Conte a situação com suas próprias palavras.",
     ssib_need_label: "O que ajudaria agora?",
@@ -251,7 +251,7 @@ export const someoneSaidItBetter = {
   },
   fr: {
     ssib_title: "Quelqu'un l'a mieux dit",
-    ssib_tagline: "Quoi que vous traversiez, quelqu'un a peut-être déjà trouvé les mots.",
+    ssib_tagline: "Les mots dont vous aviez besoin, déjà dits.",
     ssib_situation_label: "Que se passe-t-il ?",
     ssib_situation_ph: "Décrivez-moi la situation avec vos propres mots.",
     ssib_need_label: "Qu'est-ce qui vous aiderait en ce moment ?",
@@ -292,7 +292,7 @@ export const someoneSaidItBetter = {
   },
   de: {
     ssib_title: "Jemand hat es besser gesagt",
-    ssib_tagline: "Was auch immer du gerade durchmachst, vielleicht hat jemand schon die richtigen Worte gefunden.",
+    ssib_tagline: "Die Worte, die du gebraucht hast, sind schon gesagt.",
     ssib_situation_label: "Was ist los?",
     ssib_situation_ph: "Erzähl mir die Situation in deinen eigenen Worten.",
     ssib_need_label: "Was würde dir gerade helfen?",
@@ -333,7 +333,7 @@ export const someoneSaidItBetter = {
   },
   ja: {
     ssib_title: "誰かがもっと上手く言っていた",
-    ssib_tagline: "何に直面していても、すでに誰かが言葉を見つけているかもしれません。",
+    ssib_tagline: "必要だった言葉は、もう誰かが言っていた。",
     ssib_situation_label: "どんな状況ですか?",
     ssib_situation_ph: "状況を自分の言葉で教えてください。",
     ssib_need_label: "今、何があれば助かりますか?",
@@ -374,7 +374,7 @@ export const someoneSaidItBetter = {
   },
   ko: {
     ssib_title: "누군가 더 잘 표현했다",
-    ssib_tagline: "무엇을 겪고 있든, 이미 누군가 그 말을 찾아냈을지도 모릅니다.",
+    ssib_tagline: "필요했던 말은, 이미 누군가 했습니다.",
     ssib_situation_label: "무슨 일인가요?",
     ssib_situation_ph: "상황을 자신의 말로 들려주세요.",
     ssib_need_label: "지금 무엇이 도움이 될까요?",
@@ -415,7 +415,7 @@ export const someoneSaidItBetter = {
   },
   ru: {
     ssib_title: "Кто-то сказал это лучше",
-    ssib_tagline: "С чем бы вы ни столкнулись, возможно, кто-то уже нашёл нужные слова.",
+    ssib_tagline: "Слова, которые вам были нужны, уже сказаны.",
     ssib_situation_label: "Что происходит?",
     ssib_situation_ph: "Расскажите ситуацию своими словами.",
     ssib_need_label: "Что помогло бы прямо сейчас?",
@@ -456,7 +456,7 @@ export const someoneSaidItBetter = {
   },
   th: {
     ssib_title: "มีคนพูดได้ดีกว่านี้แล้ว",
-    ssib_tagline: "ไม่ว่าคุณกำลังเผชิญอะไรอยู่ อาจมีคนหาคำพูดนั้นเจอแล้วก็ได้",
+    ssib_tagline: "คำพูดที่คุณต้องการ มีคนพูดไว้แล้ว",
     ssib_situation_label: "เกิดอะไรขึ้น?",
     ssib_situation_ph: "เล่าสถานการณ์ด้วยคำพูดของคุณเอง",
     ssib_need_label: "ตอนนี้อะไรจะช่วยได้บ้าง?",
@@ -497,7 +497,7 @@ export const someoneSaidItBetter = {
   },
   vi: {
     ssib_title: "Ai đó đã nói hay hơn",
-    ssib_tagline: "Dù bạn đang đối mặt với điều gì, có thể ai đó đã tìm ra những lời phù hợp.",
+    ssib_tagline: "Những lời bạn cần, đã có người nói rồi.",
     ssib_situation_label: "Chuyện gì đang xảy ra?",
     ssib_situation_ph: "Hãy kể cho tôi tình huống bằng lời của chính bạn.",
     ssib_need_label: "Điều gì sẽ giúp ích lúc này?",
