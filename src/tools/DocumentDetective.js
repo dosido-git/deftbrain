@@ -197,9 +197,16 @@ const DocumentDetective = ({ tool }) => {
   }, [docText, pdfBase64, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated: a legal clause, a home-insurance policy, a residential
+    // lease's break clause, a disability-benefit decision letter, and a
+    // surgical consent form — the documents where the fine print decides
+    // real money or real risk.
     const ex = pickExample('DocumentDetective', [
       { n: '',  type: 'legal' },
       { n: '2', type: 'benefits' },
+      { n: '3', type: 'lease' },
+      { n: '4', type: 'government' },
+      { n: '5', type: 'medical' },
     ]);
     const k = f => `nc_ex${ex.n}_${f}`;
     setDocText(t(k('doc'), { sym }));

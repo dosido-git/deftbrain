@@ -46,6 +46,10 @@ const STATES = [
 
 const DURATIONS = [15, 30, 45, 60, 90];
 
+// Five, rotated across every driver state and most road types: a little
+// tired in the rain, anxious on snow, fine but too late at night, very
+// tired after a double shift, and shaken-but-not-tired after an argument —
+// the state the guard-key fix (very_tired reaching the model) exists for.
 const EXAMPLES = [
   {
     from: 'Office, downtown Seattle',
@@ -76,6 +80,26 @@ const EXAMPLES = [
     road: 'city',
     state: 'fine',
     concern: 'It is much later than I meant to stay out.',
+  },
+  {
+    from: 'A double shift at the hospital',
+    to: 'Home, forty-five minutes on the highway',
+    minutes: '45',
+    time: 'early_morning',
+    conditions: ['clear'],
+    road: 'highway',
+    state: 'very_tired',
+    concern: 'I have been awake for nineteen hours and I already missed my exit once tonight without noticing.',
+  },
+  {
+    from: 'A tense family argument',
+    to: 'Home, about thirty minutes on rural roads',
+    minutes: '30',
+    time: 'evening',
+    conditions: ['fog', 'construction'],
+    road: 'rural',
+    state: 'not_great',
+    concern: 'My hands are still shaking a bit and I keep replaying the argument instead of watching the road.',
   },
 ];
 

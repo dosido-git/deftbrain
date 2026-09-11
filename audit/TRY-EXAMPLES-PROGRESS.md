@@ -64,6 +64,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 34 | DifficultTalkCoach | inline | 6 goals × 8 relationships | 2 | 5 (+ landlord repairs, coworker feedback, adult-child boundary) | ✅ 2026-09-11 |
 | 35 | DoctorVisitPrep | i18n | 8 appointment types | 2 (follow-up/specialist, new-problem) | 5 (+ annual-physical with no complaint, second-opinion pushing back on surgery, first mental-health visit; 24 keys ×13) | ✅ 2026-09-11 |
 | 36 | DoctorVisitTranslator | inline | 5 document types | 2 (visit, insurance-eob) | 5 (+ prescription label, abnormal lab panel, discharge summary) | ✅ 2026-09-11 |
+| 37 | DocumentDetective | i18n | 6 document types | 2 (legal, benefits) | 5 (+ lease break clause, disability-benefit decision, surgical consent; 9 keys ×13) | ✅ 2026-09-11 |
+| 38 | DreamPatternSpotter | i18n | single / pattern (pattern needs 2+ saved dreams — not seedable) | 2 | 5 (+ exam-anxiety, body-won't-move chase, grief dream; 3 keys ×13) | ✅ 2026-09-11 |
+| 39 | DriveHome | inline | 5 driver states | 3 | 5 (+ very_tired after a double shift, not_great/shaken after an argument — exercises the very_tired guard-key fix) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
