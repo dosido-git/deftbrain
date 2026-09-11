@@ -97,6 +97,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 67 | Mend (ApologyCalibrator) | inline | 10 views (button only lives on calibrate) | 2 | 5 (+ forgotten school pickup, accidentally-spoiled surprise, honest feedback that may not need an apology) | ✅ 2026-09-11 |
 | 68 | MentalHealthNavigator | inline | 14 areas × 6 tried-before × 7 barriers | 2 | 5 (+ escalating drinking against a 3-month waitlist, restrictive eating that doesn't 'look like' a disorder, postpartum numbness masked by functioning) | ✅ 2026-09-11 |
 | 69 | MicroAdventureMapper | inline | 4 when × 3 time-of-day × 4 budget × 4 transport | 2 | 5 (+ energizing free bike ride, fully-surprise weekend drive, chill moderate-budget evening) | ✅ 2026-09-11 |
+| 70 | MiseEnPlace | inline | 3 skill levels × 4 meal types | 2 | 5 (+ advanced sourdough-discard breakfast, 10-minute beginner lunch, make-ahead gathering snack) | ✅ 2026-09-11 |
+| 71 | MissingLink (TheoryGap) | i18n | — | already 5 | — | ✅ pre-existing |
+| 72 | MoneyDiplomat | i18n | 6 request types | already 6 | — | ✅ pre-existing |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
