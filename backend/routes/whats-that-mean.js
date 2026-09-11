@@ -10,7 +10,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 // and lib/claude.js's withOutputStandard()) — it does not belong inline in the
 // prompt text itself, and a literal reference here would just print the name
 // as confusing text the model has no instructions attached to.
-const SYSTEM_PROMPT = `SAY WHAT?
+const SYSTEM_PROMPT = `WHAT'S THAT MEAN?
 
 ROLE
 
@@ -236,7 +236,7 @@ function collectProseFields(parsed) {
   return fields;
 }
 
-router.post('/say-what', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/whats-that-mean', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const phrase = cleanString(req.body.phrase, 1500);
     const context = cleanString(req.body.context, 6000);
@@ -314,14 +314,14 @@ Rules for the JSON:
       max_tokens: 2600,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'say-what' });
+    }, { label: 'whats-that-mean' });
 
     if (!parsed?.plain_meaning && !parsed?.ambiguity?.needs_context) {
       return res.status(500).json({ error: 'Could not decode that phrase. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'say-what',
+      label: 'whats-that-mean',
       fields: collectProseFields(parsed),
       supplied: `PHRASE: ${phrase}\nCONTEXT: ${context || 'none supplied'}`,
       promise: 'Identify what kind of expression the phrase is and explain what it means — plainly, and in the supplied context without inventing subtext, identity, origin, or currentness the visitor never gave.',
@@ -331,12 +331,12 @@ Rules for the JSON:
 
     res.json(parsed);
   } catch (error) {
-    console.error('SayWhat error:', error);
+    console.error('WhatsThatMean error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
-router.post('/say-what/equivalent', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/whats-that-mean/equivalent', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const phrase = cleanString(req.body.phrase, 1500);
     const plainMeaning = cleanString(req.body.plainMeaning, 2500);
@@ -371,7 +371,7 @@ Return ONLY valid JSON:
       max_tokens: 900,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    }, { label: 'say-what-equivalent' });
+    }, { label: 'whats-that-mean-equivalent' });
 
     if (!parsed?.equivalent_type) {
       return res.status(500).json({ error: 'Could not find an equivalent right now. Please try again.' });
@@ -379,7 +379,7 @@ Return ONLY valid JSON:
 
     res.json(parsed);
   } catch (error) {
-    console.error('SayWhat equivalent error:', error);
+    console.error('WhatsThatMean equivalent error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

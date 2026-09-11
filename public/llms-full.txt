@@ -3218,38 +3218,6 @@ Input: You're going to an Italian restaurant and want to order without second-gu
 
 Output: Four pronunciation cards with phonetic spelling, the sound each one trips up for an English speaker specifically, and a flag on any word whose reading genuinely depends on context you haven't given.
 
-### Say What?
-
-URL: https://deftbrain.com/SayWhat
-Tagline: What did they really mean.
-Categories: Discourse, Go Deep!
-
-Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Say What? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
-
-**What it does.** Say What? identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.
-
-**How to use it.**
-
-1. 💬 Enter the phrase: type or paste exactly what was said or written
-2. 📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely
-3. 🏷️ Read the classification: what kind of expression it is, and why
-4. 💡 Read the plain meaning, then what it means here if you gave context
-5. ➕ Not enough? Add more of the sentence and Say What? re-evaluates from scratch — it never treats its own earlier guess as a fact
-6. 🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists
-
-**Tips.**
-
-- Context changes everything — the same words can be literal or figurative depending on the situation, and Say What? classifies the use, not just the words
-- If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down
-- For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have
-- The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
-
-**Example.**
-
-Input: A coworker said "that's above my pay grade" after you asked who could approve an exception.
-
-Output: Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: "I'm not the person who can approve that."
-
 ### The Final Word
 
 URL: https://deftbrain.com/TheFinalWord
@@ -3283,6 +3251,38 @@ The argument-settling, fact-checking, trivia-hosting authority. Four modes in on
 Input: You and a friend are arguing about whether the Great Wall of China is visible from space.
 
 Output: The Final Word rules in your favor with a bold verdict headline. Your friend scores ~15% accuracy (the Wall exists but isn't visible from low Earth orbit without aid). You score ~95% accuracy. The explanation cites astronaut testimony and the Wall's width relative to visibility thresholds. Settlement suggestion: 'Loser buys the next round — and agrees to stop spreading this myth.'
+
+### What's That Mean?
+
+URL: https://deftbrain.com/WhatsThatMean
+Tagline: What did they really mean.
+Categories: Discourse, Go Deep!
+
+Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
+
+**What it does.** What's That Mean? identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.
+
+**How to use it.**
+
+1. 💬 Enter the phrase: type or paste exactly what was said or written
+2. 📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely
+3. 🏷️ Read the classification: what kind of expression it is, and why
+4. 💡 Read the plain meaning, then what it means here if you gave context
+5. ➕ Not enough? Add more of the sentence and What's That Mean? re-evaluates from scratch — it never treats its own earlier guess as a fact
+6. 🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists
+
+**Tips.**
+
+- Context changes everything — the same words can be literal or figurative depending on the situation, and What's That Mean? classifies the use, not just the words
+- If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down
+- For jargon, it focuses on what the term means and skips manufacturing cultural history or tone that ordinary technical language doesn't have
+- The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
+
+**Example.**
+
+Input: A coworker said "that's above my pay grade" after you asked who could approve an exception.
+
+Output: Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: "I'm not the person who can approve that."
 
 ## Go Deep!
 

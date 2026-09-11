@@ -59,7 +59,7 @@ function firstNonEmpty(...values) {
   return values.find(v => typeof v === 'string' && v.trim()) || '';
 }
 
-const SayWhat = ({ tool }) => {
+const WhatsThatMean = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -152,7 +152,7 @@ const SayWhat = ({ tool }) => {
     setEquivResult(null);
     const actualContext = overrideContext === null ? context.trim() : overrideContext.trim();
     try {
-      const data = await callToolEndpoint('say-what', {
+      const data = await callToolEndpoint('whats-that-mean', {
         phrase: phrase.trim(),
         context: actualContext,
         userLanguage: userLocale || 'en',
@@ -173,7 +173,7 @@ const SayWhat = ({ tool }) => {
       });
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     } catch (e) {
-      setError(e?.message || tr('syw_err_request', 'Say What? could not complete that request. Please try again.'));
+      setError(e?.message || tr('syw_err_request', "What's That Mean? could not complete that request. Please try again."));
     }
   }, [phrase, context, callToolEndpoint, userLocale, saveToRecentLog, tr]);
 
@@ -213,7 +213,7 @@ const SayWhat = ({ tool }) => {
     setEquivResult(null);
     setError('');
     try {
-      const data = await callToolEndpoint('say-what/equivalent', {
+      const data = await callToolEndpoint('whats-that-mean/equivalent', {
         phrase: phrase.trim(),
         plainMeaning: decoded.plain_meaning || '',
         contextualMeaning: decoded.contextual_meaning?.meaning || '',
@@ -248,7 +248,7 @@ const SayWhat = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!decoded) return '';
     const parts = [
-      `Say What?`,
+      `What's That Mean?`,
       `\n${phrase}`,
       classBadges.length ? `\nWhat kind of phrase: ${classBadges.map(x => x.label).join(' · ')}` : '',
       decoded.plain_meaning ? `\nPlain meaning: ${decoded.plain_meaning}` : '',
@@ -261,7 +261,7 @@ const SayWhat = ({ tool }) => {
     return parts.filter(Boolean).join('\n') + BRAND;
   }, [decoded, phrase, classBadges]);
 
-  useRegisterActions(buildFullText(), tool?.title || tr('syw_title', 'Say What?'));
+  useRegisterActions(buildFullText(), tool?.title || tr('syw_title', "What's That Mean?"));
 
   const ambiguous = decoded?.ambiguity?.needs_context;
   const responseOptions = Array.isArray(decoded?.response_help?.responses) ? decoded.response_help.responses : [];
@@ -274,7 +274,7 @@ const SayWhat = ({ tool }) => {
           <div>
             <div className="text-lg font-bold"><span className="me-2">{tool?.icon ?? '💬'}</span>{tr('syw_tagline', 'What did they really mean.')}</div>
             <p className={`mt-1 text-sm ${c.textSecondary}`}>
-              {tr('syw_intro', "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. Say What? identifies what kind of expression it is and explains what it means in plain language and in your context.")}
+              {tr('syw_intro', "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? identifies what kind of expression it is and explains what it means in plain language and in your context.")}
             </p>
           </div>
           {(phrase || decoded) && (
@@ -481,7 +481,7 @@ const SayWhat = ({ tool }) => {
 
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className="font-bold">➕ {tr('syw_whole_sentence', 'What about the whole sentence?')}</div>
-            <div className={`text-xs mt-1 ${c.textMuted}`}>{tr('syw_refine_help', 'Add more of the sentence or conversation. Say What? will re-evaluate the contextual meaning without treating its earlier interpretation as fact.')}</div>
+            <div className={`text-xs mt-1 ${c.textMuted}`}>{tr('syw_refine_help', "Add more of the sentence or conversation. What's That Mean? will re-evaluate the contextual meaning without treating its earlier interpretation as fact.")}</div>
             <textarea value={refineContext} onChange={e => setRefineContext(e.target.value)} rows={3} className={`mt-3 w-full rounded-xl border p-3 text-sm ${c.input}`} placeholder={tr('syw_refine_placeholder', 'Add the surrounding sentence or a little more context…')} />
             <button onClick={runRefinedContext} disabled={!refineContext.trim() || loading} className={`${c.btnSecondary} border mt-2 rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40`}>
               {tr('syw_recheck_context', 'Recheck with this context')} →
@@ -524,5 +524,5 @@ const SayWhat = ({ tool }) => {
   );
 };
 
-SayWhat.displayName = 'SayWhat';
-export default SayWhat;
+WhatsThatMean.displayName = 'WhatsThatMean';
+export default WhatsThatMean;

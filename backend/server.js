@@ -245,7 +245,7 @@ const TOOL_IDS = [
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
   'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','TheCrux',
-'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','SayWhat',
+'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','WhatsThatMean',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','TripRecon','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheWholeStory','TheDebrief',

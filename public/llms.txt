@@ -127,8 +127,8 @@
 - [Argue Smarter](https://deftbrain.com/ArgueSmarter): Test your ideas against the strongest criticism you can find
 - [Context Collapse](https://deftbrain.com/ContextCollapse): See how different people will read the same message — before you send it
 - [Pronounce It Right](https://deftbrain.com/PronounceItRight): Know how to say it before you have to.
-- [Say What?](https://deftbrain.com/SayWhat): What did they really mean.
 - [The Final Word](https://deftbrain.com/TheFinalWord): Arguments settled. Facts checked. No appeals.
+- [What's That Mean?](https://deftbrain.com/WhatsThatMean): What did they really mean.
 
 ## Go Deep!
 
