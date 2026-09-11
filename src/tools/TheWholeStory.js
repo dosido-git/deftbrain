@@ -44,6 +44,7 @@ const TheWholeStory = ({ tool }) => {
     { label: t('ta_ex2_label'), situation: t('ta_ex2_situation'), audience: 'interviewer' },
     { label: t('ta_ex3_label'), situation: t('ta_ex3_situation'), audience: 'interviewer' },
     { label: t('ta_ex4_label'), situation: t('ta_ex4_situation'), audience: 'landlord' },
+    { label: t('ta_ex5_label'), situation: t('ta_ex5_situation'), audience: 'lender' },
   ];
 
   const c = {

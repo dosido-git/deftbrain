@@ -41,15 +41,19 @@ const TheRunthrough = ({ tool }) => {
 
   const loadExample = () => {
     const ex = pickExample('TheRunthrough', [
-      { content: 'trt_ex_content',  context: 'trt_ex_context', stakes: 'trt_ex_stakes',  audience: 'general', minutes: 10 },
-      { content: 'trt_ex2_content', context: 'trt_ex2_goal',   stakes: 'trt_ex2_stakes', audience: 'executives', minutes: 15 },
+      { mode: 'anticipate', content: 'trt_ex_content',  context: 'trt_ex_context', stakes: 'trt_ex_stakes',  audience: 'general', minutes: 10 },
+      { mode: 'anticipate', content: 'trt_ex2_content', context: 'trt_ex2_goal',   stakes: 'trt_ex2_stakes', audience: 'executives', minutes: 15 },
+      { mode: 'cut', content: 'trt_ex3_content', context: 'trt_ex3_context', minutes: 3 },
+      { mode: 'hook', content: 'trt_ex4_content', tone: 'provocative' },
+      { mode: 'anticipate', content: 'trt_ex5_content', stakes: 'trt_ex5_stakes', audience: 'investors', minutes: 10 },
     ]);
     setContent(t(ex.content, { sym }));
-    setMode('anticipate');
-    setTimeMinutes(ex.minutes);
-    setContext(t(ex.context));
-    setAudience(ex.audience);
-    setStakes(t(ex.stakes));
+    setMode(ex.mode);
+    setTimeMinutes(ex.minutes || 10);
+    setContext(ex.context ? t(ex.context) : '');
+    setAudience(ex.audience || 'general');
+    setStakes(ex.stakes ? t(ex.stakes, { sym }) : '');
+    setTone(ex.tone || 'conversational');
   };
 
   const resultsRef = useRef(null);
