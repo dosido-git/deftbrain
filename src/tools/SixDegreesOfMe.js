@@ -288,6 +288,9 @@ const SixDegreesOfMe = ({ tool }) => {
     const ex = pickExample('SixDegreesOfMe', [
       { a: 'sdm_example_thingA',  b: 'sdm_example_thingB' },
       { a: 'sdm_example2_thingA', b: 'sdm_example2_thingB' },
+      { a: 'sdm_example3_thingA', b: 'sdm_example3_thingB' },
+      { a: 'sdm_example4_thingA', b: 'sdm_example4_thingB' },
+      { a: 'sdm_example5_thingA', b: 'sdm_example5_thingB' },
     ]);
     setThingA(t(ex.a));
     setThingB(t(ex.b));

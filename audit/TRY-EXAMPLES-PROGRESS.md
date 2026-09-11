@@ -124,6 +124,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 94 | SafeWalk | inline | 5 times-of-day × 5 durations | 2 | 5 (+ quiet-Sunday familiar walk, pre-dawn walk to catch a flight, leaving a crowded concert into unfamiliar downtown) | ✅ 2026-09-11 |
 | 95 | SayWhat | inline | — | 4 | 5 (+ 'let's take this offline' as a conversation-avoidance phrase) | ✅ 2026-09-11 |
 | 96 | ScamRadar | inline | 7 interaction stages | 2 (none) | 5 (+ fake-warrant voicemail, grandparent scam with money already sent, smishing text in a real delivery thread; covers clicked_link and sent_money stages) | ✅ 2026-09-11 |
+| 97 | SignalVsNoise | i18n | — | 5 | ✅ pre-existing (already had `svn_ex1..5_topic/conflict`) | ✅ 2026-09-11 |
+| 98 | SixDegreesOfMe | i18n | — | 2 | 5 (+ pottery-year/city-move pair, mother's-handwriting/universal-password pair, can't-stop-humming-song/still-regret-decision pair; 6 keys ×13) | ✅ 2026-09-11 |
+| 99 | SkillGapMap | i18n | — | 2 | 5 (+ teacher→instructional designer 3hrs/wk, retail manager→UX researcher 15hrs/wk, ICU nurse→health-tech PM 10hrs/wk; spans part-time to intensive commitment; 16 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

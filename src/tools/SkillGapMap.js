@@ -28,6 +28,27 @@ const EXAMPLES = [
     interestsKey: 'sgm_example2_interests',
     hoursPerWeek: 8,
   },
+  {
+    currentRoleKey: 'sgm_example3_current_role',
+    targetRoleKey: 'sgm_example3_target_role',
+    currentSkillsKey: 'sgm_example3_skills',
+    interestsKey: 'sgm_example3_interests',
+    hoursPerWeek: 3,
+  },
+  {
+    currentRoleKey: 'sgm_example4_current_role',
+    targetRoleKey: 'sgm_example4_target_role',
+    currentSkillsKey: 'sgm_example4_skills',
+    interestsKey: 'sgm_example4_interests',
+    hoursPerWeek: 15,
+  },
+  {
+    currentRoleKey: 'sgm_example5_current_role',
+    targetRoleKey: 'sgm_example5_target_role',
+    currentSkillsKey: 'sgm_example5_skills',
+    interestsKey: 'sgm_example5_interests',
+    hoursPerWeek: 10,
+  },
 ];
 const SkillGapMap = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
