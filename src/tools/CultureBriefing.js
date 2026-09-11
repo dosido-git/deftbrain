@@ -19,6 +19,9 @@ const TRIP_PURPOSES = [
 ];
 
 
+// Five, rotated: business, family, tourism, a full relocation with family
+// in tow, and a student exchange living with a host family — the purposes
+// that change what "culture" even means to brief someone on.
 const EXAMPLES = [
   {
   destination: 'Japan',
@@ -36,7 +39,31 @@ const EXAMPLES = [
   region: 'Lagos',
   context: "Meeting my partner's extended family for the first time, at a wedding. I don't speak Yoruba and I'm the only one who won't know anyone.",
 },
-];;
+  {
+  destination: 'Italy',
+  tripPurpose: 'tourism',
+  duration: '10 days',
+  homeCountry: 'Australia',
+  region: 'Rome and the Amalfi Coast',
+  context: 'First trip to Europe, travelling with two teenagers, budget-conscious.',
+},
+  {
+  destination: 'South Korea',
+  tripPurpose: 'living',
+  duration: '1 year',
+  homeCountry: 'Canada',
+  region: 'Seoul',
+  context: 'Relocating for a job. Bringing a spouse and a toddler. Renting an apartment, not staying in a hotel.',
+},
+  {
+  destination: 'Germany',
+  tripPurpose: 'study',
+  duration: '1 semester',
+  homeCountry: 'Brazil',
+  region: 'Munich',
+  context: 'Exchange student, living with a host family for the first time, do not speak German yet.',
+},
+];
 
 function CultureBriefing({ tool }) {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

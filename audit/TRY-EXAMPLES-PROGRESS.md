@@ -55,6 +55,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 25 | ContextCollapse | i18n | 8 platforms | 2 (email, announcement) | 5 (+ group_chat resignation, social_media ex-photo, slack migration-delay; 18 keys ×13) | ✅ 2026-09-11 |
 | 26 | ContractDecoder | i18n | contractType/focusAreas are unused decorative fields | 2 (freelance, saas) | 5 (+ lease, employment offer with non-compete, mutual NDA; 6 keys ×13, full contract text each) | ✅ 2026-09-11 |
 | 27 | CrisisPrioritizer | inline | — | 2 | 5 (+ full high-energy day with five deadlines, near-empty low-energy list with nothing urgent) | ✅ 2026-09-11 |
+| 28 | CrowdWisdom | i18n | — | already 5 (cw_ex1–5) | — | ✅ pre-existing |
+| 29 | CultureBriefing | inline | 6 trip purposes | 2 (business, family) | 5 (+ tourism, a full relocation with family, a student exchange with a host family) | ✅ 2026-09-11 |
+| 30 | DateNight | inline | 6 date types (shared location/last-time/restrictions across the rotation) | 2 (anniversary, stay_in) | 5 (+ big-budget adventurous 1yr in, cheap-and-short first date, long casual afternoon; $25–$350, 0–11 years) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
