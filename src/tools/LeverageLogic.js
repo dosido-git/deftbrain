@@ -186,11 +186,20 @@ const LeverageLogic = ({ tool }) => {
   };
 
   const loadExample = useCallback(() => {
+    // Five, rotated across five of the eight negotiation types and every
+    // urgency/relationship combination: a freelance rate, a remote-work
+    // salary ask, a vendor price hike, a lease renewal, and a car purchase.
     const ex = pickExample('LeverageLogic', [
       { sit: 'llog_ex_situation',  yours: 'llog_ex_leverage',  theirs: 'llog_ex_their',  des: 'llog_ex_desired',
         type: 'freelance', urgency: 'moderate', rel: 'moderate' },
       { sit: 'llog_ex2_situation', yours: 'llog_ex2_leverage', theirs: 'llog_ex2_their', des: 'llog_ex2_desired',
         type: 'salary',    urgency: 'high', rel: 'critical' },
+      { sit: 'llog_ex3_situation', yours: 'llog_ex3_leverage', theirs: 'llog_ex3_their', des: 'llog_ex3_desired',
+        type: 'vendor',    urgency: 'low', rel: 'disposable' },
+      { sit: 'llog_ex4_situation', yours: 'llog_ex4_leverage', theirs: 'llog_ex4_their', des: 'llog_ex4_desired',
+        type: 'lease',     urgency: 'moderate', rel: 'moderate' },
+      { sit: 'llog_ex5_situation', yours: 'llog_ex5_leverage', theirs: 'llog_ex5_their', des: 'llog_ex5_desired',
+        type: 'purchase',  urgency: 'high', rel: 'disposable' },
     ]);
     setSituation(t(ex.sit, { sym }));
     setYourSide(t(ex.yours, { sym }));

@@ -88,6 +88,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 58 | JustifyMyMeeting | inline | 4 modes (judge/zombie/week/rescue) | 2 each | 5 each (20 total): incident post-mortem, unwanted vendor demo, 3-person daily standup; zombie innovation committee, bug triage, customer advisory; 4th/5th week audits; rescue leading-it and asleep-on-camera scenarios | ✅ 2026-09-11 |
 | 59 | LaundroMat | i18n | — | 2 | 5 (+ red wine on white tablecloth, hand-wash-only wool+silk, mystery stain on baby clothes; 3 keys ×13) | ✅ 2026-09-11 |
 | 60 | LayoverMaximizer | inline | 4 travel styles | 2 (both efficient) | 5 (+ explorer 9h Seoul, foodie 6h Singapore, relaxer 3h Dubai overnight with checked bags) | ✅ 2026-09-11 |
+| 61 | LazyWorkoutAdapter | i18n | 5 modes (right-now/micro/body/stack/recovery) | 2 each | 5 each (25 total), each mode's five spanning its full enum range; 7 new keys ×13 | ✅ 2026-09-11 |
+| 62 | LeaseTrapDetector | inline | 5 lease types | 2 (residential, commercial) | 5 (+ house shifting maintenance to tenant, room rental with master key + 14-day notice, sublease with no landlord consent) | ✅ 2026-09-11 |
+| 63 | LeverageLogic | i18n | 8 negotiation types | 2 (freelance, salary) | 5 (+ vendor price hike, lease renewal, car purchase; 12 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

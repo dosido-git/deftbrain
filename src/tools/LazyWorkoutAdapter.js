@@ -96,26 +96,44 @@ const MODE_TABS = [
 // translation key rather than in this file: these values go straight into the
 // visitor's own input boxes, and an English string in a German form is the tool
 // failing to speak the language it just rendered itself in.
+// Five per mode, rotated: each mode's five span the enum range it has (every
+// intensity/setting/context that fits) rather than five variations on the
+// same seed.
 const MODE_EXAMPLES = {
   'right-now': [
     { energy: 3, bodyAreas: ['stiff-neck'], timeMins: 10, setting: 'home', contexts: ['bad-sleep', 'screen-marathon'], limitationsKey: 'lwa_ex_rn_lim' },
     { energy: 6, bodyAreas: ['tight-hips'], timeMins: 15, setting: 'office', contexts: ['long-meeting'], limitationsKey: '' },
+    { energy: 8, bodyAreas: ['general-tension'], timeMins: 5, setting: 'outdoors', contexts: ['pre-event-nerves'], limitationsKey: '' },
+    { energy: 2, bodyAreas: ['just-blah', 'stiff-all-over'], timeMins: 20, setting: 'bed', contexts: ['hungover'], limitationsKey: 'lwa_ex_rn2_lim' },
+    { energy: 5, bodyAreas: ['wrists-hands'], timeMins: 10, setting: 'office', contexts: ['screen-marathon', 'been-standing'], limitationsKey: '' },
   ],
   micro: [
     { bodyAreas: ['stiff-neck'], setting: 'office' },
     { bodyAreas: ['restless-legs'], setting: 'bed' },
+    { bodyAreas: ['tight-hips'], setting: 'home' },
+    { bodyAreas: ['general-tension'], setting: 'outdoors' },
+    { bodyAreas: ['just-blah'], setting: 'office' },
   ],
   body: [
     { bodyTarget: 'sore-back', bodyIntensity: 'gentle', bodyTime: 5 },
     { bodyTarget: 'wrists-hands', bodyIntensity: 'moderate', bodyTime: 10 },
+    { bodyTarget: 'stiff-neck', bodyIntensity: 'thorough', bodyTime: 15 },
+    { bodyTarget: 'general-tension', bodyIntensity: 'moderate', bodyTime: 20 },
+    { bodyTarget: 'restless-legs', bodyIntensity: 'gentle', bodyTime: 5 },
   ],
   stack: [
     { stackActivityKey: 'lwa_ex_stack_1', stackDuration: 60, bodyAreas: ['stiff-neck'], limitationsKey: '' },
     { stackActivityKey: 'lwa_ex_stack_2', stackDuration: 30, bodyAreas: ['tight-hips'], limitationsKey: '' },
+    { stackActivityKey: 'lwa_ex_stack_3', stackDuration: 120, bodyAreas: ['sore-back'], limitationsKey: '' },
+    { stackActivityKey: 'lwa_ex_stack_4', stackDuration: 45, bodyAreas: ['stiff-neck', 'tight-hips'], limitationsKey: '' },
+    { stackActivityKey: 'lwa_ex_stack_5', stackDuration: 20, bodyAreas: ['restless-legs'], limitationsKey: '' },
   ],
   recovery: [
     { recoveryEventKey: 'lwa_ex_rec_1', recoveryIntensity: 'rough', recoveryTime: 10 },
     { recoveryEventKey: 'lwa_ex_rec_2', recoveryIntensity: 'moderate', recoveryTime: 5 },
+    { recoveryEventKey: 'lwa_ex_rec_3', recoveryIntensity: 'brutal', recoveryTime: 15 },
+    { recoveryEventKey: 'lwa_ex_rec_4', recoveryIntensity: 'moderate', recoveryTime: 10 },
+    { recoveryEventKey: 'lwa_ex_rec_5', recoveryIntensity: 'mild', recoveryTime: 5 },
   ],
 };
 // ─── Pure helpers (module-level) ───
