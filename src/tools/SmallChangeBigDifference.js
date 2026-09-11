@@ -30,6 +30,21 @@ const SmallChangeBigDifference = ({ tool }) => {
       goals: t('op_ex2_goals'),
       pain: t('op_ex2_pain'),
     },
+    {
+      routine: t('op_ex3_routine'),
+      goals: t('op_ex3_goals'),
+      pain: t('op_ex3_pain'),
+    },
+    {
+      routine: t('op_ex4_routine'),
+      goals: t('op_ex4_goals'),
+      pain: t('op_ex4_pain'),
+    },
+    {
+      routine: t('op_ex5_routine'),
+      goals: t('op_ex5_goals'),
+      pain: t('op_ex5_pain'),
+    },
   ];
 
   const c = {

@@ -43,6 +43,12 @@ function SleepArchitect({ tool }) {
       disruptors: ['screens', 'stress', 'caffeine'], freeform: t('sa_ex_freeform') },
     { goals: ['stay_asleep', 'wake_rested'], bedtime: '10:30 PM', wakeTime: '6:30 AM', hoursActual: '6',
       disruptors: ['stress', 'noise'], freeform: t('sa_ex2_freeform') },
+    { goals: ['timing', 'energy'], bedtime: '4:00 AM', wakeTime: '11:00 AM', hoursActual: '6',
+      disruptors: ['irregular', 'light', 'partner'], freeform: t('sa_ex3_freeform') },
+    { goals: ['stay_asleep', 'stress'], bedtime: '9:30 PM', wakeTime: '5:30 AM', hoursActual: '4',
+      disruptors: ['pain', 'bathroom', 'temperature'], freeform: t('sa_ex4_freeform') },
+    { goals: ['wake_rested', 'energy'], bedtime: '11:00 PM', wakeTime: '6:00 AM', hoursActual: '7',
+      disruptors: ['alcohol', 'unknown'], freeform: t('sa_ex5_freeform') },
   ];
 
   const c = {

@@ -127,6 +127,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 97 | SignalVsNoise | i18n | — | 5 | ✅ pre-existing (already had `svn_ex1..5_topic/conflict`) | ✅ 2026-09-11 |
 | 98 | SixDegreesOfMe | i18n | — | 2 | 5 (+ pottery-year/city-move pair, mother's-handwriting/universal-password pair, can't-stop-humming-song/still-regret-decision pair; 6 keys ×13) | ✅ 2026-09-11 |
 | 99 | SkillGapMap | i18n | — | 2 | 5 (+ teacher→instructional designer 3hrs/wk, retail manager→UX researcher 15hrs/wk, ICU nurse→health-tech PM 10hrs/wk; spans part-time to intensive commitment; 16 keys ×13) | ✅ 2026-09-11 |
+| 100 | SleepArchitect | i18n | — | 2 | 5 (+ rotating night-shift worker, older adult with pain/temperature wakeups, moderate drinker with unexplained 4am wakeups; covers 6 goals and 8 disruptor types; 3 keys ×13) | ✅ 2026-09-11 |
+| 101 | SmallChangeBigDifference | i18n | — | 2 | 5 (+ new parent running on no sleep, student stuck in all-nighter cram cycles, retiree with unstructured drifting days; 9 keys ×13) | ✅ 2026-09-11 |
+| 102 | SocialBatteryAdvisor | inline | — | 2 | 5 (+ health-heavy day where therapy recharges more than a short work talk drains, a deceptively 'easy' day that drains steadily anyway, a loud social day that recharges while the solo commute is the real drain; covers all 6 categories) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

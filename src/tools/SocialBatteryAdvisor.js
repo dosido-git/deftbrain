@@ -294,6 +294,30 @@ const SocialBatteryAdvisor = ({ tool }) => {
         { situation: 'Supermarket', category: 'errands', performance: 2, energyBefore: 2, energyAfter: 1, duration: '45 min', custom: false },
         { situation: 'Two friends round for dinner', category: 'social', performance: 6, energyBefore: 1, energyAfter: 2, duration: '3 hours', custom: false },
       ],
+      // Health-heavy day where the emotionally demanding session recharges
+      // and the short, purely professional slot drains the most.
+      [
+        { situation: 'Doctor appointment', category: 'health', performance: 4, energyBefore: 6, energyAfter: 4, duration: '30 min', custom: false },
+        { situation: 'Therapy session', category: 'health', performance: 3, energyBefore: 5, energyAfter: 6, duration: '50 min', custom: false },
+        { situation: 'Gym class', category: 'health', performance: 2, energyBefore: 4, energyAfter: 6, duration: '1 hour', custom: false },
+        { situation: 'Presentation/talk', category: 'work', performance: 9, energyBefore: 7, energyAfter: 3, duration: '45 min', custom: false },
+      ],
+      // A day that looks easy on paper but drains steadily anyway — the
+      // pattern where nothing individually demanding still adds up.
+      [
+        { situation: 'Grocery shopping', category: 'errands', performance: 3, energyBefore: 6, energyAfter: 5, duration: '30 min', custom: false },
+        { situation: 'Small talk with neighbor', category: 'social', performance: 5, energyBefore: 5, energyAfter: 4, duration: '10 min', custom: false },
+        { situation: 'Replying to group chat all day', category: 'social', performance: 4, energyBefore: 5, energyAfter: 3, duration: 'all day', custom: true },
+        { situation: 'Quiet evening alone', category: 'creative', performance: 1, energyBefore: 3, energyAfter: 3, duration: '3 hours', custom: false },
+      ],
+      // The opposite surprise: a full, loud social day that recharges,
+      // with the solo commute being the actual drain.
+      [
+        { situation: 'Solo commute', category: 'errands', performance: 1, energyBefore: 8, energyAfter: 6, duration: '30 min', custom: false },
+        { situation: 'Big birthday party', category: 'social', performance: 8, energyBefore: 5, energyAfter: 8, duration: '4 hours', custom: true },
+        { situation: 'Group hike with friends', category: 'social', performance: 6, energyBefore: 6, energyAfter: 8, duration: '3 hours', custom: true },
+        { situation: 'Work email catch-up', category: 'work', performance: 3, energyBefore: 6, energyAfter: 4, duration: '1 hour', custom: false },
+      ],
     ]));
     setError('');
   }, []);
