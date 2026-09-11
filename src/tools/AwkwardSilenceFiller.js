@@ -53,6 +53,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
   const { t } = useTranslation();
 
   // Example seeds — scenario text localized via t().
+  // Five, rotated by pickExample: all four comfort levels, five different
+  // relationships, three described scenes and one chosen from the pills
+  // (the two input paths the form offers), one with extra context and one
+  // without — so the rotation shows every shape of help this tool gives.
   const EXAMPLES = [
     {
       scenario: t('asf_ex1_scenario'),
@@ -65,6 +69,24 @@ const AwkwardSilenceFiller = ({ tool }) => {
       customContext: t('asf_ex2_context'),
       relationship: 'boss',
       comfort: 'panicking',
+    },
+    {
+      scenario: 'waiting_room',
+      customContext: '',
+      relationship: 'stranger',
+      comfort: 'slightly_awkward',
+    },
+    {
+      scenario: t('asf_ex4_scenario'),
+      customContext: '',
+      relationship: 'in_laws',
+      comfort: 'panicking',
+    },
+    {
+      scenario: t('asf_ex5_scenario'),
+      customContext: t('asf_ex5_context'),
+      relationship: 'old_friend',
+      comfort: 'fine',
     },
   ];
 

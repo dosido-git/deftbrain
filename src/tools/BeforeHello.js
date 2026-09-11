@@ -7,6 +7,11 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 
+// Five, rotated by pickExample: investor, mentor, employer, client and
+// connector — five of the seven target types, each a different kind of ask
+// (money, judgement, a role, a sale, an introduction) and a different kind of
+// standing gap, so the rotation shows the full spread of what the tool says
+// you bring and what is missing.
 const EXAMPLES = [
   {
     targetType: 'investor',
@@ -19,6 +24,24 @@ const EXAMPLES = [
     targetDescriptionKey: 'bh_ex2_target',
     whyThemContextKey: 'bh_ex2_why',
     yourBackgroundKey: 'bh_ex2_background',
+  },
+  {
+    targetType: 'employer',
+    targetDescriptionKey: 'bh_ex3_target',
+    whyThemContextKey: 'bh_ex3_why',
+    yourBackgroundKey: 'bh_ex3_background',
+  },
+  {
+    targetType: 'client',
+    targetDescriptionKey: 'bh_ex4_target',
+    whyThemContextKey: 'bh_ex4_why',
+    yourBackgroundKey: 'bh_ex4_background',
+  },
+  {
+    targetType: 'connector',
+    targetDescriptionKey: 'bh_ex5_target',
+    whyThemContextKey: 'bh_ex5_why',
+    yourBackgroundKey: 'bh_ex5_background',
   },
 ];
 const TARGET_TYPES = [

@@ -31,9 +31,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 1 | AlternatePath | inline | — | 2 | 5 | ✅ 2026-09-11 |
 | 2 | AnalogyEngine | inline | — | 2 | 5 | ✅ 2026-09-11 |
 | 3 | ArgueSmarter | inline | setup / quick / prep (fallacy is a quiz — no input to seed) | 2 (setup only) | 5 + 5 + 5 | ✅ 2026-09-11 |
-| 4 | AwkwardSilenceFiller | inline | 8 scenarios | 2 | | |
-| 5 | BatchFlow | i18n | — | 7 keys | | |
-| 6 | BeforeHello | inline | 7 target types | 2 | | |
+| 4 | AwkwardSilenceFiller | inline | 8 scenarios | 2 | 5 (5 scenarios, 5 comfort levels; 2 new i18n keys ×13) | ✅ 2026-09-11 |
+| 5 | BatchFlow | i18n | — | 2 sets | 5 sets (4 energy curves, 5 day types, time 2h→unknown; 17 keys ×13) | ✅ 2026-09-11 |
+| 6 | BeforeHello | i18n | 7 target types | 2 | 5 (investor/mentor/employer/client/connector; 9 keys ×13) | ✅ 2026-09-11 |
 | 7 | BeforeTheCrash | inline | log / patterns | ? | | |
 | 8 | BeliefStressTest | inline (strings) | — | 9 | | |
 | 9 | BikeMedic | inline | 8 problems × tabs | 2 | | |

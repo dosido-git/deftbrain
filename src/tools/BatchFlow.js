@@ -301,8 +301,10 @@ const BatchFlow = ({ tool }) => {
   };
 
   const loadExample = useCallback(() => {
-    // A desk day of context switches, and a day made of other people's
-    // errands — same problem, but the gear changes are physical.
+    // Five, rotated by pickExample: a desk day of context switches, a day of
+    // other people's errands, exam week, a café's admin morning, and a house
+    // move — between them every energy curve but one, every day type, and
+    // time-available from two hours to unknown.
     const ex = pickExample('BatchFlow', [
       { tasks: [
           ['bf_ex_task1', '15min', 'bf_ex_loc_desk'],
@@ -320,6 +322,32 @@ const BatchFlow = ({ tool }) => {
           ['bf_ex2_task5', '5min',  'bf_ex_loc_desk'],
           ['bf_ex2_task6', '20min', 'bf_ex_loc_errand'],
         ], meta: { ...EXAMPLE_META, timeAvail: '3' } },
+      // Exam week — a night owl, a maker day, mostly desk work with two errands.
+      { tasks: [
+          ['bf_ex3_task1', '60min', 'bf_ex_loc_desk'],
+          ['bf_ex3_task2', '5min',  'bf_ex_loc_desk'],
+          ['bf_ex3_task3', '15min', 'bf_ex_loc_errand'],
+          ['bf_ex3_task4', '15min', 'bf_ex_loc_phone'],
+          ['bf_ex3_task5', '90min', 'bf_ex_loc_desk'],
+          ['bf_ex3_task6', '20min', 'bf_ex_loc_errand'],
+        ], meta: { energyCurve: 'night_owl', dayType: 'maker', timeAvail: '6' } },
+      // A café owner's admin morning — a slow starter with two hours before opening.
+      { tasks: [
+          ['bf_ex4_task1', '10min', 'bf_ex_loc_desk'],
+          ['bf_ex4_task2', '10min', 'bf_ex_loc_phone'],
+          ['bf_ex4_task3', '20min', 'bf_ex_loc_desk'],
+          ['bf_ex4_task4', '25min', 'bf_ex_loc_errand'],
+          ['bf_ex4_task5', '15min', 'bf_ex_loc_desk'],
+        ], meta: { energyCurve: 'slow_starter', dayType: 'admin', timeAvail: '2' } },
+      // Moving house — an errands day, afternoon peak, time available unknown.
+      { tasks: [
+          ['bf_ex5_task1', '30min', 'bf_ex_loc_errand'],
+          ['bf_ex5_task2', '20min', 'bf_ex_loc_phone'],
+          ['bf_ex5_task3', '90min', 'bf_ex2_loc_home'],
+          ['bf_ex5_task4', '10min', 'bf_ex_loc_phone'],
+          ['bf_ex5_task5', '45min', 'bf_ex_loc_errand'],
+          ['bf_ex5_task6', '30min', 'bf_ex2_loc_home'],
+        ], meta: { energyCurve: 'afternoon_peak', dayType: 'errands', timeAvail: 'unknown' } },
     ]);
     setTasks(ex.tasks.map(([k, duration, loc]) => ({ text: t(k), duration, location: t(loc) })));
     setEnergyCurve(ex.meta.energyCurve);
