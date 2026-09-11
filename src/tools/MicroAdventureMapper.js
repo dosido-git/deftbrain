@@ -83,6 +83,10 @@ const ACCESSIBILITY_OPTIONS = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+// Five, rotated across every when/budget/transport combination: a right-
+// now short walk, a low-budget weekend transit trip, an energizing free
+// evening bike ride, a fully-surprise weekend drive, and a chill moderate-
+// budget evening out.
 const EXAMPLES = [
   {
     location: 'Boston, MA',
@@ -103,6 +107,36 @@ const EXAMPLES = [
     vibe: 'chill',
     budget: 'low',
     transport: 'transit',
+  },
+  {
+    location: 'Austin, TX',
+    timeAvailable: 'halfday',
+    when: 'later_today',
+    timeOfDay: 'evening',
+    interests: ['nature', 'active'],
+    vibe: 'energizing',
+    budget: 'free',
+    transport: 'biking',
+  },
+  {
+    location: 'Seattle, WA',
+    timeAvailable: '1hr',
+    when: 'weekend',
+    timeOfDay: 'morning',
+    interests: ['surprise'],
+    vibe: 'surprise',
+    budget: 'any',
+    transport: 'driving',
+  },
+  {
+    location: 'New Orleans, LA',
+    timeAvailable: '3hrs',
+    when: 'right_now',
+    timeOfDay: 'evening',
+    interests: ['food_drink', 'relaxation'],
+    vibe: 'chill',
+    budget: 'moderate',
+    transport: 'walking',
   },
 ];
 const MicroAdventureMapper = ({ tool }) => {

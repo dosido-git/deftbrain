@@ -46,6 +46,11 @@ const BARRIERS = [
   { id: 'none',       labelKey: 'mhn_barrier_none' },
 ];
 
+// Five, rotated across most situation areas and every barrier: workplace
+// anxiety with a dismissive GP, grief compounded by a move abroad,
+// escalating drinking against a 3-month waitlist, restrictive eating that
+// doesn't 'look like' a disorder, and postpartum numbness masked by
+// functioning fine on the surface.
 const EXAMPLES = [
   {
   situationAreas: ['anxiety', 'work', 'sleep'],
@@ -61,7 +66,28 @@ const EXAMPLES = [
   barriers: ['language', 'access'],
   country: 'Netherlands',
 },
-];;
+  {
+  situationAreas: ['addiction', 'work'],
+  freeform: "I think I'm drinking more than I should to get through the workday stress, most nights now instead of just weekends. I looked into a couple of programs but the waitlist at the one my insurance covers is 3 months, and I don't know what to do in the meantime.",
+  triedBefore: ['crisis'],
+  barriers: ['waitlists', 'cost'],
+  country: 'Canada',
+},
+  {
+  situationAreas: ['eating', 'identity'],
+  freeform: "I've been restricting food for about a year and I know the numbers are getting concerning, but I don't feel like I fit the picture of what an eating disorder is supposed to look like, so I've never brought it up to anyone. I don't even know what kind of help to ask for.",
+  triedBefore: ['nothing'],
+  barriers: ['stigma', 'unsure'],
+  country: 'Australia',
+},
+  {
+  situationAreas: ['parenting', 'mood'],
+  freeform: "Six months postpartum and still not myself. Some days I love my daughter so much it hurts and other days I feel nothing at all, which scares me more than the sad days do. My partner thinks I'm fine because I function — I get her fed, I go to work.",
+  triedBefore: ['gp', 'self_help'],
+  barriers: ['none'],
+  country: 'South Africa',
+},
+];
 
 function MentalHealthNavigator({ tool }) {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
