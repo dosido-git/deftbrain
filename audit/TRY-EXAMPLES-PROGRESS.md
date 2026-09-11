@@ -61,6 +61,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 31 | DecisionCoach | i18n | 5 categories | 4 | 5 (+ 'other' category, quiet/no_screens; 2 keys ×13) | ✅ 2026-09-11 |
 | 32 | DecisionPrism (PlotTwist) | i18n | 8 stuck-reasons | 2 (fear_of_regret, people_pleasing) | 5 (+ analysis_paralysis on a second child, fear_of_unknown on a career leap, sunk_cost on an old friendship; 9 keys ×13) | ✅ 2026-09-11 |
 | 33 | DecoderRing | i18n | 7 sources × 10 relationships | 2 (text/partner, email/coworker) | 5 (+ slack/boss, dating/crush, letter/landlord; 6 keys ×13; fixed zh 您 and fr tu findings) | ✅ 2026-09-11 |
+| 34 | DifficultTalkCoach | inline | 6 goals × 8 relationships | 2 | 5 (+ landlord repairs, coworker feedback, adult-child boundary) | ✅ 2026-09-11 |
+| 35 | DoctorVisitPrep | i18n | 8 appointment types | 2 (follow-up/specialist, new-problem) | 5 (+ annual-physical with no complaint, second-opinion pushing back on surgery, first mental-health visit; 24 keys ×13) | ✅ 2026-09-11 |
+| 36 | DoctorVisitTranslator | inline | 5 document types | 2 (visit, insurance-eob) | 5 (+ prescription label, abnormal lab panel, discharge summary) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

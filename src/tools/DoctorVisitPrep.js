@@ -224,9 +224,16 @@ const DoctorVisitPrep = ({ tool }) => {
     setResults(null); setError('');
     // A clear physical story, and a vague long-running one that appointments
     // tend to bounce off. The second is the harder visit to prepare for.
+    // Five, rotated: a clear physical story, a vague long-running one, a
+    // routine annual physical with no complaint at all, a second opinion
+    // pushing back on a fast surgical recommendation, and a first mental-
+    // health visit.
     const ex = pickExample('DoctorVisitPrep', [
       { n: '',  sev: 6, appt: ['follow-up', 'specialist'], out: ['explanation', 'treatment-plan'] },
       { n: '2', sev: 4, appt: ['new-problem'],             out: ['testing', 'explanation'] },
+      { n: '3', sev: 2, appt: ['annual-physical'],         out: ['reassurance', 'testing'] },
+      { n: '4', sev: 5, appt: ['second-opinion'],          out: ['explanation', 'referral'] },
+      { n: '5', sev: 6, appt: ['mental-health'],           out: ['treatment-plan', 'explanation'] },
     ]);
     const k = f => `dvp_ex${ex.n}_${f}`;
     setChiefConcern(t(k('chief')));

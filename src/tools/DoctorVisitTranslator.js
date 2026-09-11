@@ -414,9 +414,15 @@ const DoctorVisitTranslator = ({ tool }) => {
   const loadExample = () => {
     setResults(null); setError(''); setPdfFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    // Five document types, rotated: visit notes, an insurance EOB, a
+    // prescription label with a drug-interaction warning, an abnormal lab
+    // panel flagged for review, and a hospital discharge summary.
     const ex = pickExample('DoctorVisitTranslator', [
       { type: 'visit', notes: "Type 2 diabetes follow-up. A1C today 7.8% (was 8.2% three months ago). Adding metformin 500mg twice daily with meals. Continue lisinopril 10mg. Repeat A1C and basic metabolic panel in 3 months. Call if fasting BG over 300 or symptoms of hypoglycemia. Consider GLP-1 agonist if A1C does not improve. Patient tolerating current meds well, BP 128/82, weight down 4 lbs." },
       { type: 'insurance-eob', notes: "EXPLANATION OF BENEFITS - THIS IS NOT A BILL\n\nProvider: Riverside Imaging Associates\nDate of service: 07/14/2026\nCPT 72148 MRI lumbar spine w/o contrast\n\nAmount billed .......... 2,840.00\nPlan discount .......... -1,962.00\nAllowed amount .......... 878.00\nPlan paid .............. 526.80\nDeductible applied ..... 0.00\nCoinsurance ............ 351.20\nPATIENT RESPONSIBILITY . 351.20\n\nRemark N130: Consult plan benefit documents for information regarding restrictions for this service.\nRemark PR-2: Coinsurance amount." },
+      { type: 'prescription-label', notes: "Rx 4471829\nATORVASTATIN CALCIUM 20MG TABLET\nTake 1 tablet by mouth once daily in the evening\nQty: 90  Refills: 3\nPrescriber: Dr. R. Okafor\nWARNING: May cause muscle pain or weakness. Avoid grapefruit juice. Do not take with certain antibiotics — consult pharmacist. Store at room temperature." },
+      { type: 'lab-report', notes: "COMPREHENSIVE METABOLIC PANEL\nGlucose: 118 mg/dL (H) [ref 70-99]\nCreatinine: 1.4 mg/dL (H) [ref 0.6-1.2]\neGFR: 52 (L) [ref >60]\nPotassium: 5.3 mmol/L (H) [ref 3.5-5.0]\nALT: 61 U/L (H) [ref 7-56]\nAll other values within normal limits.\nOrdering provider: Dr. Nguyen. Flagged as abnormal — provider review pending." },
+      { type: 'discharge', notes: "DISCHARGE SUMMARY\nAdmission: Chest pain, ruled out for MI. Troponin negative x3.\nDiagnosis: Atypical chest pain, likely musculoskeletal/GERD.\nDischarge medications: Omeprazole 20mg daily x 4 weeks, continue home meds.\nFollow up: Cardiology in 2 weeks if symptoms persist. PCP in 1 week.\nActivity: No heavy lifting >10lbs x 1 week. Return to ED if chest pain recurs, shortness of breath, or radiation to jaw/arm." },
     ]);
     setDocumentType(ex.type);
     setDoctorNotes(ex.notes);
