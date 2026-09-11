@@ -29,6 +29,9 @@ const LANGUAGES = [
   ['ja', '日本語'], ['ko', '한국어'], ['ru', 'Русский'], ['th', 'ไทย'], ['vi', 'Tiếng Việt'],
 ];
 
+// Five, rotated: a work idiom, corporate-speak deflection, a bare
+// no-context ambiguous sentence, technical jargon, and a phrase that is
+// itself a way of avoiding a conversation in the moment.
 const EXAMPLES = [
   {
     phrase: "Let's not boil the ocean.",
@@ -45,6 +48,10 @@ const EXAMPLES = [
   {
     phrase: 'The endpoint is idempotent.',
     context: 'An engineer said this while explaining an API to me.',
+  },
+  {
+    phrase: "Let's take this offline.",
+    context: 'Said in a meeting right when I raised a disagreement in front of the whole team.',
   },
 ];
 

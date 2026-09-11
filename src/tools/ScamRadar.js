@@ -26,6 +26,10 @@ const INTERACTION_OPTIONS = [
   { id: 'other',           labelKey: 'scam_int_other' },
 ];
 
+// Five, rotated across most interaction stages, from never engaged to
+// already sent money: a phishing email, a romance/pig-butchering scam, a
+// fake-warrant voicemail, a grandparent scam where money was already sent,
+// and a smishing text that arrived in a real delivery thread.
 const EXAMPLES = [
   {
   messageText: `Subject: URGENT: Your account has been suspended — verify now
@@ -62,6 +66,25 @@ Oh I'm so sorry, wrong number! But you seem nice. I'm new to the area, I moved h
 My uncle works in commodities and he's been helping me with a gold trading account. I made 2,400 last month just following his signals. I'm not trying to sell you anything, I just think you'd be good at it. I can show you the platform if you're curious, no pressure at all.`,
   senderContext: '',
   interactionStatus: 'none',
+},
+  {
+  messageText: `Hi, this is Officer Daniels with the county sheriff's office. There is a warrant out for your arrest due to a missed jury duty summons. To avoid immediate arrest, you must resolve this matter today by phone. Failure to respond within 2 hours will result in officers being dispatched to your home or workplace. Call this number immediately: (555) 019-2837. This is your only notice.`,
+  senderContext: 'Voicemail left on my cell phone, unknown number.',
+  interactionStatus: 'none',
+},
+  {
+  messageText: `Grandma it's me, I'm in trouble. I was in an accident and I'm at the police station, I can't talk long. I need you to send bail money through a gift card, I'll explain everything later. Please don't tell mom and dad yet, I don't want them to worry. Can you go to the store right now?`,
+  senderContext: 'Phone call, caller ID showed "Unknown".',
+  interactionStatus: 'sent_money',
+},
+  {
+  messageText: `Congratulations! Your delivery is on hold due to an unpaid customs fee of $1.99. Click the link below within 24 hours to release your package, or it will be returned to sender.
+
+track-your-parcel-now.info/confirm
+
+Failure to pay will result in additional storage charges.`,
+  senderContext: 'Text message, appeared in the same thread as real delivery notifications I had received before.',
+  interactionStatus: 'clicked_link',
 },
 ];
 

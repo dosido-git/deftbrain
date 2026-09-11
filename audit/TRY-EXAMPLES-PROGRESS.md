@@ -121,6 +121,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 91 | ResearchDecoder | inline | — | 2 | 5 (+ 4-day-workweek trial with selection bias, phase 2 eczema drug trial, screen-time/depression meta-analysis with reverse-causation caveat) | ✅ 2026-09-11 |
 | 92 | RoastMe | i18n | 4 content types × 3 heat levels | 2 | 5 (+ scorched dating bio, medium corporate email, scorched wanderlust social post; 3 keys ×13; fixed a French tu finding) | ✅ 2026-09-11 |
 | 93 | RoommateCourt | inline | 6 living situations | 2 (apartment, house) | 5 (+ dorm boyfriend who basically lives there, partner's recurring chore, sibling who moved back in 'temporarily') | ✅ 2026-09-11 |
+| 94 | SafeWalk | inline | 5 times-of-day × 5 durations | 2 | 5 (+ quiet-Sunday familiar walk, pre-dawn walk to catch a flight, leaving a crowded concert into unfamiliar downtown) | ✅ 2026-09-11 |
+| 95 | SayWhat | inline | — | 4 | 5 (+ 'let's take this offline' as a conversation-avoidance phrase) | ✅ 2026-09-11 |
+| 96 | ScamRadar | inline | 7 interaction stages | 2 (none) | 5 (+ fake-warrant voicemail, grandparent scam with money already sent, smishing text in a real delivery thread; covers clicked_link and sent_money stages) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
