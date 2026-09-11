@@ -42,6 +42,10 @@ function ContractDecoder({ tool }) {
 
 
 
+  // Five, rotated: a freelance agreement not yet signed, a SaaS renewal
+  // already locked in, a residential lease, a job offer with a non-compete,
+  // and a mutual NDA before any deal exists — negotiating leverage, getting
+  // out, and reading something that asks for nothing but disclosure.
   const EXAMPLES = [
     { contractType: 'freelance', focusAreas: ['ip', 'exit', 'payment'],
       context: t('cd_example_context'), contractText: t('cd_example_contract', { sym }) },
@@ -49,6 +53,12 @@ function ContractDecoder({ tool }) {
     // not about what to negotiate.
     { contractType: 'saas', focusAreas: ['autorenewal', 'exit', 'payment'],
       context: t('cd_example2_context'), contractText: t('cd_example2_contract') },
+    { contractType: 'lease', focusAreas: ['exit', 'payment'],
+      context: t('cd_example3_context'), contractText: t('cd_example3_contract') },
+    { contractType: 'employment', focusAreas: ['ip', 'exit'],
+      context: t('cd_example4_context'), contractText: t('cd_example4_contract') },
+    { contractType: 'nda', focusAreas: ['ip'],
+      context: t('cd_example5_context'), contractText: t('cd_example5_contract') },
   ];
 
   const c = {

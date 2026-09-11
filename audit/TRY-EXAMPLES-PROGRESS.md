@@ -52,6 +52,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 22 | ComplaintEscalationWriter | inline | 12 industries | 2 | 5 (airline, contractor, telecom rate dispute, healthcare billing-code error, subscription still-charging) | ✅ 2026-09-11 |
 | 23 | ConceptCoach (IdeaAutopsy) | i18n | 4 stages × 8 focus areas | 2 (shared desc/evidence/founder text — stage was the only thing that changed) | 5 — each with its own desc/evidence/founder keys (idea/exploring/building/launched, zero-validation to real-traction-with-churn; 9 keys ×13) | ✅ 2026-09-11 |
 | 24 | ConflictCoach | i18n | 7 relationships | 2 (Roommate, Partner) | 5 (+ Coworker cc'ing a manager, Family at Christmas, Customer complaint; 3 keys ×13; fixed 8 banned-pronoun findings in ja/hi/ru/fr) | ✅ 2026-09-11 |
+| 25 | ContextCollapse | i18n | 8 platforms | 2 (email, announcement) | 5 (+ group_chat resignation, social_media ex-photo, slack migration-delay; 18 keys ×13) | ✅ 2026-09-11 |
+| 26 | ContractDecoder | i18n | contractType/focusAreas are unused decorative fields | 2 (freelance, saas) | 5 (+ lease, employment offer with non-compete, mutual NDA; 6 keys ×13, full contract text each) | ✅ 2026-09-11 |
+| 27 | CrisisPrioritizer | inline | — | 2 | 5 (+ full high-energy day with five deadlines, near-empty low-energy list with nothing urgent) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

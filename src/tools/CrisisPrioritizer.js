@@ -171,6 +171,32 @@ export default function CrisisPrioritizer() {
         hours: 'about 4 hours', energy: 'okay',
         context: 'Priya is away until Wednesday.',
       },
+      // High energy, a full day, and a list where almost everything has a
+      // deadline and someone waiting — the opposite problem from the first
+      // two: not "what can I even do," but "which fire actually matters."
+      {
+        tasks: [
+          { task: 'Respond to the client escalation email', deadline: 'today', who_waiting: 'the account lead', consequence: 'they threatened to churn', depends_on: '', context: '' },
+          { task: 'Sign off on the vendor contract', deadline: 'today', who_waiting: 'legal', consequence: 'the discount expires', depends_on: '', context: '' },
+          { task: 'Prep slides for the board update', deadline: 'tomorrow 9am', who_waiting: 'CEO', consequence: '', depends_on: '', context: '' },
+          { task: 'Interview feedback for the candidate', deadline: 'today', who_waiting: 'recruiting', consequence: 'offer goes stale', depends_on: '', context: '' },
+          { task: 'Fix the broken CI pipeline', deadline: '', who_waiting: 'the whole eng team', consequence: 'nobody can ship', depends_on: '', context: '' },
+        ],
+        hours: 'about 8 hours', energy: 'high',
+        context: 'It is 9am and this is the whole day.',
+      },
+      // Very low energy, almost no hours, and nothing urgent at all — the
+      // list the tool has to be honest about instead of manufacturing a
+      // top pick that isn't really there.
+      {
+        tasks: [
+          { task: 'Reorganize the bookmarks folder', deadline: '', who_waiting: '', consequence: '', depends_on: '', context: '' },
+          { task: 'Unsubscribe from old newsletters', deadline: '', who_waiting: '', consequence: '', depends_on: '', context: '' },
+          { task: 'Water the plants', deadline: '', who_waiting: '', consequence: '', depends_on: '', context: '' },
+        ],
+        hours: 'less than 30 minutes', energy: 'low',
+        context: 'Nothing here is actually urgent. I just want to feel like I did something.',
+      },
     ]);
     setTasks(ex.tasks.map(x => ({ ...blankTask(), ...x })));
     setHours(ex.hours); setEnergy(ex.energy); setContext(ex.context);

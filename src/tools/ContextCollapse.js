@@ -163,11 +163,21 @@ const ContextCollapse = ({ tool }) => {
   }, [message, platform, audiences, intent, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated: email, an all-hands announcement, a group chat, a
+    // social post to a mixed followers list, and a Slack channel — the
+    // audience rows range from work-only to an ex's sister and an unaware
+    // follower, testing how the tool handles a genuinely personal collapse.
     const ex = pickExample('ContextCollapse', [
       { platform: 'email',    msg: 'ctc_ex_message',  intent: 'ctc_ex_intent',  worry: 'ctc_ex_concerns',
         auds: ['ctc_ex_aud1_label', 'ctc_ex_aud2_label', 'ctc_ex_aud3_label'] },
       { platform: 'announcement', msg: 'ctc_ex2_message', intent: 'ctc_ex2_intent', worry: 'ctc_ex2_concerns',
         auds: ['ctc_ex2_aud1_label', 'ctc_ex2_aud2_label', 'ctc_ex2_aud3_label'] },
+      { platform: 'group_chat', msg: 'ctc_ex3_message', intent: 'ctc_ex3_intent', worry: 'ctc_ex3_concerns',
+        auds: ['ctc_ex3_aud1_label', 'ctc_ex3_aud2_label', 'ctc_ex3_aud3_label'] },
+      { platform: 'social_media', msg: 'ctc_ex4_message', intent: 'ctc_ex4_intent', worry: 'ctc_ex4_concerns',
+        auds: ['ctc_ex4_aud1_label', 'ctc_ex4_aud2_label', 'ctc_ex4_aud3_label'] },
+      { platform: 'slack', msg: 'ctc_ex5_message', intent: 'ctc_ex5_intent', worry: 'ctc_ex5_concerns',
+        auds: ['ctc_ex5_aud1_label', 'ctc_ex5_aud2_label', 'ctc_ex5_aud3_label'] },
     ]);
     setPlatform(ex.platform);
     setMessage(t(ex.msg));
