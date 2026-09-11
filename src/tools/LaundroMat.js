@@ -261,9 +261,15 @@ const compressImageFile = (file) => {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+// Five, rotated: everyday workout gear, a red-wine tablecloth mixed with
+// whites, two hand-wash-only items neither existing example touches, and a
+// mystery stain on baby clothes mixed into a family colors load.
 const EXAMPLES = [
   { loadDescKey: 'lmt_ex1_load' },
   { loadDescKey: 'lmt_ex2_load' },
+  { loadDescKey: 'lmt_ex3_load' },
+  { loadDescKey: 'lmt_ex4_load' },
+  { loadDescKey: 'lmt_ex5_load' },
 ];
 const LaundroMat = ({ tool }) => {
   const { t } = useTranslation();

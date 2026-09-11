@@ -296,6 +296,12 @@ const JustifyMyMeeting = ({ tool }) => {
           duration: '1', attendees: '22', context: 'I am one of the team leads. I speak for about 90 seconds and listen for the rest.' },
         { text: 'Pricing alignment workshop. 90 minutes, 9 attendees, one-off. Agenda: "Align on FY26 pricing direction ahead of the exec review." Pre-read is a 40-slide deck circulated the night before. The person who actually signs off on pricing is not invited — they are in the exec review it is preparing for.',
           duration: '1.5', attendees: '9', context: 'Two of the nine disagree about the direction and have not spoken to each other about it.' },
+        { text: 'Incident post-mortem for Tuesday\'s outage. 45 minutes, 7 attendees, one-off. Agenda: "What happened, why, and what we change." Timeline and root cause already written up and shared beforehand.',
+          duration: '0.75', attendees: '7', context: 'I am the engineer whose change caused it. I have already fixed the immediate bug.' },
+        { text: 'Vendor sales call for a tool nobody on the team asked for. 30 minutes, 5 attendees. Agenda: "Product demo and Q&A." The vendor requested the meeting; someone senior said yes without checking with the team.',
+          duration: '0.5', attendees: '5', context: 'None of us have a stated need this tool would solve.' },
+        { text: 'Daily standup for a team of 3, 15 minutes, has run every weekday for two years without ever being revisited. Agenda: "What did you do yesterday, what are you doing today, any blockers."',
+          duration: '0.25', attendees: '3', context: 'The three of us sit next to each other and talk all day anyway.' },
       ]);
       setMeetingText(ex.text);
       setDuration(ex.duration);
@@ -314,6 +320,15 @@ const JustifyMyMeeting = ({ tool }) => {
         { name: 'Cross-functional Data Review', purpose: 'Nobody remembers. It was already on the calendar when I joined.',
           actual: 'Someone shares a dashboard and asks if anyone has questions. Usually nobody does. It ends 20 minutes early most weeks.',
           freq: 'Biweekly', duration: '1', attendees: '11' },
+        { name: 'Innovation Committee', purpose: 'Created after a leadership offsite to "keep the momentum going" on ideas people pitched that day.',
+          actual: 'Nobody has pitched a new idea in five months. The same three follow-up items get carried over each time without progress.',
+          freq: 'Monthly', duration: '1', attendees: '9' },
+        { name: 'Daily Bug Triage', purpose: 'The bug backlog was out of control eighteen months ago and this got the team aligned fast.',
+          actual: 'The backlog has been near-zero for a year. The meeting still runs; most days it is one person confirming there is nothing to triage.',
+          freq: 'Daily', duration: '0.25', attendees: '5' },
+        { name: 'Customer Advisory Sync', purpose: 'Started when we had three anchor customers and needed their input weekly to shape the roadmap.',
+          actual: 'Two of the three original customers have churned. The meeting continues with whoever from customer success is free that hour, discussing accounts that are not actually represented.',
+          freq: 'Weekly', duration: '0.5', attendees: '4' },
       ]);
       setZName(ex.name);
       setZPurpose(ex.purpose);
@@ -338,6 +353,18 @@ const JustifyMyMeeting = ({ tool }) => {
           { name: 'All-hands', duration: '1', attendees: '60', recurring: true, purpose: '' },
           { name: 'Incident retro', duration: '1', attendees: '7', recurring: false, purpose: 'Work out what caused Tuesday outage and who owns the fix' },
         ] },
+        { meetings: [
+          { name: 'Daily standup', duration: '0.25', attendees: '4', recurring: true, purpose: 'Blockers and priorities for the day' },
+          { name: 'Sprint planning', duration: '1.5', attendees: '4', recurring: true, purpose: 'Commit to what ships this sprint' },
+          { name: 'Retro', duration: '1', attendees: '4', recurring: true, purpose: 'What worked, what did not' },
+          { name: 'Backlog grooming', duration: '1', attendees: '6', recurring: true, purpose: '' },
+          { name: 'Team lunch', duration: '1', attendees: '4', recurring: true, purpose: '' },
+        ] },
+        { meetings: [
+          { name: 'Board update prep', duration: '2', attendees: '3', recurring: false, purpose: 'Finalize the slides for Thursday' },
+          { name: 'Skip-level 1:1s', duration: '2', attendees: '8', recurring: false, purpose: 'Get a read on morale after the reorg' },
+          { name: 'Vendor renewal call', duration: '0.5', attendees: '4', recurring: false, purpose: 'Decide whether to renew or switch providers' },
+        ] },
       ]);
       setWeekMeetings(ex.meetings.map(m => ({ ...m })));
       setWeekResults(null);
@@ -348,6 +375,12 @@ const JustifyMyMeeting = ({ tool }) => {
         minutes: '35', role: 'Attending' },
       { what: 'Someone is walking the room through a deck slide by slide. Everyone has already read it. Nobody has said anything for eight minutes.',
         minutes: '15', role: 'Optional' },
+      { what: 'The meeting I am running has drifted completely off the agenda into a side debate between two attendees that has nothing to do with why anyone else is here.',
+        minutes: '20', role: 'Leading it' },
+      { what: 'Three people are silently multitasking on laptops, one is visibly asleep on camera, and the person presenting has not noticed any of it.',
+        minutes: '40', role: 'Attending' },
+      { what: 'We keep circling the same disagreement because the person who could actually make the call is not in the room.',
+        minutes: '10', role: 'Leading it' },
     ]);
     setRWhat(ex.what);
     setRMinutes(ex.minutes);

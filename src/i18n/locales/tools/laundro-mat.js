@@ -163,6 +163,9 @@ export const laundroMat = {
     // Advisor example seeds
     lmt_ex1_load: "Mixed whites, a wool sweater, dark jeans, and a down jacket. Can I wash these together or do I need to separate them?",
     lmt_ex2_load: "Workout clothes — polyester leggings, a moisture-wicking shirt, and a sports bra. They smell even after washing.",
+    lmt_ex3_load: "A red wine stain on a white cotton tablecloth from last night's dinner party, plus a load of everyday white t-shirts and socks that need washing with it.",
+    lmt_ex4_load: "A wool sweater that got shrunk once already and a silk blouse with a coffee stain — both hand-wash labels, and I don't trust myself with either.",
+    lmt_ex5_load: "A toddler's onesie with a mystery orange stain (possibly turmeric, possibly a crayon that melted in the dryer) mixed in with the rest of the family's regular colors load.",
     lmt_history_default: "Laundry advice",
 
     // Advisor results
@@ -510,6 +513,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Blancos variados, un jersey de lana, vaqueros oscuros y un plumífero. ¿Puedo lavarlos juntos o tengo que separarlos?",
     lmt_ex2_load: "Ropa de deporte — mallas de poliéster, una camiseta transpirable y un top deportivo. Huelen incluso después de lavarlos.",
+    lmt_ex3_load: "Una mancha de vino tinto en un mantel de algodón blanco de la cena de anoche, más una colada de camisetas blancas y calcetines normales que hay que lavar con ella.",
+    lmt_ex4_load: "Un jersey de lana que ya se encogió una vez y una blusa de seda con una mancha de café: ambas etiquetas dicen lavado a mano, y no me fío de hacerlo yo mismo.",
+    lmt_ex5_load: "Un body de bebé con una mancha naranja misteriosa (¿cúrcuma?, ¿un lápiz de cera derretido en la secadora?) mezclado con la colada normal de colores de la familia.",
     lmt_history_default: "Consejo de colada",
 
     lmt_res_separate: "Separa estos",
@@ -837,6 +843,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "混合白色衣物、一件羊毛衫、深色牛仔裤，还有一件羽绒服。我能把它们一起洗吗，还是需要分开洗？",
     lmt_ex2_load: "运动服——涤纶紧身裤、一件速干衫和一件运动内衣。洗完之后还是有味道。",
+    lmt_ex3_load: "昨晚聚餐留下的红酒渍，滴在白色棉桌布上，还要跟一堆日常穿的白T恤和袜子一起洗。",
+    lmt_ex4_load: "一件已经缩过一次水的羊毛衫，还有一件带咖啡渍的真丝衬衫——两件都标着手洗，我不太放心自己动手。",
+    lmt_ex5_load: "一件婴儿连体衣上有一块神秘的橙色污渍（可能是姜黄，也可能是蜡笔在烘干机里化了），混在家里其他日常彩色衣物里一起洗。",
     lmt_history_default: "洗涤建议",
 
     lmt_res_separate: "需分开这些",
@@ -1164,6 +1173,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "मिले-जुले सफ़ेद कपड़े, एक ऊनी स्वेटर, गहरे रंग की जींस, और एक डाउन जैकेट। क्या मैं इन्हें साथ धो सकता हूँ या अलग करना होगा?",
     lmt_ex2_load: "वर्कआउट के कपड़े — पॉलिएस्टर लेगिंग, एक नमी सोखने वाली शर्ट, और एक स्पोर्ट्स ब्रा। धोने के बाद भी इनमें बदबू आती है।",
+    lmt_ex3_load: "कल रात की डिनर पार्टी से सफेद सूती मेज़पोश पर लाल वाइन का दाग, साथ ही रोज़ पहनने वाली सफेद टी-शर्ट और मोज़ों का लोड जो इसी के साथ धोना है।",
+    lmt_ex4_load: "एक ऊनी स्वेटर जो पहले ही एक बार सिकुड़ चुका है, और कॉफ़ी के दाग वाली सिल्क की ब्लाउज़ - दोनों पर हैंड-वॉश लेबल है, और मुझे खुद पर भरोसा नहीं।",
+    lmt_ex5_load: "बच्चे के वनसी पर एक रहस्यमयी नारंगी दाग (शायद हल्दी, या ड्रायर में पिघला हुआ क्रेयॉन), जो परिवार के बाकी रोज़मर्रा के रंगीन कपड़ों के साथ मिला हुआ है।",
     lmt_history_default: "कपड़े धोने की सलाह",
 
     lmt_res_separate: "इन्हें अलग करें",
@@ -1491,6 +1503,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "ملابس بيضاء مختلطة، سترة صوفية، جينز داكن، وسترة بريشة. هل يمكنني غسلها معاً أم أحتاج إلى فصلها؟",
     lmt_ex2_load: "ملابس رياضية — لباس ضيق من البوليستر، قميص ماص للرطوبة، وحمالة رياضية. لها رائحة حتى بعد الغسيل.",
+    lmt_ex3_load: "بقعة نبيذ أحمر على مفرش طاولة قطني أبيض من عشاء الليلة الماضية، بالإضافة إلى حمولة من التيشيرتات البيضاء والجوارب العادية التي يجب غسلها معها.",
+    lmt_ex4_load: "سترة صوفية انكمشت مرة من قبل، وبلوزة حرير بها بقعة قهوة - كلتاهما تحملان ملصق الغسل اليدوي، ولا أثق بنفسي في التعامل معهما.",
+    lmt_ex5_load: "بدلة رضيع بها بقعة برتقالية غامضة (ربما كركم، وربما قلم شمعي ذاب في المجفف)، مختلطة مع بقية حمولة الألوان العادية للعائلة.",
     lmt_history_default: "نصيحة غسيل",
 
     lmt_res_separate: "افصل هذه",
@@ -1818,6 +1833,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Brancos variados, um suéter de lã, jeans escuros e uma jaqueta de penas. Posso lavar juntos ou preciso separar?",
     lmt_ex2_load: "Roupa de treino — leggings de poliéster, uma camiseta que absorve suor e um top esportivo. Cheiram mesmo depois de lavar.",
+    lmt_ex3_load: "Uma mancha de vinho tinto numa toalha de mesa de algodão branca do jantar de ontem à noite, mais uma carga de camisetas brancas do dia a dia e meias que precisam ser lavadas junto.",
+    lmt_ex4_load: "Um suéter de lã que já encolheu uma vez e uma blusa de seda com mancha de café — ambas com etiqueta de lavagem à mão, e eu não confio em mim mesmo com nenhuma delas.",
+    lmt_ex5_load: "Um macacão de bebê com uma mancha laranja misteriosa (talvez açafrão-da-terra, talvez um giz de cera derretido na secadora), misturado com o resto da roupa colorida do dia a dia da família.",
     lmt_history_default: "Conselho de lavagem",
 
     lmt_res_separate: "Separe estes",
@@ -2145,6 +2163,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Du blanc mélangé, un pull en laine, un jean foncé et une doudoune. Puis-je les laver ensemble ou dois-je les séparer ?",
     lmt_ex2_load: "Des vêtements de sport — un legging en polyester, un t-shirt anti-transpirant et une brassière. Ils sentent même après lavage.",
+    lmt_ex3_load: "Une tache de vin rouge sur une nappe en coton blanc suite au dîner d'hier soir, plus une lessive de t-shirts blancs et chaussettes du quotidien à laver avec.",
+    lmt_ex4_load: "Un pull en laine déjà rétréci une fois et un chemisier en soie taché de café — les deux étiquetés lavage à la main, et je ne me fais confiance pour aucun des deux.",
+    lmt_ex5_load: "Un body de bébé avec une mystérieuse tache orange (curcuma peut-être, ou un crayon de cire fondu dans le sèche-linge), mélangé au reste de la lessive de couleurs habituelle de la famille.",
     lmt_history_default: "Conseil de lessive",
 
     lmt_res_separate: "Séparez ceux-ci",
@@ -2472,6 +2493,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Gemischte Weißwäsche, ein Wollpullover, dunkle Jeans und eine Daunenjacke. Kann ich die zusammen waschen oder muss ich sie trennen?",
     lmt_ex2_load: "Sportkleidung — Polyester-Leggings, ein feuchtigkeitsableitendes Shirt und ein Sport-BH. Die Sachen riechen sogar nach dem Waschen.",
+    lmt_ex3_load: "Ein Rotweinfleck auf einer weißen Baumwolltischdecke vom Abendessen gestern, dazu eine Ladung ganz normaler weißer T-Shirts und Socken, die damit gewaschen werden müssen.",
+    lmt_ex4_load: "Ein Wollpullover, der schon einmal eingelaufen ist, und eine Seidenbluse mit Kaffeefleck — beide mit Handwäsche-Etikett, und ich traue mir bei keinem von beiden.",
+    lmt_ex5_load: "Ein Baby-Body mit einem mysteriösen orangen Fleck (vielleicht Kurkuma, vielleicht ein im Trockner geschmolzener Wachsmalstift), gemischt mit dem übrigen bunten Alltagswäsche der Familie.",
     lmt_history_default: "Wäsche-Ratschlag",
 
     lmt_res_separate: "Diese trennen",
@@ -2799,6 +2823,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "白物いろいろ、ウールのセーター、濃い色のジーンズ、ダウンジャケット。一緒に洗えますか、それとも分ける必要がありますか？",
     lmt_ex2_load: "運動着 — ポリエステルのレギンス、吸汗性のシャツ、スポーツブラ。洗っても臭いが残ります。",
+    lmt_ex3_load: "昨夜のディナーパーティーでできた白い綿のテーブルクロスの赤ワインのシミと、それに合わせて洗う普段使いの白いTシャツと靴下一式。",
+    lmt_ex4_load: "一度縮んでしまったウールのセーターと、コーヒーのシミがついたシルクのブラウス——どちらも手洗い表示で、自分でやるのは不安。",
+    lmt_ex5_load: "謎のオレンジ色のシミ（ターメリックか、乾燥機で溶けたクレヨンか）がついた幼児のロンパースが、家族の普段のカラー洗濯物に混ざっている。",
     lmt_history_default: "洗濯アドバイス",
 
     lmt_res_separate: "これらは分ける",
@@ -3126,6 +3153,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "흰옷 여러 가지, 울 스웨터, 어두운 색 청바지, 패딩 점퍼. 함께 빨아도 되나요, 아니면 분리해야 하나요?",
     lmt_ex2_load: "운동복 — 폴리에스터 레깅스, 땀 흡수 셔츠, 스포츠 브라. 빨아도 냄새가 나요.",
+    lmt_ex3_load: "어젯밤 저녁 모임에서 생긴 흰색 면 식탁보의 레드와인 얼룩, 그리고 같이 세탁해야 할 평상시 흰 티셔츠와 양말 한 무더기.",
+    lmt_ex4_load: "이미 한 번 줄어든 울 스웨터와 커피 얼룩이 묻은 실크 블라우스 - 둘 다 손세탁 표시가 있는데 제 손으로 하는 게 못 미더워요.",
+    lmt_ex5_load: "정체불명의 주황색 얼룩(강황일 수도, 건조기에서 녹은 크레용일 수도)이 묻은 아기 우주복이 나머지 가족의 평범한 색깔 빨래와 섞여 있어요.",
     lmt_history_default: "세탁 조언",
 
     lmt_res_separate: "이것들은 분리",
@@ -3453,6 +3483,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Смешанное бельё, шерстяной свитер, тёмные джинсы и пуховик. Можно ли стирать их вместе или нужно разделить?",
     lmt_ex2_load: "Спортивная одежда — полиэстеровые леггинсы, влагоотводящая футболка и спортивный топ. Пахнут даже после стирки.",
+    lmt_ex3_load: "Пятно красного вина на белой хлопковой скатерти после вчерашнего ужина, плюс обычная стирка белых футболок и носков, которую нужно постирать вместе с ней.",
+    lmt_ex4_load: "Шерстяной свитер, который уже однажды сел, и шёлковая блузка с пятном от кофе — на обеих этикетка «только ручная стирка», и я себе не доверяю ни с той, ни с другой.",
+    lmt_ex5_load: "Детский боди с загадочным оранжевым пятном (возможно, куркума, возможно, растаявший в сушилке мелок), смешанный с обычной цветной стиркой всей семьи.",
     lmt_history_default: "Совет по стирке",
 
     lmt_res_separate: "Разделить эти",
@@ -3780,6 +3813,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "ผ้าขาวรวม ๆ เสื้อสเวตเตอร์ขนสัตว์ ยีนส์สีเข้ม และเสื้อขนเป็ด ฉันซักรวมกันได้ไหมหรือต้องแยก?",
     lmt_ex2_load: "ชุดออกกำลังกาย — เลกกิ้งโพลีเอสเตอร์ เสื้อระบายเหงื่อ และสปอร์ตบรา มีกลิ่นแม้ซักแล้ว",
+    lmt_ex3_load: "คราบไวน์แดงบนผ้าปูโต๊ะผ้าฝ้ายสีขาวจากงานเลี้ยงอาหารค่ำเมื่อคืน บวกกับเสื้อยืดสีขาวและถุงเท้าที่ใช้ประจำวันที่ต้องซักไปด้วยกัน",
+    lmt_ex4_load: "เสื้อสเวตเตอร์ขนสัตว์ที่เคยหดไปแล้วครั้งหนึ่ง กับเสื้อเชิ้ตไหมที่มีคราบกาแฟ ทั้งสองชิ้นมีป้ายซักมือ และฉันไม่ไว้ใจตัวเองกับทั้งสองชิ้น",
+    lmt_ex5_load: "ชุดบอดี้สูทเด็กที่มีคราบสีส้มปริศนา (อาจเป็นขมิ้นหรืออาจเป็นสีเทียนที่ละลายในเครื่องอบ) ปนอยู่กับผ้าสีปกติของครอบครัวที่เหลือ",
     lmt_history_default: "คำแนะนำการซักผ้า",
 
     lmt_res_separate: "แยกพวกนี้",
@@ -4107,6 +4143,9 @@ export const laundroMat = {
 
     lmt_ex1_load: "Đồ trắng hỗn hợp, một chiếc áo len, quần jean đậm màu và một chiếc áo phao lông vũ. Tôi có thể giặt chung hay phải tách riêng?",
     lmt_ex2_load: "Đồ tập — quần legging polyester, áo thấm hút mồ hôi và áo bra thể thao. Vẫn có mùi dù đã giặt.",
+    lmt_ex3_load: "Vết rượu vang đỏ trên khăn trải bàn cotton trắng sau bữa tiệc tối qua, cùng một mẻ áo thun trắng và tất thường ngày cần giặt chung.",
+    lmt_ex4_load: "Một chiếc áo len đã từng bị co lại và một chiếc áo lụa dính vết cà phê — cả hai đều có nhãn giặt tay, và tôi không tin tưởng chính mình với cả hai.",
+    lmt_ex5_load: "Một bộ đồ liền thân của trẻ nhỏ có vết ố cam bí ẩn (có thể là nghệ, có thể là sáp màu chảy trong máy sấy), trộn lẫn với đồ màu thường ngày của cả nhà.",
     lmt_history_default: "Lời khuyên giặt giũ",
 
     lmt_res_separate: "Tách riêng những món này",

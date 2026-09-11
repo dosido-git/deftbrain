@@ -85,6 +85,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 55 | HistoryToday | inline | 3 motives (5 bare quick-chips are separate) | 2 | 5 (+ moon-landing conspiracy, a decision-relevant historical pattern, a crisis's untested reforms) | ✅ 2026-09-11 |
 | 56 | HobbyMatch | i18n | 4 budgets × 8 goals | 2 | 5 (+ competitive weekend-only, free-only with chronic fatigue, restless hands-on with bad knees; 12 keys ×13) | ✅ 2026-09-11 |
 | 57 | JargonAssassin | i18n | 9 document types | 2 (legal, government) | 5 (+ medical prior-auth denial, mortgage disclosure, software license; 9 keys ×13; fixed 3 zh/es formal-register findings) | ✅ 2026-09-11 |
+| 58 | JustifyMyMeeting | inline | 4 modes (judge/zombie/week/rescue) | 2 each | 5 each (20 total): incident post-mortem, unwanted vendor demo, 3-person daily standup; zombie innovation committee, bug triage, customer advisory; 4th/5th week audits; rescue leading-it and asleep-on-camera scenarios | ✅ 2026-09-11 |
+| 59 | LaundroMat | i18n | — | 2 | 5 (+ red wine on white tablecloth, hand-wash-only wool+silk, mystery stain on baby clothes; 3 keys ×13) | ✅ 2026-09-11 |
+| 60 | LayoverMaximizer | inline | 4 travel styles | 2 (both efficient) | 5 (+ explorer 9h Seoul, foodie 6h Singapore, relaxer 3h Dubai overnight with checked bags) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
