@@ -116,6 +116,10 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+// Five per view, rotated per view. Form: two considered purchases, an
+// impulse buy on a sale deadline, a gift for someone with constraints, and a
+// second-hand listing with other buyers circling. The other views each get
+// their own five below.
 const EXAMPLES = [
   {
     product: 'Standing desk — considering FlexiSpot E7 or UPLIFT V2',
@@ -129,6 +133,74 @@ const EXAMPLES = [
     urgency: 'flexible',
     context: 'One dog, hardwood floors, hate vacuuming, travel frequently',
   },
+  {
+    product: 'Espresso machine — Breville Barista Express',
+    price: '700',
+    urgency: 'today',
+    context: 'Saw it 30% off and the sale ends tonight. Two coffees a day from a pod machine I do not love.',
+    isImpulse: true,
+    priority: 'quality',
+  },
+  {
+    product: 'Noise-cancelling headphones for my dad — Sony or Bose',
+    price: '300',
+    urgency: 'this_week',
+    context: 'His 70th is on Saturday. He wears hearing aids and flies a lot.',
+    isGift: true,
+    priority: 'convenience',
+  },
+  {
+    product: 'Second-hand e-bike from a marketplace listing, 2021 model, 4,000 km',
+    price: '900',
+    urgency: 'this_week',
+    context: 'Seller says two other people are interested. Would replace a 35-minute bus commute.',
+    priority: 'durability',
+  },
+];
+
+const BUDGET_EXAMPLES = [
+  { product: 'A laptop for working from home', amount: '900', category: 'Laptop', needs: 'Video calls, spreadsheets, occasional photo editing. Must last five years.' },
+  { product: 'Headphones for the office', amount: '150', category: 'Headphones', needs: 'Open-plan office, long calls, walks home. Not fussy about audio quality.' },
+  { product: 'A mattress for two', amount: '1200', category: 'Mattress', needs: 'Two side sleepers. One runs hot, one has a bad shoulder.' },
+  { product: 'A first sewing machine', amount: '250', category: 'Other', categoryOther: 'Sewing machine', needs: 'Complete beginner. Curtains, hems, maybe a quilt one day.' },
+  { product: 'Running shoes', amount: '60', category: 'Running shoes', needs: 'Three 5Ks a week on pavement, flat feet, first proper pair.' },
+];
+
+const CALENDAR_EXAMPLES = [
+  { category: 'TVs & displays' },
+  { category: 'Mattresses & bedding' },
+  { category: 'Cars' },
+  { category: 'Gaming' },
+  { category: '__other__', categoryOther: 'Piano' },
+];
+
+const QUOTE_EXAMPLES = [
+  { service: 'Replace a combi boiler', amount: '3800', details: 'Twelve years old, same location, three-bed semi. Includes removal of the old one.', location: 'Manchester', urgency: 'this_week' },
+  { service: 'Rewire a three-bedroom house', amount: '9500', details: 'Full rewire and a new consumer unit. The house is empty during the work.', location: 'Leeds', urgency: 'flexible' },
+  { service: 'Front brake pads and discs on a 2017 Golf', amount: '480', details: 'Independent garage. Parts and labour included, they say.', location: 'Denver', urgency: 'today' },
+  { service: 'Wedding photographer, eight hours', amount: '2400', details: 'One photographer, edited gallery, no album. A Saturday in June.', location: 'Portland', urgency: 'flexible' },
+  { service: 'Remove a 40-foot oak tree', amount: '1900', details: 'Close to the house and a fence. Includes stump grinding and taking the wood away.', location: 'Atlanta', urgency: 'flexible' },
+];
+
+const HAUL_EXAMPLES = [
+  { product: 'Kitting out a student room', occasion: 'Back to university', budget: '600',
+    items: [['Laptop stand', '40'], ['Desk lamp', '35'], ['Noise-cancelling earbuds', '180'], ['Duvet set', '60'], ['Kettle', '25'], ['Second monitor', '220'], ['Printer', '90']] },
+  { product: 'Everything for a first baby', occasion: 'Baby due in eight weeks', budget: '1500',
+    items: [['Car seat', '250'], ['Pram / travel system', '700'], ['Cot', '300'], ['Baby monitor', '120'], ['Bottle steriliser', '60'], ['Nappy bin', '40'], ['Bouncer', '80']] },
+  { product: 'Camping gear', occasion: 'First camping trip', budget: '350',
+    items: [['Two-person tent', '140'], ['Sleeping bags x2', '120'], ['Sleeping mats x2', '60'], ['Head torch', '20'], ['Stove', '45'], ['Cool box', '35']] },
+  { product: 'Home office refresh', occasion: 'New job, working from home', budget: '400',
+    items: [['Office chair', '350'], ['Monitor arm', '60'], ['Mechanical keyboard', '90'], ['Webcam', '70'], ['Desk mat', '25']] },
+  { product: 'A Black Friday basket', occasion: 'Black Friday', budget: '',
+    items: [['Air fryer', '89'], ['Smartwatch', '199'], ['Third pair of trainers', '75'], ['Robot mop', '249'], ['Electric toothbrush', '60'], ['Board game', '30']] },
+];
+
+const CONVINCE_EXAMPLES = [
+  { product: 'A Peloton bike', direction: 'against', context: 'My partner wants it. We have a gym membership we use twice a month.' },
+  { product: 'A proper winter coat, about 300', direction: 'for', context: 'I have bought three cheap ones in four years. I am always cold.' },
+  { product: 'Upgrading my phone this year', direction: 'against', context: 'The current one is three years old and the battery lasts until about 4pm.' },
+  { product: 'A dishwasher for a one-bedroom flat', direction: 'for', context: 'Renting, small kitchen. I hate washing up more than I hate most things.' },
+  { product: 'A season ticket', direction: 'against', context: 'I went to 9 of 19 home games last year on individual tickets.' },
 ];
 const BuyWise = ({ tool }) => {
   const { callToolEndpoint, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -318,14 +390,58 @@ const BuyWise = ({ tool }) => {
   // ── Refs ──
   const resultsRef = React.useRef(null);
   const loadExample = () => {
+    if (view === 'budget') {
+      const ex = pickExample('BuyWise:budget', BUDGET_EXAMPLES);
+      setProduct(ex.product);
+      setBudgetAmount(ex.amount);
+      setBudgetCategory(ex.category);
+      setBudgetCategoryOther(ex.categoryOther ?? '');
+      setBudgetNeeds(ex.needs);
+      setBudgetResults(null);
+      return;
+    }
+    if (view === 'calendar') {
+      const ex = pickExample('BuyWise:calendar', CALENDAR_EXAMPLES);
+      setCalCategory(ex.category);
+      setCalCategoryOther(ex.categoryOther ?? '');
+      setCalResults(null);
+      return;
+    }
+    if (view === 'quote') {
+      const ex = pickExample('BuyWise:quote', QUOTE_EXAMPLES);
+      setQuoteService(ex.service);
+      setQuoteAmount(ex.amount);
+      setQuoteDetails(ex.details);
+      setQuoteLocation(ex.location);
+      setQuoteUrgency(ex.urgency);
+      setQuoteResults(null);
+      return;
+    }
+    if (view === 'haul') {
+      const ex = pickExample('BuyWise:haul', HAUL_EXAMPLES);
+      setProduct(ex.product);
+      setHaulItems(ex.items.map(([name, price]) => ({ name, price })));
+      setHaulBudget(ex.budget);
+      setHaulOccasion(ex.occasion);
+      setHaulResults(null);
+      return;
+    }
+    if (view === 'convince') {
+      const ex = pickExample('BuyWise:convince', CONVINCE_EXAMPLES);
+      setProduct(ex.product);
+      setConvinceDirection(ex.direction);
+      setConvinceContext(ex.context);
+      setConvinceResults(null);
+      return;
+    }
     const ex = pickExample('BuyWise', EXAMPLES);
     setProduct(ex.product);
     setPrice(ex.price);
     setUrgency(ex.urgency);
     setContext(ex.context);
-    setIsImpulse(false);
-    setIsGift(false);
-    setPriority('budget');
+    setIsImpulse(!!ex.isImpulse);
+    setIsGift(!!ex.isGift);
+    setPriority(ex.priority ?? 'budget');
   };
 
   const handleSubmitRef = React.useRef(null);

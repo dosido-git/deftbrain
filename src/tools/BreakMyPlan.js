@@ -26,6 +26,12 @@ const BreakMyPlan = ({ tool }) => {
   const EXAMPLES = [
     { plan: t('pm_ex_plan', { sym }), planType: 'creative', stakes: t('pm_ex_stakes', { sym }), assumptions: t('pm_ex_assumptions') },
     { plan: t('pm_ex2_plan'), planType: 'project', stakes: t('pm_ex2_stakes'), assumptions: t('pm_ex2_assumptions') },
+    // Three more so the rotation reaches the plan types people bring most
+    // and least often: a career leap, a one-off financial move, and a
+    // relationship step that is also a property decision.
+    { plan: t('pm_ex3_plan'), planType: 'career', stakes: t('pm_ex3_stakes'), assumptions: t('pm_ex3_assumptions') },
+    { plan: t('pm_ex4_plan', { sym }), planType: 'financial', stakes: t('pm_ex4_stakes'), assumptions: t('pm_ex4_assumptions') },
+    { plan: t('pm_ex5_plan'), planType: 'relationship', stakes: t('pm_ex5_stakes'), assumptions: t('pm_ex5_assumptions') },
   ];
   const PLAN_TYPES = [
     { id: 'startup',      label: t('pm_type_startup'),      icon: '🚀' },

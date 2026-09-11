@@ -43,6 +43,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 13 | BrainDumpBuddy | inline | freetext / rapid / voice (one rotation; each example carries its mode) | 2 | 5 (two long typed dumps, a rapid list, a short feelings-only dump, a voice transcript) | ✅ 2026-09-11 |
 | 14 | BrainRoulette | inline + i18n topics | spin (debate/journey/digest consume a spin) | 4 | 5 (+ a folk belief at quick/casual; 1 key ×13) — depths quick/medium/deep, audiences casual/curious/nerd | ✅ 2026-09-11 |
 | 15 | BrainStateDeejay | inline | — | 2 | 5 (overwhelmed→grounded, low_energy→energized, anxious→sleepy with no task/genres and a written taste; sensitivities and taste now travel) | ✅ 2026-09-11 |
+| 16 | BreakMyPlan | i18n | 8 plan types | 2 | 5 (creative / project / career / financial / relationship; 9 keys ×13) | ✅ 2026-09-11 |
+| 17 | BuyWise | inline | form / budget / calendar / quote / haul / convince (photo needs an image — shares the form's product) | 2 (form) | 5 × 6 views via pickExample('BuyWise:<view>'); impulse, gift and priority now travel with form examples | ✅ 2026-09-11 |
+| 18 | CaptionMagic | i18n | 7 platforms × 3 lengths | 2 | 5 (+ twitter/short, linkedin/long, facebook/medium; 6 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

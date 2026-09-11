@@ -274,14 +274,22 @@ const CaptionMagic = ({ tool }) => {
   }, [results, platform, context, avoidMention, captionLength, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated. The last three carry a platform and length so the
+    // rotation reaches the 280-character post, the long LinkedIn thank-you
+    // and a Facebook post written on someone else's behalf.
     const ex = pickExample('CaptionMagic', [
       { desc: 'cm_ex_desc',  ctx: 'cm_ex_context' },
       { desc: 'cm_ex2_desc', ctx: 'cm_ex2_context' },
+      { desc: 'cm_ex3_desc', ctx: 'cm_ex3_context', platform: 'twitter',  length: 'short' },
+      { desc: 'cm_ex4_desc', ctx: 'cm_ex4_context', platform: 'linkedin', length: 'long' },
+      { desc: 'cm_ex5_desc', ctx: 'cm_ex5_context', platform: 'facebook', length: 'medium' },
     ]);
     setImageDescription(t(ex.desc));
     setContext(t(ex.ctx));
+    if (ex.platform) setPlatform(ex.platform);
+    if (ex.length) setCaptionLength(ex.length);
     setResults(null);
-  }, [setImageDescription, setContext, setResults, t]);
+  }, [setImageDescription, setContext, setPlatform, setCaptionLength, setResults, t]);
 
   const handleReset = useCallback(() => {
     clearImage(); setImageDescription(''); setContext(''); setAvoidMention('');
