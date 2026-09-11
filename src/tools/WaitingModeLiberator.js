@@ -30,7 +30,36 @@ const EXAMPLES = [
   ],
   userTasks: "Nothing urgent, which is the problem. Laundry has been in the machine since yesterday. I want to finish the book I'm 40 pages from the end of. I keep opening the fridge. Three days of this and I will have done none of it.",
 },
-];;
+  {
+  view: 'setup',
+  energy: 4,
+  anxietyBefore: 4,
+  events: [
+    { id: 1, name: 'First date — coffee shop', time: '6:00 PM', dayOffset: 0, type: 'social', prepMinutes: 45, travelMinutes: 15 },
+  ],
+  userTasks: "Want to pick an outfit and maybe think of a couple of conversation topics, but don't want to seem like I'm trying too hard. Also need to walk the dog before I leave so he's not anxious while I'm gone.",
+},
+  {
+  view: 'setup',
+  energy: 3,
+  anxietyBefore: 5,
+  events: [
+    { id: 1, name: "DMV appointment — driver's license renewal", time: '10:00 AM', dayOffset: 2, type: 'admin', prepMinutes: 10, travelMinutes: 30 },
+  ],
+  userTasks: "Need to find my old license and a proof-of-address document before I go. Also have a pile of mail I've been ignoring for two weeks that probably has something important in it.",
+},
+  {
+  view: 'setup',
+  energy: 5,
+  anxietyBefore: 2,
+  events: [
+    { id: 1, name: 'Pick up dry cleaning', time: '10:00 AM', dayOffset: 0, type: 'errand', prepMinutes: 0, travelMinutes: 10 },
+    { id: 2, name: 'Grocery run', time: '11:00 AM', dayOffset: 0, type: 'errand', prepMinutes: 5, travelMinutes: 10 },
+    { id: 3, name: 'Return library books', time: '12:00 PM', dayOffset: 0, type: 'errand', prepMinutes: 0, travelMinutes: 5 },
+  ],
+  userTasks: "Feeling productive today and want to knock out the whole errand list before it piles up again. Also want to squeeze in a workout somewhere in between.",
+},
+];
 // ─── Appointment type presets ───
 const APPT_TYPES = [
   { id: 'medical',  icon: '🏥', labelKey: 'wml_type_medical', anxietyDefault: 'high' },

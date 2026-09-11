@@ -148,6 +148,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 118 | UpsellShield | i18n | — | 2 (car dealership, funeral home) | 5 (+ phone-carrier plan, wedding photographer contract, HVAC furnace-replacement quote; 12 keys ×13) | ✅ 2026-09-11 |
 | 119 | VelvetHammer | inline | — | 2 (both behavior_change goal) | 5 (+ set_boundary with a boss, compensation from a landlord, apology from a friend; covers 4 of 6 goals and all 3 power dynamics) | ✅ 2026-09-11 |
 | 120 | VirtualBodyDouble | i18n | 6 session modes | 2 (both 'default' mode) | 5 (+ sprint-mode inbox cleanup, creative-mode logo sketching, avoidance_buster-mode dreaded phone call; covers 4 of 6 modes; 12 keys ×13) | ✅ 2026-09-11 |
+| 121 | WaitingModeLiberator | inline | — | 2 (medical types) | 5 (+ social first-date, admin DMV appointment, a multi-event errand run; covers 4 of 7 appointment types and the low/high ends of both energy and anxiety) | ✅ 2026-09-11 |
+| 122 | WardrobeChaosHelper | inline | — | 2 (work/casual, event/date) | 5 (+ freezing-weather work meeting, hot/humid workout-to-errands, mild comfort day at home; covers 5 of 7 activity types and cold/hot/mild weather) | ✅ 2026-09-11 |
+| 123 | WhatsMyVibe | inline | — | 2 (texts, emails) | 5 (+ social-media captions, dating-app opener, work Slack messages; covers 5 of 6 source types) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

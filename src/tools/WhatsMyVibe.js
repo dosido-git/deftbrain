@@ -39,6 +39,34 @@ also also I found a dog on my walk and his name was apparently Gerald which is e
     samples: `Per my earlier communication, I wanted to follow up on the outstanding deliverable we discussed. Moving forward, I think it would be beneficial to align on expectations to ensure we're all rowing in the same direction. Please advise at your earliest convenience.`,
     sourceType: 'emails',
   },
+  {
+    samples: `just a girl who forgot she had a dentist appointment and found out the hard way 💀
+
+living for this random Tuesday sunset though, no context needed
+
+reminder that you're allowed to cancel plans and it doesn't make you a bad person, it makes you tired
+
+okay but why did nobody tell me oat milk in coffee changes EVERYTHING`,
+    sourceType: 'social',
+  },
+  {
+    samples: `Hey! I saw you like hiking, do you have a favorite trail around here?
+
+Also I have to ask about the photo with the golden retriever, is that yours or a very lucky encounter
+
+No pressure to answer both, just genuinely curious about the trail one lol`,
+    sourceType: 'dating',
+  },
+  {
+    samples: `quick q — did anyone else's build break this morning or is it just me
+
+nvm found it, someone pushed straight to main again lol
+
+anyway standup moved to 10:15, calendar invite incoming
+
+also does anyone want the extra donuts in the kitchen, they will not last past noon otherwise`,
+    sourceType: 'work-slack',
+  },
 ];
 const WhatsMyVibe = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

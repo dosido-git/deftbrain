@@ -61,6 +61,21 @@ const EXAMPLES = [
     activities: { work: false, meeting: false, exercise: false, casual: false, event: true, home: false, date: true },
     mood: 'Want to look nice but not overdressed',
   },
+  {
+    weather: '20°F, snowing',
+    activities: { work: true, meeting: true, exercise: false, casual: false, event: false, home: false, date: false },
+    mood: "Need to look professional for an important client meeting but it's freezing and I have to walk 10 minutes outside",
+  },
+  {
+    weather: '85°F, humid',
+    activities: { work: false, meeting: false, exercise: true, casual: true, event: false, home: false, date: false },
+    mood: "Going straight from a workout to running errands, don't want to change twice",
+  },
+  {
+    weather: '65°F, mild',
+    activities: { work: false, meeting: false, exercise: false, casual: false, event: false, home: true, date: false },
+    mood: "Comfort day at home but a delivery might come, don't want to answer the door in pajamas",
+  },
 ];
 const WardrobeChaosHelper = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
