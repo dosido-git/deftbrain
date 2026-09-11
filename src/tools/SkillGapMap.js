@@ -188,6 +188,19 @@ const SkillGapMap = ({ tool }) => {
   // ─── State: UI ───
   const [expandedSections, setExpandedSections] = useState({});
   const [savedMaps, setSavedMaps] = usePersistentState('skill-gap-saved', []);
+  // Belt-and-suspenders: collapse a repeated from/to pair to one row even for
+  // a list saved before dedup landed at save-time (see setSavedMaps below) —
+  // "Previous" should never show the same attempt twice. Cheap (max 6 items),
+  // so a plain derivation each render is fine.
+  const dedupedSavedMaps = (() => {
+    const seen = new Set();
+    return savedMaps.filter(s => {
+      const key = `${s.from.trim().toLowerCase()}→${s.to.trim().toLowerCase()}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  })();
 
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const lang = navigator.language || 'en';
@@ -224,7 +237,15 @@ const SkillGapMap = ({ tool }) => {
       });
       setResults(data);
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (targetRole || currentRole || '').substring(0, 40) }, ...prev].slice(0, 6)); // outer history cap is 6
-      setSavedMaps(prev => [{ from: currentRole.trim(), to: targetRole.trim(), date: new Date().toISOString(), gaps: data.skill_gaps?.length }, ...prev].slice(0, 6));
+      // Collapse a repeated from/to attempt into one entry (refreshed to the
+      // top with the latest date and gap count) instead of stacking a new
+      // "Previous" row every retry of the same transition.
+      setSavedMaps(prev => {
+        const from = currentRole.trim(), to = targetRole.trim();
+        const isSamePair = s => s.from.trim().toLowerCase() === from.toLowerCase() && s.to.trim().toLowerCase() === to.toLowerCase();
+        const deduped = prev.filter(s => !isSamePair(s));
+        return [{ from, to, date: new Date().toISOString(), gaps: data.skill_gaps?.length }, ...deduped].slice(0, 6);
+      });
     } catch (err) { setError(err.message || t('sgm_err_failed')); }
   };
 
@@ -576,10 +597,10 @@ const SkillGapMap = ({ tool }) => {
           {savedMaps.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-sm p-4`}>
               <button onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <span className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_previous', { count: savedMaps.length })}</span>
+                <span className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_previous', { count: dedupedSavedMaps.length })}</span>
                 <Caret open={expandedSections.saved} />
               </button>
-              {expandedSections.saved && savedMaps.map((s, i) => (
+              {expandedSections.saved && dedupedSavedMaps.map((s, i) => (
                 <button key={i} onClick={() => { setCurrentRole(s.from); setTargetRole(s.to); setMode('map'); }}
                   className={`w-full text-start p-2 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-colors flex items-center justify-between mt-1`}>
                   <span className={c.text}>{s.from} → {s.to}</span>
