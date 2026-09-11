@@ -198,18 +198,41 @@ function withDeadline(promise, ms, fallback, label, stage) {
 // supplied, so of course they contain the disputed empirical proposition.
 const SEMANTIC_SKIP_RE = /^(?:topic_as_understood|the_noise\[\d+\]\.claim)$/;
 
-const SEMANTIC_CHECK_SYSTEM = `You validate fields from a CLAIM ANALYSIS result. No outside sources were examined in this run. For each field, answer ONE narrow question:
+// The owner's validation prompt, verbatim in substance. Two things are added
+// around it, both forced by measurement (see tool notes, V7): the batch/JSON
+// contract (the judge sees several fields per call and must name which one
+// failed), and the short CLARIFICATIONS block — the judge was itself
+// laundered by "this follows from the structure…" framing until told to
+// judge every sentence on its own, and it passed "workable for some people"
+// until subgroup narrowing was named.
+const SEMANTIC_CHECK_SYSTEM = `CLAIM ANALYSIS — VALIDATION
 
-Does this text assert or rely on any real-world factual proposition that:
-1. was not supplied in the visitor's input, AND
-2. was not supported by a source examined in this run (none were), AND
-3. materially helps decide the empirical claim being analyzed?
+Review each generated field below for epistemic overreach.
 
-Ignore statements that merely: define terms; analyze wording; identify logical requirements; identify missing information; say that evidence is needed; identify an undefined comparison, overbreadth, universalization, or a missing premise; distinguish what follows from what does not follow.
+No outside sources were reviewed.
 
-The presence of "may," "can," "could," "often," "generally," "typically," "tends to," or "depends on" does NOT turn a FAIL into a PASS. A hedged empirical proposition is still an empirical proposition. Nor does narrowing it to a subgroup: "some people find X practical," "X is workable for some people," "X works for many" are claims about what happens to real people and FAIL just the same.
+PASS a field only if every substantive claim in it is:
+- supplied by the visitor; or
+- logical analysis requiring no additional real-world factual premise.
 
-A definitional or accounting identity — something true by how its terms are defined, independent of any measurement (e.g. that a total changes only if what goes in and what goes out differ) — is background, not empirical resolution. But judge every sentence on its own. A field that opens with "this follows from the structure / definition / logic of the claim" and then states what a real-world factor does ("X influences A, B and C, which are inputs to that relationship") has NOT authorized that statement — the identity says nothing about which factor moves the quantities, and the framing sentence is not evidence. Flag the factual sentence regardless of how the field introduces it.
+FAIL a field if it:
+- uses remembered real-world knowledge to help decide the disputed claim;
+- introduces factual examples not supplied by the visitor;
+- says something is unestablished, then asserts it anyway;
+- uses "may," "can," "typically," etc. to disguise an unsupported empirical claim; or
+- introduces a conclusion not established by the validated material.
+
+Definitions may clarify terms but may not smuggle in facts about how the real world works.
+
+Key test:
+If a factual statement were false, would it materially change the analysis?
+If yes, it requires supplied or actually examined evidence.
+
+CLARIFICATIONS
+- Do not flag a sentence that merely: defines a term; analyzes wording; identifies a logical requirement, an undefined comparison, overbreadth, universalization, or a missing premise; identifies missing information; says that evidence is needed or that a question is empirical and not settled here; or distinguishes what follows from what does not follow. Those are the analysis this tool is supposed to produce, not overreach.
+- Narrowing to a subgroup does not help: "some people find X practical," "X is workable for some people," "X works for many" are claims about what happens to real people.
+- Judge every sentence on its own. A field that opens with "this follows from the structure / definition / logic of the claim" and then states what a real-world factor does has NOT authorized that statement — the framing sentence is not evidence. Flag the factual sentence regardless of how it is introduced.
+- A definitional identity (true by how its terms are defined, independent of any measurement) is a clarification of terms, not a fact about the world — unless the field goes on to say which real-world factor moves the quantities.
 
 Examples that MUST fail:
 "Hormones regulate appetite and energy expenditure."
@@ -221,10 +244,12 @@ Examples that MUST fail:
 "Some people find time-restricted eating a practical way to manage intake."
 "Metabolism involves multiple interacting systems."
 "This follows from the accounting structure: hormonal signals influence appetite, satiety, and energy expenditure, which are inputs to that relationship."
+"Hormonal factors operate within the energy-balance relationship rather than outside it."
+"Hormonal regulation and energy balance are not competing explanations — they interact."
 
-Return ONLY valid JSON, no markdown:
-{"failures":[{"path":"<field path exactly as given>","sentence":"<the exact offending sentence, quoted verbatim>"}]}
-Return {"failures":[]} when every field passes. Do not rewrite anything. Do not comment on style.`;
+Return only a verdict per field — PASS, or FAIL with the exact offending sentence(s). Return ONLY valid JSON, no markdown:
+{"failures":[{"path":"<field path exactly as given>","sentence":"<the exact offending sentence(s), quoted verbatim>"}]}
+A field that PASSES is simply absent from the list; return {"failures":[]} when every field passes. Do not rewrite anything. Do not comment on style.`;
 
 // One judge call over one small batch of [path, text] pairs → Map(path →
 // offending sentence), or null if the call failed or came back unparseable.

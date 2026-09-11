@@ -618,6 +618,25 @@ times per run, route time 58–68s (was 50–61s in V6 — the judge calls are p
 leaky response, near zero on a clean one. That is a deliberate trade for a tool whose entire promise
 is this discipline; it is not a pattern to copy into a tool that isn't making that promise.
 
+**The validation prompt (V7.1, same day).** The owner supplied the judge prompt now in
+`SEMANTIC_CHECK_SYSTEM` — PASS only if every substantive claim is visitor-supplied or logical
+analysis needing no extra real-world premise; FAIL on remembered knowledge, unsupplied factual
+examples, "unestablished, then asserted anyway," hedge-disguised claims, or a conclusion not
+established by the validated material; the counterfactual key test. It is used verbatim in
+substance, with the batch/JSON contract around it and a CLARIFICATIONS block that exists because of
+two measurements: (a) **as written, it over-flags the tool's own correct output** — on the replay
+it flagged "is an empirical question this analysis cannot settle" and "these two claims may not
+contradict each other," and on a live run it blanked the entire Signal section and turned 3 of 4
+kernels into boilerplate. Restoring the owner's earlier "ignore statements that merely define,
+analyze wording, identify missing information, say evidence is needed" list brought the replay from
+`semantic=11 rewritten=8 fallback=2 blanked=1 (signal item dropped)` to `semantic=10 rewritten=8
+fallback=2 blanked=0`. (b) The laundering and subgroup clauses from V7 stay, for the reasons
+measured above. **Cost as it stands:** on the nutrition scenario, live, 12 fallbacks fired in one
+run — 5 of 8 bottom-line items, 2 of 4 noise "instead" fields, and the framing were boilerplate.
+That is the rule applied faithfully ("empty or epistemically limited is better than invented
+completeness"); how much boilerplate density is acceptable is a product judgment for the owner,
+recorded here so it is made deliberately rather than discovered.
+
 **What this does NOT fix, honestly:** the independent judge tally on a finished response still
 finds 2–3 borderline flags per run — a definitional identity the judge reads as empirical ("energy
 balance is part of what determines whether body mass changes"), a person-specific
