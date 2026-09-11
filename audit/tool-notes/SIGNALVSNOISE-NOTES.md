@@ -868,6 +868,22 @@ is exactly the sources the rendered analysis cites, since `sources_examined` is 
    code. Noise items may still cite secondary sources (a critique can rest on them; a conclusion
    cannot). Tested both directions.
 
+**Final calibration (V8.4, same day — owner's evidence-to-conclusion rules; architecture untouched).**
+PERSONALITY rules 17–24: comparative claims need comparative evidence; do not expand populations or
+conditions; association ≠ causation; source quality bounds the verdict (ResearchGate/SSRN/arXiv are
+hosts — a thesis, preprint, magazine or professional article informs a question, never carries a
+strong verdict alone); do not synthesize beyond the packet; claim–source coverage per sentence;
+preserve good uncertainty (say the comparison is missing, do not borrow a neighbouring concept); the
+Bottom Line obeys all of it. Six matching guard entries. Softener gained "the literature shows",
+"research distinguishes" (with a lookbehind so "the cited research distinguishes" is not re-softened
+into "the cited the cited…" — caught by the both-directions test), "the real picture is". The
+research pass now labels `thesis_or_preprint` (tier 3) and `magazine_or_trade` (tier 4) and is told
+to label the document, not the host.
+**UI:** Bottom Line bullets ended in raw `[S1, S4]` — internal plumbing on a finished page. The rest
+prompt now asks for that convention deliberately, and `BulletWithRefs` strips the bracket group and
+renders the IDs as the same chips the cards use (also for What General Claims Can't Decide). IDs
+pruned by `sanitizeResult` simply render no chip.
+
 ## DO NOT silently reverse (V8)
 
 32. **Research-first is the architecture now.** Do not reintroduce a source-free "claim analysis"

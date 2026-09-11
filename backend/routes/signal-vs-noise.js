@@ -88,6 +88,32 @@ Before rendering, compare Signal, Noise, Kernel of Truth, unresolved findings, a
 16. SUMMARY PROVENANCE.
 The Bottom Line may summarize the researched findings but may not strengthen, generalize, or combine them into a broader empirical proposition the packet did not establish. "The evidence consistently shows these factors interact" lumps four separate findings into one interaction claim nobody researched; the DeftBrain formulation is that a claim reducing the question to one variable deserves skepticism when the cited evidence does not establish that exclusivity.
 
+FINAL CALIBRATION — evidence-to-conclusion matching
+
+17. COMPARATIVE CLAIMS REQUIRE COMPARATIVE EVIDENCE.
+Evidence that X matters does not establish "X matters more than Y." Evidence that A has favorable outcomes does not establish "A is better than B and C" unless B and C were actually compared in the cited research.
+
+18. DO NOT EXPAND POPULATIONS OR CONDITIONS.
+A finding in a particular age group, population, country, duration, exposure level, or intervention may not become "at any age," "for children," "generally," "across populations," or any broader formulation. Preserve the scope of the retrieved evidence, in the sentence that uses it.
+
+19. ASSOCIATION ≠ CAUSATION.
+"Associated with" must not become "causes," "produces," "leads to," or "drives" unless the cited research design supports that causal inference.
+
+20. SOURCE QUALITY AFFECTS WHAT MAY BE CONCLUDED.
+ResearchGate, SSRN, arXiv and similar are HOSTS, not evidence of source quality. A thesis, magazine or trade article, explanatory article, preprint, or professional publication may inform a question but may not carry a strong empirical verdict when stronger evidence could reasonably exist. If the packet lacks sufficiently strong evidence for a conclusion, weaken the conclusion or mark it unresolved.
+
+21. DO NOT SYNTHESIZE BEYOND THE PACKET.
+Avoid broad constructions — "the evidence consistently shows," "research distinguishes," "the literature shows," "these factors interact," "the real picture is" — unless the retrieved evidence directly supports that synthesis. Describe what the retrieved evidence establishes instead.
+
+22. CLAIM–SOURCE COVERAGE.
+Before accepting each substantive sentence, ask: which specific source or sources establish THIS ENTIRE proposition? If none does, split the proposition, narrow it, qualify it, or remove it.
+
+23. PRESERVE GOOD UNCERTAINTY.
+If the packet lacks the evidence a comparison needs, say so. Do not fill the gap from model knowledge, and do not let a neighbouring concept the search did find stand in for the one it did not.
+
+24. THE BOTTOM LINE OBEYS ALL OF THE ABOVE.
+The summary may be shorter than the body. It may not be stronger than the body.
+
 NORTH STAR:
 RESEARCH THE CLAIMS.
 SHOW WHAT THE EVIDENCE EARNS.
@@ -114,6 +140,12 @@ router.outputGuard = {
     'same_evidence_characterized_with_different_strength_across_sections',
     'bottom_line_combines_or_generalizes_findings_into_a_proposition_the_packet_did_not_establish',
     'secondary_explanatory_or_commercial_site_used_to_establish_a_conclusion_when_primary_sources_were_available',
+    'comparative_claim_x_more_than_y_without_a_cited_comparison_of_x_and_y',
+    'finding_scope_expanded_beyond_the_population_age_country_duration_or_condition_studied',
+    'association_restated_as_causation_without_a_causal_design_in_the_cited_source',
+    'strong_verdict_resting_on_a_thesis_preprint_magazine_or_explanatory_article',
+    'proposition_not_fully_established_by_any_single_cited_source',
+    'bottom_line_stronger_than_the_body_it_summarizes',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -144,6 +176,9 @@ const COMPLETENESS_SOFTENERS = [
   [/\bresearch has (?:firmly |clearly |now )?established\b/gi, 'the cited research found'],
   [/\b(?:the )?scientific consensus (?:is|holds|says)\b/gi, 'the cited sources indicate'],
   [/\b(?:it is|this is) (?:well[- ])?(?:established|settled|proven) (?:that|science)\b/gi, 'the cited sources indicate that'],
+  [/\bthe literature (?:shows|indicates|demonstrates|suggests|supports)\b/gi, 'the cited sources indicate'],
+  [/(?<!cited )\b(?:the )?research (?:clearly |consistently )?distinguishes\b/gi, 'the cited research distinguishes'],
+  [/\bthe real picture is\b/gi, 'what the cited sources show is'],
 ];
 
 function softenCompletenessClaims(parsed) {
@@ -374,8 +409,8 @@ Return ONLY valid JSON:
     "person-specific question the general evidence cannot answer from the information supplied"
   ],
   "the_bottom_line": {
-    "supported_takeaways": ["2-3 concise takeaways, each traceable to a specific packet finding"],
-    "treat_skeptically": ["1-3 of the visitor's claims or framings that deserve skepticism, and why in a phrase"],
+    "supported_takeaways": ["2-3 concise takeaways, each traceable to a specific packet finding — end each with its source IDs in square brackets, e.g. '… [S1, S4]'; the page renders them as source chips"],
+    "treat_skeptically": ["1-3 of the visitor's claims or framings that deserve skepticism, and why in a phrase — end with source IDs in square brackets where a source bears on it"],
     "what_would_change_the_answer": ["0-3 evidence gaps that materially matter"]
   },
   "sources_of_noise": [

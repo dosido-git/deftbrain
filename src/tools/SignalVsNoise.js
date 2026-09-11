@@ -114,6 +114,26 @@ const SignalVsNoise = ({ tool }) => {
       </div>
     );
   };
+  // Bottom-line bullets are plain strings that end with their source IDs in
+  // square brackets ("… [S1, S4]"). Rendered raw those read as internal
+  // plumbing; here they become the same chips the cards use, and the
+  // bracket group is stripped from the visible text. IDs that no longer
+  // resolve (pruned by sanitizeResult) simply render no chip.
+  const splitInlineRefs = (text) => {
+    const s = String(text || '');
+    const ids = [];
+    const stripped = s.replace(/\s*\[\s*((?:S\d+\s*,?\s*)+)\]\s*/gi, (_, grp) => { ids.push(...grp.match(/S\d+/gi).map(x => x.toUpperCase())); return ' '; }).replace(/\s+([.,;:])/g, '$1').trim();
+    return { text: stripped, ids: [...new Set(ids)] };
+  };
+  const BulletWithRefs = ({ text }) => {
+    const { text: body, ids } = splitInlineRefs(text);
+    return (
+      <li className={`text-sm ${c.textSecondary}`}>
+        • {body}
+        {ids.length > 0 && <SourceRefs ids={ids} />}
+      </li>
+    );
+  };
   const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-history', []);
   const [error, setError] = useState('');
   // The first request on a topic is a cold research fetch. The route waits
@@ -489,7 +509,7 @@ const SignalVsNoise = ({ tool }) => {
                         <p className={`text-[10px] font-bold uppercase tracking-wide mb-2 ${c.textMuted}`}>{t('svn_cant_decide_header')}</p>
                         <ul className="space-y-1">
                           {results.what_general_claims_cant_decide.map((x, i) => (
-                            <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
+                            <BulletWithRefs key={i} text={x} />
                           ))}
                         </ul>
                       </div>
@@ -515,7 +535,7 @@ const SignalVsNoise = ({ tool }) => {
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.signalText}`}>{t('svn_what_evidence')}</p>
                       <ul className="space-y-1">
                         {bl.supported_takeaways.map((x, i) => (
-                          <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
+                          <BulletWithRefs key={i} text={x} />
                         ))}
                       </ul>
                     </div>
@@ -525,7 +545,7 @@ const SignalVsNoise = ({ tool }) => {
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_what_ignore')}</p>
                       <ul className="space-y-1">
                         {bl.treat_skeptically.map((x, i) => (
-                          <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
+                          <BulletWithRefs key={i} text={x} />
                         ))}
                       </ul>
                     </div>
@@ -535,7 +555,7 @@ const SignalVsNoise = ({ tool }) => {
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>{t('svn_honest_uncertainty')}</p>
                       <ul className="space-y-1">
                         {bl.what_would_change_the_answer.map((x, i) => (
-                          <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
+                          <BulletWithRefs key={i} text={x} />
                         ))}
                       </ul>
                     </div>

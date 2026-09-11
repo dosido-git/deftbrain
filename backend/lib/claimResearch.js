@@ -58,7 +58,11 @@ const TIER_BY_TYPE = {
   systematic_review: 1, meta_analysis: 1, primary_study: 1,
   government: 2, regulator: 2, official_dataset: 2, methodology: 2,
   professional_body: 3,
-  high_quality_secondary: 4, other: 4,
+  // Not peer-reviewed primary research, whatever host it sits on (ResearchGate,
+  // SSRN, arXiv are hosts, not journals). Strong enough to inform a question,
+  // not to carry a verdict alone — rule 20 in the synthesis prompt.
+  thesis_or_preprint: 3,
+  high_quality_secondary: 4, magazine_or_trade: 4, other: 4,
 };
 // Commercial educational, coaching, fitness, finance-explainer and advocacy
 // sites the research pass has been seen (or is likely) to over-label as
@@ -175,7 +179,7 @@ async function claimResearch({ topic, conflictingAdvice, userContext, region, co
     timeoutMs: SEARCH_TIMEOUT_MS,
     maxTokens: 6500,
     maxUses: MAX_USES,
-    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use commercial educational, coaching, fitness, nutrition-explainer, finance-explainer, advocacy, or general explanatory sites (Healthline, WebMD, Precision Nutrition, ACE, Examine, Investopedia, NerdWallet and their kind) to establish a conclusion when a primary study, review, government source, or professional body is available — and label such a site high_quality_secondary, never professional_body or primary_study. Label source_type by what the page actually is, not by how authoritative it sounds. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
+    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use commercial educational, coaching, fitness, nutrition-explainer, finance-explainer, advocacy, or general explanatory sites (Healthline, WebMD, Precision Nutrition, ACE, Examine, Investopedia, NerdWallet and their kind) to establish a conclusion when a primary study, review, government source, or professional body is available — and label such a site high_quality_secondary, never professional_body or primary_study. Label source_type by what the page actually is, not by how authoritative it sounds: a thesis, dissertation, preprint, working paper, or conference poster is thesis_or_preprint, not primary_study; a magazine, trade, or professional-publication article is magazine_or_trade; ResearchGate, SSRN, and arXiv are HOSTS — label the document, not the host. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
     userPrompt: `Research the following topic with web_search as of today.
 
 TOPIC:
@@ -210,7 +214,7 @@ Return ONLY:
       "publisher": "publisher / journal / organization",
       "url": "full URL actually visited",
       "date": "publication/update date if visible, otherwise null",
-      "source_type": "systematic_review | meta_analysis | primary_study | government | regulator | professional_body | official_dataset | methodology | high_quality_secondary | other"
+      "source_type": "systematic_review | meta_analysis | primary_study | government | regulator | professional_body | official_dataset | methodology | thesis_or_preprint | magazine_or_trade | high_quality_secondary | other"
     }
   ]
 }`,
