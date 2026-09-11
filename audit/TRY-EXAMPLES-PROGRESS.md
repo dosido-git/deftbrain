@@ -142,6 +142,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 112 | TimeWarp | inline | — | 3 (news/letter/ad formats) | 5 (+ Airbnb review from 1920s New York, crypto/NFT explainer from Ancient Greece; covers 5 of 6 formats) | ✅ 2026-09-11 |
 | 113 | TipOfTongue | i18n | — | 5 | ✅ pre-existing (already had `tot_ex_pasta..green` spanning food/music/film/product/color) | ✅ 2026-09-11 |
 | 114 | ToastWriter | inline | — | 2 (both warm_and_funny) | 5 (+ heartfelt baby-shower toast from a grandmother-to-be, roast_style bachelor-party toast, elegant 25th-anniversary toast; covers all 4 tones and 3 of 4 durations) | ✅ 2026-09-11 |
+| 115 | ToolFinder | i18n | — | 3 | 5 (+ a friendship-repair dilemma, a two-job-offers decision-paralysis problem; 2 keys ×13) | ✅ 2026-09-11 |
+| 116 | TripRecon (i18n file: sensory-minefield-mapper.js) | i18n | — | 2 (grocery/hospital) | 5 (+ airport departures, opening-night movie theater, an outdoor wedding reception testing the 'other' concern with free-text notes; 7 keys ×13) | ✅ 2026-09-11 |
+| 117 | TruthBomb | i18n | — | 2 (friend, sibling) | 5 (+ a romantic partner/kids disagreement, a 20-year unspoken issue with a parent, an underleveled-and-underpaid conversation with a manager; 12 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

@@ -25,7 +25,7 @@ const QUICK_PICKS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const EXAMPLE_KEYS = ['tf_ex1', 'tf_ex2', 'tf_ex3'];
+const EXAMPLE_KEYS = ['tf_ex1', 'tf_ex2', 'tf_ex3', 'tf_ex4', 'tf_ex5'];
 const ToolFinder = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();

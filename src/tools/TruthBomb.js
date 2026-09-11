@@ -115,6 +115,9 @@ const TruthBomb = ({ tool }) => {
     const ex = pickExample('TruthBomb', [
       { who: 'tb_ex_who',  thing: 'tb_ex_thing',  why: 'tb_ex_why',  ctx: 'tb_ex_context' },
       { who: 'tb_ex2_who', thing: 'tb_ex2_thing', why: 'tb_ex2_why', ctx: 'tb_ex2_context' },
+      { who: 'tb_ex3_who', thing: 'tb_ex3_thing', why: 'tb_ex3_why', ctx: 'tb_ex3_context' },
+      { who: 'tb_ex4_who', thing: 'tb_ex4_thing', why: 'tb_ex4_why', ctx: 'tb_ex4_context' },
+      { who: 'tb_ex5_who', thing: 'tb_ex5_thing', why: 'tb_ex5_why', ctx: 'tb_ex5_context' },
     ]);
     setWhoItsAbout(t(ex.who));
     setTheUnsaidThing(t(ex.thing));

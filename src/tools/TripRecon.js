@@ -269,6 +269,9 @@ function TripRecon({ tool }) {
     const ex = pickExample('SensoryScout', [
       { loc: 'smm_ex_location', type: 'grocery', concerns: { noise: true, crowds: true, lighting: true }, known: 'smm_ex_known', notes: '' },
       { loc: 'smm_ex2_location', type: 'hospital', concerns: { lighting: true, smells: true, temperature: true, waiting: true }, known: 'smm_ex2_known', notes: '' },
+      { loc: 'smm_ex3_location', type: 'airport', concerns: { crowds: true, waiting: true, parking: true }, known: 'smm_ex3_known', notes: '' },
+      { loc: 'smm_ex4_location', type: 'movie_theater', concerns: { noise: true, visual_clutter: true, personal_space: true }, known: 'smm_ex4_known', notes: '' },
+      { loc: 'smm_ex5_location', type: 'event', concerns: { crowds: true, noise: true, other: true }, known: 'smm_ex5_known', notes: 'smm_ex5_notes' },
     ]);
     setLocation(t(ex.loc));
     setPlaceType(ex.type);
