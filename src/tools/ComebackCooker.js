@@ -23,7 +23,27 @@ const EXAMPLES = [
   relationship: 'A peer on another team — said it in a project channel where eight other people could see it, then immediately moved on to the next agenda item',
   mood: 'dignified',
 },
-];;
+  // Three more so the rotation reaches the two moods above and a jab that
+  // is not really a jab, from a stranger, a friend and a child respectively.
+  {
+  situation: 'Group chat with old university friends',
+  whatTheySaid: "Still doing the little side business thing? Fair play, I couldn't live like that.",
+  relationship: 'A friend of fifteen years who earns roughly three times what I do and has started saying things like this whenever my work comes up',
+  mood: 'surgical',
+},
+  {
+  situation: 'At the gym',
+  whatTheySaid: "Wow, good for you for getting out there.",
+  relationship: "A stranger, mid-twenties, clearly meaning it kindly — I'm 58 and had just finished the same class she had",
+  mood: 'petty',
+},
+  {
+  situation: 'Kitchen, on a school night',
+  whatTheySaid: "You wouldn't get it. You've never been good at anything hard.",
+  relationship: 'My fourteen-year-old, after I asked how the maths exam went. He is not usually cruel; he was upset and I was the nearest target',
+  mood: 'dignified',
+},
+];
 
 
 // ════════════════════════════════════════════════════════════

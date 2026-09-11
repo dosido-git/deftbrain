@@ -46,6 +46,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 16 | BreakMyPlan | i18n | 8 plan types | 2 | 5 (creative / project / career / financial / relationship; 9 keys ×13) | ✅ 2026-09-11 |
 | 17 | BuyWise | inline | form / budget / calendar / quote / haul / convince (photo needs an image — shares the form's product) | 2 (form) | 5 × 6 views via pickExample('BuyWise:<view>'); impulse, gift and priority now travel with form examples | ✅ 2026-09-11 |
 | 18 | CaptionMagic | i18n | 7 platforms × 3 lengths | 2 | 5 (+ twitter/short, linkedin/long, facebook/medium; 6 keys ×13) | ✅ 2026-09-11 |
+| 19 | ChaosPilot | inline | — | 3 | 5 (+ parental leave with no work in it; night shifts with no daytime and an empty "stuck") | ✅ 2026-09-11 |
+| 20 | ColdOpenCraft | i18n | 5 channels | 2 (both email) | 5 (email ×2, linkedin, instagram_dm, text; 12 keys ×13) | ✅ 2026-09-11 |
+| 21 | ComebackCooker | inline | 4 moods | 2 (witty, dignified) | 5 (all four moods; a jab from a friend, a kindness from a stranger, a cruelty from a child) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

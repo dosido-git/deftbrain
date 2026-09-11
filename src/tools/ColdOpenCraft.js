@@ -111,9 +111,15 @@ const ColdOpenCraft = ({ tool }) => {
   }, [who, why, channel, whatYouKnow, yourBackground, callToolEndpoint, userLocale, userCurrency, userRegion, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
+    // Five, rotated: two emails, a LinkedIn note to a hiring manager after
+    // the posting closed, an Instagram DM to an artist who turns comments
+    // off, and a text to a cousin after nine years of silence.
     const ex = pickExample('ColdOpenCraft', [
       { n: '',  channel: 'email' },
       { n: '2', channel: 'email' },
+      { n: '3', channel: 'linkedin' },
+      { n: '4', channel: 'instagram_dm' },
+      { n: '5', channel: 'text' },
     ]);
     const k = f => `coc_ex${ex.n}_${f}`;
     setWho(t(k('who')));

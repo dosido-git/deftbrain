@@ -25,6 +25,19 @@ const EXAMPLE_ROUTINES = [
     context: 'Freelance designer, work is good but inconsistent, mostly works alone',
     stuck: 'Productive some days, completely derailed others. No real rhythm.',
   },
+  // Two more so the rotation reaches a routine with no work in it and a
+  // routine with no daytime in it — the ones where "shake it up" cannot mean
+  // "leave the office earlier".
+  {
+    routine: 'Up at 5:30 with the baby. Feed, nap, walk to the same park, feed, nap. Partner home at 6:30, handover, dinner standing up, asleep by 9:30 and up twice in the night.',
+    context: 'On parental leave for another five months. First baby. Most of my friends are at work all day.',
+    stuck: 'I love her and I am so bored I could cry. I have not had a conversation about anything else in weeks.',
+  },
+  {
+    routine: 'Sleep 8am to 3pm. Coffee, TV, gym some days. Shift 7pm to 7am at the hospital, four nights on, three off. Days off mostly spent trying to flip my sleep and failing.',
+    context: 'Night-shift nurse for three years. Single. Live alone. Everyone I know is awake when I am asleep.',
+    stuck: '',
+  },
 ];
 
 // ════════════════════════════════════════════════════════════
