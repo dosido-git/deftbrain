@@ -24,9 +24,16 @@ const AlternatePath = ({ tool }) => {
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
+  // Five, rotated by pickExample. Together they cover both reaches, both
+  // tones, an ancient / medieval / modern / prehistoric divergence, and one
+  // with the optional context left blank — so the rotation exercises every
+  // shape of timeline the tool can produce, not five flavours of one.
   const EXAMPLES = [
     { whatIf: t('ap_qp3'), yearOrContext: '476 CE — barbarian invasions repelled, Western Empire endures', reach: 'today', tone: 'plausible' },
-    { whatIf: t('ap_qp5'), yearOrContext: 'c. 940 CE — movable type spreads through Europe five centuries early', reach: 'today', tone: 'plausible' },
+    { whatIf: t('ap_qp5'), yearOrContext: 'c. 940 CE — movable type spreads through Europe five centuries early', reach: 'decades', tone: 'plausible' },
+    { whatIf: t('ap_qp1'), yearOrContext: '1920 — packet-switched networking built on top of the telegraph and telephone grid', reach: 'decades', tone: 'plausible' },
+    { whatIf: t('ap_qp2'), yearOrContext: '66 million years ago — the Chicxulub impactor misses Earth', reach: 'today', tone: 'weird' },
+    { whatIf: t('ap_qp6'), yearOrContext: '', reach: 'decades', tone: 'weird' },
   ];
 
   // "Depth" was one control asking two unrelated questions: quick/deep set how
