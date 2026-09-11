@@ -778,11 +778,18 @@ with no backend edits in between. On Railway, confirm `GROUNDED_CACHE_PATH` poin
 volume, or every deploy makes every topic cold again (the 5 "Try Example" topics would be the ones
 to pre-warm if that ever matters).
 
-**Source policy observation for the owner:** the research pass admitted a Medium blog post as
-`high_quality_secondary` (S13 on the nutrition run) alongside the BMJ, Lancet and NIH sources.
-The policy allows secondary sources "only when stronger primary material is not available"; it was
-not needed here. Tightening that (exclude blog platforms outright, or cap secondary sources at one)
-is a prompt change in `claimResearch.js`, and a policy call — not made in this install.
+**Source policy — blog platforms excluded (V8.1, same day, owner decision).** The first nutrition
+run admitted a Medium post as `high_quality_secondary` next to the BMJ and the Lancet. Now enforced
+in two layers in `claimResearch.js`: the research prompt names blog/UGC platforms as never
+acceptable ("go to the research it summarizes instead, or leave the point unresolved"), and
+`cleanPacket` drops any source whose host is, or is a subdomain of, an entry in
+`BLOG_PLATFORM_HOSTS` (Medium, Substack, Blogspot/Blogger, WordPress.com, Tumblr, Ghost, dev.to,
+Hashnode, HubPages, Vocal, Quora, Reddit, Pinterest, Facebook, Instagram, TikTok, X/Twitter,
+Threads, LinkedIn, YouTube). Because findings are already filtered to surviving source IDs and
+claims to surviving findings, anything that rested only on a dropped source disappears with it —
+tested both directions (`mediumhealth.org` and `xmedium.com` are kept; `m.youtube.com` and
+`someone.substack.com` are dropped). A personal blog on its own domain is not caught by the host
+list — that is what the prompt clause is for.
 
 ## DO NOT silently reverse (V8)
 

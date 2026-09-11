@@ -25,14 +25,14 @@
         "conflictingAdvice": "Index funds always win vs. active management can beat the market, time in market beats timing the market vs. valuations matter, real estate vs. stocks"
       },
       "output": {
-        "topic_as_understood": "Three contested investing debates: index funds vs. active management, staying fully invested vs. timing the market using valuations, and real estate vs. stocks as long-term wealth builders",
-        "framing": "Each debate collapses a nuanced empirical question into an absolute rule. The evidence consistently supports qualified versions of the popular wisdom — but the qualifications are where the real decisions live.",
+        "topic_as_understood": "Three common investing debates: index funds vs. active management, time in market vs. market timing, and real estate vs. stocks as long-term wealth builders",
+        "framing": "Each of these debates is often posed as a binary when the evidence supports more conditional conclusions — 'usually true for most investors' is not the same as 'always true.' The strongest distortion in all three is collapsing a probabilistic, context-dependent finding into a universal rule.",
         "the_signal": {
           "items": [
             {
-              "claim": "Over long horizons, the large majority of actively managed mutual funds have underperformed low-cost index funds — and past outperformance does not reliably predict future outperformance.",
-              "basis": "Over a 20-year period ending 2024, more than 94% of domestic U.S. active funds underperformed their benchmark. Over 15 years, no U.S. equity category had a majority of active managers outperforming. Persistence data shows top-quartile active funds did not sustain that ranking at better than chance rates. Survivorship bias further overstates active returns: roughly 30% of active funds merge or close over 10-year periods, and those are typically poor performers.",
-              "limits": "These figures cover mutual funds only. Results are weakest in large-cap markets; small-cap and emerging-market segments show less consistent underperformance. One strong year (2024 small-cap) is a notable exception, though analysts attributed it partly to a large-cap tilt rather than stock-picking skill.",
+              "claim": "For most retail investors in U.S. large-cap equity, low-cost index funds have a strong track record against the average actively managed fund — especially over long horizons.",
+              "basis": "Over the 15-year period ending 2024, no U.S. equity fund category had a majority of active managers beating their benchmark. In 2025, 79% of active large-cap funds underperformed the S&P 500. The arithmetic explanation — active management is zero-sum before costs, and costs are higher — gives a structural reason to expect this, not just a historical curiosity.",
+              "limits": "Results vary by category; some international and small-cap categories have shown shorter periods of majority active outperformance. The underperformance gap narrows when comparing before-fee returns. A minority of truly active funds with high 'active share' and low fees have shown some ability to add value in certain market conditions.",
               "source_ids": [
                 "S1",
                 "S2",
@@ -41,37 +41,33 @@
               ]
             },
             {
-              "claim": "Attempting to exit and re-enter the market around downturns is extremely difficult to execute profitably, and the cost of mistiming is large.",
-              "basis": "A Morningstar analysis of 2000-2019 found that missing just the 10 best trading days cut annualized returns from roughly 6% to roughly 2.4%. Seven of those ten best days occurred within two weeks of the worst days, making successful exit-and-reentry timing extremely hard in practice. Investors who exit during volatile markets tend to do so after sharp declines — precisely when strong recovery days cluster.",
-              "limits": "The 'missing best days' framing is symmetric: someone who also avoided the worst days would have outperformed. The claim is strongest for long-horizon equity investors; it is less applicable to investors near retirement or using systematic rules-based strategies rather than discretionary judgment.",
+              "claim": "Staying invested in a broad market index over long periods has historically produced positive real returns, and attempting to time the market has a poor track record for typical retail investors.",
+              "basis": "U.S. broad market data from 1936 to 2025 shows no negative returns on any rolling 20-year window, and no negative returns over any rolling period longer than 12 years since 1972. Missing even a small number of the best-performing days — which cluster during high-volatility periods when timers are most likely to be out — substantially reduces long-run returns. Successful timing requires two correct decisions (exit and re-entry), and evidence indicates most investors get one or both wrong.",
+              "limits": "This evidence is U.S.-centric; investors in markets that experienced prolonged or permanent declines would have had different outcomes. The finding applies to broad index participation, not concentrated or illiquid positions. It does not rule out long-horizon, valuation-aware allocation adjustments — only short-term in-and-out timing.",
               "source_ids": [
                 "S5",
-                "S6",
-                "S7"
+                "S6"
               ]
             },
             {
-              "claim": "Valuation levels, specifically the Shiller CAPE ratio, have meaningful predictive power for 10-year-plus stock returns — but essentially none for short-term timing.",
-              "basis": "The Shiller CAPE has a documented negative correlation of roughly -0.55 to -0.65 with subsequent 10-year real returns over a long historical dataset, explaining roughly 40% of the variance in 10-year forward returns. A June 2026 component-based variant explained nearly 74% of that variation. As of September 2026, the CAPE stands around 40.8 — well above its long-run median — implying lower expected 10-year real returns on current models. However, the correlation between CAPE and 1-year forward returns is near zero. A Morningstar analysis also found that in practice, staying fully invested beat a valuation-aware cash-shifting strategy over 2002-2023, partly because extreme valuations are relatively rare: the market was within 10% of fair value in roughly 79% of months studied.",
-              "limits": "High CAPE has persisted for extended periods without producing predicted lower returns. The long-run CAPE median may itself be shifting upward due to accounting changes, buybacks, and interest rate structures, making historical comparisons uncertain. CAPE identifies lower expected returns, not an imminent correction — and the opportunity cost of waiting for cheaper markets can itself destroy returns.",
+              "claim": "Real estate and stocks have produced broadly comparable gross long-run returns globally, but net returns on direct real estate ownership are meaningfully lower once operating costs are properly counted.",
+              "basis": "A large multi-country study covering 1870-2015 found inflation-adjusted total returns of roughly 7% annually for both residential real estate (including rent) and equities (including dividends). However, when maintenance, property taxes, insurance, and management costs are deducted at the property level, net real returns on residential real estate have been estimated at roughly 2.3% — far below the gross figure commonly cited in comparisons with equities.",
+              "limits": "The multi-country averages mask sharp variation by location, time period, and property type. Leverage, rental income, and tax treatment can substantially alter outcomes for individual investors. Direct real estate and REITs behave differently and should not be conflated.",
               "source_ids": [
-                "S8",
-                "S9",
                 "S10",
-                "S11",
-                "S12"
+                "S11"
               ]
             }
           ]
         },
         "the_noise": [
           {
-            "claim": "Index funds always win",
+            "claim": "Index funds always win over active management",
             "noise_type": "oversimplified",
-            "noise_label": "True trend, false absolute",
-            "what_the_evidence_supports_instead": "Over long periods, a large majority of active mutual funds underperform their benchmark — but not all, not in all categories, and not in every year.",
-            "what_went_wrong": "'Always' is not supported. SPIVA data shows meaningful variation by time period, market segment, and fund category. Active bond funds in some markets achieved majority outperformance. Small-cap active managers had an unusually strong 2024. The evidence supports a strong probabilistic case against active funds, not a categorical law.",
-            "kernel_of_truth": "For most investors choosing among broadly available mutual funds over long holding periods, especially in large-cap U.S. equity, the odds strongly favor index funds.",
+            "noise_label": "Always is doing too much work",
+            "what_the_evidence_supports_instead": "The average actively managed U.S. large-cap fund has underperformed its benchmark over most long-horizon windows studied, and the majority of active funds in most categories fail to beat their benchmarks over 15 years. But 'always' and 'every fund' are not supported.",
+            "what_went_wrong": "The strong aggregate evidence against the average active fund gets stretched into a claim that no active fund can outperform under any conditions. The research shows a minority of high-active-share, lower-cost funds in certain market structures have shown evidence of adding value — 'usually loses' is not the same as 'always loses.'",
+            "kernel_of_truth": "The overwhelming odds, especially over long horizons and in large-cap U.S. markets, favor low-cost index funds over the average active alternative. That is a well-supported and practically important conclusion.",
             "source_ids": [
               "S1",
               "S2",
@@ -80,94 +76,78 @@
             ]
           },
           {
-            "claim": "Valuations matter (as a challenge to 'time in the market')",
-            "noise_type": "context_dependent",
-            "noise_label": "Right signal, wrong timeframe",
-            "what_the_evidence_supports_instead": "Valuations have real predictive value for 10-year-plus expected returns, but provide no usable short-term timing signal and do not clearly justify moving to cash even at extreme levels.",
-            "what_went_wrong": "The framing pits valuations against 'time in the market' as if they are competing strategies. They operate on different timescales. CAPE near 41 suggests lower expected 10-year real returns — but it does not tell you when a correction arrives or whether exiting now beats staying invested. Morningstar's analysis found staying invested outperformed a valuation-aware cash-shifting approach even over a period that included two major crashes.",
-            "kernel_of_truth": "At current CAPE levels, historical models project roughly 3-4% annual real returns over the next decade — lower than the long-run average. That is useful information for setting expectations, not for deciding whether to sell today.",
-            "source_ids": [
-              "S8",
-              "S9",
-              "S10",
-              "S11",
-              "S12"
-            ]
-          },
-          {
-            "claim": "Real estate vs. stocks — one clearly beats the other",
+            "claim": "Valuations do not matter — pure time in market is all that counts",
             "noise_type": "too_broad",
-            "noise_label": "Comparison that depends entirely on the inputs",
-            "what_the_evidence_supports_instead": "Over very long historical horizons, residential real estate (including rental income) and equities have produced broadly similar inflation-adjusted returns. Over more recent decades, equities have outperformed more decisively. Leverage, geography, costs, and methodology all materially shift the outcome.",
-            "what_went_wrong": "The head-to-head framing treats both as uniform, comparable assets. Real estate returns vary widely by location and property type. Including or excluding rental income, maintenance, transaction costs, and taxes changes the result significantly. Leverage amplifies both gains and losses in real estate in a way that has no direct parallel in passive stock investing. The assets are also not interchangeable in practice: real estate requires active management effort and is illiquid.",
-            "kernel_of_truth": "A 16-country historical study found residential real estate and equities have produced roughly comparable long-run inflation-adjusted returns when rental income is included. Holding both can improve risk-adjusted outcomes because their correlation has historically been relatively low.",
+            "noise_label": "Conflates short-term timing with long-horizon base rates",
+            "what_the_evidence_supports_instead": "Time in market strongly beats short-term tactical timing for most retail investors. Separately, valuation measures such as the Shiller CAPE have shown meaningful predictive power for long-horizon expected returns — not for when to exit, but for calibrating realistic return expectations.",
+            "what_went_wrong": "The 'time in market' evidence, which concerns short-term in-and-out timing decisions, gets overapplied to dismiss any role for valuations in setting return expectations over a decade or more. These are different questions. The CAPE's poor ability to time markets does not negate its demonstrated relationship with 10-to-20-year forward returns.",
+            "kernel_of_truth": "Trying to use valuations as a short-term market timing signal has not been shown to improve investor outcomes. The anti-timing evidence is real and strong for that specific use case.",
             "source_ids": [
-              "S13",
-              "S14",
-              "S15",
-              "S16"
+              "S5",
+              "S6",
+              "S7",
+              "S8",
+              "S9"
             ]
           }
         ],
         "still_worth_verifying": [
           {
-            "question": "Does the CAPE ratio's predictive power hold under current structural conditions — higher valuations driven by buybacks, changed accounting, and a low-rate environment — or has the relevant baseline shifted?",
-            "why_it_matters": "If the long-run CAPE median has structurally risen, then a reading of 40.8 may be less extreme than historical comparisons suggest, and the 3-4% forward return projection may be too pessimistic.",
-            "what_would_help": "Research that adjusts CAPE for accounting changes and buybacks over time, or tracks whether component-based CAPE variants produce better-calibrated forecasts going forward.",
+            "question": "Does the current CAPE reading of approximately 40.6x (98.8th historical percentile as of September 2026) meaningfully lower expected long-horizon returns, or have structural changes made the historical CAPE baseline obsolete?",
+            "why_it_matters": "If the historical CAPE-return relationship holds, long-horizon real returns from U.S. equities at current valuations may be substantially below their historical average — relevant to anyone allocating heavily to U.S. stocks today. If structural changes (accounting standards, sector composition, persistently lower real rates) have shifted the baseline upward, the signal is weaker.",
+            "what_would_help": "Analysis distinguishing how much of the elevated CAPE is explained by structural factors versus speculative premium; out-of-sample tests of CAPE predictive power in post-2002 data; international CAPE comparisons to assess whether U.S. premium is justified.",
             "source_ids": [
+              "S7",
               "S8",
-              "S9",
-              "S10",
-              "S12"
+              "S9"
             ]
           },
           {
-            "question": "How much of active fund underperformance is explained by fees alone versus actual stock-selection decisions?",
-            "why_it_matters": "If fees are the dominant driver, a low-cost active fund could theoretically narrow the gap significantly — a different conclusion than 'active management cannot add value.'",
-            "what_would_help": "Gross-of-fee SPIVA results broken down by expense ratio tier, or comparable data for institutional mandates where fees are lower.",
+            "question": "Under what specific conditions — market type, fund characteristics, time horizon — do high-active-share, lower-cost active funds reliably add value net of fees?",
+            "why_it_matters": "If reliably identifying such funds in advance is possible, the 'just use index funds' conclusion is less universal. If it requires after-the-fact selection, the practical value is limited.",
+            "what_would_help": "Prospective studies tracking funds identified as high-active-share and low-cost before the measurement period, across multiple market regimes and geographies.",
             "source_ids": [
-              "S1",
-              "S2",
-              "S4"
+              "S4",
+              "S1"
             ]
           }
         ],
         "what_general_claims_cant_decide": [
-          "Whether index funds, active funds, real estate, or some mix is appropriate depends on your time horizon, tax situation, liquidity needs, and ability to tolerate volatility — none of which can be read from general evidence.",
-          "Whether current CAPE-implied lower expected returns should change your asset allocation depends on what alternatives you are comparing to, your time horizon, and your return requirements — questions general evidence cannot answer for any individual.",
-          "Whether real estate makes sense for you depends on geography, available capital, willingness to manage property or pay for management, and access to financing — national averages cannot substitute for local market analysis."
+          "Whether direct real estate or stocks is better for you depends on your access to capital, ability to manage a property, local market conditions, tax situation, existing diversification, and financing terms — none of which the general evidence can answer.",
+          "Whether you should adjust your equity allocation given current CAPE levels depends on your time horizon, liquidity needs, and whether you have a disciplined framework for re-entry — factors the population-level evidence does not resolve for any individual.",
+          "Whether a specific active fund is worth its fees depends on its actual active share, cost structure, and the market segment it operates in — not on aggregate SPIVA data."
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "For most investors choosing among mutual funds over long periods, index funds have a strong probabilistic advantage — not because active management is impossible, but because after fees and survivorship effects, it has been very hard to identify winning active funds in advance.",
-            "Staying invested is harder to beat than it looks: missing even a small number of the strongest recovery days has historically been very costly, and those days cluster around the worst ones — making successful exit-and-reentry extremely difficult in practice.",
-            "Valuations (CAPE) carry real information about likely 10-year returns but are not a short-term timing tool and do not clearly favor moving to cash even at historically high levels; real estate and stocks have produced broadly comparable long-run returns when measured carefully, but the comparison is highly sensitive to methodology and individual circumstances."
+            "Low-cost broad index funds have beaten the majority of actively managed U.S. large-cap funds over most long horizons studied — the odds strongly favor indexing for a typical investor, even if 'always wins' overstates it.",
+            "Staying invested beats short-term market timing for most retail investors; the evidence on missed best-days and re-entry errors is consistent and the long-horizon loss record for U.S. broad indices is essentially zero across periods of 12-20 years.",
+            "Real estate and stocks have historically produced similar gross returns globally, but direct real estate ownership carries substantial costs that compress net returns — leverage, tax treatment, and local conditions are the decisive variables, not the asset class label."
           ],
           "treat_skeptically": [
-            "'Index funds always win' — the evidence supports a strong probabilistic case, not a categorical rule; exceptions exist by time period, category, and market.",
-            "'Valuations matter' as a challenge to staying invested — CAPE predicts long-run expected returns, not short-term market direction, and the evidence does not support using it as a sell signal.",
-            "Simple real estate vs. stocks head-to-head comparisons — the outcome changes substantially depending on whether rental income, leverage, costs, and local conditions are included."
+            "'Index funds always win' — the evidence supports 'usually wins on average' and 'the odds heavily favor indexing,' not a universal law.",
+            "Gross return comparisons between real estate and stocks that omit operating costs — the net-of-cost gap is large enough to reverse casual conclusions.",
+            "Using CAPE or any valuation metric as a short-term timing signal — the evidence supports CAPE as a long-horizon return forecaster, not an exit trigger."
           ],
           "what_would_change_the_answer": [
-            "Evidence that the CAPE ratio's structural baseline has shifted upward would weaken the case that current valuations are as extreme as raw comparisons to the 16-median suggest.",
-            "Gross-of-fee active fund performance data broken down by cost tier would clarify whether fees or stock-selection decisions drive most of the observed underperformance gap."
+            "Evidence that current elevated CAPE levels are fully explained by structural changes rather than speculative premium would weaken the case for tempering long-horizon U.S. equity return expectations.",
+            "Prospective data showing that high-active-share, low-cost active funds can be identified in advance and deliver consistent net-of-fee alpha would qualify the indexing conclusion more substantially."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Absolute-rule simplification of probabilistic findings",
-            "how_it_distorts": "Research shows strong tendencies — most active funds underperform, staying invested is usually better — but these get retold as universal laws ('always,' 'never'). The exceptions and conditions disappear.",
-            "how_to_recognize_it": "Any investing claim that uses 'always,' 'never,' or 'beats' without a defined time period, investor type, or methodology is almost certainly overstating what the evidence shows."
+            "source_type": "Aggregation masking distribution",
+            "how_it_distorts": "Average active fund underperformance is real and large, but reporting the average obscures that a minority of funds do outperform. The aggregate statistic gets treated as a statement about every fund, producing 'always' and 'never' claims the data does not support.",
+            "how_to_recognize_it": "Claims that use 'always,' 'never,' or 'impossible' about active management — as opposed to 'most,' 'on average,' or 'the majority.'"
           },
           {
-            "source_type": "Timeframe mismatch between signal and conclusion",
-            "how_it_distorts": "A metric with genuine predictive power at one horizon (CAPE at 10 years) gets applied at a different horizon (short-term timing) where it has little or no power. The metric's real value is preserved but misapplied.",
-            "how_to_recognize_it": "Ask what time horizon the underlying research actually used. If someone cites a valuation measure to justify a near-term trade, check whether the cited evidence was about 10-year returns."
+            "source_type": "Gross vs. net return conflation",
+            "how_it_distorts": "Headline comparisons between asset classes (especially real estate vs. stocks) typically use gross returns. Operating costs for direct real estate are large enough to substantially change the comparison. The conflation makes real estate look more competitive than net evidence supports.",
+            "how_to_recognize_it": "Any real estate return figure that does not specify whether maintenance, taxes, insurance, and management costs have been deducted."
           },
           {
-            "source_type": "Methodology sensitivity hidden by clean comparisons",
-            "how_it_distorts": "Real estate vs. stocks comparisons produce very different answers depending on whether rental income, leverage, maintenance costs, and transaction costs are included. A single number gets quoted as if the comparison were settled.",
-            "how_to_recognize_it": "Look for whether the comparison specifies what is being measured. 'Real estate returns X%' without stating whether that includes rent, costs, and leverage is an incomplete claim."
+            "source_type": "Collapsing different questions into one claim",
+            "how_it_distorts": "Evidence that short-term market timing is harmful gets used to dismiss the relevance of valuations to long-horizon expected returns — two distinct claims that the evidence treats differently. The simplified framing ('just stay invested, nothing else matters') sounds stronger than the research warrants.",
+            "how_to_recognize_it": "When 'time in market beats timing' is used to argue that current valuations are irrelevant to expected returns over the next decade — that is a different and less well-supported claim."
           }
         ],
         "analysis_mode": "verified_research",
@@ -176,6 +156,22 @@
         "sources_examined": [
           {
             "id": "S1",
+            "title": "U.S. Persistence Scorecard Year-End 2025",
+            "publisher": "S&P Dow Jones Indices",
+            "url": "https://www.spglobal.com/spdji/en/spiva/article/us-persistence-scorecard/",
+            "date": "2026-05-07",
+            "source_type": "official_dataset"
+          },
+          {
+            "id": "S2",
+            "title": "SPIVA Scorecard: How Active Funds Performed vs. Their Benchmarks",
+            "publisher": "Institute of Business & Finance (ICFS)",
+            "url": "https://icfs.com/specialists-desk/spiva-scorecard-results",
+            "date": "2026-05-24",
+            "source_type": "high_quality_secondary"
+          },
+          {
+            "id": "S3",
             "title": "Active Fund Managers vs. Indexes: Analyzing SPIVA Scorecards",
             "publisher": "Index Fund Advisors, Inc.",
             "url": "https://www.ifa.com/articles/spiva-report-active-vs-passive",
@@ -183,120 +179,64 @@
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S2",
-            "title": "Active Management's Persistent Failure: A 2025 Perspective",
-            "publisher": "WealthManagement.com",
-            "url": "https://www.wealthmanagement.com/investing-strategies/active-management-s-persistent-failure-a-2025-perspective",
-            "date": "2025-06-24",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S3",
-            "title": "SPIVA Scorecard: How Active Funds Performed vs. Their Benchmarks",
-            "publisher": "Institute of Business & Finance / ICFS",
-            "url": "https://icfs.com/specialists-desk/spiva-scorecard-results",
-            "date": "2026-05-24",
-            "source_type": "high_quality_secondary"
-          },
-          {
             "id": "S4",
-            "title": "Index Funds vs Active Funds: What the Data Actually Shows",
-            "publisher": "iAdviser",
-            "url": "https://iadviser.com/index-funds-vs-active-funds-data-comparison/",
-            "date": "2026-04-06",
-            "source_type": "high_quality_secondary"
+            "title": "Indexing and Active Fund Management: International Evidence",
+            "publisher": "ScienceDirect / Journal of Financial Economics",
+            "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X16300083",
+            "date": "2016-02-17",
+            "source_type": "primary_study"
           },
           {
             "id": "S5",
-            "title": "Time in the Market versus Timing The Market: A Critical Distinction for Retirement Success",
-            "publisher": "Partners in Financial Planning, LLC",
-            "url": "https://partnersinfinancialplanning.com/time-in-the-market-vs-timing-the-market/",
-            "date": "2025-07-15",
-            "source_type": "high_quality_secondary"
+            "title": "Long-Term Investing: Time in the Market Can Top Market Timing",
+            "publisher": "iShares by BlackRock",
+            "url": "https://www.ishares.com/us/investor-education/investing-101/long-term-investing",
+            "date": null,
+            "source_type": "professional_body"
           },
           {
             "id": "S6",
-            "title": "The Case Against Market Timing",
-            "publisher": "Brown Brothers Harriman (BBH)",
-            "url": "https://www.bbh.com/us/en/insights/capital-partners-insights/the-case-against-market-timing.html",
-            "date": "2025-04-30",
+            "title": "Why time in the market beats timing the market",
+            "publisher": "Bank of Singapore",
+            "url": "https://www.bankofsingapore.com/research/why-time-in-the-market-beats-timing-the-market.html",
+            "date": "2025-02-12",
             "source_type": "high_quality_secondary"
           },
           {
             "id": "S7",
-            "title": "Time in Market vs Timing the Market: What Works Better?",
-            "publisher": "HeyGotrade",
-            "url": "https://www.heygotrade.com/en/blog/time-in-market-vs-timing-the-market/",
-            "date": "2026-02-25",
-            "source_type": "high_quality_secondary"
+            "title": "Applied philosophy: The Shiller P/E and S&P 500 returns revisited",
+            "publisher": "Invesco",
+            "url": "https://www.invesco.com/apac/en/institutional/insights/market-outlook/applied-philosophy-the-shiller-PE-and-SP-500-returns-revisited.html",
+            "date": null,
+            "source_type": "professional_body"
           },
           {
             "id": "S8",
-            "title": "Shiller CAPE: long-term equity valuation reference",
-            "publisher": "eco3min.fr",
-            "url": "https://eco3min.fr/en/cape-shiller-pe-cyclically-adjusted-equity-valuation-long-term/",
-            "date": "2026-07-12",
+            "title": "Shiller P/E Ratio: What It Is & How To Use It In 2026",
+            "publisher": "Financer.com",
+            "url": "https://financer.com/invest/shiller-p-e-ratio/",
+            "date": "2026-07-13",
             "source_type": "high_quality_secondary"
           },
           {
             "id": "S9",
-            "title": "A Better Way to Predict Long-Term Stock Returns",
-            "publisher": "Morningstar",
-            "url": "https://www.morningstar.com/financial-advisors/better-way-predict-long-term-stock-returns",
-            "date": "2026-09-09",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S10",
-            "title": "S&P 500 Shiller CAPE Ratio: Historical Chart & Data",
-            "publisher": "GuruFocus",
-            "url": "https://www.gurufocus.com/economic_indicators/56/sp-500-shiller-cape-ratio",
-            "date": "2026-09-01",
+            "title": "Shiller PE (CAPE) Ratio Today: 40.6x (September 2026)",
+            "publisher": "thetrading.tools (sourcing Robert Shiller's dataset, shillerdata.com)",
+            "url": "https://www.thetrading.tools/shiller-cape",
+            "date": "2026-09-04",
             "source_type": "official_dataset"
           },
           {
-            "id": "S11",
-            "title": "Staying Invested Beats Timing the Market — Here's the Proof",
-            "publisher": "Morningstar",
-            "url": "https://www.morningstar.com/portfolios/staying-invested-beats-timing-marketheres-proof",
-            "date": "2023-11-08",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S12",
-            "title": "Applied Philosophy: The Shiller P/E and S&P 500 Returns Revisited",
-            "publisher": "Invesco",
-            "url": "https://www.invesco.com/apac/en/institutional/insights/market-outlook/applied-philosophy-the-shiller-PE-and-SP-500-returns-revisited.html",
-            "date": "2025-02-28",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S13",
-            "title": "Is Real Estate a Good Investment for Long-Term Growth?",
+            "id": "S10",
+            "title": "Is Real Estate a Good Investment for Long-Term Growth? (citing Jorda et al., Quarterly Journal of Economics, 2019)",
             "publisher": "Wealth Enhancement Group",
             "url": "https://www.wealthenhancement.com/blog/is-real-estate-actually-a-good-investment",
             "date": "2026-06-16",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S14",
-            "title": "Real Estate vs Stock Investing: Historical Performance",
-            "publisher": "The Luxury Playbook",
-            "url": "https://theluxuryplaybook.com/real-estate-vs-stock-investing-historical-performance/",
-            "date": "2026-05-24",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S15",
-            "title": "Real Estate vs Stocks: Which Builds Wealth Better?",
-            "publisher": "michaeleweintraubesq.org",
-            "url": "https://michaeleweintraubesq.org/real-estate-vs-stocks-which-builds-wealth-better-over-time/",
-            "date": "2026-07-23",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S16",
-            "title": "Real Estate vs. Stocks: Which Is Better?",
+            "id": "S11",
+            "title": "Real Estate versus Stocks: Evidence-Based Analysis",
             "publisher": "Shoora Capital",
             "url": "https://shooracapital.com/real-estate-versus-stocks/",
             "date": "2026-03-14",
@@ -323,43 +263,39 @@
         "conflictingAdvice": "Indexfonds gewinnen immer vs. aktives Management kann den Markt schlagen, Zeit im Markt schlaegt Markt-Timing vs. Bewertungen sind wichtig"
       },
       "output": {
-        "topic_as_understood": "Drei verbreitete Investitionsthesen im Vergleich: Indexfonds versus aktives Management, Zeit im Markt versus Markt-Timing, und ob Bewertungen für langfristige Renditen eine Rolle spielen.",
-        "framing": "Die drei Thesen klingen wie Gegensätze, beschreiben aber unterschiedliche Zeitrahmen und Entscheidungsebenen: welches Vehikel man nutzt, wann man ein- und aussteigt, und was man von der Zukunft erwarten darf. Ein Widerspruch zwischen ihnen entsteht oft nur, wenn man sie vermischt.",
+        "topic_as_understood": "Drei verbreitete Investmentthesen im Vergleich: Indexfonds vs. aktives Management, langfristiges Halten vs. Markt-Timing, und ob Bewertungskennzahlen (insbesondere CAPE) als Renditeprädiktor nützlich sind.",
+        "framing": "Der entscheidende Unterschied liegt im Zeithorizont und der Formulierung: Aussagen, die über lange Zeiträume statistisch gut belegt sind, werden im Alltag oft als absolute oder universelle Regeln wiedergegeben. Damit überschreiten sie, was die Belege tragen.",
         "the_signal": {
           "items": [
             {
-              "claim": "Über lange Zeiträume (15–20 Jahre) schneidet die große Mehrheit aktiv verwalteter Aktienfonds schlechter ab als ihr Vergleichsindex – sowohl in den USA als auch in Europa.",
-              "basis": "SPIVA-Daten für den 20-Jahres-Zeitraum bis Ende 2024 zeigen, dass 94,1 % aller US-amerikanischen Inlandsfonds den S&P 1500 Composite nicht schlagen konnten; auf risikoadjustierter Basis stieg dieser Anteil auf 97,3 %. In Europa lagen je nach Kategorie 70–85 % der aktiven Fonds unter ihrer Benchmark. Die Methodik berücksichtigt dabei auch Fonds, die im Beobachtungszeitraum aufgelöst oder zusammengelegt wurden, um Überlebens-Bias zu vermeiden.",
-              "limits": "Das Ergebnis gilt für börsengehandelte Publikumsfonds. Andere aktive Vehikel wie Hedgefonds oder Einzelmandate sind nicht erfasst. In bestimmten Segmenten – etwa europäischen Anleihen oder US-Small-Caps in Einzeljahren – zeigten aktive Manager kurzfristig mehrheitlich Outperformance. In weniger effizienten Märkten (Schwellenländer, Frontier Markets) liegen keine vergleichbar robusten Langfristdaten im Paket vor.",
+              "claim": "Über lange Zeiträume underperformen die meisten aktiv gemanagten Aktienfonds ihren Vergleichsindex – und die Outperformance der wenigen Ausnahmen lässt sich kaum zuverlässig im Voraus identifizieren.",
+              "basis": "SPIVA-Daten zeigen, dass über 15 Jahre in keiner einzigen der 22 untersuchten US-Aktienfondskategorien eine Mehrheit der aktiven Manager ihren Benchmark schlug. Die Persistenz-Scorecard ergänzt dies: Fonds, die kurzfristig outperformen, wiederholen das statistisch kaum – bei Large-Cap-Fonds sogar unterhalb einer reinen Zufallsverteilung.",
+              "limits": "Die Daten beziehen sich hauptsächlich auf den US-Markt. Europäische und deutsche Fondslandschaften, andere Anlageklassen sowie bestimmte Nischensegmente können abweichen. Außerdem schwanken die Jahresergebnisse: In der ersten Jahreshälfte 2025 underperformten nur 54 % der Large-Cap-Fonds, deutlich weniger als der langfristige Schnitt.",
               "source_ids": [
                 "S1",
                 "S2",
                 "S3",
-                "S4",
-                "S5"
+                "S4"
               ]
             },
             {
-              "claim": "Kontinuierlich investiert bleiben schlägt reaktives Ein- und Aussteigen: Wer versucht, schlechte Phasen zu umgehen, riskiert, die stärksten Handelstage zu verpassen, die erfahrungsgemäß in und unmittelbar nach starken Kursrückgängen auftreten.",
-              "basis": "Zwei unabhängige Quellen beschreiben, dass Market-Timing strukturell zwei korrekte Entscheidungen verlangt – Ausstieg und Wiedereinstieg – und dass das Verpassen weniger der besten Handelstage die langfristige Rendite erheblich mindert. Eine RBC-GAM-Illustration zeigt zudem, dass selbst Anleger mit dem denkbar schlechtesten Timing (immer am Jahreshöchststand gekauft) besser abschnitten als jene, die durchgehend in Cash blieben.",
-              "limits": "Die Belege stützen sich stark auf die Geschichte des US-Aktienmarkts. Andere Märkte hatten teils jahrzehntelange Phasen ohne reale Kursgewinne. Das Argument gilt primär für reaktives kurzfristiges Timing, nicht für die Frage, ob das Einstiegsbewertungsniveau langfristige Renditeerwartungen beeinflusst.",
+              "claim": "Für die meisten Anleger ist dauerhaftes Investieren dem Versuch überlegen, den richtigen Ein- und Ausstiegszeitpunkt zu treffen.",
+              "basis": "Akademische Studien finden bei aktiv gemanagten Fonds keine belastbaren Belege für Markt-Timing-Fähigkeiten. Morningstar-Daten zeigen, dass Anleger über zehn Jahre rund 1,1 Prozentpunkte pro Jahr weniger als die tatsächliche Fondsrendite erzielten – ein Hinweis auf verhaltensbedingte Timing-Verluste. Wer die stärksten Handelstage verpasst, verliert überproportional, weil diese oft direkt auf starke Kursrückgänge folgen.",
+              "limits": "Die Analyse der 'verpassten besten Tage' ist methodisch angreifbar: Wer auch die schlechtesten Tage meidet, könnte besser abschneiden – doch diese ex ante zu identifizieren gilt als kaum möglich. Regelbasierte Trendfolge-Ansätze sind konzeptuell von spontanem Timing zu unterscheiden und durch den Befund nicht ausgeschlossen.",
               "source_ids": [
-                "S7",
+                "S5",
+                "S6",
+                "S7"
+              ]
+            },
+            {
+              "claim": "Das Shiller-CAPE hat eine dokumentierte, statistisch negative Beziehung zu nachfolgenden 10-Jahres-Aktienrenditen – hohe Bewertungen gehen tendenziell mit niedrigeren langfristigen Renditen einher.",
+              "basis": "Forschungen zeigen diese Beziehung für 17 MSCI-Länderindizes seit 1979. Das Maß wird von Zentralbanken, IWF und BIZ als Referenzgröße genutzt. Eine aktuellere Studie (Juni 2026) weist zudem darauf hin, dass eine kapitalgewichtete CAPE-Variante die Prognosekraft verbessert.",
+              "limits": "Die Vorhersagekraft gilt vorwiegend für 10-Jahres-Horizonte; für kürzere Zeiträume ist sie deutlich schwächer. Methodische Kritikpunkte (veränderte Bilanzregeln, Indexzusammensetzung) schränken historische Vergleiche ein. Hohe Bewertungen schließen jahrelange weitere Kursanstiege nicht aus.",
+              "source_ids": [
                 "S8",
                 "S9",
                 "S10"
-              ]
-            },
-            {
-              "claim": "Bewertungskennzahlen wie das Shiller-CAPE liefern verlässliche Hinweise auf langfristige Renditeerwartungen – aber keine brauchbaren kurzfristigen Timing-Signale.",
-              "basis": "Forschungsarbeiten von Campbell und Shiller sowie eine internationale Bestätigung über 17 MSCI-Länderindizes seit 1979 zeigen einen robusten negativen Zusammenhang zwischen hohem CAPE und den folgenden 10-Jahres-Renditen. Eine neuere Studie (Juni 2026) erklärt mit einer verfeinerten CAPE-Variante 73,9 % der Streuung der nachfolgenden 10-Jahres-Renditen des S&P 500. Gleichzeitig kann das CAPE über Jahre in extremem Territorium verweilen, ohne dass eine Korrektur eintritt – wie von 1996 bis 1999 und erneut seit 2021 beobachtet.",
-              "limits": "Die Vorhersagekraft des CAPE schwankt je nach Subperiode erheblich. Strukturelle Veränderungen (Bilanzierungsregeln, Ausschüttungsquoten, dauerhaft niedrigere Zinsen) könnten ein strukturell höheres CAPE-Gleichgewichtsniveau rechtfertigen. Für internationale Märkte ist die Evidenz vorhanden, aber weniger dicht dokumentiert.",
-              "source_ids": [
-                "S11",
-                "S12",
-                "S13",
-                "S14",
-                "S15"
               ]
             }
           ]
@@ -368,27 +304,25 @@
           {
             "claim": "Indexfonds gewinnen immer.",
             "noise_type": "oversimplified",
-            "noise_label": "Absoluter Anspruch, den die Daten nicht stützen",
-            "what_the_evidence_supports_instead": "Über lange Zeiträume und in den meisten Kategorien gewinnen Indexfonds gegen aktive Fonds – aber nicht in allen Segmenten, nicht in jedem Jahr und nicht ausnahmslos.",
-            "what_went_wrong": "Das Wort 'immer' verlangt universelle Gültigkeit. Die SPIVA-Daten zeigen, dass aktive Manager in bestimmten Kategorien (z. B. US-Small-Caps 2024, europäische Anleihen H1 2024) und über kurze Zeiträume mehrheitlich ihre Benchmark schlagen konnten. 'Fast immer, über lange Zeiträume, in den meisten Kategorien' wäre belegt – 'immer' ist es nicht.",
-            "kernel_of_truth": "Die langfristige Bilanz aktiver Fonds ist in den verfügbaren Daten klar negativ: Über 20 Jahre unterschritten 94 % der US-Fonds ihren Vergleichsindex.",
+            "noise_label": "Aus 'meistens langfristig' wird 'immer'",
+            "what_the_evidence_supports_instead": "Über lange Zeiträume (10-15 Jahre) underperformt eine große Mehrheit aktiver Fonds ihren Index. In einzelnen Jahren oder Marktsegmenten kann aktives Management kurzfristig besser abschneiden.",
+            "what_went_wrong": "Das Wort 'immer' behauptet eine absolute Ausnahmslosigkeit, die die Daten nicht stützen. SPIVA zeigt jährliche Schwankungen (z. B. 54 % Underperformance im ersten Halbjahr 2025 statt der langfristigen ~64-79 %). 'Immer' gilt weder für jeden Zeitraum noch für jedes Marktsegment.",
+            "kernel_of_truth": "Die Datenlage spricht langfristig und über die meisten Kategorien klar für Indexfonds – besonders wenn man Fonds berücksichtigt, die in der Zwischenzeit fusioniert oder liquidiert wurden.",
             "source_ids": [
               "S1",
               "S2",
               "S3",
-              "S4",
-              "S5"
+              "S4"
             ]
           },
           {
-            "claim": "Zeit im Markt schlägt Markt-Timing (als universelle, bedingungslose Regel).",
+            "claim": "Bewertungen sind wichtig – implizit als kurzfristiger Handlungsauslöser.",
             "noise_type": "context_dependent",
-            "noise_label": "Richtig im Kern, aber nicht bedingungslos",
-            "what_the_evidence_supports_instead": "Reaktives kurzfristiges Ein- und Aussteigen schadet langfristigen Renditen nachweislich. Das bedeutet aber nicht, dass Einstiegsbewertungen egal sind oder dass die Regel unabhängig vom Markt, dem Zeithorizont und der Lebensphase gilt.",
-            "what_went_wrong": "Die Formel wird häufig so verwendet, als ob Bewertungen beim Einstieg keine Rolle spielen und als ob der Ratschlag für jeden Markt, jeden Zeithorizont und jede Lebenssituation gleich gilt. Das Paket stützt die Kernaussage für langfristig investierte Anleger in liquiden Märkten – macht aber explizit darauf aufmerksam, dass etwa Japan nach 1989 jahrzehntelang kein positives Ergebnis lieferte und dass Anleger kurz vor dem Ruhestand anderen Risiken ausgesetzt sind.",
-            "kernel_of_truth": "Reaktives Market-Timing – ausgelöst durch kurzfristige Kursbewegungen – schadet langfristigen Renditen in den untersuchten Märkten nachweislich.",
+            "noise_label": "Langfristiger Prädiktor wird als Timing-Signal missverstanden",
+            "what_the_evidence_supports_instead": "CAPE ist ein statistisch belegter Prädiktor für 10-Jahres-Renditen, nicht für kurzfristige Marktbewegungen. Als Basis für taktisches Timing – z. B. US-Aktien bei hohem CAPE untergewichten – hat es historisch nicht zuverlässig besser abgeschnitten als einfaches Buy-and-Hold.",
+            "what_went_wrong": "Die Formulierung 'Bewertungen sind wichtig' impliziert oft, dass man bei hohen Bewertungen jetzt handeln sollte. Die Belege stützen aber nur einen langfristigen statistischen Zusammenhang, keinen verlässlichen kurzfristigen Handlungsauslöser.",
+            "kernel_of_truth": "Für einen Anleger mit sehr langem Horizont (10+ Jahre) liefert CAPE eine nützliche Einschätzung der Ertragschancen verschiedener Märkte – als grober Kompass, nicht als Präzisionsinstrument.",
             "source_ids": [
-              "S7",
               "S8",
               "S9",
               "S10"
@@ -397,55 +331,59 @@
         ],
         "still_worth_verifying": [
           {
-            "question": "Wie verlässlich ist das Shiller-CAPE als Planungsgröße angesichts struktureller Veränderungen (Bilanzregeln, Zinsniveau) und schwankender Vorhersagekraft je nach Subperiode?",
-            "why_it_matters": "Wenn ein strukturell höheres CAPE-Gleichgewichtsniveau gerechtfertigt ist, überschätzen historische Durchschnittswerte die tatsächliche Überbewertung – und die Renditeerwartungen auf Basis des CAPE wären zu pessimistisch.",
-            "what_would_help": "Analysen, die verschiedene strukturelle Regime (vor und nach Zinswende, verschiedene Bilanzierungsstandards) explizit modellieren und prüfen, ob die Vorhersagebeziehung stabil bleibt.",
+            "question": "Wie gut funktionieren Indexfonds-Argumente speziell für den deutschen und europäischen Markt?",
+            "why_it_matters": "SPIVA-Daten stammen überwiegend aus dem US-Markt. Fondskosten, Regulierung und Marktstruktur in Deutschland und Europa können die Ergebnisse verschieben.",
+            "what_would_help": "Europäische SPIVA-Scorecards oder vergleichbare Studien für in Deutschland vertriebene Fonds würden helfen, die These auf den hiesigen Markt zu übertragen.",
             "source_ids": [
-              "S11",
-              "S12",
-              "S16"
+              "S1",
+              "S2",
+              "S4"
             ]
           },
           {
-            "question": "Gilt die Langzeit-Unterlegenheit aktiver Fonds in ähnlichem Ausmaß für weniger effiziente Märkte wie Schwellenländer oder Frontier Markets?",
-            "why_it_matters": "Ein Anleger, der in Märkte außerhalb der USA und Europas investiert, kann aus den vorliegenden SPIVA-Daten keine direkte Schlussfolgerung ziehen.",
-            "what_would_help": "SPIVA-Daten oder vergleichbare Langzeitstudien für Schwellenländer-Aktienfonds mit Survivorship-Bias-Korrektur.",
+            "question": "Verbessert eine kapitalgewichtete CAPE-Variante die Renditeprognosekraft gegenüber dem klassischen Shiller-CAPE tatsächlich belastbar?",
+            "why_it_matters": "Wenn ja, könnte das die praktische Nutzbarkeit von Bewertungskennzahlen für die langfristige Asset-Allocation stärken.",
+            "what_would_help": "Unabhängige Replikation der Juni-2026-Studie über verschiedene Marktphasen und Länder hinweg.",
             "source_ids": [
-              "S1",
-              "S4"
+              "S8"
             ]
           }
         ],
         "what_general_claims_cant_decide": [
-          "Ob ein Sparplan (Cost-Averaging) oder eine Einmalanlage für die konkrete Situation besser passt, hängt von verfügbarem Kapital, Anlagehorizont und individueller Risikotoleranz ab – das lässt sich aus den allgemeinen Befunden nicht ableiten.",
-          "Welche Bewertungsniveaus bei deutschen Steuerregelungen (Vorabpauschale, Teilfreistellung) und dem individuellen Grenzsteuersatz tatsächlich relevant sind, ist aus den vorliegenden Forschungsdaten nicht ableitbar.",
-          "Ob ein bestimmtes Produkt – ETF, Fonds, Direktanlage – für die eigene Lebenssituation, den Zeithorizont und den Rentenbeginn geeignet ist, erfordert persönliche Angaben, die hier nicht vorliegen."
+          "Ob Indexfonds für den individuellen Anleger die passende Wahl sind, hängt von Zeithorizont, Risikobereitschaft, Steuersituation und verfügbaren Produkten ab – das entscheidet keine allgemeine Statistik.",
+          "Ob und wie stark CAPE-basierte Überlegungen die persönliche Asset-Allocation beeinflussen sollten, hängt davon ab, wie viele Jahre der Anleger tatsächlich investiert bleiben kann und will.",
+          "Ob regelbasierte Trendfolge-Ansätze für eine bestimmte Person Sinn ergeben, lässt sich aus den vorliegenden Belegen nicht ableiten."
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "Über Zeiträume von 15–20 Jahren haben Indexfonds die große Mehrheit aktiver Fonds in den untersuchten Märkten geschlagen – das ist belastbar, aber kein absolutes Gesetz für alle Segmente und Zeiträume.",
-            "Investiert bleiben statt reaktiv ein- und auszusteigen ist durch die vorliegenden Daten gut gestützt – allerdings mit wichtigen Ausnahmen für bestimmte Märkte und Lebensphasen nahe dem Renteneintritt.",
-            "Bewertungskennzahlen wie das CAPE geben verlässliche Hinweise auf langfristige Renditeerwartungen, taugen aber nicht als kurzfristige Timing-Signale und sollten nicht als Ausstiegstrigger verwendet werden."
+            "Über lange Zeiträume underperformt eine klare Mehrheit aktiv gemanagter Aktienfonds ihren Index, und die Ausnahmen lassen sich kaum im Voraus identifizieren – das stützt Indexfonds als Ausgangspunkt, ohne 'immer' zu rechtfertigen.",
+            "Dauerhaft investiert bleiben schlägt für die meisten Anleger den Versuch, den Markt zu timen – verhaltensbedingte Verluste durch schlechtes Timing sind empirisch dokumentiert.",
+            "CAPE ist ein nützlicher grober Kompass für langfristige Renditeerwartungen verschiedener Märkte, aber kein zuverlässiges Signal für kurzfristige Handlungen."
           ],
           "treat_skeptically": [
-            "Die Formulierung 'Indexfonds gewinnen immer' – das Wort 'immer' ist durch keine der vorliegenden Datenreihen gedeckt.",
-            "Die Verwendung von 'Zeit im Markt' als Universalargument, das Bewertungen, Marktwahl und Lebensphase irrelevant macht – das geht über das hinaus, was die Belege stützen."
+            "'Indexfonds gewinnen immer' – das Wort 'immer' überschreitet, was die Daten belegen.",
+            "Hohe CAPE-Werte als unmittelbaren Handlungsauslöser zu nutzen – die Belege stützen keinen verlässlichen kurzfristigen Timing-Vorteil daraus."
           ],
           "what_would_change_the_answer": [
-            "Robuste Langzeitdaten zu aktiven versus passiven Fonds in Schwellenländern könnten die Generalisierbarkeit der SPIVA-Befunde einschränken oder ausweiten.",
-            "Neue Erkenntnisse darüber, ob strukturelle Veränderungen (Zinsniveau, Bilanzregeln) das historische CAPE-Gleichgewicht dauerhaft verschoben haben, würden die Verlässlichkeit von Bewertungsaussagen auf Basis historischer CAPE-Durchschnitte verändern."
+            "Belastbare europäische bzw. deutsche Fondsdaten könnten die Indexfonds-Argumentation für hiesige Anleger stärken oder abschwächen.",
+            "Unabhängige Replikation der kapitalgewichteten CAPE-Variante könnte die praktische Nutzbarkeit von Bewertungskennzahlen für die Asset-Allocation neu bewerten."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Vereinfachung für Kommunikationszwecke",
-            "how_it_distorts": "Befunde, die 'in den meisten Fällen, über lange Zeiträume' gelten, werden zu absoluten Regeln ('immer', 'nie') verdichtet, weil kurze, eingängige Formeln besser in Erinnerung bleiben und sich leichter teilen lassen.",
-            "how_to_recognize_it": "Immer wenn eine Investitionsregel ohne Zeitrahmen, Marktsegment oder Ausnahme ausgedrückt wird, lohnt es sich zu fragen: Für welchen Zeitraum? Für welchen Markt? Unter welchen Bedingungen?"
+            "source_type": "Vereinfachung für breite Zielgruppen",
+            "how_it_distorts": "Aus 'in den meisten Fällen über lange Zeiträume' wird 'immer' oder 'nie' – weil absolute Aussagen leichter zu kommunizieren und zu merken sind als statistisch kalibrierte.",
+            "how_to_recognize_it": "Immer, nie, immer besser, schlägt grundsätzlich – Quantoren ohne Einschränkung zu Zeitraum oder Marktsegment."
           },
           {
-            "source_type": "Konfusion von Zeitrahmen",
-            "how_it_distorts": "Aussagen, die für einen Zeithorizont von 10–20 Jahren belegt sind, werden auf kurzfristige Entscheidungen übertragen (oder umgekehrt). So wird etwa 'Bewertungen sind wichtig' fälschlich als kurzfristiges Timing-Signal verstanden, obwohl die Evidenz nur den langfristigen Zusammenhang stützt.",
-            "how_to_recognize_it": "Wenn eine Empfehlung keinen Zeitrahmen nennt oder implizit annimmt, dass kurz- und langfristige Logik dieselbe ist, ist Vorsicht geboten."
+            "source_type": "Verwechslung von Zeithorizont",
+            "how_it_distorts": "Befunde, die für 10-Jahres-Horizonte gelten (z. B. CAPE-Prognosekraft), werden auf kürzere Zeiträume übertragen, für die die Belege deutlich schwächer sind.",
+            "how_to_recognize_it": "Wenn eine Empfehlung nicht angibt, für welchen Zeithorizont sie gilt, ist das ein Warnsignal."
+          },
+          {
+            "source_type": "Survivor Bias in Fondsvergleichen",
+            "how_it_distorts": "Vergleiche, die nur noch existierende Fonds berücksichtigen, überschätzen die Erfolgsquote aktiver Manager, weil schlechte Fonds geschlossen oder fusioniert werden.",
+            "how_to_recognize_it": "Studien oder Werbeaussagen, die keine Angabe machen, ob liquidierte oder fusionierte Fonds einbezogen wurden."
           }
         ],
         "analysis_mode": "verified_research",
@@ -454,122 +392,82 @@
         "sources_examined": [
           {
             "id": "S1",
+            "title": "U.S. Persistence Scorecard Year-End 2025",
+            "publisher": "S&P Dow Jones Indices (S&P Global)",
+            "url": "https://www.spglobal.com/spdji/en/spiva/article/us-persistence-scorecard/",
+            "date": "2026-05-07",
+            "source_type": "official_dataset"
+          },
+          {
+            "id": "S2",
             "title": "SPIVA Scorecard: How Active Funds Performed vs. Their Benchmarks",
-            "publisher": "Institute of Business & Finance (citing S&P DJI SPIVA U.S. Year-End 2024)",
+            "publisher": "Institute of Business & Finance (ICFS)",
             "url": "https://icfs.com/specialists-desk/spiva-scorecard-results",
             "date": "2026-05-24",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S2",
-            "title": "2024 SPIVA Report Reveals 2 Areas Active Outperforms",
-            "publisher": "ETF Trends (citing S&P DJI SPIVA Year-End 2024)",
-            "url": "https://www.etftrends.com/2024-spiva-report-reveals-2-areas-active-outperforms/",
-            "date": "2025-03-06",
-            "source_type": "high_quality_secondary"
-          },
-          {
             "id": "S3",
-            "title": "Active Management's Persistent Failure: A 2025 Perspective",
-            "publisher": "Wealth Management (citing S&P DJI SPIVA U.S. Year-End 2024 and Persistence Scorecard 2024)",
-            "url": "https://www.wealthmanagement.com/investing-strategies/active-management-s-persistent-failure-a-2025-perspective",
-            "date": "2025-06-24",
+            "title": "Chart of the Week – September 8, 2025: SPIVA 2025: Active's brief shine, passive's lasting edge",
+            "publisher": "Sustainable Research and Analysis LLC",
+            "url": "https://sustainableinvest.com/chart-of-the-week-september-8-2025-spiva-2025-actives-brief-shine-passives-lasting-edge/",
+            "date": "2025-09-08",
             "source_type": "high_quality_secondary"
           },
           {
             "id": "S4",
-            "title": "SPIVA Europe Year-End 2024 Scorecard",
-            "publisher": "S&P Dow Jones Indices",
-            "url": "https://www.spglobal.com/spdji/en/documents/spiva/spiva-europe-year-end-2024.pdf",
-            "date": "2025-03",
-            "source_type": "official_dataset"
+            "title": "Index Funds vs Active Funds: What the Data Actually Shows",
+            "publisher": "iAdviser",
+            "url": "https://iadviser.com/index-funds-vs-active-funds-data-comparison/",
+            "date": "2026-04-06",
+            "source_type": "high_quality_secondary"
           },
           {
             "id": "S5",
-            "title": "Active Fund Managers vs. Indexes: Analyzing SPIVA Scorecards",
-            "publisher": "Index Fund Advisors (citing SPIVA Year-End 2025)",
-            "url": "https://www.ifa.com/articles/spiva-report-active-vs-passive",
-            "date": "2026-06-04",
+            "title": "Timing the stock market: Does it really make no sense?",
+            "publisher": "ScienceDirect / Journal of Behavioral and Experimental Finance",
+            "url": "https://www.sciencedirect.com/science/article/abs/pii/S2214635016300132",
+            "date": "2016-04-08",
+            "source_type": "primary_study"
+          },
+          {
+            "id": "S6",
+            "title": "The case against market timing",
+            "publisher": "Brown Brothers Harriman (BBH)",
+            "url": "https://www.bbh.com/us/en/insights/private-banking-insights/the-case-against-market-timing.html",
+            "date": "2025-04-30",
             "source_type": "high_quality_secondary"
           },
           {
             "id": "S7",
-            "title": "Time in the Market vs Timing the Market: What Works Better?",
-            "publisher": "HeyGoTrade",
-            "url": "https://www.heygotrade.com/en/blog/time-in-market-vs-timing-the-market/",
-            "date": "2026-02-25",
+            "title": "Time in the market vs. timing the market",
+            "publisher": "RBC Global Asset Management",
+            "url": "https://www.rbcgam.com/documents/en/advisor-support/time-in-the-market-vs-timing-the-market.pdf",
+            "date": "2026-05-01",
             "source_type": "high_quality_secondary"
           },
           {
             "id": "S8",
-            "title": "Why time in the market beats timing the market",
-            "publisher": "Bank of Singapore",
-            "url": "https://www.bankofsingapore.com/research/why-time-in-the-market-beats-timing-the-market.html",
-            "date": "2025-02-12",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S9",
-            "title": "Time in the market vs. timing the market",
-            "publisher": "RBC Global Asset Management",
-            "url": "https://www.rbcgam.com/documents/en/advisor-support/time-in-the-market-vs-timing-the-market.pdf",
-            "date": "2026-05",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S10",
-            "title": "SPIVA U.S. Year-End 2025",
-            "publisher": "S&P Dow Jones Indices",
-            "url": "https://www.spglobal.com/spdji/en/spiva/article/spiva-us/",
-            "date": "2026-03-03",
-            "source_type": "official_dataset"
-          },
-          {
-            "id": "S11",
-            "title": "A Better Way to Predict Long-Term Stock Returns (Component CAPE study, June 2026)",
+            "title": "A Better Way to Predict Long-Term Stock Returns",
             "publisher": "Morningstar",
             "url": "https://www.morningstar.com/financial-advisors/better-way-predict-long-term-stock-returns",
             "date": "2026-09-09",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S12",
-            "title": "Shiller CAPE: long-term equity valuation reference",
-            "publisher": "Eco3min",
-            "url": "https://eco3min.fr/en/cape-shiller-pe-cyclically-adjusted-equity-valuation-long-term/",
-            "date": "2026-07-12",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S13",
-            "title": "Predicting Stock Market Returns Using the Shiller CAPE — An Improvement Towards Traditional Value Indicators?",
+            "id": "S9",
+            "title": "Predicting Stock Market Returns Using the Shiller CAPE – An Improvement Towards Traditional Value Indicators?",
             "publisher": "SSRN (Norbert Keimling)",
             "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2736423",
-            "date": "2016-01-21",
+            "date": "2016-02-24",
             "source_type": "primary_study"
           },
           {
-            "id": "S14",
-            "title": "The Shiller CAPE 10: how to use it, not abuse it",
-            "publisher": "Evidence Investor",
-            "url": "https://www.evidenceinvestor.com/post/the-shiller-cape-10-how-to-use-it-not-abuse-it",
-            "date": "2024-11-13",
-            "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S15",
-            "title": "Conditional mean reversion of financial ratios and the predictability of returns",
-            "publisher": "ScienceDirect / Journal of International Money and Finance",
-            "url": "https://www.sciencedirect.com/science/article/abs/pii/S0261560623001080",
-            "date": "2023-07-08",
-            "source_type": "primary_study"
-          },
-          {
-            "id": "S16",
-            "title": "The Shiller P/E and S&P 500 returns revisited",
-            "publisher": "Invesco Global Market Strategy Office",
-            "url": "https://www.invesco.com/content/dam/invesco/apac/en/pdf/insights/2025/march/invesco-applied-philosophy-the-shiller-PE-and-SP-500-returns-revisited-mar-2025.pdf",
-            "date": "2025-03-02",
+            "id": "S10",
+            "title": "Predicting Stock Market Returns Using Shiller-CAPE And PB",
+            "publisher": "Seeking Alpha (Norbert Keimling)",
+            "url": "https://seekingalpha.com/article/3987114-predicting-stock-market-returns-using-shiller-cape-pb",
+            "date": "2016-07-08",
             "source_type": "high_quality_secondary"
           }
         ]
@@ -590,40 +488,37 @@
         "conflictingAdvice": "Screen time is destroying kids vs. it depends on content, tiger parenting vs. free-range, homework helps vs. homework is harmful"
       },
       "output": {
-        "topic_as_understood": "Three contested parenting debates: whether screen time uniformly harms children, whether high-pressure 'tiger' parenting produces better outcomes than other styles, and whether homework helps or hurts children's achievement.",
-        "framing": "All three debates are framed publicly as binary choices, but the research consistently shows the answer depends on conditions — content type, child age, parenting warmth, grade level, and family context — rather than on the practice in isolation. The noise in each debate comes from stripping those conditions away.",
+        "topic_as_understood": "Four contested parenting claims: whether screen time universally harms children, whether tiger parenting outperforms other styles, whether free-range parenting produces better outcomes than overprotective parenting, and whether homework helps or hurts academic achievement.",
+        "framing": "Most of these conflicts are not about which side is simply right — they are about universalized claims being applied to outcomes that depend heavily on dose, content, age, and context. The evidence mostly supports narrower, conditional versions of each claim.",
         "the_signal": {
           "items": [
             {
-              "claim": "Screen time is associated with small but real socioemotional risks for younger children, with content type and compensating factors mattering alongside total time.",
-              "basis": "A 2025 meta-analysis of 117 longitudinal studies covering over 292,000 children found statistically significant but small associations between screen use and later anxiety, depression, hyperactivity, and aggression — particularly for girls and children under around age 10. A separate study found that violent content and cyberbullying exposure compounded these risks, while high-quality educational programming showed positive effects. Outdoor play was found to lessen some adverse associations in one study of young children.",
-              "limits": "Effect sizes are small, not large. Most underlying studies are correlational, so causal direction is not established. Key moderators — content, co-viewing, sleep displacement — are not fully disentangled across studies.",
+              "claim": "Screen time type and content matter, not just total hours — passive TV-style use is more consistently linked to worse outcomes than educational or interactive use.",
+              "basis": "A longitudinal study of over 4,000 Australian children found that passive screen time was linked to worse outcomes, while educational screen time showed positive educational associations and no significant negative associations with other outcomes. A 2026 systematic review found that passive use was linked to reduced attention in preschoolers, while interactive and educational use tended to show more favorable attentional outcomes. Both sources agree the field has been held back by treating all screen time as a single measure.",
+              "limits": "Even the content distinctions are imprecise: 'interactive' covers qualitatively different activities, and educational quality varies by specific app or platform. All identified effects in the Australian study were small (standardized effects under 0.07). Evidence is largely correlational.",
               "source_ids": [
-                "S1",
-                "S2",
-                "S3",
-                "S4",
-                "S5"
+                "S5",
+                "S6"
               ]
             },
             {
-              "claim": "Among Chinese American families studied, supportive parenting — not tiger parenting — was associated with the strongest academic and developmental outcomes.",
-              "basis": "An eight-year longitudinal study of 444 Chinese American families found that children in the supportive parenting group had higher GPAs and educational attainment, while children in the tiger parenting group had lower GPAs, more depressive symptoms, greater academic pressure, and more family alienation. Supportive parenting was also the most common profile in that sample. A separate study of Chinese preschoolers found no school-readiness advantage for tiger parenting over supportive parenting.",
-              "limits": "The primary longitudinal evidence is drawn from Chinese American families in one region; applicability to other cultural contexts is uncertain. Tiger parenting effects may interact with acculturation and cultural expectations in ways the studies do not fully separate.",
+              "claim": "Supportive parenting — high warmth combined with high structure — is associated with better child outcomes than high-pressure, low-warmth tiger parenting.",
+              "basis": "An eight-year longitudinal study of over 400 Asian-American families found supportive parenting was the most common style and was linked to the best developmental outcomes and highest GPA. Tiger parenting in that study was associated with higher rates of depressive symptoms, academic pressure, and feelings of alienation. A study of Hong Kong children also found that child-perceived tiger parenting was positively associated with child anxiety.",
+              "limits": "Research is concentrated in Asian and Asian-American samples; how well findings transfer to other cultural contexts is unclear. Tiger parenting combines high demandingness with high involvement, making it hard to isolate which aspect drives which outcome.",
               "source_ids": [
-                "S6",
                 "S7",
-                "S8"
+                "S8",
+                "S9"
               ]
             },
             {
-              "claim": "Homework's academic benefit is grade-dependent: modest for early elementary, meaningfully larger for middle and high school students.",
-              "basis": "A meta-analysis cited in 2025 found a limited effect size for grades 1-4, with effects rising substantially for grades 5-8 and further for grades 9-12. A 2026 meta-analysis of e-homework found a positive but moderate overall effect across K-12, with effects varying by subject and school level. Effects also appear to vary by family socioeconomic status, with higher-income students more likely to benefit.",
-              "limits": "Effect sizes vary considerably across studies depending on how outcomes are measured. Most research is observational, making causal direction difficult to establish. Non-academic benefits such as study habits are frequently claimed but less rigorously measured.",
+              "claim": "The homework-achievement relationship is real for older students but weak to absent for younger ones.",
+              "basis": "A widely cited meta-analysis found a positive correlation between homework and achievement that was stronger for grades 7-12 and weak for younger students. A 2017 meta-analysis found the effect size grows substantially through upper elementary and high school, while the impact for grades 1-4 is limited.",
+              "limits": "Most homework research is correlational, not experimental. Cooper's earlier foundational review concluded there is no evidence that homework improves performance for elementary students. Excessive homework is also linked to fatigue and negative attitudes toward learning. A meta-analysis using PISA data found parental help with homework was associated with lower achievement, suggesting involvement effects can be counterproductive.",
               "source_ids": [
-                "S9",
-                "S11",
-                "S12"
+                "S12",
+                "S13",
+                "S14"
               ]
             }
           ]
@@ -631,105 +526,91 @@
         "the_noise": [
           {
             "claim": "Screen time is destroying kids.",
-            "noise_type": "oversimplified",
-            "noise_label": "Small effects dressed as catastrophe",
-            "what_the_evidence_supports_instead": "Screen use is associated with small socioemotional risks for younger children, with the relationship shaped by content type, context, and compensating activities — not by total time alone.",
-            "what_went_wrong": "The word 'destroying' implies large, uniform, and causal harm. The best available evidence — a meta-analysis of over 292,000 children — describes effect sizes as small. The relationship also appears bidirectional rather than one-directional: children with socioemotional difficulties also gravitate toward more screen use. Stripping out content, co-viewing, and contextual factors produces a misleadingly bleak picture.",
-            "kernel_of_truth": "There are real, statistically significant associations between heavy screen use and socioemotional problems in younger children, especially for girls, and content involving violence or cyberbullying appears to heighten risk.",
+            "noise_type": "too_broad",
+            "noise_label": "Universal harm claim",
+            "what_the_evidence_supports_instead": "Excessive screen time — particularly passive viewing — is associated with risks including depression, sleep problems, and social-emotional difficulties, especially in young children. Up to roughly two hours per day may not be associated with depression in children aged 5-18, and content type meaningfully shapes outcomes.",
+            "what_went_wrong": "The word 'destroying' implies universal, severe, and direct causation across all children and all screen use. The actual evidence shows associations (not established causation), meaningful variation by dose and content type, often small effect sizes, and high heterogeneity across studies. The blanket framing erases the dose-response and content distinctions the evidence supports.",
+            "kernel_of_truth": "High volumes of passive screen use are consistently associated with worse outcomes across multiple domains for children, particularly the very young.",
             "source_ids": [
               "S1",
-              "S2",
               "S3",
               "S4",
-              "S5"
+              "S5",
+              "S6"
             ]
           },
           {
-            "claim": "Tiger parenting produces superior academic and developmental outcomes.",
-            "noise_type": "cherry_picked",
-            "noise_label": "Cultural stereotype without the longitudinal data to back it",
-            "what_the_evidence_supports_instead": "In the most direct longitudinal research available, tiger parenting was associated with worse academic and mental health outcomes compared to supportive parenting — and was not the dominant parenting style even within the Chinese American sample it is most associated with.",
-            "what_went_wrong": "The claim likely rests on observed high academic achievement in some Asian American communities and attributes that achievement to high-pressure parenting. The longitudinal evidence does not support that attribution: when parenting styles within Chinese American families were tracked over eight years, tiger parenting was associated with lower GPA and more depressive symptoms, not higher achievement.",
-            "kernel_of_truth": "High academic expectations are not inherently harmful, and some pressure combined with warmth may support achievement. The research distinguishes tiger parenting (high demands, low warmth) from supportive parenting (high demands, high warmth) — the latter, not the former, is what the evidence supports.",
+            "claim": "Tiger parenting produces superior child outcomes.",
+            "noise_type": "oversimplified",
+            "noise_label": "Achievement framed as total success",
+            "what_the_evidence_supports_instead": "Tiger parenting may be associated with certain academic pressures, but the empirical evidence finds supportive parenting (high warmth plus structure) linked to better overall developmental outcomes and GPA, while tiger parenting is linked to higher depressive symptoms and anxiety.",
+            "what_went_wrong": "'Superior outcomes' implies advantage across the board. The research shows trade-offs: any academic associations come alongside documented mental health costs. The construct also does not appear to be as prevalent in practice as popular accounts suggest.",
+            "kernel_of_truth": "High parental involvement and structure are associated with positive educational outcomes — but those components appear to work better when combined with warmth rather than pressure.",
             "source_ids": [
-              "S6",
               "S7",
-              "S8"
-            ]
-          },
-          {
-            "claim": "Homework helps (uniformly) vs. homework is harmful (uniformly).",
-            "noise_type": "context_dependent",
-            "noise_label": "Both sides ignore grade level, amount, and family circumstances",
-            "what_the_evidence_supports_instead": "Homework's effects depend substantially on the child's grade level, the amount assigned, how parental help is delivered, and the family's socioeconomic situation. It is neither uniformly helpful nor uniformly harmful.",
-            "what_went_wrong": "Framing homework as universally good or bad ignores that effect sizes differ dramatically by grade, that excessive homework correlates with stress and declining outcomes, that parental help delivered as direct answers is associated with lower achievement across large cross-national data, and that disadvantaged students gain less and are penalized more by homework policies.",
-            "kernel_of_truth": "Both sides have genuine evidence behind them: younger children show limited academic benefit, excessive amounts harm wellbeing, but older students do benefit meaningfully from well-designed homework — and digital homework formats show a positive moderate effect in recent research.",
-            "source_ids": [
-              "S9",
-              "S10",
-              "S11",
-              "S12"
+              "S8",
+              "S9"
             ]
           }
         ],
         "still_worth_verifying": [
           {
-            "question": "What content types and usage patterns for screens are actually protective vs. harmful across different developmental stages?",
-            "why_it_matters": "Current evidence suggests content matters as much as duration, but the research does not yet clearly specify which content types, at which ages, cross from neutral or beneficial into harmful territory.",
-            "what_would_help": "Longitudinal studies that track content type, context (solo vs. co-viewed), and time of day separately from total hours, with outcome measures that distinguish developmental stages.",
+            "question": "Does free-range parenting directly produce better outcomes, or does the evidence only establish that overprotective parenting produces worse ones?",
+            "why_it_matters": "The visitor's claim pairs these as opposites, but the research packet shows evidence runs mostly in one direction — harms of overprotection — while direct evidence for free-range parenting outcomes is limited. The policy and practical implications differ depending on which is true.",
+            "what_would_help": "Studies with standardized definitions of free-range parenting measuring child outcomes directly, rather than inferring them from overprotective parenting research. Research accounting for neighborhood safety and socioeconomic context would also sharpen the picture.",
             "source_ids": [
-              "S1",
-              "S3",
-              "S4",
-              "S5"
+              "S10",
+              "S11"
             ]
           },
           {
-            "question": "How much does the homework benefit for older students depend on homework type and subject, rather than the fact of homework itself?",
-            "why_it_matters": "The 2026 e-homework meta-analysis found that effects were moderated by subject domain and school level. If benefit is concentrated in specific subjects or formats, blanket homework policies may not capture it.",
-            "what_would_help": "Head-to-head comparisons by subject area, homework format, and grade band, ideally with standardized exam outcomes rather than assignment scores alone.",
+            "question": "What is the causal direction between screen time and child depression or social-emotional difficulties?",
+            "why_it_matters": "If children with emerging mental health difficulties gravitate toward more screen use, reducing screens may not address the underlying problem. The direction of causation shapes whether screen-time limits are an effective intervention.",
+            "what_would_help": "Experimental or quasi-experimental studies with random assignment to screen-time conditions, or stronger longitudinal designs that control for pre-existing mental health status.",
             "source_ids": [
-              "S9",
-              "S11"
+              "S3",
+              "S4",
+              "S2"
             ]
           }
         ],
         "what_general_claims_cant_decide": [
-          "Whether a specific child's screen time is at a level or content mix that warrants concern, given their individual development, sleep, physical activity, and social context.",
-          "Whether a particular family's cultural background and community context would make high-expectation parenting more or less likely to carry the costs found in the Chinese American longitudinal study.",
-          "Whether a specific school's homework load falls within the range associated with benefit or the range associated with stress and declining returns for their students' age group."
+          "Whether a specific child's screen habits — given their age, content, social context, and existing wellbeing — are at a harmful level.",
+          "Whether a particular family's parenting approach lands closer to 'supportive structure' or 'tiger parenting' in the sense the research measures.",
+          "Whether homework at a specific grade level and in specific quantities is helping or hurting a particular child's learning or wellbeing."
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "All three debates are condition-dependent, not binary: screen time risk is real but small and shaped by content and context; tiger parenting does not outperform supportive parenting in the available longitudinal data; and homework helps older students more than younger ones, with diminishing and then negative returns at high volumes.",
-            "In the most direct research available, warm and supportive parenting outperformed high-pressure parenting on both academic and mental health outcomes — even within the cultural population most associated with tiger parenting.",
-            "Parental involvement with homework is not straightforwardly beneficial: cross-national data associates direct parental help with lower achievement, suggesting how involvement is structured matters more than how much is given."
+            "For screen time, how much and what type both matter: the evidence for harm is stronger for high volumes of passive viewing, weaker or absent for moderate educational and interactive use. 'All screens are harmful' is not what the research supports.",
+            "Tiger parenting is not supported as a superior overall strategy: longitudinal evidence links it to worse mental health outcomes, while supportive parenting (warm and structured) is associated with better results across domains.",
+            "Homework appears to have a real but age-dependent relationship with achievement — meaningful for older students, weak to negligible for younger ones, and potentially counterproductive when excessive or when heavy parental involvement substitutes for the child's own effort."
           ],
           "treat_skeptically": [
-            "Any claim that screen time is uniformly destroying children, given that the best available meta-analysis describes effect sizes as small and the relationship as bidirectional.",
-            "The popular narrative that tiger parenting explains high achievement in Asian American families, which the longitudinal evidence does not support within Chinese American samples.",
-            "Homework policies applied uniformly across grade levels, since the evidence base for benefit is concentrated in middle and high school, not early elementary."
+            "Any claim that screen time universally 'destroys' children — the evidence is about dose, content, and age, not a blanket harm.",
+            "The popular tiger parenting narrative that strict, high-pressure parenting produces children who outperform — the empirical record shows this framing misses significant mental health costs.",
+            "The implied binary between tiger parenting and free-range parenting — the research identifies supportive parenting (warm plus structured) as a distinct and better-supported approach, not simply a midpoint."
           ],
           "what_would_change_the_answer": [
-            "Experimental or quasi-experimental studies of screen time that can establish causal direction rather than bidirectional association would clarify how much screen use itself drives outcomes vs. how much pre-existing difficulties drive screen use.",
-            "Research on tiger parenting effects in non-Chinese American or non-Asian populations would clarify whether the longitudinal findings generalize beyond that specific cultural context."
+            "Experimental evidence establishing whether screen time reductions causally improve child outcomes, or whether the association runs the other way.",
+            "Standardized definitions and direct outcome studies for free-range parenting that go beyond inferring benefits from the harms of overprotection.",
+            "Cross-cultural replication of tiger parenting research beyond Asian and Asian-American samples, to clarify how much cultural context shapes the findings."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Magnitude flattening",
-            "how_it_distorts": "Small but real statistical effects get translated into alarming language — 'destroying,' 'toxic,' 'epidemic' — that implies large and uniform harm. This makes the finding easier to share but strips away the effect size and the conditions that matter.",
-            "how_to_recognize_it": "Look for dramatic verbs or adjectives ('destroy,' 'ruin,' 'crisis') attached to findings reported in academic sources with modest effect sizes. Check whether the original study language matches the headline language."
+            "source_type": "Universalization of conditional findings",
+            "how_it_distorts": "Research showing an association between a factor and an outcome under specific conditions — age group, content type, dose level — gets restated as a universal claim applying to all children in all circumstances. The conditions drop out in popular retelling.",
+            "how_to_recognize_it": "Look for absolute language ('destroys,' 'always,' 'superior') where the underlying study measured averages, associations, or outcomes in a defined subgroup. If no age range, content type, or dosage is mentioned alongside the claim, the original conditions have likely been stripped away."
           },
           {
-            "source_type": "Outcome-to-cause reverse inference",
-            "how_it_distorts": "An observed group outcome — high academic achievement in some communities — gets attributed to a specific parenting style without verifying whether families in that group actually use that style, or whether those who do outperform those who do not.",
-            "how_to_recognize_it": "Claims that a cultural group succeeds because of a specific practice, without data comparing within that group across parenting styles, are doing reverse inference. Ask: was the practice actually measured and compared, or is it assumed?"
+            "source_type": "Correlational evidence treated as causal",
+            "how_it_distorts": "Most studies in this area measure associations between parenting behaviors and child outcomes without being able to establish which caused which. Claims that a parenting approach 'produces' a result go beyond what the observational data supports.",
+            "how_to_recognize_it": "Check whether the research design involved random assignment or strong controls for pre-existing differences. If not, phrases like 'leads to,' 'causes,' or 'produces' in summaries of the research are doing more than the data can support."
           },
           {
-            "source_type": "Grade-level or age-group elision",
-            "how_it_distorts": "Research findings concentrated in one age group — such as homework benefits in high school — get reported as if they apply across all ages, making a conditional truth look universal.",
-            "how_to_recognize_it": "When a claim about children does not specify the age range the study covered, treat the implied universality as unverified. The homework research shows dramatically different effects by grade band, so 'homework helps kids' is a different claim from 'homework helps high schoolers.'"
+            "source_type": "Single-outcome reporting",
+            "how_it_distorts": "A parenting style or practice may show a benefit on one measured outcome (e.g., academic scores) while showing costs on another (e.g., anxiety, emotional wellbeing). Advocates selectively highlight the favorable outcome and omit the trade-offs.",
+            "how_to_recognize_it": "When a claim cites only academic or only mental health outcomes, ask whether the same research measured outcomes in the other domain — and whether those results were mentioned."
           }
         ],
         "analysis_mode": "verified_research",
@@ -738,99 +619,115 @@
         "sources_examined": [
           {
             "id": "S1",
-            "title": "Electronic screen use and children's socioemotional problems: A systematic review and meta-analysis of longitudinal studies",
-            "publisher": "Psychological Bulletin / American Psychological Association",
-            "url": "https://www.apa.org/news/press/releases/2025/06/screen-time-problems-children",
-            "date": "2025-06-09",
+            "title": "Screen Time Among Children and Youth With Disabilities: A Systematic Review and Meta-Analysis",
+            "publisher": "Child: Care, Health and Development (Wiley)",
+            "url": "https://onlinelibrary.wiley.com/doi/10.1111/cch.70136",
+            "date": "2025-07-16",
             "source_type": "systematic_review"
           },
           {
             "id": "S2",
-            "title": "Electronic Screen Use and Children's Socioemotional Problems (Psychological Bulletin full text via Ovid)",
-            "publisher": "Psychological Bulletin",
-            "url": "https://www.ovid.com/journals/plbul/fulltext/10.1037/bul0000468~electronic-screen-use-and-childrens-socioemotional-problems",
-            "date": "2025-06-09",
+            "title": "The effectiveness of school-based interventions for reducing screen time: a systematic review and meta-analysis",
+            "publisher": "Child and Adolescent Mental Health (Wiley / ACAMH)",
+            "url": "https://acamh.onlinelibrary.wiley.com/doi/full/10.1111/camh.70022",
+            "date": "2025-07-14",
             "source_type": "systematic_review"
           },
           {
             "id": "S3",
-            "title": "Exploring Screen Time and Its Effects on Children's Mental Health: A Cross-Sectional Study",
-            "publisher": "Cureus (PMC/NCBI)",
-            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11549943/",
-            "date": "2024-10-10",
-            "source_type": "primary_study"
+            "title": "A meta-analysis of prospective cohort studies on screen time and the risk of depression in adolescents",
+            "publisher": "Acta Psychologica (ScienceDirect / Elsevier)",
+            "url": "https://www.sciencedirect.com/science/article/pii/S0001691824004086",
+            "date": "2024-11-05",
+            "source_type": "meta_analysis"
           },
           {
             "id": "S4",
-            "title": "Screen time and neurodevelopment in preschoolers: addressing a growing concern in pediatric practice",
-            "publisher": "Clinical and Experimental Pediatrics (PMC/NCBI)",
-            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12146794/",
-            "date": "2025-01-13",
-            "source_type": "high_quality_secondary"
+            "title": "A Systematic Review and Meta-Analysis on the Impact of Screen-Time on the Social-Emotional Development of Children Under Five Years",
+            "publisher": "Journal of the College of Physicians and Surgeons Pakistan (PubMed)",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/40055171/",
+            "date": "2025-03",
+            "source_type": "meta_analysis"
           },
           {
             "id": "S5",
-            "title": "Research Digest: Screen time and green time",
-            "publisher": "Children and Nature Network",
-            "url": "https://www.childrenandnature.org/resources/research-digest-screen-time-and-green-time/",
-            "date": "2025-03-05",
-            "source_type": "high_quality_secondary"
+            "title": "Type of screen time moderates effects on outcomes in 4013 children: evidence from the Longitudinal Study of Australian Children",
+            "publisher": "NCBI PMC (BMC Public Health)",
+            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6884886/",
+            "date": "2019",
+            "source_type": "primary_study"
           },
           {
             "id": "S6",
-            "title": "Defining Tiger Parenting in Chinese Americans",
-            "publisher": "Human Development / Karger Publishers",
-            "url": "https://karger.com/hde/article/56/4/217/157958/Defining-Tiger-Parenting-in-Chinese-Americans",
-            "date": "2013-09-01",
-            "source_type": "primary_study"
+            "title": "Passive and active screen time relate differently to attention in preschool children",
+            "publisher": "Frontiers in Psychology",
+            "url": "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2026.1737937/full",
+            "date": "2026-02-27",
+            "source_type": "systematic_review"
           },
           {
             "id": "S7",
-            "title": "Does Tiger Parenting Exist? Parenting Profiles of Chinese Americans and Adolescent Developmental Outcomes",
-            "publisher": "Asian American Journal of Psychology (PMC/NCBI)",
-            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3641860/",
-            "date": "2013-03-01",
-            "source_type": "primary_study"
+            "title": "Tiger parenting does not create child prodigies, finds new research",
+            "publisher": "American Psychological Association Monitor on Psychology",
+            "url": "https://www.apa.org/monitor/2013/09/tiger-parenting",
+            "date": "2013-09",
+            "source_type": "professional_body"
           },
           {
             "id": "S8",
-            "title": "Tiger parenting | Social Sciences and Humanities Research Starters",
-            "publisher": "EBSCOhost",
-            "url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/tiger-parenting",
+            "title": "What is tiger parenting? How does it affect children?",
+            "publisher": "APA Division 7 (Developmental Psychology)",
+            "url": "https://www.apadivisions.org/division-7/publications/newsletters/developmental/2013/07/tiger-parenting",
+            "date": "2013-07",
+            "source_type": "professional_body"
+          },
+          {
+            "id": "S9",
+            "title": "The moderating effects of positive psychological strengths on the relationship between tiger parenting and child anxiety",
+            "publisher": "Children and Youth Services Review (ScienceDirect / Elsevier)",
+            "url": "https://www.sciencedirect.com/science/article/abs/pii/S0190740918303293",
+            "date": "2018-10-10",
+            "source_type": "primary_study"
+          },
+          {
+            "id": "S10",
+            "title": "Free-range parenting (Research Starter)",
+            "publisher": "EBSCO Research Starters — Social Sciences and Humanities",
+            "url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/free-range-parenting",
             "date": null,
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S9",
+            "id": "S11",
+            "title": "Do Kids Have Too Much Freedom? (Free-Range Parenting: The Pros and Cons)",
+            "publisher": "Psych Central",
+            "url": "https://psychcentral.com/blog/do-kids-have-too-much-freedom",
+            "date": "2022-07-25",
+            "source_type": "high_quality_secondary"
+          },
+          {
+            "id": "S12",
+            "title": "Homework: Is It Good for Kids? Here's What the Research Says",
+            "publisher": "TIME",
+            "url": "https://time.com/4466390/homework-debate-research/",
+            "date": "2016",
+            "source_type": "high_quality_secondary"
+          },
+          {
+            "id": "S13",
             "title": "The Pros and Cons of Homework (in 6 Charts)",
-            "publisher": "Edutopia",
+            "publisher": "Edutopia (George Lucas Educational Foundation)",
             "url": "https://www.edutopia.org/visual-essay/the-pros-and-cons-of-homework-in-6-charts/",
             "date": "2025-09-26",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S10",
+            "id": "S14",
             "title": "Should we Help our Children with Homework? A Meta-Analysis Using PISA Data",
-            "publisher": "PubMed/NCBI",
+            "publisher": "PubMed (NCBI)",
             "url": "https://pubmed.ncbi.nlm.nih.gov/35048896/",
-            "date": "2022-01-18",
+            "date": "2022",
             "source_type": "meta_analysis"
-          },
-          {
-            "id": "S11",
-            "title": "The effect of E-homework on K-12 students' academic achievements: a meta-analysis study",
-            "publisher": "Frontiers in Psychology (PMC/NCBI)",
-            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12901446/",
-            "date": "2026-01-30",
-            "source_type": "meta_analysis"
-          },
-          {
-            "id": "S12",
-            "title": "Homework: The Good and The Bad",
-            "publisher": "Helping Families Thrive",
-            "url": "https://helpingfamiliesthrive.com/homework-good-and-bad/",
-            "date": "2021-11-11",
-            "source_type": "high_quality_secondary"
           }
         ]
       },
@@ -850,128 +747,139 @@
         "conflictingAdvice": "My coworker says blue light glasses fixed her insomnia. Another friend says sleep debt cannot be repaid on weekends, but my doctor said catching up on weekends helps."
       },
       "output": {
-        "topic_as_understood": "Whether 8 hours of sleep is a universal requirement, whether blue light glasses resolve insomnia, and whether weekend sleep can repay weekday sleep debt",
-        "framing": "Each of these claims collapses a range or a partial effect into an absolute — the evidence mostly supports narrower, conditional versions of all three. The core distinction is between a useful population-level guideline and a rule that applies identically to every individual in every circumstance.",
+        "topic_as_understood": "Three related sleep claims: whether everyone needs exactly 8 hours, whether blue light glasses reliably fix insomnia, and whether weekend sleep can or cannot repay sleep debt.",
+        "framing": "Each claim collapses a range into an absolute. The evidence consistently shows gradients and conditions where the popular version says a bright line.",
         "the_signal": {
           "items": [
             {
-              "claim": "For most adults, the sleep duration associated with better health outcomes falls somewhere in the range of 7 to 9 hours — not a fixed 8.",
-              "basis": "A 2026 systematic review reaffirming NSF recommendations and an overview of systematic reviews both describe a range, with 7-8 hours showing the most favorable dose-response associations for adults. The recommendation is explicitly a range to reflect individual variation.",
-              "limits": "These are population-level ranges derived largely from self-reported sleep data and expert consensus, not experimental trials. They cannot identify the right amount for a specific person.",
+              "claim": "Most adults need somewhere in the range of 7–9 hours, not exactly 8, and the right amount varies by person and age.",
+              "basis": "The National Sleep Foundation reviewed over 130 meta-analyses and set a recommended range of 7–9 hours for adults — not a fixed 8. Major bodies including the American Academy of Sleep Medicine recommend at least 7 hours. A large population study found that both very short and very long sleep were associated with worse health outcomes, with the healthier pattern centered around 6–8 hours.",
+              "limits": "Recommended ranges come from epidemiological associations, not controlled trials proving causation for every health outcome. Self-reported sleep times, which most studies rely on, may not reflect actual sleep. A small number of people may genuinely function well outside the 7–9 hour range.",
               "source_ids": [
                 "S1",
                 "S2",
-                "S3"
+                "S3",
+                "S4",
+                "S5"
               ]
             },
             {
-              "claim": "Weekend catch-up sleep can partially restore mood, reduce fatigue, and recover some cognitive performance after short-term sleep loss, but does not fully reverse the effects of chronic sleep deprivation — particularly metabolic effects.",
-              "basis": "A 2025 systematic review found partial short-term benefit from weekend recovery sleep. A separate primary study found that weekend recovery sleep did not restore insulin sensitivity, which was worse than in people who slept consistently throughout the week.",
-              "limits": "Most experimental evidence comes from short lab protocols. Long-term real-world effects are known mainly from epidemiological data, which cannot establish causation. The distinction between occasional and chronic sleep debt is important but not always well-defined in the studies.",
+              "claim": "Weekend catch-up sleep offers partial, real benefit over staying chronically deprived, but does not fully undo the damage from regular short sleep.",
+              "basis": "A 2025 systematic review found catch-up sleep can improve mood, reduce fatigue, and restore some cognitive performance short-term, but is not a sustainable repayment strategy. One study found that after a week of restricted sleep, two nights of recovery sleep did not fully restore attention or insulin sensitivity. A longer-term study found people who caught up on weekends had better survival outcomes than those who remained deprived all week, suggesting real but limited benefit.",
+              "limits": "The survival study is observational and cannot establish causation. How much catch-up helps likely depends on how severe and prolonged the deficit is. Sleeping in significantly can also shift the circadian clock, creating 'social jet lag' associated with its own metabolic costs.",
               "source_ids": [
-                "S7",
-                "S8",
-                "S9",
-                "S11"
-              ]
-            },
-            {
-              "claim": "Blue light glasses have not been shown in adequately powered trials to meaningfully reduce insomnia, though individual experiences of benefit are not impossible and the intervention carries low risk.",
-              "basis": "A 2025 pre-registered meta-analysis of the best available RCTs found non-significant effects on objective sleep measures. The trial base is small (combined n=49 across three double-blind studies), so absence of a demonstrated effect is not the same as proof of no effect. No clinical guidelines currently recommend blue light glasses as a primary insomnia treatment.",
-              "limits": "The mechanism — evening blue light affects melatonin timing — is established, but whether blocking it via glasses produces clinically meaningful insomnia improvement has not been adequately tested. Effect may differ by insomnia type or severity, which current trials cannot address.",
-              "source_ids": [
-                "S5",
-                "S6"
+                "S11",
+                "S12",
+                "S13",
+                "S14"
               ]
             }
           ]
         },
         "the_noise": [
           {
-            "claim": "Everyone needs exactly 8 hours of sleep or their health suffers",
+            "claim": "Everyone needs exactly 8 hours of sleep or their health suffers.",
             "noise_type": "oversimplified",
-            "noise_label": "Single number, not a range",
-            "what_the_evidence_supports_instead": "Most adults need somewhere in the 7-9 hour range, and sleep quality, regularity, and daytime functioning matter alongside duration. Some individuals may function well at the lower or upper end of that range.",
-            "what_went_wrong": "The claim converts a population-level range into a universal fixed target, and treats duration as the only variable that matters, when the evidence treats it as one component among several.",
-            "kernel_of_truth": "Consistently getting substantially less than 7 hours is associated with worse health outcomes across multiple studies.",
+            "noise_label": "Collapsing a range into a single number",
+            "what_the_evidence_supports_instead": "Most adults function best somewhere within a 7–9 hour range, with individual variation, and sleep quality and regularity matter alongside duration.",
+            "what_went_wrong": "The claim fixes one number where the evidence supports a range, and treats duration as the only variable when professional guidance treats it as one component among several.",
+            "kernel_of_truth": "Getting close to 8 hours puts most adults near the middle of the recommended range, so the number is not arbitrary — it just does not apply identically to everyone.",
             "source_ids": [
               "S1",
               "S2",
               "S3",
-              "S4"
+              "S4",
+              "S5"
             ]
           },
           {
-            "claim": "Blue light glasses fixed my coworker's insomnia (as a general lesson about what works for insomnia)",
-            "noise_type": "weak_evidence",
-            "noise_label": "Personal result, not a proven treatment",
-            "what_the_evidence_supports_instead": "Blue light glasses are low-risk and may complement other approaches, but the best available trial evidence does not show statistically significant objective sleep improvement for insomnia. Individual improvement is possible and consistent with some trial outcomes, but placebo effects are well-documented in sleep research and cannot be ruled out from a single person's experience.",
-            "what_went_wrong": "One person's positive outcome cannot establish that the glasses caused the improvement, or that the same result would follow for others. The trial evidence is too small and inconsistent to support a broader conclusion.",
-            "kernel_of_truth": "The underlying mechanism — that evening blue light can delay circadian timing — is established. For people whose insomnia has a circadian or sleep-onset component, the approach has biological plausibility.",
+            "claim": "Blue light glasses fixed insomnia (implying they reliably improve sleep for people with insomnia).",
+            "noise_type": "context_dependent",
+            "noise_label": "One person's result generalized to a reliable fix",
+            "what_the_evidence_supports_instead": "Blue-light blocking glasses show promise for some clinical populations, but trial results are split roughly evenly between showing benefit and showing no significant effect — and the quality and filtering specification of the glasses matter considerably.",
+            "what_went_wrong": "A single person's reported improvement is being treated as evidence that the intervention works reliably. The research base is inconsistent: one Cochrane-indexed review found three RCTs showing benefit and three showing none. There is also a documented gap between subjective improvement and objective sleep measures.",
+            "kernel_of_truth": "There is a plausible biological rationale and some positive trial evidence, particularly for people with insomnia, delayed sleep phase, or shift work — the coworker's experience is not implausible, but it cannot be assumed to generalize.",
             "source_ids": [
-              "S5",
-              "S6"
+              "S6",
+              "S7",
+              "S8",
+              "S9",
+              "S10"
+            ]
+          },
+          {
+            "claim": "Sleep debt cannot be repaid on weekends at all (friend's absolute version).",
+            "noise_type": "too_broad",
+            "noise_label": "Treating partial recovery as no recovery",
+            "what_the_evidence_supports_instead": "Full repayment of chronic sleep debt over a weekend is not supported, but partial recovery — improved mood, reduced fatigue, some cognitive restoration, and possibly better long-term health outcomes compared to sustained deprivation — is documented.",
+            "what_went_wrong": "The friend's claim is correct that a weekend cannot erase a chronic deficit, but it overstates the case by implying catch-up sleep provides no benefit, when the evidence shows meaningful partial benefit over not recovering at all.",
+            "kernel_of_truth": "Weekend sleep is not a reliable substitute for consistent adequate nightly sleep, and relying on it as a strategy carries real costs including social jet lag.",
+            "source_ids": [
+              "S11",
+              "S12",
+              "S13",
+              "S14"
             ]
           }
         ],
         "still_worth_verifying": [
           {
-            "question": "Does weekend catch-up sleep help or hurt — and does the answer depend on whether sleep loss is occasional versus chronic?",
-            "why_it_matters": "This is the core disagreement between the visitor's friend and doctor. The evidence suggests both may be partially right depending on that distinction, but the boundary between 'occasional' and 'chronic' sleep debt is not clearly defined in current studies.",
-            "what_would_help": "Studies that explicitly compare outcomes in people with one or two nights of sleep loss per week versus those with consistent nightly deprivation, using objective outcome measures over longer follow-up periods.",
+            "question": "Do blue-light blocking glasses help people without diagnosed sleep disorders, or is the benefit mainly in clinical populations?",
+            "why_it_matters": "Most of the positive evidence comes from people with insomnia, delayed sleep phase, or shift work. Whether healthy adults with ordinary screen exposure benefit is less established, which affects whether the coworker's experience is likely to transfer to others.",
+            "what_would_help": "Larger RCTs in non-clinical populations using glasses that meet a specified melanopic filtering threshold, with both subjective and objective sleep outcome measures.",
             "source_ids": [
               "S7",
               "S8",
               "S9",
-              "S11"
+              "S10"
             ]
           },
           {
-            "question": "Does the additional circadian disruption from large weekday-weekend schedule shifts ('social jet lag') add harm beyond whatever sleep debt remains?",
-            "why_it_matters": "If irregular weekend sleep schedules carry their own costs through circadian disruption — independent of total sleep hours — then the catch-up strategy could make things worse even when it restores some hours.",
-            "what_would_help": "Studies that separately measure the circadian disruption effect from the sleep-hour recovery effect, to distinguish the two costs.",
+            "question": "How much does the severity and duration of sleep debt affect how much weekend catch-up sleep can restore?",
+            "why_it_matters": "The doctor and friend may both be right in different circumstances — mild short-term debt may be more recoverable than months of chronic restriction. The right advice likely depends on which situation applies.",
+            "what_would_help": "Studies that vary the depth and length of accumulated deficit and track multiple recovery markers, including metabolic and cognitive outcomes, over longer follow-up periods.",
             "source_ids": [
-              "S7",
-              "S10"
+              "S11",
+              "S14"
             ]
           }
         ],
         "what_general_claims_cant_decide": [
-          "Whether this visitor personally needs 7, 8, or 9 hours — individual optimal duration depends on biological and other factors not characterized by population recommendations.",
-          "Whether blue light glasses would help this visitor specifically, since the effect (if any) may vary by insomnia type, severity, and cause.",
-          "Whether the visitor's own sleep loss pattern is the occasional kind that weekend recovery may partially address, or the chronic kind where evidence of benefit is weaker."
+          "How many hours this particular person actually needs, which can only be determined by tracking their own sleep, daytime functioning, and energy across consistent conditions.",
+          "Whether the coworker's insomnia improvement from blue-light glasses reflects a genuine circadian effect, a placebo response, or some other change she made at the same time.",
+          "Whether the doctor's advice about catching up on weekends was tailored to the visitor's specific pattern of sleep loss, which would change whether it applies."
         ],
         "the_bottom_line": {
           "supported_takeaways": [
-            "8 hours is the middle of a range, not a universal requirement — most adults need 7 to 9 hours, and quality and consistency matter alongside duration.",
-            "Weekend sleep can partially recover short-term sleep loss in some respects, but the evidence is clear that it does not fully reverse the effects of chronic deprivation, and the irregular schedule itself may carry additional costs.",
-            "Blue light glasses have not been shown in adequately powered trials to meaningfully treat insomnia; a coworker's positive experience is real to her but cannot establish that the glasses caused the improvement or that others will share it."
+            "For most adults, anywhere from 7 to 9 hours is the evidence-supported target range — 8 is a reasonable midpoint, not a universal requirement.",
+            "Weekend catch-up sleep is genuinely better than staying deprived, but it does not fully restore what chronic short sleep costs, and relying on it habitually carries its own risks.",
+            "Blue-light glasses have mixed trial evidence — plausible and possibly helpful, especially for people with diagnosed sleep problems, but not a proven fix even for insomnia."
           ],
           "treat_skeptically": [
-            "Any advice that treats 8 hours as a precise, universal threshold rather than a rough midpoint of a recommended range.",
-            "The claim that weekend catch-up sleep 'helps' or 'cannot help' without specifying whether the sleep loss is occasional or chronic — both the friend and the doctor may be right in different scopes.",
-            "Anecdotal reports that a single low-risk product resolved a complex sleep disorder, without acknowledgment of placebo effects or the limits of personal experience as evidence."
+            "Any claim that a single number applies to every adult's sleep need.",
+            "Treating one person's positive experience with blue-light glasses as evidence the product reliably works for others.",
+            "The absolute version of 'you cannot repay sleep debt at all' — partial recovery is real, even if full recovery is not."
           ],
           "what_would_change_the_answer": [
-            "Larger, adequately powered RCTs on blue light glasses for insomnia — the current trial base is too small to draw confident conclusions in either direction.",
-            "Research that clearly distinguishes catch-up sleep effects for occasional versus chronic sleep debt, with objective outcome measures over longer time horizons."
+            "Larger, well-controlled RCTs on blue-light glasses in non-clinical populations would clarify whether the benefit extends beyond people with diagnosed sleep disorders.",
+            "Studies tracking cognitive, metabolic, and health outcomes of habitual weekend catch-up sleep over months or years would better establish whether it is a viable long-term strategy or a consistently poor one."
           ]
         },
         "sources_of_noise": [
           {
-            "source_type": "Range-to-point simplification",
-            "how_it_distorts": "Population recommendations are communicated as a single memorable number rather than a range, making guidelines sound more precise and universal than they are.",
-            "how_to_recognize_it": "A sleep claim that names one exact number (8 hours) as the requirement, with no acknowledgment of individual variation or a recommended range."
+            "source_type": "Range-to-single-number compression",
+            "how_it_distorts": "A recommended range like 7–9 hours gets simplified to one memorable number — 8 — which then gets treated as a universal requirement rather than a population midpoint.",
+            "how_to_recognize_it": "The claim states one figure with no acknowledgment of variation; professional guidance documents typically list a range rather than a single number."
           },
           {
-            "source_type": "Anecdote as proof",
-            "how_it_distorts": "A genuine personal improvement gets retold as evidence that the cause is identified and the effect is reproducible, bypassing the need to distinguish placebo response, coincidence, or other simultaneous changes.",
-            "how_to_recognize_it": "'It worked for me / my coworker' presented as a reason to expect the same result, especially for interventions with weak or mixed trial evidence."
+            "source_type": "Personal anecdote generalized to reliable effect",
+            "how_it_distorts": "One person's improvement with a product or intervention gets communicated as evidence the intervention works, when it could reflect genuine effect, placebo, or coincidence — and the underlying trial evidence may be split.",
+            "how_to_recognize_it": "The claim starts with 'it worked for my [friend/coworker]' and implies it will therefore work, without reference to what controlled studies found."
           },
           {
-            "source_type": "Scope collapse in a genuine scientific debate",
-            "how_it_distorts": "Two claims that are each correct within a narrower scope — catch-up sleep helps versus cannot help — get presented as a flat contradiction when the actual disagreement is about the type or duration of sleep debt being discussed.",
-            "how_to_recognize_it": "Confident opposing claims where neither side specifies the conditions under which the claim applies — the conflict often dissolves once the conditions are named."
+            "source_type": "Partial truth stated as absolute",
+            "how_it_distorts": "A finding that full recovery is not achieved gets repackaged as 'no recovery is possible,' erasing the meaningful partial benefit the evidence does support.",
+            "how_to_recognize_it": "The claim uses words like 'cannot,' 'never,' or 'impossible' in a domain where the evidence shows differences in degree rather than a binary outcome."
           }
         ],
         "analysis_mode": "verified_research",
@@ -980,15 +888,15 @@
         "sources_examined": [
           {
             "id": "S1",
-            "title": "How much sleep do you need: A 10-year systematic review of National Sleep Foundation sleep duration recommendations and examination of sex differences",
+            "title": "National Sleep Foundations sleep time duration recommendations: methodology and results summary",
             "publisher": "Sleep Health: Journal of the National Sleep Foundation",
-            "url": "https://www.sleephealthjournal.org/article/S2352-7218(26)00106-3/fulltext",
-            "date": "2026-06-05",
-            "source_type": "systematic_review"
+            "url": "https://www.sleephealthjournal.org/article/s2352-7218(15)00015-7/fulltext",
+            "date": "2015-01-14",
+            "source_type": "professional_body"
           },
           {
             "id": "S2",
-            "title": "Sleep Duration Recommendations",
+            "title": "Sleep Duration Recommendations (2026 update)",
             "publisher": "National Sleep Foundation",
             "url": "https://www.thensf.org/sleep-duration-recommendations/",
             "date": "2026-06-10",
@@ -996,75 +904,99 @@
           },
           {
             "id": "S3",
-            "title": "Sleep duration and health in adults: an overview of systematic reviews",
-            "publisher": "Applied Physiology, Nutrition, and Metabolism (Canadian Science Publishing)",
-            "url": "https://cdnsciencepub.com/doi/10.1139/apnm-2020-0034",
-            "date": "2020-10-13",
-            "source_type": "systematic_review"
-          },
-          {
-            "id": "S4",
-            "title": "National Sleep Foundation sleep time duration recommendations: methodology and results summary",
-            "publisher": "Sleep Health: Journal of the National Sleep Foundation",
-            "url": "https://www.sleephealthjournal.org/article/s2352-7218(15)00015-7/fulltext",
-            "date": "2015-01-14",
+            "title": "National Sleep Foundations updated sleep duration recommendations: final report",
+            "publisher": "PubMed / National Sleep Foundation",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/29073398/",
+            "date": "2017",
             "source_type": "professional_body"
           },
           {
+            "id": "S4",
+            "title": "Associations between sleep duration and depression, mental health, physical health, and general health in U.S. adults: A population-based study",
+            "publisher": "PubMed Central / NCBI",
+            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12803467/",
+            "date": "2025",
+            "source_type": "primary_study"
+          },
+          {
             "id": "S5",
-            "title": "Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials",
-            "publisher": "Frontiers in Neurology",
-            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12668929/",
-            "date": "2025-11-18",
-            "source_type": "meta_analysis"
+            "title": "Association Between Abnormal Sleep and Mortality Risk: A Nationwide Prospective Cohort Study",
+            "publisher": "medRxiv",
+            "url": "https://www.medrxiv.org/content/10.1101/2025.02.21.25322660.full.pdf",
+            "date": "2025-02-21",
+            "source_type": "primary_study"
           },
           {
             "id": "S6",
             "title": "Evening wear of blue-blocking glasses for sleep and mood disorders: a systematic review",
-            "publisher": "PubMed / National Library of Medicine",
+            "publisher": "PubMed",
             "url": "https://pubmed.ncbi.nlm.nih.gov/34030534/",
-            "date": "2021-05-24",
+            "date": "2021",
             "source_type": "systematic_review"
           },
           {
             "id": "S7",
+            "title": "Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials",
+            "publisher": "PubMed Central / NCBI",
+            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12668929/",
+            "date": "2025",
+            "source_type": "meta_analysis"
+          },
+          {
+            "id": "S8",
+            "title": "Blue-light filtering spectacle lenses for visual performance, sleep, and macular health in adults",
+            "publisher": "PubMed",
+            "url": "https://pubmed.ncbi.nlm.nih.gov/37593770/",
+            "date": "2023-08-18",
+            "source_type": "systematic_review"
+          },
+          {
+            "id": "S9",
+            "title": "Optimizing the Potential Utility of Blue-Blocking Glasses for Sleep and Circadian Health",
+            "publisher": "Translational Vision Science and Technology (ARVO Journals)",
+            "url": "https://tvst.arvojournals.org/article.aspx?articleid=2810600",
+            "date": "2025-07-01",
+            "source_type": "systematic_review"
+          },
+          {
+            "id": "S10",
+            "title": "Effect of evening blue light blocking glasses on subjective and objective sleep in healthy adults: A randomized control trial",
+            "publisher": "ScienceDirect / Sleep Health journal",
+            "url": "https://www.sciencedirect.com/science/article/abs/pii/S2352721821000127",
+            "date": "2021-03-08",
+            "source_type": "primary_study"
+          },
+          {
+            "id": "S11",
             "title": "Can weekend catch-up sleep repay the sleep debt? Balancing short-term relief with long-term risks",
-            "publisher": "PubMed / National Library of Medicine",
+            "publisher": "PubMed",
             "url": "https://pubmed.ncbi.nlm.nih.gov/41148489/",
             "date": "2025-10-28",
             "source_type": "systematic_review"
           },
           {
-            "id": "S8",
-            "title": "Does extra sleep on the weekends repay your sleep debt? No, researchers say",
-            "publisher": "ScienceDaily",
-            "url": "https://www.sciencedaily.com/releases/2019/02/190228113534.htm",
-            "date": "2019-02-28",
+            "id": "S12",
+            "title": "Sleep Debt: The Hidden Cost of Insufficient Rest",
+            "publisher": "Sleep Foundation",
+            "url": "https://www.sleepfoundation.org/how-sleep-works/sleep-debt-and-catch-up-sleep",
+            "date": "2026-03-12",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S9",
-            "title": "Weekend catch-up sleep won't fix the effects of sleep deprivation on your waistline",
-            "publisher": "Harvard Health Publishing",
-            "url": "https://www.health.harvard.edu/blog/weekend-catch-up-sleep-wont-fix-the-effects-of-sleep-deprivation-on-your-waistline-2019092417861",
-            "date": "2019-09-24",
+            "id": "S13",
+            "title": "Good News: You Can Make Up for Lost Sleep Over the Weekend (Kind Of)",
+            "publisher": "Cleveland Clinic",
+            "url": "https://health.clevelandclinic.org/insomnia-can-you-make-up-for-lost-sleep-on-weekends",
+            "date": "2023-08-15",
             "source_type": "high_quality_secondary"
           },
           {
-            "id": "S10",
-            "title": "Why Weekend Catch-Up Sleep Doesn't Fully Fix Sleep Debt",
-            "publisher": "Circle Medical",
-            "url": "https://www.circlemedical.com/blog-post/sleep-consistency-vs-weekend-catch-up-sleep",
-            "date": "2026-03-27",
+            "id": "S14",
+            "title": "Can You Catch Up on Sleep? What the Science Really Says",
+            "publisher": "Superpower / Circle Medical",
+            "url": "https://superpower.com/guides/sleep-health/can-you-catch-up-on-sleep",
+            "date": "2026-03-24",
             "source_type": "high_quality_secondary"
-          },
-          {
-            "id": "S11",
-            "title": "Association between weekend catch-up sleep and health-related quality of life of Korean adults",
-            "publisher": "PMC / National Library of Medicine",
-            "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6455713/",
-            "date": null,
-            "source_type": "primary_study"
           }
         ]
       },

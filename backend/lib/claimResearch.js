@@ -16,6 +16,27 @@ function compact(s, n = 240) {
   return String(s || '').trim().replace(/\s+/g, ' ').slice(0, n);
 }
 
+// Blog and user-generated-content platforms are never admitted as sources,
+// whatever the research pass labels them. Seen live on the first nutrition
+// run: a Medium post sat in the packet as "high_quality_secondary" next to
+// the BMJ and the Lancet, and it was not needed. The prompt says so too, but
+// the packet is code-owned — a source on one of these hosts is dropped here,
+// and any finding that then has no surviving source goes with it. Matched on
+// the registrable host or any subdomain of it; a personal blog on its own
+// domain is not caught (no list could be), which is what the prompt is for.
+const BLOG_PLATFORM_HOSTS = [
+  'medium.com', 'substack.com', 'blogspot.com', 'blogger.com', 'wordpress.com',
+  'tumblr.com', 'ghost.io', 'dev.to', 'hashnode.dev', 'hubpages.com', 'vocal.media',
+  'quora.com', 'reddit.com', 'pinterest.com', 'facebook.com', 'instagram.com',
+  'tiktok.com', 'x.com', 'twitter.com', 'threads.net', 'linkedin.com', 'youtube.com',
+];
+
+function isBlogPlatformUrl(url) {
+  let host;
+  try { host = new URL(url).hostname.toLowerCase(); } catch { return false; }
+  return BLOG_PLATFORM_HOSTS.some(h => host === h || host.endsWith(`.${h}`));
+}
+
 function researchKey({ topic, conflictingAdvice }) {
   return `signal-research:${normalizeKeyPart(compact(topic, 100))}:${normalizeKeyPart(compact(conflictingAdvice, 180))}`;
 }
@@ -30,6 +51,7 @@ function cleanPacket(raw) {
     const id = compact(src?.id, 20);
     const url = compact(src?.url, 600);
     if (!/^S\d+$/i.test(id) || !url || seen.has(id.toUpperCase())) continue;
+    if (isBlogPlatformUrl(url)) continue;
     seen.add(id.toUpperCase());
     cleanSources.push({
       id: id.toUpperCase(),
@@ -78,7 +100,7 @@ async function claimResearch({ topic, conflictingAdvice, userContext, region }) 
     timeoutMs: SEARCH_TIMEOUT_MS,
     maxTokens: 6500,
     maxUses: MAX_USES,
-    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
+    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
     userPrompt: `Research the following topic with web_search as of today.
 
 TOPIC:
@@ -127,4 +149,4 @@ Return ONLY:
   return { block: packet ? renderResearchBlock(packet) : '', packet, cacheKey: key };
 }
 
-module.exports = { claimResearch, cleanPacket, researchKey };
+module.exports = { claimResearch, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS };
