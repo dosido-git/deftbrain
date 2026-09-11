@@ -82,6 +82,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 52 | GratitudeDebtClearer | inline | 5 relationships | 2 | 5 (+ a parent, a neighbor, a friend who lent money without making it awkward) | ✅ 2026-09-11 |
 | 53 | GriefGuide | i18n | 10 loss types × 5 timelines × myself/helping | 3 | 5 (+ a sudden pet death, helping a brother 8 months into job-loss identity grief; 2 keys ×13) | ✅ 2026-09-11 |
 | 54 | HecklerPrep | i18n | 3 stakes levels | 2 (both high) | 5 (+ moderate HOA parking fee, low-stakes tool switch, high-stakes school board proposal; 12 keys ×13) | ✅ 2026-09-11 |
+| 55 | HistoryToday | inline | 3 motives (5 bare quick-chips are separate) | 2 | 5 (+ moon-landing conspiracy, a decision-relevant historical pattern, a crisis's untested reforms) | ✅ 2026-09-11 |
+| 56 | HobbyMatch | i18n | 4 budgets × 8 goals | 2 | 5 (+ competitive weekend-only, free-only with chronic fatigue, restless hands-on with bad knees; 12 keys ×13) | ✅ 2026-09-11 |
+| 57 | JargonAssassin | i18n | 9 document types | 2 (legal, government) | 5 (+ medical prior-auth denial, mortgage disclosure, software license; 9 keys ×13; fixed 3 zh/es formal-register findings) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

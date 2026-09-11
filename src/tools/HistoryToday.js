@@ -22,6 +22,10 @@ const MOTIVATIONS = [
   { value: 'curious',    icon: '👀', labelKey: 'ht_mot_curious' },
 ];
 
+// Five, rotated across all three motives (worried, decision, curious): a
+// wall falling faster than predicted, a pandemic's cultural afterlife, a
+// relative down a conspiracy rabbit hole, a decision-relevant historical
+// pattern, and whether a crisis's reforms actually held.
 const EXAMPLES = [
   {
   event: 'The fall of the Berlin Wall',
@@ -31,7 +35,19 @@ const EXAMPLES = [
   event: 'The 1918 influenza pandemic',
   context: "Interested in what happened AFTER — how people went back to normal, what got remembered and what got quietly dropped, and why it left so little cultural trace compared to the war that overlapped it.",
 },
-];;
+  {
+  event: 'The moon landing',
+  context: "Worried about a family member who has gone down a rabbit hole insisting it was faked. Want to understand the actual weight of evidence, not just be told to trust NASA.",
+},
+  {
+  event: 'The fall of the Roman Empire',
+  context: "Making a decision — trying to figure out if 'societies collapse when they get too complacent' is actually a sound historical pattern or just a story people tell to feel smart about the present.",
+},
+  {
+  event: 'The 2008 financial crisis',
+  context: "Curious whether the reforms that followed actually fixed the underlying problem or just patched the specific mechanism that failed last time.",
+},
+];
 
 const EXAMPLE_KEYS = ['ht_ex1', 'ht_ex2', 'ht_ex3', 'ht_ex4', 'ht_ex5'];
 

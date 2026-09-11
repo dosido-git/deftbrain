@@ -41,11 +41,21 @@ const HobbyMatch = ({ tool }) => {
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
+  // Five, rotated across every budget level and most goals: flexible budget
+  // for relaxation, tight budget with mobility limits, a competitive
+  // weekend-only schedule, free-only with chronic fatigue, and restless
+  // hands-on energy with bad knees ruling out anything high-impact.
   const EXAMPLES = [
     { personality: t('hm_ex_personality'), schedule: t('hm_ex_schedule'), budget: 'flexible',
       physical: t('hm_ex_physical'), triedBefore: t('hm_ex_tried'), selectedGoals: ['relax', 'learn', 'creative'] },
     { personality: t('hm_ex2_personality'), schedule: t('hm_ex2_schedule'), budget: 'under_50',
       physical: t('hm_ex2_physical'), triedBefore: t('hm_ex2_tried'), selectedGoals: ['relax', 'creative'] },
+    { personality: t('hm_ex3_personality'), schedule: t('hm_ex3_schedule'), budget: 'under_200',
+      physical: t('hm_ex3_physical'), triedBefore: t('hm_ex3_tried'), selectedGoals: ['social', 'learn', 'physical'] },
+    { personality: t('hm_ex4_personality'), schedule: t('hm_ex4_schedule'), budget: 'free',
+      physical: t('hm_ex4_physical'), triedBefore: t('hm_ex4_tried'), selectedGoals: ['relax', 'creative'] },
+    { personality: t('hm_ex5_personality'), schedule: t('hm_ex5_schedule'), budget: 'under_50',
+      physical: t('hm_ex5_physical'), triedBefore: t('hm_ex5_tried'), selectedGoals: ['creative', 'learn', 'solo'] },
   ];
 
 

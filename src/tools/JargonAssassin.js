@@ -281,9 +281,16 @@ const JargonAssassin = ({ tool }) => {
   const handleReset = () => { setMode('input'); setDocText(''); setFileName(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setPersData(null); setCmpData(null); setSecData(null); setExpData(null); setLtrData(null); setDossData(null); setUserGoal(''); setShowExplanationStyle(false); setError(''); };
 
   const loadExample = () => {
+    // Five, rotated across five of the nine document types: a lease
+    // indemnity clause, a benefits overpayment notice, a prior-authorization
+    // denial, an adjustable-rate mortgage disclosure, and a software
+    // license's usage-suspension clause.
     const ex = pickExample('JargonAssassin', [
       { doc: 'jarg_example_doc',  type: 'legal' },
       { doc: 'jarg_example2_doc', type: 'government' },
+      { doc: 'jarg_example3_doc', type: 'medical' },
+      { doc: 'jarg_example4_doc', type: 'financial' },
+      { doc: 'jarg_example5_doc', type: 'technical' },
     ]);
     setMode('input');
     setDocType(ex.type);
