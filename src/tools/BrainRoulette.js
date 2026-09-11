@@ -84,7 +84,15 @@ const EXAMPLES = [
   depth: 'deep',
   audienceLevel: 'nerd',
 },
-];;
+  // A folk belief that is simply wrong, at the quickest depth for the most
+  // casual reader — the verdict that has to be blunt without being smug.
+  {
+  topicKey: 'bro_ex_topic_folk',
+  selectedInterests: [],
+  depth: 'quick',
+  audienceLevel: 'casual',
+},
+];
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT

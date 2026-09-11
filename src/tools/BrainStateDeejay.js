@@ -23,7 +23,32 @@ const EXAMPLES = [
   task: 'unwinding',
   genres: ['ambient', 'classical'],
 },
-];;
+  // Three more so the rotation covers the awkward transitions: down-shifting
+  // with vocals ruled out, an energy lift for a body not a desk, and a
+  // wind-down to sleep with no task, no genres and a taste written in words.
+  {
+  currentState: 'overwhelmed',
+  desiredState: 'grounded',
+  task: 'admin',
+  genres: ['indie', 'world'],
+  sensitivities: ['no_sudden_sounds', 'vocals_distracting'],
+},
+  {
+  currentState: 'low_energy',
+  desiredState: 'energized',
+  task: 'exercise',
+  genres: ['hiphop', 'electronic'],
+  sensitivities: ['need_rhythm'],
+},
+  {
+  currentState: 'anxious',
+  desiredState: 'sleepy',
+  task: '',
+  genres: [],
+  sensitivities: ['need_predictability', 'repetition_soothing'],
+  musicTaste: 'Mostly film scores. One Sigur Rós album on repeat since 2009. Anything with a drum machine wakes me up.',
+},
+];
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -402,6 +427,8 @@ const BrainStateDeejay = ({ tool }) => {
     setDesiredState(ex.desiredState);
     setTask(ex.task);
     setGenres(ex.genres);
+    setSensitivities(ex.sensitivities ?? []);
+    setMusicTaste(ex.musicTaste ?? '');
     setShowInputs(true);
   }, []);
 
