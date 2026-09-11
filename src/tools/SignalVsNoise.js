@@ -27,7 +27,7 @@ const NOISE_TYPE_CONFIG = {
 const SignalVsNoise = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
-  const { t } = useTranslation();
+  const { t, tPlural } = useTranslation();
 
 
   const c = {
@@ -134,7 +134,76 @@ const SignalVsNoise = ({ tool }) => {
       </li>
     );
   };
-  const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-history', []);
+  // ── Recent checks ─────────────────────────────────────────────────────
+  // Each entry is a compact, LLM-free record of a check: what was asked,
+  // what the saved analysis contains (counts, not verdicts — an old
+  // researched conclusion must not look current indefinitely), and the
+  // saved result itself so reopening costs nothing. Same input run again
+  // within a day collapses into one row with a check count.
+  const [sessionHistory, setSessionHistory] = usePersistentState('signalvsnoise-checks-v1', []);
+  const [showAllChecks, setShowAllChecks] = useState(false);
+  const [restoredCheck, setRestoredCheck] = useState(null); // entry currently on screen, if reopened from Recent
+  const RECENT_VISIBLE = 5;
+  const RECENT_MAX = 20;
+  const DEDUPE_WINDOW_MS = 24 * 60 * 60 * 1000;
+  const normInput = (p) => `${(p.topic || '').trim().toLowerCase()}|${(p.conflictingAdvice || '').trim().toLowerCase()}`;
+  // Short labels for the claims investigated. The synthesis supplies
+  // claim_labels; older results fall back to the first words of each
+  // Noise/Signal claim so the row still says what was checked.
+  const labelsFor = (r) => {
+    const fromResult = Array.isArray(r?.claim_labels) ? r.claim_labels.filter(x => typeof x === 'string' && x.trim()).slice(0, 4) : [];
+    if (fromResult.length) return fromResult;
+    const claims = [...(r?.the_noise || []).map(n => n.claim), ...((r?.the_signal?.items) || []).map(s => s.claim)].filter(Boolean);
+    return claims.slice(0, 3).map(cl => cl.split(/\s+/).slice(0, 4).join(' ').replace(/[.,;:]+$/, ''));
+  };
+  const rememberCheck = (input, r) => {
+    const entry = {
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+      topic: (input.topic || '').trim().slice(0, 80),
+      preview: (input.topic || '').trim().slice(0, 40), // PF-25 preview text, kept for the history contract
+      input: { topic: input.topic, conflictingAdvice: input.conflictingAdvice, userContext: input.userContext },
+      claimLabels: labelsFor(r),
+      signalCount: (r?.the_signal?.items || []).length,
+      noiseCount: (r?.the_noise || []).length,
+      unresolvedCount: (r?.still_worth_verifying || []).length,
+      sourceCount: (r?.sources_examined || []).length,
+      researchedAt: r?.researched_at || null,
+      checks: 1,
+      result: r,
+    };
+    setSessionHistory(prev => {
+      const key = normInput(input);
+      const dup = prev.find(e => normInput(e.input || {}) === key && (Date.now() - new Date(e.createdAt).getTime()) < DEDUPE_WINDOW_MS);
+      const rest = prev.filter(e => e !== dup);
+      if (dup) entry.checks = (dup.checks || 1) + 1;
+      return [entry, ...rest].slice(0, RECENT_MAX);
+    });
+  };
+  const reopenCheck = (entry) => {
+    setError(''); setPreview(null); setPhase('idle');
+    setTopic(entry.input?.topic || entry.topic || '');
+    setConflictingAdvice(entry.input?.conflictingAdvice || '');
+    setUserContext(entry.input?.userContext || '');
+    setRestoredCheck(entry);
+    setResults(entry.result);
+  };
+  // Today / Yesterday / "Sep 8" — easier to scan than a full numeric date.
+  const relativeDay = (iso) => {
+    // A bare date ("2026-09-11") would parse as UTC midnight — yesterday
+    // evening west of Greenwich — so build it as a LOCAL date instead.
+    // Full ISO timestamps (what the backend writes now) parse normally.
+    const m = typeof iso === 'string' && iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const startOf = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const diffDays = Math.round((startOf(new Date()) - startOf(d)) / 86400000);
+    if (diffDays <= 0) return t('svn_today');
+    if (diffDays === 1) return t('svn_yesterday');
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+  const researchedLabel = results?.researched_at ? relativeDay(results.researched_at) : null;
+  const researchedToday = researchedLabel === t('svn_today');
   const [error, setError] = useState('');
   // The first request on a topic is a cold research fetch. The route waits
   // up to its cold-wait window (60s by default) and then answers 503
@@ -166,13 +235,16 @@ const SignalVsNoise = ({ tool }) => {
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
-  const handleSubmit = async () => {
+  // `refresh` = "Check again with current sources": the route bypasses the
+  // cached research and searches afresh. Everything else is the normal run.
+  const handleSubmit = async ({ refresh = false } = {}) => {
     if (!topic.trim()) return;
-    setError(''); setResults(null); setPreview(null);
+    setError(''); setResults(null); setPreview(null); setRestoredCheck(null);
     const payload = {
       topic: topic.trim(),
       conflictingAdvice: conflictingAdvice.trim() || undefined,
       userContext: userContext.trim() || undefined,
+      refresh: refresh || undefined,
       userLocale, userCurrency, userRegion,
     };
     try {
@@ -183,7 +255,9 @@ const SignalVsNoise = ({ tool }) => {
       let pollFailures = 0;
       for (let poll = 0; poll < RESEARCH_POLLS; poll++) {
         try {
-          const status = await pollToolEndpoint('signal-vs-noise/research', payload);
+          // Only the FIRST poll carries `refresh`: it drops the cached packet and
+          // starts the new fetch; later polls just wait for it to land.
+          const status = await pollToolEndpoint('signal-vs-noise/research', poll === 0 ? payload : { ...payload, refresh: undefined });
           pollFailures = 0;
           if (status?.status === 'ready') { ready = status; break; }
           // The research fetch failed and is negative-cached — no point
@@ -218,8 +292,7 @@ const SignalVsNoise = ({ tool }) => {
       }
       setPhase('idle'); setPreview(null);
       setResults(data);
-      // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (topic || '').slice(0, 40) }, ...prev].slice(0, 6));
+      rememberCheck(payload, data);
     } catch (e) {
       setPhase('idle'); setPreview(null);
       setError(e?.code === 'research_unavailable' ? t('svn_research_unavailable') : (e.message || t('svn_error')));
@@ -369,7 +442,7 @@ const SignalVsNoise = ({ tool }) => {
                 )}
               </div>
             )}
-            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={busy || !topic.trim()}
+            <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={busy || !topic.trim()}
               className={`relative w-full py-3 rounded-xl font-bold ${(!topic.trim()) ? c.btnIdle : c.btnPrimary}`}>
               {busy ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
             {!busy && (
@@ -404,6 +477,18 @@ const SignalVsNoise = ({ tool }) => {
                       <span className={`text-[10px] ${c.textMuted}`}>
                         {t('svn_sources_checked', { n: results?.sources_examined?.length || 0 })}
                       </span>
+                      {/* Research date, always — and a way to re-run against today's
+                          sources when this isn't today's research. Reopening a saved
+                          check is free; checking again is a new research pass. */}
+                      {researchedLabel && (
+                        <span className={`text-[10px] ${c.textMuted}`}>· {t('svn_researched_on', { date: researchedLabel })}</span>
+                      )}
+                      {(restoredCheck || !researchedToday) && (
+                        <button onClick={() => handleSubmit({ refresh: true })} disabled={busy}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/30' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                          {t('svn_check_again')}
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
@@ -627,8 +712,46 @@ const SignalVsNoise = ({ tool }) => {
           </div>
         )}
 
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('svn_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('svn_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {/* RECENT CHECKS — a convenience, not a section competing with the
+          result: five rows, the rest behind "View all". A row is the whole
+          click target and restores the saved result with no research call;
+          the second line is the claims actually investigated, the third is
+          what the saved analysis contains — counts, never verdicts. */}
+      {sessionHistory.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('svn_recent_checks')}</p>
+          <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
+            {(showAllChecks ? sessionHistory : sessionHistory.slice(0, RECENT_VISIBLE)).map(e => {
+              const stats = [
+                e.signalCount ? tPlural('svn_rc_signals', e.signalCount, { n: e.signalCount }) : null,
+                e.noiseCount ? tPlural('svn_rc_challenged', e.noiseCount, { n: e.noiseCount }) : null,
+                e.unresolvedCount ? tPlural('svn_rc_unresolved', e.unresolvedCount, { n: e.unresolvedCount }) : null,
+                e.sourceCount ? tPlural('svn_rc_sources', e.sourceCount, { n: e.sourceCount }) : null,
+              ].filter(Boolean).slice(0, 3);
+              return (
+                <button key={e.id} onClick={() => reopenCheck(e)} disabled={busy}
+                  className={`w-full text-start py-2.5 flex items-start justify-between gap-3 group ${busy ? 'opacity-60' : ''}`}>
+                  <div className="min-w-0">
+                    <p className={`text-sm font-semibold truncate ${c.text}`}>{e.topic}</p>
+                    {e.claimLabels?.length > 0 && (
+                      <p className={`text-xs truncate ${c.textSecondary}`}>{e.claimLabels.join(' · ')}</p>
+                    )}
+                    <p className={`text-[11px] ${c.textMuted}`}>
+                      {stats.join(' · ')}{e.checks > 1 ? ` · ${tPlural('svn_checks_n', e.checks, { n: e.checks })}` : ''}
+                    </p>
+                  </div>
+                  <span className={`text-xs whitespace-nowrap flex-shrink-0 ${c.textMuted}`}>{relativeDay(e.createdAt)} <span className="group-hover:translate-x-0.5 inline-block transition-transform">›</span></span>
+                </button>
+              );
+            })}
+          </div>
+          {sessionHistory.length > RECENT_VISIBLE && (
+            <button onClick={() => setShowAllChecks(v => !v)} className={`mt-2 text-xs font-semibold ${c.accentTxt}`}>
+              {showAllChecks ? t('svn_show_fewer') : t('svn_view_all', { n: sessionHistory.length })}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

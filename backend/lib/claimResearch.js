@@ -154,7 +154,12 @@ function cleanPacket(raw) {
 
   if (!citedSources.length || !claims.length) return null;
   return {
-    researched_at: compact(raw.researched_at, 50) || new Date().toISOString(),
+    // Stamped by us at fetch time, not taken from the model: its notion of
+    // "today" is unreliable, and a date-only string ("2026-09-11") parses as
+    // UTC midnight in the browser — which showed a check made this afternoon
+    // as "Researched Yesterday" in US time zones. A full ISO timestamp does
+    // not have that problem.
+    researched_at: new Date().toISOString(),
     claims,
     sources: citedSources,
   };
@@ -169,13 +174,16 @@ function renderResearchBlock(packet) {
 // default (a researched answer or a 503); the /research status endpoint
 // passes 0 so a poll returns immediately — cached packet or "pending" —
 // while the fetch it just started runs on in the background.
-async function claimResearch({ topic, conflictingAdvice, userContext, region, coldWaitMs = COLD_WAIT_MS }) {
+// `force` = "check again with current sources": drop the cached packet for
+// this topic and research afresh (paying the cold path on purpose).
+async function claimResearch({ topic, conflictingAdvice, userContext, region, coldWaitMs = COLD_WAIT_MS, force = false }) {
   const key = researchKey({ topic, conflictingAdvice });
   const block = await groundedFacts({
     cacheKey: key,
     label: 'signal-vs-noise-research',
     ttlMs: RESEARCH_TTL_MS,
     coldWaitMs,
+    force,
     timeoutMs: SEARCH_TIMEOUT_MS,
     maxTokens: 6500,
     maxUses: MAX_USES,

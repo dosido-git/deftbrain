@@ -168,7 +168,12 @@ function normalizeKeyPart(s) {
 // contract — the caller's hedge rules take over — so this is the same
 // degradation, just without the 25s wait attached to it.
 
-async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, maxUses = 3, system, timeoutMs = 120000, coldWaitMs = 0 }) {
+async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, maxUses = 3, system, timeoutMs = 120000, coldWaitMs = 0, force = false }) {
+  // `force`: a caller that explicitly wants today's evidence (signal-vs-noise
+  // "check again with current sources") drops the cached entry first, so the
+  // request takes the cold path on purpose. A fetch already in flight is
+  // still joined rather than duplicated.
+  if (force) cache.delete(cacheKey);
   const hit = cache.get(cacheKey);
   const fresh = hit && hit.expires > Date.now();
 

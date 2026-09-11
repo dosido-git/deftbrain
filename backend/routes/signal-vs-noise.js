@@ -233,6 +233,11 @@ function sanitizeResult(parsed, packet) {
   parsed.what_general_claims_cant_decide = (Array.isArray(parsed.what_general_claims_cant_decide) ? parsed.what_general_claims_cant_decide : [])
     .filter(nonBlank).slice(0, 3);
 
+  // Short subject labels for the visitor's "Recent checks" list — kept tiny
+  // so an old row never re-asserts an old verdict. Never blocks the result.
+  parsed.claim_labels = (Array.isArray(parsed.claim_labels) ? parsed.claim_labels : [])
+    .filter(nonBlank).map(x => x.trim().slice(0, 30)).slice(0, 4);
+
   parsed.sources_of_noise = (Array.isArray(parsed.sources_of_noise) ? parsed.sources_of_noise : [])
     .filter(x => nonBlank(x?.source_type) && nonBlank(x?.how_it_distorts) && nonBlank(x?.how_to_recognize_it))
     .slice(0, 3);
@@ -305,6 +310,7 @@ router.post('/signal-vs-noise/research', rateLimit(RESEARCH_POLL_LIMITS, 'svn-re
       userContext: userContext?.trim(),
       region: req.body.userRegion,
       coldWaitMs: 0,
+      force: req.body.refresh === true,
     });
     if (!research.packet) {
       // A failed fetch is negative-cached for a few minutes; without this the
@@ -333,11 +339,15 @@ router.post('/signal-vs-noise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const { topic, conflictingAdvice, userContext, userLanguage } = req.body;
     if (!topic?.trim()) return res.status(400).json({ error: 'What topic are you trying to cut through?' });
 
+    // `refresh` is the client's "check again with current sources". The
+    // readiness endpoint has normally already forced the refetch by the time
+    // this call arrives; passing it here too keeps a direct caller honest.
     const research = await claimResearch({
       topic: topic.trim(),
       conflictingAdvice: conflictingAdvice?.trim(),
       userContext: userContext?.trim(),
       region: req.body.userRegion,
+      force: req.body.refresh === true,
     });
 
     if (!research.packet) {
@@ -408,6 +418,7 @@ Return ONLY valid JSON:
   "what_general_claims_cant_decide": [
     "person-specific question the general evidence cannot answer from the information supplied"
   ],
+  "claim_labels": ["2-4 labels, each 1-3 words, naming the SUBJECT of each visitor claim analyzed — e.g. 'Screen time', 'Tiger parenting', 'Homework' — for the visitor's history list; a noun phrase, never a verdict"],
   "the_bottom_line": {
     "supported_takeaways": ["2-3 concise takeaways, each traceable to a specific packet finding — end each with its source IDs in square brackets, e.g. '… [S1, S4]'; the page renders them as source chips"],
     "treat_skeptically": ["1-3 of the visitor's claims or framings that deserve skepticism, and why in a phrase — end with source IDs in square brackets where a source bears on it"],

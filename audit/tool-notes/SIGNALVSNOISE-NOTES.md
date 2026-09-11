@@ -884,6 +884,42 @@ prompt now asks for that convention deliberately, and `BulletWithRefs` strips th
 renders the IDs as the same chips the cards use (also for What General Claims Can't Decide). IDs
 pruned by `sanitizeResult` simply render no chip.
 
+**Recent checks (V8.5, same day).** "Recent" was a generic session list (a 40-char preview and a
+numeric date). It is now **📋 Recent checks**, part of the tool: each row is the question (the
+visitor's topic), the claims actually investigated (`claim_labels`, 2–4 short subject nouns the
+synthesis now returns — never a verdict), and what the saved analysis contains as counts ("2 strong
+signals · 3 claims challenged · 1 unresolved"), with a relative date (Today / Yesterday / Sep 8).
+Five rows, "View all (n)" beyond that, twenty kept.
+- **A row is the whole click target and restores the saved result — no research call, no cost.**
+  Each entry stores the inputs and the full result (`signalvsnoise-checks-v1`; the old
+  `signalvsnoise-history` shape is abandoned, not migrated — it held nothing restorable).
+- **Same input within 24h collapses** into one row with "3 checks" instead of three near-duplicate
+  rows (the nutrition repetitions during testing were the case in point).
+- **Research date is always shown** in the result header ("Researched Sep 10"), and when the result
+  is reopened from Recent or is not today's, a **↻ Check again with current sources** button appears.
+  That is a real distinction now that the tool is web-researched: reopen = instant and free; check
+  again = `refresh: true` → `claimResearch({ force })` → `groundedFacts` drops the cached packet and
+  takes the cold path deliberately. Only the FIRST readiness poll carries `refresh` (it starts the
+  new fetch); later polls just wait for it, and the main call passes it too so a direct caller is
+  honest.
+- Counts, not verdicts, on purpose: an old researched conclusion must not look current indefinitely.
+- The name-keyed frontend audit (S1.5) expects a rendered `sessionHistory` whose entries carry
+  `preview` — the state keeps that name and field; it IS the session history.
+- Plural counts use `tPlural` with `_one/_other` everywhere plus `_few/_many` for Russian and
+  `_zero/_two/_few/_many` for Arabic (Gate 5 checks CLDR categories per language).
+- **Found in the browser check:** a check made this afternoon showed "Researched Yesterday".
+  `researched_at` was the model's own date-only string, which the browser parses as UTC midnight —
+  the previous evening in US time zones. `cleanPacket` now stamps the actual fetch time as a full ISO
+  timestamp (the model's date is ignored), and `relativeDay` parses any remaining date-only string as
+  a local date. Verified live: forced refresh → new packet at +78s → `claim_labels` populated;
+  reopen from Recent restores in ~1s with no request.
+
+**Load note for the research pass:** two research fetches failed and were negative-cached during
+this session — both while five golden re-records were running concurrently, and both succeeded when
+re-run alone (69s, 78s). One visitor cannot cause that; several simultaneous cold topics in
+production could. If `research_unavailable` shows up in the logs under load, that is the mechanism;
+the fix would be a small concurrency cap on cold research fetches, not a prompt change.
+
 ## DO NOT silently reverse (V8)
 
 32. **Research-first is the architecture now.** Do not reintroduce a source-free "claim analysis"
