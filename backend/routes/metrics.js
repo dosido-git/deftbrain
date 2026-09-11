@@ -688,6 +688,48 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       }).join('');
 
+    // ── LLM usage by route ──
+    // One 'llm_usage' record per model call, written by lib/claude.js and keyed
+    // by the route slug the request scope carries. Dollar figures come from the
+    // price table in lib/models.js — estimates, reconcile against the console.
+    // Rows are already range-filtered above, so this follows the range picker.
+    const usageRows = rows.filter(r => r.kind === 'llm_usage');
+    const usage = {};
+    let usageTotals = { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0 };
+    for (const r of usageRows) {
+      const k = r.route || r.label || '?';
+      const u = usage[k] = usage[k] || { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, ms: 0, models: {} };
+      u.calls++; u.input += r.input || 0; u.output += r.output || 0; u.cache_read += r.cache_read || 0; u.cache_write += r.cache_write || 0; u.ms += r.ms || 0;
+      if (typeof r.usd === 'number') u.usd += r.usd; else u.unpriced++;
+      u.models[r.model || '?'] = (u.models[r.model || '?'] || 0) + 1;
+      usageTotals.calls++; usageTotals.input += r.input || 0; usageTotals.output += r.output || 0; usageTotals.cache_read += r.cache_read || 0; usageTotals.cache_write += r.cache_write || 0;
+      if (typeof r.usd === 'number') usageTotals.usd += r.usd; else usageTotals.unpriced++;
+    }
+    // Requests per route = tool_run events for the matching frontend tool. The
+    // two keys differ (route slug vs PascalCase tool id), so this is joined by
+    // normalising both to lowercase alphanumerics — 'signal-vs-noise' ↔
+    // 'SignalVsNoise'. Where no run event matches, cost per request shows '—'
+    // rather than dividing by a guess.
+    const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const runsByNorm = {};
+    for (const e of runs) { const k = norm(toolOf(e)); runsByNorm[k] = (runsByNorm[k] || 0) + 1; }
+    const fmtK = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n);
+    const fmtUsd = (n, unpriced) => (n || unpriced) ? `$${n.toFixed(2)}${unpriced ? '*' : ''}` : '—';
+    const usageRowsHtml = Object.entries(usage).sort((a, b) => b[1].usd - a[1].usd || b[1].calls - a[1].calls).slice(0, 60)
+      .map(([route, u]) => {
+        const reqs = runsByNorm[norm(route)] || 0;
+        const perReq = reqs && !u.unpriced ? `$${(u.usd / reqs).toFixed(3)}` : '—';
+        const models = Object.entries(u.models).sort((a, b) => b[1] - a[1]).map(([m, n]) => `${escH(m.replace(/^claude-/, ''))}×${n}`).join(', ');
+        return `<tr><td>${escH(route)}</td><td>${u.calls}</td><td>${reqs || '—'}</td><td>${fmtK(u.input)}</td><td>${fmtK(u.cache_read)}</td><td>${fmtK(u.cache_write)}</td><td>${fmtK(u.output)}</td><td>${fmtUsd(u.usd, u.unpriced)}</td><td>${perReq}</td><td style="font-size:11px;color:#666">${models}</td></tr>`;
+      }).join('');
+    // Total requests = only the runs matched to routes that have usage
+    // records. Dividing by every tool_run in the range would spread this
+    // deploy's cost over requests made before usage was recorded.
+    const usageMatchedRuns = Object.keys(usage).reduce((n, route) => n + (runsByNorm[norm(route)] || 0), 0);
+    const usageTotalHtml = usageTotals.calls
+      ? `<tr style="font-weight:600;border-top:2px solid #ccc"><td>total</td><td>${usageTotals.calls}</td><td>${usageMatchedRuns || '—'}</td><td>${fmtK(usageTotals.input)}</td><td>${fmtK(usageTotals.cache_read)}</td><td>${fmtK(usageTotals.cache_write)}</td><td>${fmtK(usageTotals.output)}</td><td>${fmtUsd(usageTotals.usd, usageTotals.unpriced)}</td><td>${usageMatchedRuns && !usageTotals.unpriced ? `$${(usageTotals.usd / usageMatchedRuns).toFixed(3)}` : '—'}</td><td></td></tr>`
+      : '';
+
     // ── sources (session-scoped ref context) ──
     const srcSessions = {}, srcRuns = {};
     for (const e of sessions) { const r = (e.props && e.props.ref) || e.ref || 'direct'; srcSessions[r] = (srcSessions[r] || 0) + 1; }
@@ -1182,6 +1224,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log.</p>
+    <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
     <h2>Prompt-cache viability</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token; a hit costs 0.1x — so a prompt prefix needs roughly <b>two hits per write</b> before caching saves money. This counts a run as a would-be hit when the same tool ran again within ${TTL_MIN} minutes. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further.</p>
     <p style="font-size:13px;margin:0 0 8px"><b>${cacheWouldHit} of ${cacheRuns} runs</b> (${cacheRate}%) would have hit a warm cache. ${escH(cacheVerdict)}</p>

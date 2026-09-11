@@ -248,12 +248,23 @@ const requestStandard = new AsyncLocalStorage();
 // per module would nest 128 synchronous frames under every request. Each
 // module's marker runs immediately before that module, so the last write before
 // the matching handler is the right one.
-function enterRouteStandard(standard) {
-  requestStandard.enterWith(standard || null);
+//
+// The store also carries the ROUTE SLUG (the route file's basename), because
+// it is the one per-tool key every model call underneath a request can reach
+// without being told — the per-call `label` is free-form and one tool uses
+// up to twenty-five of them. lib/claude.js reads it to attribute token usage.
+function enterRouteStandard(standard, route) {
+  requestStandard.enterWith({ standard: standard || null, route: route || null });
 }
 
 function currentStandard() {
-  return requestStandard.getStore() || null;
+  const s = requestStandard.getStore();
+  return (s && s.standard) || null;
+}
+
+function currentRoute() {
+  const s = requestStandard.getStore();
+  return (s && s.route) || null;
 }
 
 // Prepended below the epistemic rules, so the universal contract stays the
@@ -271,5 +282,6 @@ module.exports = {
   FROZEN_V1,
   enterRouteStandard,
   currentStandard,
+  currentRoute,
   withOutputStandard,
 };

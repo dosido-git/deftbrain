@@ -53,4 +53,48 @@ const ACKNOWLEDGED_NEWER = [
   'claude-opus-5',
 ];
 
-module.exports = { MODELS, ALL_MODELS, ACKNOWLEDGED_NEWER };
+// ── Price table, USD per million tokens ─────────────────────────────────
+// Used ONLY to estimate cost in the metrics report. Matched by longest
+// model-id prefix, so a pinned snapshot ('claude-haiku-4-5-20251001') picks up
+// its family row. These are published list prices at the time of writing —
+// they drift, and a new model generation can land on a different tier — so
+// treat the report's dollar figures as estimates and reconcile against the
+// Anthropic console. Override or extend without a deploy:
+//   MODEL_PRICING_JSON='{"claude-opus-4-8":{"in":5,"out":25,"cache_write":6.25,"cache_read":0.5}}'
+// An unmatched model yields `null`, which the report shows as "—" rather than
+// a wrong number.
+const DEFAULT_PRICING = {
+  'claude-opus-4':    { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },
+  'claude-sonnet-4':  { in: 3,  out: 15, cache_write: 3.75,  cache_read: 0.30 },
+  'claude-haiku-4-5': { in: 1,  out: 5,  cache_write: 1.25,  cache_read: 0.10 },
+  'claude-opus':      { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },
+  'claude-sonnet':    { in: 3,  out: 15, cache_write: 3.75,  cache_read: 0.30 },
+  'claude-haiku':     { in: 1,  out: 5,  cache_write: 1.25,  cache_read: 0.10 },
+};
+let PRICING = DEFAULT_PRICING;
+try {
+  if (process.env.MODEL_PRICING_JSON) PRICING = { ...DEFAULT_PRICING, ...JSON.parse(process.env.MODEL_PRICING_JSON) };
+} catch (_) { /* keep defaults; a bad override must never break startup */ }
+
+function priceFor(model) {
+  const id = String(model || '');
+  let best = null;
+  for (const prefix of Object.keys(PRICING)) {
+    if (id.startsWith(prefix) && (!best || prefix.length > best.length)) best = prefix;
+  }
+  return best ? PRICING[best] : null;
+}
+
+// usage = { input_tokens, output_tokens, cache_read_input_tokens, cache_creation_input_tokens }
+// (the SDK's shape). Returns USD, or null when the model is not in the table.
+function estimateCostUSD(model, usage) {
+  const p = priceFor(model);
+  if (!p || !usage) return null;
+  const n = k => Number(usage[k] || 0);
+  return (n('input_tokens') * p.in
+        + n('output_tokens') * p.out
+        + n('cache_creation_input_tokens') * p.cache_write
+        + n('cache_read_input_tokens') * p.cache_read) / 1e6;
+}
+
+module.exports = { MODELS, ALL_MODELS, ACKNOWLEDGED_NEWER, PRICING, priceFor, estimateCostUSD };

@@ -25,7 +25,10 @@ files.forEach(file => {
     // point: a route's model calls inherit the contract without naming it,
     // including the ones that call anthropic.messages.create directly.
     const declared = routeModule.outputStandard || null;
-    router.use('/', (req, res, next) => { enterRouteStandard(declared); next(); });
+    // The slug travels with the standard so every model call under this
+    // request can attribute its token usage to the tool (see lib/claude.js).
+    const slug = file.replace(/\.js$/, '');
+    router.use('/', (req, res, next) => { enterRouteStandard(declared, slug); next(); });
     router.use('/', routeModule);
   } catch (err) {
     console.error(`  ❌ Failed to load route ${file}:`, err.message);
