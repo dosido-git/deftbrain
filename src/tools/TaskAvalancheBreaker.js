@@ -22,6 +22,24 @@ const EXAMPLES = [
     availableTime: '30',
     energy: 5,
   },
+  {
+    project: "Have a difficult conversation with my roommate about splitting bills fairly. We've been avoiding it for two months and it's starting to affect everything else between us.",
+    overwhelmReasons: { too_many_steps: false, dont_know_start: true, emotionally_difficult: true, boring: false, unfamiliar: false },
+    availableTime: '10',
+    energy: 3,
+  },
+  {
+    project: 'Renew my passport and driver\'s license, both expired last month. Need to find all the documents, get new photos, and go to two different offices.',
+    overwhelmReasons: { too_many_steps: true, dont_know_start: false, emotionally_difficult: false, boring: true, unfamiliar: false },
+    availableTime: '15',
+    energy: 8,
+  },
+  {
+    project: "Clean out my late father's garage. It's decades of tools, boxes, and paperwork and I don't know what's actually worth keeping versus what to throw out.",
+    overwhelmReasons: { too_many_steps: true, dont_know_start: true, emotionally_difficult: true, boring: false, unfamiliar: true },
+    availableTime: '5',
+    energy: 2,
+  },
 ];
 const TaskAvalancheBreaker = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

@@ -130,6 +130,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 100 | SleepArchitect | i18n | — | 2 | 5 (+ rotating night-shift worker, older adult with pain/temperature wakeups, moderate drinker with unexplained 4am wakeups; covers 6 goals and 8 disruptor types; 3 keys ×13) | ✅ 2026-09-11 |
 | 101 | SmallChangeBigDifference | i18n | — | 2 | 5 (+ new parent running on no sleep, student stuck in all-nighter cram cycles, retiree with unstructured drifting days; 9 keys ×13) | ✅ 2026-09-11 |
 | 102 | SocialBatteryAdvisor | inline | — | 2 | 5 (+ health-heavy day where therapy recharges more than a short work talk drains, a deceptively 'easy' day that drains steadily anyway, a loud social day that recharges while the solo commute is the real drain; covers all 6 categories) | ✅ 2026-09-11 |
+| 103 | SpiralStopper | inline | 3 (spiral/frozen/crashed) | 2 (spiral, frozen — frozen example set the wrong fields, never populated its own `stuckOn` input) | 5 per mode (15 total): spiral spans intensity 2-5 across 5 different triggers; frozen gets 5 real `stuckOn` scenarios (previously broken — fixed `loadExample` to branch by mode and set the field each mode actually renders); crashed gets one example per all 5 crash types across mild/moderate/severe | ✅ 2026-09-11 |
+| 104 | SubscriptionTamer | inline | — | 2 sample sets | 5 sample sets (+ gaming/food with a cancelling sub, finance/productivity with paused + already-cancelled subs, a shared household plan) covering all 10 categories, all 3 cycles, and all 4 statuses | ✅ 2026-09-11 |
+| 105 | TaskAvalancheBreaker | inline | — | 2 | 5 (+ emotionally-difficult roommate conversation, boring bureaucratic renewal at high energy, fully-loaded overwhelm at very low energy clearing out a late parent's garage; covers all 5 overwhelm reasons and the full energy/time range) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

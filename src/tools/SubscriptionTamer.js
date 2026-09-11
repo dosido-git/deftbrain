@@ -536,6 +536,29 @@ const SubscriptionTamer = ({ tool }) => {
         newSub({ name: 'Password manager',    cost: 35.88,  cycle: 'yearly',  usage: 'daily',   category: 'productivity' }),
         newSub({ name: 'Meditation app',      cost: 69.99,  cycle: 'yearly',  usage: 'forgot',  category: 'fitness' }),
       ],
+      // A weekly-cycle grocery box plus a subscription already mid-cancellation.
+      [
+        newSub({ name: 'Xbox Game Pass',     cost: 16.99, cycle: 'monthly', usage: 'weekly',  category: 'gaming' }),
+        newSub({ name: 'HelloFresh',         cost: 89.94, cycle: 'weekly',  usage: 'rarely',   category: 'food' }),
+        newSub({ name: 'DoorDash DashPass',  cost: 9.99,  cycle: 'monthly', usage: 'monthly',  category: 'food' }),
+        newSub({ name: 'PlayStation Plus',   cost: 79.99, cycle: 'yearly',  usage: 'daily',    category: 'gaming' }),
+        newSub({ name: 'Old gym I quit',     cost: 45.00, cycle: 'monthly', usage: 'forgot',   category: 'fitness', status: 'cancelling' }),
+      ],
+      // Finance/productivity stack with a paused and an already-cancelled entry.
+      [
+        newSub({ name: 'Robinhood Gold',            cost: 5.00,  cycle: 'monthly', usage: 'monthly', category: 'finance' }),
+        newSub({ name: 'Credit monitoring service', cost: 24.99, cycle: 'monthly', usage: 'forgot',  category: 'finance', status: 'cancelling' }),
+        newSub({ name: 'Notion Plus',                cost: 8.00,  cycle: 'monthly', usage: 'daily',   category: 'productivity' }),
+        newSub({ name: 'Old VPN service',            cost: 99.00, cycle: 'yearly',  usage: 'rarely',  category: 'other', status: 'paused' }),
+        newSub({ name: 'LinkedIn Premium',           cost: 39.99, cycle: 'monthly', usage: 'monthly', category: 'productivity', status: 'cancelled', cancelledDate: '2026-06-01' }),
+      ],
+      // A household plan with shared subscriptions split across the family.
+      [
+        newSub({ name: 'Family Disney+',   cost: 15.99, cycle: 'monthly', usage: 'weekly',  category: 'streaming', shared: true, sharedWith: ['Partner', 'Kids'] }),
+        newSub({ name: 'YouTube TV',       cost: 82.99, cycle: 'monthly', usage: 'daily',    category: 'streaming' }),
+        newSub({ name: 'Costco membership', cost: 65.00, cycle: 'yearly',  usage: 'monthly', category: 'other', shared: true, sharedWith: ['Partner'] }),
+        newSub({ name: 'Duolingo Super',   cost: 83.99, cycle: 'yearly',  usage: 'daily',    category: 'other' }),
+      ],
     ]);
     persistSubs(sample);
     setInputMode('manual');
