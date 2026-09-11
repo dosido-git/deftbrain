@@ -49,8 +49,21 @@ const KEPT_VISIBLE = 6;
 const DEDUPE_WINDOW_MS = 24 * 60 * 60 * 1000;
 const normSituation = (s) => (s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
+// Polling for phase 1 (research readiness) below. A cold situation's search
+// runs ~40-90s; 24 polls at 5s covers a slower one without a client-side
+// timeout that's shorter than the search itself — which was the actual bug
+// behind the old "could not verify enough quotations" message: the main
+// endpoint's synchronous 45s cold wait was regularly shorter than the search
+// it was waiting on, so a visitor's first search for a brand-new situation
+// failed even though the research was seconds from landing. Same numbers and
+// shape as Signal vs. Noise's research/synthesis split (2026-09-11).
+const RESEARCH_POLLS = 24;
+const RESEARCH_POLL_MS = 5000;
+const WARM_RETRIES = 2;
+const WARM_RETRY_DELAY_MS = 6000;
+
 const SomeoneSaidItBetter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, tPlural } = useTranslation();
 
@@ -112,9 +125,15 @@ const SomeoneSaidItBetter = ({ tool }) => {
   const [restoredFind, setRestoredFind] = useState(null);
   const [currentFindId, setCurrentFindId] = useState(null);
   const [error, setError] = useState('');
+  // research: waiting on the verified-quote search itself. synthesis:
+  // choosing and explaining picks from an already-cached packet — normally
+  // fast, since phase 1 doesn't move on until the packet is ready.
+  const [phase, setPhase] = useState('idle');
+  const [preview, setPreview] = useState(null); // verified quote count, once known
   const resultsRef = useRef(null);
 
   const canSubmit = situation.trim().length > 0;
+  const busy = loading || phase !== 'idle';
 
   // Today / Yesterday / "Sep 8" — easier to scan than a full numeric date.
   const relativeDay = useCallback((iso) => {
@@ -172,20 +191,70 @@ const SomeoneSaidItBetter = ({ tool }) => {
 
   const runSearch = useCallback(async ({ situationText, needVal, voiceVal, force = false, previousQuotes = null }) => {
     const trimmed = situationText.trim();
-    if (!trimmed || loading) return;
+    if (!trimmed || busy) return;
     setError(''); setResults(null); setRestoredFind(null);
+    // Phase 1 only needs what the research step itself reads; the match step's
+    // extra fields (need, previousQuotes, locale) would be dead params there.
+    const researchPayload = { situation: trimmed, voice: voiceVal, force: force || undefined };
+    const matchPayload = {
+      situation: trimmed, need: needVal, voice: voiceVal,
+      force: force || undefined,
+      previousQuotes: previousQuotes || undefined,
+      userLocale, userCurrency, userRegion,
+    };
     try {
-      const data = await callToolEndpoint('someone-said-it-better', {
-        situation: trimmed, need: needVal, voice: voiceVal,
-        force: force || undefined,
-        previousQuotes: previousQuotes || undefined,
-        userLocale, userCurrency, userRegion,
-      });
+      // Phase 1 — research readiness. A cold situation reports `pending`
+      // while the search runs; a warm one (or a repeat of the same search)
+      // is `ready` on the first poll.
+      setPhase('research');
+      let ready = null;
+      let pollFailures = 0;
+      for (let poll = 0; poll < RESEARCH_POLLS; poll++) {
+        try {
+          // Only the FIRST poll carries `force`: it drops the cached packet
+          // and starts the fresh fetch; later polls just wait for it to land.
+          const status = await pollToolEndpoint('someone-said-it-better/research', poll === 0 ? researchPayload : { ...researchPayload, force: undefined });
+          pollFailures = 0;
+          if (status?.status === 'ready') { ready = status; break; }
+          // The research fetch failed and is negative-cached — no point
+          // polling out the budget; the match call below returns the honest
+          // 503 and the visitor sees the real message within seconds.
+          if (status?.status === 'failed') break;
+          await new Promise(r => setTimeout(r, RESEARCH_POLL_MS));
+        } catch (e) {
+          // A poll is not the answer — a 429 (two tabs, a shared IP) or a
+          // blip must not fail the run. Back off and keep asking; give up
+          // only if the readiness endpoint itself is persistently down.
+          if (++pollFailures >= 4) throw e;
+          await new Promise(r => setTimeout(r, RESEARCH_POLL_MS * 2));
+        }
+      }
+      if (ready) setPreview(ready.quote_count || null);
+
+      // Phase 2 — matching and explaining from the cached packet. If phase 1
+      // ended without a packet, one attempt is enough: it answers 503
+      // immediately from the negative cache, and retrying would only wait it out.
+      setPhase('synthesis');
+      let data = null;
+      const retries = ready ? WARM_RETRIES : 0;
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          data = await callToolEndpoint('someone-said-it-better', matchPayload);
+          break;
+        } catch (e) {
+          if (e?.code !== 'quote_research_unavailable' || attempt === retries) throw e;
+          await new Promise(r => setTimeout(r, WARM_RETRY_DELAY_MS));
+        }
+      }
+      setPhase('idle'); setPreview(null);
       setResults(data);
       const id = rememberFind({ situation: trimmed, need: needVal, voice: voiceVal }, data);
       setCurrentFindId(id);
-    } catch (e) { setError(e.message || t('ssib_error_generic')); }
-  }, [loading, callToolEndpoint, rememberFind, setResults, userLocale, userCurrency, userRegion, t]);
+    } catch (e) {
+      setPhase('idle'); setPreview(null);
+      setError(e?.code === 'quote_research_unavailable' ? t('ssib_research_unavailable') : (e.message || t('ssib_error_generic')));
+    }
+  }, [busy, callToolEndpoint, pollToolEndpoint, rememberFind, setResults, userLocale, userCurrency, userRegion, t]);
 
   const handleSubmit = useCallback(() => {
     runSearch({ situationText: situation, needVal: need, voiceVal: voice });
@@ -196,12 +265,12 @@ const SomeoneSaidItBetter = ({ tool }) => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading) handleSubmit();
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !busy) handleSubmit();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, handleSubmit]);
+  }, [busy, handleSubmit]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('SomeoneSaidItBetter', EXAMPLES);
@@ -216,6 +285,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
   const handleReset = useCallback(() => {
     setSituation(''); setNeed('perspective'); setVoice('any');
     setResults(null); setRestoredFind(null); setCurrentFindId(null); setError('');
+    setPhase('idle'); setPreview(null);
   }, [setResults]);
 
   // Reopening a Recent Find restores the whole cached result — no new
@@ -325,7 +395,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
               <p className={`text-base ${c.textSecondary}`}>
                 <span className="me-2 text-lg">{tool?.icon ?? '📚'}</span>{tool?.tagline ?? t('ssib_tagline')}
               </p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              <button onClick={loadExample} disabled={busy} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {(results || situation.trim()) && (
@@ -344,7 +414,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                 {t('ssib_situation_label')} <span className={c.required}>*</span>
               </label>
               <textarea value={situation} onChange={e => setSituation(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmit) { e.preventDefault(); handleSubmit(); } }}
+                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !busy && canSubmit) { e.preventDefault(); handleSubmit(); } }}
                 placeholder={t('ssib_situation_ph')}
                 rows={5} maxLength={2200}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
@@ -378,12 +448,24 @@ const SomeoneSaidItBetter = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
-            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !canSubmit}
+            {/* Phase status: a cold situation's search can take a while, and
+                saying so beats the visitor sitting on a bare spinner — or
+                worse, a "try again" error for a search that was seconds from
+                landing. Same pattern as Signal vs. Noise. */}
+            {busy && (
+              <p className={`text-xs ${c.textMuted}`}>
+                {phase === 'research' && t('ssib_research_warming')}
+                {phase === 'synthesis' && (preview ? t('ssib_research_synthesizing', { n: preview }) : t('ssib_processing'))}
+                {phase === 'idle' && t('ssib_processing')}
+              </p>
+            )}
+
+            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || phase !== 'idle' || !canSubmit}
               className={`relative w-full py-3 rounded-xl font-bold min-h-[48px] flex items-center justify-center gap-2 ${!canSubmit ? c.btnIdle : c.btnPrimary}`}>
-              {loading
+              {busy
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '📚'}</span> {t('ssib_processing')}</>
                 : <><span>{tool?.icon ?? '📚'}</span> {t('ssib_submit')}</>}
-              {!loading && (
+              {!busy && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
                   ⌘↵
@@ -410,7 +492,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className={`text-[10px] ${c.textMuted}`}>{t('ssib_found_on', { date: foundLabel })}</span>
                   {(restoredFind || !foundToday) && (
-                    <button onClick={handleFindDifferentWords} disabled={loading}
+                    <button onClick={handleFindDifferentWords} disabled={busy}
                       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/30' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
                       {t('ssib_find_different_words')}
                     </button>
@@ -471,8 +553,8 @@ const SomeoneSaidItBetter = ({ tool }) => {
               const primary = (e.quotes || []).find(q => q.role === 'one_to_keep') || e.quotes?.[0];
               if (!primary) return null;
               return (
-                <button key={e.id} onClick={() => reopenFind(e)} disabled={loading} title={e.preview}
-                  className={`w-full text-start py-3 group ${loading ? 'opacity-60' : ''}`}>
+                <button key={e.id} onClick={() => reopenFind(e)} disabled={busy} title={e.preview}
+                  className={`w-full text-start py-3 group ${busy ? 'opacity-60' : ''}`}>
                   <p className={`text-sm italic leading-snug ${c.text}`}>"{primary.text}"</p>
                   <p className={`text-xs mt-0.5 ${c.textSecondary}`}>— {primary.author}</p>
                   <p className={`text-[11px] mt-1 flex items-center gap-1 ${c.textMuted}`}>

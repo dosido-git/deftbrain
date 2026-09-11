@@ -2,13 +2,18 @@
 // Uses the shared groundedFacts web-search/cache primitive. The main generation
 // call never invents quotation text; it may only choose from this packet.
 
-const { groundedFacts, groundedData, normalizeKeyPart } = require('./groundedFacts');
+const { groundedFacts, groundedData, groundedStatus, normalizeKeyPart } = require('./groundedFacts');
 const { NO_QUOTE_RULE } = require('./factCheck');
 
 const TTL_MS = Number(process.env.QUOTE_RESEARCH_TTL_MS || 30 * 24 * 60 * 60 * 1000);
 const COLD_WAIT_MS = Number(process.env.QUOTE_RESEARCH_COLD_WAIT_MS || 45_000);
 const TIMEOUT_MS = Number(process.env.QUOTE_RESEARCH_TIMEOUT_MS || 90_000);
-const MAX_USES = Number(process.env.QUOTE_RESEARCH_MAX_USES || 5);
+// 5 -> 6, and the packet target below 5-8 -> 6-10: a request that lands one
+// verifiable quote short of the 2-quote minimum fails the whole search, so a
+// slightly wider net lowers how often that happens. Cost is one more
+// possible search per request, on a call the cache already amortizes across
+// everyone asking about the same situation.
+const MAX_USES = Number(process.env.QUOTE_RESEARCH_MAX_USES || 6);
 
 function compact(s, n = 300) { return String(s || '').trim().replace(/\s+/g, ' ').slice(0, n); }
 function keyFor({ situation, voice }) {
@@ -43,15 +48,20 @@ function render(packet) {
   return `\n\nVERIFIED QUOTE PACKET — quotation wording and attribution may ONLY come from this packet. Do not alter quotation text, author, work, or source. If a candidate is not a good fit, omit it.\n${JSON.stringify(packet)}`;
 }
 
-async function quoteResearch({ situation, voice = 'any', force = false }) {
+// `coldWaitMs` overrides the default synchronous wait. The main route keeps
+// the default (a researched answer or a 503 for a direct caller); the
+// /research readiness endpoint passes 0 so a poll returns immediately —
+// cached packet or "pending" — while the fetch it just started runs on in
+// the background. Same split as claimResearch.js.
+async function quoteResearch({ situation, voice = 'any', force = false, coldWaitMs = COLD_WAIT_MS }) {
   const cacheKey = keyFor({ situation, voice });
   const block = await groundedFacts({
     cacheKey,
     label: 'someone-said-it-better-quotes',
     ttlMs: TTL_MS,
-    coldWaitMs: COLD_WAIT_MS,
+    coldWaitMs,
     timeoutMs: TIMEOUT_MS,
-    maxTokens: 5500,
+    maxTokens: 6500,
     maxUses: MAX_USES,
     // `force`: "Find different words for this" wants a genuinely fresh
     // research pass, not the same 30-day-cached candidate set re-served —
@@ -70,7 +80,7 @@ HARD RULES:
 - Return only candidates you can verify. Return ONLY valid JSON.
 
 ${NO_QUOTE_RULE}`,
-    userPrompt: `Find 5-8 verified short quotations that could illuminate this situation:\n${compact(situation, 1800)}\n\nDESIRED VOICE: ${compact(voice, 60)}\n\nReturn ONLY:\n{\n  "researched_at": "ISO date/time",\n  "quotes": [\n    {\n      "text": "exact quotation, 25 words maximum",\n      "author": "verified speaker/author",\n      "work": "original work/speech/letter if established, otherwise null",\n      "date": "date if established, otherwise null",\n      "source_title": "title of page actually visited",\n      "publisher": "archive/publisher/institution",\n      "url": "full URL actually visited",\n      "verification": "primary | authoritative_secondary",\n      "context_note": "brief provenance/context only if established by source",\n      "themes": ["short theme labels"]\n    }\n  ]\n}`,
+    userPrompt: `Find 6-10 verified short quotations that could illuminate this situation:\n${compact(situation, 1800)}\n\nDESIRED VOICE: ${compact(voice, 60)}\n\nReturn ONLY:\n{\n  "researched_at": "ISO date/time",\n  "quotes": [\n    {\n      "text": "exact quotation, 25 words maximum",\n      "author": "verified speaker/author",\n      "work": "original work/speech/letter if established, otherwise null",\n      "date": "date if established, otherwise null",\n      "source_title": "title of page actually visited",\n      "publisher": "archive/publisher/institution",\n      "url": "full URL actually visited",\n      "verification": "primary | authoritative_secondary",\n      "context_note": "brief provenance/context only if established by source",\n      "themes": ["short theme labels"]\n    }\n  ]\n}`,
     render: raw => {
       const packet = cleanPacket(raw);
       return packet ? { block: render(packet), data: packet } : { block: '', data: null };
@@ -80,4 +90,11 @@ ${NO_QUOTE_RULE}`,
   return { packet, block: packet ? render(packet) : '', cacheKey };
 }
 
-module.exports = { quoteResearch, cleanPacket };
+// 'ready' | 'in_flight' | 'failed' | 'none' for this situation — see
+// groundedStatus. Lets the readiness endpoint say "failed" instead of
+// "pending" while the negative cache holds after a failed fetch.
+function quoteResearchState({ situation, voice = 'any' }) {
+  return groundedStatus(keyFor({ situation, voice }));
+}
+
+module.exports = { quoteResearch, quoteResearchState, cleanPacket };
