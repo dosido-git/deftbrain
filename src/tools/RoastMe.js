@@ -36,9 +36,13 @@ const RoastMe = ({ tool }) => {
     { value: 'scorched', label: t('rm_heat_scorched'), icon: '💀', desc: t('rm_heat_scorched_desc') },
   ];
 
+  // Five, rotated across every content type and heat level.
   const EXAMPLES = [
     { content: t('rm_ex1', { sym }), contentType: 'linkedin', heatLevel: 'medium' },
     { content: t('rm_ex2', { sym }), contentType: 'social',   heatLevel: 'gentle' },
+    { content: t('rm_ex3'),          contentType: 'dating',   heatLevel: 'scorched' },
+    { content: t('rm_ex4'),          contentType: 'email',    heatLevel: 'medium' },
+    { content: t('rm_ex5'),          contentType: 'social',   heatLevel: 'scorched' },
   ];
 
   // ── Theme — verbatim from CONVENTIONS.md PF-2 ──

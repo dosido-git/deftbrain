@@ -118,6 +118,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 88 | ReadTheRoom (RoomReader) | i18n | 4 comfort levels × 12 event types | 2 | 5 (+ slightly-awkward first date, nervous networking mixer, fine new-job lunch; 9 keys ×13; fixed a Japanese plain-form finding) | ✅ 2026-09-11 |
 | 89 | RecipeChaosSolver | i18n | — | 3 | 5 (+ half-frozen roast chicken, over-salted stew from misread recipe; 4 keys ×13) | ✅ 2026-09-11 |
 | 90 | RentersDepositSaver | inline | 5 countries | 2 (US, UK) | 5 (+ Australia, Canada, and 'other' — Germany; covers every supported country) | ✅ 2026-09-11 |
+| 91 | ResearchDecoder | inline | — | 2 | 5 (+ 4-day-workweek trial with selection bias, phase 2 eczema drug trial, screen-time/depression meta-analysis with reverse-causation caveat) | ✅ 2026-09-11 |
+| 92 | RoastMe | i18n | 4 content types × 3 heat levels | 2 | 5 (+ scorched dating bio, medium corporate email, scorched wanderlust social post; 3 keys ×13; fixed a French tu finding) | ✅ 2026-09-11 |
+| 93 | RoommateCourt | inline | 6 living situations | 2 (apartment, house) | 5 (+ dorm boyfriend who basically lives there, partner's recurring chore, sibling who moved back in 'temporarily') | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
