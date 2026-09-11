@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -138,6 +138,24 @@ const SomeoneSaidItBetter = ({ tool }) => {
   const [preview, setPreview] = useState(null); // verified quote count, once known
   const resultsRef = useRef(null);
 
+  // `results` persists across a reload (usePersistentState); situation, need,
+  // voice, currentFindId and restoredFind do not. A visitor who reloaded
+  // while a result was on screen used to see the right quotes but a "Find
+  // different words" button that silently did nothing and no Keep hearts at
+  // all, because those all read the plain state — which had reset to empty/
+  // null — instead of the persisted result. Restore it once, before paint,
+  // from the fields the result was stored with.
+  useLayoutEffect(() => {
+    if (results && !situation.trim()) {
+      setSituation(results.__situation || '');
+      setNeed(results.__need || 'perspective');
+      setVoice(results.__voice || 'any');
+      setCurrentFindId(results.__findId || null);
+      if (results.__historical) setRestoredFind(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const canSubmit = situation.trim().length > 0;
   const busy = loading || phase !== 'idle';
 
@@ -263,8 +281,12 @@ const SomeoneSaidItBetter = ({ tool }) => {
         }
       }
       setPhase('idle'); setPreview(null);
-      setResults(data);
       const id = rememberFind({ situation: trimmed, need: needVal, voice: voiceVal }, data);
+      // __-prefixed fields are this component's own bookkeeping, not part of
+      // the API response — stored on the persisted result itself so a page
+      // reload can restore situation/need/voice/findId (see the hydration
+      // effect above) instead of leaving them at their empty defaults.
+      setResults({ ...data, __situation: trimmed, __need: needVal, __voice: voiceVal, __findId: id, __historical: false });
       setCurrentFindId(id);
     } catch (e) {
       setPhase('idle'); setPreview(null);
@@ -324,20 +346,28 @@ const SomeoneSaidItBetter = ({ tool }) => {
         why_this_one: q.whyThisOne,
         quote: { id: q.quoteId, text: q.text, author: q.author, work: q.work, date: q.date, publisher: q.publisher, source_title: q.sourceTitle, url: q.url },
       })),
+      __situation: entry.situation, __need: entry.need, __voice: entry.voice, __findId: entry.id, __historical: true,
     });
     setShowAllFinds(false);
   }, [setResults]);
 
+  // Bug: this used to read restoredFind.situation/need/voice/quotes, so it
+  // silently did nothing whenever the button showed next to a FRESH result
+  // (restoredFind null) rather than a reopened one — which turned out to be
+  // the common case, since a result's own researched_at often doesn't land
+  // on "today" even for a search that just ran. `situation`/`need`/`voice`
+  // and `results` already reflect whatever is currently on screen, reopened
+  // or not, so read from those instead.
   const handleFindDifferentWords = useCallback(() => {
-    if (!restoredFind) return;
+    if (!results || !situation.trim()) return;
     runSearch({
-      situationText: restoredFind.situation,
-      needVal: restoredFind.need,
-      voiceVal: restoredFind.voice,
+      situationText: situation,
+      needVal: need,
+      voiceVal: voice,
       force: true,
-      previousQuotes: (restoredFind.quotes || []).map(q => q.text),
+      previousQuotes: (results.picks || []).map(p => p.quote?.text).filter(Boolean),
     });
-  }, [restoredFind, runSearch]);
+  }, [results, situation, need, voice, runSearch]);
 
   const unkeep = useCallback((findId, quoteId) => {
     setKeptQuotes(prev => prev.filter(k => !(k.findId === findId && k.quoteId === quoteId)));
