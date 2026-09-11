@@ -404,9 +404,13 @@ const NerveCheck = ({ tool }) => {
   const readinessLabel = (n) => n <= 3 ? t('nck_terrified') : n >= 8 ? t('nck_feeling_good') : '';
 
   const loadExample = useCallback(() => {
+    // Five, rotated across five of the eight situation types.
     const ex = pickExample('NerveCheck', [
       { situation: 'nck_ex_situation', fears: 'nck_ex_fears', type: 'interview' },
       { situation: 'nck_ex2_situation', fears: 'nck_ex2_fears', type: 'confrontation' },
+      { situation: 'nck_ex3_situation', fears: 'nck_ex3_fears', type: 'presentation' },
+      { situation: 'nck_ex4_situation', fears: 'nck_ex4_fears', type: 'date' },
+      { situation: 'nck_ex5_situation', fears: 'nck_ex5_fears', type: 'medical' },
     ]);
     setSituation(t(ex.situation));
     setSpecificFears(t(ex.fears));
@@ -415,9 +419,14 @@ const NerveCheck = ({ tool }) => {
   }, [t, setResults]);
 
   const loadDebriefExample = useCallback(() => {
+    // Five, rotated across the readiness range: better than expected, worse
+    // than expected, roughly as expected, and the two extremes.
     const ex = pickExample('NerveCheckDebrief', [
       { situation: 'nck_debex_situation', how: 'nck_debex_how', surprised: 'nck_debex_surprised', before: 4, after: 7 },
       { situation: 'nck_debex2_situation', how: 'nck_debex2_how', surprised: '', before: 6, after: 3 },
+      { situation: 'nck_debex3_situation', how: 'nck_debex3_how', surprised: '', before: 5, after: 6 },
+      { situation: 'nck_debex4_situation', how: 'nck_debex4_how', surprised: 'nck_debex4_surprised', before: 3, after: 8 },
+      { situation: 'nck_debex5_situation', how: 'nck_debex5_how', surprised: '', before: 2, after: 4 },
     ]);
     setSituation(t(ex.situation));
     setHowItWent(t(ex.how));
@@ -428,9 +437,13 @@ const NerveCheck = ({ tool }) => {
   }, [t, setDebriefResults]);
 
   const loadCoachExample = useCallback(() => {
+    // Five, rotated across every relation and both non-adult ages.
     const ex = pickExample('NerveCheckCoach', [
       { who: 'nck_coex_who', situation: 'nck_coex_situation', relation: 'child', age: 'child' },
       { who: 'nck_coex2_who', situation: 'nck_coex2_situation', relation: 'partner', age: 'adult' },
+      { who: 'nck_coex3_who', situation: 'nck_coex3_situation', relation: 'student', age: 'teen' },
+      { who: 'nck_coex4_who', situation: 'nck_coex4_situation', relation: 'friend', age: 'adult' },
+      { who: 'nck_coex5_who', situation: 'nck_coex5_situation', relation: 'coworker', age: 'adult' },
     ]);
     setCoachWho(t(ex.who));
     setCoachSituation(t(ex.situation));

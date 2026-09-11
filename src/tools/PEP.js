@@ -85,9 +85,15 @@ const PEP = ({ tool }) => {
   const MOOD_OPTS = MOOD_META.map(o => ({ v: o.v, e: o.e, l: t(o.lk) }));
   const ENV_OPTS = ENV_META.map(o => ({ v: o.v, e: o.e, l: t(o.lk) }));
 
+  // Five, rotated across energy, mood and environment: a stressed low-energy
+  // start, a sad drained one, an anxious pre-presentation spike, a numb
+  // do-nothing day, and an overstimulated commute.
   const examples = [
     { energy: 3, time: '30 minutes', mood: '', environment: '', context: t('pep_ex1_context') },
     { energy: 2, time: '15 minutes', mood: '', environment: 'home', context: t('pep_ex2_context') },
+    { energy: 7, time: '5 minutes', mood: 'anxious', environment: 'office', context: t('pep_ex3_context') },
+    { energy: 1, time: '1 hour', mood: 'numb', environment: 'in_bed', context: t('pep_ex4_context') },
+    { energy: 5, time: '15 minutes', mood: 'overstimulated', environment: 'commuting', context: t('pep_ex5_context') },
   ];
 
   const localeParams = { userLocale, userCurrency, userRegion };
