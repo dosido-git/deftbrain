@@ -175,9 +175,16 @@ const FutureProof = ({ tool }) => {
   handleSubmitRef.current = handleSubmit;
 
   const loadExample = useCallback(() => {
+    // Five, rotated across every subject type: a career path, a trade
+    // business's future, whether physical retail still makes sense, a
+    // long-term investment bet, and a relationship commitment with no
+    // concrete plan behind it.
     const ex = pickExample('FutureProof', [
-      { subj: 'fp_ex_subject',  type: 'career',  ctx: 'fp_ex_context',  years: '5 years' },
-      { subj: 'fp_ex2_subject', type: 'skill',   ctx: 'fp_ex2_context', years: '10 years' },
+      { subj: 'fp_ex_subject',  type: 'career',     ctx: 'fp_ex_context',  years: '5 years' },
+      { subj: 'fp_ex2_subject', type: 'skill',      ctx: 'fp_ex2_context', years: '10 years' },
+      { subj: 'fp_ex3_subject', type: 'technology', ctx: 'fp_ex3_context', years: '10 years' },
+      { subj: 'fp_ex4_subject', type: 'investment', ctx: 'fp_ex4_context', years: '10 years' },
+      { subj: 'fp_ex5_subject', type: 'commitment', ctx: 'fp_ex5_context', years: '3 years' },
     ]);
     setSubject(t(ex.subj));
     setSubjectType(ex.type);

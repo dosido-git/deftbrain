@@ -376,9 +376,16 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const loadExample = () => {
     // A friend drifting because life got busy, and one who has been quiet for
     // years — the message that suits those two is not remotely the same.
+    // Five, rotated: a college roommate drifting through new parenthood, a
+    // best man gone quiet after years of silence, a sister going through a
+    // divorce, an old manager who taught you the job, and a mentor's message
+    // you still haven't answered.
     const ex = pickExample('FriendshipFadeAlerter', [
       { nameKey: 'ffa_example_name', notesKey: 'ffa_example_notes', relationshipType: 'close_friend', rhythm: 'biweekly', daysAgo: 21 },
       { nameKey: 'ffa_example2_name', notesKey: 'ffa_example2_notes', relationshipType: 'friend', rhythm: 'semiannually', daysAgo: 400 },
+      { nameKey: 'ffa_example3_name', notesKey: 'ffa_example3_notes', relationshipType: 'family', rhythm: 'monthly', daysAgo: 95 },
+      { nameKey: 'ffa_example4_name', notesKey: 'ffa_example4_notes', relationshipType: 'former_coworker', rhythm: 'quarterly', daysAgo: 200 },
+      { nameKey: 'ffa_example5_name', notesKey: 'ffa_example5_notes', relationshipType: 'mentor', rhythm: 'semiannually', daysAgo: 21 },
     ]);
     setForm({
       ...blankPerson(),
@@ -398,9 +405,16 @@ const FriendshipFadeAlerter = ({ tool }) => {
   // empty list can never get to it. This one saves the example rather than
   // filling a form, so the screen being demonstrated is the one you land on.
   const loadExamplePerson = () => {
+    // Five, rotated: a college roommate drifting through new parenthood, a
+    // best man gone quiet after years of silence, a sister going through a
+    // divorce, an old manager who taught you the job, and a mentor's message
+    // you still haven't answered.
     const ex = pickExample('FriendshipFadeAlerter', [
       { nameKey: 'ffa_example_name', notesKey: 'ffa_example_notes', relationshipType: 'close_friend', rhythm: 'biweekly', daysAgo: 21 },
       { nameKey: 'ffa_example2_name', notesKey: 'ffa_example2_notes', relationshipType: 'friend', rhythm: 'semiannually', daysAgo: 400 },
+      { nameKey: 'ffa_example3_name', notesKey: 'ffa_example3_notes', relationshipType: 'family', rhythm: 'monthly', daysAgo: 95 },
+      { nameKey: 'ffa_example4_name', notesKey: 'ffa_example4_notes', relationshipType: 'former_coworker', rhythm: 'quarterly', daysAgo: 200 },
+      { nameKey: 'ffa_example5_name', notesKey: 'ffa_example5_notes', relationshipType: 'mentor', rhythm: 'semiannually', daysAgo: 21 },
     ]);
     const existing = allPeople.find(x => x.name === t(ex.nameKey));
     if (existing) { openPerson(existing.id); return; }

@@ -73,6 +73,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 43 | FinalWish | inline | — | 2 (complete solo, deliberately unfinished) | 5 (+ a couple with young children/guardianship, a business owner with a tangled company estate) | ✅ 2026-09-11 |
 | 44 | FocusPocus | inline | — | 3 | 5 (+ a difficult performance review with a vague 'enough', a no-exit-condition garage clean) | ✅ 2026-09-11 |
 | 45 | FocusSoundArchitect | inline | 7 tasks × 7 environments | 2 | 5 (+ studying/high-frequency-sensitive, relaxing toward sleep, tedious commute wanting variety) | ✅ 2026-09-11 |
+| 46 | FriendshipFadeAlerter | i18n | 6 relationships × 5 rhythms | 2 | 5 (+ a sister mid-divorce, an old manager who taught the job, a mentor's unanswered message; 6 keys ×13) | ✅ 2026-09-11 |
+| 47 | FutureProof | i18n | 5 subject types | 2 (career, skill) | 5 (+ physical retail's future, a long-term index-fund bet, a long-distance commitment with no concrete plan; 6 keys ×13) | ✅ 2026-09-11 |
+| 48 | GentlePushGenerator | i18n | 6 domains | already 7 | — | ✅ pre-existing |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
