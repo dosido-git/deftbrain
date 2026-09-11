@@ -205,8 +205,13 @@ export default function EmailUrgencyTriager({ tool }) {
   };
   analyzeRef.current = analyze;
 
+  // Five inboxes, rotated: a real deadline buried under process noise, a
+  // quiet mostly-newsletter day with nothing same-day, and a family signal
+  // (a terse message about a hospitalized parent) buried under retail spam.
   const loadExample = () => {
-    setEmailContent(t(pickExample('EmailUrgencyTriager', ['eut2_example_emails', 'eut2_example2_emails'])));
+    setEmailContent(t(pickExample('EmailUrgencyTriager', [
+      'eut2_example_emails', 'eut2_example2_emails', 'eut2_example3_emails', 'eut2_example4_emails', 'eut2_example5_emails',
+    ])));
     setMode('input');
   };
 

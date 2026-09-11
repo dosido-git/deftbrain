@@ -178,6 +178,10 @@ const buildPasteGuides = (t) => [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+// Five categories, rotated: electronics with the classic five-star-flood
+// pattern, beauty with 'received for free' disclosures, kitchenware that
+// reads mostly genuine, books with competitor-bashing one-stars, and
+// automotive parts mixing disclosed and undisclosed incentivized reviews.
 const EXAMPLES = [
   {
     reviewText: `★★★★★ Amazing product! Best purchase I ever made. My life changed completely. Everyone should buy these immediately. 10/10 recommend to all family members!
@@ -187,6 +191,42 @@ const EXAMPLES = [
 ★★★★★ Perfect in every way!! I've tried many similar products and these are THE BEST. My partner who has very high standards also loves them.
 ★★ Returned after 3 days. Left side stopped charging. Customer service took a week to respond. Sound was fine until it died.`,
     category: 'Electronics',
+  },
+  {
+    reviewText: `★★★★★ OMG this serum changed my skin in literally 3 DAYS!!! I look 10 years younger. Everyone at work asked what I did. Buying 5 more as gifts!!!
+★★★★★ I received this product for free in exchange for my honest review. Absolutely incredible, will be repurchasing at full price!
+★★★★★ Life changing. My dermatologist (who I've seen for 15 years) said my skin has never looked better. 100000% recommend.
+★★★ Nice texture, absorbs well. Haven't noticed a dramatic difference yet but it's only been two weeks, so managing expectations.
+★★★★★ Best skincare product on the market PERIOD. Don't waste your money on the expensive brands, THIS is all you need!!
+★ Broke me out badly within a week. Had to stop using it. Fragrance is also much stronger than the ingredient list suggests.`,
+    category: 'Beauty',
+  },
+  {
+    reviewText: `★★★★ Solid everyday knife set. The chef's knife holds an edge better than my old one. Block is a bit tight for the steak knives.
+★★★★★ Exactly as described, arrived quickly, well packaged.
+★★★ Handles feel a little light for my taste but they cut well. Wouldn't say they're worth double the price of the store brand though.
+★★★★★ We've had these for eight months now and they've held up to daily family cooking. The paring knife is my favorite.
+★★ One knife arrived with a chip in the blade. Replacement process was easy at least.
+★★★★ Good value. Not restaurant-grade but more than fine for a home kitchen.`,
+    category: 'Home & Kitchen',
+  },
+  {
+    reviewText: `★ Save your money. This is objectively worse than [Competitor Book Title] in every way — the pacing drags, the twist is telegraphed from chapter two, and the ending feels rushed.
+★★★★★ A masterpiece. I could not put this down. Read it in one sitting and immediately started it again.
+★ I don't understand the hype. If you want a REAL story in this genre, read [Competitor Author] instead, not this.
+★★★★ Genuinely moving in places, though the middle third sags. Worth reading for the ending alone.
+★ Received an advance copy from a friend of the author. Honestly? Overwritten and self-indulgent.
+★★★★★ Cried three times. Recommended it to my entire book club and we're doing it for next month's pick.`,
+    category: 'Books',
+  },
+  {
+    reviewText: `★★★★★ Installed in 20 minutes, fits perfectly, exactly the OEM replacement I needed. Great price too.
+★★★★★ Seller sent me this for free to test and I said I'd leave my honest opinion — genuinely impressed, holds up well after 3 months of daily driving.
+★★★ Fit was a little off on my model year, needed to file down one bracket slightly. Works fine now.
+★★★★★ Better quality than the dealership part at a third of the price. Will buy again for my other car.
+★★ Arrived with one mounting bolt missing. Had to source my own from a hardware store.
+★★★★★ Five stars, easy install, no issues 8 months in.`,
+    category: 'Automotive',
   },
 ];
 const FakeReviewDetective = ({ tool }) => {

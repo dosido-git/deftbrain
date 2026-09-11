@@ -45,6 +45,9 @@ const EVIDENCE_STYLES = {
 const EXAMPLES = [
   { title: 'The Office', mediaType: 'show' },
   { title: 'Inception', mediaType: 'movie' },
+  { title: 'Harry Potter', mediaType: 'book' },
+  { title: 'The Legend of Zelda', mediaType: 'game' },
+  { title: 'Severance', mediaType: 'show' },
 ];
 const FanTheory = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
