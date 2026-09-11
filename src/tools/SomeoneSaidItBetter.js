@@ -62,6 +62,12 @@ const RESEARCH_POLL_MS = 5000;
 const WARM_RETRIES = 2;
 const WARM_RETRY_DELAY_MS = 6000;
 
+// Show the visitor their own words, not a model paraphrase — a third-person
+// "the visitor was rejected…" summary made the tool sound like it was
+// discussing them with someone else. The model-written situation_as_understood
+// is a fallback for the rare case the original is too long to show in full.
+const SITUATION_DISPLAY_MAX = 480;
+
 const SomeoneSaidItBetter = ({ tool }) => {
   const { callToolEndpoint, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -134,6 +140,16 @@ const SomeoneSaidItBetter = ({ tool }) => {
 
   const canSubmit = situation.trim().length > 0;
   const busy = loading || phase !== 'idle';
+
+  // `situation` state holds the visitor's raw text for whatever is currently
+  // on screen — their live input, or (via reopenFind/handleFindDifferentWords)
+  // the original text of a Recent Find. Prefer it verbatim; fall back to the
+  // model's paraphrase only when it's too long to show in full.
+  const situationDisplayFor = useCallback((resultsObj) => {
+    const raw = situation.trim();
+    if (raw && raw.length <= SITUATION_DISPLAY_MAX) return raw;
+    return resultsObj?.situation_as_understood || raw;
+  }, [situation]);
 
   // Today / Yesterday / "Sep 8" — easier to scan than a full numeric date.
   const relativeDay = useCallback((iso) => {
@@ -356,7 +372,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
 
   const buildText = useCallback(() => {
     if (!results) return '';
-    const lines = [`💬 ${tool?.title || t('ssib_title')}`, '', `${t('ssib_your_situation')}: ${results.situation_as_understood}`, ''];
+    const lines = [`💬 ${tool?.title || t('ssib_title')}`, '', `${t('ssib_your_situation')}: ${situationDisplayFor(results)}`, ''];
     results.picks?.forEach((p) => {
       lines.push(`— ${roleLabel(p.role)} —`);
       lines.push(`"${p.quote.text}"`);
@@ -368,7 +384,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
     });
     return lines.join('\n') + BRAND;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, tool, t]);
+  }, [results, tool, t, situationDisplayFor]);
 
   // ─── Register export content ───
   useRegisterActions(results ? buildText() : '', tool?.title);
@@ -500,8 +516,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                 </div>
               )}
             </div>
-            <p className={`mt-2 text-lg font-semibold ${c.text}`}>{results.situation_as_understood}</p>
-            <p className={`mt-2 text-xs ${c.textMuted}`}>{t('ssib_verified_note')}</p>
+            <p className={`mt-2 text-lg font-semibold ${c.text}`}>{situationDisplayFor(results)}</p>
           </div>
 
           {results.picks?.map((p) => {

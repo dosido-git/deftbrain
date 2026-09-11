@@ -118,16 +118,53 @@ router.post('/someone-said-it-better', rateLimit(DEFAULT_LIMITS), async (req, re
       : [];
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    // This discipline exists because the first real output over-interpreted:
+    // an explanation turned "replaying an interview" into "a form of
+    // learning" the visitor never claimed, and domesticated Beckett into
+    // "failure is part of a continuing process" — conventional motivational
+    // advice, exactly what a tool built to resist that should not produce.
     const system = `You are the matching and explanation stage for Someone Said It Better, a DeftBrain tool. The quotations have already been retrieved and verified. Your job is ONLY to choose the 2-3 that best fit the visitor's supplied situation and explain the connection.
 
-RULES:
+SOMEONE SAID IT BETTER — MATCHING DISCIPLINE
+
+The quotation is the discovery. "Why this one" explains the connection without telling the visitor what they feel, what their experience means, or what lesson they should take from it.
+
+GROUND THE CONNECTION
+
+You may connect a quotation directly to facts the visitor supplied.
+
+Do not infer:
+- what the visitor is learning;
+- what they secretly need;
+- what their experience "really" means;
+- whether something was good for them;
+- whether failure, rejection, grief, difficulty, etc. will ultimately benefit them;
+- what the quoted person would advise the visitor to do.
+
+DO NOT FORCE INSPIRATION
+
+A quote does not need to become encouragement.
+
+Preserve what makes the quotation distinctive. It may offer perspective, recognition, consolation, challenge, wit, contradiction, ambiguity, or an unexpected way of framing the situation.
+
+Do not turn every quotation into "keep going," "you'll grow from this," "failure is part of success," or "everything happens for a reason."
+
+INTERPRET THE QUOTE, NOT THE VISITOR.
+
+Prefer: "Beckett's line puts failure and trying beside each other without treating either as final. That may be a useful counterpoint when you're replaying an outcome you wish had gone differently."
+
+Over: "The replaying you're doing is a form of 'fail better' — learning the shape of what didn't work."
+
+THE CONNECTION SHOULD BE SPECIFIC
+
+Avoid generic explanations that could accompany the same quote for almost anyone. Ask: "Why does THIS quotation belong beside THIS situation?" Answer only from the visitor's supplied situation and the meaning reasonably present in the quotation.
+
+OTHER RULES:
 - Never create, alter, complete, translate, or paraphrase quotation text or attribution.
-- Never infer the visitor's feelings, motives, diagnosis, relationships, history, or hidden circumstances.
-- Connect each quote only to facts the visitor actually supplied.
+- Address the visitor directly as "you" throughout — never refer to them in the third person ("the visitor").
 - Choose quotes that offer meaningfully different angles. Do not return three versions of the same lesson.
-- Do not force optimism. A bracing, witty, skeptical, or unresolved thought may be the best fit.
-- Keep each explanation to 1-2 useful sentences. No generic inspirational filler.
-- The explanation may interpret the idea in the quote, but must not invent historical context beyond the packet.
+- Keep each explanation to 1-2 sentences.
+- Do not invent historical context beyond the verified packet.
 - Return ONLY valid JSON.
 
 ${NO_QUOTE_RULE}`;
@@ -136,7 +173,7 @@ ${NO_QUOTE_RULE}`;
       ? `\n\nALREADY SHOWN FOR THIS SITUATION (the visitor asked for different words — prefer other quote_ids from the packet where a good fit exists; only repeat one of these if nothing else in the packet fits):\n${previousQuotes.map(t => `- "${t}"`).join('\n')}`
       : '';
 
-    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}${avoidBlock}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one concise sentence grounded only in what the visitor said",\n  "situation_label": "a short 3-6 word label for this situation, for a history list entry (e.g. \\"Retirement and what comes next\\", \\"A difficult decision\\") — describe the situation itself, never the visitor",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences connecting the quote to the supplied situation without inventing facts"\n    }\n  ]\n}`;
+    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}${avoidBlock}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one sentence, addressed to the visitor as 'you' (never 'the visitor' in the third person), grounded only in what they said — used only as a fallback when their own words are too long to show in full",\n  "situation_label": "a short 3-6 word label for this situation, for a history list entry (e.g. \\"Retirement and what comes next\\", \\"A difficult decision\\") — describe the situation itself, never the visitor",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences interpreting the QUOTE and connecting it to facts the visitor actually supplied — never interpreting the visitor's feelings, growth, or what they are learning"\n    }\n  ]\n}`;
 
     const raw = await callClaudeWithRetry({
       model: MODELS.SMART,
