@@ -212,7 +212,7 @@ const TheCrux = ({ tool }) => {
 
   const loadExample = useCallback(() => {
     setMode('distill');
-    const ex = pickExample('TheCrux', [{ n: '' }, { n: '2' }]);
+    const ex = pickExample('TheCrux', [{ n: '' }, { n: '2' }, { n: '3' }, { n: '4' }, { n: '5' }]);
     const k = f => `rec_ex${ex.n}_${f}`;
     setSubject(t(k('subject')));
     setLectureTitle(t(k('title')));

@@ -206,12 +206,18 @@ const TheDebrief = ({ tool }) => {
 
   const loadExample = useCallback(() => {
     setMode('distill');
-    const ex = pickExample('TheDebrief', [{ n: '' }, { n: '2' }]);
+    const ex = pickExample('TheDebrief', [
+      { n: '', meetingType: 'auto', tone: 'professional' },
+      { n: '2', meetingType: 'auto', tone: 'professional' },
+      { n: '3', meetingType: 'retro', tone: 'casual' },
+      { n: '4', meetingType: 'one_on_one', tone: 'formal' },
+      { n: '5', meetingType: 'client', tone: 'professional' },
+    ]);
     const k = f => `td_ex${ex.n}_${f}`;
-    setMeetingType('auto');
+    setMeetingType(ex.meetingType);
     setAttendees(t(k('attendees')));
     setContext(t(k('context')));
-    setTone('professional');
+    setTone(ex.tone);
     setTranscript(t(k('transcript')));
     setResults(null);
   }, [setMode, setMeetingType, setAttendees, setContext, setTone, setTranscript, setResults, t]);
