@@ -195,40 +195,45 @@ export const tools = [
     get: "A protocol built around your schedule rather than an ideal one, in the order to change things.",
     edge: "It won't tell you to avoid screens. It starts from what's actually happening in your evening.",
   },
-  seoDescription: "Fix your sleep with a free, personalized improvement plan built around your habits. Get quick wins to try tonight plus a phased, science-backed protocol.",
-  seoTitle: "Sleep Improvement Plan & Insomnia Fixer",
+  seoDescription: "Build a free, personalized sleep experiment plan around your own habits — quick wins to try tonight, plus a phased plan for what to test next. No diagnosis, no score.",
+  seoTitle: "Personalized Sleep Improvement Plan for Better Rest",
   title: "SleepArchitect",
   tagline: "A personalized sleep improvement protocol built around your habits",
-  tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'CBT-I', 'stress', 'anxiety', 'night', 'melatonin', 'sleep hygiene'],
+  tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'stress', 'anxiety', 'night', 'sleep hygiene'],
   icon: "😴",
   categories: ['Energy'],
   headerColor: "#c8c0e8",
-  description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a scored assessment, quick wins you can try tonight, and a phased improvement protocol grounded in sleep science.",
+  // v2 (2026-09-11): no diagnosis, no numeric score, no melatonin/medication
+  // claims, no fabricated physiology — every recommendation is framed as an
+  // experiment to try and observe, tied to what was actually reported. A
+  // reported red-flag symptom (breathing pauses, severe daytime sleepiness)
+  // gets a professional-evaluation step instead of a home protocol.
+  description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a plain-language read on it, quick wins you can try tonight, and a phased plan of experiments to test what actually helps.",
   guide: {
-    overview: "Bad sleep is usually caused by a handful of specific, fixable habits — but generic advice like 'avoid screens' rarely sticks because it's not tailored to what's actually happening. SleepArchitect takes your specific situation (your schedule, what disrupts you, what you've tried) and builds a protocol around it: what to change first, what to change next, and how to build the habits that last. The protocol is grounded in cognitive behavioral therapy for insomnia (CBT-I), the same approach used by sleep specialists — without the waitlist.",
+    overview: "Bad sleep is usually caused by a handful of specific habits — but generic advice like 'avoid screens' rarely sticks because it's not tailored to what's actually happening. SleepArchitect takes your specific situation (your schedule, what disrupts you, what you've tried) and turns it into a small, testable experiment: one or two variables worth changing first, and a way to notice whether they helped. It doesn't diagnose what's wrong or score your sleep — it's not a clinician, and it says so when something you report (loud snoring with breathing pauses, severe daytime sleepiness) is worth an actual doctor's visit instead of a home experiment.",
 
     howToUse: [
       "Select your primary sleep struggles — you can pick multiple",
       "Enter your current bedtime, wake time, and actual hours of sleep if you know them",
       "Check off any known disruptors — caffeine, screens, stress, noise, irregular schedule, etc.",
       "Add more context in the freeform field — describe a typical night, what you've tried, what time you feel naturally sleepy",
-      "Click 'Build My Sleep Protocol' — get a sleep health score, diagnosis, and phased action plan",
-      "Start with the Quick Wins — these have immediate impact and can be tried tonight",
-      "Work through the full protocol in order: immediate changes first, then week-1 habits, then environment",
+      "Click 'Build My Sleep Protocol' — get a plain-language read on your situation and a phased experiment plan",
+      "Start with the Quick Wins — low-risk things to try tonight, when there's something worth trying",
+      "Work through the full plan in order: immediate changes first, then week-1 experiments, then environment",
     ],
 
     tips: [
-      "The freeform field is the most powerful input — describe your actual night in detail for the most accurate protocol",
-      "Sleep score is honest, not optimistic — a 4/10 means there's a lot to gain, which is actually good news",
-      "Quick wins are chosen for immediate impact: the first one often has an outsized effect",
-      "If stress or racing thoughts is a factor, the protocol will include a specific cognitive technique, not just 'relax'",
-      "The target schedule includes a wind-down start time — this is often the most underrated intervention",
+      "The freeform field is the most powerful input — describe your actual night in detail for the most relevant plan",
+      "There's no sleep score or diagnosis — the read on your situation names what's worth testing, not a number to chase",
+      "Quick wins are capped at 2 and can come back empty — if nothing sensible fits what you reported, it won't invent one",
+      "If stress or racing thoughts is a factor, the plan will include a specific technique to try, not just 'relax'",
+      "A target schedule only appears when your own reported times support one — it's an experiment, not a biologically ideal number",
       "Works across all 12 DeftBrain languages",
     ],
 
     example: {
-      scenario: "Someone selects 'Fall asleep faster' and 'Wake up feeling rested', enters 12 AM bedtime / 7 AM wake time / 5.5 hours actual sleep, checks screens, stress, and caffeine as disruptors, and describes lying awake for an hour with a racing mind.",
-      result: "Sleep score: 4/10. Diagnosis: Sleep onset insomnia driven by a hyperactive mind at bedtime — likely worsened by late caffeine and blue light exposure disrupting melatonin timing. Quick wins: stop caffeine after 1 PM, no screens 60 minutes before bed. Protocol: immediate (stimulus control — use bed only for sleep), week 1 (build a 30-minute wind-down routine starting 10:30 PM, try the 4-7-8 breathing technique for racing thoughts), ongoing (consistent wake time regardless of sleep quality), environment (blackout curtains, room temperature 65-68°F). Target schedule: wind-down 10:30 PM, lights out 11:00 PM, wake 6:30 AM."
+      scenario: "Someone selects 'Fall asleep faster' and 'Stay asleep through the night', enters 11:30 PM bedtime / 7 AM wake time / 5 hours actual sleep, checks screens, stress, and caffeine as disruptors, and describes lying awake for an hour with a racing mind about work.",
+      result: "A plain-language read of what was reported, naming the one or two variables most worth testing — here, afternoon caffeine timing and a pre-bed thought-dump for the racing mind — without claiming either one is the cause. Two quick wins to try tonight. A phased plan: an immediate wind-down/thought-dump experiment, a week of testing an earlier caffeine cutoff, an environment change (screens out of the bed), and a check-in step for noticing what actually helped. A target schedule appears because bedtime and wake time were supplied — framed as an experiment, not an optimal number."
     },
   },
 },

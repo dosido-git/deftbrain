@@ -1,10 +1,11 @@
 {
   "_meta": {
     "tool": "SleepArchitect",
-    "generated": "2026-07-14",
+    "generated": "2026-09-11",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/sleep-architect/stream, not streaming)",
-    "baseline_commit": "sleeparchitect-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden sleep-architect) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) protocol[].phase MUST be an English token (immediate|week1|ongoing|environment) — the frontend phaseConfig styles the protocol cards on it; withLanguage would otherwise localize it → generic fallback styling in 12 langs. (2) key_issues/quick_wins/protocol.actions capped at 4, protocol 3-5 + max_tokens 4000 (verified DE ~1542 tok, fits). (3) no-inner-double-quote rule (free-prose fields). (4) guard keys top-level diagnosis + protocol array. (5) a static sa_disclaimer i18n line (×13) renders under the diagnosis — general sleep-hygiene, not medical advice. DO NOT reverse: phase English pin; array caps; the no-inner-quote rule; the sa_disclaimer line."
+    "baseline_commit": "sleeparchitect-v2",
+    "why_v2": "v1 diagnosed insomnia, assigned a 1-10 sleep-health score, and invented precise physiology (melatonin suppression windows, caffeine half-life cutoffs, an 'evidence-based' circadian schedule) from a handful of checkboxes. Owner-supplied rewrite (sleep-architect.zip, 2026-09-11): frames every recommendation as an experiment to try and observe, never a diagnosis or prescription; sleep_score is now force-nulled server-side regardless of what the model returns; schedule is null unless the visitor's own supplied times justify one; melatonin/medication recommendations are banned outright; a reported red-flag symptom (breathing pauses, severe daytime sleepiness, etc.) gets a professional-evaluation step instead of a home protocol. The v1 golden sample below this replaced is preserved in git history (grep sleeparchitect-v1) if the old behavior is ever needed for comparison.",
+    "how_to_regression_diff": "Re-run (npm run check:golden sleep-architect) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) protocol[].phase MUST be an English token (immediate|week1|ongoing|environment) — the frontend phaseConfig styles the protocol cards on it; withLanguage would otherwise localize it → generic fallback styling in 12 langs. (2) key_issues/quick_wins/protocol.actions capped at 4 (quick_wins at 2), protocol capped at 4 steps + max_tokens 3500. (3) no-inner-double-quote rule (free-prose fields). (4) guard keys top-level diagnosis + protocol array (both always present). (5) sleep_score MUST be null in every case — validateResult() in the route force-nulls it; a non-null score reaching the response is the route failing to sanitize the model's output, not the model's fault to fix in the prompt. (6) schedule may legitimately be null (case 2) — do NOT treat that as a regression; the whole point of the rewrite is that a schedule is only offered when justified. (7) diagnosis/key_issues/protocol descriptions must read as hypotheses ('worth testing', 'reported pattern') not verdicts — eyeball this, no gate catches wording drift. DO NOT reverse: phase English pin; array caps; the no-inner-quote rule; the sa_disclaimer i18n line; the null sleep_score; the conditional (not automatic) schedule."
   },
   "cases": [
     {
@@ -30,83 +31,126 @@
         "freeform": "Ich liege oft stundenlang wach und grüble über die Arbeit. Trinke nachmittags Kaffee."
       },
       "output": {
-        "sleep_score": 3,
-        "diagnosis": "Die Person leidet unter einer verhaltens- und stressbedingten Insomnie: Grübeln über die Arbeit hält das Gehirn in einem Zustand erhöhter Wacheit, während Koffein am Nachmittag und Bildschirmlicht den natürlichen Einschlafdruck zusätzlich untergraben. Das Ergebnis sind nur etwa 5 Stunden effektiver Schlaf bei 7,5 Stunden im Bett.",
+        "sleep_score": null,
+        "diagnosis": "Du berichtest, dass du trotz einer geplanten Schlafenszeit von 23:30 Uhr und einem Wecker um 07:00 Uhr nur etwa 5 Stunden schläfst – du liegst also vermutlich mehrere Stunden wach, bevor der Schlaf kommt. Du beschreibst stundenlanges Grübeln über die Arbeit sowie Kaffeekonsum am Nachmittag und Bildschirmnutzung vor dem Schlafen. Die zwei Variablen, die sich am ehesten für einen gezielten Test eignen, sind der Zeitpunkt deines Nachmittagskaffees und eine kurze Abendroutine zum Abschalten von arbeitsbezogenen Gedanken.",
         "key_issues": [
-          "Kognitives Hyperarousal: Stundenlange Grübelschleifen über Arbeit nach dem Zubettgehen verhindern den Übergang in den Schlaf und halten das Nervensystem aktiv",
-          "Koffein am Nachmittag: Kaffee nach ca. 13:00 Uhr hat eine Halbwertszeit von 5–7 Stunden und erhöht noch um 23:30 Uhr die kortikale Erregung messbar",
-          "Bildschirmnutzung vor dem Schlafen: Blaues Licht von Smartphones und Bildschirmen unterdrückt die Melatoninausschüttung und verzögert die innere Uhr um bis zu 90 Minuten",
-          "Niedriger Schlafdruck: Mit 7,5 Stunden Bettzeit bei nur 5 Stunden Schlaf ist die Schlafeffizienz unter 70 % – das Bett wird unbewusst mit Wachliegen assoziiert"
+          "Wert zu testen: ob ein früherer Kaffee-Stopp das Einschlafen erleichtert",
+          "Wert zu testen: ob eine kurze schriftliche Gedankenentleerung vor dem Schlafengehen das Grübeln im Bett reduziert",
+          "Wert zu testen: ob der Verzicht auf Bildschirme im Bett einen Unterschied macht",
+          "Noch unbekannt: was den Unterschied zwischen 23:30 Uhr und dem tatsächlichen Einschlafen hauptsächlich überbrückt"
         ],
         "quick_wins": [
-          "Lege heute Abend um 22:30 Uhr alle Bildschirme weg und aktiviere keinen Ersatz – das ist die wirksamste Einzelmaßnahme heute Nacht",
-          "Schreibe vor dem Schlafengehen 5–10 Minuten alle Arbeitsgedanken in ein Notizbuch (sogenannte Worry-Dump-Methode) und schließe es danach physisch – das entlastet das Arbeitsgedächtnis",
-          "Trinke heute deinen letzten Kaffee oder koffeinhaltigen Tee spätestens um 13:00 Uhr – ab sofort gilt diese Grenze dauerhaft",
-          "Stehe morgen früh um exakt 07:00 Uhr auf, auch wenn du schlecht geschlafen hast – Schlafdruck für die nächste Nacht aufbauen ist entscheidend"
+          "Lege heute Abend Handy und Bildschirm mindestens 30 Minuten vor dem Hinlegen weg – nicht als Garantie, sondern um zu sehen, ob das Einschlafen ohne Bildschirm vor Augen anders anfühlt.",
+          "Schreib vor dem Schlafengehen 5 Minuten lang alles auf, was dich wegen der Arbeit beschäftigt – konkrete To-dos, offene Fragen, was auch immer – und leg den Zettel beiseite. Das ist ein Experiment: Bemerk, ob du danach leichter loslässt oder nicht."
         ],
         "protocol": [
           {
             "phase": "immediate",
-            "title": "Grübelunterbrechung mit der Scheduled-Worry-Technik",
-            "description": "Unkontrolliertes Grübeln im Bett entsteht, weil das Gehirn keine feste Zeit für Sorgen hat und sie daher nachts verarbeitet. Ein tägliches 15-minütiges Sorgen-Zeitfenster am Abend trainiert das Gehirn, Gedanken auf einen definierten Zeitpunkt zu verschieben.",
+            "title": "Gedanken aus dem Bett herausschreiben",
+            "description": "Du berichtest, dass du stundenlang grübelst – meist über die Arbeit. Ein kurzes schriftliches Abladen vor dem Hinlegen kann testen, ob es hilft, diese Gedanken aus dem Kopf auf das Papier zu verlagern, bevor du ins Bett gehst.",
             "actions": [
-              "Täglich um 21:00 Uhr 15 Minuten lang alle Arbeitssorgen und offenen Punkte auf Papier schreiben – nicht am Gerät",
-              "Für jeden Sorgengedanken eine konkrete Nächste-Aktion notieren (z. B. 'Montag E-Mail an Kollege X') – das schließt die mentale Schleife",
-              "Sobald im Bett ein Arbeitsgedanke auftaucht, innerlich sagen: 'Das habe ich bereits notiert – jetzt ist nicht der Zeitpunkt' und die Aufmerksamkeit zur Atmung zurückführen",
-              "Nutze die 4-7-8-Atemtechnik als Anker: 4 Sekunden einatmen, 7 Sekunden halten, 8 Sekunden ausatmen – dreimal wiederholen"
-            ]
-          },
-          {
-            "phase": "immediate",
-            "title": "Koffein-Cutoff um 13:00 Uhr",
-            "description": "Koffein blockiert Adenosin-Rezeptoren und verzögert den Schlafdruck direkt – bei einer Halbwertszeit von bis zu 7 Stunden ist ein Nachmittagskaffee um 15:00 Uhr um Mitternacht noch zur Hälfte im System aktiv. Der Cut-off um 13:00 Uhr ist die evidenzbasierte Grenze für einen 23:30-Uhr-Schlafzeitpunkt.",
-            "actions": [
-              "Letzter Kaffee oder Espresso täglich spätestens um 13:00 Uhr",
-              "Grüner Tee, Matcha und Eistee ab sofort ebenfalls vor 13:00 Uhr konsumieren – sie enthalten relevante Koffeinmengen",
-              "Nachmittags auf Wasser, Kräutertee (z. B. Kamille, Melisse) oder entkoffeinierten Kaffee umsteigen",
-              "Falls Entzugskopfschmerzen auftreten: In der ersten Woche den Cut-off schrittweise um je 30 Minuten vorverlegen statt sofort zu wechseln"
+              "Nimm dir 5–10 Minuten vor dem Hinlegen Zeit – außerhalb des Bettes, z. B. am Tisch.",
+              "Schreib auf, was dich gedanklich beschäftigt: offene Aufgaben, Sorgen, was morgen wichtig ist.",
+              "Leg den Zettel bewusst weg – als Signal, dass du diese Gedanken für heute abgelegt hast.",
+              "Beobachte über mehrere Abende: Fühlst du dich im Bett weniger gedanklich aktiv als ohne diese Routine?"
             ]
           },
           {
             "phase": "week1",
-            "title": "Strukturierte Abendroutine mit Screen-Stopp",
-            "description": "Eine feste 60-minütige Abendroutine signalisiert dem Nervensystem den Übergang vom Aktivitätsmodus in den Schlafmodus und ersetzt die zufällige Bildschirmnutzung durch schlafffördernde Reize. Regelmäßigkeit stärkt den zirkadianen Rhythmus bereits nach 3–5 Tagen.",
+            "title": "Kaffee-Zeitpunkt als Variable testen",
+            "description": "Du trinkst Kaffee am Nachmittag und hast Einschlafschwierigkeiten gemeldet. Es ist nicht bekannt, wie spät du ihn trinkst – daher lohnt es sich zu testen, ob ein früherer Stopp einen Unterschied macht.",
             "actions": [
-              "22:30 Uhr: Alle Bildschirme (Handy, Tablet, Laptop, TV) ausschalten oder im anderen Zimmer laden – keine Ausnahmen in Woche 1",
-              "22:30–22:50 Uhr: Körperliche Entspannung – warmes Duschen oder Baden (38–40 °C) senkt danach die Kernkörpertemperatur und fördert den Einschlaf",
-              "22:50–23:10 Uhr: Lesen eines gedruckten Buches bei gedimmtem Licht (< 10 Lux) oder ruhige Musik ohne Texte hören",
-              "23:10 Uhr: Ins Bett gehen – nur bei echtem Schläfrigkeitsgefühl, nicht einfach weil es Zeit ist"
-            ]
-          },
-          {
-            "phase": "ongoing",
-            "title": "Stimulus-Kontrolle: Das Bett wieder mit Schlaf verknüpfen",
-            "description": "Wer regelmäßig wach im Bett liegt, konditioniert das Gehirn darauf, das Bett als Ort der Wachheit zu erleben. Stimulus-Kontrolle ist die am stärksten evidenzbasierte Einzelintervention der CBT-I und bricht diese Konditionierung systematisch auf.",
-            "actions": [
-              "Das Bett ausschließlich für Schlaf (und Sex) nutzen – kein Lesen, Scrollen, Essen oder Fernsehen im Bett",
-              "Wenn du nach 20 Minuten noch wach bist: aufstehen, in ein anderes Zimmer gehen und bei gedimmtem Licht etwas Ruhiges tun, bis echte Schläfrigkeit einsetzt – dann zurück ins Bett",
-              "Jeden Tag zur gleichen Zeit aufstehen – auch am Wochenende, auch nach schlechten Nächten (±30 Minuten maximale Abweichung)",
-              "Keine Kompensation durch Mittagsschlaf über 20 Minuten oder nach 15:00 Uhr"
+              "Notiere heute zunächst, wann du deinen letzten Kaffee trinkst – nur zur Bestandsaufnahme.",
+              "Ziehe den letzten Kaffee für eine Woche auf 13:00 oder 14:00 Uhr vor – das ist ein Experiment, kein biologisch bewiesener Grenzwert.",
+              "Halte fest, ob du das Einschlafen in dieser Woche anders erlebst als davor.",
+              "Wenn du keinerlei Unterschied bemerkst, ist der Kaffee-Zeitpunkt möglicherweise nicht der ausschlaggebende Faktor für dich."
             ]
           },
           {
             "phase": "environment",
-            "title": "Schlafumgebung optimieren",
-            "description": "Temperatur, Licht und Lärm sind die drei physischen Parameter mit dem größten Einfluss auf Schlafarchitektur und Tiefschlafanteil – eine optimierte Umgebung macht alle anderen Maßnahmen wirksamer.",
+            "title": "Bildschirmfreie Zeit im Bett testen",
+            "description": "Du hast Bildschirmnutzung vor dem Schlafen als möglichen Störfaktor genannt. Das Bett als reinen Schlafbereich zu behandeln – ohne Scrollen oder Videoschauen darin – ist ein einfacher Test, der nichts kostet.",
             "actions": [
-              "Schlafzimmertemperatur auf 16–19 °C einstellen – dies ist der evidenzbasierte Optimalbereich für Erwachsene (Thermostat, Lüften, oder Klimaanlage)",
-              "Vollständige Dunkelheit herstellen: Verdunklungsvorhänge oder Schlafmaske verwenden – auch kleines LED-Standby-Licht abkleben",
-              "Bei Straßenlärm oder Partnergeräuschen: Ohrstöpsel (Schaumstoff, NRR 33) oder ein White-Noise-Gerät (ca. 20–40 EUR im deutschen Fachhandel) einsetzen",
-              "Handy und Router wenn möglich aus dem Schlafzimmer entfernen – alternativ Handy auf Flugmodus und Display nach unten legen"
+              "Lass Handy und andere Bildschirme ab 22:30 Uhr im Zimmer, aber nicht im Bett.",
+              "Wenn du abends noch etwas lesen oder entspannen möchtest, tu das außerhalb des Bettes.",
+              "Geh erst ins Bett, wenn du dich schläfrig fühlst – nicht nur müde.",
+              "Beobachte nach einer Woche: Fühlt sich das Einschlafen nach dem Hinlegen schneller oder ruhiger an?"
+            ]
+          },
+          {
+            "phase": "ongoing",
+            "title": "Beobachten, was wirklich hilft",
+            "description": "Da du mehrere mögliche Variablen gleichzeitig verändert hast, hilft es, nach einer Woche kurz innezuhalten und zu bewerten, welche Änderung den spürbarsten Unterschied gemacht hat.",
+            "actions": [
+              "Halte täglich grob fest: wie lange es gefühlt hat, einzuschlafen, ob du aufgewacht bist und wie du morgens aufgestanden bist.",
+              "Nach 7 Tagen: Welche Änderung fiel dir leicht und brachte etwas? Diese weitermachen.",
+              "Welche Änderung war unpraktisch oder brachte nichts? Die kannst du weglassen.",
+              "Wenn du nach zwei Wochen konsequenter Experimente keinen Unterschied spürst und der Schlaf dich tagsüber stark beeinträchtigt, ist das ein guter Zeitpunkt, das Gespräch mit deiner Hausärztin oder deinem Hausarzt zu suchen."
             ]
           }
         ],
         "schedule": {
-          "bedtime": "23:10",
+          "bedtime": "23:30",
           "wake_time": "07:00",
           "wind_down_start": "22:30",
-          "note": "Halte Schlafenszeit und Aufwachzeit sieben Tage die Woche konstant – bereits ±30 Minuten Abweichung am Wochenende können den zirkadianen Rhythmus um 1–2 Tage zurückwerfen."
+          "note": "Das ist kein biologisch berechneter Optimalplan – sondern ein Experiment, das deine eigenen Zeiten beibehält und testet, ob eine feste Einschlafvorbereitung ab 22:30 Uhr dazu beiträgt, dass du nach 23:30 Uhr schneller einschläfst."
         }
+      }
+    },
+    {
+      "name": "en-breathing-pause-escalation",
+      "endpoint": "/api/sleep-architect/stream",
+      "optionalSections": ["quick_wins"],
+      "input": {
+        "userLanguage": "en",
+        "goals": ["energy"],
+        "freeform": "I want more energy during the day. My partner says I snore loudly and sometimes seem to stop breathing for a bit."
+      },
+      "output": {
+        "sleep_score": null,
+        "diagnosis": "You report wanting more daytime energy, and your partner has observed loud snoring along with what sounds like occasional breathing pauses during your sleep. These observations point to something that goes beyond typical sleep-habit experiments and warrants a conversation with a clinician before testing behavioral changes. The most important next step is getting a professional evaluation of the breathing pattern your partner described.",
+        "key_issues": [
+          "Reported by partner: loud snoring with occasional apparent pauses in breathing — worth discussing with a clinician before proceeding with self-experiments",
+          "Still unknown: whether the low daytime energy is connected to the breathing pattern, sleep duration, sleep quality, or other factors",
+          "Still unknown: how long this pattern has been present and how often the pauses occur",
+          "Worth noting: behavioral sleep experiments are unlikely to resolve a breathing-related disruption if one is present"
+        ],
+        "quick_wins": [],
+        "protocol": [
+          {
+            "phase": "immediate",
+            "title": "Talk to a clinician about what your partner observed",
+            "description": "Your partner has reported loud snoring combined with what appeared to be breathing pauses during sleep. These are observable signs that a clinician — typically a primary care doctor as a starting point — should hear about, because they can indicate a condition that requires evaluation rather than self-experimentation.",
+            "actions": [
+              "Write down what your partner has described: how often they notice it, how loud the snoring is, and roughly how long the pauses seem to last — this will help your doctor ask the right follow-up questions",
+              "Contact your primary care doctor and describe the reported snoring and breathing pauses; ask whether a sleep study or referral is appropriate",
+              "Note whether you wake feeling unrefreshed even after a full night in bed, and whether you feel sleepy during low-activity moments in the day — share this with your doctor as well",
+              "Do not delay this step: behavioral experiments are a reasonable next move only after a clinician has weighed in on the breathing concern"
+            ]
+          },
+          {
+            "phase": "week1",
+            "title": "Observe and record while you wait for your appointment",
+            "description": "While you arrange or wait for a clinical evaluation, keeping a simple log gives you and your clinician more useful information than memory alone.",
+            "actions": [
+              "Each morning, note roughly what time you got into bed, how long you think it took to fall asleep, and how you felt on waking — refreshed, groggy, or somewhere in between",
+              "Ask your partner to note any nights the snoring or pauses seemed worse or better, and whether anything different happened those days (alcohol, sleeping position, congestion)",
+              "Note your energy level at two points in the day — mid-morning and mid-afternoon — on a simple low/medium/high scale",
+              "Bring this log to your appointment; it can help your clinician understand the pattern"
+            ]
+          },
+          {
+            "phase": "ongoing",
+            "title": "Return to behavioral experiments after clinical clearance",
+            "description": "Once a clinician has evaluated the breathing concern and advised on next steps, behavioral experiments around sleep timing, wind-down habits, or other factors become more meaningful and safer to interpret.",
+            "actions": [
+              "If your clinician finds no concerns requiring treatment, come back to this plan and build a targeted experiment around whichever variable they or you identify as worth testing",
+              "If a treatment or device is recommended, give it time to take effect before judging daytime energy changes — your clinician can advise on a reasonable observation window",
+              "Keep the morning log going so you have a baseline to compare against any changes"
+            ]
+          }
+        ],
+        "schedule": null
       }
     }
   ]
