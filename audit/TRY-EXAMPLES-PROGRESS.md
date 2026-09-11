@@ -100,6 +100,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 70 | MiseEnPlace | inline | 3 skill levels × 4 meal types | 2 | 5 (+ advanced sourdough-discard breakfast, 10-minute beginner lunch, make-ahead gathering snack) | ✅ 2026-09-11 |
 | 71 | MissingLink (TheoryGap) | i18n | — | already 5 | — | ✅ pre-existing |
 | 72 | MoneyDiplomat | i18n | 6 request types | already 6 | — | ✅ pre-existing |
+| 73 | NameAudit | inline | — | 2 | 5 (+ overly long/generic consulting name, marketplace-search toy brand, a name that may overpromise) | ✅ 2026-09-11 |
+| 74 | NameStorm | inline | 3 modes (generate/blend/quick), 15 categories | 1 each (no rotation) | 5 each — converted single-example-per-mode to pickExample rotation (15 total) | ✅ 2026-09-11 |
+| 75 | NameThatFeeling | i18n | — | 2 | 5 (+ relief tangled with disappointment, quiet satisfaction at someone's struggle, dread-hope waiting on news; 6 keys ×13) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

@@ -363,9 +363,16 @@ const NameThatFeeling = ({ tool }) => {
   }, [description, whatWasHappening, whyHardToName, callToolEndpoint, setResults, setSessionHistory, t]);
 
   const loadExample = useCallback(() => {
+    // Five, rotated: bittersweet nostalgia, schadenfreude-adjacent envy,
+    // relief tangled with unexpected disappointment, quiet satisfaction at
+    // someone else's struggle, and the specific dread-hope of waiting on
+    // news.
     const ex = pickExample('NameThatFeeling', [
       { desc: 'ntf_ex_desc',  ctx: 'ntf_ex_context' },
       { desc: 'ntf_ex2_desc', ctx: 'ntf_ex2_context' },
+      { desc: 'ntf_ex3_desc', ctx: 'ntf_ex3_context' },
+      { desc: 'ntf_ex4_desc', ctx: 'ntf_ex4_context' },
+      { desc: 'ntf_ex5_desc', ctx: 'ntf_ex5_context' },
     ]);
     setDescription(t(ex.desc));
     setWhatWasHappening(t(ex.ctx));
