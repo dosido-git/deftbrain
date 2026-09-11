@@ -1,0 +1,95 @@
+const express = require('express');
+const router = express.Router();
+const { callClaudeWithRetry, withLanguage, withLocaleContext, cleanJsonResponse } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { quoteResearch } = require('../lib/quoteResearch');
+const { NO_QUOTE_RULE } = require('../lib/factCheck');
+
+router.outputStandard = 'v2';
+// validateResult() below IS the check this declares — it enforces every one
+// of these against the model's picks before a response ever reaches the
+// visitor, by construction (a quote_id it can't map to the verified packet,
+// or an unrecognized role, is dropped rather than passed through).
+router.outputGuard = {
+  prohibit: [
+    'quote_id_not_present_in_verified_packet',
+    'quotation_text_or_attribution_altered_from_the_verified_packet',
+    'unrecognized_role_label_passed_through_unmapped',
+    'duplicate_quote_id_returned_as_a_second_distinct_pick',
+    'fewer_than_two_verified_picks_returned_as_a_success_response',
+  ],
+  require: ['fulfills_tool_promise'],
+};
+
+const VOICES = new Set(['wise', 'reassuring', 'bracing', 'witty', 'unexpected', 'any']);
+const NEEDS = new Set(['perspective', 'courage', 'comfort', 'motivation', 'reality_check', 'humor', 'surprise_me']);
+const compact = (s, n = 1200) => String(s || '').trim().replace(/\s+/g, ' ').slice(0, n);
+
+function validateResult(result, packet) {
+  if (!result || typeof result !== 'object') return null;
+  const byId = new Map(packet.quotes.map(q => [q.id, q]));
+  const picks = (Array.isArray(result.picks) ? result.picks : []).slice(0, 3).map(p => {
+    const q = byId.get(String(p?.quote_id || '').toUpperCase());
+    if (!q) return null;
+    return {
+      quote_id: q.id,
+      role: ['different_way', 'another_angle', 'one_to_keep'].includes(p?.role) ? p.role : 'another_angle',
+      why_this_one: compact(p?.why_this_one, 650),
+      quote: q,
+    };
+  }).filter(Boolean);
+  const unique = [];
+  const seen = new Set();
+  for (const p of picks) if (!seen.has(p.quote_id)) { seen.add(p.quote_id); unique.push(p); }
+  if (unique.length < 2) return null;
+  return { situation_as_understood: compact(result.situation_as_understood, 500), picks: unique };
+}
+
+router.post('/someone-said-it-better', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const situation = compact(req.body.situation, 2200);
+    if (!situation) return res.status(400).json({ error: 'Tell me what is going on.' });
+    const voice = VOICES.has(req.body.voice) ? req.body.voice : 'any';
+    const need = NEEDS.has(req.body.need) ? req.body.need : 'perspective';
+
+    const research = await quoteResearch({ situation, voice });
+    if (!research.packet) return res.status(503).json({
+      error: 'I could not verify enough quotations right now. Please try again.',
+      code: 'quote_research_unavailable',
+    });
+
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const system = `You are the matching and explanation stage for Someone Said It Better, a DeftBrain tool. The quotations have already been retrieved and verified. Your job is ONLY to choose the 2-3 that best fit the visitor's supplied situation and explain the connection.
+
+RULES:
+- Never create, alter, complete, translate, or paraphrase quotation text or attribution.
+- Never infer the visitor's feelings, motives, diagnosis, relationships, history, or hidden circumstances.
+- Connect each quote only to facts the visitor actually supplied.
+- Choose quotes that offer meaningfully different angles. Do not return three versions of the same lesson.
+- Do not force optimism. A bracing, witty, skeptical, or unresolved thought may be the best fit.
+- Keep each explanation to 1-2 useful sentences. No generic inspirational filler.
+- The explanation may interpret the idea in the quote, but must not invent historical context beyond the packet.
+- Return ONLY valid JSON.
+
+${NO_QUOTE_RULE}`;
+
+    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one concise sentence grounded only in what the visitor said",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences connecting the quote to the supplied situation without inventing facts"\n    }\n  ]\n}`;
+
+    const raw = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1800,
+      system: withLanguage(system, req.body.userLanguage) + locale,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'someone-said-it-better:match' });
+    const parsed = typeof raw === 'string' ? JSON.parse(cleanJsonResponse(raw)) : raw;
+    const result = validateResult(parsed, research.packet);
+    if (!result) return res.status(502).json({ error: 'The verified quotes could not be matched cleanly. Please try again.' });
+    res.json({ ...result, researched_at: research.packet.researched_at });
+  } catch (err) {
+    console.error('someone-said-it-better:', err);
+    res.status(500).json({ error: 'Something went wrong while finding the words.' });
+  }
+});
+
+module.exports = router;

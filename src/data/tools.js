@@ -6543,6 +6543,58 @@ tagline: "Work with the energy you have.",
   }
 },
 
+{
+  modified: "2026-09-11",
+  id: "SomeoneSaidItBetter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You're facing something and your own words for it feel thin.",
+    give: "The situation in your own words, what would help, and what kind of voice you want.",
+    get: "Two or three real, verified quotations that fit — with why each one connects and a link to check it yourself.",
+    edge: "It won't invent a comforting quote. If nothing verifiable fits, it says so instead of manufacturing one.",
+  },
+  seoDescription: "Facing something hard to put into words? Someone Said It Better finds real, verified quotations that fit your situation — checked against outside sources, never invented. Free.",
+  seoTitle: "Find a Real Quote for Your Situation",
+  title: "Someone Said It Better",
+  tagline: "Whatever you're facing, someone may have found the words.",
+  tags: ['quotes', 'quotations', 'wisdom', 'perspective', 'comfort', 'motivation', 'famous quotes', 'life advice', 'find a quote', 'verified quotes', 'inspiration', 'grief', 'career change'],
+  icon: "📚",
+  categories: ['Go Deep!', 'Me'],
+  headerColor: "#e3eef0",
+  description: "Tell it what you're facing — in your own words. Someone Said It Better researches real, verified quotations that fit the moment, checks the wording and attribution against an actual source before showing you anything, and explains why each one may be worth sitting with. No source, no quote — it will never invent one to fill the gap.",
+  guide: {
+    overview: "Someone Said It Better is built around one rule: quotation text is never generated. It researches candidate quotations with live web search, verifies the exact wording and attribution against a source it actually visits, and only then picks 2-3 that genuinely fit your situation from that verified set — explaining the connection without inventing your feelings, history, or circumstances. If it can't verify enough quotations to feel confident, it tells you that plainly instead of quietly lowering its standards.",
+
+    howToUse: [
+      "📝 Describe your situation: in your own words, as much detail as actually matters",
+      "🎯 Pick what would help: perspective, courage, comfort, motivation, a reality check, humor, or let it surprise you",
+      "🎭 Pick a voice (optional): wise, reassuring, bracing, witty, unexpected, or any",
+      "📚 Get 2-3 verified quotes: each with the exact source, why it connects to what you said, and a link to check it yourself",
+      "🔁 Facing something else? Start over — each situation gets its own fresh research pass"
+    ],
+
+    example: {
+      scenario: "You've worked on something for two years and are starting to wonder whether you should quit.",
+      action: "Describe the situation, choose 'Perspective' for what would help, and 'Bracing' for the voice — you don't want to be told everything is fine.",
+      result: "Two or three verified quotes about persistence, timing, or knowing when to stop — each with a real author, source, and a one-line explanation of why it connects to two years of doubt, not just to 'giving up' in general."
+    },
+
+    tips: [
+      "The more specific your situation, the better the match — 'my daughter is getting married and I want to capture how big this feels' finds sharper quotes than 'big life moment'",
+      "If it comes back with only 2 quotes instead of 3, that's it being honest that a third genuinely-different angle didn't verify cleanly — not a bug",
+      "'Surprise me' as the need and 'Unexpected' as the voice together tend to produce the least predictable, most memorable results",
+      "Every quote links to the actual source page — worth clicking, especially for anything you plan to repeat or share"
+    ],
+
+    pitfalls: [
+      "It can occasionally return 'I could not verify enough quotations right now' — that's the source-verification step failing safely, not a broken tool; trying again or rephrasing the situation usually resolves it",
+      "It won't manufacture optimism — a bracing or unresolved quote can be the honest best fit, and it won't swap in something falsely upbeat instead",
+      "For putting a hard truth into your OWN words instead of someone else's, Truth Bomb is the better tool; this one only ever hands you words that are verifiably someone else's"
+    ]
+  }
+},
+
 ];
 export const getToolById = (id) => {
   return tools.find(tool => tool.id === id);

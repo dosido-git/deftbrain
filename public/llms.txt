@@ -1,6 +1,6 @@
 # DeftBrain
 
-> DeftBrain (https://deftbrain.com) is a free collection of 126 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 127 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 ## Start here
 
@@ -138,6 +138,7 @@
 - [Plain Talk](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
 - [Research Decoder](https://deftbrain.com/ResearchDecoder): Understand the research without becoming a researcher.
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): 📡 Find what holds up — and what doesn't.
+- [Someone Said It Better](https://deftbrain.com/SomeoneSaidItBetter): Whatever you're facing, someone may have found the words.
 - [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
 
 ## Diversions
