@@ -122,10 +122,20 @@ const BeliefStressTest = ({ tool }) => {
     setError('');
   };
 
+  // Five, rotated. The chips below the field stay as they are; the rotation
+  // pairs three of those beliefs with the optional context so the reading
+  // has to answer a situation, not a proverb — and leaves two bare, which
+  // is how most people arrive.
   const loadExample = useCallback(() => {
-    setBelief(t(pickExample('BeliefStressTest',
-      ['bst_ex1', 'bst_ex2', 'bst_ex3', 'bst_ex4', 'bst_ex5', 'bst_ex6', 'bst_ex7', 'bst_ex8'])));
-    setContext('');
+    const ex = pickExample('BeliefStressTest', [
+      { belief: 'bst_ex1', context: 'bst_ex1_ctx' },
+      { belief: 'bst_ex2' },
+      { belief: 'bst_ex7', context: 'bst_ex7_ctx' },
+      { belief: 'bst_ex5' },
+      { belief: 'bst_ex4', context: 'bst_ex4_ctx' },
+    ]);
+    setBelief(t(ex.belief));
+    setContext(ex.context ? t(ex.context) : '');
     setResults(null);
   }, [setBelief, setResults, t]);
 

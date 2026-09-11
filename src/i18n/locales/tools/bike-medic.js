@@ -167,6 +167,9 @@ export const bikeMedic = {
     // ── Example seeds (loadExample) ──
     bmd_example_shifting: "My rear derailleur is skipping under load when I push hard on the pedals, especially going uphill. Started after a wet ride last week.",
     bmd_example_noise: "Clicking noise from the bottom bracket area when I pedal, only on the downstroke with my right foot. Gets worse in the cold.",
+    bmd_example_flat: "Third rear flat in two weeks, same tyre, always a tiny hole on the inside of the tube near the rim. I've checked the tyre for glass and found nothing.",
+    bmd_example_brakes: "Hydraulic disc brakes: the front lever pulls almost to the bar before anything happens, and there's a faint squeal when I do finally stop. Bike sat unused all winter.",
+    bmd_example_custom: "Something is wrong but I can't tell what — the whole bike feels vague and wobbly at speed, like it's steering itself, especially downhill with no hands on the bars.",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "Tires: squeeze — firm pressure, no cuts",
@@ -1599,6 +1602,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "Solucionar",
     bmd_example_shifting: "Mi desviador trasero salta bajo carga cuando pedaleo con fuerza, sobre todo cuesta arriba. Empezó tras rodar con lluvia la semana pasada.",
     bmd_example_noise: "Un clic en la zona del eje pedalier al pedalear, solo en la fase de empuje con el pie derecho. Empeora con el frío.",
+    bmd_example_flat: "Tercer pinchazo trasero en dos semanas, misma cubierta, siempre un agujerito en la cara interior de la cámara junto a la llanta. He revisado la cubierta buscando cristales y no hay nada.",
+    bmd_example_brakes: "Frenos de disco hidráulicos: la maneta delantera llega casi al manillar antes de que pase algo, y hay un chirrido leve cuando por fin freno. La bici estuvo parada todo el invierno.",
+    bmd_example_custom: "Algo falla pero no sé qué: toda la bici se siente imprecisa y bamboleante a velocidad, como si girase sola, sobre todo bajando sin manos en el manillar.",
     bmd_chk_pre_tires: "Cubiertas: apriétalas — presión firme, sin cortes",
     bmd_chk_pre_brakes: "Frenos: aprieta cada maneta — firmes, las pastillas muerden",
     bmd_chk_pre_chain: "Cadena: sin óxido, sin eslabones duros, no seca",
@@ -2922,6 +2928,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "Resolver",
     bmd_example_shifting: "Meu câmbio traseiro pula sob carga quando forço o pedal, especialmente em subidas. Começou depois de um pedal na chuva semana passada.",
     bmd_example_noise: "Um clique na região do movimento central ao pedalar, só na descida com o pé direito. Piora no frio.",
+    bmd_example_flat: "Terceiro furo traseiro em duas semanas, mesmo pneu, sempre um furinho na parte interna da câmara perto do aro. Já procurei caco de vidro no pneu e não achei nada.",
+    bmd_example_brakes: "Freios a disco hidráulicos: o manete da frente vai quase até o guidão antes de acontecer alguma coisa, e sai um chiado leve quando finalmente paro. A bike ficou parada o inverno inteiro.",
+    bmd_example_custom: "Tem algo errado mas não sei o quê — a bike inteira fica vaga e bamba em velocidade, como se guiasse sozinha, principalmente em descida sem as mãos no guidão.",
     bmd_chk_pre_tires: "Pneus: aperte — pressão firme, sem cortes",
     bmd_chk_pre_brakes: "Freios: aperte cada manete — firmes, as pastilhas pegam",
     bmd_chk_pre_chain: "Corrente: sem ferrugem, sem elos travados, não seca",
@@ -4245,6 +4254,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "Dépanner",
     bmd_example_shifting: "Mon dérailleur arrière saute en charge quand je pousse fort sur les pédales, surtout en montée. Ça a commencé après une sortie sous la pluie la semaine dernière.",
     bmd_example_noise: "Un cliquetis vers le boîtier de pédalier quand je pédale, seulement à la poussée avec le pied droit. Ça empire par temps froid.",
+    bmd_example_flat: "Troisième crevaison arrière en deux semaines, même pneu, toujours un petit trou côté intérieur de la chambre près de la jante. J'ai inspecté le pneu pour du verre, rien trouvé.",
+    bmd_example_brakes: "Freins à disque hydrauliques : le levier avant vient presque au cintre avant que quoi que ce soit se passe, et ça couine légèrement quand je finis par m'arrêter. Le vélo est resté au garage tout l'hiver.",
+    bmd_example_custom: "Quelque chose cloche mais je ne sais pas quoi — tout le vélo semble flou et instable à vitesse, comme s'il se dirigeait tout seul, surtout en descente sans les mains.",
     bmd_chk_pre_tires: "Pneus : pressez — pression ferme, pas de coupures",
     bmd_chk_pre_brakes: "Freins : pressez chaque levier — fermes, les plaquettes mordent",
     bmd_chk_pre_chain: "Chaîne : pas de rouille, pas de maillons raides, pas sèche",
@@ -5568,6 +5580,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "Fehler beheben",
     bmd_example_shifting: "Mein hinteres Schaltwerk springt unter Last, wenn ich kräftig in die Pedale trete, besonders bergauf. Begann nach einer Fahrt im Nassen letzte Woche.",
     bmd_example_noise: "Ein Klicken aus dem Tretlagerbereich beim Treten, nur im Abwärtshub mit dem rechten Fuß. Wird bei Kälte schlimmer.",
+    bmd_example_flat: "Dritter Platten hinten in zwei Wochen, gleicher Reifen, immer ein winziges Loch an der Innenseite des Schlauchs nahe der Felge. Reifen auf Glas geprüft, nichts gefunden.",
+    bmd_example_brakes: "Hydraulische Scheibenbremsen: Der vordere Hebel geht fast bis zum Lenker, bevor etwas passiert, und beim Anhalten quietscht es leise. Das Rad stand den ganzen Winter.",
+    bmd_example_custom: "Irgendwas stimmt nicht, aber ich weiß nicht was — das ganze Rad fühlt sich bei Tempo schwammig und wackelig an, als würde es selbst lenken, besonders bergab ohne Hände am Lenker.",
     bmd_chk_pre_tires: "Reifen: drücken — fester Druck, keine Schnitte",
     bmd_chk_pre_brakes: "Bremsen: jeden Hebel ziehen — fest, Beläge greifen",
     bmd_chk_pre_chain: "Kette: kein Rost, keine steifen Glieder, nicht trocken",
@@ -6891,6 +6906,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "Khắc phục",
     bmd_example_shifting: "Củ đề sau của tôi bị nhảy khi đạp mạnh có tải, nhất là khi lên dốc. Bắt đầu sau một chuyến đi mưa tuần trước.",
     bmd_example_noise: "Tiếng lách cách ở khu vực trục giữa khi đạp, chỉ ở nhịp đạp xuống với chân phải. Trời lạnh thì nặng hơn.",
+    bmd_example_flat: "Lần thứ ba thủng lốp sau trong hai tuần, cùng một lốp, luôn là một lỗ nhỏ ở mặt trong săm gần vành. Tôi đã kiểm tra lốp tìm mảnh thủy tinh mà không thấy gì.",
+    bmd_example_brakes: "Phanh đĩa dầu: tay phanh trước bóp gần chạm ghi đông rồi mới ăn, và có tiếng rít nhẹ khi cuối cùng cũng dừng lại. Xe để không cả mùa đông.",
+    bmd_example_custom: "Có gì đó không ổn nhưng tôi không biết là gì — cả chiếc xe cảm giác lỏng lẻo và lắc lư khi chạy nhanh, như tự lái, nhất là khi xuống dốc buông hai tay.",
     bmd_chk_pre_tires: "Lốp: bóp thử — áp suất căng, không có vết cắt",
     bmd_chk_pre_brakes: "Phanh: bóp từng tay phanh — chắc, má phanh ăn",
     bmd_chk_pre_chain: "Xích: không gỉ, không mắt cứng, không khô",
@@ -8214,6 +8232,9 @@ export const bikeMedic = {
     bmd_troubleshoot: "排查",
     bmd_example_shifting: "我的后拨在用力蹬踏带负载时会跳齿，尤其是上坡时。是上周一次雨中骑行后开始的。",
     bmd_example_noise: "蹬踏时中轴附近有咔哒声，只在右脚下踏的行程出现。天冷时更严重。",
+    bmd_example_flat: "两周内后轮第三次扎胎，同一条外胎，总是内胎靠近轮圈的内侧有个小孔。我检查过外胎有没有玻璃碎片，什么都没找到。",
+    bmd_example_brakes: "液压碟刹：前刹车把手几乎捏到车把才有反应，最后停下来时有轻微的尖叫声。车整个冬天没骑过。",
+    bmd_example_custom: "有点不对劲但说不上来——高速时整辆车感觉发飘、晃动，像是自己在转向，尤其是下坡松开车把的时候。",
     bmd_chk_pre_tires: "轮胎：捏一捏 — 气压硬实，无割伤",
     bmd_chk_pre_brakes: "刹车：分别捏每个刹把 — 硬实，刹皮咬合",
     bmd_chk_pre_chain: "链条：无锈，无死结，不干涩",
@@ -9560,6 +9581,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "जोर से पैडल मारने पर, खासकर चढ़ाई पर, मेरा रियर डिरेलियर भार के नीचे स्किप करता है। पिछले हफ़्ते गीली राइड के बाद शुरू हुआ।",
     bmd_example_noise: "पैडल मारने पर बॉटम ब्रैकेट क्षेत्र से क्लिक की आवाज़, सिर्फ़ दाएँ पैर के डाउनस्ट्रोक पर। ठंड में और बढ़ जाती है।",
+    bmd_example_flat: "दो हफ़्तों में पिछले पहिये का तीसरा पंचर, वही टायर, हमेशा ट्यूब के अंदर की तरफ़ रिम के पास एक छोटा-सा छेद। टायर में काँच ढूँढा, कुछ नहीं मिला।",
+    bmd_example_brakes: "हाइड्रोलिक डिस्क ब्रेक: आगे का लीवर लगभग हैंडलबार तक आ जाता है तब कुछ होता है, और आख़िर रुकने पर हल्की चीं की आवाज़ आती है। साइकिल पूरी सर्दी खड़ी रही।",
+    bmd_example_custom: "कुछ गड़बड़ है पर समझ नहीं आ रहा क्या - तेज़ रफ़्तार पर पूरी साइकिल ढीली और डगमगाती लगती है, जैसे खुद मुड़ रही हो, खासकर ढलान पर हैंडल छोड़ने पर।",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "टायर: दबाएँ — दृढ़ हवा, कोई कट नहीं",
@@ -11011,6 +11035,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "المبدّل الخلفي يقفز تحت الحمل عندما أضغط بقوة على البدّالات، خصوصاً عند الصعود. بدأ بعد ركوب مبلّل الأسبوع الماضي.",
     bmd_example_noise: "صوت طقطقة من منطقة المحور السفلي عند البدْل، فقط في الضربة النازلة بقدمي اليمنى. يزداد سوءاً في البرد.",
+    bmd_example_flat: "ثالث ثقب في العجلة الخلفية خلال أسبوعين، الإطار نفسه، ودائماً ثقب صغير في الجهة الداخلية من الأنبوب قرب الحافة. فحصت الإطار بحثاً عن زجاج ولم أجد شيئاً.",
+    bmd_example_brakes: "فرامل قرصية هيدروليكية: ذراع الفرامل الأمامية يصل تقريباً إلى المقود قبل أن يحدث شيء، ويصدر صرير خفيف حين أتوقف أخيراً. الدراجة بقيت متوقفة طوال الشتاء.",
+    bmd_example_custom: "هناك خلل ما لكنني لا أعرف ما هو، الدراجة كلها تبدو مهزوزة وغير مستقرة عند السرعة، كأنها تقود نفسها، خصوصاً في المنحدرات بدون يدين على المقود.",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "الإطارات: اضغط — ضغط متين، لا قطوع",
@@ -12462,6 +12489,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "ペダルを強く踏むと、特に登坂時にリアディレイラーが負荷で歯飛びします。先週の雨天走行後から始まりました。",
     bmd_example_noise: "ペダリング時にボトムブラケット付近からカチカチ音、右足の踏み込み時だけ。寒いと悪化します。",
+    bmd_example_flat: "2週間で後輪が3回目のパンク。同じタイヤで、毎回リム寄りのチューブ内側に小さな穴が開きます。タイヤにガラス片がないか確認しましたが何もありません。",
+    bmd_example_brakes: "油圧ディスクブレーキ：前のレバーがハンドルに付きそうなところまで引かないと効かず、やっと止まるときにかすかなキーッという音がします。冬の間ずっと乗っていませんでした。",
+    bmd_example_custom: "何かがおかしいのに何かわからない——スピードが出ると車体全体がふわふわして揺れ、勝手にハンドルが切れるような感じ。特に下りで手放しにすると顕著です。",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "タイヤ：握って — しっかりした空気圧、切れなし",
@@ -13913,6 +13943,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "페달을 세게 밟을 때, 특히 오르막에서 뒤 디레일러가 부하를 받으면 건너뜁니다. 지난주 비 오는 날 주행 후 시작됐어요.",
     bmd_example_noise: "페달을 밟을 때 BB(보텀 브래킷) 부근에서 딸깍 소리가 나는데, 오른발 다운스트로크에서만 납니다. 추우면 더 심해져요.",
+    bmd_example_flat: "2주 사이에 뒷바퀴 펑크가 세 번째, 같은 타이어이고 늘 림 근처 튜브 안쪽에 작은 구멍이 납니다. 타이어에 유리 조각이 있는지 확인했지만 아무것도 없었어요.",
+    bmd_example_brakes: "유압 디스크 브레이크: 앞 레버가 핸들바에 거의 닿을 때까지 당겨야 뭔가 반응하고, 겨우 멈출 때 희미한 끽 소리가 납니다. 자전거는 겨우내 세워뒀어요.",
+    bmd_example_custom: "뭔가 잘못됐는데 뭔지 모르겠어요. 속도가 붙으면 자전거 전체가 흐물흐물하고 흔들리며 저절로 방향이 틀어지는 느낌인데, 특히 내리막에서 손을 놓으면 심합니다.",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "타이어: 눌러보기 — 단단한 공기압, 베임 없음",
@@ -15364,6 +15397,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "Задний переключатель проскакивает под нагрузкой, когда сильно жму на педали, особенно в гору. Началось после поездки по мокрому на прошлой неделе.",
     bmd_example_noise: "Щелчок из района каретки при педалировании, только на нажиме правой ногой. В холод усиливается.",
+    bmd_example_flat: "Третий прокол заднего колеса за две недели, та же покрышка, всегда крошечная дырка на внутренней стороне камеры у обода. Покрышку на стекло проверял — ничего.",
+    bmd_example_brakes: "Гидравлические дисковые тормоза: передняя ручка доходит почти до руля, прежде чем что-то происходит, и при остановке слышен слабый визг. Велосипед всю зиму стоял.",
+    bmd_example_custom: "Что-то не так, но не пойму что — на скорости весь велосипед кажется расхлябанным и вилючим, будто рулит сам, особенно на спуске без рук.",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "Шины: сжать — плотное давление, без порезов",
@@ -16815,6 +16851,9 @@ export const bikeMedic = {
     // ── Example seeds ──
     bmd_example_shifting: "ตีนผีหลังกระโดดเมื่อมีแรงกดตอนกดบันไดแรงๆ โดยเฉพาะตอนขึ้นเขา เริ่มเป็นหลังขี่ตากฝนเมื่อสัปดาห์ที่แล้ว",
     bmd_example_noise: "มีเสียงคลิกจากบริเวณกระโหลกตอนปั่น เฉพาะจังหวะกดลงด้วยเท้าขวา ยิ่งหนาวยิ่งแย่ลง",
+    bmd_example_flat: "ยางหลังรั่วครั้งที่สามในสองสัปดาห์ ยางเส้นเดิม รูเล็ก ๆ อยู่ด้านในของยางในใกล้ขอบล้อทุกครั้ง ตรวจยางนอกหาเศษแก้วแล้วไม่เจออะไร",
+    bmd_example_brakes: "ดิสก์เบรกน้ำมัน: มือเบรกหน้าบีบเกือบถึงแฮนด์ก่อนจะมีอะไรเกิดขึ้น และมีเสียงเอี๊ยดเบา ๆ ตอนหยุดได้ในที่สุด จักรยานจอดไม่ได้ใช้ทั้งฤดูหนาว",
+    bmd_example_custom: "มีอะไรผิดปกติแต่บอกไม่ถูก ทั้งคันรู้สึกโหวง ๆ และส่ายตอนใช้ความเร็ว เหมือนมันเลี้ยวเอง โดยเฉพาะตอนลงเขาแบบปล่อยมือจากแฮนด์",
 
     // ── Quick Check items: pre_ride ──
     bmd_chk_pre_tires: "ยาง: บีบดู — ลมแน่น ไม่มีรอยบาด",

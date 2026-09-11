@@ -34,9 +34,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 4 | AwkwardSilenceFiller | inline | 8 scenarios | 2 | 5 (5 scenarios, 5 comfort levels; 2 new i18n keys ×13) | ✅ 2026-09-11 |
 | 5 | BatchFlow | i18n | — | 2 sets | 5 sets (4 energy curves, 5 day types, time 2h→unknown; 17 keys ×13) | ✅ 2026-09-11 |
 | 6 | BeforeHello | i18n | 7 target types | 2 | 5 (investor/mentor/employer/client/connector; 9 keys ×13) | ✅ 2026-09-11 |
-| 7 | BeforeTheCrash | inline | log / patterns | ? | | |
-| 8 | BeliefStressTest | inline (strings) | — | 9 | | |
-| 9 | BikeMedic | inline | 8 problems × tabs | 2 | | |
+| 7 | BeforeTheCrash | inline | check-in (patterns reads the saved log — no seed) | 2 | 5 (sliding / good / marked crash / wired + wearable numbers / flat-withdrawn) | ✅ 2026-09-11 |
+| 8 | BeliefStressTest | i18n | — | 8 bare beliefs | 5 rotated pairs, 3 with the optional context (3 keys ×13); 8 chips kept | ✅ 2026-09-11 |
+| 9 | BikeMedic | i18n | 10 problems (loadExample seeds the interpreter or a tree) | 2 | 5 (shifting / noise / repeat flat / hydraulic brakes / 'custom' vague fault; 3 keys ×13; custom no longer routed to a tree that does not exist) | ✅ 2026-09-11 |
 | 10 | BillRescue | inline | 8 bill types / 7 letter types | ? | | |
 | 11 | Bookmark | none | 4 media types | 0 | | |
 | 12 | BragSheetBuilder | inline | tabs | 2 | | |

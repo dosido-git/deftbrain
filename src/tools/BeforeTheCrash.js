@@ -214,9 +214,35 @@ export default function BeforeTheCrash() {
   // House scaffolding the rewrite did not carry over: a demo path, a copy
   // payload with the branding line, the Cmd+Enter shortcut, and the disclaimer.
   const loadExample = () => {
+    // Five, rotated: a sliding day, a good day, a crash day marked as one,
+    // a wired-but-tired day with caffeine and a wearable's numbers, and a
+    // flat day with nothing obviously wrong — the one a pattern read has to
+    // work hardest on.
     const ex = pickExample('BeforeTheCrash', [
-      { energy: 4, sleep: 5, stress: 7, mood: 4, notes: 'Third late night this week. Ran out of steam mid-afternoon.' },
-      { energy: 7, sleep: 8, stress: 3, mood: 7, notes: 'Slept properly, walked at lunch, felt like myself.' },
+      { energy: 4, sleep: 5, stress: 7, mood: 4, notes: 'Third late night this week. Ran out of steam mid-afternoon.',
+        activities: { work: true, social: false, exercise: false, rest: false, obligations: true },
+        physicalSymptoms: { headache: false, fatigue: true, tension: true, appetiteChanges: false, sleepIssues: false },
+        warningSigns: { irritability: true, brainFog: false, difficultyDeciding: false, cryingEasily: false, withdrawing: false },
+        caffeine: 3 },
+      { energy: 7, sleep: 8, stress: 3, mood: 7, notes: 'Slept properly, walked at lunch, felt like myself.',
+        activities: { work: true, social: true, exercise: true, rest: false, obligations: false },
+        caffeine: 1 },
+      { energy: 2, sleep: 3, stress: 9, mood: 2, crashDay: true,
+        notes: 'Cancelled everything. Cried in the car before the school run. Two weeks of saying yes caught up at once.',
+        activities: { work: false, social: false, exercise: false, rest: true, obligations: true },
+        physicalSymptoms: { headache: true, fatigue: true, tension: true, appetiteChanges: true, sleepIssues: true },
+        warningSigns: { irritability: true, brainFog: true, difficultyDeciding: true, cryingEasily: true, withdrawing: true },
+        caffeine: 0, alcohol: 0 },
+      { energy: 8, sleep: 4, stress: 6, mood: 6, notes: 'Wired. Big launch day, four coffees, felt great until I sat down.',
+        activities: { work: true, social: true, exercise: false, rest: false, obligations: false },
+        physicalSymptoms: { headache: false, fatigue: false, tension: true, appetiteChanges: true, sleepIssues: true },
+        warningSigns: { irritability: false, brainFog: false, difficultyDeciding: false, cryingEasily: false, withdrawing: false },
+        caffeine: 4, alcohol: 2,
+        biometrics: { hrv: '31', restingHR: '68', sleepHours: '5.1', steps: '3200' } },
+      { energy: 5, sleep: 6, stress: 5, mood: 4, notes: 'Nothing wrong exactly. Did the minimum, skipped the gym again, did not text anyone back.',
+        activities: { work: true, social: false, exercise: false, rest: false, obligations: false },
+        warningSigns: { irritability: false, brainFog: true, difficultyDeciding: false, cryingEasily: false, withdrawing: true },
+        caffeine: 2, medications: 'Antihistamine' },
     ]);
     setEntry({ ...EMPTY_ENTRY, date: today(), ...ex });
     setView('checkin');

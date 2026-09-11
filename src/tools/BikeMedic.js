@@ -890,9 +890,15 @@ const CONDITION_LABELS = { dry: 'bmd_cond_dry', wet: 'bmd_cond_wet', muddy: 'bmd
 
 // `problem` is a PROBLEMS id (stays English); `symptomKey` is the example seed
 // text resolved via t() — it pre-fills the input and is then sent to the model.
+// Five, rotated: a drivetrain fault, a noise, a repeat flat (a rim-tape
+// problem hiding behind a puncture), neglected hydraulic brakes, and a vague
+// "something is wrong" that has no tree of its own and must be interpreted.
 const EXAMPLES = [
   { problem: 'shifting', symptomKey: 'bmd_example_shifting' },
   { problem: 'noise', symptomKey: 'bmd_example_noise' },
+  { problem: 'flat', symptomKey: 'bmd_example_flat' },
+  { problem: 'brakes', symptomKey: 'bmd_example_brakes' },
+  { problem: 'custom', symptomKey: 'bmd_example_custom' },
 ];
 const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
@@ -1147,11 +1153,18 @@ const BikeMedic = ({ tool }) => {
     setCurrentFix(null);
     // On home screen: pre-fill the freetext input and open the accordion
     // On sub-screens: navigate to a problem tree as before
+    const seed = t(ex.symptomKey);
     if (!selectedProblem && !activeSection) {
-      const seed = t(ex.symptomKey);
       setSymptomText(seed);
       setCustomProblem(seed);
       setShowInterpreter(true);
+    } else if (ex.problem === 'custom') {
+      // No decision tree for "something else" — same path as picking that
+      // card by hand, with the symptom already described.
+      setSelectedProblem('custom');
+      setShowAskMechanic(true);
+      setTreePath([]);
+      setCustomProblem(seed);
     } else {
       setSelectedProblem(ex.problem);
       setTreePath([`${ex.problem}_start`]);
