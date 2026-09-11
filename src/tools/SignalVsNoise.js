@@ -526,6 +526,22 @@ const SignalVsNoise = ({ tool }) => {
               </div>
             )}
 
+            {/* NO SIGNAL — say why, rather than leaving a hole. Two honest reasons:
+                the sources found were all secondary (the strong-source rule then
+                admits nothing as a Signal), or strong sources existed and still
+                left every claim mixed/unresolved. Source type is what the packet
+                carries, so that is what decides which note shows. */}
+            {results?.the_signal && (!results.the_signal.items || results.the_signal.items.length === 0) && (results?.the_noise?.length > 0 || results?.still_worth_verifying?.length > 0) && (() => {
+              const STRONG = new Set(['systematic_review', 'meta_analysis', 'primary_study', 'government', 'regulator', 'official_dataset', 'methodology', 'professional_body', 'thesis_or_preprint']);
+              const hadStrong = (results?.sources_examined || []).some(s => STRONG.has(s.source_type));
+              return (
+                <div className={`rounded-xl border border-dashed p-4 ${c.border} ${c.cardAlt}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest mb-1 ${c.textMuted}`}>{t('svn_no_signal_header')}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{hadStrong ? t('svn_no_signal_unresolved') : t('svn_no_signal_secondary')}</p>
+                </div>
+              );
+            })()}
+
             {/* THE NOISE */}
             {results?.the_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
