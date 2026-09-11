@@ -39,10 +39,20 @@ const EXAMPLES = [
   { situationKey: 'ssib_ex5_situation', need: 'reality_check', voice: 'reassuring' },
 ];
 
+// Recent Finds shows 3 rows with "View all" behind them, same shape as
+// Signal vs. Noise's Recent Checks (2026-09-11) and Trip Recon's Recent
+// places (2026-09-09). What gets remembered is tool-specific: there it's
+// claim stats, here it's the quotation itself — a quote-first row is the
+// thing worth recognizing at a glance, not the situation text repeated.
+const FINDS_VISIBLE = 3;
+const KEPT_VISIBLE = 6;
+const DEDUPE_WINDOW_MS = 24 * 60 * 60 * 1000;
+const normSituation = (s) => (s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
 const SomeoneSaidItBetter = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, tPlural } = useTranslation();
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -83,30 +93,103 @@ const SomeoneSaidItBetter = ({ tool }) => {
   const [need, setNeed] = useState('perspective');
   const [voice, setVoice] = useState('any');
   const [results, setResults] = usePersistentState('someone-said-it-better-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('someone-said-it-better-history', []);
-  const [showHistory, setShowHistory] = useState(false);
+  // Recent Finds: where I've been. One entry per situation (repeats within a
+  // day merge into a visit count rather than piling up duplicates — the
+  // Signal vs. Noise anti-pattern this feature exists to avoid: "Retirement
+  // / Difficult conversation / Retirement / Feeling stuck / Retirement" is
+  // browser history wearing a Recents costume). Data shape is the full
+  // cached result, so reopening one costs no new research call.
+  const [savedFinds, setSavedFinds] = usePersistentState('someone-said-it-better-finds-log-v2', []);
+  const [showAllFinds, setShowAllFinds] = useState(false);
+  // Quotes I've Kept: words deliberately chosen to remember — a second,
+  // separate collection from Recent Finds. A find is where you were; a kept
+  // quote is what you decided was worth keeping regardless of the visit.
+  const [keptQuotes, setKeptQuotes] = usePersistentState('someone-said-it-better-kept-v1', []);
+  const [showAllKept, setShowAllKept] = useState(false);
+  // The find currently on screen, if reopened from Recent Finds — null for
+  // a fresh live result. Gates "Find different words for this" (a genuinely
+  // new research pass) so it never shows next to a result that's already new.
+  const [restoredFind, setRestoredFind] = useState(null);
+  const [currentFindId, setCurrentFindId] = useState(null);
   const [error, setError] = useState('');
   const resultsRef = useRef(null);
 
   const canSubmit = situation.trim().length > 0;
 
-  const handleSubmit = useCallback(async () => {
-    if (!canSubmit || loading) return;
-    setError(''); setResults(null);
+  // Today / Yesterday / "Sep 8" — easier to scan than a full numeric date.
+  const relativeDay = useCallback((iso) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const startOf = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const diffDays = Math.round((startOf(new Date()) - startOf(d)) / 86400000);
+    if (diffDays <= 0) return t('ssib_today');
+    if (diffDays === 1) return t('ssib_yesterday');
+    const locale = userLocale || (typeof navigator !== 'undefined' ? navigator.language : 'en');
+    return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(d);
+  }, [t, userLocale]);
+
+  const rememberFind = useCallback((input, data) => {
+    const quotes = (data.picks || []).map(p => ({
+      quoteId: p.quote_id,
+      text: p.quote.text,
+      author: p.quote.author,
+      work: p.quote.work,
+      date: p.quote.date,
+      publisher: p.quote.publisher,
+      sourceTitle: p.quote.source_title,
+      url: p.quote.url,
+      role: p.role,
+      whyThisOne: p.why_this_one,
+    }));
+    const id = Date.now();
+    const entry = {
+      id,
+      createdAt: new Date().toISOString(),
+      situation: input.situation,
+      need: input.need,
+      voice: input.voice,
+      situationLabel: data.situation_label || input.situation.slice(0, 60),
+      situationAsUnderstood: data.situation_as_understood,
+      foundAt: data.researched_at || null,
+      // Accessible label for the row button below — kept even though the
+      // quote text is now the visible headline.
+      preview: input.situation.trim().slice(0, 40),
+      quotes,
+      visits: 1,
+    };
+    setSavedFinds(prev => {
+      const key = normSituation(input.situation);
+      const dup = prev.find(e => normSituation(e.situation) === key && (Date.now() - new Date(e.createdAt).getTime()) < DEDUPE_WINDOW_MS);
+      const rest = prev.filter(e => e !== dup);
+      if (dup) entry.visits = (dup.visits || 1) + 1;
+      // Exception: this log needs more than 6 for "view all" to be worth
+      // having — a situation someone returns to shouldn't fall off in a
+      // week the way a fixed 6-slot list would force it to.
+      return [entry, ...rest].slice(0, 20);
+    });
+    return id;
+  }, [setSavedFinds]);
+
+  const runSearch = useCallback(async ({ situationText, needVal, voiceVal, force = false, previousQuotes = null }) => {
+    const trimmed = situationText.trim();
+    if (!trimmed || loading) return;
+    setError(''); setResults(null); setRestoredFind(null);
     try {
       const data = await callToolEndpoint('someone-said-it-better', {
-        situation: situation.trim(), need, voice, userLocale, userCurrency, userRegion,
+        situation: trimmed, need: needVal, voice: voiceVal,
+        force: force || undefined,
+        previousQuotes: previousQuotes || undefined,
+        userLocale, userCurrency, userRegion,
       });
       setResults(data);
-      setSessionHistory(prev => [{
-        id: Date.now(), date: new Date().toISOString(),
-        // Exception: this is preview-text truncation, not the history-array
-        // cap (that's the outer .slice(0, 6) below, PF-25 standard).
-        preview: situation.trim().slice(0, 40),
-        situation: situation.trim(), need, voice, result: data,
-      }, ...prev].slice(0, 6));
+      const id = rememberFind({ situation: trimmed, need: needVal, voice: voiceVal }, data);
+      setCurrentFindId(id);
     } catch (e) { setError(e.message || t('ssib_error_generic')); }
-  }, [canSubmit, loading, situation, need, voice, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [loading, callToolEndpoint, rememberFind, setResults, userLocale, userCurrency, userRegion, t]);
+
+  const handleSubmit = useCallback(() => {
+    runSearch({ situationText: situation, needVal: need, voiceVal: voice });
+  }, [runSearch, situation, need, voice]);
 
   // Cmd/Ctrl+Enter submits from anywhere
   useEffect(() => {
@@ -126,21 +209,74 @@ const SomeoneSaidItBetter = ({ tool }) => {
     setNeed(ex.need);
     setVoice(ex.voice);
     setResults(null);
+    setRestoredFind(null);
     setError('');
   }, [setResults, t]);
 
   const handleReset = useCallback(() => {
-    setSituation(''); setNeed('perspective'); setVoice('any'); setResults(null); setError('');
+    setSituation(''); setNeed('perspective'); setVoice('any');
+    setResults(null); setRestoredFind(null); setCurrentFindId(null); setError('');
   }, [setResults]);
 
-  const loadHistoryEntry = useCallback((entry) => {
+  // Reopening a Recent Find restores the whole cached result — no new
+  // search, no new API cost. Distinct from "Find different words", which
+  // takes the same situation through a fresh discovery pass.
+  const reopenFind = useCallback((entry) => {
+    setError('');
     setSituation(entry.situation || '');
     setNeed(entry.need || 'perspective');
     setVoice(entry.voice || 'any');
-    setResults(entry.result || null);
-    setError('');
-    setShowHistory(false);
+    setCurrentFindId(entry.id);
+    setRestoredFind(entry);
+    setResults({
+      situation_as_understood: entry.situationAsUnderstood || entry.situation,
+      situation_label: entry.situationLabel,
+      researched_at: entry.foundAt,
+      picks: (entry.quotes || []).map(q => ({
+        quote_id: q.quoteId,
+        role: q.role,
+        why_this_one: q.whyThisOne,
+        quote: { id: q.quoteId, text: q.text, author: q.author, work: q.work, date: q.date, publisher: q.publisher, source_title: q.sourceTitle, url: q.url },
+      })),
+    });
+    setShowAllFinds(false);
   }, [setResults]);
+
+  const handleFindDifferentWords = useCallback(() => {
+    if (!restoredFind) return;
+    runSearch({
+      situationText: restoredFind.situation,
+      needVal: restoredFind.need,
+      voiceVal: restoredFind.voice,
+      force: true,
+      previousQuotes: (restoredFind.quotes || []).map(q => q.text),
+    });
+  }, [restoredFind, runSearch]);
+
+  const unkeep = useCallback((findId, quoteId) => {
+    setKeptQuotes(prev => prev.filter(k => !(k.findId === findId && k.quoteId === quoteId)));
+  }, [setKeptQuotes]);
+
+  const isKept = useCallback((quoteId) => keptQuotes.some(k => k.findId === currentFindId && k.quoteId === quoteId),
+    [keptQuotes, currentFindId]);
+
+  const toggleKeep = useCallback((p) => {
+    if (!currentFindId) return;
+    if (isKept(p.quote_id)) { unkeep(currentFindId, p.quote_id); return; }
+    setKeptQuotes(prev => [{
+      findId: currentFindId,
+      quoteId: p.quote_id,
+      text: p.quote.text,
+      author: p.quote.author,
+      work: p.quote.work,
+      date: p.quote.date,
+      publisher: p.quote.publisher,
+      url: p.quote.url,
+      whyThisOne: p.why_this_one,
+      situationLabel: results?.situation_label || results?.situation_as_understood || '',
+      keptAt: new Date().toISOString(),
+    }, ...prev].slice(0, 200));
+  }, [currentFindId, isKept, unkeep, setKeptQuotes, results]);
 
   const roleLabel = (role) => {
     if (role === 'different_way') return t('ssib_role_different_way');
@@ -174,6 +310,9 @@ const SomeoneSaidItBetter = ({ tool }) => {
     return () => clearTimeout(timer);
   }, [results]);
 
+  const foundLabel = results?.researched_at ? relativeDay(results.researched_at) : null;
+  const foundToday = foundLabel === t('ssib_today');
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -189,11 +328,6 @@ const SomeoneSaidItBetter = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              {sessionHistory.length > 0 && (
-                <button onClick={() => setShowHistory(s => !s)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                  🕓 {sessionHistory.length}
-                </button>
-              )}
               {(results || situation.trim()) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
                   ↺ {t('start_over')}
@@ -201,18 +335,6 @@ const SomeoneSaidItBetter = ({ tool }) => {
               )}
             </div>
           </div>
-
-          {showHistory && sessionHistory.length > 0 && (
-            <div className="mt-3 space-y-1">
-              {sessionHistory.map(h => (
-                <button key={h.id} onClick={() => loadHistoryEntry(h)}
-                  className={`w-full text-start p-2 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-colors flex items-center justify-between`}>
-                  <span className={c.text}>{h.preview}</span>
-                  <span className={c.textMuteded}>{new Date(h.date).toLocaleDateString()}</span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {!results && (
@@ -282,33 +404,125 @@ const SomeoneSaidItBetter = ({ tool }) => {
           <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
 
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>{t('ssib_your_situation')}</p>
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>{t('ssib_your_situation')}</p>
+              {foundLabel && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className={`text-[10px] ${c.textMuted}`}>{t('ssib_found_on', { date: foundLabel })}</span>
+                  {(restoredFind || !foundToday) && (
+                    <button onClick={handleFindDifferentWords} disabled={loading}
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/30' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                      {t('ssib_find_different_words')}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
             <p className={`mt-2 text-lg font-semibold ${c.text}`}>{results.situation_as_understood}</p>
             <p className={`mt-2 text-xs ${c.textMuted}`}>{t('ssib_verified_note')}</p>
           </div>
 
-          {results.picks?.map((p) => (
-            <div key={p.quote_id} className={`rounded-xl border p-6 ${c.quoteBg}`}>
-              <div className={`text-xs font-bold tracking-widest ${c.accentTxt}`}>{roleLabel(p.role)}</div>
-              <blockquote className={`mt-4 text-xl font-medium leading-relaxed ${c.text}`}>"{p.quote.text}"</blockquote>
-              <div className={`mt-3 ${c.textSecondary}`}>
-                — <strong>{p.quote.author}</strong>
-                {p.quote.work ? <> , <em>{p.quote.work}</em></> : null}
-                {p.quote.date ? ` · ${p.quote.date}` : ''}
+          {results.picks?.map((p) => {
+            const kept = isKept(p.quote_id);
+            return (
+              <div key={p.quote_id} className={`rounded-xl border p-6 ${c.quoteBg}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className={`text-xs font-bold tracking-widest ${c.accentTxt}`}>{roleLabel(p.role)}</div>
+                  {currentFindId && (
+                    <button onClick={() => toggleKeep(p)} aria-pressed={kept}
+                      title={kept ? t('ssib_unkeep') : t('ssib_keep')}
+                      className={`flex-shrink-0 text-lg leading-none transition-transform hover:scale-110 ${kept ? '' : c.textMuted}`}>
+                      {kept ? '❤️' : '🤍'}
+                    </button>
+                  )}
+                </div>
+                <blockquote className={`mt-4 text-xl font-medium leading-relaxed ${c.text}`}>"{p.quote.text}"</blockquote>
+                <div className={`mt-3 ${c.textSecondary}`}>
+                  — <strong>{p.quote.author}</strong>
+                  {p.quote.work ? <> , <em>{p.quote.work}</em></> : null}
+                  {p.quote.date ? ` · ${p.quote.date}` : ''}
+                </div>
+                <div className="mt-5">
+                  <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('ssib_why_this_one')}</p>
+                  <p className={`mt-1 text-sm leading-relaxed ${c.textSecondary}`}>{p.why_this_one}</p>
+                </div>
+                <a href={p.quote.url} target="_blank" rel="noreferrer" className={`mt-5 inline-block text-sm ${linkStyle}`}>
+                  ↗ {t('ssib_verify_link')} · {p.quote.publisher || p.quote.source_title}
+                </a>
               </div>
-              <div className="mt-5">
-                <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('ssib_why_this_one')}</p>
-                <p className={`mt-1 text-sm leading-relaxed ${c.textSecondary}`}>{p.why_this_one}</p>
-              </div>
-              <a href={p.quote.url} target="_blank" rel="noreferrer" className={`mt-5 inline-block text-sm ${linkStyle}`}>
-                ↗ {t('ssib_verify_link')} · {p.quote.publisher || p.quote.source_title}
-              </a>
-            </div>
-          ))}
+            );
+          })}
 
           <p className={`text-xs text-center ${c.textMuted}`}>
             {t('ssib_xref_toast_q')} <a href="/ToastWriter" className={linkStyle}>{t('ssib_xref_toast')}</a>
           </p>
+        </div>
+      )}
+
+      {/* Recent Finds — the quotation is the thing worth recognizing at a
+          glance, so it leads each row; the situation label and date are the
+          smaller second line, not the headline. Reopening restores the
+          cached result at no API cost. */}
+      {savedFinds.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('ssib_recent_finds')}</p>
+          <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
+            {(showAllFinds ? savedFinds : savedFinds.slice(0, FINDS_VISIBLE)).map(e => {
+              const primary = (e.quotes || []).find(q => q.role === 'one_to_keep') || e.quotes?.[0];
+              if (!primary) return null;
+              return (
+                <button key={e.id} onClick={() => reopenFind(e)} disabled={loading} title={e.preview}
+                  className={`w-full text-start py-3 group ${loading ? 'opacity-60' : ''}`}>
+                  <p className={`text-sm italic leading-snug ${c.text}`}>"{primary.text}"</p>
+                  <p className={`text-xs mt-0.5 ${c.textSecondary}`}>— {primary.author}</p>
+                  <p className={`text-[11px] mt-1 flex items-center gap-1 ${c.textMuted}`}>
+                    <span className="truncate">{e.situationLabel}</span>
+                    <span className="whitespace-nowrap">· {relativeDay(e.createdAt)}</span>
+                    {e.visits > 1 && <span className="whitespace-nowrap">· {tPlural('ssib_visits_n', e.visits, { n: e.visits })}</span>}
+                    <span aria-hidden="true" className="ms-auto flex-shrink-0 group-hover:translate-x-0.5 inline-block transition-transform">›</span>
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+          {savedFinds.length > FINDS_VISIBLE && (
+            <button onClick={() => setShowAllFinds(v => !v)} className={`mt-2 text-xs font-semibold ${c.accentTxt}`}>
+              {showAllFinds ? t('ssib_show_fewer') : t('ssib_view_all', { n: savedFinds.length })}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Quotes I've Kept — a second, separate collection: words deliberately
+          chosen to remember, independent of which situation surfaced them. */}
+      {keptQuotes.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>❤️ {t('ssib_kept_title')}</p>
+          <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
+            {(showAllKept ? keptQuotes : keptQuotes.slice(0, KEPT_VISIBLE)).map(k => (
+              <div key={`${k.findId}:${k.quoteId}`} className="py-3 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className={`text-sm italic leading-snug ${c.text}`}>"{k.text}"</p>
+                  <p className={`text-xs mt-0.5 ${c.textSecondary}`}>— {k.author}{k.work ? `, ${k.work}` : ''}</p>
+                  {k.situationLabel && <p className={`text-[11px] mt-1 truncate ${c.textMuted}`}>{k.situationLabel}</p>}
+                  {k.url && (
+                    <a href={k.url} target="_blank" rel="noreferrer" className={`text-[11px] ${linkStyle}`}>
+                      ↗ {t('ssib_verify_link')}
+                    </a>
+                  )}
+                </div>
+                <button onClick={() => unkeep(k.findId, k.quoteId)} title={t('ssib_unkeep')}
+                  className="flex-shrink-0 text-lg leading-none hover:scale-110 transition-transform">
+                  ❤️
+                </button>
+              </div>
+            ))}
+          </div>
+          {keptQuotes.length > KEPT_VISIBLE && (
+            <button onClick={() => setShowAllKept(v => !v)} className={`mt-2 text-xs font-semibold ${c.accentTxt}`}>
+              {showAllKept ? t('ssib_show_fewer') : t('ssib_view_all', { n: keptQuotes.length })}
+            </button>
+          )}
         </div>
       )}
     </div>

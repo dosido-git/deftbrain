@@ -43,7 +43,7 @@ function render(packet) {
   return `\n\nVERIFIED QUOTE PACKET — quotation wording and attribution may ONLY come from this packet. Do not alter quotation text, author, work, or source. If a candidate is not a good fit, omit it.\n${JSON.stringify(packet)}`;
 }
 
-async function quoteResearch({ situation, voice = 'any' }) {
+async function quoteResearch({ situation, voice = 'any', force = false }) {
   const cacheKey = keyFor({ situation, voice });
   const block = await groundedFacts({
     cacheKey,
@@ -53,6 +53,10 @@ async function quoteResearch({ situation, voice = 'any' }) {
     timeoutMs: TIMEOUT_MS,
     maxTokens: 5500,
     maxUses: MAX_USES,
+    // `force`: "Find different words for this" wants a genuinely fresh
+    // research pass, not the same 30-day-cached candidate set re-served —
+    // see backend/server's groundedFacts force option.
+    force,
     system: `You retrieve and verify short, well-known quotations for a DeftBrain tool. Use web_search. Find candidate quotations that illuminate the visitor's situation without pretending to know their feelings or biography.
 
 HARD RULES:

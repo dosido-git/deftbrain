@@ -43,7 +43,13 @@ function validateResult(result, packet) {
   const seen = new Set();
   for (const p of picks) if (!seen.has(p.quote_id)) { seen.add(p.quote_id); unique.push(p); }
   if (unique.length < 2) return null;
-  return { situation_as_understood: compact(result.situation_as_understood, 500), picks: unique };
+  return {
+    situation_as_understood: compact(result.situation_as_understood, 500),
+    // Short label for a Recent Finds list entry ("Retirement and what comes
+    // next") — distinct from situation_as_understood, which is a full sentence.
+    situation_label: compact(result.situation_label, 60) || compact(result.situation_as_understood, 60),
+    picks: unique,
+  };
 }
 
 router.post('/someone-said-it-better', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -52,12 +58,22 @@ router.post('/someone-said-it-better', rateLimit(DEFAULT_LIMITS), async (req, re
     if (!situation) return res.status(400).json({ error: 'Tell me what is going on.' });
     const voice = VOICES.has(req.body.voice) ? req.body.voice : 'any';
     const need = NEEDS.has(req.body.need) ? req.body.need : 'perspective';
+    // "Find different words for this" replays the same situation but wants a
+    // genuinely fresh research pass, not the cached candidate set re-served.
+    const force = req.body.force === true;
 
-    const research = await quoteResearch({ situation, voice });
+    const research = await quoteResearch({ situation, voice, force });
     if (!research.packet) return res.status(503).json({
       error: 'I could not verify enough quotations right now. Please try again.',
       code: 'quote_research_unavailable',
     });
+
+    // Optional: quote text already shown for this situation ("Find different
+    // words for this"). Best-effort steer away from repeats; never blocks a
+    // response if the fresh packet doesn't have enough distinct alternatives.
+    const previousQuotes = Array.isArray(req.body.previousQuotes)
+      ? req.body.previousQuotes.map(t => compact(t, 360)).filter(Boolean).slice(0, 10)
+      : [];
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const system = `You are the matching and explanation stage for Someone Said It Better, a DeftBrain tool. The quotations have already been retrieved and verified. Your job is ONLY to choose the 2-3 that best fit the visitor's supplied situation and explain the connection.
@@ -74,7 +90,11 @@ RULES:
 
 ${NO_QUOTE_RULE}`;
 
-    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one concise sentence grounded only in what the visitor said",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences connecting the quote to the supplied situation without inventing facts"\n    }\n  ]\n}`;
+    const avoidBlock = previousQuotes.length
+      ? `\n\nALREADY SHOWN FOR THIS SITUATION (the visitor asked for different words — prefer other quote_ids from the packet where a good fit exists; only repeat one of these if nothing else in the packet fits):\n${previousQuotes.map(t => `- "${t}"`).join('\n')}`
+      : '';
+
+    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}${avoidBlock}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one concise sentence grounded only in what the visitor said",\n  "situation_label": "a short 3-6 word label for this situation, for a history list entry (e.g. \\"Retirement and what comes next\\", \\"A difficult decision\\") — describe the situation itself, never the visitor",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences connecting the quote to the supplied situation without inventing facts"\n    }\n  ]\n}`;
 
     const raw = await callClaudeWithRetry({
       model: MODELS.SMART,
