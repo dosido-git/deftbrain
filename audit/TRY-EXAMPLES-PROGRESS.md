@@ -70,6 +70,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 40 | EmailUrgencyTriager | i18n | — | 2 inboxes | 5 (+ deadline buried under process noise, quiet newsletter-only day, family-emergency signal buried in retail spam; 3 keys ×13) | ✅ 2026-09-11 |
 | 41 | FakeReviewDetective | inline | 11 categories | 1 | 5 (+ beauty with 'received for free' disclosures, kitchenware mostly genuine, books with competitor-bashing, automotive with incentivized reviews) | ✅ 2026-09-11 |
 | 42 | FanTheory | inline | 4 media types | 2 (show, movie) | 5 (+ book, game, a second show) | ✅ 2026-09-11 |
+| 43 | FinalWish | inline | — | 2 (complete solo, deliberately unfinished) | 5 (+ a couple with young children/guardianship, a business owner with a tangled company estate) | ✅ 2026-09-11 |
+| 44 | FocusPocus | inline | — | 3 | 5 (+ a difficult performance review with a vague 'enough', a no-exit-condition garage clean) | ✅ 2026-09-11 |
+| 45 | FocusSoundArchitect | inline | 7 tasks × 7 environments | 2 | 5 (+ studying/high-frequency-sensitive, relaxing toward sleep, tedious commute wanting variety) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)

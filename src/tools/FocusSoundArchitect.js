@@ -358,6 +358,10 @@ const fmt = (totalSeconds) => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 
+// Five, rotated across most tasks, environments and the energy-goal range:
+// deep work in an open-plan office, creative flow in a café, studying in a
+// library with high-frequency sensitivity, winding down to sleep-adjacent
+// energy in bed, and tedious commute work that wants variety, not calm.
 const EXAMPLES = [
   {
     task: 'deep_work',
@@ -372,6 +376,27 @@ const EXAMPLES = [
     soundPrefs: ['cafe', 'pinkNoise'],
     sensitivities: [],
     energyGoal: 55,
+  },
+  {
+    task: 'studying',
+    environments: ['library', 'quietHome'],
+    soundPrefs: ['whiteNoise', 'binauralBeats'],
+    sensitivities: ['highFrequencySensitive', 'preferConsistency'],
+    energyGoal: 60,
+  },
+  {
+    task: 'relaxing',
+    environments: ['bedroom'],
+    soundPrefs: ['ocean', 'wind'],
+    sensitivities: ['needLowBass'],
+    energyGoal: 25,
+  },
+  {
+    task: 'tedious',
+    environments: ['commute', 'noisyOffice'],
+    soundPrefs: ['forest', 'fire'],
+    sensitivities: ['needVariety'],
+    energyGoal: 45,
   },
 ];
 const FocusSoundArchitect = ({ tool }) => {
