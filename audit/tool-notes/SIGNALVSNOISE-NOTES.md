@@ -816,6 +816,58 @@ UI: "N sources checked" → **"N sources cited"** (and "Sources cited"), 13 lang
 is exactly the sources the rendered analysis cites, since `sources_examined` is pruned to cited IDs;
 "checked" implied evaluation-and-acceptance of the retrieval set.
 
+**Speed (V8.3, same day).** Measured before: cold ~150s (research 60–100s, synthesis 50–80s), warm
+~60s. Three changes:
+1. **Synthesis split into two parallel calls** — signal+noise (3000 tok) and verify + can't-decide +
+   bottom line + sources-of-noise (2200 tok). Same packet in both prompts, disjoint output keys, merged
+   by spread. The Bottom Line is written from the packet in parallel with the cards; rule 16 pins it to
+   the packet's strength, so the halves cannot disagree about what was found. Established repo pattern
+   (see the parallel-split notes).
+2. **Hard word caps per field** in the prompt (framing 45, basis 60, what_went_wrong 45, bottom-line
+   bullet 40, …). Output tokens are what cost time.
+3. **Two-phase UX.** New `POST /signal-vs-noise/research` returns immediately: 202 `{status:'pending',
+   sources:[]}` while the fetch runs (it STARTS the fetch on a cold topic; `groundedFacts` dedupes),
+   200 `{status:'ready', researched_at, claim_count, sources}` once cached. Own rate-limit bucket
+   (20/min, `svn-research:`) because the client polls every ~6s for up to ~4 minutes. The client polls
+   with `pollToolEndpoint` — a new `useClaudeAPI` helper that does NOT emit tool_run/tool_complete or
+   toggle `loading`, so polling cannot inflate the dashboard — shows "N sources found" with the list,
+   then calls the main endpoint, which finds the research cached and runs synthesis only. The main
+   endpoint is unchanged for direct callers (60s cold wait, 503). **Dashboard consequence:** the
+   tool's "avg time" now measures the synthesis call only (the tracked one), not the visitor's wait.
+   New golden case `research-status-investing-warm` (sources optional — a cold server answers pending).
+
+   **Measured after (standing-desk topic, cold):** research ready at +66s, synthesis **28s** (was 50–80s),
+   **cold total 95s** (was ~150–160s); **warm repeat 31s** (was ~60s). The visitor now sees "checking
+   sources" within a second, "10 sources found" at ~66s with the list, and the result at ~95s.
+
+   **Found in the browser check:** the readiness endpoint's per-IP bucket was hit by my own golden
+   re-record polling the same endpoint from the same IP → the client showed "Too many requests" and
+   abandoned the run. Two fixes: the client treats a failed *poll* as transient (backs off, gives up
+   only after 4 consecutive failures — a poll is not the answer), and the readiness bucket is 40/min
+   (a poll costs nothing; two tabs on one IP must not fail each other). The golden-record helper
+   (`scratchpad/record_svn_goldens.js`) now honours each case's `endpoint` — its first run posted the
+   readiness case's input to the main endpoint, which would have recorded the wrong shape.
+
+   **Found in the golden re-record:** one topic's research fetch failed, `groundedFacts`
+   negative-cached the failure (5 min), and the readiness endpoint — which could only see "no packet"
+   — reported `pending` for 220s+ while the client polled out its whole budget. `groundedFacts` now
+   exports `groundedStatus(key)` → `ready | in_flight | failed | none`; `claimResearch.researchState()`
+   wraps it; the readiness endpoint answers `{status:'failed', code:'research_unavailable'}` (200 — the
+   poll succeeded, the research did not) while the negative cache holds, and the client stops polling
+   on `failed`, makes one main call (which 503s immediately from the same cache) and shows
+   `svn_research_unavailable` within seconds instead of four minutes. (The failure itself was
+   transient: the same research ran clean standalone in 69s, ~$0.17.)
+
+   **Found in that probe — secondary-only Signal.** For the real-estate-vs-stocks claim the only
+   sources the search found were BiggerPockets, a wealth manager's `/blog/` and "The Luxury
+   Playbook", all tier 4 — and a tier-4-only claim was still allowed to become a Signal conclusion.
+   Two rules added: any URL with a `/blog/` segment is tier 4 whatever the domain; each packet claim
+   now carries `support: 'primary' | 'secondary_only'`; the synthesis prompt routes `secondary_only`
+   claims to Still Worth Verifying ("only secondary sources were found"); and `sanitizeResult` drops
+   any Signal item that does not cite at least one tier 1–3 source, so the prompt rule is enforced in
+   code. Noise items may still cite secondary sources (a critique can rest on them; a conclusion
+   cannot). Tested both directions.
+
 ## DO NOT silently reverse (V8)
 
 32. **Research-first is the architecture now.** Do not reintroduce a source-free "claim analysis"

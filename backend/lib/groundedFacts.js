@@ -261,9 +261,27 @@ function store(key, block, ttlMs, data) {
  * Null whenever there is nothing cached, or the entry predates structure —
  * callers must treat null as "no information", never as "none".
  */
+/**
+ * Where a key stands right now, for callers that poll for readiness:
+ *   'ready'      a real block is cached (fresh or stale — stale still serves)
+ *   'in_flight'  a fetch is running
+ *   'failed'     the last fetch failed and the short negative cache is holding
+ *   'none'       nothing known; the next groundedFacts() call would start one
+ * Added for signal-vs-noise's /research endpoint, which otherwise could not
+ * tell a failed fetch from a slow one and reported "pending" for the whole
+ * negative-cache window.
+ */
+function groundedStatus(cacheKey) {
+  if (inFlight.has(cacheKey)) return 'in_flight';
+  const hit = cache.get(cacheKey);
+  if (!hit) return 'none';
+  if (hit.block) return 'ready';
+  return hit.expires > Date.now() ? 'failed' : 'none';
+}
+
 function groundedData(cacheKey) {
   const hit = cache.get(cacheKey);
   return (hit && hit.data) || null;
 }
 
-module.exports = { groundedFacts, groundedData, normalizeKeyPart, stripCites };
+module.exports = { groundedFacts, groundedData, groundedStatus, normalizeKeyPart, stripCites };

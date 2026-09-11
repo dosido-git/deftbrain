@@ -5,7 +5,7 @@
 // metadata, and return a compact evidence packet that the main generation call
 // can synthesize without live search.
 
-const { groundedFacts, groundedData, normalizeKeyPart } = require('./groundedFacts');
+const { groundedFacts, groundedData, groundedStatus, normalizeKeyPart } = require('./groundedFacts');
 
 const RESEARCH_TTL_MS = Number(process.env.SIGNAL_RESEARCH_TTL_MS || 24 * 60 * 60 * 1000);
 const COLD_WAIT_MS = Number(process.env.SIGNAL_RESEARCH_COLD_WAIT_MS || 60_000);
@@ -77,6 +77,10 @@ const EXPLAINER_HOST_HINTS = [
 
 function tierOf(src) {
   if (hostMatches(hostOf(src.url), EXPLAINER_HOST_HINTS)) return 4;
+  // A blog post on a company's own domain is an explainer whatever the domain
+  // (seen: a wealth manager's /blog/ and BiggerPockets /blog/ labelled as
+  // secondary support for a Signal conclusion).
+  if (/\/blogs?\//i.test(String(src.url || ''))) return 4;
   return TIER_BY_TYPE[src.source_type] || 4;
 }
 
@@ -124,9 +128,15 @@ function cleanPacket(raw) {
     // …and within one claim: a finding resting on tier 4 alone is dropped
     // when a sibling finding has stronger support.
     if (findings.some(f => f.source_ids.some(strong))) findings = findings.filter(f => f.source_ids.some(strong));
+    // Secondary-only support is kept in the packet (it may be all the research
+    // found) but named, so the synthesis can route the claim to "still worth
+    // verifying" rather than present it as established — and sanitizeResult
+    // in the route enforces that for Signal items regardless.
+    const support = findings.some(f => f.source_ids.some(strong)) ? 'primary' : 'secondary_only';
     return {
       claim: compact(c?.claim, 500),
       assessment: ['supported', 'overstated', 'mixed', 'unresolved'].includes(c?.assessment) ? c.assessment : 'unresolved',
+      support,
       findings,
       limits: (Array.isArray(c?.limits) ? c.limits : []).map(x => compact(x, 500)).filter(Boolean).slice(0, 4),
     };
@@ -148,16 +158,20 @@ function cleanPacket(raw) {
 
 function renderResearchBlock(packet) {
   if (!packet) return '';
-  return `\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved.\n${JSON.stringify(packet)}`;
+  return `\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked "support": "secondary_only" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n${JSON.stringify(packet)}`;
 }
 
-async function claimResearch({ topic, conflictingAdvice, userContext, region }) {
+// `coldWaitMs` overrides the default cold wait. The main route keeps the
+// default (a researched answer or a 503); the /research status endpoint
+// passes 0 so a poll returns immediately — cached packet or "pending" —
+// while the fetch it just started runs on in the background.
+async function claimResearch({ topic, conflictingAdvice, userContext, region, coldWaitMs = COLD_WAIT_MS }) {
   const key = researchKey({ topic, conflictingAdvice });
   const block = await groundedFacts({
     cacheKey: key,
     label: 'signal-vs-noise-research',
     ttlMs: RESEARCH_TTL_MS,
-    coldWaitMs: COLD_WAIT_MS,
+    coldWaitMs,
     timeoutMs: SEARCH_TIMEOUT_MS,
     maxTokens: 6500,
     maxUses: MAX_USES,
@@ -210,4 +224,11 @@ Return ONLY:
   return { block: packet ? renderResearchBlock(packet) : '', packet, cacheKey: key };
 }
 
-module.exports = { claimResearch, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };
+// 'ready' | 'in_flight' | 'failed' | 'none' for the visitor's topic — see
+// groundedStatus. Lets the readiness endpoint say "failed" instead of
+// "pending" while the negative cache holds after a failed fetch.
+function researchState({ topic, conflictingAdvice }) {
+  return groundedStatus(researchKey({ topic, conflictingAdvice }));
+}
+
+module.exports = { claimResearch, researchState, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };

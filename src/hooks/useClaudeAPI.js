@@ -148,5 +148,27 @@ export const useClaudeAPI = () => {
     }
   };
 
-  return { callToolEndpoint, callToolEndpointStreaming, loading, error, userLanguage, userLocale, userRegion, userCurrency };
+  // Status poll — same request shape and locale plumbing as callToolEndpoint,
+  // but it does NOT track tool_run / tool_complete and does not toggle
+  // `loading`. A tool that polls a readiness endpoint every few seconds
+  // (signal-vs-noise/research) would otherwise log twenty "runs" per visitor
+  // and skew every per-tool number on the dashboard. Errors carry status and
+  // code like the tracked call.
+  const pollToolEndpoint = async (endpoint, data) => {
+    const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
+    });
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const err = new Error(json.error || `Server error: ${response.status}`);
+      err.status = response.status;
+      if (typeof json.code === 'string') err.code = json.code;
+      throw err;
+    }
+    return json;
+  };
+
+  return { callToolEndpoint, callToolEndpointStreaming, pollToolEndpoint, loading, error, userLanguage, userLocale, userRegion, userCurrency };
 };

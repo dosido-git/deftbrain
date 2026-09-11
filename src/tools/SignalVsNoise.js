@@ -26,7 +26,7 @@ const NOISE_TYPE_CONFIG = {
 
 const SignalVsNoise = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
 
 
@@ -125,8 +125,19 @@ const SignalVsNoise = ({ tool }) => {
   // specific state and retries; each retry is cheap server-side (it joins
   // the in-flight fetch) and the second attempt normally returns the
   // researched answer.
-  const [warming, setWarming] = useState(false);
-  const WARM_RETRIES = 6;
+  //
+  // Two phases, so the visitor sees progress instead of a 2-minute spinner:
+  //   1. poll /signal-vs-noise/research every ~6s until the packet is ready
+  //      (untracked — see pollToolEndpoint), and show "N sources found";
+  //   2. call /signal-vs-noise, which now finds the research cached and only
+  //      runs the synthesis (~40s after the split).
+  // The 503 retry below stays as a fallback for the rare case the cache
+  // entry is gone between the two phases.
+  const [phase, setPhase] = useState('idle');          // idle | research | synthesis
+  const [preview, setPreview] = useState(null);         // sources found, shown during synthesis
+  const RESEARCH_POLLS = 40;
+  const RESEARCH_POLL_MS = 6000;
+  const WARM_RETRIES = 3;
   const WARM_RETRY_DELAY_MS = 8000;
   // "sources" (HOW THE NOISE GETS MADE) and "verify" (STILL WORTH
   // VERIFYING) are collapsed by default — the target layout keeps the main
@@ -137,7 +148,7 @@ const SignalVsNoise = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!topic.trim()) return;
-    setError(''); setResults(null); setWarming(false);
+    setError(''); setResults(null); setPreview(null);
     const payload = {
       topic: topic.trim(),
       conflictingAdvice: conflictingAdvice.trim() || undefined,
@@ -145,26 +156,56 @@ const SignalVsNoise = ({ tool }) => {
       userLocale, userCurrency, userRegion,
     };
     try {
+      // Phase 1 — research readiness. A cold topic reports `pending` while
+      // the search runs; a warm one is `ready` on the first poll.
+      setPhase('research');
+      let ready = null;
+      let pollFailures = 0;
+      for (let poll = 0; poll < RESEARCH_POLLS; poll++) {
+        try {
+          const status = await pollToolEndpoint('signal-vs-noise/research', payload);
+          pollFailures = 0;
+          if (status?.status === 'ready') { ready = status; break; }
+          // The research fetch failed and is negative-cached — no point
+          // polling out the budget; the main call below returns the honest
+          // 503 and the visitor sees svn_research_unavailable within seconds.
+          if (status?.status === 'failed') break;
+          await new Promise(r => setTimeout(r, RESEARCH_POLL_MS));
+        } catch (e) {
+          // A poll is not the answer — a 429 (two tabs, a shared IP) or a
+          // blip must not fail the run. Back off and keep asking; give up
+          // only if the readiness endpoint itself is persistently down.
+          if (++pollFailures >= 4) throw e;
+          await new Promise(r => setTimeout(r, RESEARCH_POLL_MS * 2));
+        }
+      }
+      if (ready) setPreview(ready.sources || []);
+
+      // Phase 2 — synthesis from the cached packet. If phase 1 ended without
+      // a packet, one main call is enough: it answers 503 immediately from
+      // the negative cache, and retrying would only wait it out.
+      setPhase('synthesis');
       let data = null;
-      for (let attempt = 0; attempt <= WARM_RETRIES; attempt++) {
+      const retries = ready ? WARM_RETRIES : 0;
+      for (let attempt = 0; attempt <= retries; attempt++) {
         try {
           data = await callToolEndpoint('signal-vs-noise', payload);
           break;
         } catch (e) {
-          if (e?.code !== 'research_unavailable' || attempt === WARM_RETRIES) throw e;
-          setWarming(true);
+          if (e?.code !== 'research_unavailable' || attempt === retries) throw e;
           await new Promise(r => setTimeout(r, WARM_RETRY_DELAY_MS));
         }
       }
-      setWarming(false);
+      setPhase('idle'); setPreview(null);
       setResults(data);
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (topic || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (e) {
-      setWarming(false);
+      setPhase('idle'); setPreview(null);
       setError(e?.code === 'research_unavailable' ? t('svn_research_unavailable') : (e.message || t('svn_error')));
     }
   };
+  const busy = loading || phase !== 'idle';
 
   const loadExample = () => {
     const ex = pickExample('SignalVsNoise', EXAMPLE_TOPICS);
@@ -221,14 +262,16 @@ const SignalVsNoise = ({ tool }) => {
 
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const busyRef = useRef(false);
   handleSubmitRef.current = handleSubmit;
   canSubmitRef.current = !!topic.trim();
+  busyRef.current = busy; // covers the untracked research-poll phase, which `loading` does not
 
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'SELECT') return;
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current)
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && !busyRef.current && canSubmitRef.current)
         handleSubmitRef.current?.();
     };
     document.addEventListener('keydown', handler);
@@ -285,13 +328,31 @@ const SignalVsNoise = ({ tool }) => {
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
-            {(loading || warming) && (
-              <p className={`text-xs ${c.textMuted}`}>{warming ? t('svn_research_warming') : t('svn_research_running')}</p>
+            {busy && (
+              <div className={`text-xs ${c.textMuted} space-y-1`}>
+                <p>
+                  {phase === 'research' && t('svn_research_warming')}
+                  {phase === 'synthesis' && (preview ? t('svn_research_synthesizing', { n: preview.length }) : t('svn_research_running'))}
+                  {phase === 'idle' && t('svn_research_running')}
+                </p>
+                {/* Sources found so far, while the analysis is being written —
+                    the packet's admitted sources; the result shows only the
+                    ones the analysis ends up citing, so this count can shrink. */}
+                {phase === 'synthesis' && preview?.length > 0 && (
+                  <ul className="space-y-0.5">
+                    {preview.slice(0, 8).map(src => (
+                      <li key={src.id} className="truncate">
+                        <span className={`font-semibold ${c.accentTxt}`}>{src.id}</span> · {src.publisher || src.title || src.url}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             )}
-            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || warming || !topic.trim()}
+            <button title={t('cmd_enter')} onClick={handleSubmit} disabled={busy || !topic.trim()}
               className={`relative w-full py-3 rounded-xl font-bold ${(!topic.trim()) ? c.btnIdle : c.btnPrimary}`}>
-              {(loading || warming) ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
-            {!loading && (
+              {busy ? <><span className="inline-block animate-spin me-2">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
+            {!busy && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
                 ⌘↵

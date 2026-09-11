@@ -17,7 +17,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
-const { claimResearch } = require('../lib/claimResearch');
+const { claimResearch, researchState, tierOf } = require('../lib/claimResearch');
 
 function collectProseFields(parsed) {
   const fields = [];
@@ -174,10 +174,15 @@ function sanitizeResult(parsed, packet) {
   parsed.researched_at = packet.researched_at || null;
   parsed.sources_examined = packet.sources;
 
+  // A Signal conclusion rests on at least one tier 1–3 source (review, primary
+  // research, government/regulator, professional body). Secondary-only
+  // support — a company blog, an explainer — is enough to flag a question,
+  // never to establish an answer. The prompt says so; this makes it true.
+  const strongIds = new Set((packet?.sources || []).filter(s => tierOf(s) <= 3).map(s => String(s.id).toUpperCase()));
   parsed.the_signal ??= { items: [] };
   parsed.the_signal.items = (Array.isArray(parsed.the_signal.items) ? parsed.the_signal.items : [])
     .map(x => ({ ...x, source_ids: cleanIds(x?.source_ids, valid) }))
-    .filter(x => nonBlank(x?.claim) && nonBlank(x?.basis) && x.source_ids.length)
+    .filter(x => nonBlank(x?.claim) && nonBlank(x?.basis) && x.source_ids.some(id => strongIds.has(id)))
     .slice(0, 4);
 
   parsed.the_noise = (Array.isArray(parsed.the_noise) ? parsed.the_noise : [])
@@ -214,6 +219,80 @@ function sanitizeResult(parsed, packet) {
   return parsed;
 }
 
+function buildSupplied(topic, conflictingAdvice, userContext) {
+  return `TOPIC:\n${topic.trim()}\n\n${conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE:\n${conflictingAdvice.trim()}\n\n` : ''}${userContext?.trim() ? `VISITOR-SUPPLIED CONTEXT:\n${userContext.trim()}\n\n` : ''}`;
+}
+
+// The three shared prompt parts each synthesis call gets: the packet, the
+// task, and the calibration rules. The two calls split the SCHEMA, not the
+// evidence — both read the same packet, so their halves cannot disagree
+// about what was found, only about how to say it (rule 15 covers that).
+function synthesisPreamble(supplied, researchBlock) {
+  return `${supplied}${researchBlock}
+
+TASK
+
+Synthesize the researched evidence into your part of a Signal vs. Noise result. Do not use outside facts that are absent from the WEB RESEARCH PACKET. Another writer is producing the other part from this same packet in parallel; write only the keys asked of you.
+
+LENGTH — this is a screen, not a paper. Word caps are hard limits:
+framing 45; a claim 30; basis 60; limits 35; what_the_evidence_supports_instead 60; what_went_wrong 45; kernel_of_truth 35; any bottom-line bullet 40; question / why_it_matters / what_would_help 35 each; source_type / how_it_distorts / how_to_recognize_it 30 each.`;
+}
+
+const SHARED_RULES = `- Analyze the visitor's actual claims; do not add adjacent controversies.
+- Do not mention a paper, institution, statistic, mechanism, or real-world fact unless it is in the research packet.
+- Do not copy long quotations from sources. Paraphrase.
+- Do not turn correlation into causation unless the packet supports causation.
+- Do not call evidence consensus, settled, definitive, or proven unless the packet explicitly justifies that strength.
+- When evidence is mixed, say mixed. When unresolved, say unresolved.
+- Return [] rather than manufacturing content.`;
+
+// Polling-friendly limit for the readiness endpoint: the client asks every
+// ~6s while a cold research fetch runs (up to ~4 minutes), which the
+// 12/minute default would 429 halfway through. Own key prefix, so polls do
+// not eat the main endpoint's budget. 40/min because a poll costs nothing
+// (no model call) and two tabs — or a shared office IP — must not fail each
+// other; 20/min was tripped in testing by two pollers on one IP.
+const RESEARCH_POLL_LIMITS = { perMinute: 40, perDay: 1200 };
+
+// ── Phase 1: research readiness ─────────────────────────────────────────
+// Returns immediately. On a cold topic the first call STARTS the research
+// fetch (groundedFacts dedupes concurrent starts) and reports `pending`;
+// the client polls until `ready`, which carries the sources the packet
+// admitted so the page can show "N sources found" while the synthesis
+// (phase 2) runs. Nothing here is a tool result — no model call, no cost.
+router.post('/signal-vs-noise/research', rateLimit(RESEARCH_POLL_LIMITS, 'svn-research:'), async (req, res) => {
+  try {
+    const { topic, conflictingAdvice, userContext } = req.body;
+    if (!topic?.trim()) return res.status(400).json({ error: 'What topic are you trying to cut through?' });
+    const research = await claimResearch({
+      topic: topic.trim(),
+      conflictingAdvice: conflictingAdvice?.trim(),
+      userContext: userContext?.trim(),
+      region: req.body.userRegion,
+      coldWaitMs: 0,
+    });
+    if (!research.packet) {
+      // A failed fetch is negative-cached for a few minutes; without this the
+      // client would poll "pending" for its whole budget and only then learn
+      // there was nothing coming. 200, not an error status — the poll itself
+      // succeeded; it is the research that did not.
+      const state = researchState({ topic: topic.trim(), conflictingAdvice: conflictingAdvice?.trim() });
+      if (state === 'failed') return res.json({ status: 'failed', code: 'research_unavailable', sources: [] });
+      return res.status(202).json({ status: 'pending', sources: [] });
+    }
+    res.json({
+      status: 'ready',
+      researched_at: research.packet.researched_at || null,
+      claim_count: research.packet.claims.length,
+      sources: research.packet.sources,
+    });
+  } catch (error) {
+    console.error('[SignalVsNoise/research]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ── Phase 2 (or the whole thing, for a direct caller) ───────────────────
 router.post('/signal-vs-noise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { topic, conflictingAdvice, userContext, userLanguage } = req.body;
@@ -234,13 +313,16 @@ router.post('/signal-vs-noise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     }
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const supplied = `TOPIC:\n${topic.trim()}\n\n${conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE:\n${conflictingAdvice.trim()}\n\n` : ''}${userContext?.trim() ? `VISITOR-SUPPLIED CONTEXT:\n${userContext.trim()}\n\n` : ''}`;
+    const supplied = buildSupplied(topic, conflictingAdvice, userContext);
+    const preamble = synthesisPreamble(supplied, research.block);
 
-    const prompt = `${supplied}${research.block}
+    // Two disjoint-key calls in parallel. Measured before the split: one
+    // 6000-token call took 50–80s; the halves run concurrently and each
+    // produces well under half the tokens, so the wall-clock is roughly the
+    // slower half. Keys never overlap, so the merge is a spread.
+    const signalPrompt = `${preamble}
 
-TASK
-
-Synthesize the researched evidence into a Signal vs. Noise result. Do not use outside facts that are absent from the WEB RESEARCH PACKET.
+YOUR PART: what the evidence supports and where the visitor's claims outrun it.
 
 Return ONLY valid JSON:
 {
@@ -250,7 +332,7 @@ Return ONLY valid JSON:
     "items": [
       {
         "claim": "carefully calibrated conclusion the researched evidence supports",
-        "basis": "plain-language explanation of why the evidence supports it",
+        "basis": "plain-language explanation of why the evidence supports it — name the design and size where they matter (a controlled trial of 20 people; a 72-study meta-analysis)",
         "limits": "important limit or null",
         "source_ids": ["S1", "S2"]
       }
@@ -266,7 +348,20 @@ Return ONLY valid JSON:
       "kernel_of_truth": "supported core worth preserving or null",
       "source_ids": ["S1", "S3"]
     }
-  ],
+  ]
+}
+
+RULES
+- Prefer 2-4 strong Signal/Noise conclusions total over exhaustive coverage.
+- A Signal item MUST cite source_ids, at least one of them a review, primary study, government/regulator source, or professional body — a claim the packet marks "support": "secondary_only" is never a Signal item (the other writer lists it under still_worth_verifying). A Noise item MUST cite source_ids supporting the narrower replacement and critique. Cite only the sources that materially support THAT item.
+${SHARED_RULES}`;
+
+    const restPrompt = `${preamble}
+
+YOUR PART: what remains open, what the general evidence cannot decide for one person, the bottom line, and how this kind of noise gets made.
+
+Return ONLY valid JSON:
+{
   "still_worth_verifying": [
     {
       "question": "genuinely mixed or unresolved empirical question",
@@ -279,8 +374,8 @@ Return ONLY valid JSON:
     "person-specific question the general evidence cannot answer from the information supplied"
   ],
   "the_bottom_line": {
-    "supported_takeaways": ["2-3 concise takeaways traceable to the Signal/Noise analysis"],
-    "treat_skeptically": ["1-3 claims or framings examined above that deserve skepticism"],
+    "supported_takeaways": ["2-3 concise takeaways, each traceable to a specific packet finding"],
+    "treat_skeptically": ["1-3 of the visitor's claims or framings that deserve skepticism, and why in a phrase"],
     "what_would_change_the_answer": ["0-3 evidence gaps that materially matter"]
   },
   "sources_of_noise": [
@@ -293,27 +388,27 @@ Return ONLY valid JSON:
 }
 
 RULES
-- Prefer 2-4 strong Signal/Noise conclusions total over exhaustive coverage.
-- Analyze the visitor's actual claims; do not add adjacent controversies.
-- A Signal item MUST cite source_ids.
-- A Noise item MUST cite source_ids supporting the narrower replacement and critique.
-- still_worth_verifying may cite the sources showing disagreement/limits; if no source bears on it, omit it.
-- Do not mention a paper, institution, statistic, mechanism, or real-world fact unless it is in the research packet.
-- Do not copy long quotations from sources. Paraphrase.
-- Do not turn correlation into causation unless the packet supports causation.
-- Do not call evidence consensus, settled, definitive, or proven unless the packet explicitly justifies that strength.
-- When evidence is mixed, say mixed. When unresolved, say unresolved.
-- Bottom Line may summarize only conclusions already established above; it may not introduce new empirical claims.
-- Return [] rather than manufacturing content.`;
+- The Bottom Line summarizes what the PACKET establishes, at the packet's own strength — it may not strengthen, generalize, or combine findings into a broader proposition (rule 16). The Signal/Noise cards are being written from this same packet; do not assume anything beyond it.
+- still_worth_verifying may cite the sources showing disagreement or limits; if no source bears on it, omit it. A packet claim marked "support": "secondary_only" belongs here, stated as unresolved, with its sources and a note that only secondary sources were found.
+- sources_of_noise describes general mechanisms only — never a named actor's motive.
+${SHARED_RULES}`;
 
-    let parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'signal-vs-noise:synthesis' });
+    const [signalPart, restPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`,
+        messages: [{ role: 'user', content: signalPrompt }],
+      }, { label: 'signal-vs-noise:synthesis-signal' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2200,
+        system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`,
+        messages: [{ role: 'user', content: restPrompt }],
+      }, { label: 'signal-vs-noise:synthesis-rest' }),
+    ]);
 
-    parsed = sanitizeResult(parsed || {}, research.packet);
+    let parsed = sanitizeResult({ ...(restPart || {}), ...(signalPart || {}) }, research.packet);
     if (!parsed?.framing || (!parsed.the_signal.items.length && !parsed.the_noise.length && !parsed.still_worth_verifying.length)) {
       return res.status(500).json({ error: 'Could not synthesize the researched claims. Please try again.' });
     }
