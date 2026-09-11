@@ -791,6 +791,31 @@ tested both directions (`mediumhealth.org` and `xmedium.com` are kept; `m.youtub
 `someone.substack.com` are dropped). A personal blog on its own domain is not caught by the host
 list — that is what the prompt clause is for.
 
+**Research calibration (V8.2, same day — owner's first normal-refinement pass; the tool is no longer
+"troubled").** Six controls, deliberately simpler than the old judge:
+1. **Source priority, enforced in the packet** (`claimResearch.js`): sources are tiered — 1 review/
+   meta-analysis/primary, 2 government/regulator/official data, 3 professional body, 4 everything
+   else — with `EXPLAINER_HOST_HINTS` forcing commercial-educational/coaching/fitness/finance-explainer
+   hosts to tier 4 whatever the research pass labelled them (seen live: Precision Nutrition and ACE on a
+   Signal card next to PubMed). A finding with any tier 1–3 support loses its tier-4 sources; a claim
+   with any tier 1–3 finding loses tier-4-only findings; uncited sources leave the packet. Tier 4 still
+   counts when it is all the research found. Tested both directions.
+2. **No search-completeness claims** — prompt rule 12, a guard entry, and `softenCompletenessClaims`
+   in the route: a short list of exact idioms ("the strongest study available", "the evidence
+   consistently shows", "research has established", "the scientific consensus is", "the best available
+   evidence", "the broadest review") each replaced by a strictly weaker phrase. Every substitution only
+   weakens — that is what makes it safe to apply blind, unlike the old judge. Not a phrase catalogue to
+   grow.
+3. **Evidence-strength matching** — rule 13 + guard entry (one trial → "a controlled trial found").
+4. **Source–claim fit** — rule 14; `cleanIds` cap 5 → 4 per item.
+5. **Internal consistency** — rule 15 + guard entry, with the ultra-processed-food drift as the worked
+   example (reconcile to the least-strong formulation both sections support).
+6. **Summary provenance** — rule 16 + guard entry ("the evidence consistently shows these factors
+   interact" lumps four findings into one proposition nobody researched).
+UI: "N sources checked" → **"N sources cited"** (and "Sources cited"), 13 languages — the number shown
+is exactly the sources the rendered analysis cites, since `sources_examined` is pruned to cited IDs;
+"checked" implied evaluation-and-acceptance of the retrieval set.
+
 ## DO NOT silently reverse (V8)
 
 32. **Research-first is the architecture now.** Do not reintroduce a source-free "claim analysis"

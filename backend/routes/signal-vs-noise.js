@@ -68,6 +68,26 @@ Keep the main answer compact. Put limitations and sources close to the conclusio
 10. DEFTBRAIN_OUTPUT_STANDARD_V2.
 Solve the actual problem, use supplied context, give actionable guidance that survives uncertainty, write plainly, avoid AI-report voice and filler, preserve visitor agency, and keep the shortest structure that adequately solves the problem.
 
+RESEARCH CALIBRATION
+
+11. SOURCE PRIORITY.
+For consequential empirical conclusions, prefer in order: systematic reviews / meta-analyses; primary peer-reviewed research; government or major public research institutions; authoritative professional bodies; high-quality secondary sources only when stronger sources are unavailable. Do not use commercial educational, coaching, fitness, advocacy, or general explanatory sites to establish a conclusion when suitable primary or authoritative sources are in the packet.
+
+12. NO SEARCH-COMPLETENESS CLAIMS.
+A bounded web search does not establish "the best available evidence", "the strongest study available", "the broadest review", "the evidence consistently shows", "research has established", or "the scientific consensus is" — unless the retrieved evidence itself supports that characterization. Describe the evidence actually found: "A controlled NIH inpatient trial found…", not "the strongest causal study available found…".
+
+13. EVIDENCE-STRENGTH MATCHING.
+Do not make the conclusion stronger than the cited evidence. One trial → "A controlled trial found…". Several observational studies → "Several observational studies associate…". A meta-analysis → describe what that meta-analysis found. Mixed evidence → say mixed. Insufficient evidence → say unresolved. A 20-person, two-week trial is described as that, wherever it appears.
+
+14. SOURCE-CLAIM FIT.
+Every cited source must materially support the sentence or field it is attached to. Do not attach a group of sources to a paragraph when only some of them support each material assertion; cite the ones that do.
+
+15. INTERNAL CONSISTENCY.
+Before rendering, compare Signal, Noise, Kernel of Truth, unresolved findings, and the Bottom Line. If two sections characterize the same evidence with different strength ("remains genuinely unresolved" here, "does not establish any harm" there, "no strong evidence it is neutral" elsewhere), reconcile them to the least-strong formulation both support — e.g. "the evidence presented here does not establish a safe or harmful threshold for moderate consumption" — and do not push farther in either direction.
+
+16. SUMMARY PROVENANCE.
+The Bottom Line may summarize the researched findings but may not strengthen, generalize, or combine them into a broader empirical proposition the packet did not establish. "The evidence consistently shows these factors interact" lumps four separate findings into one interaction claim nobody researched; the DeftBrain formulation is that a claim reducing the question to one variable deserves skepticism when the cited evidence does not establish that exclusivity.
+
 NORTH STAR:
 RESEARCH THE CLAIMS.
 SHOW WHAT THE EVIDENCE EARNS.
@@ -89,6 +109,11 @@ router.outputGuard = {
     'practical_recommendation_not_traceable_to_preceding_analysis',
     'empty_or_manufactured_item_included_to_fill_schema',
     'research_breadth_overstated_as_systematic_or_comprehensive',
+    'search_completeness_superlative_best_strongest_broadest_or_consistently_not_established_by_packet',
+    'conclusion_stated_stronger_than_the_design_and_size_of_the_cited_evidence',
+    'same_evidence_characterized_with_different_strength_across_sections',
+    'bottom_line_combines_or_generalizes_findings_into_a_proposition_the_packet_did_not_establish',
+    'secondary_explanatory_or_commercial_site_used_to_establish_a_conclusion_when_primary_sources_were_available',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -100,7 +125,44 @@ function validSourceIds(packet) {
 function cleanIds(ids, valid) {
   return [...new Set((Array.isArray(ids) ? ids : [])
     .map(x => String(x || '').toUpperCase().trim())
-    .filter(x => valid.has(x)))].slice(0, 5);
+    .filter(x => valid.has(x)))].slice(0, 4);
+}
+
+// ── Search-completeness superlatives, softened deterministically ─────────
+// A bounded search cannot establish that it found "the strongest study
+// available" or that "the evidence consistently shows" anything; the prompt
+// (rule 12) and the guard both say so, and this is the last line. Each
+// substitution only ever WEAKENS a claim, never restates or invents one, so
+// it is safe to apply blind — which is exactly what the old semantic judge
+// was not. Kept to a short list of exact idioms on purpose; this is not a
+// place to grow a phrase catalogue again.
+const COMPLETENESS_SOFTENERS = [
+  [/\bthe (?:single )?(?:strongest|best|most rigorous|most definitive) (?:causal |controlled |available )?(?:study|trial|evidence|review|research)(?: (?:available|to date|that exists|on record))?\b/gi, 'a cited $&'.replace('a cited $&', 'the cited study')],
+  [/\bthe best available evidence\b/gi, 'the evidence found here'],
+  [/\bthe broadest (?:evidence )?review\b/gi, 'a review'],
+  [/\bthe evidence (?:consistently|overwhelmingly|clearly|repeatedly) (?:shows|indicates|demonstrates|supports|finds)\b/gi, 'the cited evidence indicates'],
+  [/\bresearch has (?:firmly |clearly |now )?established\b/gi, 'the cited research found'],
+  [/\b(?:the )?scientific consensus (?:is|holds|says)\b/gi, 'the cited sources indicate'],
+  [/\b(?:it is|this is) (?:well[- ])?(?:established|settled|proven) (?:that|science)\b/gi, 'the cited sources indicate that'],
+];
+
+function softenCompletenessClaims(parsed) {
+  let hits = 0;
+  const walk = (val) => {
+    if (typeof val === 'string') {
+      let out = val;
+      for (const [re, rep] of COMPLETENESS_SOFTENERS) {
+        if (re.test(out)) { hits++; out = out.replace(re, rep); }
+        re.lastIndex = 0;
+      }
+      return out;
+    }
+    if (Array.isArray(val)) return val.map(walk);
+    if (val && typeof val === 'object') { for (const k of Object.keys(val)) val[k] = walk(val[k]); return val; }
+    return val;
+  };
+  walk(parsed);
+  return hits;
 }
 
 function sanitizeResult(parsed, packet) {
@@ -268,6 +330,8 @@ RULES
     // Guard repair can touch prose, but source IDs are code-owned. Re-run the
     // structural/source validation before anything reaches the visitor.
     parsed = sanitizeResult(parsed, research.packet);
+    const softened = softenCompletenessClaims(parsed);
+    if (softened) console.log(`[signal-vs-noise] softened ${softened} search-completeness superlative(s)`);
     res.json(parsed);
   } catch (error) {
     console.error('[SignalVsNoise]', error);

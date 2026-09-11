@@ -31,10 +31,53 @@ const BLOG_PLATFORM_HOSTS = [
   'tiktok.com', 'x.com', 'twitter.com', 'threads.net', 'linkedin.com', 'youtube.com',
 ];
 
+function hostOf(url) {
+  try { return new URL(url).hostname.toLowerCase(); } catch { return ''; }
+}
+function hostMatches(host, list) {
+  return list.some(h => host === h || host.endsWith(`.${h}`));
+}
+
 function isBlogPlatformUrl(url) {
-  let host;
-  try { host = new URL(url).hostname.toLowerCase(); } catch { return false; }
-  return BLOG_PLATFORM_HOSTS.some(h => host === h || host.endsWith(`.${h}`));
+  const host = hostOf(url);
+  return !!host && hostMatches(host, BLOG_PLATFORM_HOSTS);
+}
+
+// ── Source priority, enforced in the packet ─────────────────────────────
+// The research pass labels each source; the tier is what the packet acts on.
+//   1  systematic review / meta-analysis / primary peer-reviewed research
+//   2  government, regulator, major public research institution, official data
+//   3  authoritative professional body
+//   4  everything else — secondary, explanatory, commercial-educational
+// A finding that has ANY tier 1–3 support loses its tier-4 sources; a claim
+// that has ANY tier 1–3 finding loses findings that rest on tier 4 alone; a
+// source nothing cites any more leaves the packet. Tier 4 still counts when
+// it is all the research found — the policy is "not when stronger sources
+// are available", not "never".
+const TIER_BY_TYPE = {
+  systematic_review: 1, meta_analysis: 1, primary_study: 1,
+  government: 2, regulator: 2, official_dataset: 2, methodology: 2,
+  professional_body: 3,
+  high_quality_secondary: 4, other: 4,
+};
+// Commercial educational, coaching, fitness, finance-explainer and advocacy
+// sites the research pass has been seen (or is likely) to over-label as
+// "professional body" or "primary". Whatever it calls them, they are tier 4
+// here. Seen live: Precision Nutrition and ACE cited on a Signal card next
+// to PubMed and a journal. Extend when one slips through; do not loosen.
+const EXPLAINER_HOST_HINTS = [
+  'precisionnutrition.com', 'acefitness.org', 'nasm.org', 'issaonline.com', 'infs.co.in',
+  'healthline.com', 'webmd.com', 'medicalnewstoday.com', 'verywellhealth.com', 'verywellmind.com',
+  'verywellfit.com', 'examine.com', 'mindbodygreen.com', 'menshealth.com', 'womenshealthmag.com',
+  'shape.com', 'eatthis.com', 'livestrong.com', 'nerdfitness.com', 'bodybuilding.com',
+  'muscleandstrength.com', 'draxe.com', 'goop.com',
+  'investopedia.com', 'nerdwallet.com', 'thebalancemoney.com', 'fool.com', 'bankrate.com',
+  'wikihow.com', 'wikipedia.org',
+];
+
+function tierOf(src) {
+  if (hostMatches(hostOf(src.url), EXPLAINER_HOST_HINTS)) return 4;
+  return TIER_BY_TYPE[src.source_type] || 4;
 }
 
 function researchKey({ topic, conflictingAdvice }) {
@@ -64,24 +107,42 @@ function cleanPacket(raw) {
   }
 
   const validIds = new Set(cleanSources.map(s => s.id));
-  const claims = (Array.isArray(raw.claims) ? raw.claims : []).slice(0, 6).map(c => ({
-    claim: compact(c?.claim, 500),
-    assessment: ['supported', 'overstated', 'mixed', 'unresolved'].includes(c?.assessment) ? c.assessment : 'unresolved',
-    findings: (Array.isArray(c?.findings) ? c.findings : []).slice(0, 5).map(f => ({
-      text: compact(f?.text, 900),
-      source_ids: (Array.isArray(f?.source_ids) ? f.source_ids : [])
+  const tierById = new Map(cleanSources.map(s => [s.id, tierOf(s)]));
+  const strong = id => tierById.get(id) <= 3;
+
+  const claims = (Array.isArray(raw.claims) ? raw.claims : []).slice(0, 6).map(c => {
+    let findings = (Array.isArray(c?.findings) ? c.findings : []).slice(0, 5).map(f => {
+      let ids = (Array.isArray(f?.source_ids) ? f.source_ids : [])
         .map(x => compact(x, 20).toUpperCase())
         .filter(id => validIds.has(id))
-        .slice(0, 4),
-    })).filter(f => f.text && f.source_ids.length),
-    limits: (Array.isArray(c?.limits) ? c.limits : []).map(x => compact(x, 500)).filter(Boolean).slice(0, 4),
-  })).filter(c => c.claim && c.findings.length);
+        .slice(0, 4);
+      // Source priority within one finding: stronger sources present → the
+      // explanatory ones are not needed to establish it.
+      if (ids.some(strong)) ids = ids.filter(strong);
+      return { text: compact(f?.text, 900), source_ids: ids };
+    }).filter(f => f.text && f.source_ids.length);
+    // …and within one claim: a finding resting on tier 4 alone is dropped
+    // when a sibling finding has stronger support.
+    if (findings.some(f => f.source_ids.some(strong))) findings = findings.filter(f => f.source_ids.some(strong));
+    return {
+      claim: compact(c?.claim, 500),
+      assessment: ['supported', 'overstated', 'mixed', 'unresolved'].includes(c?.assessment) ? c.assessment : 'unresolved',
+      findings,
+      limits: (Array.isArray(c?.limits) ? c.limits : []).map(x => compact(x, 500)).filter(Boolean).slice(0, 4),
+    };
+  }).filter(c => c.claim && c.findings.length);
 
-  if (!cleanSources.length || !claims.length) return null;
+  // A source nothing cites any more (an explainer displaced by a journal, a
+  // blog dropped above) leaves the packet, so the synthesis never sees it.
+  const cited = new Set();
+  for (const c of claims) for (const f of c.findings) for (const id of f.source_ids) cited.add(id);
+  const citedSources = cleanSources.filter(s => cited.has(s.id));
+
+  if (!citedSources.length || !claims.length) return null;
   return {
     researched_at: compact(raw.researched_at, 50) || new Date().toISOString(),
     claims,
-    sources: cleanSources,
+    sources: citedSources,
   };
 }
 
@@ -100,7 +161,7 @@ async function claimResearch({ topic, conflictingAdvice, userContext, region }) 
     timeoutMs: SEARCH_TIMEOUT_MS,
     maxTokens: 6500,
     maxUses: MAX_USES,
-    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
+    system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use commercial educational, coaching, fitness, nutrition-explainer, finance-explainer, advocacy, or general explanatory sites (Healthline, WebMD, Precision Nutrition, ACE, Examine, Investopedia, NerdWallet and their kind) to establish a conclusion when a primary study, review, government source, or professional body is available — and label such a site high_quality_secondary, never professional_body or primary_study. Label source_type by what the page actually is, not by how authoritative it sounds. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
     userPrompt: `Research the following topic with web_search as of today.
 
 TOPIC:
@@ -149,4 +210,4 @@ Return ONLY:
   return { block: packet ? renderResearchBlock(packet) : '', packet, cacheKey: key };
 }
 
-module.exports = { claimResearch, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS };
+module.exports = { claimResearch, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };
