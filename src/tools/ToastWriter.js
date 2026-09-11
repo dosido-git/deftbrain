@@ -110,6 +110,30 @@ const ToastWriter = ({ tool }) => {
       duration: '2_minutes',
       avoid: '',
     },
+    {
+      occasion: "Baby shower — I'm the grandmother-to-be",
+      relationship: 'My daughter, about to have her first child',
+      stories: "How scared and excited she was calling to tell us the news. The nursery she's been painting herself every weekend for a month. The way she already talks to her belly like the baby can understand every word.",
+      tone: 'heartfelt',
+      duration: '5_minutes',
+      avoid: 'Nothing about my own difficult pregnancy with her',
+    },
+    {
+      occasion: "Bachelor party — I'm the groomsman",
+      relationship: 'College roommate, now getting married in two weeks',
+      stories: "The time he tried to cook a proposal dinner and set off the fire alarm three times. How he practiced his vows in the car so much we all had them memorized. The infamous Vegas trip.",
+      tone: 'roast_style',
+      duration: '1_minute',
+      avoid: 'The ex-girlfriend, and the Vegas incident specifically — everyone knows, nobody needs it in a speech',
+    },
+    {
+      occasion: "25th wedding anniversary dinner — I'm the spouse",
+      relationship: 'Married 25 years, met in our twenties',
+      stories: "The apartment with no furniture we were somehow happy in. Raising two kids through the hard years and still choosing each other every single day. The quiet, ordinary Tuesday nights that turned out to be the best part.",
+      tone: 'elegant',
+      duration: '3_minutes',
+      avoid: '',
+    },
   ];
 
   const loadExample = () => {

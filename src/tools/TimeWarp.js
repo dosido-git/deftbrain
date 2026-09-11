@@ -55,6 +55,16 @@ const EXAMPLES = [
     historicalPeriod: 'Medieval Europe',
     format: 'ad',
   },
+  {
+    modernThing: 'Airbnb',
+    historicalPeriod: '1920s New York',
+    format: 'review',
+  },
+  {
+    modernThing: 'Cryptocurrency and NFTs',
+    historicalPeriod: 'Ancient Greece',
+    format: 'explain',
+  },
 ];
 const TimeWarp = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();

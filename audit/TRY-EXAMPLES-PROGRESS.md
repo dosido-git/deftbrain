@@ -139,6 +139,9 @@ get all 13 languages at once (Gate 5 requires it).
 | 109 | TheRunthrough (i18n file: the-runthrough.js) | i18n | 3 (cut/anticipate/hook — example previously only ever forced 'anticipate') | 2 (both anticipate) | 5 across all 3 modes: +cut (rambling migration-project update needing trimmed to 3 min), +hook (provocative conference-talk opener), +anticipate (nonprofit donor pitch); loadExample now sets mode + only the fields that mode's view actually renders; 5 keys ×13; fixed 1 German Sie→du convention finding | ✅ 2026-09-11 |
 | 110 | TheWholeStory (i18n file: the-alibi.js) | i18n | — | 4 (3 interviewer, 1 landlord) | 5 (+ lender audience: explaining a past bankruptcy on a mortgage application; 2 keys ×13) | ✅ 2026-09-11 |
 | 111 | TicketTackler | inline | 2 (parking/camera) | 2 | 5 (+ fire-hydrant parking violation with a weak defense, red-light camera violation with a stopping-safely defense, expired-meter ticket with an app-payment-not-yet-synced defense; spans clear-cut FIGHT/JUST PAY/ambiguous outcomes) | ✅ 2026-09-11 |
+| 112 | TimeWarp | inline | — | 3 (news/letter/ad formats) | 5 (+ Airbnb review from 1920s New York, crypto/NFT explainer from Ancient Greece; covers 5 of 6 formats) | ✅ 2026-09-11 |
+| 113 | TipOfTongue | i18n | — | 5 | ✅ pre-existing (already had `tot_ex_pasta..green` spanning food/music/film/product/color) | ✅ 2026-09-11 |
+| 114 | ToastWriter | inline | — | 2 (both warm_and_funny) | 5 (+ heartfelt baby-shower toast from a grandmother-to-be, roast_style bachelor-party toast, elegant 25th-anniversary toast; covers all 4 tones and 3 of 4 durations) | ✅ 2026-09-11 |
 
 (rows 13–126 are appended as each batch is inventoried — see
 `scratchpad/examples/inventory.json` for the machine inventory of all 126.)
