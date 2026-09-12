@@ -5328,7 +5328,7 @@ tagline: "Work with the energy you have.",
   primer: {
     when: "You suspect a few subscriptions are worth another look, but you're not sure which.",
     give: "Each subscription's real price, how you'd describe using it, and anything that makes it hard to judge.",
-    get: "Three review-priority groups and, for anything non-obvious, one question that could change your mind.",
+    get: "Three review-priority groups, one decision-changing question for anything non-obvious, and a place to mark Keep, Cancel, or Decide later so the review turns into something you actually acted on.",
     edge: "This isn't a verdict machine — it won't tell you what to cancel. It finds where your own price, usage, and context create the strongest reason to look again.",
   },
   seoTitle: "Subscription Review Tool",
@@ -5341,13 +5341,15 @@ tagline: "Work with the energy you have.",
   headerColor: "#c0d8b8",
   description: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider.",
   guide: {
-    overview: "Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list persists so you can build it up over time.",
+    overview: "Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. Mark each one Keep, Cancel, or Decide later — a canceled subscription moves its cost from Planned Reduction into Actually Canceled once you check it off, so the review tracks through to what you actually did. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list and your decisions both persist so you can build the review up over time.",
     howToUse: [
       "Add each subscription: name, the price you actually pay, billing period, and how you'd describe using it",
       "Optionally add context that makes one hard to judge — family uses it, you need it occasionally for work, it's bundled with something else",
       "Or paste a bank/card statement — the tool flags possible recurring charges for you to confirm and add",
       "Submit to get three groups: Start Here (the clearest mismatches), Take Another Look (mixed or uncertain), and Probably Leave Alone For Now",
       "Read the one question attached to anything non-obvious — it's designed to be the question that could actually change your mind",
+      "Mark each one Keep, Cancel, or Decide later — Decide later can note what's still missing before you commit",
+      "Check off 'I canceled it' once you've actually done it, and watch the amount move from Planned Reduction into Actually Canceled",
       "Check any subscriptions to see the exact monthly/annual total if you stopped them — pure arithmetic, not a suggestion"
     ],
     example: {
@@ -5359,7 +5361,8 @@ tagline: "Work with the energy you have.",
       "Use the price you're actually paying now, not the introductory rate — that's what the math needs",
       "A rough usage description is enough — don't try to calculate an exact frequency",
       "The context field is for whatever makes a subscription hard to judge on price and usage alone — it changes how the review reads it",
-      "Statement scanning only flags possible matches — you decide what each one actually is before it's added"
+      "Statement scanning only flags possible matches — you decide what each one actually is before it's added",
+      "Editing a subscription clears any decision already made on it, since the review that decision was based on no longer applies"
     ],
     pitfalls: [
       "This tool doesn't decide what's worth paying for — it only points out where your own data creates the strongest reason to look again",
