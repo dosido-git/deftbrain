@@ -937,7 +937,21 @@ for name, fpath in tools:
                          # list — the same staleness reasoning as SBA's
                          # auto-clear-on-new-log, just resolved by never
                          # writing it in the first place.
-                         'SubscriptionTamer'}
+                         'SubscriptionTamer',
+                         # TaskAvalancheBreaker joined on 2026-09-12 with the
+                         # ground-up rebuild. README lists "export/import
+                         # progress" among the removed features on purpose —
+                         # the old design's giant task list with points and
+                         # momentum checkpoints was something to track over
+                         # time; this one is a single foothold sized to right
+                         # now. `result` (the current foothold plus its
+                         # preview of later ones) is deliberately plain
+                         # useState: it is a snapshot of one project
+                         # described in one sitting, not a record meant to
+                         # outlive the session, and a stale foothold from a
+                         # different project would be actively misleading if
+                         # it survived a reload.
+                         'TaskAvalancheBreaker'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

@@ -4403,78 +4403,53 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-12",
   id: "TaskAvalancheBreaker",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A project so big you can't start it.",
-    give: "The project, and why it feels overwhelming.",
-    get: "Micro-steps specific enough to need no decisions — each one a single physical action.",
-    edge: "The steps are sized so that starting requires no thinking. 'Break it down' fails when the sub-tasks still need decisions.",
+    when: "A project so big you can't find anywhere to start.",
+    give: "The project, what makes starting hard, and how much time you actually have right now.",
+    get: "One concrete first move sized to your time, a smaller fallback if it's still too much, and a preview of what comes after.",
+    edge: "This isn't a task list — you already have too much list. It's one foothold, not a plan for the whole project.",
   },
-  seoDescription: "Break any overwhelming project into 5-minute micro-steps with zero decisions required. Built to beat 'too big to start' paralysis. Free, no signup.",
-  seoTitle: "Overwhelming Task Breakdown Into Micro-Steps",
+  seoDescription: "Stuck on a project that feels too big to start? Get one concrete first move sized to the time you actually have — not another giant to-do list. Free, no signup.",
+  seoTitle: "Find One Foothold in an Overwhelming Project",
   title: "Task Avalanche Breaker",
-  tagline: "Turn that overwhelming mountain into micro-steps",
-  tags: ['overwhelm', 'todo', 'too much', 'prioritize', 'anxiety', 'procrastination'],
+  tagline: "Find one foothold in a project that feels too big to start",
+  tags: ['overwhelm', 'todo', 'too much', 'prioritize', 'procrastination', 'getting started'],
   icon: "⛏️",
   categories: ['Energy', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "Turn overwhelming projects into 5-minute micro-tasks. Built for that 'too big to start' paralysis. No decisions required.",
+  description: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one concrete first move sized to the time you actually have — not another giant to-do list.",
   guide: {
-    overview: "The Task Avalanche Breaker converts overwhelming projects into ultra-specific micro-tasks that require ZERO decision-making. Built specifically for  anyone experiencing 'too big to start' paralysis. Each task is broken down to 2-5 minute chunks with clear completion criteria and momentum-building sequencing.",
-    
+    overview: "Task Avalanche Breaker exists for the moment a project already feels too big to look at, not the moment you want it broken into a full plan. Describe what's looming, optionally say what makes starting hard, and say how much time you actually have right now — 2, 5, 10, or 20 minutes. You get back one concrete first move that fits that time, why it's the useful place to start, a visible done condition, and a genuinely smaller fallback if even that is too much. Up to three later footholds are there as a preview of what comes after, not a project plan to work through. The tool never diagnoses why something is hard, never invents facts about your project, and never promises the first move will resolve how you feel about the rest of it — it just gives you one thing to actually do.",
     howToUse: [
-      "Describe your overwhelming project (garage cleanup, thesis writing, etc.)",
-      "Check why it feels overwhelming (too many steps, don't know where to start, etc.)",
-      "Set your available time (5-30 minutes)",
-      "Adjust energy level slider to current state (exhausted to energized)",
-      "Click 'Break This Down for Me' to get micro-tasks",
-      "See total tasks, estimated time, and project complexity",
-      "Focus on highlighted 'Next Task' - just this one thing",
-      "Start the timer for the task (optional but helpful)",
-      "Complete task and click 'I Did It!' to celebrate and move on",
-      "Click 'This Is Too Hard' button to break task down further",
-      "Stop at any time - progress is progress, no failure here"
+      "Describe what feels too big to start right now",
+      "Optionally note what's making it hard — too many moving parts, not knowing where to start, it being emotionally difficult, having put it off, or it being unfamiliar",
+      "Say how much room you have for this right now: about 2, 5, 10, or 20 minutes",
+      "Get one first move sized to that time, with why it's useful and a visible done condition",
+      "If even that feels like too much, open 'Still too much?' for a genuinely smaller version of the same move",
+      "Do the move, then click 'I did it — what's next?' to move to the next foothold, or stop — either is a complete use of the tool",
+      "Optionally expand 'See the path ahead' for up to three later footholds — a preview, not a plan to finish in one sitting"
     ],
-    
     example: {
-      scenario: "You need to clean your garage but it's been years and you're completely overwhelmed. You don't know where to start, it's emotionally difficult (sentimental items), and there are too many steps.",
-      action: "Enter 'Clean out my garage', check 'Too many steps', 'Don't know where to start', and 'Emotionally difficult', set energy to 3/10 (tired), click Break Down",
-      result: "Get 25 micro-tasks starting with: Task 1: 'Stand in garage doorway (don't go in, just stand there)' - 30 seconds. Task 2: 'Get three trash bags from kitchen' - 1 minute. Each task ultra-specific, no decisions needed, builds momentum. After 5 tasks, get celebration checkpoint with permission to stop."
+      scenario: "You need to clean out your late father's garage. There are decades of tools, boxes, and paperwork, it's emotionally difficult, and you don't know where to start.",
+      action: "Describe the project, check 'It feels emotionally difficult' and \"I don't know where to start\", and say you have about 5 minutes right now.",
+      result: "One first move sized to 5 minutes — something concrete you can actually do, not 'start sorting the garage.' A visible done condition, a smaller fallback if it's still too much, and up to three later footholds you can look at or ignore."
     },
-    
     tips: [
-      "Do ONLY task 1 if that's all you can manage - that's real progress",
-      "Use the timer - it makes tasks feel finite and manageable",
-      "If a task feels too hard, click 'This Is Too Hard' for breakdown",
-      "You're allowed to stop after ANY task - there's no failure",
-      "First 5 tasks are momentum builders - absurdly simple on purpose",
-      "Tasks are ordered to avoid decision-making when energy is low",
-      "Completion criteria tells you EXACTLY when you're done",
-      "Check off tasks to see visual progress - it's motivating!",
-      "Celebrate at checkpoints - you're making real progress",
-      "Don't have to finish the whole project - any progress counts"
+      "The time you pick shapes the move you get — be honest about what you actually have right now, not what you wish you had",
+      "The reasons you check aren't diagnosed or explained back to you — they just help size the first move to what's actually in the way",
+      "'Still too much?' gives a smaller version of the SAME move, not a different, easier task",
+      "The later footholds are a preview, not a commitment — nothing requires you to do more than the one you're on"
     ],
-    
     pitfalls: [
-      "Don't skip ahead to 'interesting' tasks - sequence matters for momentum",
-      "Don't add decisions to tasks ('should I keep this?' = stop, use later box)",
-      "Don't expect to finish everything in one session - chunking is the point",
-      "Don't judge yourself for needing tiny steps - executive function is real",
-      "Don't feel bad using 'This Is Too Hard' - it's there for a reason"
-    ],
-    
-    quickReference: {
-      "Purpose": "Break overwhelming projects into 5-min micro-tasks",
-      "For": "task paralysis, overwhelm, procrastination, productivity",
-      "Key Feature": "ZERO decision-making within tasks",
-      "Task Size": "2-5 minutes, ultra-specific",
-      "Completion": "Clear criteria, you know when done",
-      "Permission": "Stop after ANY task, progress is progress",
-      "Special Buttons": "'This Is Too Hard' breaks task down further"
-    }
+      "This tool won't turn your project into a full task list — it deliberately gives one move at a time, because a list is what already felt too big",
+      "It doesn't diagnose why the project is hard, and a reason you check describes your experience, not a cause the tool has identified",
+      "Completing the first move isn't guaranteed to make the rest of the project feel resolved — it's one available thing to do, not a fix for the whole project",
+      "It won't invent deadlines, requirements, or details about your project that you didn't supply"
+    ]
   }
 },
 

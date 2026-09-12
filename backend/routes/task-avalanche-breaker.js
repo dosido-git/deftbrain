@@ -1,325 +1,149 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-// ── JSON repair helpers (fallback for complex responses) ──
+// Ground-up rebuild (2026-09-12), installed from an owner-supplied rewrite
+// per audit/REWRITE-INSTALL-KIT.md. Replaces a nine-plus-field micro-task
+// generator (quick modes, an energy-level slider driving task count/
+// complexity, habit stacking, an accountability partner, a reorder action,
+// a raw anthropic.messages.create call with hand-rolled JSON repair/manual
+// regex parsing, and 25-task gamified lists with points and momentum
+// checkpoints) with one job: find ONE useful foothold in an overwhelming
+// project, sized to the time the visitor actually has right now — the
+// tool exists because the visitor already has too much list, not because
+// they need a longer one.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'first_move_missing_or_empty',
+    'more_than_three_later_footholds',
+    'malformed_later_foothold_passed_through_unfiltered',
+  ],
+  require: ['fulfills_tool_promise'],
+};
 
-function repairJSON(str) {
-  let repaired = str;
-  repaired = repaired.replace(/,\s*}/g, '}');
-  repaired = repaired.replace(/,\s*]/g, ']');
-  repaired = repaired.replace(/[\x00-\x1F\x7F]/g, (ch) => {
-    if (ch === '\n' || ch === '\r' || ch === '\t') return ch;
-    return ' ';
-  });
+const CONTRACT = `
+You are Task Avalanche Breaker.
 
-  const opens = (repaired.match(/{/g) || []).length;
-  const closes = (repaired.match(/}/g) || []).length;
-  if (opens > closes) repaired += '}'.repeat(opens - closes);
+PURPOSE
+Help someone who has a real project but cannot find a manageable place to begin.
 
-  const openBrackets = (repaired.match(/\[/g) || []).length;
-  const closeBrackets = (repaired.match(/\]/g) || []).length;
-  if (openBrackets > closeBrackets) {
-    const lastBrace = repaired.lastIndexOf('}');
-    if (lastBrace > 0) {
-      const missing = ']'.repeat(openBrackets - closeBrackets);
-      repaired = repaired.substring(0, lastBrace) + missing + repaired.substring(lastBrace);
-    } else {
-      repaired += ']'.repeat(openBrackets - closeBrackets);
-    }
-  }
-  return repaired;
-}
+NORTH STAR
+TURN THE MOUNTAIN INTO ONE FOOTHOLD.
 
-function manuallyParseTasks(jsonStr) {
-  const tasks = [];
-  const taskPattern = /\{\s*"task_id"\s*:\s*(\d+)\s*,\s*"task"\s*:\s*"([^"]*?)"/g;
-  let match;
-  while ((match = taskPattern.exec(jsonStr)) !== null) {
-    const taskId = parseInt(match[1]);
-    const taskText = match[2];
-    const start = match.index;
-    const end = jsonStr.indexOf('}', start);
-    const taskChunk = end > start ? jsonStr.substring(start, end + 1) : '';
+THE TRANSFORMATION
+OVERWHELMING PROJECT -> SMALLEST SENSIBLE START -> CLEAR DONE CONDITION -> NEXT FOOTHOLD
 
-    const timeMatch = taskChunk.match(/"estimated_time"\s*:\s*"([^"]*?)"/);
-    const energyMatch = taskChunk.match(/"energy_required"\s*:\s*"([^"]*?)"/);
-    const criteriaMatch = taskChunk.match(/"completion_criteria"\s*:\s*"([^"]*?)"/);
-    const stuckMatch = taskChunk.match(/"if_stuck"\s*:\s*"([^"]*?)"/);
+RULES
+- Do not produce a giant task list. The visitor came because the project already feels too big.
+- Give one primary first move that fits the time they actually have now.
+- The first move must materially belong to the project. Do not use fake progress such as merely opening an app unless that truly removes a blocker.
+- Prefer concrete, visible actions over abstract advice such as plan, research, organize, think about, get motivated, or make progress.
+- If the visitor does not know where to start, choose for them. Do not hand the decision back.
+- If the project contains several major parts, create a small number of useful containers only when that itself is the best first move.
+- Do not invent requirements, deadlines, documents, people, constraints, or project facts the visitor did not supply.
+- Do not diagnose executive dysfunction, anxiety, ADHD, depression, burnout, or any other condition.
+- A visitor-selected reason such as emotionally difficult describes their experience; it does not establish why the project is difficult.
+- Do not promise momentum, motivation, relief, or productivity.
+- Do not manufacture precise time estimates. The visitor supplies a time budget; fit the move inside it rather than claiming an exact duration.
+- Give a smaller fallback for the first move. It must be a genuine smaller version of the same move.
+- Provide at most three later footholds. They are a preview, not a complete project plan.
+- Each later foothold must follow naturally from the supplied project and the work already suggested.
+- Write directly to the visitor as you.
+- Be calm, concise, practical, and specific.
 
-    tasks.push({
-      task_id: taskId,
-      task: taskText,
-      estimated_time: timeMatch ? timeMatch[1] : '2 minutes',
-      energy_required: energyMatch ? energyMatch[1] : 'low',
-      dependencies: [],
-      completion_criteria: criteriaMatch ? criteriaMatch[1] : 'Task is complete',
-      if_stuck: stuckMatch ? stuckMatch[1] : 'Try an easier version',
-      momentum_builder: taskId <= 5
-    });
-  }
-  return tasks;
+OUTPUT STANDARD
+Conform to DEFTBRAIN_OUTPUT_STANDARD_V2.
+Reason freely. Assert carefully.
+`;
+
+// Structural sanitization only — the CONTRACT's epistemic discipline (no
+// diagnosis, no invented project facts, no fake progress, no promised
+// momentum) is prompt-enforced, not code-checkable. This pins the shape:
+// first_move always present with every field a string, after_that capped
+// at 3 and stripped of any item missing an action.
+function validateResult(parsed) {
+  const firstMove = parsed?.first_move && typeof parsed.first_move === 'object' ? parsed.first_move : {};
+  const action = String(firstMove.action || '').trim();
+  if (!action) return null;
+
+  const later = Array.isArray(parsed?.after_that) ? parsed.after_that : [];
+  const after_that = later
+    .filter(x => x && typeof x === 'object' && String(x.action || '').trim())
+    .slice(0, 3)
+    .map(x => ({
+      action: String(x.action || '').trim(),
+      done_when: String(x.done_when || '').trim(),
+    }));
+
+  return {
+    project_read: String(parsed?.project_read || '').trim(),
+    first_move: {
+      action,
+      why_this: String(firstMove.why_this || '').trim(),
+      done_when: String(firstMove.done_when || '').trim(),
+      if_too_hard: String(firstMove.if_too_hard || '').trim(),
+    },
+    after_that,
+    permission_to_stop: String(parsed?.permission_to_stop || '').trim() || 'This foothold is enough for this session.',
+  };
 }
 
 router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-
   try {
-    const {
-      project, overwhelmReasons, availableTime,
-      energyLevel, userLanguage, existingHabit,
-      adaptiveMode, currentTasks
-    } = req.body;
+    const { project, stuckReasons, availableTime, userLanguage, userLocale, userCurrency, userRegion } = req.body || {};
+    const cleanProject = String(project || '').trim();
+    if (cleanProject.length < 3) return res.status(400).json({ error: 'Tell us what feels too big to start.' });
 
-    if (!project || project.trim().length < 10) {
-      return res.status(400).json({ error: 'Please describe your project (at least 10 characters)' });
-    }
+    const time = ['2', '5', '10', '20'].includes(String(availableTime)) ? String(availableTime) : '5';
+    const reasons = Array.isArray(stuckReasons) ? stuckReasons.filter(Boolean).slice(0, 5) : [];
 
-    const reasonsText = overwhelmReasons && overwhelmReasons.length > 0
-      ? overwhelmReasons.map(r => r.replace(/_/g, ' ')).join(', ')
-      : 'general overwhelm';
+    const prompt = `WHAT FEELS TOO BIG TO START
+${cleanProject.slice(0, 5000)}
 
-    const time = parseInt(availableTime) || 5;
-    const energy = energyLevel || 5;
+WHAT MAKES STARTING HARD
+${reasons.length ? reasons.join(', ') : 'Not specified'}
 
-    // Calculate intelligent task parameters based on BOTH time and energy
-    let taskCount;
-    if (time <= 5) taskCount = { min: 2, max: 4 };
-    else if (time <= 10) taskCount = { min: 5, max: 8 };
-    else if (time <= 15) taskCount = { min: 8, max: 12 };
-    else taskCount = { min: 12, max: 15 };
+TIME AVAILABLE RIGHT NOW
+About ${time} minutes
 
-    let taskProfile;
-    if (energy <= 3) {
-      taskProfile = { maxDuration: '2 minutes', type: 'PURE PHYSICAL only - no thinking, no decisions', complexity: 'absurdly simple' };
-    } else if (energy <= 6) {
-      taskProfile = { maxDuration: '5 minutes', type: 'Physical tasks + light mental work okay', complexity: 'straightforward' };
-    } else {
-      taskProfile = { maxDuration: '10 minutes', type: 'Complex tasks okay - thinking, planning, organizing', complexity: 'can be challenging' };
-    }
-
-    const hasHabit = typeof existingHabit === 'string' && existingHabit.trim().length > 0;
-    const habitAnchor = hasHabit ? existingHabit.trim().replace(/"/g, "'") : '';
-
-    const modeLines = {
-      exhausted: '\nMODE (exhausted): The user is running on empty — make every task nearly effortless and front-load trivially easy physical wins.',
-      quick: '\nMODE (quick win): The user wants visible progress fast — prioritize tasks that produce an immediate, tangible result.',
-      anxiety: '\nMODE (high anxiety): The project feels emotionally heavy — use calm, reassuring task wording and make the first tasks feel safe and low-stakes.'
-    };
-    const modeLine = modeLines[adaptiveMode] || '';
-
-    const isReorder = adaptiveMode === 'reorder' && Array.isArray(currentTasks) && currentTasks.length > 0;
-
-    let prompt;
-    if (isReorder) {
-      const taskListJson = JSON.stringify(currentTasks.map(mt => ({
-        task_id: mt.task_id,
-        task: mt.task,
-        estimated_time: mt.estimated_time,
-        energy_required: mt.energy_required,
-        dependencies: Array.isArray(mt.dependencies) ? mt.dependencies : [],
-        completion_criteria: mt.completion_criteria,
-        if_stuck: mt.if_stuck,
-        momentum_builder: mt.momentum_builder
-      })), null, 2);
-
-      prompt = `You are re-sequencing an existing micro-task list for a user's new energy level.
-
-USER'S NEW ENERGY LEVEL: ${energy}/10
-
-CURRENT TASKS:
-${taskListJson}
-
-Re-sequence these EXACT tasks (do not invent, remove, or rename any task) for the user's new energy level.
-Put the tasks best suited to ${energy <= 3 ? 'very low' : energy <= 6 ? 'medium' : 'high'} energy first, but never place a task before one it depends on.
-Return the same task objects re-ordered, with "task_id" renumbered 1..N in the new order. Keep the "task" text and every other field value EXACTLY as given.
-Keep energy_required values in English exactly as listed (low, medium, or high).
-
-Return this JSON structure:
+Return ONLY valid JSON:
 {
-  "micro_tasks": [
-    { ...the same task objects as the input, re-ordered, task_id renumbered 1..N... }
-  ]
-}
-
-Return ONLY valid JSON.`;
-    } else {
-      prompt = `You are breaking down an overwhelming project into micro-tasks.
-
-PROJECT: ${project}
-AVAILABLE TIME: ${time} minutes (this session)
-ENERGY LEVEL: ${energy}/10
-OVERWHELM REASONS: ${reasonsText}${modeLine}
-${hasHabit ? `HABIT STACKING: The user already does this habit: "${habitAnchor}". On task 1 ONLY, include a "habit_stack" field explaining how to anchor task 1 to that habit.` : ''}
-Generate ${taskCount.min}-${taskCount.max} tasks that fit within ${time} minutes.
-Max task duration: ${taskProfile.maxDuration}
-Task type: ${taskProfile.type}
-Complexity: ${taskProfile.complexity}
-
-${energy <= 3 ? 'EVERY task must be 30 seconds to 2 minutes MAX. ZERO mental work - pure physical actions only.' : ''}
-${energy <= 6 && energy > 3 ? 'Tasks can be 1-5 minutes. Mix of physical + light mental work okay.' : ''}
-${energy > 6 ? 'Tasks can be up to 10 minutes. Complex mental work is fine.' : ''}
-
-MANDATORY RULES:
-1. First 3-5 tasks MUST be extremely easy (30 sec - 2 min) regardless of energy
-2. Tasks must total approximately ${time} minutes
-3. Respect energy level
-4. Keep energy_required values in English exactly as listed (low, medium, or high)
-5. Include "why_this_first" on the first 1-3 tasks only; omit the field on later tasks
-
-Return this JSON structure:
-{
-  "project_breakdown": {
-    "total_micro_tasks": number,
-    "estimated_total_time": "X minutes"
+  "project_read": "One short sentence reflecting the project as supplied, without diagnosis or invented interpretation.",
+  "first_move": {
+    "action": "One concrete action the visitor can do now within the supplied time budget.",
+    "why_this": "One short sentence explaining why this is the useful foothold, based on the project.",
+    "done_when": "A visible, concrete stopping condition.",
+    "if_too_hard": "A genuinely smaller version of this same action."
   },
-  "micro_tasks": [
+  "after_that": [
     {
-      "task_id": 1,
-      "task": "description — one sentence",
-      "estimated_time": "30 seconds",
-      "energy_required": "low|medium|high",
-      "dependencies": [],
-      "why_this_first": "why this task comes first — one sentence",${hasHabit ? `\n      "habit_stack": "how to anchor task 1 to '${habitAnchor}' — one sentence",` : ''}
-      "completion_criteria": "Done when... — one sentence",
-      "if_stuck": "Try this instead — one sentence",
-      "momentum_builder": true
+      "action": "A later foothold, not a full project plan.",
+      "done_when": "A concrete stopping condition."
     }
   ],
-  "anti_paralysis_strategies": {
-    "if_cant_start": "Do ONLY task 1. That's enough. — one sentence",
-    "if_decision_paralysis": "Pick first option, change later okay — one sentence",
-    "permission_to_stop": "Stop after any task. Progress is progress. — one sentence"
-  },
-  "momentum_checkpoints": [
-    { "after_task": 5, "celebration": "You started! Hardest part done! — one sentence" }
-  ]
+  "permission_to_stop": "One short sentence making clear that completing the current foothold is enough for this session."
 }
 
-Return ONLY valid JSON.`;
-    }
+after_that: 1 to 3 items only.
+Never use double-quote characters inside JSON string values.`;
 
-    const systemPrompt = withLanguage(
-      'You are an expert task decomposition coach for people with executive dysfunction. Return only valid JSON.',
-      userLanguage
-    ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
-      + ' Never place a double-quote (") character inside any JSON string value — task descriptions and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2200,
+      system: withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'TaskAvalancheBreakerV2' });
 
-    let textContent = '';
-    let stopReason = null;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        const message = await anthropic.messages.create({
-          model: MODELS.SMART,
-          max_tokens: 5000,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: prompt }]
-        });
-        textContent = message.content.find(item => item.type === 'text')?.text || '';
-        stopReason = message.stop_reason;
-        break;
-      } catch (retryErr) {
-        if (attempt === 3) throw retryErr;
-        await new Promise(r => setTimeout(r, 1000 * attempt));
-      }
-    }
+    const result = validateResult(parsed);
+    if (!result) return res.status(500).json({ error: 'Could not find a useful first foothold. Please try again.' });
 
-    // Fail fast on truncation — a truncated response can never parse into valid JSON
-    if (stopReason === 'max_tokens') {
-      console.error('❌ Response truncated at max_tokens');
-      return res.status(500).json({ error: 'The breakdown was cut off. Please try again with a simpler project description.' });
-    }
-
-    const cleaned = cleanJsonResponse(textContent);
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch (parseError) {
-      console.error('❌ Parse failed, attempting repair:', parseError.message);
-      const repaired = repairJSON(cleaned);
-      try {
-        parsed = JSON.parse(repaired);
-      } catch (retryError) {
-        const tasks = manuallyParseTasks(repaired);
-        if (tasks.length === 0) {
-          return res.status(500).json({ error: 'Could not extract any tasks. Please try a simpler project description.' });
-        }
-        parsed = {
-          project_breakdown: {
-            total_micro_tasks: tasks.length,
-            estimated_total_time: `${Math.ceil(tasks.length * 3)} minutes`,
-            complexity: 'medium',
-            total_points_possible: tasks.length * 10
-          },
-          micro_tasks: tasks,
-          anti_paralysis_strategies: {
-            if_cant_start: "Do ONLY task 1. That's enough.",
-            if_decision_paralysis: "Pick first option, change later okay",
-            permission_to_stop: "Stop after any task. Progress is progress."
-          },
-          momentum_checkpoints: [{ after_task: 5, celebration: "You started! Hardest part done!" }]
-        };
-      }
-    }
-
-    // Validate and enhance
-    if (!parsed.micro_tasks || !Array.isArray(parsed.micro_tasks) || parsed.micro_tasks.length === 0) {
-      return res.status(500).json({ error: 'No valid tasks found. Please try again.' });
-    }
-
-    if (!parsed.project_breakdown) parsed.project_breakdown = {};
-    parsed.project_breakdown.total_micro_tasks = parsed.micro_tasks.length;
-    parsed.project_breakdown.total_points_possible = parsed.micro_tasks.length * 10;
-
-    // Always recompute total time server-side from per-task values (unit-aware, mirrors frontend parseTimeToSeconds)
-    const parseTaskMinutes = (timeStr) => {
-      if (!timeStr) return 2;
-      const lower = String(timeStr).toLowerCase();
-      const num = parseInt(lower, 10) || 0;
-      if (lower.includes('second')) return num / 60;
-      if (lower.includes('hour')) return num * 60;
-      if (lower.includes('minute') || lower.includes('min')) return num;
-      return num || 2;
-    };
-    const totalMinutes = Math.max(1, Math.round(parsed.micro_tasks.reduce((sum, task) => sum + parseTaskMinutes(task.estimated_time), 0)));
-    const hours = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
-    parsed.project_breakdown.estimated_total_time = hours > 0
-      ? `${hours} hour${hours > 1 ? 's' : ''} ${mins} minutes`
-      : `${mins} minutes`;
-
-    // Ensure all tasks have required fields
-    parsed.micro_tasks = parsed.micro_tasks.map((task, idx) => ({
-      task_id: task.task_id || idx + 1,
-      task: task.task || 'Complete this step',
-      estimated_time: task.estimated_time || '2 minutes',
-      energy_required: task.energy_required || 'low',
-      dependencies: Array.isArray(task.dependencies) ? task.dependencies : [],
-      why_this_first: task.why_this_first || '',
-      habit_stack: task.habit_stack || '',
-      completion_criteria: task.completion_criteria || 'Task is complete',
-      if_stuck: task.if_stuck || 'Try an easier version',
-      momentum_builder: task.momentum_builder !== undefined ? task.momentum_builder : idx < 5
-    }));
-
-    if (!parsed.anti_paralysis_strategies) {
-      parsed.anti_paralysis_strategies = {
-        if_cant_start: "Do ONLY task 1. That's enough.",
-        permission_to_stop: "Stop after any task. Progress is progress."
-      };
-    }
-
-    if (!parsed.momentum_checkpoints) {
-      parsed.momentum_checkpoints = [{ after_task: 5, celebration: "You started! Hardest part done!" }];
-    }
-
-    res.json(parsed);
-
+    return res.json(result);
   } catch (error) {
-    console.error('❌ Error:', error.message);
-    res.status(500).json({ error: 'Failed to break down project. Please try again or simplify your project description.' });
+    console.error('TaskAvalancheBreaker v2 error:', error);
+    return res.status(500).json({ error: 'Could not break that project down right now. Please try again.' });
   }
 });
 
