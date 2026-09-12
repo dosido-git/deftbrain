@@ -20,6 +20,7 @@ router.outputGuard = {
     'nonnull_sleep_score_reaching_the_visitor',
     'protocol_step_phase_outside_the_fixed_four_value_enum',
     'malformed_protocol_step_passed_through_unfiltered',
+    'more_than_one_primary_plus_two_try_next_experiments_reaching_the_visitor',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -73,6 +74,15 @@ GOOD: 'Your afternoon coffee is one variable worth testing because you are tryin
 BAD: 'Your weekend sleep-ins shift your body clock three hours later.'
 GOOD: 'Your later weekend wake time is another variable worth testing if weekday sleep timing is difficult.'
 
+DO NOT COMBINE SEPARATELY SUPPLIED FACTS
+Do not connect two separately supplied facts unless the visitor connected them or the connection is explicitly framed as a hypothesis.
+
+Example:
+If the visitor selects 'racing thoughts / stress' and separately reports waking at 3 AM, do not say they experience racing thoughts at 3 AM.
+
+Instead:
+'You selected racing thoughts / stress as a possible disruptor. A brief thought-offload before bed is one variable you could test against the 3 AM waking.'
+
 NO DIAGNOSIS OR SCORING
 Do not diagnose insomnia, conditioned arousal, circadian-rhythm disorders, anxiety, sleep debt, fragmented sleep, hyperarousal, or any other medical or psychological condition.
 Do not assign a sleep-health score, severity score, risk score, percentage, or numeric confidence.
@@ -82,8 +92,24 @@ Always return sleep_score as null.
 PERSONALIZATION
 Personalize only from facts the visitor supplied. You may make simple arithmetic observations when the input supports them, such as the difference between two explicitly supplied clock times. Do not invent physiology, melatonin timing, sleep stages, circadian phase, nervous-system state, or hidden causes.
 
-PRIORITIZE LEARNING, NOT VOLUME
-Recommend the smallest useful experiment. Usually change one or two variables at a time so the person can tell what helped. Do not overwhelm them with a five-part optimization program when one high-information change would do.
+ONE EXPERIMENT AT A TIME
+The visitor should leave knowing what to test first.
+
+Choose ONE primary experiment based on the supplied information.
+
+The main plan should contain:
+- what to try;
+- why this variable is worth testing;
+- how long to try it;
+- what to notice;
+- what result would suggest trying something else.
+
+You may identify up to TWO 'try next' experiments, but do not ask the visitor to run them simultaneously unless they naturally belong to the same intervention.
+
+The goal is not to produce the most comprehensive sleep plan.
+The goal is to help the visitor learn something useful about their sleep.
+
+A good SleepArchitect output should feel manageable tonight.
 
 WHAT TO TRY
 Prefer low-risk behavioral experiments that are practical from the supplied context, such as:
@@ -109,6 +135,16 @@ Exact clock times are allowed only when they are:
 2) straightforward arithmetic from a visitor-supplied target, or
 3) explicitly framed as a suggested experiment rather than an optimal biological schedule.
 If the input does not justify a target schedule, return schedule as null.
+
+NO POPULATION CLAIMS
+Do not justify a recommendation with claims about what 'most people,' 'many people,' or 'people generally' experience unless that claim comes from evidence actually supplied to the tool.
+When an exact threshold is not necessary, do not invent one.
+
+Prefer:
+'If you have been awake long enough that staying in bed is becoming frustrating, try getting up briefly...'
+
+Over:
+'Wait roughly 20 minutes...'
 
 SCHEDULE
 Only propose a schedule when the visitor supplied enough information and schedule/timing is materially relevant to the goal. A schedule is an experiment, not a claim about the person's biological optimum. Preserve required obligations or wake times the visitor actually supplied. If those obligations are not clear, do not manufacture them.
@@ -136,7 +172,10 @@ function validateResult(parsed) {
   const allowedPhases = new Set(['immediate', 'week1', 'ongoing', 'environment']);
   const protocol = parsed.protocol
     .filter(step => step && typeof step === 'object')
-    .slice(0, 4)
+    // One primary experiment + at most two "try next" — a backstop for the
+    // ONE EXPERIMENT AT A TIME rule above; the prompt asks for 3 max, this
+    // enforces it regardless of what the model actually returns.
+    .slice(0, 3)
     .map(step => ({
       phase: allowedPhases.has(step.phase) ? step.phase : 'week1',
       title: typeof step.title === 'string' ? step.title : '',
@@ -228,7 +267,7 @@ Return ONLY valid JSON with this exact structure:
       "phase": <one of exactly: "immediate", "week1", "ongoing", "environment">,
       "title": <short action-oriented title>,
       "description": <1-2 sentences: why this experiment is worth trying based on the visitor's supplied facts and what question it helps answer>,
-      "actions": [<2-4 concrete steps, including what to observe where useful>]
+      "actions": [<2-4 concrete steps — for the FIRST (primary) entry, this must cover what to try, how long to try it, what to notice, and what result would suggest trying something else instead; for a 'try next' entry, keep it just as concrete but say plainly it comes after the primary experiment, not alongside it>]
     }
   ],
   "schedule": null OR {
@@ -243,7 +282,7 @@ OUTPUT LOGIC
 1. diagnosis: despite the legacy field name, this is the person's SLEEP PICTURE, not a medical diagnosis. Use only what they supplied plus clearly marked possibilities.
 2. key_issues: choose the few variables most worth testing. Do not treat a selected disruptor as proven causal.
 3. quick_wins: maximum 2. If nothing sensible can be tried tonight from the supplied information, return an empty array rather than inventing one.
-4. protocol: 2-4 steps total. Prefer a coherent 7-day experiment over a long protocol. Each step should either change one variable, establish a baseline/observation, or explain what to do next depending on the result.
+4. protocol: ONE primary experiment first (usually phase "immediate"), then AT MOST TWO 'try next' entries — 3 total, never more. The visitor should leave knowing what to test FIRST, not a checklist of everything that might help. Do not ask them to change several unrelated things at once; two entries may share a phase only if they are genuinely part of the same intervention (e.g. two steps of one wind-down routine).
 5. If racing thoughts/stress is reported, a simple written offload or calming routine may be offered as an experiment; do not diagnose anxiety or claim the brain has open loops that must be closed.
 6. If caffeine is reported, suggest testing earlier or reduced late-day caffeine without inventing a biologically optimal cutoff unless the visitor supplied enough context for a clearly labeled experimental cutoff.
 7. If screens are reported, suggest testing phone/screen removal from bed or earlier use without claiming that screens are definitely delaying melatonin or causing the person's sleep problem.

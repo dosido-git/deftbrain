@@ -197,8 +197,8 @@ export const tools = [
   },
   seoDescription: "Build a free, personalized sleep experiment plan around your own habits — quick wins to try tonight, plus a phased plan for what to test next. No diagnosis, no score.",
   seoTitle: "Personalized Sleep Improvement Plan for Better Rest",
-  title: "SleepArchitect",
-  tagline: "A personalized sleep improvement protocol built around your habits",
+  title: "Sleep Architect",
+  tagline: "😴 Better sleep, one useful experiment at a time.",
   tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'stress', 'anxiety', 'night', 'sleep hygiene'],
   icon: "😴",
   categories: ['Energy'],
@@ -208,7 +208,7 @@ export const tools = [
   // experiment to try and observe, tied to what was actually reported. A
   // reported red-flag symptom (breathing pauses, severe daytime sleepiness)
   // gets a professional-evaluation step instead of a home protocol.
-  description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a plain-language read on it, quick wins you can try tonight, and a phased plan of experiments to test what actually helps.",
+  description: "Tell us what sleep has been like lately — your schedule, what gets in the way, and what you want to improve. SleepArchitect turns it into a practical experiment you can try and learn from.",
   guide: {
     overview: "Bad sleep is usually caused by a handful of specific habits — but generic advice like 'avoid screens' rarely sticks because it's not tailored to what's actually happening. SleepArchitect takes your specific situation (your schedule, what disrupts you, what you've tried) and turns it into a small, testable experiment: one or two variables worth changing first, and a way to notice whether they helped. It doesn't diagnose what's wrong or score your sleep — it's not a clinician, and it says so when something you report (loud snoring with breathing pauses, severe daytime sleepiness) is worth an actual doctor's visit instead of a home experiment.",
 
