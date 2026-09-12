@@ -1,12 +1,13 @@
 {
   "_meta": {
     "tool": "SocialBatteryAdvisor",
-    "generated": "2026-09-11",
+    "generated": "2026-09-12",
     "model": "claude-haiku-4-5-20251001 (MODELS.FAST), 1 route / two states (log, review patterns)",
-    "baseline_commit": "socialbatteryadvisor-v2.1",
+    "baseline_commit": "socialbatteryadvisor-v2.2",
     "why_v2": "Ground-up rebuild (commit 622372be) replaced the six-mode weekly-audit design (Daily Check-In, Planner, Recharge, Weekly Audit, Say Yes?, Journal — capacity/budget arithmetic, cost-per-hour math, weekly_budget/recovery_time sections) with two states: log one interaction, review patterns across logs. The v1 cases below (main-audit, week-planner, quick-check, recharge-minimal) tested endpoints (/plan, /quick-check, /recharge) and fields (energy_score, drains, rechargers, weekly_budget) that no longer exist and were replaced wholesale. This re-record was overdue — golden went unrecorded at v2's own rebuild and was failing 0/4 by the time this correction pass found it.",
-    "why_v2_1": "Owner review of live output found the pattern-reasoning engine overclaiming beyond the data in five ways: (1) converting a contrast between two logs into an implied cause ('something about the pace or dynamic differed') instead of naming every candidate feature and saying the log doesn't establish which mattered; (2) statistical-sounding language ('does not predict') from a 3-entry sample; (3) test_next experiments that changed more than one variable at once (or, once fixed, asked the visitor to wait for a deliberately MISMATCHED combination of two conditions to break a confound — still a compound ask); (4) energy-transfer language ('cost'/'added'/'reduced') for what is only a before/after self-rating, not a battery measurement; (5) calling a 2-4-observation split a 'pattern' before the evidence actually earned that word. CONTRACT gained a CONTRAST DISCIPLINE section, a rewritten PATTERN THRESHOLD with an explicit evidence-count ladder and a banned-word list (predict/predicts/predictive/predictor; pattern below 5 comparable observations), and an ACTION section requiring single-variable experiments with a mandatory fallback (track one variable across future ordinary logs, never a manufactured or deliberately-mismatched next interaction) when the candidate variables are confounded in the supplied logs. Frontend: the 'My patterns (N)' tab was renamed 'What I'm noticing (N)' across all 13 languages — the tool has observations and contrasts at this stage, not yet repeated comparable observations, so 'patterns' overclaimed its own confidence.",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden sea). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: validateResult() in backend/routes/social-battery-advisor.js keys on summary.headline/body being present; caps worth_noticing<=3, contrasts<=2, not_enough_to_tell<=4; forces test_next to one well-shaped object; summary.counts is always recomputed in code from the actual submitted logs, never trusted from the model. The five epistemic corrections above are prompt-enforced (CONTRACT), not code-checkable — when eyeballing new captures, grep the JSON for 'predict', 'pattern' (below 5 comparable observations), 'cost'/'drained'/'restored'/'added energy', and read every test_next.experiment for a second named variable or a compound wait-for condition. DO NOT reverse: the array caps, the recomputed counts, or any of the five CONTRACT disciplines above."
+    "why_v2_1": "Owner review of live output found the pattern-reasoning engine overclaiming beyond the data in five ways: (1) converting a contrast between two logs into an implied cause ('something about the pace or dynamic differed') instead of naming every candidate feature and saying the log doesn't establish which mattered; (2) statistical-sounding language ('does not predict') from a 3-entry sample; (3) test_next experiments that changed more than one variable at once (or, once fixed, asked the visitor to wait for a deliberately MISMATCHED combination of two conditions to break a confound — still a compound ask); (4) energy-transfer language ('cost'/'added'/'reduced') for what is only a before/after self-rating, not a battery measurement; (5) calling a 2-4-observation split a 'pattern' before the evidence actually earned that word. CONTRACT gained a CONTRAST DISCIPLINE section, a rewritten PATTERN THRESHOLD with an explicit evidence-count ladder and a banned-word list, and an ACTION section requiring single-variable experiments with a mandatory fallback when the candidate variables are confounded. Frontend: the 'My patterns (N)' tab was renamed 'What I'm noticing (N)' across all 13 languages.",
+    "why_v2_2": "A second owner review, after living with the corrected output, found four remaining implementation issues: (1) the raw internal on-ness enum (not_much/a_lot) was leaking into generated prose instead of the plain-English form the input form already showed — fixed at the CODE level (a new onnessLabel() helper humanizes the value before it ever reaches the model's prompt, so the token literally cannot be echoed, not just a prompt instruction hoping the model complies); (2) a contrast invented an unstated duration ('duration: not specified vs. implied longer') — added an explicit NEVER INFER duration rule and stripped 'duration' from the CONTRAST DISCIPLINE default feature list unless both entries actually supplied one; (3) the single-variable experiment language still overstated what casual observational logging can establish ('will help separate on-ness from group size', 'independent of group size') — ordinary logs cannot hold other variables constant, so ACTION was rewritten to ban 'separate'/'isolate'/'independent' as claims and require purely observational framing ('see whether a repeated relationship appears'); (4) summary language occasionally treated 'energy' as a measured quantity ('ended with you 2 points higher in energy') rather than keeping the language attached to the rating — added an explicit rule and example. While re-verifying, live testing also surfaced a stochastic third-person voice leak ('The visitor rated their energy...') that the corrections had not touched — CONTRACT had never had an explicit VOICE section (unlike the same-session SpiralStopper fix), so one was added with a wrong/right example. Frontend: added two more rotation examples (3→5, matching the session's five-example convention) and removed the 'Refresh patterns' button — saveLog() now clears stale results automatically, so the only action after saving is 'Log another interaction'; revisiting the patterns tab after a new log shows the same single 'look for patterns' action used on first visit, not a distinct refresh concept.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden sea). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: validateResult() in backend/routes/social-battery-advisor.js keys on summary.headline/body being present; caps worth_noticing<=3, contrasts<=2, not_enough_to_tell<=4; forces test_next to one well-shaped object; summary.counts is always recomputed in code from the actual submitted logs, never trusted from the model. Every correction above is prompt-enforced (CONTRACT) except the enum humanization, which is code-enforced in the logText builder (onnessLabel()) — when eyeballing new captures, grep the JSON for 'not_much'/'a_lot' (should never appear), 'predict', 'pattern' (below 5 comparable observations), 'cost'/'drained'/'restored'/'added energy', 'isolate'/'separate'/'independent' used as a CLAIM (not as a hedge denying capability, which is fine), 'implied' + a duration word, and 'the visitor' (should always be 'you'/'your'). DO NOT reverse: the array caps, the recomputed counts, the onnessLabel() code fix, or any CONTRACT discipline above."
   },
   "cases": [
     {
@@ -22,39 +23,33 @@
       },
       "output": {
         "summary": {
-          "headline": "Three interactions produced different outcomes: one ended lower, one unchanged, one higher.",
-          "body": "The dinner with six people where you felt a lot on ended 2 points lower. The team meeting where you felt some on ended unchanged. The call with your sister where you felt not much on ended 2 points higher.",
+          "headline": "Three interactions produced three different outcomes: one ended lower, one unchanged, and one ended higher.",
+          "body": "The dinner with friends ended 2 points lower despite knowing everyone present. The team meeting ended unchanged. The phone call with your sister ended 2 points higher, and you reported feeling not much on during it.",
           "counts": { "total": 3, "lower": 1, "same": 1, "higher": 1 }
         },
         "worth_noticing": [
           {
-            "title": "On-ness and energy outcome did not line up consistently",
-            "evidence": "The dinner log shows high on-ness (a_lot) ending lower (4→2). The sister call shows low on-ness (not_much) ending higher (2→4). The team meeting shows medium on-ness (some) ending unchanged (3→3).",
-            "meaning": "Across these three entries, feeling more on did not consistently go with lower energy afterward, and feeling less on did not consistently go with higher energy. With only three entries and three different outcomes, this makes on-ness worth continuing to track rather than treating as an explanation yet."
-          },
-          {
-            "title": "Group size and energy outcome are separate questions",
-            "evidence": "The dinner was six people and ended lower (4→2). The team meeting was small and ended unchanged (3→3). The call was one person and ended higher (2→4).",
-            "meaning": "In these three entries, smaller groups did not consistently end higher or lower — the one-on-one call ended higher while the small team meeting ended unchanged. Too few entries to settle what matters about group size."
+            "title": "The interaction where you felt not much on was the only one that ended higher.",
+            "evidence": "Phone call with your sister: energy 2→4, on-ness not much. The dinner (a lot on) ended lower. The team meeting (some on) ended unchanged.",
+            "meaning": "Worth continuing to track: whether interactions where you feel less on tend to end with higher ratings than interactions where you feel a lot on. With only one log in each direction, this is too early to treat as a pattern, but it is a contrast worth watching."
           }
         ],
         "contrasts": [
           {
-            "title": "Dinner (ended lower) vs. sister call (ended higher)",
-            "first": "Dinner with six people, high on-ness, ended 4→2",
-            "second": "Phone call with sister, low on-ness, ended 2→4",
-            "question": "Several features differed between these two: group size (six vs. one), on-ness (a_lot vs. not_much), and likely duration and setting as well. This log does not tell you which of these differences, if any, mattered to the opposite outcomes."
+            "title": "Dinner ended lower; phone call ended higher",
+            "first": "Dinner with friends: 4→2, on-ness a lot, six people, conversation moved fast",
+            "second": "Phone call with sister: 2→4, on-ness not much, about half an hour",
+            "question": "On-ness differed (a lot vs. not much), group size differed (six vs. two), and setting differed (dinner vs. phone call). This log does not establish which of these, if any, mattered to the different outcomes."
           }
         ],
         "test_next": {
-          "observation": "The dinner and sister call produced opposite results, and on-ness differed between them. It is worth testing whether on-ness itself matters, separate from the other things that also differed.",
-          "experiment": "Over your next several interactions, pay attention to how on you felt regardless of who you were with or how many people were there. Comparing on-ness to your energy outcome across more entries, independent of group size, will help separate the two and show whether one of them matters more than the other.",
-          "watch_for": "Does higher on-ness consistently go with lower energy after, or does it vary like it did in these first three logs?"
+          "observation": "The phone call with lower on-ness ended higher; the dinner with higher on-ness ended lower. Worth testing whether on-ness itself tends to accompany different before-and-after outcomes.",
+          "experiment": "Keep logging as usual. Pay attention to your on-ness rating across your next several ordinary interactions, and notice whether higher on-ness, lower on-ness, or both appear alongside different kinds of before-and-after outcomes.",
+          "watch_for": "Whether a repeated relationship appears between how much you felt you had to be on and whether your before-and-after rating ended higher, lower, or unchanged."
         },
         "not_enough_to_tell": [
-          "Whether on-ness itself drives the energy change, or whether group size, duration, familiarity, conversation pace, or another feature is what matters",
-          "Whether the same interaction would produce the same result next time",
-          "What role the starting energy level (before the interaction) plays in the outcome"
+          "Whether group size, the pace or dynamic of conversation, familiarity with people, or any other feature of these interactions affected the outcomes — too many things differed between the dinner and phone call to point to one.",
+          "How the team meeting's unchanged rating relates to your other two experiences — only one entry in that category."
         ],
         "handoff": { "show_before_the_crash": false, "reason": null }
       }
@@ -74,34 +69,34 @@
       },
       "output": {
         "summary": {
-          "headline": "Large group interactions ended lower; small group interactions ended higher.",
-          "body": "The three interactions with 20+ people and high on-ness all ended 2-3 points lower in energy. The two interactions with one other person and low on-ness both ended 2 points higher. Group size and on-ness moved together in every log, making it unclear which one, if either, explains the difference.",
+          "headline": "Large gatherings where you felt a lot on ended lower; small interactions where you felt not much on ended higher.",
+          "body": "Three interactions with 20+ people and a lot of on-ness ended 2-3 points lower. Two interactions one-on-one with not much on-ness ended 2 points higher. The split is clean across these five logs.",
           "counts": { "total": 5, "lower": 3, "same": 0, "higher": 2 }
         },
         "worth_noticing": [
           {
-            "title": "Large crowded interactions ended lower; one-on-one interactions ended higher.",
-            "evidence": "Work happy hour (20+ people, a_lot on-ness, 4→2), family reunion (25 people, a_lot on-ness, 4→1), and networking mixer (crowded room, a_lot on-ness, 3→1) all ended lower. Coffee with close friend (two people, not_much on-ness, 3→5) and walk with neighbor (two people, not_much on-ness, 2→4) both ended higher.",
-            "meaning": "These two groups had opposite outcomes in every entry. However, they differ in at least two ways: group size and how much you felt you had to be on. The logs do not yet show which of these matters, or whether both do."
+            "title": "Large groups with a lot of on-ness ended lower; one-on-one interactions with not much on-ness ended higher",
+            "evidence": "Work happy hour (20+ people, a lot on): 4→2. Family reunion (25 people, a lot on): 4→1. Conference mixer (big crowded room, many new people, a lot on): 3→1. Coffee with close friend (just two, not much on): 3→5. Walk with neighbor (quiet, just the two, not much on): 2→4.",
+            "meaning": "These two kinds of interaction produced opposite outcomes in every example so far. You have only two examples on the higher end, so continue watching whether one-on-one interactions with lower on-ness consistently end higher, or whether something else about those particular interactions mattered. You also have only three examples on the lower end, though they are consistent."
           }
         ],
         "contrasts": [
           {
-            "title": "Large group with high on-ness ended lower; one-on-one with low on-ness ended higher.",
-            "first": "Work happy hour: 20+ people, a_lot on-ness, energy ended at 2",
-            "second": "Coffee with close friend: two people, not_much on-ness, energy ended at 5",
-            "question": "These differ in group size, on-ness, familiarity (close friend vs. coworkers), setting (loud bar vs. quiet coffee), and duration. This log does not tell you which of these, if any, explained the opposite outcomes."
+            "title": "Work happy hour vs. coffee with close friend: opposite outcomes despite both being social",
+            "first": "Work happy hour (20+ people, a lot on): ended 2 points lower",
+            "second": "Coffee with close friend (just two, not much on): ended 2 points higher",
+            "question": "Group size and on-ness both differed between these interactions. This log does not establish which of those two, if any, mattered — or whether something else about the particular people, setting, or the nature of the interaction itself made the difference."
           }
         ],
         "test_next": {
-          "observation": "Group size and on-ness moved together in all five logs — larger groups came with higher on-ness, smaller groups with lower on-ness. To separate these two, watch for how on you feel across your next several logs, regardless of group size or setting.",
-          "experiment": "Over your next several interactions, notice how much you felt you had to be on, independent of whether the group was large or small. Log as usual. Comparing on-ness to energy outcome across more entries — setting aside group size for now — will help show whether on-ness alone tracks with your energy change.",
-          "watch_for": "Does higher on-ness tend to match lower ending energy across different group sizes, or does the relationship depend on group size too?"
+          "observation": "The contrast between large-group-with-a-lot-on and one-on-one-with-not-much-on showing opposite outcomes.",
+          "experiment": "Keep logging as usual. Pay attention to how much you feel you have to be 'on' in your next several interactions, and notice whether higher on-ness repeatedly appears alongside lower before-and-after ratings, and lower on-ness repeatedly appears alongside higher ratings.",
+          "watch_for": "Whether on-ness and your before-and-after outcome repeatedly appear together in a consistent direction, or whether they did not line up the same way across different interactions."
         },
         "not_enough_to_tell": [
-          "Whether group size or on-ness (or both, or neither) actually explains the energy changes.",
-          "How duration, setting, or familiarity contributed to the outcomes.",
-          "What will happen in a large group where you feel less on, or a small group where you feel more on."
+          "Whether group size alone accounts for the difference, or whether on-ness is what mattered, or whether they mattered together.",
+          "Whether the specific people (close friend vs. new people vs. coworkers) shaped the outcome.",
+          "Whether the same outcome would happen if you were in a large group but felt not much on, or in a one-on-one but felt a lot on."
         ],
         "handoff": { "show_before_the_crash": false, "reason": null }
       }
@@ -117,30 +112,30 @@
       },
       "output": {
         "summary": {
-          "headline": "One interaction ended notably lower in energy.",
-          "body": "Back-to-back client calls left you at energy 1, down from 3. You felt a lot on during the calls. Your note mentions concern about heading toward a bigger crash rather than simple fatigue from this session alone.",
+          "headline": "One log: back-to-back client calls left you 2 points lower, with a note that this feels like heading toward something larger.",
+          "body": "You rated your energy 3 before and 1 after, while feeling a lot on. Your own note flags concern about a bigger crash ahead, not just fatigue from this single session.",
           "counts": { "total": 1, "lower": 1, "same": 0, "higher": 0 }
         },
         "worth_noticing": [
           {
-            "title": "Energy ended notably lower after feeling a lot on during back-to-back calls.",
-            "evidence": "This single entry: energy changed from 3 to 1 (a drop of 2 points), with on-ness marked as a_lot.",
-            "meaning": "This one session shows a clear downward shift. With only one log, you cannot yet know whether this outcome is typical for back-to-back calls, typical when on-ness is high, or specific to something else about this particular session — group size, duration, type of call, or something not captured in these fields. Worth continuing to track as more similar interactions occur."
+            "title": "Your note about heading toward a bigger crash",
+            "evidence": "You logged one interaction (back-to-back client calls, a lot on, energy 3→1) and added a note that this feels like heading toward a bigger crash, not just tired from this one call.",
+            "meaning": "This suggests you may be tracking something beyond what a single log can show — a sense of accumulation or direction over time. One log is not enough to establish whether you are approaching an overload, but your own observation is real and worth taking seriously. This belongs in Before the Crash, which can help you track what a full-scale crash looks like for you and what the warning signs are."
           }
         ],
         "contrasts": [],
         "test_next": { "observation": null, "experiment": null, "watch_for": null },
         "not_enough_to_tell": [
-          "Whether back-to-back calls themselves tend to lower your energy, or whether high on-ness during calls is what mattered, or whether something specific to this session (content, number of calls, duration, or people involved) drove the result.",
-          "What on-ness feels like during interactions that end higher or unchanged, and how that compares to this session.",
-          "Whether this energy level is typical for you after similar work, or whether this session was unusual."
+          "Whether back-to-back calls (versus single calls or other interaction types) consistently leave you lower.",
+          "Whether a lot of on-ness consistently goes with lower energy outcomes, or whether the outcome varies.",
+          "Whether you are actually approaching a crash, or what that would look like for you specifically."
         ],
         "handoff": {
           "show_before_the_crash": true,
-          "reason": "Your note explicitly mentions concern about heading toward a bigger crash, not just fatigue from this one interaction. Before the Crash can help you track whether this is an isolated session or part of a larger pattern building toward overload."
+          "reason": "Your note explicitly says you feel like you are heading toward a bigger crash. Before the Crash can help you identify what a crash looks like for you and what the earliest warning signs are."
         }
       },
-      "optionalSections": ["contrasts"]
+      "optionalSections": ["contrasts", "test_next"]
     }
   ]
 }

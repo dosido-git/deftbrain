@@ -18,13 +18,16 @@ const ONNESS = [
   { value: 'a_lot',    labelKey: 'sea_onness_a_lot' },
 ];
 
-// Three, rotated: a big-group drain, a neutral small meeting, and an
-// energizing 1:1 call — spans all three before/after directions (lower,
-// same, higher) since that contrast is the whole point of the tool.
+// Five, rotated: a big-group drain, a neutral small meeting, an energizing
+// 1:1 call, a family gathering, and a networking event — spans all three
+// before/after directions (lower, same, higher) since that contrast is the
+// whole point of the tool.
 const EXAMPLES = [
   { interactionKey: 'sea_ex1_interaction', before: 4, after: 2, onness: 'a_lot',    noteKey: 'sea_ex1_note' },
   { interactionKey: 'sea_ex2_interaction', before: 3, after: 3, onness: 'some',     noteKey: 'sea_ex2_note' },
   { interactionKey: 'sea_ex3_interaction', before: 2, after: 4, onness: 'not_much', noteKey: 'sea_ex3_note' },
+  { interactionKey: 'sea_ex4_interaction', before: 3, after: 1, onness: 'a_lot',    noteKey: 'sea_ex4_note' },
+  { interactionKey: 'sea_ex5_interaction', before: 3, after: 5, onness: 'not_much', noteKey: 'sea_ex5_note' },
 ];
 
 // Declared above the main component per REWRITE-INSTALL-KIT §11 — a helper
@@ -131,8 +134,13 @@ const SocialBatteryAdvisor = ({ tool }) => {
     // convenience list — 100 keeps enough logged interactions for the
     // pattern-review endpoint to find something worth comparing weeks apart.
     setLogs(prev => [entry, ...prev].slice(0, 100));
+    // A new log makes any earlier review stale — clear it rather than
+    // leaving a "Refresh patterns" button for the visitor to manage.
+    // Next visit to the patterns tab shows the same single "look for
+    // patterns" action as a first-time review.
+    setResults(null);
     handleReset();
-  }, [canSave, interaction, before, after, onness, note, setLogs, handleReset]);
+  }, [canSave, interaction, before, after, onness, note, setLogs, setResults, handleReset]);
 
   const deleteLog = useCallback((id) => {
     setLogs(prev => prev.filter(x => x.id !== id));
@@ -436,9 +444,6 @@ const SocialBatteryAdvisor = ({ tool }) => {
               <div className="flex flex-wrap gap-2">
                 <button onClick={startNewLog} className={`px-5 py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                   {t('sea_log_another_btn')}
-                </button>
-                <button onClick={reviewPatterns} disabled={loading} className={`px-5 py-3 rounded-xl font-semibold ${c.btnSecondary} disabled:opacity-50`}>
-                  {t('sea_refresh_patterns_btn')}
                 </button>
               </div>
 
