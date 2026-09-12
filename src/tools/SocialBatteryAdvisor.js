@@ -288,8 +288,14 @@ const SocialBatteryAdvisor = ({ tool }) => {
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
             <button title={t('cmd_enter')} onClick={saveLog} disabled={!canSave}
-              className={`w-full py-3 rounded-xl font-bold min-h-[48px] flex items-center justify-center gap-2 ${!canSave ? c.btnIdle : c.btnPrimary}`}>
+              className={`relative w-full py-3 rounded-xl font-bold min-h-[48px] flex items-center justify-center gap-2 ${!canSave ? c.btnIdle : c.btnPrimary}`}>
               <span>{tool?.icon ?? '⚡'}</span>{t('sea_save_btn')}
+              {canSave && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
             </button>
 
             <p className={`text-xs text-center ${c.textMuted}`}>
