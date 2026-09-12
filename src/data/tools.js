@@ -2235,48 +2235,52 @@ export const tools = [
 },
 
 {
-  modified: "",
+  // Ground-up rebuild (2026-09-11), installed from an owner-supplied
+  // rewrite: replaces the six-mode weekly-audit design (Weekly Audit, Week
+  // Planner, Quick Check, Daily Check-In, Energy Forecast, Journal — energy
+  // budgets, performance-cost arithmetic, crash forecasting) with two
+  // states: log one interaction, then review patterns across your logs.
+  // No energy score, no weekly budget, no crash prediction — see Before
+  // the Crash for that boundary.
+  modified: "2026-09-11",
   id: "SocialBatteryAdvisor",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You're tired all week and can't tell which things did it.",
-    give: "Your week's interactions logged with duration and how drained each left you. A few minutes.",
-    get: "Where your energy actually goes, which interactions cost most, and how to restructure the week.",
-    edge: "Cost isn't length. A 30-minute call where you're fully 'on' can outspend a three-hour dinner, and only logging reveals it.",
+    when: "You want to know which interactions actually cost you energy, not just guess.",
+    give: "One interaction at a time — what it was, your energy before and after, and how much you had to be 'on'.",
+    get: "Patterns and contrasts across what you've logged, and one small experiment worth testing next.",
+    edge: "It won't score your week or forecast a crash — just what your own logged interactions actually show.",
   },
-  seoDescription: "Always drained but can't say why? Log your interactions with before/after energy ratings, forecast your week's lowest-battery point, and get exactly what to skip, shorten, or protect. Free, no signup.",
-  seoTitle: "Social Battery Tracker & Burnout Forecaster",
+  seoDescription: "Notice what leaves you with more energy — and what leaves you with less. Log an interaction before and after; over time, spot patterns in your own experience and decide what might be worth changing. Free, no signup.",
+  seoTitle: "Track Which Interactions Drain or Recharge Your Energy",
   title: "Social Battery Advisor",
-  tagline: "See where your energy actually goes — and restructure your week around it",
-  tags: ['energy', 'social', 'social battery', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'forecast', 'alone time', 'schedule', 'interactions'],
+  tagline: "⚡ Learn which interactions affect your energy — and what makes the difference.",
+  tags: ['energy', 'social', 'social battery', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'alone time', 'schedule', 'interactions'],
   icon: "⚡",
   categories: ['Humans', 'Energy'],
   headerColor: "#e0b8b8",
-  description: "Log social and professional interactions with before/after energy ratings and performance levels (how much you had to be 'on'). Six modes: Weekly Audit, Week Planner, Quick Check, Daily Check-In (30-second energy snapshot), Energy Forecast, and Energy Journal. Save your typical week as a template for faster logging",
+  description: "Notice what leaves you with more energy — and what leaves you with less. Log an interaction before and after; over time, Social Battery Advisor helps you spot patterns in your own experience and decide what might be worth changing.",
   guide: {
-    overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Battery Advisor makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
+    overview: "Some interactions leave you with more energy than you started with; others leave you with less — but it's hard to know which is which from memory alone. Social Battery Advisor is built around one idea: log an interaction right after it happens (what it was, your energy before and after, how much you had to 'be on'), and let a pattern emerge from your own data rather than a guess. There's no weekly energy budget, no performance score, and no forecast of a crash — just what your logs actually show, held to how much evidence you've actually given it. One log tells you what happened once; a repeated, comparable pattern only counts once you have a few. When you're ready, switch to My Patterns to see what's worth noticing, a useful contrast or two between logged interactions, and at most one small experiment worth testing next.",
     howToUse: [
-      "Start with the Log tab — add your week's interactions using quick presets or custom entries",
-      "For each interaction: name it, set the category, choose duration, then rate Performance (1=natural, 10=full 'on' mode), Energy Before, and Energy After",
-      "Run the audit to see your energy score, top drains, rechargers, patterns, and restructuring suggestions",
-      "Use Quick Check ('Should I Say Yes?') before committing to new things — get an instant energy-aware verdict",
-      "Do a 30-second Daily Check-In to track energy over time — this feeds the Forecast and Ideal Week features",
-      "After 3+ weeks in the Journal, unlock your AI-designed Ideal Week with personal energy rules and your Golden Rule"
+      "Log an interaction right after it happens — what it was, your energy before and after, and how much you had to be 'on'",
+      "Add an optional note if something about it seems worth remembering",
+      "Repeat for a few more interactions — one log tells you what happened once, not a pattern",
+      "Switch to My Patterns to see what your logs show: worth noticing, useful contrasts, and one experiment to try next",
+      "Try the suggested experiment, if any, then log a few more interactions and check again"
     ],
     example: {
-      scenario: "It's Wednesday and you're exhausted but can't figure out why — your week doesn't seem that busy.",
-      action: "Log Monday's team standup (perf 6, energy 7→5), Tuesday's client presentation (perf 9, energy 6→2), Tuesday evening networking event (perf 8, energy 3→1), and Wednesday's manager 1-on-1 (perf 7, energy 4→2). Run the audit.",
-      result: "The audit reveals: your Tuesday was a 'double high-performance day' — the presentation + networking cost you 8 energy points total because both required perf 8+. The pattern insight: 'Never stack two high-performance interactions on the same day. Your client presentation alone would leave you at 2/10 — the networking event pushed you into deficit.' Restructure suggestion: 'Move the networking event to Thursday, or attend for 30 minutes instead of 2 hours when it follows a presentation day.'"
+      scenario: "You log a big dinner with friends (energy 4→2, felt fully 'on'), your weekly team meeting (energy 3→3, mostly listened), and a call with your sister (energy 2→4, barely had to be 'on').",
+      action: "Open My Patterns to review the three logs together.",
+      result: "Social Battery Advisor shows the plain counts — one interaction ended lower, one stayed the same, one ended higher — and names a contrast worth noticing: the interaction where you felt most 'on' was also the one that left you lowest, worth testing with more data. It does not tell you the dinner wasn't worth having, and it does not predict a crash — just what these three logs show, and what to log next to learn more."
     },
     tips: [
-      "Performance level is the secret weapon — a relaxed dinner with close friends (perf 2) costs way less than a work lunch with executives (perf 8) even at the same duration",
-      "Save your typical week as a template — then each week you just adjust energy ratings instead of re-entering everything",
-      "The Quick Check mode is great for in-the-moment decisions: 'Friend invited me to dinner but I'm at 3/10 energy'",
-      "Daily Check-Ins take 30 seconds but unlock powerful features: energy forecasts and your personal Ideal Week",
-      "After 3+ weeks in the Journal, the Ideal Week feature designs an optimized schedule based on YOUR actual data",
-      "Compare two weeks side-by-side to see what made a good week good and a bad week bad",
-      "The Recurring Pattern Tracker automatically finds situations that consistently drain or recharge you across weeks"
+      "Log right after the interaction — energy ratings from memory a day later are a guess, not data",
+      "One log tells you what happened once; it takes two or three comparable logs before a pattern means much",
+      "There's no energy score or weekly budget here — just what your own logs show",
+      "The tool suggests at most one experiment at a time — try that before logging a dozen more interactions",
+      "If a note sounds like you're heading toward a bigger crash, not just one draining interaction, the tool may point you to Before the Crash instead of another experiment"
     ]
   }
 },
