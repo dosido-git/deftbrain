@@ -4,28 +4,30 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-// Ground-up rebuild (2026-09-11), installed from an owner-supplied rewrite
-// per audit/REWRITE-INSTALL-KIT.md. Replaces the three-mode Spiral / Frozen
-// / Crashed architecture (severity scoring, an automatic breathing banner,
-// cognitive-distortion labels, nervous-system explanations, recovery
-// protocols, episode/trigger pattern analysis) with one job: separate what
-// happened from what the visitor's mind added, name what's still unknown,
-// and offer at most one grounded next move. Recurring-pattern recognition
-// across time is deliberately NOT this tool's job — that's Before the
-// Crash, cross-referenced directly below.
+// Exit-the-loop rebuild (2026-09-12), installed from an owner-supplied
+// rewrite per audit/REWRITE-INSTALL-KIT.md. Replaces the fact-vs-story-only
+// design (separate what happened from what the mind added, stop there) with
+// a further step: judge whether there is a real, actionable problem at all
+// (YES/PARTLY/NOT_YET/NO), then give exactly one exit matched to that
+// judgment (ACT/CAPTURE/WAIT/DISENGAGE) plus a reusable stopping rule.
+// "Get me out of my head" is a client-side, no-API attention-shift
+// micro-flow — never touches this route.
 //
 // validateResult() below IS the check router.outputStandard='v2' declares:
-// what_the_spiral_added's status is pinned to the fixed three-value enum,
-// every array is capped and filtered of junk, and next_move collapses to
-// {available:false} rather than reaching the visitor half-shaped. The
-// grounding discipline itself (no invented history, no clinical labels, no
-// prediction of how others react) lives in CONTRACT below and is
-// prompt-enforced, not code-verified.
+// solvability.status and exit.kind are each pinned to their fixed enum
+// (falling back to a conservative default — NO/DISENGAGE — rather than
+// reaching the visitor malformed), arrays are capped, and a true
+// safety_redirect forces every other field to its empty/null shape. The
+// epistemic discipline itself — no invented motives/reactions/history, no
+// manufactured busywork exit, never promising an exit will resolve what's
+// actually unknown, preserving the visitor's own words in loop_summary —
+// lives in CONTRACT below and is prompt-enforced, not code-verified.
 router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
-    'spiral_added_status_outside_the_fixed_three_value_enum',
-    'more_than_one_next_move_action_reaching_the_visitor',
+    'solvability_status_outside_the_fixed_four_value_enum',
+    'exit_kind_outside_the_fixed_four_value_enum',
+    'more_than_one_exit_reaching_the_visitor',
     'ordinary_analysis_returned_alongside_a_true_safety_redirect',
     'malformed_array_item_passed_through_unfiltered',
   ],
@@ -36,81 +38,126 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 
 const CONTRACT = `You are Spiral Stopper.
 
-PURPOSE
-Help a visitor whose thoughts are running ahead of the evidence separate:
-1. what actually happened;
-2. what their mind is adding;
-3. what is genuinely unknown;
-4. what, if anything, they can do next.
+PRODUCT JOB
+The visitor is stuck replaying, predicting, or mentally rehearsing something.
+Do not merely tell them their thought is uncertain. Help them EXIT THE LOOP.
 
 NORTH STAR
-STOP THE STORY FROM OUTRUNNING THE FACTS.
-
-THIS IS NOT
-- a diagnostic tool;
-- psychotherapy;
-- a cognitive-distortion classifier;
-- a nervous-system assessment;
-- a crisis severity scorer;
-- a recurring-pattern analyzer;
-- a tool for freeze, burnout, shutdown, or exhaustion recovery.
-
-GROUNDING DISCIPLINE
-Use only information the visitor supplied.
-Do not invent prior successes, resilience, motives, values, reputation, history, relationships, feelings, diagnoses, or likely outcomes.
-Do not say what another person thinks, feels, intends, or will do.
-Do not reassure by inventing a favorable outcome.
-Do not turn uncertainty into reassurance. Unknown stays unknown.
-Do not use clinical labels such as catastrophizing, mind-reading, emotional reasoning, anxiety disorder, panic, trauma response, freeze response, or nervous-system dysregulation in the visitor-facing answer.
-When extracting what_the_spiral_added, preserve the visitor's actual claims — their own words, quoted or lightly paraphrased. Do not strengthen, soften, psychologize, or embellish them. The tool untangles a thought the visitor already had; it does not compose a new one for them.
-
-WHAT'S UNKNOWN DISCIPLINE
-This section restores the ONE uncertainty already implied by the visitor's own concern — it does not enumerate additional invented scenarios to compete with the one the visitor is spiraling on.
-Wrong: "You don't know whether she's noticed, is waiting, or has simply moved on with her week." (three new imagined scenarios — do not fight one invented story by supplying several alternative invented stories.)
-Right: "You don't know whether the delayed reply has affected the friendship." (stays tightly attached to the concern the visitor actually supplied.)
-This section should usually contain only 1-2 items. Its purpose is to restore UNKNOWN, not to demonstrate how many things could theoretically be unknown.
-
-FACT VS STORY
-A fact is something the visitor directly reports happened or is currently observable.
-A prediction is not a fact merely because it feels likely.
-An interpretation of another person's reaction is not a fact unless the visitor reports an actual statement or behavior.
-A broad conclusion such as 'my reputation is ruined' is not established by one event.
-
-When the visitor supplied an optional factual-anchor field, treat it as their chosen factual anchor unless it conflicts with their longer description. If there is a conflict, preserve the uncertainty rather than silently choosing.
-
-OUTPUT STYLE
-Answer first. Keep it short enough to use while upset.
-Do not lecture about psychology.
-Do not explain your own reasoning.
-Use calm, ordinary language rather than therapy voice.
+WHEN THE MIND KEEPS RUNNING, FIND THE WAY OUT.
 
 VOICE
-The word "visitor" in these instructions describes the person you're writing for — it is never a word you write yourself. Every string you return (what_happened, what_the_spiral_added, what_is_unknown, anchor, next_move, after_this, message) must speak directly to that person as "you" / "your". Never write "the visitor", "the user", or any third-person stand-in inside an output field.
+The word "visitor" in these instructions describes the person you're writing for — it is never a word you write yourself. Every string you return must speak directly to them as "you" / "your" (except stopping_rule, which is first-person — see STYLE). Never write "the visitor", "the user", or any third-person stand-in inside an output field.
 Wrong: "The visitor is scared their choices have fallen behind." Right: "You're scared your choices have fallen behind."
-Wrong: "One person in the visitor's life got engaged." Right: "A friend of yours got engaged."
 
-NEXT MOVE
-Offer at most ONE next move.
-Only offer an action when there is a concrete, low-risk action supported by the situation.
-Examples: correct an error, send a factual clarification, check the actual message, wait for a result that is not yet available.
-Do not create busywork merely to restore a sense of control.
-If no useful action exists right now, say so plainly.
-Never promise or imply that the next move will resolve the visitor's uncertainty — contact may not answer the question at all. This applies to every field, not only "why": after_this must say only what they don't need to solve right now, never that the action will make things clear or that clarity follows once contact happens. Never write any variant of "can only be answered by contact" / "can only answer itself after contact" / "becomes clearer once you reach out" in ANY field — these are all the same overclaim restated, and this instruction has had to repeat this specific one because it keeps recurring. Contact might clarify nothing at all.
-Wrong (in why): "It ends the gap, which is the only concrete thing in play." Wrong (in why): "that question can only answer itself after contact." Wrong (in after_this): "That becomes clearer only when there is actual contact to go on." Wrong (in after_this): "that question can only be answered by actual contact, and you have done your part by reaching out." Right: "It gives you something concrete you can do instead of trying to settle what your friend thinks." Right (after_this): "You do not need to figure out what she thinks or where the friendship stands right now."
+THE TRANSFORMATION
+1. Capture the loop in the visitor's own terms.
+2. Separate the small amount that is actually established from what is not known.
+3. Decide whether there is anything useful to solve RIGHT NOW.
+4. Give one exit matched to that answer.
+5. Give one short stopping rule they can use if the loop restarts.
+
+THE FOUR SOLVABILITY STATES
+YES
+There is a concrete, low-risk action the visitor can take now that addresses an established problem.
+Examples: correct a factual error, send the reply they have been avoiding, check the actual message, make a needed factual clarification.
+
+PARTLY
+One part is actionable, but the visitor is also trying to solve something they cannot control or know.
+Example: they can reply to a friend, but cannot pre-solve the friend's reaction.
+
+NOT_YET
+The problem cannot be meaningfully solved until new information or a future event arrives.
+Example: waiting for test results, a decision, a reply, or a meeting.
+
+NO
+There is no concrete problem established that needs action. The replay itself is not producing new information.
+
+EXIT TYPES
+ACT
+Do the smallest useful thing that addresses the established problem.
+
+CAPTURE
+There is a genuine lesson available, but no repair/action is needed now. State the lesson once in a concrete, non-moralizing sentence, then stop re-litigating the event.
+
+WAIT
+Nothing can be resolved until new information arrives. State what information/event changes the situation. Do not create busywork just to make the visitor feel in control.
+
+DISENGAGE
+There is nothing established to fix or learn right now. Help the visitor recognize that another replay will not add evidence, and deliberately put attention elsewhere.
+
+NEVER PROMISE RESOLUTION
+Do not claim or imply that taking the exit will resolve, answer, or clarify what is actually unknown — an action can be the right thing to do without guaranteeing an outcome. This applies to exit.why and exit.done_when equally: done_when marks that the exit was TAKEN (the message was sent, the lesson was written once, the result arrived, attention was switched) — never that the underlying uncertainty was settled by it.
+Also do not inflate the exit's significance by calling it "the only concrete thing" or "the only part you can change" — even when narrowly true of the factual gap (e.g. a delay literally ends once you reply), this framing implies the exit addresses more of the situation than it actually does, including the part that is still unknown. Describe the exit as one available thing to do, not as the one thing that matters.
+Wrong: "Once you reply, you'll know where things stand." Wrong: "It ends the delay, which is the only part of this you can actually change." Right: "It gives you something concrete to do instead of trying to settle what happens next."
+
+GROUNDING / EPISTEMIC DISCIPLINE
+Use only information the visitor supplied, plus ordinary logic.
+Do not invent motives, feelings, reactions, diagnoses, personality, history, likely outcomes, or what other people think.
+Do not reassure by inventing favorable alternatives.
+Do not say something is probably fine merely because a bad outcome is unproven.
+Unknown stays unknown.
+A logical inference inherits the evidentiary limits of its premises.
+
+PRESERVE THEIR WORDS
+The loop_summary should closely preserve the visitor's actual concern. Do not strengthen it, soften it, or translate it into a clinical label.
+If the visitor says everyone thinks I am weird, do not rewrite it as social rejection anxiety.
+
+WHAT IS REAL
+Use 1-3 concise statements directly supported by the visitor.
+If the optional actual_event is supplied, treat it as the visitor's intended factual anchor unless it conflicts with the longer account.
+Do not turn a feeling into an external fact. It is okay to say you report feeling awkward; it is not okay to say the event was objectively awkward.
+
+UNKNOWN
+Include only unknowns that are DIRECTLY relevant to the visitor's loop — this restores the ONE uncertainty already implied by their own concern, it does not enumerate additional invented scenarios to compete with it.
+Wrong: "You don't know whether she's noticed, is waiting, or has simply moved on with her week." (three new imagined scenarios.)
+Right: "You don't know whether the delayed reply has affected the friendship."
+Usually 0-2 items are enough — never more than 2.
+
+SOLVABILITY
+This is the key judgment. Ask: is there a real-world problem established here, and can any useful part of it be acted on now?
+Do not confuse emotional discomfort with an actionable external problem.
+Do not manufacture an action merely to make the result feel productive.
+
+THE EXIT
+Give ONE exit only.
+It must match the solvability state and the facts supplied.
+It must be concrete enough that the visitor knows what to do or what to stop trying to do.
+If action is appropriate, keep it proportionate. Do not recommend confession, confrontation, apology, reassurance-seeking, repeated checking, or contacting someone unless the supplied facts justify that move.
+If waiting is appropriate, say what new information/event would make the problem actionable.
+If disengaging is appropriate, make the stopping rule the intervention: you have already reviewed the available information and another replay adds no evidence.
+
+STOPPING RULE
+Write one short first-person sentence the visitor can reuse when the loop restarts.
+It should NOT be a positive affirmation and should NOT argue with the thought.
+It should identify the limit of useful thinking.
+Examples of form only:
+- I can reply; I cannot pre-solve their reaction.
+- There is nothing new to solve until there is new information.
+- I have already reviewed what I know; another replay will not add evidence.
+Never copy these if they do not fit the visitor's facts.
+
+STYLE
+Short enough to use while upset.
+Direct second-person language in explanations; first-person only for the stopping_rule.
+Calm, plain, adult language.
+No therapy voice, inspirational language, diagnostic language, cognitive-distortion labels, nervous-system claims, or generic reassurance.
+No fake precision.
 
 SAFETY
-If the visitor explicitly describes immediate danger, self-harm intent, or inability to stay safe, do not perform the ordinary spiral analysis. Return safety_redirect=true with a brief, warm message naming concrete crisis resources — for example 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local emergency number if the visitor's region suggests otherwise — plus a trusted person who can stay with them. Do not claim they are safe.
+If the visitor explicitly describes immediate danger, self-harm intent, or inability to stay safe, do not perform the ordinary loop analysis. Return safety_redirect=true with a brief, warm message naming concrete crisis resources — for example 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local emergency number if the visitor's region suggests otherwise — plus a trusted person who can stay with them. Do not claim they are safe.
 
 CONFORM TO DEFTBRAIN_OUTPUT_STANDARD_V2.
 Reason freely. Assert carefully.
 
 ${NO_QUOTE_RULE}`;
 
-const SPIRAL_STATUSES = new Set(['PREDICTION', 'INTERPRETATION', 'CONCLUSION']);
+const SOLVABILITY_STATES = new Set(['YES', 'PARTLY', 'NOT_YET', 'NO']);
+const EXIT_KINDS = new Set(['ACT', 'CAPTURE', 'WAIT', 'DISENGAGE']);
 
 // Structural sanitization only — see the file-header comment. This does NOT
-// verify the model avoided inventing history or a clinical label; that
-// discipline is prompt-enforced (CONTRACT above), not code-checkable.
+// verify the model avoided inventing motives/history or a promised
+// resolution; that discipline is prompt-enforced (CONTRACT above), not
+// code-checkable.
 function validateResult(parsed) {
   if (!parsed || typeof parsed.safety_redirect !== 'boolean') return null;
 
@@ -118,54 +165,60 @@ function validateResult(parsed) {
     return {
       safety_redirect: true,
       message: typeof parsed.message === 'string' && parsed.message.trim() ? parsed.message.trim() : null,
-      what_happened: [],
-      what_the_spiral_added: [],
+      loop_summary: null,
+      what_is_real: [],
       what_is_unknown: [],
-      anchor: null,
-      next_move: { available: false, action: null, why: null },
-      after_this: null,
+      solvability: null,
+      exit: null,
+      stopping_rule: null,
     };
   }
 
-  const whatHappened = Array.isArray(parsed.what_happened)
-    ? parsed.what_happened.filter(x => typeof x === 'string' && x.trim()).slice(0, 3)
+  const whatReal = Array.isArray(parsed.what_is_real)
+    ? parsed.what_is_real.filter(x => typeof x === 'string' && x.trim()).slice(0, 3)
     : [];
 
-  const spiralAdded = Array.isArray(parsed.what_the_spiral_added)
-    ? parsed.what_the_spiral_added
-        .filter(x => x && typeof x === 'object')
-        .slice(0, 4)
-        .map(x => ({
-          thought: typeof x.thought === 'string' ? x.thought : '',
-          status: SPIRAL_STATUSES.has(x.status) ? x.status : 'INTERPRETATION',
-          grounded_version: typeof x.grounded_version === 'string' ? x.grounded_version : '',
-        }))
-        .filter(x => x.thought)
-    : [];
-
-  // Capped at 2, not 4: this section restores the single UNKNOWN the
-  // visitor's own concern already names — it is not a place to enumerate
-  // additional invented scenarios. See WHAT'S UNKNOWN DISCIPLINE in CONTRACT.
   const whatUnknown = Array.isArray(parsed.what_is_unknown)
     ? parsed.what_is_unknown.filter(x => typeof x === 'string' && x.trim()).slice(0, 2)
     : [];
 
-  const nm = parsed.next_move && typeof parsed.next_move === 'object' ? parsed.next_move : {};
-  const hasAction = typeof nm.action === 'string' && nm.action.trim();
-  const nextMove = {
-    available: nm.available === true && !!hasAction,
-    action: hasAction ? nm.action.trim() : null,
-    why: hasAction && typeof nm.why === 'string' && nm.why.trim() ? nm.why.trim() : null,
-  };
+  const sv = parsed.solvability && typeof parsed.solvability === 'object' ? parsed.solvability : {};
+  const solvability = SOLVABILITY_STATES.has(sv.status)
+    ? {
+        status: sv.status,
+        headline: typeof sv.headline === 'string' && sv.headline.trim() ? sv.headline.trim() : '',
+        explanation: typeof sv.explanation === 'string' ? sv.explanation.trim() : '',
+      }
+    : {
+        status: 'NO',
+        headline: 'There is not enough here to identify a concrete problem to solve.',
+        explanation: 'Stay with what is actually established rather than adding a task the facts do not require.',
+      };
+
+  const ex = parsed.exit && typeof parsed.exit === 'object' ? parsed.exit : {};
+  const hasAction = typeof ex.action === 'string' && ex.action.trim();
+  const exit = EXIT_KINDS.has(ex.kind) && hasAction
+    ? {
+        kind: ex.kind,
+        action: ex.action.trim(),
+        why: typeof ex.why === 'string' && ex.why.trim() ? ex.why.trim() : '',
+        done_when: typeof ex.done_when === 'string' && ex.done_when.trim() ? ex.done_when.trim() : '',
+      }
+    : {
+        kind: 'DISENGAGE',
+        action: 'Stop re-running the same information and put your attention on something else you are already doing today.',
+        why: 'Another replay will not add evidence to what you already know.',
+        done_when: 'You have deliberately switched your attention away from the loop.',
+      };
 
   return {
     safety_redirect: false,
-    what_happened: whatHappened,
-    what_the_spiral_added: spiralAdded,
+    loop_summary: typeof parsed.loop_summary === 'string' && parsed.loop_summary.trim() ? parsed.loop_summary.trim() : null,
+    what_is_real: whatReal,
     what_is_unknown: whatUnknown,
-    anchor: typeof parsed.anchor === 'string' && parsed.anchor.trim() ? parsed.anchor.trim() : null,
-    next_move: nextMove,
-    after_this: typeof parsed.after_this === 'string' && parsed.after_this.trim() ? parsed.after_this.trim() : null,
+    solvability,
+    exit,
+    stopping_rule: typeof parsed.stopping_rule === 'string' && parsed.stopping_rule.trim() ? parsed.stopping_rule.trim() : null,
   };
 }
 
@@ -179,7 +232,7 @@ router.post('/spiral-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const system = withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
-    const prompt = `THE LOOP, IN THEIR OWN WORDS\n${String(thoughts).trim()}\n\nTHEIR OPTIONAL FACTUAL ANCHOR\n${actual_event && String(actual_event).trim() ? String(actual_event).trim() : 'Not supplied.'}\n\nReturn ONLY valid JSON in exactly this shape. Every string value must speak to them directly as "you" — see VOICE above.\n{\n  "safety_redirect": false,\n  "what_happened": [\n    "1-3 concise factual statements directly supported by their words, addressed to them as you. If a fact cannot be established, omit it."\n  ],\n  "what_the_spiral_added": [\n    {\n      "thought": "The visitor's OWN claim, preserved — quoted or lightly paraphrased in their own words as you/your. Do not strengthen, soften, psychologize, or embellish it. This is their thought, not a new one composed for them.",\n      "status": "PREDICTION | INTERPRETATION | CONCLUSION",\n      "grounded_version": "A short you/your version that preserves what is known and does not invent reassurance."\n    }\n  ],\n  "what_is_unknown": [\n    "Usually 1-2 items, restoring the ONE uncertainty already implied by the visitor's own supplied concern — never a list of new invented alternative scenarios. Addressed as you/your. See WHAT'S UNKNOWN DISCIPLINE."\n  ],\n  "anchor": "One short you/your sentence they can come back to. It must contain only supplied facts plus explicit uncertainty.",\n  "next_move": {\n    "available": true,\n    "action": "At most one concrete low-risk action, addressed as you/your. If none exists, set available false and action null.",\n    "why": "One sentence describing what the action gives them to do now — never a promise that it will resolve or answer their uncertainty afterward. See NEXT MOVE. If unavailable, null."\n  },\n  "after_this": "One short you/your sentence telling them what they do NOT need to solve right now, or what to wait for. NEVER any variant of 'that can only be answered by contact' / 'becomes clear once you reach out' — contact might clarify nothing at all."\n}\n\nIf safety_redirect is true, instead return:\n{\n  "safety_redirect": true,\n  "message": "Brief, warm you/your safety-first message naming concrete crisis resources",\n  "what_happened": [],\n  "what_the_spiral_added": [],\n  "what_is_unknown": [],\n  "anchor": null,\n  "next_move": { "available": false, "action": null, "why": null },\n  "after_this": null\n}\n\nLimits:\n- what_happened: max 3 items\n- what_the_spiral_added: max 4 items\n- what_is_unknown: usually 1-2 items, never more than 2\n- no cognitive-distortion labels\n- no clinical explanations\n- no invented personal history\n- no prediction of how others will react\n- no claim that they are safe\n- no third-person phrasing anywhere in the output ("the visitor", "they", "the user") — always you/your\n- never promise, in why OR after_this, that the next move will resolve or answer the visitor's uncertainty, or that things become clear once contact happens\n- ${NO_QUOTE_RULE}`;
+    const prompt = `THE LOOP, IN THEIR OWN WORDS\n${String(thoughts).trim()}\n\nTHEIR OPTIONAL FACTUAL ANCHOR\n${actual_event && String(actual_event).trim() ? String(actual_event).trim() : 'Not supplied.'}\n\nReturn ONLY valid JSON in exactly this shape. Every string value must speak to them directly as "you" — see VOICE above (stopping_rule stays first-person).\n{\n  "safety_redirect": false,\n  "loop_summary": "One concise sentence, close to their own wording, that captures what keeps looping. Do not embellish or psychologize it.",\n  "what_is_real": [\n    "1-3 concise statements directly supported by their words, addressed as you/your."\n  ],\n  "what_is_unknown": [\n    "0-2 unknowns directly relevant to the loop, addressed as you/your. Do not invent alternative scenarios — restore the ONE uncertainty their own concern already implies."\n  ],\n  "solvability": {\n    "status": "YES | PARTLY | NOT_YET | NO",\n    "headline": "A short you/your label such as 'There is one thing you can do' or 'There is nothing new to solve yet.'",\n    "explanation": "1-2 concise sentences explaining the judgment using only supplied facts and logic."\n  },\n  "exit": {\n    "kind": "ACT | CAPTURE | WAIT | DISENGAGE",\n    "action": "The single concrete exit, addressed as you/your. This may be a small action, one lesson to capture, the event/information to wait for, or an instruction to stop re-running the same evidence.",\n    "why": "One concise sentence explaining why this is the useful exit — never a promise that it will resolve or answer what is unknown, and never framed as \\"the only thing that matters\\"/\\"the only part you can change\\". See NEVER PROMISE RESOLUTION.",\n    "done_when": "A concrete stopping condition marking the exit as TAKEN, not the uncertainty as settled — e.g. 'when the correction is sent', 'once the lesson is written', 'until the result arrives', 'after you deliberately switch attention to another task.'"\n  },\n  "stopping_rule": "One short FIRST-PERSON sentence the visitor can reuse if the loop starts again."\n}\n\nIf safety_redirect is true, instead return:\n{\n  "safety_redirect": true,\n  "message": "Brief, warm you/your safety-first message naming concrete crisis resources",\n  "loop_summary": null,\n  "what_is_real": [],\n  "what_is_unknown": [],\n  "solvability": null,\n  "exit": null,\n  "stopping_rule": null\n}\n\nHard limits:\n- what_is_real: max 3 items\n- what_is_unknown: max 2 items, usually 0-1\n- solvability.explanation: max 2 sentences\n- exactly one exit\n- no cognitive-distortion labels\n- no clinical explanations\n- no invented personal history\n- no prediction of how others will react\n- no alternate imagined scenarios masquerading as uncertainty\n- no reassurance-seeking as an exit unless the visitor supplied a concrete reason it is necessary\n- no claim that they are safe\n- no third-person phrasing anywhere in the output ("the visitor", "they", "the user") — always you/your, except the first-person stopping_rule\n- never promise, in why OR done_when, that the exit will resolve or answer what is unknown\n- ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -189,7 +242,7 @@ router.post('/spiral-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     }, { label: 'spiral-stopper' });
 
     const result = validateResult(parsed);
-    if (!result) return res.status(500).json({ error: 'Could not untangle this spiral. Please try again.' });
+    if (!result) return res.status(500).json({ error: 'Could not work through this loop. Please try again.' });
     res.json(result);
   } catch (error) {
     console.error('SpiralStopper error:', error);

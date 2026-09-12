@@ -5883,20 +5883,20 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-11",
+  modified: "2026-09-12",
   id: "SpiralStopper",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A thought is stuck on repeat and you can't tell any more what's fact and what your mind added.",
+    when: "Your mind won't let something go and you can't tell if there's actually anything left to do about it.",
     give: "Whatever is looping in your head, unfiltered. A factual anchor too, if you have one.",
-    get: "What actually happened, separated from the predictions and conclusions layered on top — plus at most one thing to do next.",
+    get: "What's real, what's still unknown, whether there's really a problem to solve — and, if so, exactly one way out.",
     edge: "This is for one loop, right now — not a freeze, a crash, or a pattern across time. For a trigger that keeps recurring, see Before the Crash.",
   },
-  seoDescription: "Can't stop replaying something or jumping to the worst conclusion? Separate what happened from what your mind added, name what's still unknown, and get one grounded next step. Free.",
+  seoDescription: "Stuck replaying something, imagining what might happen, or thinking the same thought over and over? Tell Spiral Stopper what's looping. It finds out if there's something to solve, something to learn, or nothing more you can usefully do right now — then gives you a way out. Free.",
   seoTitle: "Stop a Racing-Thought Spiral",
   title: "Spiral Stopper",
-  tagline: "🌀 Stop the story from outrunning the facts.",
+  tagline: "🌀 When your mind won't let something go, find the way out.",
   tags: [
     'anxiety', 'spiral', 'rumination', 'worry', 'catastrophize', 'racing thoughts',
     'overthinking', 'grounding', 'reality check', 'prediction', 'assumption',
@@ -5905,32 +5905,32 @@ tagline: "Work with the energy you have.",
   icon: "🌀",
   categories: ['Energy', 'Me'],
   headerColor: "#2a5248",
-  description: "Can't stop replaying something or jumping to the worst conclusion? Tell Spiral Stopper what's running through your head. It separates what happened, what you're predicting, and what you don't actually know yet — then gives you one grounded next step.",
+  description: "Stuck replaying something, imagining what might happen, or thinking the same thought over and over? Tell Spiral Stopper what's looping. It helps you figure out whether there's something to solve, something to learn, or nothing more you can usefully do right now — then gives you a concrete way out of the loop.",
   guide: {
-    overview: "Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It sorts your own words into what actually happened, what your mind predicted or concluded on top of that (each labeled as a prediction, an interpretation, or a conclusion), and what's genuinely still unknown. You get one anchor sentence to come back to and, only when there's a real one, a single low-risk next move — never a list of things to try.",
+    overview: "Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It separates what's actually real from what's still unknown, then makes the key judgment: is there a genuine, actionable problem here right now, or not? Based on that, you get exactly one exit — act on the one useful thing, take the lesson and stop replaying it, wait for the specific information that would actually change things, or deliberately leave the loop because another pass won't add anything new — plus a short stopping rule you can reuse if the same loop starts again. If you need a moment before writing it all out, 'Get me out of my head' walks through a brief, no-input attention shift.",
     howToUse: [
-      "Type out the loop exactly as it's running, unfiltered — the messier and more catastrophic, the more useful the split",
+      "Type out the loop exactly as it's running, unfiltered — the messier and more repetitive, the more useful the result",
       "Optionally add the one factual anchor you're sure of, stated plainly (what you'd put on a timeline, not what it means)",
-      "If you're too keyed up to write clearly, tap 'Ground me first' for a 30-second, no-solving grounding step, then come back",
-      "Submit and read the split: what happened, what the spiral added (each thought labeled prediction, interpretation, or conclusion), and what's still unknown",
-      "Read the one anchor sentence and, if one applies, the single next move — take it or don't, there's no second one waiting",
+      "If you're too keyed up to write clearly, tap 'Get me out of my head' for a short attention shift, then come back",
+      "Submit and read the breakdown: the loop restated plainly, what's real, what's still unknown, and the judgment on whether there's really something to solve right now",
+      "Read your one exit and what it means to be done with it, plus the stopping rule to reuse if the loop restarts",
       "If this keeps happening with the same trigger, that's a different question — Spiral Stopper hands off to Before the Crash for that"
     ],
     example: {
-      scenario: "You sent a work email with a typo in it. Your mind is already several steps past the typo: your boss thinks you're incompetent, it'll come up in your review, you're going to lose the promotion you've been working toward for months.",
-      action: "Paste the whole loop in as it's running. Add the factual anchor: 'I sent an email with a typo in it.'",
-      result: "What happened: you sent an email with a typo. What the spiral added: 'he thinks I'm incompetent' (interpretation), 'it'll come up in my review' (prediction), 'I'm losing the promotion' (conclusion) — each with a grounded version. What's unknown: whether he's even read it yet, how he reacted, whether it affects your review. One anchor sentence to hold onto. One next move: send a short, factual follow-up with the correction — nothing more."
+      scenario: "You're waiting on biopsy results and your mind keeps jumping straight to the worst case, running the whole story before there's anything to run it on.",
+      action: "Type out the spiral exactly as it's happening. Add the factual anchor: 'I am waiting for biopsy results. I do not have the results yet.'",
+      result: "What's real: you're waiting for results, you don't have them yet. What's unknown: what the results will show. The judgment: NOT YET — there's nothing to solve until the results arrive, because the story your mind is running can't be verified either way. Your exit: WAIT — stop at the edge of what's established, and let the actual result be the thing that makes this actionable. A stopping rule to reuse: 'I don't have the result yet — there's nothing established here to solve.'"
     },
     tips: [
       "Don't clean up what you type — the whole point is to hand over the story exactly as your mind is telling it, worst parts included",
       "The factual-anchor field is optional but sharpens the split — one plain sentence, not your interpretation of what it means",
-      "If there's no safe next move right now, the tool says so plainly rather than inventing busywork to feel like it did something",
+      "The exit won't always be an action — sometimes the honest answer is that there's nothing to do until something changes, or nothing to do at all",
       "This tool doesn't keep a log of your spirals on purpose — it's built to help with the one in front of you, not to track you over time"
     ],
     pitfalls: [
       "If what you're describing is immediate danger or an inability to stay safe, the tool stops the ordinary breakdown and gives you crisis resources instead — that's not a bug, take it seriously",
       "This isn't a substitute for professional support — if the same spiral keeps recurring, a person trained for that is the better next step",
-      "It only works with what you tell it — it won't guess at anyone else's intentions, and neither should the next move you take"
+      "It only works with what you tell it — it won't guess at anyone else's intentions, and it won't promise that taking the exit will settle what's still unknown"
     ]
   }
 },
