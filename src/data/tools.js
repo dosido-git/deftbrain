@@ -187,15 +187,16 @@ export const tools = [
 },
 {
   id: "SleepArchitect",
+  modified: "2026-09-11",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You've read the generic sleep advice and it didn't stick.",
-    give: "Your bedtime, wake time, actual hours slept, what disrupts you, and what you've already tried.",
-    get: "A protocol built around your schedule rather than an ideal one, in the order to change things.",
-    edge: "It won't tell you to avoid screens. It starts from what's actually happening in your evening.",
+    when: "Your sleep is not working and generic advice has not helped you figure out what to change first.",
+    give: "Your schedule, what sleep has actually been like, what may be disrupting it, and anything you've already tried.",
+    get: "One practical sleep experiment, what to watch for, and what to try next if it doesn't help.",
+    edge: "It changes one useful variable at a time instead of diagnosing you or handing you a giant sleep protocol.",
   },
-  seoDescription: "Build a free, personalized sleep experiment plan around your own habits — quick wins to try tonight, plus a phased plan for what to test next. No diagnosis, no score.",
+  seoDescription: "Build a personalized sleep experiment from your actual schedule and disruptions. Try one practical change, track what happens, and decide what to test next. No diagnosis or sleep score.",
   seoTitle: "Personalized Sleep Improvement Plan for Better Rest",
   title: "Sleep Architect",
   tagline: "😴 Better sleep, one useful experiment at a time.",
@@ -203,37 +204,32 @@ export const tools = [
   icon: "😴",
   categories: ['Energy'],
   headerColor: "#c8c0e8",
-  // v2 (2026-09-11): no diagnosis, no numeric score, no melatonin/medication
-  // claims, no fabricated physiology — every recommendation is framed as an
-  // experiment to try and observe, tied to what was actually reported. A
-  // reported red-flag symptom (breathing pauses, severe daytime sleepiness)
-  // gets a professional-evaluation step instead of a home protocol.
-  description: "Tell us what sleep has been like lately — your schedule, what gets in the way, and what you want to improve. SleepArchitect turns it into a practical experiment you can try and learn from.",
+  description: "Tell us what sleep has been like lately — your schedule, what gets in the way, and what you want to improve. Sleep Architect turns it into one practical experiment you can try and learn from.",
   guide: {
-    overview: "Bad sleep is usually caused by a handful of specific habits — but generic advice like 'avoid screens' rarely sticks because it's not tailored to what's actually happening. SleepArchitect takes your specific situation (your schedule, what disrupts you, what you've tried) and turns it into a small, testable experiment: one or two variables worth changing first, and a way to notice whether they helped. It doesn't diagnose what's wrong or score your sleep — it's not a clinician, and it says so when something you report (loud snoring with breathing pauses, severe daytime sleepiness) is worth an actual doctor's visit instead of a home experiment.",
+    overview: "Sleep Architect helps you learn from your own sleep rather than pretending to diagnose it. It starts with what you reported, identifies a plausible variable worth testing, and asks you to change one thing at a time so you can tell whether it helped. The output separates reported patterns from hypotheses and unknowns, gives only low-risk behavioral experiments, and keeps other possibilities in What to Try Next instead of turning them into simultaneous protocols. It does not prescribe medication, supplements, melatonin, clinician-supervised sleep-restriction treatment, or invented 'optimal' bedtimes and wake times. When you report persistent severe sleep difficulty, major daytime sleepiness, breathing concerns, significant pain, or near-total sleep loss around shift changes, it points toward professional evaluation rather than trying to manage that condition itself.",
 
     howToUse: [
-      "Select your primary sleep struggles — you can pick multiple",
-      "Enter your current bedtime, wake time, and actual hours of sleep if you know them",
-      "Check off any known disruptors — caffeine, screens, stress, noise, irregular schedule, etc.",
-      "Add more context in the freeform field — describe a typical night, what you've tried, what time you feel naturally sleepy",
-      "Click 'Build My Sleep Protocol' — get a plain-language read on your situation and a phased experiment plan",
-      "Start with the Quick Wins — low-risk things to try tonight, when there's something worth trying",
-      "Work through the full plan in order: immediate changes first, then week-1 experiments, then environment",
+      "Select the sleep problem or problems you want to improve",
+      "Enter your usual bedtime, wake time, and actual hours slept if you know them",
+      "Select any disruptors you already suspect or experience — these are clues to test, not established causes",
+      "Use the freeform field to describe what a typical night actually looks like, including timing, awakenings, discomfort, shift work, or things you've already tried",
+      "Click Build my sleep experiment to get a plain-language sleep picture and one primary experiment",
+      "Use Quick Wins only when they support that same experiment; the tool should not ask you to change several independent variables at once",
+      "Track the small set of observations the experiment names, then use What to Try Next only after you have learned something from the first test",
     ],
 
     tips: [
-      "The freeform field is the most powerful input — describe your actual night in detail for the most relevant plan",
-      "There's no sleep score or diagnosis — the read on your situation names what's worth testing, not a number to chase",
-      "Quick wins are capped at 2 and can come back empty — if nothing sensible fits what you reported, it won't invent one",
-      "If stress or racing thoughts is a factor, the plan will include a specific technique to try, not just 'relax'",
-      "A target schedule only appears when your own reported times support one — it's an experiment, not a biologically ideal number",
-      "Works across all 12 DeftBrain languages",
+      "The freeform description is the strongest input — concrete observations are more useful than labels like 'bad sleeper'",
+      "A selected disruptor means it may matter; the tool should not silently promote it into the cause of your sleep problem",
+      "One experiment means one independent variable at a time, with other ideas held for later",
+      "Target Schedule appears only when your own information supports a useful experimental baseline; it is never presented as a biologically ideal schedule",
+      "Rotating shifts and near-total sleep loss get extra caution — the tool should not tell you to restrict sleep, hold a wake time despite severe sleep loss, or force a rapid schedule change",
+      "Pain, breathing concerns, persistent severe sleep difficulty, or substantial daytime sleepiness may deserve professional evaluation rather than another home experiment",
     ],
 
     example: {
-      scenario: "Someone selects 'Fall asleep faster' and 'Stay asleep through the night', enters 11:30 PM bedtime / 7 AM wake time / 5 hours actual sleep, checks screens, stress, and caffeine as disruptors, and describes lying awake for an hour with a racing mind about work.",
-      result: "A plain-language read of what was reported, naming the one or two variables most worth testing — here, afternoon caffeine timing and a pre-bed thought-dump for the racing mind — without claiming either one is the cause. Two quick wins to try tonight. A phased plan: an immediate wind-down/thought-dump experiment, a week of testing an earlier caffeine cutoff, an environment change (screens out of the bed), and a check-in step for noticing what actually helped. A target schedule appears because bedtime and wake time were supplied — framed as an experiment, not an optimal number."
+      scenario: "You fall asleep easily but wake most nights between 1 and 3 AM, sometimes because of hip and back discomfort. You also report that the room often feels too warm.",
+      result: "Sleep Architect summarizes the reported waking pattern, keeps the relationship between pain, temperature, and other awakenings unresolved unless you established it, and selects one variable to test first — for example, a single positional-support change. It tells you what to observe while keeping everything else as stable as practical. Temperature or another plausible factor stays under What to Try Next rather than becoming a second simultaneous experiment."
     },
   },
 },
@@ -334,16 +330,16 @@ export const tools = [
 },
 {
   id: "ScamRadar",
-  modified: "2026-09-09",
+  modified: "2026-09-11",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A message arrived and something feels off.",
-    give: "The full message and whatever you know about the sender.",
-    get: "A read on what's concerning, what's still uncertain, and how to verify it safely.",
-    edge: "It won't claim to have verified the sender or the site — it tells you how to check for yourself, through a channel the message doesn't control.",
+    give: "The full message, whatever you know about the sender, and what — if anything — you've already done.",
+    get: "What looks concerning, what to do right now, how to verify it safely, and what still isn't settled.",
+    edge: "It separates the message itself from known scam patterns and from facts that would need outside verification.",
   },
-  seoDescription: "Paste a suspicious email, text, DM, phone script, or invoice. See what's concerning, what's still uncertain, and how to verify it safely — no numeric confidence scores, no false reassurance. Free, no signup.",
+  seoDescription: "Paste a suspicious email, text, DM, phone script, or invoice. See what's concerning, what to do now, and how to verify it safely — without false certainty. Free, no signup.",
   seoTitle: "Scam & Phishing Checker: Is This a Scam?",
   title: "Scam Radar",
   tagline: "🎣 Spot the warning signs before you click, pay, or reply.",
@@ -351,30 +347,30 @@ export const tools = [
   icon: "🎣",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what looks concerning, what is still uncertain, and the safest way to verify it without relying on the message itself.",
+  description: "Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what in it deserves caution, what to do next, and how to verify the request without relying on the message itself.",
   guide: {
-    overview: "Scam Radar treats the message and whatever you know about the sender as the only established facts — everything else is either a general scam pattern worth naming or something that genuinely needs outside verification, and it says which is which. It never assigns a numeric confidence score, never calls a domain or sender 'spoofed' or 'fraudulent' without independent verification, and never treats a generic greeting, typos, or polished branding as decisive evidence either way. It also asks whether you've already clicked a link, replied, entered a password, or sent money — because the right next step depends entirely on that, not just on what the message says.",
+    overview: "Scam Radar starts with the evidence you actually have: the message, the sender details you supplied, the surrounding context, and whether you've already clicked, replied, shared information, entered a code or password, or sent money. It separates what the message says from general scam patterns and from facts that would require independent verification. The output puts the immediate action first, explains why particular details are concerning, shows how to verify through a channel the message does not control, and names what does not settle the question. It does not invent sender intent, pretend a domain or identity has been verified when it has not, or treat polished branding, typos, urgency, or any single cue as decisive on its own.",
 
     howToUse: [
-      "Paste the full message content — the more complete, the better the read",
-      "Add sender context if you have it (email address, phone number, platform)",
-      "Say whether you've already clicked, replied, entered a password or code, shared information, or sent money — the response is built around this",
-      "Click 'Check This Message' — get a plain-language read, why it looks concerning, and what to do right now",
-      "Verify using a channel the message doesn't control — never its own link, phone number, or contact address",
-      "If you already interacted, follow the guidance built specifically for what happened rather than a generic checklist",
+      "Paste the complete message or script whenever possible — subject lines, sender details, links shown as text, and surrounding context can matter",
+      "Add anything you already know about the sender or situation",
+      "Say what you've already done, if anything — clicked, replied, entered credentials or a code, shared information, or sent money",
+      "If your pasted message and your exposure selection conflict, resolve that discrepancy rather than letting a checkbox overwrite the message",
+      "Review What to Do Right Now first, then Why This Looks Concerning and How to Verify It",
+      "Verify through a channel you already trust or find independently — not a link, phone number, or reply address supplied by the suspicious message",
     ],
 
     tips: [
-      "Paste the full message including subject lines, headers, and sender details — partial pastes get a thinner read",
-      "The sender context field matters: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'",
-      "'No clear scam signs' doesn't mean verified safe — it means nothing concerning was found in what you pasted. Verify independently before acting on any sensitive request regardless of the read",
-      "Recent checks are saved so you can compare patterns across messages",
-      "Works in any language — paste a message in your own language and Scam Radar analyzes it in context",
+      "A full paste is more useful than a summary because wording, requests, sender details, and sequence can all matter",
+      "'No clear scam signs' is not the same as 'verified safe' — sensitive requests still deserve independent verification",
+      "A familiar company name, logo, or sender display name does not establish who actually sent the message",
+      "If you already interacted with the message, the next step depends on what happened; include that rather than asking only whether the message looks suspicious",
+      "Pattern language is descriptive: 'resembles a known tactic' is different from claiming this particular sender is following a proven script",
     ],
 
     example: {
-      scenario: "You receive an urgent email claiming your account has been suspended, asking for your password and Social Security number within 24 hours. You paste the full email body and the sender address. You haven't clicked anything yet.",
-      result: "The read: likely scam. Why it's concerning: a look-alike sender domain substituting a digit for a letter, a high-risk request for card and identity details through the message's own link, and an artificial 24-hour deadline. What to do right now: don't use the link, and if you have an account with the company named, open its app or type its known website yourself and check there. How to verify it: never through the email itself — use contact information you already trust or find independently."
+      scenario: "You receive an email saying your account will be suspended unless you confirm billing information through a link in the message. The sender address looks similar to the company's name, and you have not clicked anything.",
+      result: "Scam Radar would put the immediate action first: don't use the message's link. It would identify the sensitive request, urgency, and sender details as reasons for caution without claiming the sender has been independently verified as fraudulent. It would then tell you to open the company's known app or type its known website yourself, and explain which facts remain unresolved until you check through that independent channel."
     },
   },
 },
@@ -693,12 +689,12 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You've read five confident articles that contradict each other.",
-    give: "The contested topic. One line.",
-    get: "What the sources it checked actually support, what's noise and why, and what's still unresolved — with the sources listed.",
-    edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses — and shows you which source says what.",
+    when: "You've read confident claims that contradict each other and want to know what the evidence actually supports.",
+    give: "The contested topic or claim. One line is enough.",
+    get: "What checked sources support, what's overstated or mixed, what's unresolved, and which sources establish each point.",
+    edge: "It researches first, then synthesizes only from that evidence packet — so 'not established' does not quietly become 'false.'",
   },
-  seoDescription: "Checks real sources on any contested health, finance, or productivity claim. Free: what the evidence supports, what to treat skeptically, what's still unresolved — with the sources it used.",
+  seoDescription: "Research a contested health, finance, science, productivity, or lifestyle claim. See what checked sources support, what's overstated, and what remains unresolved — with sources. Free, no signup.",
   seoTitle: "Evidence Checker: Signal vs. Noise",
   title: "Signal vs. Noise",
   tagline: "📡 Find what holds up — and what doesn't.",
@@ -706,27 +702,28 @@ export const tools = [
   icon: "📡",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Conflicting advice everywhere? Signal vs. Noise checks real sources on the claims you paste in, then separates what the evidence supports from overstatement — and shows you the sources it used.",
+  description: "Conflicting claims everywhere? Signal vs. Noise researches the question first, then shows what the checked sources actually support, what is overstated or mixed, and what is still unresolved — with the sources behind each conclusion.",
   guide: {
-      overview: "Signal vs. Noise researches first, then judges. Paste any contested topic — intermittent fasting, index funds, cold showers, productivity systems — and it runs a bounded web search across reviews, primary studies, official data and professional bodies, then gives you a structured breakdown: what those sources support, which popular claims outrun them and why, and what remains genuinely mixed or unresolved. Every Signal and Noise conclusion carries the sources behind it, and only sources it actually used are shown. It is a targeted source check, not a systematic review — and it says so rather than overstating what it searched.",
+      overview: "Signal vs. Noise uses a two-step research workflow. First it searches and builds a fixed evidence packet from the sources it actually examined. Then a separate synthesis pass works only from that packet: no new search, no remembered evidence quietly filling gaps. Conclusions are tied to source IDs, comparative claims need comparative evidence, population and time-horizon limits stay attached to the findings, and association is not promoted to causation. If a proposition is only partly supported, it is narrowed, split, qualified, or left unresolved. The result is a targeted evidence check, not a claim that every relevant source on the internet was found.",
       howToUse: [
-        "Enter any health, finance, productivity, or lifestyle topic you've seen conflicting advice about",
-        "Review The Signal — conclusions the checked sources actually support, each with its source chips and limits",
-        "Review The Noise — where popular claims are stronger, broader, or more certain than the sources allow",
-        "Check Still Worth Verifying — questions the sources leave genuinely mixed or unresolved, not manufactured both-sides debates",
-        "Open Sources checked to read what it relied on, and use the Bottom Line for what holds up, what to treat skeptically, and what would change the answer"
+        "Enter the contested topic or claim you want checked",
+        "Review The Signal for conclusions the checked evidence supports within its actual scope",
+        "Review The Noise for claims that are broader, stronger, or more certain than the retrieved evidence allows",
+        "Check Still Worth Verifying for genuinely mixed, incomplete, or unresolved questions",
+        "Open the cited sources to see which source establishes each empirical point and what limits came with it",
+        "Use the Bottom Line as a concise synthesis of the same evidence — never as a stronger conclusion than the sections above it",
       ],
       example: {
-        scenario: "Is creatine actually worth taking for fitness?",
-        action: "Enter 'creatine supplementation for athletic performance'",
-        result: "Signal: evidence from controlled studies supports strength and power benefits for most healthy adults who resistance train. Noise: cognitive-enhancement claims and 'loading phase' marketing outrun what the evidence establishes. Still unsettled: optimal long-term dosing patterns in older adults. Bottom line: broadly supported for people who already train; the loading-protocol and cognition claims are the parts to treat skeptically."
+        scenario: "You've seen conflicting claims about whether a particular diet, supplement, productivity method, or financial strategy reliably delivers the benefit people promise.",
+        action: "Enter the disputed claim in plain language.",
+        result: "Signal vs. Noise researches the claim, then separates supported findings from overstatement, mixed evidence, and unresolved questions. Each empirical conclusion points back to the sources that support it, and the wording preserves important limits such as population, duration, comparison group, or study design instead of flattening them into a universal answer."
       },
       tips: [
-        "Works best on topics where you've seen contradictory headlines or advice",
-        "\"How the Noise Gets Made\" describes general mechanisms of distortion — marketing, media simplification — never named companies or motives unless you supplied that evidence yourself",
-        "Still Worth Verifying is where intellectual honesty lives — a topic with zero items there is a real finding, not a gap",
-        "The first run on a new topic takes longer because it is actually searching; the same topic asked again within a day answers from the cached research",
-        "Use this before making any significant health, financial, or lifestyle decision — and treat the Bottom Line as a starting point for a clinician or advisor conversation, not a substitute for one"
+        "Ask a claim specific enough to research — a concrete proposition usually produces a better evidence packet than a huge topic",
+        "A logical inference is only as strong as its empirical premises; reasoning cannot turn remembered background knowledge into retrieved evidence",
+        "'Not established by the checked sources' is different from 'disproven' — the tool preserves that distinction",
+        "Comparative claims require evidence that actually makes the comparison; separate unrelated findings do not establish which option is better",
+        "Recent Checks reopen the saved researched result without another search; use Check again with current sources when you want the evidence refreshed",
       ]
     }
 },
@@ -3247,17 +3244,17 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-10",
+  modified: "2026-09-11",
   id: "SkillGapMap",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You want a different job and don't know what's actually missing.",
-    give: "Your current role and the one you want — or your interests, to find candidates.",
-    get: "What already carries over, the one gap worth starting with, and a next move you can actually take.",
-    edge: "It won't hand you a percentage or an hour estimate — just what your own experience actually establishes, and what to check next.",
+    when: "You want a different job and don't know what already carries over or what to investigate next.",
+    give: "Your current role and the role you want — or your interests, if you're still exploring — plus the experience you want considered.",
+    get: "What your experience already demonstrates, possible connections to investigate, one gap worth checking first, and a concrete next move.",
+    edge: "It won't invent a proficiency score or pretend generic role knowledge is a verified job requirement.",
   },
-  seoDescription: "Compare what you already know with what your target role is likely to require, and see which gaps are worth working on first. Free, no signup.",
+  seoDescription: "Map what your experience already demonstrates, identify possible skill gaps to verify for a target role, and choose a practical next move. Free, no signup.",
   seoTitle: "Career Change Skill Gap Analyzer",
   title: "Skill Gap Map",
   tagline: "🗺 See what carries over. Find what to build next.",
@@ -3265,28 +3262,31 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#ccdfc4",
-  description: "Thinking about a career move? Skill Gap Map compares what you already know with what your target role is likely to require, then shows you which gaps are worth working on first.",
+  description: "Thinking about a career move? Skill Gap Map starts with what your own experience actually demonstrates, then shows possible connections and gaps worth checking against the roles or job postings you're considering.",
   guide: {
-      overview: "Skill Gap Map starts from your own supplied experience, not a guess at your proficiency. Tell it your current role and target role (or your interests, if you haven't picked a target) and it separates what genuinely carries over from what isn't established yet, then gives you one place to start and one concrete next move. A handful of optional deeper tools — a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, and more — stay tucked behind a disclosure so the first thing you see is the answer, not a dashboard.",
+      overview: "Skill Gap Map starts from evidence you supplied about your own work rather than guessing at your proficiency. In I Know My Target mode, it identifies experience that may transfer, separates that from candidate requirements that still need verification, and gives you one place to start plus one concrete next move. In Help Me Explore, it suggests plausible directions to investigate without pretending it has proven what suits you. Generic role knowledge can open a door — 'this may matter' or 'worth checking' — but it does not become a claim that a role requires, commonly uses, or typically values something unless the tool has actual role-specific evidence such as a job posting.",
 
       howToUse: [
-        "🔍 Help Me Explore: Enter your current role and interests to see plausible directions worth investigating — not a single invented target scored against itself",
-        "🗺️ I Know My Target: Enter your current role, target role, and whatever experience you want considered → see what transfers, the one gap worth starting with, and the fuller list worth checking",
-        "✅ Act on it: Take the suggested next move, or open any skill gap for what would demonstrate it",
-        "📂 Go deeper (optional): Open the collapsed sections for a learning sequence, portfolio proof ideas, salary context, company targeting, interview prep, resume feedback, and more — none of it required to get value from the first screen"
+        "🔍 Help Me Explore: Enter your current role, experience, and interests to get plausible directions worth investigating rather than one confident career verdict",
+        "🗺️ I Know My Target: Enter your current role, target role, and the experience you want considered",
+        "Review what your supplied experience clearly demonstrates and which connections to the target are reasonable possibilities rather than established requirements",
+        "Start with the one gap or unknown that would be most useful to verify next",
+        "Use an actual job posting when available — specific posting language can replace generic role hypotheses with concrete requirements",
+        "Open deeper sections only when useful for learning sequence, proof to build, economics, company targeting, interview preparation, or resume work",
       ],
 
       example: {
-        scenario: "You're a marketing coordinator who wants to become a product manager. You have project management and analytics skills but no technical background.",
-        action: "Enter 'Marketing Coordinator' as current role, 'Product Manager' as target, and list what you already do (project management, analytics, stakeholder communication).",
-        result: "You see what carries over (stakeholder communication, structured project work), the one gap worth starting with (translating data into a product decision, not just reporting it), and a next move you can do today — like writing a one-page brief on a decision you'd make with data you already have access to. The fuller list below adds a few more gaps worth checking, each labeled by how well your supplied experience actually establishes it, not a score.",
+        scenario: "You're a marketing coordinator considering product-management roles. You have project coordination, analytics, and stakeholder-communication experience but no specific job posting yet.",
+        action: "Enter your current role, the target role, and concrete examples of what you already do.",
+        result: "Skill Gap Map identifies the supplied experience that could transfer, suggests areas worth comparing with actual product-management postings, and picks one high-information next step — for example, finding two target postings and checking which requirements repeatedly appear. It does not label a capability 'core,' 'required,' or 'commonly expected' unless role-specific evidence establishes that."
       },
 
       tips: [
-        "Use Help Me Explore if you're unsure about your target — it suggests directions traceable to what you've actually done, not a single confident guess",
-        "The 'Add trip details'-style disclosures (Timeline, Proof to Build, Economics, and the rest) are genuinely optional — the first screen is designed to stand on its own",
-        "A real job posting is the best way to replace this tool's general role expectations with the actual requirements of one specific job — the Job Posting Decoder panel is built for exactly that",
-        "\"Not established yet\" means the evidence you supplied doesn't show it — not that you lack it. Add more detail if a gap looks off, and it'll reassess"
+        "Use Help Me Explore when the target itself is uncertain — the output should give you directions to investigate, not diagnose your ideal career",
+        "'Not established yet' means the information you supplied does not show it; it does not mean you lack the skill",
+        "A real job posting is the strongest way to turn a possible gap into a job-specific one",
+        "Descriptions of your own supplied experience can be confident; descriptions of an unsourced target role should stay conditional",
+        "Optional deeper sections are secondary — the first screen should still tell you what carries over, what to check, and what to do next",
       ]
     }
 },
@@ -5040,17 +5040,17 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-09",
+  modified: "2026-09-11",
   id: "TripRecon",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle.",
-    give: "What matters to you and whatever you already know about the place. Save a profile once.",
+    when: "Going somewhere that might be noisy, crowded, bright, smelly, warm, or otherwise hard to handle.",
+    give: "What matters to you and whatever you already know about the place or route. Save a profile once if you want.",
     get: "What may be worth preparing for, practical steps, words to ask for what you need, and a backup plan.",
-    edge: "It won't predict the room's conditions — it helps you prepare for possibilities without pretending to know what it can't verify.",
+    edge: "It prepares for possibilities without pretending it knows what the place will actually be like when you arrive.",
   },
-  seoDescription: "Going somewhere that might be noisy, crowded, bright, or smelly? Get a practical preparation plan, words to ask for what you need, and a backup plan — without fake predictions. Free, no signup.",
+  seoDescription: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Build a practical preparation and backup plan without fake predictions. Free, no signup.",
   seoTitle: "Prepare for a Sensory-Demanding Place or Route",
   title: "Trip Recon",
   tagline: "🗺️ Prepare for the sensory parts of going somewhere.",
@@ -5062,28 +5062,29 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Out & About', 'Energy', 'Me'],
   headerColor: "#2a3820",
-  description: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Tell Trip Recon what matters to you and what you know about the place. It helps you anticipate likely challenges, prepare for them, and make a practical backup plan without pretending to know conditions it can't verify.",
+  description: "Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise hard to handle? Tell Trip Recon what matters to you and what you already know. It helps you prepare for possibilities, ask for what you need, and make a backup plan without inventing conditions at the place.",
   guide: {
-    overview: "Trip Recon turns what you actually know — your own sensitivities, what you've supplied about the place, and reasonable general possibilities for that type of setting — into a preparation plan. It does not predict crowd density, noise, lighting, or temperature for a specific place and time, invent a building's layout, or promise a venue will grant an accommodation. It separates what you actually know from general possibilities worth preparing for, gives you words to ask for what you need, and a backup plan that respects constraints you've already stated (like not being able to leave a line without losing your place).",
+    overview: "Trip Recon treats you as the sensor. It starts with what matters to you, what you already know from past visits or other reliable information, and what you observe once you're there. From that, it suggests possibilities worth preparing for and practical ways to reduce friction. It does not predict crowd levels, noise, lighting, smells, temperature, wait times, layouts, or accommodation outcomes for a specific place and time unless those facts were supplied or actually verified. A place type can suggest what to consider; it cannot establish what this particular place will be like. Profiles are preference presets, not diagnoses.",
     howToUse: [
-      "Save a profile — select what matters to you once and load it every time with one tap.",
-      "Choose Prepare for a Place or Prepare for a Route.",
-      "Tell it where you're going; place type, timing, and what you already know about it are all optional.",
-      "Select what you'd like help with — noise, crowds, lighting, and so on.",
-      "Review what's worth preparing for, before-you-go steps, and words to ask for what you need.",
-      "If conditions differ once you're there, use Conditions Changed to adjust the plan from what you actually observe.",
-      "Afterward, rate what was actually true — your own reports improve future preparation for that place."
+      "Save a profile if you want — choose what tends to matter to you so you don't have to re-enter it every time",
+      "Choose Prepare for a Place or Prepare for a Route",
+      "Enter the place or route and add anything you already know from a past visit, a call, a review, instructions, or another source you trust",
+      "Select the concerns you want help preparing for — noise, crowds, lighting, smells, temperature, and others",
+      "Review the preparation plan, the words you can use to ask for what you need, and a backup that respects the constraints you supplied",
+      "If reality differs once you're there, use Conditions Changed and describe what you actually observe so the plan can adapt",
+      "Afterward, save what was actually true if you want that experience to inform a future visit",
     ],
     example: {
-      scenario: "You have a hospital outpatient appointment Thursday morning. You've been asked to arrive early, you can't leave and return without risking your place, and last time you waited about two hours.",
-      action: "Choose Prepare for a Place. Enter the hospital waiting area, select noise, lighting, smells, and temperature, and note what you already know: the early arrival, the risk of losing your place, and the two-hour wait last time.",
-      result: "A plan that treats your own facts as established — the wait, the arrival time, the constraint on leaving — and offers low-burden ways to prepare for noise, lighting, smells, and temperature as general possibilities, not predictions. It includes a script for asking to wait somewhere else without missing your name being called, and a backup plan that doesn't tell you to leave when you've said you can't."
+      scenario: "You have a hospital outpatient appointment. You've been told to arrive early, you cannot leave and return without risking your place, and on your last visit you waited about two hours.",
+      action: "Choose Prepare for a Place, enter the waiting area, select the concerns that matter to you, and add the facts you already know about arrival, waiting, and not being able to leave.",
+      result: "Trip Recon treats those supplied facts as established and the sensory conditions as possibilities to prepare for unless you also supplied evidence about them. It gives you low-burden preparation ideas, a script for asking whether you can wait somewhere else without missing your name being called, and a backup plan that does not tell you to leave when you've said you cannot."
     },
     tips: [
-      "The more specific your location, the more useful the read — but nothing is required beyond the place and what you'd like help with.",
-      "What you already know about a place (a past visit, a review, a call ahead) is the strongest input — it's the difference between a general possibility and something worth actually planning around.",
-      "Comfort Kit personalizes a packing list from what you selected, not a generic list.",
-      "Save what matters to you as a profile — it's a preference preset, not a diagnosis, and it's yours to edit or delete anytime."
+      "What you already know about a place is stronger than what its category merely suggests — include past experience or verified details when you have them",
+      "A selected concern says what matters to you; it does not prove the place will contain that problem",
+      "Comfort Kit should be built from the concerns and constraints you selected, not from a generic packing list",
+      "Accommodation language should ask clearly for what would help without promising that a venue can or will provide it",
+      "Save what matters to you as a profile if useful — it is a preference preset you control, not a diagnosis",
     ]
   }
 },

@@ -3209,4 +3209,188 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user is about to walk somewhere alone and wants practical preparation, a check-in plan, or walking utilities without a fake safety score.",
     whenNotToRecommend: "Do not recommend for live crime prediction, route-safety certification, emergency-response guarantees, or authoritative navigation.",
   },
+
+  ScamRadar: {
+    problems: [
+      "I got an email, text, DM, phone script, invoice, or other message that may be a scam",
+      "A message is asking me to click, pay, reply, share information, enter a code, or take urgent action",
+      "I already interacted with a suspicious message and need to know what to do next",
+      "I want to verify a suspicious request without relying on the contact information inside it",
+    ],
+    capabilities: [
+      "analyzes the supplied message, sender context, and exposure details without pretending the sender has been independently verified",
+      "puts the immediate next action first when the user may be at risk",
+      "identifies specific concerning features and distinguishes them from general scam patterns and unresolved facts",
+      "explains how to verify the request through an independent channel the suspicious message does not control",
+      "adapts the response when the user already clicked, replied, shared information, entered credentials or a code, or sent money",
+      "surfaces contradictions between the pasted evidence and exposure selections instead of silently choosing one",
+    ],
+    accepts: [
+      "email, text, DM, chat message, phone script, invoice, or other suspicious message content",
+      "sender address, phone number, platform, or other sender context the user already has",
+      "what the user has already done in response to the message",
+      "optional surrounding context about the request",
+    ],
+    notFor: [
+      "guaranteeing that a sender, domain, website, or request is safe or fraudulent without independent verification",
+      "malware scanning, forensic header analysis, or technical compromise investigation",
+      "reviewing whether customer reviews are fake when there is no suspicious direct message",
+      "explaining a legitimate bill, contract, or document when scam suspicion is not the real question",
+    ],
+    handoffs: [
+      { when: "the concern is whether product or business reviews look manipulated rather than whether a direct message is a scam", toolId: "FakeReviewDetective" },
+      { when: "the message turns out to be a legitimate bill and the user mainly needs help understanding or challenging the charges", toolId: "BillRescue" },
+      { when: "the user has a legitimate contract or agreement and wants its terms explained rather than a scam check", toolId: "ContractDecoder" },
+    ],
+    primaryIntent: "analyze a suspicious message, decide what deserves caution right now, and verify the request through an independent channel",
+    whenToRecommend: "Recommend when the user has a specific suspicious email, text, DM, phone script, invoice, or request and wants to know what looks concerning, what to do now, or how to verify it safely.",
+    whenNotToRecommend: "Do not recommend when the user wants a guaranteed fraud verdict without evidence, malware forensics, fake-review analysis, or ordinary explanation of a legitimate bill or contract.",
+  },
+
+  TripRecon: {
+    problems: [
+      "I am going somewhere and want to prepare for noise, crowds, lighting, smells, temperature, or other sensory demands",
+      "I know a place or route can be hard for me but I do not want the tool to invent what conditions will be like",
+      "I want practical words for asking a venue or staff member for something that would make the visit easier",
+      "I want a backup plan that respects constraints such as not being able to leave, losing my place, or needing to stay with someone",
+    ],
+    capabilities: [
+      "builds a preparation plan from the user's preferences, supplied facts about the place or route, and general possibilities worth considering",
+      "keeps supplied or verified place facts separate from possibilities suggested only by the type of setting",
+      "creates low-burden before-you-go steps, a personalized comfort-kit list, and a practical backup plan",
+      "offers concise accommodation-request language without promising that a venue can or will provide it",
+      "adapts the plan when the user reports what conditions are actually like after arrival",
+      "can reuse a saved preference profile without treating it as a diagnosis",
+    ],
+    accepts: [
+      "a place or route the user is preparing for",
+      "sensory or environmental concerns that matter to the user",
+      "facts the user already knows from past visits, calls, reviews, instructions, or other trusted information",
+      "timing, constraints, companions, and other practical context",
+    ],
+    notFor: [
+      "predicting actual crowd levels, noise, lighting, temperature, smells, wait times, or layout without current evidence",
+      "diagnosing sensory-processing, anxiety, autism, ADHD, or another condition",
+      "certifying that a venue is accessible or guaranteeing an accommodation",
+      "route-safety prediction or live walking monitoring",
+    ],
+    handoffs: [
+      { when: "the main question is personal safety while walking a route rather than sensory or environmental preparation", toolId: "SafeWalk" },
+      { when: "the user wants a recreational local outing or route idea rather than preparation for a known destination", toolId: "MicroAdventureMapper" },
+      { when: "the user is deciding what can realistically fit during an airport layover", toolId: "LayoverMaximizer" },
+    ],
+    primaryIntent: "prepare for the sensory and environmental demands that might matter on a specific trip without inventing conditions at the destination",
+    whenToRecommend: "Recommend when the user is going to a place or along a route and wants to prepare for noise, crowds, light, smells, temperature, waiting, or similar conditions using what they already know plus practical possibilities.",
+    whenNotToRecommend: "Do not recommend for diagnosis, guaranteed accommodation advice, live route safety, or confident predictions about a place's actual conditions when those conditions have not been supplied or verified.",
+  },
+
+  SignalVsNoise: {
+    problems: [
+      "I keep seeing contradictory claims and want to know what the evidence actually supports",
+      "A health, finance, science, productivity, or lifestyle claim sounds confident but I do not know whether it holds up",
+      "I want to separate a supported finding from exaggeration, mixed evidence, and unanswered questions",
+      "I want the actual sources behind an evidence-based conclusion rather than a source-free summary",
+    ],
+    capabilities: [
+      "researches the contested claim first and builds a fixed evidence packet from sources actually examined",
+      "synthesizes only from that evidence packet rather than silently adding remembered empirical claims",
+      "separates supported, overstated, mixed, and unresolved propositions and ties empirical conclusions to source IDs",
+      "preserves important limits such as population, duration, comparison group, intervention, and study design",
+      "requires comparative evidence for comparative conclusions and keeps association separate from causation",
+      "reopens saved Recent Checks without new research and can rerun a check with current sources when requested",
+    ],
+    accepts: [
+      "a contested topic or concrete claim in plain language",
+      "health, finance, science, productivity, consumer, or lifestyle questions that can be investigated with public sources",
+      "follow-up requests to inspect the evidence, unresolved points, or refresh a prior check",
+    ],
+    notFor: [
+      "claiming that every relevant source was found or that the result is a full systematic review",
+      "making a personal medical diagnosis or individualized treatment decision",
+      "making a personal investment recommendation or predicting market returns",
+      "explaining the methods or conclusions of one specific research paper when the user already has that paper",
+    ],
+    handoffs: [
+      { when: "the user has a specific paper and wants help understanding what that paper itself says, how it was conducted, or what it can support", toolId: "ResearchDecoder" },
+      { when: "the user wants to pressure-test an argument or belief rather than research the empirical evidence behind a claim", toolId: "BeliefStressTest" },
+      { when: "the user wants to stress-test a future career, technology, investment, or long-term bet under several scenarios", toolId: "FutureProof" },
+    ],
+    primaryIntent: "research a contested empirical claim and distinguish what checked sources support from overstatement, mixed evidence, and unresolved questions",
+    whenToRecommend: "Recommend when the user is confronting contradictory empirical claims and wants a source-backed evidence check rather than a source-free opinion or debate exercise.",
+    whenNotToRecommend: "Do not recommend for personal diagnosis, individualized investment advice, exhaustive systematic-review claims, or close reading of one supplied research paper.",
+  },
+
+  SkillGapMap: {
+    problems: [
+      "I want to move into a different role and need to know what from my experience may carry over",
+      "I know my target role but do not know which possible gap is worth checking or working on first",
+      "I am considering a career change but have not chosen a target yet",
+      "I want to distinguish what my experience actually demonstrates from assumptions about a target role",
+    ],
+    capabilities: [
+      "maps concrete experience the user supplied into capabilities that are actually supported by that experience",
+      "suggests possible connections to a target role without presenting generic role knowledge as verified requirements",
+      "identifies one high-information gap or unknown to investigate first and one concrete next move",
+      "supports an exploration mode for plausible directions when the user has not chosen a target",
+      "uses an actual job posting, when supplied, to replace generic hypotheses with job-specific requirements",
+      "keeps optional learning, proof-building, economics, company-targeting, interview, and resume material secondary to the main answer",
+    ],
+    accepts: [
+      "current role and concrete experience the user wants considered",
+      "a target role, if the user has one",
+      "interests or directions to explore when the target is not yet known",
+      "a real job posting or role-specific requirements when available",
+    ],
+    notFor: [
+      "assigning a numeric fit score, proficiency percentage, or invented time-to-competence estimate",
+      "declaring what a role universally requires, commonly values, or typically does without role-specific evidence",
+      "choosing the user's ideal career based on personality inference",
+      "writing the final resume or cover letter as the primary task",
+    ],
+    handoffs: [
+      { when: "the user already knows the direction and wants to increase visibility or demonstrate value where they are", toolId: "GetNoticed" },
+      { when: "the user wants to build professional familiarity before making an outreach ask", toolId: "BeforeHello" },
+      { when: "the user wants to identify the highest-leverage move inside a current role or negotiation rather than map a career-transition gap", toolId: "LeverageLogic" },
+    ],
+    primaryIntent: "map what the user's existing experience already establishes, identify target-role questions or gaps worth verifying, and choose a practical next step",
+    whenToRecommend: "Recommend when the user is considering a career transition, has a target role to investigate, or wants help discovering plausible directions based on experience they can describe.",
+    whenNotToRecommend: "Do not recommend for numeric fit scoring, personality-based career matching, unsupported claims about universal role requirements, or pure resume-writing requests.",
+  },
+
+  SleepArchitect: {
+    problems: [
+      "My sleep is not working and I do not know what to change first",
+      "I have a recurring sleep pattern or disruption and want a practical experiment rather than generic sleep advice",
+      "Several things may be affecting my sleep and I want to test one variable at a time",
+      "I want to notice whether a change actually helps instead of following a long sleep-hygiene checklist",
+    ],
+    capabilities: [
+      "summarizes the sleep pattern the user actually reported without assigning a sleep score or diagnosis",
+      "separates reported patterns, plausible variables worth testing, and unresolved relationships",
+      "selects one primary low-risk behavioral experiment and keeps other possibilities under What to Try Next",
+      "gives a small set of observations to track so the user can learn whether the experiment helped",
+      "uses supplied schedule information as an experimental baseline only when it is useful rather than inventing an optimal schedule",
+      "recognizes when severe or persistent symptoms are better taken to a clinician than managed with another home experiment",
+    ],
+    accepts: [
+      "sleep goal or main sleep problem",
+      "usual bedtime, wake time, and actual hours slept when known",
+      "suspected or experienced disruptors such as stress, noise, temperature, pain, caffeine, screens, irregular schedules, or bathroom waking",
+      "freeform description of a typical night, shift pattern, awakenings, discomfort, and things already tried",
+    ],
+    notFor: [
+      "diagnosing insomnia, circadian disorders, sleep apnea, anxiety, pain conditions, or another medical or psychological condition",
+      "prescribing melatonin, medication, supplements, or clinician-supervised sleep-restriction treatment",
+      "inventing an optimal bedtime, wake time, caffeine cutoff, nap cutoff, or recovery timeline",
+      "forcing a schedule change despite near-total sleep loss, unsafe fatigue, rotating-shift transitions, or other circumstances that deserve clinical guidance",
+    ],
+    handoffs: [
+      { when: "racing thoughts or acute stress is the main immediate problem and the user wants help settling the mind rather than running a sleep experiment", toolId: "SpiralStopper" },
+      { when: "the user plans to discuss persistent sleep symptoms with a clinician and wants help preparing for that appointment", toolId: "DoctorVisitPrep" },
+      { when: "the sleep question is secondary and the user's main problem is managing limited daytime energy", toolId: "PEP" },
+    ],
+    primaryIntent: "turn the user's reported sleep pattern into one manageable behavioral experiment, a way to observe the result, and a clear next step",
+    whenToRecommend: "Recommend when the user wants practical help with sleep and can describe their schedule, recurring pattern, or possible disruptors, especially when generic sleep-hygiene advice has not helped them decide what to test first.",
+    whenNotToRecommend: "Do not recommend for diagnosis, medication or supplement advice, clinician-supervised CBT-I treatment, or aggressive schedule manipulation when the user reports severe sleep loss or another situation that warrants professional evaluation.",
+  },
 };
