@@ -183,7 +183,11 @@ function SleepArchitect({ tool }) {
         p.actions?.forEach(a => lines.push(`  → ${a}`));
       });
     }
-    if (results.schedule) {
+    if (results.try_next?.length) {
+      lines.push(`\n${t('sa_copy_try_next')}`);
+      results.try_next.forEach(w => lines.push(`• ${w}`));
+    }
+    if (results.schedule?.bedtime || results.schedule?.wake_time) {
       lines.push(`\n${t('sa_copy_schedule')}`);
       if (results.schedule.bedtime) lines.push(`${t('sa_copy_bedtime')} ${results.schedule.bedtime}`);
       if (results.schedule.wake_time) lines.push(`${t('sa_copy_waketime')} ${results.schedule.wake_time}`);
@@ -419,8 +423,25 @@ function SleepArchitect({ tool }) {
           </div>
         )}
 
-        {/* Target schedule */}
-        {results.schedule && (
+        {/* What to try next — named possibilities only, deliberately not full
+            cards: giving these the same treatment as the primary experiment
+            is exactly the "protocol card disguised as one experiment" this
+            section exists to avoid. */}
+        {results.try_next?.length > 0 && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔭 {t('sa_try_next_title')}</p>
+            <div className="flex flex-wrap gap-2">
+              {results.try_next.map((v, i) => (
+                <span key={i} className={`text-xs px-3 py-1.5 rounded-full border ${c.pillInactive}`}>{v}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Target schedule — only when there's a real bedtime or wake time to
+            show; validateResult() already nulls a schedule missing both, but
+            this guards persisted results saved before that fix too. */}
+        {results.schedule && (results.schedule.bedtime || results.schedule.wake_time) && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🕐 {t('sa_target_schedule')}</p>
             <div className="grid grid-cols-3 gap-3">

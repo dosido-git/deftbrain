@@ -3,10 +3,11 @@
     "tool": "SleepArchitect",
     "generated": "2026-09-11",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/sleep-architect/stream, not streaming)",
-    "baseline_commit": "sleeparchitect-v2.1",
-    "why_v2": "v1 diagnosed insomnia, assigned a 1-10 sleep-health score, and invented precise physiology (melatonin suppression windows, caffeine half-life cutoffs, an 'evidence-based' circadian schedule) from a handful of checkboxes. Owner-supplied rewrite (sleep-architect.zip, 2026-09-11): frames every recommendation as an experiment to try and observe, never a diagnosis or prescription; sleep_score is force-nulled server-side regardless of what the model returns; schedule is null unless the visitor's own supplied times justify one; melatonin/medication recommendations are banned outright; a reported red-flag symptom (breathing pauses, severe daytime sleepiness, etc.) gets a professional-evaluation step instead of a home protocol.",
-    "why_v2_1": "Owner review of the v2 output (2026-09-11, same day) found two remaining overreach patterns and a structural one: (1) the model was fusing two separately-selected facts into one claim it was never told ('racing thoughts / stress' selected + '3 AM waking' reported -> 'the racing thoughts... make the 3 AM wakefulness... the most useful thing to test', when the visitor never said the racing thoughts happen AT 3 AM) — added DO NOT COMBINE SEPARATELY SUPPLIED FACTS; (2) population claims dressed as guidance ('roughly 20 minutes feels natural for most people') — added NO POPULATION CLAIMS, with an explicit preferred phrasing pattern; (3) the protocol had drifted back into a 3-5 step checklist (thought-offload + middle-of-night behavior change + sound masking + wake-time anchoring, all at once) instead of a single testable experiment — replaced PRIORITIZE LEARNING, NOT VOLUME with ONE EXPERIMENT AT A TIME: exactly one primary experiment (what/why/how long/what to notice/what result means switching) plus at most two 'try next' entries that are explicitly sequenced, not simultaneous. protocol cap dropped from 4 to 3 (validateResult, code-enforced). UI section renamed 'Your full protocol' -> 'Your first experiment' (sa_full_protocol, all 13 languages) to match — the label change is doing real work, not cosmetic.",
-    "how_to_regression_diff": "Re-run (npm run check:golden sleep-architect) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) protocol[].phase MUST be an English token (immediate|week1|ongoing|environment) — the frontend phaseConfig styles the protocol cards on it; withLanguage would otherwise localize it → generic fallback styling in 12 langs. (2) key_issues/protocol.actions capped at 4, quick_wins at 2, protocol at 3 STEPS TOTAL (one primary + at most two 'try next', code-enforced in validateResult — do not raise this back to 4 without re-reading why_v2_1 above). (3) no-inner-double-quote rule (free-prose fields). (4) guard keys top-level diagnosis + protocol array (both always present). (5) sleep_score MUST be null in every case. (6) schedule may legitimately be null (case 2) or protocol may legitimately be length 1 (case 2, a safety escalation correctly gets ONE step, not a padded checklist) — do NOT treat either as a regression. (7) eyeball wording for: no claim that two separately-supplied facts are connected unless the visitor connected them; no 'most/many people' population claims or invented time thresholds ('wait ~20 minutes') — prefer 'if staying in bed becomes frustrating' framing; the FIRST protocol entry's actions should read as what/how-long/notice/what-would-mean-switching, and any later entry should say plainly it comes after the first, not alongside it. No gate catches wording drift on any of this. DO NOT reverse: phase English pin; array caps (protocol=3 is deliberate, not a bug); the no-inner-quote rule; the sa_disclaimer i18n line; the null sleep_score; the conditional (not automatic) schedule; the one-experiment-first structure."
+    "baseline_commit": "sleeparchitect-v2.2",
+    "why_v2": "v1 diagnosed insomnia, assigned a 1-10 sleep-health score, and invented precise physiology (melatonin suppression windows, caffeine half-life cutoffs, an 'evidence-based' circadian schedule) from a handful of checkboxes. v2 frames every recommendation as an experiment to try and observe; sleep_score is force-nulled server-side; melatonin/medication recommendations are banned outright.",
+    "why_v2_1": "v2's first live output still fused separately-supplied facts into one claim ('racing thoughts' selected + '3 AM waking' reported -> 'the racing thoughts... make the 3 AM wakefulness the most useful thing to test') and used population claims ('roughly 20 minutes feels natural for most people'). Both banned. The protocol had also drifted into a 3-step checklist run at once instead of one experiment; replaced with ONE EXPERIMENT AT A TIME (one primary + up to two sequenced 'try next' full cards). protocol cap 4 -> 3, code-enforced.",
+    "why_v2_2": "v2.1's live test (the tool's own shift-work example: rotating nights, partner up at 9 AM, near-total sleep loss on switch-back days) found the one-experiment rule wasn't actually being enforced structurally — it still produced 2 'most useful variables', 2 quick wins, and a primary experiment PLUS a switch-back intervention PLUS an environmental audit: 3 full protocol cards again, just relabeled. Worse, the switch-back 'experiment' had drifted into consequential sleep-restriction advice ('choose a single wake time you will hold both days even if sleep was short', 'do not compensate with a long nap') for someone reporting near-total sleep loss during a shift transition -- exactly the case where the tool should recognize it has exceeded ordinary sleep-hygiene experimentation. Fixes, both structural and content: (1) PRIMARY EXPERIMENT ENFORCEMENT replaces ONE EXPERIMENT AT A TIME -- protocol is now EXACTLY ONE entry (cap dropped 3 -> 1, code-enforced in validateResult), quick_wins must support that same experiment, and every other plausible variable goes into a new 'try_next' field: at most 2 SHORT NAMED possibilities with explicitly no instructions, rendered as chips, not cards -- 'a protocol card disguised as one experiment' is now impossible by construction, not just discouraged. (2) SHIFT WORK AND SEVERE SLEEP LOSS: an explicit banned-instruction list (hold a wake time despite little sleep, skip compensatory sleep/naps, stay awake to force adjustment, rapid re-timing, light/melatonin/medication circadian manipulation) plus a required 3-step alternative (identify the one low-risk testable variable / state plainly in diagnosis or key_issues that the transition itself deserves professional guidance / name what to bring to that conversation). (3) The DO NOT COMBINE rule was widened to explicitly cover the diagnosis field's OPENING sentence, not just later ones -- the original bug had a hedged 'may be' two sentences after an unhedged causal claim in sentence one; the visitor reads sentence one first. (4) Schedule can no longer render half-populated: a schedule needs BOTH a real bedtime and a real wake_time (a placeholder string like 'to be determined' is explicitly rejected by a regex, not just relies on the model not writing one) or the whole schedule collapses to null -- both backend (validateResult) and frontend (render guard) now require this. (5) UI: submit button 'Build My Sleep Protocol' -> 'Build my sleep experiment' (sa_build_btn + sa_building, all 13 languages).",
+    "how_to_regression_diff": "Re-run (npm run check:golden sleep-architect) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) protocol[].phase MUST be an English token (immediate|week1|ongoing|environment). (2) protocol MUST be exactly 1 entry (code-enforced .slice(0,1) in validateResult — this is deliberate, never raise it back up without re-reading why_v2_2 above). (3) try_next capped at 2, each entry SHORT (a few words naming a variable, not a paragraph of steps) — if try_next entries start reading like protocol cards, that's the 'disguised second experiment' bug back. (4) quick_wins capped at 2 and must read as supporting protocol[0], never a second intervention. (5) key_issues/protocol.actions capped at 4. (6) no-inner-double-quote rule. (7) sleep_score MUST be null in every case. (8) schedule is null whenever bedtime or wake_time is missing OR is a placeholder string (case 2 has schedule: null; verify a case with 'to be determined' or similar in either field also comes back null, not half-populated). (9) eyeball wording for: the diagnosis's FIRST sentence must be as hedged as its later sentences — no unhedged causal claim followed by a correctly-hedged one; no 'most/many people' population claims or invented time thresholds; for a shift-work / severe-sleep-loss case (case 3), the primary experiment must never restrict, delay, discourage, or forbid sleep, and the diagnosis or key_issues must explicitly name the severe transition as worth a clinician's attention. No gate catches wording drift on any of this — this file is the only record of what 'good' looks like. DO NOT reverse: phase English pin; the protocol=1 cap; the try_next 'names only' design; the no-inner-quote rule; the sa_disclaimer i18n line; the null sleep_score; the conditional (not automatic) schedule; the shift-work banned-instruction list."
   },
   "cases": [
     {
@@ -33,62 +34,46 @@
       },
       "output": {
         "sleep_score": null,
-        "diagnosis": "Du berichtest, dass du trotz einer geplanten Schlafzeit von 23:30 bis 07:00 Uhr nur etwa 5 Stunden schläfst – offenbar liegt ein erheblicher Teil der Nacht im Wachliegen. Du beschreibst stundenlanges Grübeln über die Arbeit und nennst nachmittäglichen Kaffeekonsum sowie Bildschirmnutzung vor dem Schlafen als mögliche Einflussfaktoren. Die nützlichsten Variablen zum Testen sind das abendliche Gedankenkreisen und der Zeitpunkt des Kaffeekonsums am Nachmittag.",
+        "diagnosis": "Du beschreibst, dass du oft stundenlang wach liegst und über die Arbeit grübelst – obwohl dein angestrebtes Schlaffenster von 23:30 bis 07:00 Uhr rund 7,5 Stunden umfasst, schläfst du nach eigenen Angaben tatsächlich etwa 5 Stunden. Ob das Grübeln das Einschlafen erschwert oder ob andere Faktoren dabei eine Rolle spielen, lässt sich aus diesen Angaben nicht feststellen. Zwei Variablen lohnen sich als erstes zu testen: das Gedankenkarussell vor dem Schlafen und die Bildschirmnutzung im Bett.",
         "key_issues": [
-          "Berichtetes Muster: Stundenlanges Wachliegen mit arbeitsbezogenem Grübeln",
-          "Wert zu testen: Ob ein kurzes schriftliches Gedanken-Entladen vor dem Zubettgehen das Einschlafen erleichtert",
-          "Wert zu testen: Ob ein früherer Kaffee-Stopp am Nachmittag die Einschlafzeit beeinflusst",
-          "Noch unbekannt: Ob Bildschirmnutzung unabhängig vom Grübeln zum Wachliegen beiträgt"
+          "Gemeldetes Muster: stundenlange Grübelei über die Arbeit beim Zubettgehen",
+          "Prüfenswert: ob Bildschirmnutzung kurz vor dem Schlafen das Einschlafen beeinflusst",
+          "Prüfenswert: ob nachmittäglicher Kaffeekonsum mit dem Schlaf zusammenhängt",
+          "Noch unbekannt: was das nächtliche Aufwachen auslöst"
         ],
         "quick_wins": [
-          "Schreib heute Abend vor dem Zubettgehen 5 Minuten lang alles auf, was dich beschäftigt – keine Lösungen, nur die Gedanken auf Papier bringen. Das ist ein Experiment: Beobachte, ob sich das Kopf-Chaos danach etwas leichter anfühlt.",
-          "Leg Handy und Bildschirme heute Abend mindestens 30 Minuten vor 23:30 Uhr weg – nicht weil das garantiert hilft, sondern um zu sehen, ob der Übergang ins Bett ruhiger wird."
+          "Lege heute Abend Handy und Bildschirme mindestens 30 Minuten vor 23:30 Uhr weg – nicht als Lösung, sondern um zu beobachten, ob das Einschlafen sich dadurch verändert.",
+          "Halte Stift und Zettel neben dem Bett bereit, um beim Zubettgehen offene Gedanken kurz aufzuschreiben – das ist Teil des Experiments, nicht eine Garantie."
         ],
         "protocol": [
           {
             "phase": "immediate",
-            "title": "Gedanken-Entladen als Abendritual testen",
-            "description": "Du berichtest, stundenlang über die Arbeit zu grübeln – das ist die am deutlichsten beschriebene Schwierigkeit. Ein kurzes schriftliches Entladen der Gedanken vor dem Schlafen ist ein einfaches Experiment, das prüft, ob das Zu-Bett-Gehen sich dadurch ruhiger anfühlt.",
+            "title": "Gedanken-Ablage vor dem Schlafen testen",
+            "description": "Du berichtest, dass du grübelnd über die Arbeit liegst – es lohnt sich zu testen, ob ein kurzer schriftlicher Gedanken-Ablage-Moment vor dem Zubettgehen dazu beiträgt, dass du schneller zur Ruhe kommst. Das beantwortet die Frage: Verändert sich das Einschlafen, wenn Gedanken vor dem Schlafengehen auf Papier sind statt im Kopf?",
             "actions": [
-              "Setz dich etwa 20–30 Minuten vor 23:30 Uhr hin und schreib 5 Minuten lang alles auf, was dir durch den Kopf geht – Sorgen, offene Aufgaben, Gedanken. Kein Ausformulieren, nur raus damit.",
-              "Probiere das 7 Tage lang konsequent aus.",
-              "Beobachte: Fühlt sich das Einschlafen kürzer an? Kreisen die Gedanken im Bett weniger? Wie oft wachst du auf?",
-              "Wenn sich nach einer Woche nichts verändert hat – weder beim Einschlafen noch beim Durchschlafen – ist das ein Hinweis, dass eine andere Variable (z. B. Kaffee-Timing) als nächstes getestet werden sollte."
-            ]
-          },
-          {
-            "phase": "week1",
-            "title": "Kaffee-Zeitpunkt verschieben – danach testen",
-            "description": "Du berichtest, nachmittags Kaffee zu trinken. Ob und wie stark das deinen Schlaf beeinflusst, ist eine offene Frage – aber es ist eine einfache Variable, die du nach dem ersten Experiment gezielt testen kannst.",
-            "actions": [
-              "Erst nach dem Gedanken-Entladen-Experiment (oder wenn du das abgeschlossen hast): Verleg deinen letzten Kaffee des Tages auf den Vormittag – ohne einen genauen biologisch 'optimalen' Zeitpunkt zu erfinden, einfach früher als bisher.",
-              "Halte das eine Woche durch und beobachte, ob sich Einschlafdauer oder Häufigkeit des Aufwachens verändern.",
-              "Wenn kein Unterschied spürbar ist, muss Kaffee-Timing möglicherweise nicht weiter verändert werden."
-            ]
-          },
-          {
-            "phase": "environment",
-            "title": "Bildschirme aus dem Einschlafritual herausnehmen",
-            "description": "Du hast Bildschirmnutzung vor dem Schlafen als möglichen Einflussfaktor genannt. Dieses Experiment lässt sich gut nach den ersten beiden testen, um zu prüfen, ob es einen eigenen Beitrag leistet.",
-            "actions": [
-              "Teste nach den vorigen Experimenten: Bildschirme konsequent 30–45 Minuten vor dem Zubettgehen weglegen – als Ersatz z. B. Lesen oder ruhige Musik.",
-              "Beobachte, ob das Einschlafen sich verändert oder ob du das Ritual als angenehm oder unangenehm erlebst.",
-              "Wenn kein Unterschied erkennbar ist, ist Bildschirmnutzung für dich möglicherweise weniger relevant als die anderen Variablen."
+              "Nimm dir etwa 5–10 Minuten vor dem Zubettgehen – noch außerhalb des Bettes – und schreibe auf, was dich beschäftigt: offene Aufgaben, Sorgen, alles, was im Kopf kreist. Kein vollständiger Text, Stichworte reichen.",
+              "Lege Bildschirme in dieser Zeit ebenfalls beiseite, damit beides zusammen die Abend-Routine bildet – du testest das Ablegen der Gedanken als Hauptvariable.",
+              "Probiere das sieben Abende lang aus und notiere morgens kurz: wie lange es gefühlt gedauert hat einzuschlafen, ob du aufgewacht bist, und ob das Aufschreiben praktikabel war.",
+              "Wenn sich nach sieben Tagen kein Unterschied beim Einschlafen zeigt oder das Gedankenkarussell genauso stark bleibt, ist das ein nützlicher Befund – dann lohnt es sich, eine andere Variable zu testen, zum Beispiel den Kaffeezeitpunkt am Nachmittag."
             ]
           }
+        ],
+        "try_next": [
+          "Früherer Kaffeestopp am Nachmittag",
+          "Konsequentere Aufwachzeit auch am Wochenende"
         ],
         "schedule": {
           "bedtime": "23:30",
           "wake_time": "07:00",
           "wind_down_start": "23:00",
-          "note": "Das ist kein biologisch vorgegebener Optimalplan, sondern ein Experiment auf Basis deiner eigenen Angaben – beobachte, ob ein festes Wind-down-Ritual ab 23:00 Uhr das Einschlafen um 23:30 Uhr erleichtert."
+          "note": "Das ist ein Experiment mit deinen bereits gemeldeten Zeiten – beobachte, ob das Einhalten dieser Zeiten in Kombination mit der Gedanken-Ablage das Einschlafen verändert, nicht ob diese Zeiten biologisch optimal sind."
         }
       }
     },
     {
       "name": "en-breathing-pause-escalation",
       "endpoint": "/api/sleep-architect/stream",
-      "optionalSections": ["quick_wins"],
+      "optionalSections": ["quick_wins", "try_next"],
       "input": {
         "userLanguage": "en",
         "goals": ["energy"],
@@ -96,27 +81,78 @@
       },
       "output": {
         "sleep_score": null,
-        "diagnosis": "You report wanting more daytime energy, and your partner has observed loud snoring along with occasional pauses in your breathing during sleep. These observations are the most important thing to bring to a clinician before running any behavioral sleep experiment. The snoring and breathing pauses are not something a self-directed experiment can safely address or rule out.",
+        "diagnosis": "You report wanting more daytime energy, and your partner has observed loud snoring and what sound like breathing pauses during your sleep. Those two observations together are a reason to speak with a clinician before designing a behavioral sleep experiment, because a medical evaluation is the appropriate first step when breathing pauses during sleep have been noticed. A behavioral experiment cannot address or rule out what your partner described.",
         "key_issues": [
-          "Reported by partner: loud snoring and apparent breathing pauses during sleep — worth professional evaluation before other experiments",
-          "Goal reported: increasing daytime energy — still unknown whether the energy issue is linked to the breathing pattern, sleep duration, timing, or another factor",
-          "Still unknown: whether any behavioral variables (timing, wind-down, environment) are contributing alongside the breathing concern"
+          "Reported pattern: loud snoring with observed breathing pauses during sleep",
+          "Still unknown: whether a sleep study or clinical evaluation has ever been done",
+          "Worth discussing with a clinician: the connection between the reported breathing pattern and low daytime energy"
         ],
         "quick_wins": [],
         "protocol": [
           {
             "phase": "immediate",
-            "title": "Talk to a clinician about the breathing observations",
-            "description": "Your partner has observed what sounds like pauses in your breathing during sleep. This is a specific, observable sign that a clinician should hear about — it is the right starting point before testing any other variable, because it could be relevant to the daytime energy you want to improve.",
+            "title": "Book a conversation with your doctor about what your partner observed",
+            "description": "Your partner has noticed breathing pauses during your sleep, and you are experiencing low daytime energy. That combination is the kind of thing a clinician needs to hear about directly, because the appropriate next step depends on a proper evaluation rather than a self-directed experiment.",
             "actions": [
-              "Write down what your partner has observed in plain language — loud snoring, and moments where your breathing seems to stop briefly — so you can describe it accurately at an appointment.",
-              "Book an appointment with your GP or primary care provider and lead with these observations. Mention that your main goal is improving daytime energy.",
-              "Ask the clinician whether any further evaluation of your breathing during sleep is appropriate. Let their guidance shape what you test next.",
-              "Hold off on designing a broader sleep experiment until you have had that conversation — some experiments would not be the right starting point if the breathing pattern turns out to need attention."
+              "Contact your doctor and describe specifically what your partner has observed: loud snoring and moments where your breathing appears to stop briefly.",
+              "Mention that low daytime energy is your main concern, so the clinician has the full picture.",
+              "Ask whether a sleep study or any further assessment is appropriate in your case.",
+              "If the clinician finds nothing that needs medical attention, return to SleepArchitect with that outcome and any new information, and a behavioral experiment can be built from there."
             ]
           }
         ],
+        "try_next": [],
         "schedule": null
+      }
+    },
+    {
+      "name": "en-shift-work-severe-sleep-loss",
+      "endpoint": "/api/sleep-architect/stream",
+      "input": {
+        "userLanguage": "en",
+        "goals": ["timing", "energy"],
+        "bedtime": "4:00 AM",
+        "wakeTime": "11:00 AM",
+        "hoursActual": "6",
+        "disruptors": ["irregular", "light", "partner"],
+        "freeform": "I work rotating night shifts, three weeks on nights then a week back on days. On night weeks I sleep 4am to 11am with blackout curtains but my partner is up and moving by 9. On the switch-back week I barely sleep at all for two days."
+      },
+      "output": {
+        "sleep_score": null,
+        "diagnosis": "You work a rotating night-shift schedule and currently sleep 4 AM to 11 AM during night weeks, with your partner up and moving by 9 AM — cutting your available sleep window shorter than your target. The switch-back week is where you report the sharpest difficulty, describing near-total sleep loss over two days. The transition itself, not any single behavioral habit, is the most prominent feature of what you have described, and that kind of repeated severe transition is worth discussing with a clinician or sleep specialist familiar with shift work.",
+        "key_issues": [
+          "Reported pattern: partner movement by 9 AM may be limiting sleep to roughly 5 hours during night weeks, worth testing whether earlier wind-down or a separate sleep-space arrangement helps",
+          "Reported pattern: switch-back week involves near-total sleep loss over two days — a recurring severe transition that behavioral experiments alone are unlikely to address adequately",
+          "Worth testing: whether a consistent pre-sleep wind-down during night weeks improves the quality of the hours actually slept",
+          "Still unknown: what specifically is happening during the switch-back — whether it is difficulty falling asleep, staying asleep, or both"
+        ],
+        "quick_wins": [
+          "Tonight, if you are in a night week, try using earplugs or a white-noise source to reduce how much your partner's 9 AM movement reaches you — this supports the one variable the experiment below is testing",
+          "Before bed, spend a few minutes writing down anything on your mind so it is out of your head and on paper — this is a low-effort addition to the wind-down you will be testing"
+        ],
+        "protocol": [
+          {
+            "phase": "immediate",
+            "title": "Test a consistent pre-sleep wind-down during night weeks",
+            "description": "During your night weeks you have a relatively stable sleep window (4 AM to whenever disruption begins), which makes it the more testable phase right now. Adding a brief, consistent wind-down before 4 AM gives you one variable to observe against how long sleep takes to arrive and how rested you feel on the hours you do get.",
+            "actions": [
+              "For the next five night-shift days, start a 20-to-30-minute wind-down before your 4 AM bedtime: dim any lights, step away from screens, and do something quiet such as reading or the written thought-dump mentioned above.",
+              "Pair this with whatever you can practically do about the 9 AM disruption — earplugs, a white-noise app, or a conversation with your partner about staying quieter until 11 AM if that is possible.",
+              "Each morning before sleeping, note one thing: roughly how long it felt before you fell asleep. When you wake, note whether the sleep felt lighter or deeper than usual.",
+              "If after five days you notice no change in how long sleep takes to arrive or in how rested you feel, the wind-down is probably not the variable that matters most right now — and that is useful information pointing you toward the switch-back transition as the priority conversation to have with a clinician."
+            ]
+          }
+        ],
+        "try_next": [
+          "the partner-disruption window during night weeks",
+          "what is happening specifically during the switch-back nights"
+        ],
+        "schedule": {
+          "bedtime": "4:00 AM",
+          "wake_time": "11:00 AM",
+          "wind_down_start": "3:30 AM",
+          "note": "This is an experimental anchor for your night weeks only, based on the times you supplied — treat it as a starting point to observe against, not a biological prescription, and notice whether protecting that window changes how rested you feel."
+        }
       }
     }
   ]
