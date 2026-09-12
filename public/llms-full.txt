@@ -83,38 +83,6 @@ Input: You have a $2,400 medical bill that's 60 days overdue. You lost your job 
 
 Output: Quick Check flags a $340 duplicate facility fee. Rescue plan gives you the exact phone script with insider phrases. Rehearsal builds your confidence — you handle the hard-mode rep's pushback. Letter is ready to send. After the call, you log that they accepted $50/month and waived the late fees. Victory tracker shows you saved $640.
 
-### Cut to the Chase
-
-URL: https://deftbrain.com/CutToTheChase
-Tagline: Paste any long document — we'll extract only what affects you
-Categories: The Grind, Loot
-
-Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Cut to the Chase extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.
-
-**What it does.** Cut to the Chase solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.
-
-**How to use it.**
-
-1. Paste the full text of the document you received
-2. Select the document type (insurance, HOA, lease, policy update, etc.)
-3. Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')
-4. Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')
-5. Review action items, cost changes, savings opportunities, and what you can safely ignore
-
-**Tips.**
-
-- More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'
-- Action Required items show deadlines and consequences — these are the ones people miss and regret
-- 'Buried but Important' specifically calls out things hidden in fine print or dense paragraphs
-- The 'Safely Ignore' section is genuinely useful — it gives you permission to stop reading
-- 'Consult Professional' flags appear when the tool spots something that needs expert review, not just AI analysis
-
-**Example.**
-
-Input: You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.
-
-Output: Cut to the Chase finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all.
-
 ### Doctor Visit Prep
 
 URL: https://deftbrain.com/DoctorVisitPrep
@@ -178,6 +146,38 @@ Medical conversations often make perfect sense while you're sitting in the exam 
 Input: You left a doctor appointment where they said you have 'hypertension' and prescribed 'lisinopril 10mg.' Your blood pressure was 145/92. You're confused about what this means.
 
 Output: You receive a plain English summary, definition of 'hypertension' and what 145/92 means, action checklist (HIGH: Start medication, MEDIUM: Reduce sodium), lisinopril explanation with side effects, follow-up requirements, and questions to ask next visit.
+
+### Document Detective
+
+URL: https://deftbrain.com/DocumentDetective
+Tagline: Paste the document. Find what matters to you.
+Categories: The Grind, Loot
+
+Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Document Detective extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.
+
+**What it does.** Document Detective solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.
+
+**How to use it.**
+
+1. Paste the full text of the document you received
+2. Select the document type (insurance, HOA, lease, policy update, etc.)
+3. Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')
+4. Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')
+5. Review action items, cost changes, savings opportunities, and what you can safely ignore
+
+**Tips.**
+
+- More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'
+- Action Required items show deadlines and consequences — these are the ones people miss and regret
+- 'Buried but Important' specifically calls out things hidden in fine print or dense paragraphs
+- The 'Safely Ignore' section is genuinely useful — it gives you permission to stop reading
+- 'Consult Professional' flags appear when the tool spots something that needs expert review, not just AI analysis
+
+**Example.**
+
+Input: You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.
+
+Output: Document Detective finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all.
 
 ### Drive Home
 

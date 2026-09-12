@@ -12,9 +12,9 @@
 
 - [Bike Medic](https://deftbrain.com/BikeMedic): Figure out what's wrong with your bike — and what to do next.
 - [Bill Rescue](https://deftbrain.com/BillRescue): A bill isn't a verdict. It's a puzzle to solve.
-- [Cut to the Chase](https://deftbrain.com/CutToTheChase): Paste any long document — we'll extract only what affects you
 - [Doctor Visit Prep](https://deftbrain.com/DoctorVisitPrep): Walk in prepared — because fifteen minutes goes by quickly.
 - [Doctor Visit Translator](https://deftbrain.com/DoctorVisitTranslator): Turn medical jargon into plain English
+- [Document Detective](https://deftbrain.com/DocumentDetective): Paste the document. Find what matters to you.
 - [Drive Home](https://deftbrain.com/DriveHome): A clearer call before you get behind the wheel
 - [Final Wish](https://deftbrain.com/FinalWish): Organize what matters. Say what needs to be said.
 - [Jargon Assassin](https://deftbrain.com/JargonAssassin): Confusing documents → plain language → what to do about it

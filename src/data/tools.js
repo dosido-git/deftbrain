@@ -2476,8 +2476,8 @@ export const tools = [
 },
 
 {
-  modified: "",
-  id: "CutToTheChase",
+  modified: "2026-09-12",
+  id: "DocumentDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2487,16 +2487,16 @@ export const tools = [
     edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you.",
   },
   seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and see only what costs you money or needs action.",
-  seoTitle: "Cut to the Chase: Find What Actually Affects You",
-  title: "Cut to the Chase",
-  tagline: "Paste any long document — we'll extract only what affects you",
+  seoTitle: "Document Detective: Find What Actually Affects You",
+  title: "Document Detective",
+  tagline: "Paste the document. Find what matters to you.",
   tags: ['document', 'document analysis', 'long document', 'what matters', 'personalized document', 'fine print', 'notice', 'policy', 'benefits', 'EOB', 'lease amendment', 'company policy', 'government notice', 'medical bill', 'legal document', 'deadline', 'action required', 'fee', 'document question', 'document relevance', 'understand document'],
-  icon: "✂️",
+  icon: "🔎",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
-  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Cut to the Chase extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
+  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Document Detective extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
-    overview: "Cut to the Chase solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
+    overview: "Document Detective solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
     howToUse: [
       "Paste the full text of the document you received",
       "Select the document type (insurance, HOA, lease, policy update, etc.)",
@@ -2507,7 +2507,7 @@ export const tools = [
     example: {
       scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
       action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
-      result: "Cut to the Chase finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
+      result: "Document Detective finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
     },
     tips: [
       "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
