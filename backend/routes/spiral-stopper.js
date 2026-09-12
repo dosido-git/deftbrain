@@ -4,288 +4,183 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-// ═══════════════════════════════════════════════════
-// SPIRAL STOPPER — v2 (5 routes, 3 modes)
-// v1: single spiral analysis
-// v2: +unfreeze (FreezeStateUnblocker), +recover (ShutdownRecoveryGuide),
-//     +reflect (post-spiral debrief), +patterns (history analysis)
-// ═══════════════════════════════════════════════════
+// Ground-up rebuild (2026-09-11), installed from an owner-supplied rewrite
+// per audit/REWRITE-INSTALL-KIT.md. Replaces the three-mode Spiral / Frozen
+// / Crashed architecture (severity scoring, an automatic breathing banner,
+// cognitive-distortion labels, nervous-system explanations, recovery
+// protocols, episode/trigger pattern analysis) with one job: separate what
+// happened from what the visitor's mind added, name what's still unknown,
+// and offer at most one grounded next move. Recurring-pattern recognition
+// across time is deliberately NOT this tool's job — that's Before the
+// Crash, cross-referenced directly below.
+//
+// validateResult() below IS the check router.outputStandard='v2' declares:
+// what_the_spiral_added's status is pinned to the fixed three-value enum,
+// every array is capped and filtered of junk, and next_move collapses to
+// {available:false} rather than reaching the visitor half-shaped. The
+// grounding discipline itself (no invented history, no clinical labels, no
+// prediction of how others react) lives in CONTRACT below and is
+// prompt-enforced, not code-verified.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'spiral_added_status_outside_the_fixed_three_value_enum',
+    'more_than_one_next_move_action_reaching_the_visitor',
+    'ordinary_analysis_returned_alongside_a_true_safety_redirect',
+    'malformed_array_item_passed_through_unfiltered',
+  ],
+  require: ['fulfills_tool_promise'],
+};
+
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
+
+const CONTRACT = `You are Spiral Stopper.
+
+PURPOSE
+Help a visitor whose thoughts are running ahead of the evidence separate:
+1. what actually happened;
+2. what their mind is adding;
+3. what is genuinely unknown;
+4. what, if anything, they can do next.
+
+NORTH STAR
+STOP THE STORY FROM OUTRUNNING THE FACTS.
+
+THIS IS NOT
+- a diagnostic tool;
+- psychotherapy;
+- a cognitive-distortion classifier;
+- a nervous-system assessment;
+- a crisis severity scorer;
+- a recurring-pattern analyzer;
+- a tool for freeze, burnout, shutdown, or exhaustion recovery.
+
+GROUNDING DISCIPLINE
+Use only information the visitor supplied.
+Do not invent prior successes, resilience, motives, values, reputation, history, relationships, feelings, diagnoses, or likely outcomes.
+Do not say what another person thinks, feels, intends, or will do.
+Do not reassure by inventing a favorable outcome.
+Do not turn uncertainty into reassurance. Unknown stays unknown.
+Do not use clinical labels such as catastrophizing, mind-reading, emotional reasoning, anxiety disorder, panic, trauma response, freeze response, or nervous-system dysregulation in the visitor-facing answer.
+
+FACT VS STORY
+A fact is something the visitor directly reports happened or is currently observable.
+A prediction is not a fact merely because it feels likely.
+An interpretation of another person's reaction is not a fact unless the visitor reports an actual statement or behavior.
+A broad conclusion such as 'my reputation is ruined' is not established by one event.
+
+When the visitor supplied an optional factual-anchor field, treat it as their chosen factual anchor unless it conflicts with their longer description. If there is a conflict, preserve the uncertainty rather than silently choosing.
+
+OUTPUT STYLE
+Answer first. Keep it short enough to use while upset.
+Do not lecture about psychology.
+Do not explain your own reasoning.
+Use calm, ordinary language rather than therapy voice.
+
+VOICE
+The word "visitor" in these instructions describes the person you're writing for — it is never a word you write yourself. Every string you return (what_happened, what_the_spiral_added, what_is_unknown, anchor, next_move, after_this, message) must speak directly to that person as "you" / "your". Never write "the visitor", "the user", or any third-person stand-in inside an output field.
+Wrong: "The visitor is scared their choices have fallen behind." Right: "You're scared your choices have fallen behind."
+Wrong: "One person in the visitor's life got engaged." Right: "A friend of yours got engaged."
+
+NEXT MOVE
+Offer at most ONE next move.
+Only offer an action when there is a concrete, low-risk action supported by the situation.
+Examples: correct an error, send a factual clarification, check the actual message, wait for a result that is not yet available.
+Do not create busywork merely to restore a sense of control.
+If no useful action exists right now, say so plainly.
+
+SAFETY
+If the visitor explicitly describes immediate danger, self-harm intent, or inability to stay safe, do not perform the ordinary spiral analysis. Return safety_redirect=true with a brief, warm message naming concrete crisis resources — for example 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local emergency number if the visitor's region suggests otherwise — plus a trusted person who can stay with them. Do not claim they are safe.
+
+CONFORM TO DEFTBRAIN_OUTPUT_STANDARD_V2.
+Reason freely. Assert carefully.
+
+${NO_QUOTE_RULE}`;
+
+const SPIRAL_STATUSES = new Set(['PREDICTION', 'INTERPRETATION', 'CONCLUSION']);
+
+// Structural sanitization only — see the file-header comment. This does NOT
+// verify the model avoided inventing history or a clinical label; that
+// discipline is prompt-enforced (CONTRACT above), not code-checkable.
+function validateResult(parsed) {
+  if (!parsed || typeof parsed.safety_redirect !== 'boolean') return null;
+
+  if (parsed.safety_redirect) {
+    return {
+      safety_redirect: true,
+      message: typeof parsed.message === 'string' && parsed.message.trim() ? parsed.message.trim() : null,
+      what_happened: [],
+      what_the_spiral_added: [],
+      what_is_unknown: [],
+      anchor: null,
+      next_move: { available: false, action: null, why: null },
+      after_this: null,
+    };
+  }
+
+  const whatHappened = Array.isArray(parsed.what_happened)
+    ? parsed.what_happened.filter(x => typeof x === 'string' && x.trim()).slice(0, 3)
+    : [];
+
+  const spiralAdded = Array.isArray(parsed.what_the_spiral_added)
+    ? parsed.what_the_spiral_added
+        .filter(x => x && typeof x === 'object')
+        .slice(0, 4)
+        .map(x => ({
+          thought: typeof x.thought === 'string' ? x.thought : '',
+          status: SPIRAL_STATUSES.has(x.status) ? x.status : 'INTERPRETATION',
+          grounded_version: typeof x.grounded_version === 'string' ? x.grounded_version : '',
+        }))
+        .filter(x => x.thought)
+    : [];
+
+  const whatUnknown = Array.isArray(parsed.what_is_unknown)
+    ? parsed.what_is_unknown.filter(x => typeof x === 'string' && x.trim()).slice(0, 4)
+    : [];
+
+  const nm = parsed.next_move && typeof parsed.next_move === 'object' ? parsed.next_move : {};
+  const hasAction = typeof nm.action === 'string' && nm.action.trim();
+  const nextMove = {
+    available: nm.available === true && !!hasAction,
+    action: hasAction ? nm.action.trim() : null,
+    why: hasAction && typeof nm.why === 'string' && nm.why.trim() ? nm.why.trim() : null,
+  };
+
+  return {
+    safety_redirect: false,
+    what_happened: whatHappened,
+    what_the_spiral_added: spiralAdded,
+    what_is_unknown: whatUnknown,
+    anchor: typeof parsed.anchor === 'string' && parsed.anchor.trim() ? parsed.anchor.trim() : null,
+    next_move: nextMove,
+    after_this: typeof parsed.after_this === 'string' && parsed.after_this.trim() ? parsed.after_this.trim() : null,
+  };
+}
 
 router.post('/spiral-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { action } = req.body;
-
   try {
-    switch (action || 'spiral') {
+    const { thoughts, actual_event, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
-      // ╔══════════════════════════════════════════════╗
-      // ║  SPIRAL MODE — Anxiety spiral intervention   ║
-      // ╚══════════════════════════════════════════════╝
-
-      case 'spiral': {
-        const { thoughts, physical_symptoms, trigger, intensity, history, sessionHistory, userLanguage } = req.body;
-        const hist = history || sessionHistory;
-
-        if (!thoughts?.trim()) {
-          return res.status(400).json({ error: 'What are you thinking right now?' });
-        }
-
-        const historyHint = hist?.length
-          ? `\nPAST SPIRALS: ${hist.slice(0, 5).map(h => `${h.trigger} → ${h.primary_distortion} (intensity ${h.intensity})`).join('; ')}`
-          : '';
-
-        const prompt = withLanguage(`Someone is caught in an anxiety spiral right now. This is an emergency intervention — be direct, warm, and effective.
-
-THEIR THOUGHTS: "${thoughts}"
-PHYSICAL SYMPTOMS: ${physical_symptoms || 'not specified'}
-TRIGGER: ${trigger || 'not specified'}
-INTENSITY: ${intensity || '?'}/5
-${historyHint}
-
-DETECT these cognitive distortions:
-- Catastrophizing: one event → everything ruined
-- All-or-nothing: "always", "never", "everyone", "no one"
-- Fortune-telling: predicting negative outcomes with certainty
-- Mind-reading: assuming what others think
-- Overgeneralization: one instance → permanent pattern
-- Emotional reasoning: "I feel it so it must be true"
-- Should statements: "I should have" → shame spiral
-
-RULES:
-- Start with the immediate physical intervention — ground them FIRST.
-- Reality checks must use EVIDENCE, not just positivity. "You've sent 500 emails without getting fired" beats "I'm sure it's fine."
-- Name the specific distortion pattern. People feel validated when their thinking trap has a name.
-- The compassionate reality should be SHORT and hit hard — this is the thing they'll remember.
-- If you notice a pattern from history, mention it: "This looks similar to the email spiral from before — and that turned out fine."
-
-Return ONLY valid JSON:
-{
-  "spiral_detected": true,
-  "intensity_read": "Brief assessment of how deep this spiral is.",
-  "primary_distortion": "catastrophizing|all_or_nothing|fortune_telling|mind_reading|overgeneralization|emotional_reasoning|should_statements",
-  "distortion_label": "Human-readable name for their specific pattern.",
-  "immediate_action": {
-    "instruction": "One physical action to do RIGHT NOW. Specific. 'Put your phone face down and press both palms flat on the surface in front of you.'",
-    "why": "One sentence: why this breaks the spiral."
-  },
-  "thought_breakdown": [
-    {
-      "anxious_thought": "The specific thought they expressed.",
-      "distortion": "Which cognitive distortion this is.",
-      "reality_check": "Evidence-based counter. Not 'it'll be fine' but specific evidence.",
-      "reframe": "The same situation described without the distortion."
-    }
-  ],
-  "grounding": {
-    "name": "Grounding exercise name.",
-    "steps": ["Step-by-step instructions. Short sentences. One action per step."],
-    "duration": "How long, e.g. about 2 minutes."
-  },
-  "compassionate_reality": "2-3 sentences. The truth about what's actually happening vs anxiety's narrative. This is the anchor statement.",
-  "pattern_note": "If history shows a recurring pattern, note it. Otherwise null.",
-  "after_spiral": "What to do next — one concrete action for when they feel calmer."
-}
-
-Provide AT MOST 4 thought_breakdown items and AT MOST 5 grounding steps. Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SS-Spiral' });
-        if (parsed.spiral_detected === undefined) {
-          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ╔══════════════════════════════════════════════╗
-      // ║  FREEZE MODE — (absorbs FreezeStateUnblocker)║
-      // ╚══════════════════════════════════════════════╝
-
-      case 'unfreeze': {
-        const { stuck_on, completed_steps, can_move, userLanguage } = req.body;
-
-        const stepContext = completed_steps?.length
-          ? `\nCOMPLETED SO FAR: ${completed_steps.join(' → ')}`
-          : '';
-
-        const prompt = withLanguage(`Someone is completely frozen. They can't start, can't decide, can't move. This is NOT procrastination — it's paralysis. They need ONE micro-action, not a plan.
-
-STUCK ON: "${stuck_on || 'not specified — just frozen'}"
-CAN THEY PHYSICALLY MOVE? ${can_move === false ? 'No — they may be in bed or on the couch' : 'Yes, or unknown'}
-STEP NUMBER: ${(completed_steps?.length || 0) + 1}
-${stepContext}
-
-RULES:
-- Give ONE action. Not two. Not "and then." ONE.
-- If this is step 1-3 and they can move: physical actions first (stand, walk, drink water). Physical movement breaks the freeze response.
-- If they can't move: start even smaller (wiggle toes, shift weight, open eyes wider).
-- Each action must have a clear completion signal — how they know they did it.
-- Give explicit permission to stop after this step. "If you stop here, you moved. That matters."
-- If they specified what they're stuck on AND they've done 3+ physical steps, start micro-stepping toward the task.
-- Never give more than one action. Never include "and then" or "next."
-- Tone: calm, steady, no enthusiasm. Like a quiet friend sitting next to them.
-
-Return ONLY valid JSON:
-{
-  "step_number": ${(completed_steps?.length || 0) + 1},
-  "instruction": "The ONE action. Short. Specific. 'Stand up from where you are sitting.'",
-  "completion_signal": "How they know they did it. 'You're standing.'",
-  "why_this": "One sentence: why this specific action matters right now.",
-  "permission": "Explicit permission to stop after this. 'You can be done. You moved.'",
-  "encouragement": "Brief, genuine. Not peppy. 'That was hard and you did it.'"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SS-Unfreeze' });
-        if (parsed.step_number === undefined) {
-          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ╔══════════════════════════════════════════════╗
-      // ║  RECOVER MODE — (absorbs ShutdownRecoveryGuide) ║
-      // ╚══════════════════════════════════════════════╝
-
-      case 'recover': {
-        const { crash_type, severity, duration, can_do, userLanguage } = req.body;
-
-        if (!crash_type) {
-          return res.status(400).json({ error: 'What kind of crash are you experiencing?' });
-        }
-
-        const prompt = withLanguage(`Someone has crashed and needs a recovery protocol. This is for when they're completely spent — not "tired" but "cannot function." The protocol must be matched to what they can actually do RIGHT NOW.
-
-CRASH TYPE: ${crash_type}
-SEVERITY: ${severity || 'severe'}
-HOW LONG: ${duration || 'unknown'}
-WHAT THEY CAN DO: "${can_do || 'not sure'}"
-
-RULES:
-- Match instructions to severity. "Severe" means they might not be able to get out of bed. Don't tell them to cook a meal.
-- Hour 1 is SURVIVAL only: breathe, water if possible, stay safe. That's enough.
-- Permission statements are critical — people in this state feel guilty for not functioning. Counter that directly.
-- Be warm but extremely practical. No inspirational quotes. Just: "Drink water. That counts."
-- Organize by what they can handle in stages, not by time necessarily — some people will be in the first stage for a full day.
-- Include when to ask for help — specific, non-scary triggers.
-
-Return ONLY valid JSON:
-{
-  "acknowledgment": "Warm, brief validation. 'You're not failing. Your system hit a wall. That's real.'",
-  "current_read": "What their reported state tells you, in plain language.",
-  "stages": [
-    {
-      "name": "Stage name — e.g., 'Right now' or 'When you can sit up'",
-      "description": "What this stage is for. — 1-2 sentences",
-      "steps": ["Ultra-simple instructions. One sentence each. 'Drink water if it's nearby.' Not 'Go get water.'"],
-      "enough_statement": "What counts as 'enough' at this stage. 'If you do nothing else today, breathing is enough.'"
-    }
-  ],
-  "permissions": ["Explicit permission statements. 'You don't have to reply to messages.' 'The mess can wait.' 'Canceling plans is protecting yourself.'"],
-  "basics_checklist": ["The absolute minimum needs. 'Water', 'Medication if you take any', 'Tell one person you're struggling (text counts)'"],
-  "when_to_reach_out": "Specific, non-scary guidance on when to ask for help. Not 'call 911' unless warranted — more like 'If this lasts more than 3 days, text one person.'",
-  "recovery_signs": ["How they'll know they're coming out of it. 'You'll notice you can think about tomorrow.' 'You'll feel annoyed instead of numb — that's actually progress.'"],
-  "gentle_reminder": "One sentence they can come back to. The anchor."
-}
-
-Provide AT MOST 4 stages (each AT MOST 5 steps), AT MOST 5 permissions, AT MOST 5 basics_checklist items, and AT MOST 5 recovery_signs. Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SS-Recover' });
-        if (parsed.acknowledgment === undefined) {
-          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // REFLECT — Post-spiral debrief
-      // ────────────────────────────────────────────
-      case 'reflect': {
-        const { trigger, distortion, intensity_before, intensity_after, what_helped, userLanguage } = req.body;
-
-        const prompt = withLanguage(`Someone just came through a spiral/freeze/crash and is debriefing. Help them learn from it.
-
-TRIGGER: "${trigger || 'unknown'}"
-DISTORTION: ${distortion || 'unknown'}
-INTENSITY: ${intensity_before || '?'}/5 → ${intensity_after || '?'}/5
-WHAT HELPED: "${what_helped || 'not sure'}"
-
-Return ONLY valid JSON:
-{
-  "reflection": "2-3 sentences. What this episode shows about their patterns. Non-judgmental.",
-  "pattern_insight": "If there's a recurring pattern (from distortion type), name it. 'You tend to catastrophize around work emails. Your brain has a groove for that specific spiral.' null if not enough info.",
-  "prevention_tip": "One specific thing they could try next time they notice this trigger. Concrete, not vague.",
-  "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.'"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SS-Reflect' });
-        if (parsed.reflection === undefined) {
-          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // PATTERNS — Analyze spiral history
-      // ────────────────────────────────────────────
-      case 'patterns': {
-        const { episode_log, userLanguage } = req.body;
-
-        if (!episode_log?.length || episode_log.length < 3) {
-          return res.status(400).json({ error: 'Need at least 3 logged episodes for pattern analysis.' });
-        }
-
-        const prompt = withLanguage(`Analyze this person's history of spirals, freezes, and crashes for patterns.
-
-EPISODE LOG (most recent first):
-${JSON.stringify(episode_log.slice(0, 20), null, 2)}
-
-Return ONLY valid JSON:
-{
-  "total_episodes": ${episode_log.length},
-  "most_common_type": "spiral|freeze|crash",
-  "most_common_distortion": "The distortion that shows up most.",
-  "trigger_patterns": ["Recurring trigger themes. e.g., 'Work email mistakes trigger 60% of your spirals.'"],
-  "time_patterns": "Any patterns in when episodes happen. null if not detectable.",
-  "improvement_trend": "Are episodes getting less intense over time? More spaced out? Be honest.",
-  "biggest_insight": "The single most useful pattern observation.",
-  "personalized_toolkit": [
-    { "trigger": "Specific trigger", "best_response": "What's worked best for this trigger based on their data." }
-  ],
-  "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.'"
-}
-
-Provide AT MOST 5 trigger_patterns and AT MOST 5 personalized_toolkit items. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SS-Patterns' });
-        if (parsed.total_episodes === undefined) {
-          return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      default:
-        return res.status(400).json({ error: `Unknown action: ${action}` });
+    if (!thoughts || !String(thoughts).trim()) {
+      return res.status(400).json({ error: 'Tell me what is looping in your head.' });
     }
 
-  } catch (err) {
-    console.error('SpiralStopper error:', err);
+    const system = withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+
+    const prompt = `THE LOOP, IN THEIR OWN WORDS\n${String(thoughts).trim()}\n\nTHEIR OPTIONAL FACTUAL ANCHOR\n${actual_event && String(actual_event).trim() ? String(actual_event).trim() : 'Not supplied.'}\n\nReturn ONLY valid JSON in exactly this shape. Every string value must speak to them directly as "you" — see VOICE above.\n{\n  "safety_redirect": false,\n  "what_happened": [\n    "1-3 concise factual statements directly supported by their words, addressed to them as you. If a fact cannot be established, omit it."\n  ],\n  "what_the_spiral_added": [\n    {\n      "thought": "A prediction, interpretation, or broad conclusion contained in their own words, quoted or paraphrased as you/your.",\n      "status": "PREDICTION | INTERPRETATION | CONCLUSION",\n      "grounded_version": "A short you/your version that preserves what is known and does not invent reassurance."\n    }\n  ],\n  "what_is_unknown": [\n    "1-4 specific things they do not actually know yet, addressed as you/your."\n  ],\n  "anchor": "One short you/your sentence they can come back to. It must contain only supplied facts plus explicit uncertainty.",\n  "next_move": {\n    "available": true,\n    "action": "At most one concrete low-risk action, addressed as you/your. If none exists, set available false and action null.",\n    "why": "One sentence explaining what the action resolves or verifies without promising an emotional result. If unavailable, null."\n  },\n  "after_this": "One short you/your sentence telling them what they do NOT need to solve right now, or what to wait for."\n}\n\nIf safety_redirect is true, instead return:\n{\n  "safety_redirect": true,\n  "message": "Brief, warm you/your safety-first message naming concrete crisis resources",\n  "what_happened": [],\n  "what_the_spiral_added": [],\n  "what_is_unknown": [],\n  "anchor": null,\n  "next_move": { "available": false, "action": null, "why": null },\n  "after_this": null\n}\n\nLimits:\n- what_happened: max 3 items\n- what_the_spiral_added: max 4 items\n- what_is_unknown: max 4 items\n- no cognitive-distortion labels\n- no clinical explanations\n- no invented personal history\n- no prediction of how others will react\n- no claim that they are safe\n- no third-person phrasing anywhere in the output ("the visitor", "they", "the user") — always you/your\n- ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 3200,
+      system,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'spiral-stopper' });
+
+    const result = validateResult(parsed);
+    if (!result) return res.status(500).json({ error: 'Could not untangle this spiral. Please try again.' });
+    res.json(result);
+  } catch (error) {
+    console.error('SpiralStopper error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

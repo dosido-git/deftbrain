@@ -5891,55 +5891,54 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-03-23",
+  modified: "2026-09-11",
   id: "SpiralStopper",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Right now, mid-spiral, frozen, or completely spent.",
-    give: "Which of the three you're in, and whatever you can get out.",
-    get: "A structured intervention for that specific state.",
-    edge: "Three different states get three different interventions. What breaks a spiral will not move someone who's frozen.",
+    when: "A thought is stuck on repeat and you can't tell any more what's fact and what your mind added.",
+    give: "Whatever is looping in your head, unfiltered. A factual anchor too, if you have one.",
+    get: "What actually happened, separated from the predictions and conclusions layered on top — plus at most one thing to do next.",
+    edge: "This is for one loop, right now — not a freeze, a crash, or a pattern across time. For a trigger that keeps recurring, see Before the Crash.",
   },
-  seoDescription: "Free crisis tool for when your brain goes sideways. Get grounded from an anxiety spiral, unstuck from a freeze, or a recovery plan when you've crashed.",
-  seoTitle: "Anxiety Spiral & Panic Help Tool",
+  seoDescription: "Can't stop replaying something or jumping to the worst conclusion? Separate what happened from what your mind added, name what's still unknown, and get one grounded next step. Free.",
+  seoTitle: "Stop a Racing-Thought Spiral",
   title: "Spiral Stopper",
-  tagline: "Emergency intervention for spirals, freezes, and crashes",
+  tagline: "🌀 Stop the story from outrunning the facts.",
   tags: [
-    'anxiety', 'spiral', 'panic', 'worry', 'catastrophize', 'frozen', 'stuck',
-    'overwhelmed', 'crashed', 'burnout', 'grounding', 'racing thoughts', 'crisis',
-    'distortion', 'reality check', 'cant start', 'cant move', 'exhausted', 'shutdown'
+    'anxiety', 'spiral', 'rumination', 'worry', 'catastrophize', 'racing thoughts',
+    'overthinking', 'grounding', 'reality check', 'prediction', 'assumption',
+    'worst case', 'jumping to conclusions', 'crisis', 'stuck thought'
   ],
   icon: "🌀",
   categories: ['Energy', 'Me'],
   headerColor: "#2a5248",
-  description: "Three-mode crisis tool for when your brain goes sideways. Spiraling gets you grounded with reality checks and a distortion-busting anchor statement. Frozen gets you unstuck with one micro-action at a time and explicit permission to stop. Crashed gets you a severity-matched recovery protocol with basics checklists and staged instructions. All three log episodes and unlock pattern analysis after 3+ entries.",
+  description: "Can't stop replaying something or jumping to the worst conclusion? Tell Spiral Stopper what's running through your head. It separates what happened, what you're predicting, and what you don't actually know yet — then gives you one grounded next step.",
   guide: {
-    overview: "SpiralStopper is an in-the-moment intervention tool — not a therapy replacement, but a structured first responder for the three most common mental crisis states. Spiraling uses cognitive distortion identification and evidence-based reality checks. Frozen delivers one micro-action at a time with no plans, no decisions, and explicit permission to stop after any step. Crashed matches a recovery protocol to your severity level and crash type, with staged instructions so you only have to do the absolute minimum. All three modes log episodes persistently and unlock pattern analysis after 3+ entries, helping you spot your triggers and build a personal intervention toolkit over time.",
+    overview: "Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It sorts your own words into what actually happened, what your mind predicted or concluded on top of that (each labeled as a prediction, an interpretation, or a conclusion), and what's genuinely still unknown. You get one anchor sentence to come back to and, only when there's a real one, a single low-risk next move — never a list of things to try.",
     howToUse: [
-      "Choose your current state: Spiraling (racing thoughts), Frozen (can't move or start), or Crashed (completely spent)",
-      "Spiraling: dump your thoughts unfiltered, optionally add your trigger and physical symptoms, rate intensity 1-5, then hit Stop the Spiral",
-      "Frozen: optionally say what you're stuck on, indicate if you can physically get up, then tap 'Give me one thing' — complete it, tap Done, get the next one",
-      "Crashed: select what happened (exhaustion, emotional overload, burnout, overwhelm collapse, sensory overload), set severity, and get a staged recovery protocol",
-      "After any mode, do the optional debrief — 3 taps that update your episode log and improve future interventions",
-      "After 3+ episodes, tap the history counter to run pattern analysis and see your personal toolkit"
+      "Type out the loop exactly as it's running, unfiltered — the messier and more catastrophic, the more useful the split",
+      "Optionally add the one factual anchor you're sure of, stated plainly (what you'd put on a timeline, not what it means)",
+      "If you're too keyed up to write clearly, tap 'Ground me first' for a 30-second, no-solving grounding step, then come back",
+      "Submit and read the split: what happened, what the spiral added (each thought labeled prediction, interpretation, or conclusion), and what's still unknown",
+      "Read the one anchor sentence and, if one applies, the single next move — take it or don't, there's no second one waiting",
+      "If this keeps happening with the same trigger, that's a different question — Spiral Stopper hands off to Before the Crash for that"
     ],
     example: {
-      scenario: "It's 11pm. You made an error at work, your thoughts are spiraling into 'I'm going to get fired and everyone thinks I'm incompetent', your chest is tight, and you can't stop.",
-      action: "Select Spiraling. Dump everything: 'I messed up the report, my boss is going to notice, I'll get fired, I've always been bad at this...' Add trigger: 'work mistake'. Physical: 'tight chest, can't stop thinking'. Intensity: 4/5.",
-      result: "Immediate action: box breathing, right now, why explained. Distortion identified: catastrophizing + mind reading. Reality checks for each anxious thought. Grounding exercise with timed steps. Compassionate anchor: a single statement that reframes the whole spiral. Pattern note if you've been here before. After-spiral suggestion for what to do next."
+      scenario: "You sent a work email with a typo in it. Your mind is already several steps past the typo: your boss thinks you're incompetent, it'll come up in your review, you're going to lose the promotion you've been working toward for months.",
+      action: "Paste the whole loop in as it's running. Add the factual anchor: 'I sent an email with a typo in it.'",
+      result: "What happened: you sent an email with a typo. What the spiral added: 'he thinks I'm incompetent' (interpretation), 'it'll come up in my review' (prediction), 'I'm losing the promotion' (conclusion) — each with a grounded version. What's unknown: whether he's even read it yet, how he reacted, whether it affects your review. One anchor sentence to hold onto. One next move: send a short, factual follow-up with the correction — nothing more."
     },
     tips: [
-      "Don't filter your thoughts in Spiral mode — the messier and more catastrophic, the better the reality checks",
-      "In Frozen mode, each step is designed to be completable even if you're barely functional — trust the size of the action",
-      "The debrief takes 30 seconds and dramatically improves pattern analysis — do it even if you feel better",
-      "Pattern analysis after 3+ episodes is where this tool gets genuinely useful — your personal toolkit is built from your actual history",
-      "Crashed mode has a 'what can you do right now?' field — be honest, even if the answer is 'nothing'"
+      "Don't clean up what you type — the whole point is to hand over the story exactly as your mind is telling it, worst parts included",
+      "The factual-anchor field is optional but sharpens the split — one plain sentence, not your interpretation of what it means",
+      "If there's no safe next move right now, the tool says so plainly rather than inventing busywork to feel like it did something",
+      "This tool doesn't keep a log of your spirals on purpose — it's built to help with the one in front of you, not to track you over time"
     ],
     pitfalls: [
-      "This is a first-responder tool, not a replacement for professional support — if crises are frequent, please talk to someone",
-      "Don't skip the Frozen mode steps to 'do more' — one thing at a time is the entire point",
-      "The episode log caps at 6 — if you want longer pattern history, use it consistently and run analysis before the log rolls over"
+      "If what you're describing is immediate danger or an inability to stay safe, the tool stops the ordinary breakdown and gives you crisis resources instead — that's not a bug, take it seriously",
+      "This isn't a substitute for professional support — if the same spiral keeps recurring, a person trained for that is the better next step",
+      "It only works with what you tell it — it won't guess at anyone else's intentions, and neither should the next move you take"
     ]
   }
 },

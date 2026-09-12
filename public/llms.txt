@@ -116,7 +116,7 @@
 - [Nerve Check](https://deftbrain.com/NerveCheck): Real confidence for scary moments.
 - [PEP — Personal Energy Planner](https://deftbrain.com/PEP): Work with the energy you have.
 - [Sleep Architect](https://deftbrain.com/SleepArchitect): 😴 Better sleep, one useful experiment at a time.
-- [Spiral Stopper](https://deftbrain.com/SpiralStopper): Emergency intervention for spirals, freezes, and crashes
+- [Spiral Stopper](https://deftbrain.com/SpiralStopper): 🌀 Stop the story from outrunning the facts.
 - [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Turn that overwhelming mountain into micro-steps
 - [Virtual Body Double](https://deftbrain.com/VirtualBodyDouble): Work together. Even when you're working alone.
 - [Waiting Mode Liberator](https://deftbrain.com/WaitingModeLiberator): Break free when upcoming events freeze your day

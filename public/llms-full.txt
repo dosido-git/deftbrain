@@ -2946,35 +2946,34 @@ Output: Sleep Architect summarizes the reported waking pattern, keeps the relati
 ### Spiral Stopper
 
 URL: https://deftbrain.com/SpiralStopper
-Tagline: Emergency intervention for spirals, freezes, and crashes
+Tagline: 🌀 Stop the story from outrunning the facts.
 Categories: Energy, Me
 
-Three-mode crisis tool for when your brain goes sideways. Spiraling gets you grounded with reality checks and a distortion-busting anchor statement. Frozen gets you unstuck with one micro-action at a time and explicit permission to stop. Crashed gets you a severity-matched recovery protocol with basics checklists and staged instructions. All three log episodes and unlock pattern analysis after 3+ entries.
+Can't stop replaying something or jumping to the worst conclusion? Tell Spiral Stopper what's running through your head. It separates what happened, what you're predicting, and what you don't actually know yet — then gives you one grounded next step.
 
-**What it does.** SpiralStopper is an in-the-moment intervention tool — not a therapy replacement, but a structured first responder for the three most common mental crisis states. Spiraling uses cognitive distortion identification and evidence-based reality checks. Frozen delivers one micro-action at a time with no plans, no decisions, and explicit permission to stop after any step. Crashed matches a recovery protocol to your severity level and crash type, with staged instructions so you only have to do the absolute minimum. All three modes log episodes persistently and unlock pattern analysis after 3+ entries, helping you spot your triggers and build a personal intervention toolkit over time.
+**What it does.** Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It sorts your own words into what actually happened, what your mind predicted or concluded on top of that (each labeled as a prediction, an interpretation, or a conclusion), and what's genuinely still unknown. You get one anchor sentence to come back to and, only when there's a real one, a single low-risk next move — never a list of things to try.
 
 **How to use it.**
 
-1. Choose your current state: Spiraling (racing thoughts), Frozen (can't move or start), or Crashed (completely spent)
-2. Spiraling: dump your thoughts unfiltered, optionally add your trigger and physical symptoms, rate intensity 1-5, then hit Stop the Spiral
-3. Frozen: optionally say what you're stuck on, indicate if you can physically get up, then tap 'Give me one thing' — complete it, tap Done, get the next one
-4. Crashed: select what happened (exhaustion, emotional overload, burnout, overwhelm collapse, sensory overload), set severity, and get a staged recovery protocol
-5. After any mode, do the optional debrief — 3 taps that update your episode log and improve future interventions
-6. After 3+ episodes, tap the history counter to run pattern analysis and see your personal toolkit
+1. Type out the loop exactly as it's running, unfiltered — the messier and more catastrophic, the more useful the split
+2. Optionally add the one factual anchor you're sure of, stated plainly (what you'd put on a timeline, not what it means)
+3. If you're too keyed up to write clearly, tap 'Ground me first' for a 30-second, no-solving grounding step, then come back
+4. Submit and read the split: what happened, what the spiral added (each thought labeled prediction, interpretation, or conclusion), and what's still unknown
+5. Read the one anchor sentence and, if one applies, the single next move — take it or don't, there's no second one waiting
+6. If this keeps happening with the same trigger, that's a different question — Spiral Stopper hands off to Before the Crash for that
 
 **Tips.**
 
-- Don't filter your thoughts in Spiral mode — the messier and more catastrophic, the better the reality checks
-- In Frozen mode, each step is designed to be completable even if you're barely functional — trust the size of the action
-- The debrief takes 30 seconds and dramatically improves pattern analysis — do it even if you feel better
-- Pattern analysis after 3+ episodes is where this tool gets genuinely useful — your personal toolkit is built from your actual history
-- Crashed mode has a 'what can you do right now?' field — be honest, even if the answer is 'nothing'
+- Don't clean up what you type — the whole point is to hand over the story exactly as your mind is telling it, worst parts included
+- The factual-anchor field is optional but sharpens the split — one plain sentence, not your interpretation of what it means
+- If there's no safe next move right now, the tool says so plainly rather than inventing busywork to feel like it did something
+- This tool doesn't keep a log of your spirals on purpose — it's built to help with the one in front of you, not to track you over time
 
 **Example.**
 
-Input: It's 11pm. You made an error at work, your thoughts are spiraling into 'I'm going to get fired and everyone thinks I'm incompetent', your chest is tight, and you can't stop.
+Input: You sent a work email with a typo in it. Your mind is already several steps past the typo: your boss thinks you're incompetent, it'll come up in your review, you're going to lose the promotion you've been working toward for months.
 
-Output: Immediate action: box breathing, right now, why explained. Distortion identified: catastrophizing + mind reading. Reality checks for each anxious thought. Grounding exercise with timed steps. Compassionate anchor: a single statement that reframes the whole spiral. Pattern note if you've been here before. After-spiral suggestion for what to do next.
+Output: What happened: you sent an email with a typo. What the spiral added: 'he thinks I'm incompetent' (interpretation), 'it'll come up in my review' (prediction), 'I'm losing the promotion' (conclusion) — each with a grounded version. What's unknown: whether he's even read it yet, how he reacted, whether it affects your review. One anchor sentence to hold onto. One next move: send a short, factual follow-up with the correction — nothing more.
 
 ### Task Avalanche Breaker
 

@@ -909,7 +909,18 @@ for name, fpath in tools:
                          # renders; it just doesn't match this rule's naming
                          # or shape patterns (no top-level *History
                          # usePersistentState, no literal `preview:` field).
-                         'PlantRescue'}
+                         'PlantRescue',
+                         # SpiralStopper joined on 2026-09-11 with the
+                         # ground-up rebuild. README: "longitudinal history
+                         # as a product feature" removed on purpose — the
+                         # whole point of the redesign is separating this
+                         # tool from Before the Crash, whose job IS
+                         # recurring-pattern recognition across time. A saved
+                         # log of someone's spiraling thoughts (which can
+                         # include safety_redirect content) is exactly the
+                         # kind of thing that should not sit in a browser's
+                         # storage by default.
+                         'SpiralStopper'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 
@@ -952,9 +963,13 @@ for name, fpath in tools:
 
     # S1.7: results persisted (not useState) — exception for complex multi-state tools
     # (tools with many persistent states likely manage results as session state by design)
+    # and for _NO_HISTORY_TOOLS (S1.5's opt-in exemption list): a tool that
+    # deliberately keeps no history has usually made the same call about its
+    # single most-recent result for the same reason — see the SpiralStopper
+    # entry in that list.
     res_state = re.search(r'const \[(results|result)\b[^\]]*\]\s*=\s*(useState|usePersistentState)', content)
     persistent_count = len(re.findall(r'usePersistentState\(', content))
-    if res_state and res_state.group(2) == 'useState' and persistent_count < 3:
+    if not _skip_history and res_state and res_state.group(2) == 'useState' and persistent_count < 3:
         fails.append('S1.7: results uses useState (should be usePersistentState)')
 
     # S2.1: Enter key — global document listener required
