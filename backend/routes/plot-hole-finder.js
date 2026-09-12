@@ -255,9 +255,9 @@ const MEDIA_HINT = {
 };
 
 // ════════════════════════════════════════════════════════════
-// POST /plot-hole — Find Holes
+// POST /plot-hole-finder — Find Holes
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/plot-hole-finder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, whatToLookAt, mediaType, userLanguage } = req.body;
 
@@ -336,9 +336,9 @@ ${NO_QUOTE_RULE}`;
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /plot-hole/defend — Defend a Hole
+// POST /plot-hole-finder/defend — Defend a Hole
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole/defend', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/plot-hole-finder/defend', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, allegedHole, whatFeelsWrong, userLanguage } = req.body;
 

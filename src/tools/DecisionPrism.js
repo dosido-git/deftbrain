@@ -200,7 +200,7 @@ const DecisionPrism = ({ tool }) => {
       stuckReason,
     };
     try {
-      const data = await callToolEndpoint('plot-twist', {
+      const data = await callToolEndpoint('decision-prism', {
         decision: inputs.decision,
         options: inputs.options.length > 0 ? inputs.options : null,
         context: inputs.context || null,

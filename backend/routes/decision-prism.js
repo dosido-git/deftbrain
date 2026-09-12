@@ -184,9 +184,9 @@ function buildSupplied(body) {
 }
 
 // ════════════════════════════════════════════
-// POST /plot-twist — Untangle a decision
+// POST /decision-prism — Untangle a decision
 // ════════════════════════════════════════════
-router.post('/plot-twist', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/decision-prism', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decision, userLanguage } = req.body;
     if (!decision?.trim()) return res.status(400).json({ error: 'Describe the decision.' });
@@ -228,13 +228,13 @@ ${NO_QUOTE_RULE}`;
         max_tokens: 4000,
         system: withLanguage(optionsPrompt, userLanguage) + locale,
         messages: [{ role: 'user', content: 'Analyze the options.' }],
-      }, { label: 'plot-twist-options' }),
+      }, { label: 'decision-prism-options' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 2500,
         system: withLanguage(framingPrompt, userLanguage) + locale,
         messages: [{ role: 'user', content: 'Build the reframe.' }],
-      }, { label: 'plot-twist-framing' }),
+      }, { label: 'decision-prism-framing' }),
     ]);
 
     const parsed = { ...optionsPart, ...framingPart };
@@ -276,7 +276,7 @@ ${NO_QUOTE_RULE}`;
       }
 
       await runOutputGuard(parsed, {
-        label: 'plot-twist',
+        label: 'decision-prism',
         fields,
         supplied,
         promise: 'Examine a difficult decision from several useful angles — pre-mortem, time horizons, opportunity cost, reversibility, values fit, and a comparison matrix — using only options and facts the visitor actually supplied. Never predict the visitor\'s future feelings, another person\'s reaction, or a hidden motive; never invent an option like "do nothing" the visitor never named; never assign an arbitrary numeric score.',
@@ -284,7 +284,7 @@ ${NO_QUOTE_RULE}`;
         userLanguage,
       });
     } catch (guardErr) {
-      console.log('[plot-twist] v2 guard skipped:', guardErr.message);
+      console.log('[decision-prism] v2 guard skipped:', guardErr.message);
     }
 
     res.json(parsed);

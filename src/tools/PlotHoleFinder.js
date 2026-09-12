@@ -209,7 +209,7 @@ const PlotHoleFinder = ({ tool }) => {
     if (!title.trim()) return;
     setError(''); setResults(null); setViewingHistoryId(null);
     try {
-      const data = await callToolEndpoint('plot-hole', {
+      const data = await callToolEndpoint('plot-hole-finder', {
         title: title.trim(), whatToLookAt: whatToLookAt.trim(), mediaType,
         userLocale, userCurrency, userRegion,
       });
@@ -231,7 +231,7 @@ const PlotHoleFinder = ({ tool }) => {
     if (!allegedHole.trim()) return;
     setError(''); setDefendResults(null);
     try {
-      const data = await callToolEndpoint('plot-hole/defend', {
+      const data = await callToolEndpoint('plot-hole-finder/defend', {
         title: title.trim(), allegedHole: allegedHole.trim(), whatFeelsWrong: whatFeelsWrong.trim(),
         userLocale, userCurrency, userRegion,
       });
@@ -416,7 +416,7 @@ const PlotHoleFinder = ({ tool }) => {
             <p className={`text-[11px] text-center ${c.textMuted}`}>⚠️ {t('plh_spoiler_notice')}</p>
 
             <p className={`text-xs text-center ${c.textMuted}`}>
-              {t('plh_xref_find')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('plh_plottwist')}</a> {t('plh_xref_find_tail')}
+              {t('plh_xref_find')} <a href="/DecisionPrism" className={linkStyle}>🔀 {t('plh_plottwist')}</a> {t('plh_xref_find_tail')}
             </p>
           </div>
 
@@ -635,7 +635,7 @@ const PlotHoleFinder = ({ tool }) => {
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('plh_related')}</p>
                 <div className="flex flex-wrap gap-3">
-                  <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 {t('plh_plottwist')}</a>
+                  <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('plh_plottwist')}</a>
                 </div>
               </div>
             </div>
