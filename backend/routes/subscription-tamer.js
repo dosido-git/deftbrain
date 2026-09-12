@@ -26,6 +26,16 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // steps/retention offers/current plans, no cost-per-use from a rough
 // usage label, no population claims — lives in CONTRACT below and is
 // prompt-enforced, not code-verified.
+//
+// v2.1 (2026-09-12, live-testing correction): the question field was
+// re-confirming information the visitor already supplied (a "forgot about
+// it" subscription doesn't need to be asked whether it became a background
+// charge — that's what forgot about it means) and, separately, was
+// assuming an unstated capability ("would pausing and restarting cost
+// less?" when the visitor never said the service could be paused).
+// BEFORE YOU DECIDE below replaces QUESTION with an explicit "ask only
+// what's still missing" rule plus a standalone ban on assuming pause/
+// downgrade/restart capability.
 router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
@@ -62,6 +72,7 @@ You must not:
 - say a subscription 'earns its keep';
 - assign KEEP/CUT verdicts;
 - invent cancellation difficulty, cancellation steps, retention offers, current plans, current prices, bundles, discounts, or company policies;
+- assume a subscription can be paused, downgraded, or restarted, or that doing so would change its price — the visitor did not tell you the service supports this;
 - infer family usage, work need, cancellation penalties, grandfathered pricing, or other context not supplied;
 - calculate cost per use from rough frequency labels;
 - tell the visitor what is financially responsible;
@@ -81,8 +92,18 @@ Use exactly one review bucket:
 
 These are review priorities, not verdicts.
 
-QUESTION
-For every subscription in start_here or take_another_look, give one short question that could materially change the visitor's decision. The question must arise from the information supplied, not invented scenarios.
+BEFORE YOU DECIDE
+For every subscription in start_here or take_another_look, give one short "Before you decide:" question that could materially change the placement or recommendation.
+
+Ask only about missing information that could materially change the placement or recommendation. The question must arise from the information supplied, not invented scenarios, and must not assume any capability — pausing, downgrading, restarting, switching plans — the visitor never mentioned.
+
+A seasonal or occasional-use subscription (used heavily for a few weeks, ignored the rest of the year) is the case where this rule is most often broken. The natural-sounding question is "could you cancel it and restart/rejoin/resubscribe when the season comes around?" — do not ask this or anything shaped like it. The visitor never said the service can be stopped and started again, what that would cost, or whether they'd keep their rate. Ask instead whether the value they get during the weeks they do use it is enough to justify paying for it the rest of the year, or what they'd lose by stopping it now.
+Wrong: "Would you cancel and restart it when the season returns?" Wrong: "Could you rejoin only when the holidays approach?" Wrong: "...or would you prefer to restart it just before the holidays?"
+Right: "Does the value during the weeks you use it justify paying for it the other months?" Right: "If you stopped this now, would you lose anything that matters to you?"
+
+Do not ask the visitor to reconfirm information they already supplied. If their own usage label already answers part of what you'd ask, narrow the question to whatever it doesn't already answer.
+
+Prefer one high-value overturning question over a generic question about the subscription.
 
 WRITING
 Be concise. No generic finance advice. No moralizing. No AI-report voice.

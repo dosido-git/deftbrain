@@ -5326,7 +5326,7 @@ tagline: "Work with the energy you have.",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You suspect a few subscriptions aren't earning their place, but you're not sure which.",
+    when: "You suspect a few subscriptions are worth another look, but you're not sure which.",
     give: "Each subscription's real price, how you'd describe using it, and anything that makes it hard to judge.",
     get: "Three review-priority groups and, for anything non-obvious, one question that could change your mind.",
     edge: "This isn't a verdict machine — it won't tell you what to cancel. It finds where your own price, usage, and context create the strongest reason to look again.",
@@ -5334,7 +5334,7 @@ tagline: "Work with the energy you have.",
   seoTitle: "Subscription Review Tool",
   seoDescription: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider. Free, no signup.",
   title: "Subscription Tamer",
-  tagline: "⚔ Find the subscriptions that aren't earning their place.",
+  tagline: "⚔ Find the subscriptions worth another look.",
   tags: ['subscription', 'cancel', 'unsubscribe', 'recurring charges', 'money', 'review', 'statement scan', 'budget'],
   icon: "⚔️",
   categories: ['Loot'],

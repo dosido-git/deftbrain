@@ -42,28 +42,28 @@ const blankSub = (overrides = {}) => ({
 // context), and a genuinely uncertain take_another_look (sometimes/not_sure).
 const EXAMPLES = [
   [
-    { nameKey: 'sut_ex1_sub1_name', cost: '17.99', cycle: 'monthly', usage: 'barely', contextKey: 'sut_ex1_sub1_context' },
+    { nameKey: 'sut_ex1_sub1_name', cost: '17.99', cycle: 'monthly', usage: 'barely' },
     { nameKey: 'sut_ex1_sub2_name', cost: '11.99', cycle: 'monthly', usage: 'a_lot', contextKey: 'sut_ex1_sub2_context' },
-    { nameKey: 'sut_ex1_sub3_name', cost: '40', cycle: 'monthly', usage: 'forgot', contextKey: 'sut_ex1_sub3_context' },
+    { nameKey: 'sut_ex1_sub3_name', cost: '40', cycle: 'monthly', usage: 'forgot' },
   ],
   [
-    { nameKey: 'sut_ex2_sub1_name', cost: '9.99', cycle: 'monthly', usage: 'barely', contextKey: 'sut_ex2_sub1_context' },
+    { nameKey: 'sut_ex2_sub1_name', cost: '9.99', cycle: 'monthly', usage: 'barely' },
     { nameKey: 'sut_ex2_sub2_name', cost: '89', cycle: 'monthly', usage: 'sometimes', contextKey: 'sut_ex2_sub2_context' },
-    { nameKey: 'sut_ex2_sub3_name', cost: '25', cycle: 'yearly', usage: 'forgot', contextKey: 'sut_ex2_sub3_context' },
+    { nameKey: 'sut_ex2_sub3_name', cost: '25', cycle: 'yearly', usage: 'forgot' },
   ],
   [
     { nameKey: 'sut_ex3_sub1_name', cost: '6.99', cycle: 'monthly', usage: 'sometimes', contextKey: 'sut_ex3_sub1_context' },
     { nameKey: 'sut_ex3_sub2_name', cost: '99', cycle: 'yearly', usage: 'a_lot', contextKey: 'sut_ex3_sub2_context' },
-    { nameKey: 'sut_ex3_sub3_name', cost: '4.99', cycle: 'monthly', usage: 'not_sure', contextKey: 'sut_ex3_sub3_context' },
+    { nameKey: 'sut_ex3_sub3_name', cost: '4.99', cycle: 'monthly', usage: 'not_sure' },
   ],
   [
-    { nameKey: 'sut_ex4_sub1_name', cost: '19.99', cycle: 'monthly', usage: 'forgot', contextKey: 'sut_ex4_sub1_context' },
+    { nameKey: 'sut_ex4_sub1_name', cost: '19.99', cycle: 'monthly', usage: 'forgot' },
     { nameKey: 'sut_ex4_sub2_name', cost: '4.99', cycle: 'monthly', usage: 'a_lot', contextKey: 'sut_ex4_sub2_context' },
     { nameKey: 'sut_ex4_sub3_name', cost: '12', cycle: 'monthly', usage: 'sometimes', contextKey: 'sut_ex4_sub3_context' },
   ],
   [
     { nameKey: 'sut_ex5_sub1_name', cost: '14.99', cycle: 'monthly', usage: 'a_lot', contextKey: 'sut_ex5_sub1_context' },
-    { nameKey: 'sut_ex5_sub2_name', cost: '2.99', cycle: 'monthly', usage: 'not_sure', contextKey: 'sut_ex5_sub2_context' },
+    { nameKey: 'sut_ex5_sub2_name', cost: '2.99', cycle: 'monthly', usage: 'not_sure' },
     { nameKey: 'sut_ex5_sub3_name', cost: '69.99', cycle: 'yearly', usage: 'barely', contextKey: 'sut_ex5_sub3_context' },
   ],
 ];
