@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, SMALL_SAMPLE_PATTERN_DISCIPLINE } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -27,8 +27,11 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // observations rather than total log count, never turning a contrast into
 // a causal explanation, never a multi-variable test_next experiment, and
 // never "cost"/"added"/"reduced" energy language for a before/after rating
-// — lives in CONTRACT below (added/tightened 2026-09-11 per live-test
-// feedback) and is prompt-enforced, not code-verified.
+// — lives in CONTRACT below (added/tightened 2026-09-11/12 per live-test
+// feedback) and is prompt-enforced, not code-verified. The general framing
+// behind the pattern-threshold/contrast rules is now the shared
+// SMALL_SAMPLE_PATTERN_DISCIPLINE block from lib/claude.js — see its
+// comment there for when to reuse it on other tools.
 router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
@@ -89,6 +92,10 @@ A contrast between two logs can show that two interactions differed and that the
 When several things differed between two interactions (group size, on-ness, setting, a note detail — duration only if the visitor actually supplied one for both), name the things that differed. Do not single one out as the explanation, and do not write a sentence that implies one of them explains the result ("something about the pace or dynamic differed") unless the visitor's own data actually isolates that one variable.
 Wrong: "Something about the structure, pace, or dynamic of the dinner differed from the call."
 Right: "Several things differed between these interactions: group size and reported on-ness. This log does not tell you which, if any, mattered."
+
+${SMALL_SAMPLE_PATTERN_DISCIPLINE}
+
+This tool's own version of "claims of prediction" above: never use the word predict/predicts/predictive/predictor anywhere in your response, in any form, however hedged — a handful of logs cannot establish or rule out a predictor, so the word itself overclaims regardless of what surrounds it. See PATTERN THRESHOLD below for the full vocabulary ladder this maps to.
 
 EVIDENCE LEVELS
 ONE LOG: say what happened once.

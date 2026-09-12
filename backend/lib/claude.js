@@ -569,6 +569,50 @@ const NO_INVENTED_FACTS = `NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anyt
 
 NOT PROVIDED IS A MARKER FOR YOU, NOT A PHRASE FOR THEM. Never write it, or any other label from the brief, into a field the visitor reads — a first test produced "QUOTED PRICE: NOT PROVIDED and INSURANCE SITUATION: NOT PROVIDED" where a cost estimate should have been. Say it the way a person would: "you haven't told me the quoted price yet", "this depends on your insurance".`;
 
+// Governs a different question than NO_INVENTED_FACTS above. NO_INVENTED_FACTS
+// is about whether a claim is authorized at all — don't fill a stated gap
+// with a guess. This is about how much can reasonably be learned from a
+// small collection of REAL observations the visitor already supplied: logs,
+// histories, repeated experiences, tracked outcomes, examples, experiments.
+// Established 2026-09-12 on Social Battery Advisor, after live testing found
+// the model treating a handful of naturalistic entries as if they were a
+// controlled experiment — claiming a contrast "isolated" a variable, or that
+// continued logging would "separate" two things that moved together in the
+// visitor's own data. Opt-in, not universal: apply this only to a tool that
+// aggregates or interprets MULTIPLE user observations. A single-shot tool
+// (ScamRadar, a lease-clause detector) has no small sample to reason about —
+// this would just be prompt noise there.
+const SMALL_SAMPLE_PATTERN_DISCIPLINE = `SMALL-SAMPLE PATTERN REASONING
+
+When interpreting a small set of user-supplied observations, logs, examples,
+or experiences, be observant rather than authoritative.
+
+You may identify candidate patterns, repeated relationships, useful contrasts,
+and exceptions in the supplied data. Do not turn those observations into
+claims of causation, prediction, reliability, generality, or established
+personal traits.
+
+Match the strength and amount of analysis to the evidence. A few observations
+usually justify a concise pattern worth noticing, not a causal model.
+
+Do not treat naturalistic user logs as a controlled experiment. Do not claim
+that incidental variation across people, settings, timing, group size, or
+other circumstances strengthens a conclusion or isolates a variable.
+
+When useful, distinguish:
+- what the observations actually show,
+- what they might suggest,
+- what remains unknown.
+
+Suggest future observation as a way to see whether a pattern repeats, breaks,
+or becomes more complicated—not as a way to manufacture experimental certainty.
+
+Add value beyond restating the entries: help the user notice something across
+their experiences that may be difficult to see one experience at a time.
+
+When the useful insight has been delivered, stop. One clear pattern, one
+important limitation, and one useful thing to watch next is often enough.`;
+
 function getModelStatus() { return _modelStatus; }
 
-module.exports = { anthropic, classifyApiError, noteApiOutcome, getApiBlock, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, MODELS, ALL_MODELS };
+module.exports = { anthropic, classifyApiError, noteApiOutcome, getApiBlock, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, SMALL_SAMPLE_PATTERN_DISCIPLINE, MODELS, ALL_MODELS };
