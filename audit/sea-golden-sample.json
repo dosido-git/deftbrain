@@ -1,311 +1,146 @@
 {
   "_meta": {
-    "tool": "social-energy-audit",
-    "captured": "2026-06-24",
-    "baseline": "tag sea-v1",
-    "model": "claude-haiku-4-5",
-    "note": "Known-good Social Energy Audit reference (4 of 6 endpoints (incl. the recharge minimal-input case that regressed)). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/tool-notes/SEA-NOTES.md for the don't-undo list."
+    "tool": "SocialBatteryAdvisor",
+    "generated": "2026-09-11",
+    "model": "claude-haiku-4-5-20251001 (MODELS.FAST), 1 route / two states (log, review patterns)",
+    "baseline_commit": "socialbatteryadvisor-v2.1",
+    "why_v2": "Ground-up rebuild (commit 622372be) replaced the six-mode weekly-audit design (Daily Check-In, Planner, Recharge, Weekly Audit, Say Yes?, Journal — capacity/budget arithmetic, cost-per-hour math, weekly_budget/recovery_time sections) with two states: log one interaction, review patterns across logs. The v1 cases below (main-audit, week-planner, quick-check, recharge-minimal) tested endpoints (/plan, /quick-check, /recharge) and fields (energy_score, drains, rechargers, weekly_budget) that no longer exist and were replaced wholesale. This re-record was overdue — golden went unrecorded at v2's own rebuild and was failing 0/4 by the time this correction pass found it.",
+    "why_v2_1": "Owner review of live output found the pattern-reasoning engine overclaiming beyond the data in five ways: (1) converting a contrast between two logs into an implied cause ('something about the pace or dynamic differed') instead of naming every candidate feature and saying the log doesn't establish which mattered; (2) statistical-sounding language ('does not predict') from a 3-entry sample; (3) test_next experiments that changed more than one variable at once (or, once fixed, asked the visitor to wait for a deliberately MISMATCHED combination of two conditions to break a confound — still a compound ask); (4) energy-transfer language ('cost'/'added'/'reduced') for what is only a before/after self-rating, not a battery measurement; (5) calling a 2-4-observation split a 'pattern' before the evidence actually earned that word. CONTRACT gained a CONTRAST DISCIPLINE section, a rewritten PATTERN THRESHOLD with an explicit evidence-count ladder and a banned-word list (predict/predicts/predictive/predictor; pattern below 5 comparable observations), and an ACTION section requiring single-variable experiments with a mandatory fallback (track one variable across future ordinary logs, never a manufactured or deliberately-mismatched next interaction) when the candidate variables are confounded in the supplied logs. Frontend: the 'My patterns (N)' tab was renamed 'What I'm noticing (N)' across all 13 languages — the tool has observations and contrasts at this stage, not yet repeated comparable observations, so 'patterns' overclaimed its own confidence.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden sea). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: validateResult() in backend/routes/social-battery-advisor.js keys on summary.headline/body being present; caps worth_noticing<=3, contrasts<=2, not_enough_to_tell<=4; forces test_next to one well-shaped object; summary.counts is always recomputed in code from the actual submitted logs, never trusted from the model. The five epistemic corrections above are prompt-enforced (CONTRACT), not code-checkable — when eyeballing new captures, grep the JSON for 'predict', 'pattern' (below 5 comparable observations), 'cost'/'drained'/'restored'/'added energy', and read every test_next.experiment for a second named variable or a compound wait-for condition. DO NOT reverse: the array caps, the recomputed counts, or any of the five CONTRACT disciplines above."
   },
   "cases": [
     {
-      "name": "main-audit",
+      "name": "three-unrelated-interactions-mixed-outcomes",
       "endpoint": "/api/social-energy-audit",
       "input": {
-        "interactions": [
-          {
-            "situation": "Team meeting",
-            "category": "work",
-            "performance": 6,
-            "energyBefore": 7,
-            "energyAfter": 4,
-            "duration": "1 hour"
-          },
-          {
-            "situation": "Lunch with coworkers",
-            "category": "work",
-            "performance": 5,
-            "energyBefore": 5,
-            "energyAfter": 4,
-            "duration": "45 min"
-          },
-          {
-            "situation": "Networking event",
-            "category": "social",
-            "performance": 9,
-            "energyBefore": 6,
-            "energyAfter": 2,
-            "duration": "2 hours"
-          },
-          {
-            "situation": "Solo time",
-            "category": "creative",
-            "performance": 1,
-            "energyBefore": 4,
-            "energyAfter": 7,
-            "duration": "1 hour"
-          }
-        ],
-        "weekLabel": "Ordinary week"
-      },
-      "output": {
-        "energy_score": {
-          "total_energy_spent": "13/100",
-          "net_energy_change": "+3",
-          "sustainability_verdict": "SUSTAINABLE",
-          "one_liner": "You spent three hours performing for others and got back what you needed through one hour alone."
-        },
-        "drains": [
-          {
-            "situation": "Team meeting — 1 hour of moderate collaboration with unclear outcomes",
-            "energy_cost": "-3",
-            "performance_tax": "6/10",
-            "why_costly": "You're half-present (6/10 performance), which taxes effort without the payoff of full engagement or genuine rest.",
-            "cost_per_hour": "-3 per hour"
-          },
-          {
-            "situation": "Lunch with coworkers — 45 minutes of social obligation",
-            "energy_cost": "-1",
-            "performance_tax": "5/10",
-            "why_costly": "You're underperforming (5/10) in a social setting where you're forcing connection, creating friction cost without authentic presence.",
-            "cost_per_hour": "-1.3 per hour"
-          },
-          {
-            "situation": "Networking event — 2 hours of high-stakes impression management",
-            "energy_cost": "-4",
-            "performance_tax": "9/10",
-            "why_costly": "Near-flawless performance (9/10) in an extractive environment: you're executing perfectly but getting nothing back emotionally, leaving you depleted."
-          }
-        ],
-        "rechargers": [
-          {
-            "situation": "Solo creative time — 1 hour of unstructured work on your own terms",
-            "energy_effect": "+3 — direct restoration despite low performance score",
-            "why_good": "You need zero audience and zero judgment to refill; this is your genuine recharge frequency."
-          }
-        ],
-        "patterns": {
-          "biggest_surprise": "Your lowest performance (1/10 solo time) is your highest energy gain — you're not measuring what matters to you.",
-          "performance_vs_drain": "Your highest performance (networking at 9/10) creates your worst drain; you're performing away your capacity instead of toward something that reciprocates.",
-          "category_breakdown": "Work dominates cost (2 interactions, -4 energy combined), social/performance second (-4 at networking), creative recharges (+3). Work is net-negative without recovery.",
-          "optimal_ratio": "Protect at least 1 recharging hour for every 2 hours of high-performance work; your current ratio (1:3) is sustainable this week but fragile if work intensifies."
-        },
-        "restructure_suggestions": [
-          "Move solo creative time to directly after the team meeting (not later) — use it as a reset, not an afterthought. Your data shows you need it to recover from work clusters.",
-          "Reduce networking events to biweekly instead of weekly. A single 2-hour event costs -4 energy for 2 hours; you recover it in solo time, but one every two weeks keeps you stable without borrowing against future energy.",
-          "Skip or radically reframe the coworker lunch. It costs -1 energy at 5/10 performance with zero emotional return. Replace it once a month with someone you genuinely want to see, or protect that 45 min for solo work instead.",
-          "Schedule the team meeting for right after lunch (if possible) rather than as a standalone. Your energy is lowest at 5/10 going in; clustering it with other work interactions might let you settle into \"work mode\" instead of jarring between states.",
-          "Protect Thursday or Friday afternoon as a no-meeting zone. Your week pattern shows back-to-back draining interactions (meeting → lunch → event) without recovery between. One 2-hour solo window mid-week prevents the cumulative cliff."
-        ],
-        "recovery_time": {
-          "estimated_hours": "2-3 hrs",
-          "best_recovery_day": "Immediately after the networking event (don't schedule anything the evening you attend); your energy crashes to 2/10 and needs inline recovery, not delayed.",
-          "recovery_type": "Solo, unstructured creative time with zero performance pressure — this is the only mode that actually restores you, not social recovery or physical activity."
-        },
-        "weekly_budget": {
-          "total_capacity": "100/100",
-          "spent": "13/100",
-          "remaining": "+87",
-          "verdict": "You're living well within budget this week — you have room to add commitments, but be selective; the pattern shows work clusters and high-performance contexts drain faster than the numbers suggest."
-        }
-      }
-    },
-    {
-      "name": "week-planner",
-      "endpoint": "/api/social-energy-audit/plan",
-      "input": {
-        "upcoming": [
-          {
-            "situation": "Client kickoff",
-            "category": "work",
-            "day": "Monday",
-            "duration": "1-2 hours",
-            "performance": 8
-          },
-          {
-            "situation": "Standup",
-            "category": "work",
-            "day": "Tuesday",
-            "duration": "1-2 hours",
-            "performance": 5
-          },
-          {
-            "situation": "1-on-1",
-            "category": "work",
-            "day": "Wednesday",
-            "duration": "1-2 hours",
-            "performance": 7
-          },
-          {
-            "situation": "Networking",
-            "category": "social",
-            "day": "Thursday",
-            "duration": "1-2 hours",
-            "performance": 9
-          },
-          {
-            "situation": "Family dinner",
-            "category": "family",
-            "day": "Friday",
-            "duration": "1-2 hours",
-            "performance": 6
-          },
-          {
-            "situation": "Date",
-            "category": "social",
-            "day": "Saturday",
-            "duration": "1-2 hours",
-            "performance": 4
-          },
-          {
-            "situation": "Board presentation",
-            "category": "work",
-            "day": "Sunday",
-            "duration": "1-2 hours",
-            "performance": 9
-          },
-          {
-            "situation": "Volunteer",
-            "category": "social",
-            "day": "Monday",
-            "duration": "1-2 hours",
-            "performance": 7
-          }
+        "userLanguage": "en",
+        "logs": [
+          { "interaction": "Dinner with friends", "before": 4, "after": 2, "onness": "a_lot", "note": "Six people. I knew everyone, but the conversation moved fast.", "createdAt": "2026-09-08T19:00:00Z" },
+          { "interaction": "Weekly team meeting", "before": 3, "after": 3, "onness": "some", "note": "Small group and I mostly listened.", "createdAt": "2026-09-09T10:00:00Z" },
+          { "interaction": "Phone call with my sister", "before": 2, "after": 4, "onness": "not_much", "note": "We talked for about half an hour.", "createdAt": "2026-09-10T18:00:00Z" }
         ]
       },
       "output": {
-        "predicted_total_cost": "78/100",
-        "risk_level": "OVERLOADED",
-        "day_breakdown": [
+        "summary": {
+          "headline": "Three interactions produced different outcomes: one ended lower, one unchanged, one higher.",
+          "body": "The dinner with six people where you felt a lot on ended 2 points lower. The team meeting where you felt some on ended unchanged. The call with your sister where you felt not much on ended 2 points higher.",
+          "counts": { "total": 3, "lower": 1, "same": 1, "higher": 1 }
+        },
+        "worth_noticing": [
           {
-            "day": "Monday",
-            "commitments": [
-              "Client kickoff",
-              "Volunteer"
-            ],
-            "predicted_cost": "14",
-            "risk": "HIGH",
-            "note": "Back-to-back high-stakes and service commitments with no buffer; you're starting the week already depleted."
+            "title": "On-ness and energy outcome did not line up consistently",
+            "evidence": "The dinner log shows high on-ness (a_lot) ending lower (4→2). The sister call shows low on-ness (not_much) ending higher (2→4). The team meeting shows medium on-ness (some) ending unchanged (3→3).",
+            "meaning": "Across these three entries, feeling more on did not consistently go with lower energy afterward, and feeling less on did not consistently go with higher energy. With only three entries and three different outcomes, this makes on-ness worth continuing to track rather than treating as an explanation yet."
           },
           {
-            "day": "Tuesday",
-            "commitments": [
-              "Standup"
-            ],
-            "predicted_cost": "8",
-            "risk": "LOW",
-            "note": "Solo work commitment; low performance expectation makes this a recovery window if protected."
-          },
-          {
-            "day": "Wednesday",
-            "commitments": [
-              "1-on-1"
-            ],
-            "predicted_cost": "10",
-            "risk": "MEDIUM",
-            "note": "Requires relational presence and listening; moderate drain before the social push ahead."
-          },
-          {
-            "day": "Thursday",
-            "commitments": [
-              "Networking"
-            ],
-            "predicted_cost": "8",
-            "risk": "LOW",
-            "note": "High performance energy (9/10) in a domain you're confident in; this actually *replenishes* despite being social."
-          },
-          {
-            "day": "Friday",
-            "commitments": [
-              "Family dinner"
-            ],
-            "predicted_cost": "12",
-            "risk": "MEDIUM",
-            "note": "Low expected performance (6/10) signals obligation fatigue; family contexts can carry unspoken emotional labor."
-          },
-          {
-            "day": "Saturday",
-            "commitments": [
-              "Date"
-            ],
-            "predicted_cost": "16",
-            "risk": "HIGH",
-            "note": "Very low performance expectation (4/10) despite social commitment suggests anxiety, mismatch, or depletion carrying over."
-          },
-          {
-            "day": "Sunday",
-            "commitments": [
-              "Board presentation"
-            ],
-            "predicted_cost": "11",
-            "risk": "HIGH",
-            "note": "High-stakes performance on a recovery day; leaves zero buffer before the work week restarts Monday."
+            "title": "Group size and energy outcome are separate questions",
+            "evidence": "The dinner was six people and ended lower (4→2). The team meeting was small and ended unchanged (3→3). The call was one person and ended higher (2→4).",
+            "meaning": "In these three entries, smaller groups did not consistently end higher or lower — the one-on-one call ended higher while the small team meeting ended unchanged. Too few entries to settle what matters about group size."
           }
         ],
-        "danger_zones": [
-          "Monday has 2 commitments (kickoff + volunteer) with zero spacing—you're committing to performance + service back-to-back with no recharge. This sets a deficit tone for the week.",
-          "Friday→Saturday→Sunday is a three-day sprint ending with board presentation on your only traditional rest day. By Saturday your date, you'll already be social-fatigued and under-resourced.",
-          "The 4/10 performance expectation on Saturday suggests this commitment may not align with your actual capacity or interest—this is a yellow flag for reciprocity misalignment."
+        "contrasts": [
+          {
+            "title": "Dinner (ended lower) vs. sister call (ended higher)",
+            "first": "Dinner with six people, high on-ness, ended 4→2",
+            "second": "Phone call with sister, low on-ness, ended 2→4",
+            "question": "Several features differed between these two: group size (six vs. one), on-ness (a_lot vs. not_much), and likely duration and setting as well. This log does not tell you which of these differences, if any, mattered to the opposite outcomes."
+          }
         ],
-        "optimization_suggestions": [
-          "Move volunteer from Monday to a weeknight (Tuesday or Wednesday evening) after standup when you have smaller social asks—this breaks the Monday double-hit and spreads load.",
-          "Protect Tuesday and Wednesday as true recovery days: no optional social plans, no extended work beyond scheduled meetings. These are your only buffers before Friday's sprint.",
-          "Push the date to next week if possible, or reframe it as a low-pressure hangout rather than a 'date' (mental load reduction). The 4/10 expectation signals misalignment that needs addressing before Saturday.",
-          "Move board presentation prep to Friday afternoon so Sunday becomes actual rest, not prep time. You cannot deliver 9/10 performance on a weekend without Thursday/Friday prep time.",
-          "Add 90-minute buffer Friday evening (6:30–8 PM) explicitly for alone time between family dinner and Saturday. Non-negotiable decompression."
+        "test_next": {
+          "observation": "The dinner and sister call produced opposite results, and on-ness differed between them. It is worth testing whether on-ness itself matters, separate from the other things that also differed.",
+          "experiment": "Over your next several interactions, pay attention to how on you felt regardless of who you were with or how many people were there. Comparing on-ness to your energy outcome across more entries, independent of group size, will help separate the two and show whether one of them matters more than the other.",
+          "watch_for": "Does higher on-ness consistently go with lower energy after, or does it vary like it did in these first three logs?"
+        },
+        "not_enough_to_tell": [
+          "Whether on-ness itself drives the energy change, or whether group size, duration, familiarity, conversation pace, or another feature is what matters",
+          "Whether the same interaction would produce the same result next time",
+          "What role the starting energy level (before the interaction) plays in the outcome"
         ],
-        "protection_plan": "Block Tuesday evening and all of Wednesday evening as offline recovery time (no socials, minimal work chat)—these are your only air pockets before Friday's emotional and social sprint. Sunday must be prep-free and protected for genuine rest after the board presentation, or you'll enter next week already in deficit."
+        "handoff": { "show_before_the_crash": false, "reason": null }
       }
     },
     {
-      "name": "quick-check",
-      "endpoint": "/api/social-energy-audit/quick-check",
+      "name": "five-logs-group-size-onness-confounded",
+      "endpoint": "/api/social-energy-audit",
       "input": {
-        "commitment": "Friend invited me to a 2-hour dinner party tonight",
-        "currentEnergy": 4,
-        "weekSoFar": "3 client calls and a presentation",
-        "upcomingToday": "one more 1-on-1"
+        "userLanguage": "en",
+        "logs": [
+          { "interaction": "Big work happy hour", "before": 4, "after": 2, "onness": "a_lot", "note": "Twenty-plus people, loud bar.", "createdAt": "2026-08-01T19:00:00Z" },
+          { "interaction": "Large family reunion", "before": 4, "after": 1, "onness": "a_lot", "note": "About 25 relatives, lots of small talk.", "createdAt": "2026-08-15T15:00:00Z" },
+          { "interaction": "Conference networking mixer", "before": 3, "after": 1, "onness": "a_lot", "note": "Big crowded room, many new people.", "createdAt": "2026-08-29T18:00:00Z" },
+          { "interaction": "Coffee with one close friend", "before": 3, "after": 5, "onness": "not_much", "note": "Just the two of us.", "createdAt": "2026-09-02T14:00:00Z" },
+          { "interaction": "One-on-one walk with a neighbor", "before": 2, "after": 4, "onness": "not_much", "note": "Quiet walk, just chatting.", "createdAt": "2026-09-05T09:00:00Z" }
+        ]
       },
       "output": {
-        "verdict": "SKIP IT",
-        "verdict_emoji": "🛑",
-        "one_liner": "You're at 4/10 energy with a 1-on-1 still today—a 2-hour dinner will leave you depleted and resentful.",
-        "energy_impact": "2-hour social + mental performance for the 1-on-1 = -6 points; you'll hit 0 by tonight.",
-        "condition": null,
-        "if_you_say_yes": "If you somehow go anyway, commit to leaving by 8:30pm and eat beforehand so you're not performing hunger on top of fatigue.",
-        "if_you_say_no": "'Hey, I'm running on fumes this week and need to protect tonight—can we lock in a dinner next week when I can actually show up for you?'",
-        "recovery_note": "You need 8 hours sleep and zero social plans tomorrow to reset before the weekend."
+        "summary": {
+          "headline": "Large group interactions ended lower; small group interactions ended higher.",
+          "body": "The three interactions with 20+ people and high on-ness all ended 2-3 points lower in energy. The two interactions with one other person and low on-ness both ended 2 points higher. Group size and on-ness moved together in every log, making it unclear which one, if either, explains the difference.",
+          "counts": { "total": 5, "lower": 3, "same": 0, "higher": 2 }
+        },
+        "worth_noticing": [
+          {
+            "title": "Large crowded interactions ended lower; one-on-one interactions ended higher.",
+            "evidence": "Work happy hour (20+ people, a_lot on-ness, 4→2), family reunion (25 people, a_lot on-ness, 4→1), and networking mixer (crowded room, a_lot on-ness, 3→1) all ended lower. Coffee with close friend (two people, not_much on-ness, 3→5) and walk with neighbor (two people, not_much on-ness, 2→4) both ended higher.",
+            "meaning": "These two groups had opposite outcomes in every entry. However, they differ in at least two ways: group size and how much you felt you had to be on. The logs do not yet show which of these matters, or whether both do."
+          }
+        ],
+        "contrasts": [
+          {
+            "title": "Large group with high on-ness ended lower; one-on-one with low on-ness ended higher.",
+            "first": "Work happy hour: 20+ people, a_lot on-ness, energy ended at 2",
+            "second": "Coffee with close friend: two people, not_much on-ness, energy ended at 5",
+            "question": "These differ in group size, on-ness, familiarity (close friend vs. coworkers), setting (loud bar vs. quiet coffee), and duration. This log does not tell you which of these, if any, explained the opposite outcomes."
+          }
+        ],
+        "test_next": {
+          "observation": "Group size and on-ness moved together in all five logs — larger groups came with higher on-ness, smaller groups with lower on-ness. To separate these two, watch for how on you feel across your next several logs, regardless of group size or setting.",
+          "experiment": "Over your next several interactions, notice how much you felt you had to be on, independent of whether the group was large or small. Log as usual. Comparing on-ness to energy outcome across more entries — setting aside group size for now — will help show whether on-ness alone tracks with your energy change.",
+          "watch_for": "Does higher on-ness tend to match lower ending energy across different group sizes, or does the relationship depend on group size too?"
+        },
+        "not_enough_to_tell": [
+          "Whether group size or on-ness (or both, or neither) actually explains the energy changes.",
+          "How duration, setting, or familiarity contributed to the outcomes.",
+          "What will happen in a large group where you feel less on, or a small group where you feel more on."
+        ],
+        "handoff": { "show_before_the_crash": false, "reason": null }
       }
     },
     {
-      "name": "recharge-minimal",
-      "endpoint": "/api/social-energy-audit/recharge",
+      "name": "single-log-crash-handoff",
+      "endpoint": "/api/social-energy-audit",
       "input": {
-        "currentEnergy": 4
+        "userLanguage": "en",
+        "logs": [
+          { "interaction": "Back-to-back client calls", "before": 3, "after": 1, "onness": "a_lot", "note": "I feel like I am heading toward a bigger crash, not just tired from this one call.", "createdAt": "2026-09-10T16:00:00Z" }
+        ]
       },
       "output": {
-        "energy_assessment": "You're running on fumes—a phone at 4% battery that needs to be plugged in immediately before it shuts down entirely.",
-        "immediate": {
-          "do_now": "Step outside for 3 minutes of silence with no phone, just noticing what you see and hear around you.",
-          "avoid": "Do not scroll social media, check work messages, or say yes to anything—your nervous system needs a pause, not more input."
+        "summary": {
+          "headline": "One interaction ended notably lower in energy.",
+          "body": "Back-to-back client calls left you at energy 1, down from 3. You felt a lot on during the calls. Your note mentions concern about heading toward a bigger crash rather than simple fatigue from this session alone.",
+          "counts": { "total": 1, "lower": 1, "same": 0, "higher": 0 }
         },
-        "tonight": {
-          "activity": "Take a 20-minute bath or shower with the bathroom door locked and no notifications visible, focusing on warm water on your shoulders and neck where tension lives.",
-          "why": "Extreme depletion at 4/10 requires physical reset; warm water lowers cortisol and gives your body permission to stop performing.",
-          "duration": 20
-        },
-        "this_week": [
-          "Tuesday: 45 minutes alone doing something that requires zero decisions (listen to a podcast while walking, watch something familiar, organize one small space)—no new input, just gentle motion.",
-          "Thursday: One meal eaten slowly without your phone present, tasting the food instead of thinking about obligations.",
-          "Saturday: 2 hours of something that made you feel alive before—a hobby, a place, a person who energizes rather than depletes you.",
-          "Sunday: An hour of complete unstructured time with no plans, no productivity goals, no checking what you 'should' do."
+        "worth_noticing": [
+          {
+            "title": "Energy ended notably lower after feeling a lot on during back-to-back calls.",
+            "evidence": "This single entry: energy changed from 3 to 1 (a drop of 2 points), with on-ness marked as a_lot.",
+            "meaning": "This one session shows a clear downward shift. With only one log, you cannot yet know whether this outcome is typical for back-to-back calls, typical when on-ness is high, or specific to something else about this particular session — group size, duration, type of call, or something not captured in these fields. Worth continuing to track as more similar interactions occur."
+          }
         ],
-        "boundaries_to_set": [
-          "No work communication after 7pm and no first-thing-morning check-ins—your depletion suggests chronic over-access; protect your edges by creating dead zones.",
-          "Audit recurring commitments this week and cancel or defer at least one that doesn't align with your values; you cannot afford to keep saying yes out of obligation.",
-          "Set a maximum of two social or work obligations per day for the next two weeks—your 4/10 indicates you've been running on empty; slow down before you break."
+        "contrasts": [],
+        "test_next": { "observation": null, "experiment": null, "watch_for": null },
+        "not_enough_to_tell": [
+          "Whether back-to-back calls themselves tend to lower your energy, or whether high on-ness during calls is what mattered, or whether something specific to this session (content, number of calls, duration, or people involved) drove the result.",
+          "What on-ness feels like during interactions that end higher or unchanged, and how that compares to this session.",
+          "Whether this energy level is typical for you after similar work, or whether this session was unusual."
         ],
-        "recharge_ratio": "For every 5 hours of obligation or relational labor, you need 3 hours of solitude, physical rest, or low-stakes activity to maintain sustainable energy levels."
-      }
+        "handoff": {
+          "show_before_the_crash": true,
+          "reason": "Your note explicitly mentions concern about heading toward a bigger crash, not just fatigue from this one interaction. Before the Crash can help you track whether this is an isolated session or part of a larger pattern building toward overload."
+        }
+      },
+      "optionalSections": ["contrasts"]
     }
   ]
 }

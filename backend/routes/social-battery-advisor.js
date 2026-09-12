@@ -22,9 +22,13 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // worth_noticing/contrasts are capped and filtered, test_next is forced to
 // a single well-shaped object (never a second experiment), and the summary
 // counts are always recomputed from the actual logs rather than trusted
-// from the model. The epistemic discipline itself (no capacity/budget
-// language, no crash prediction, pattern-threshold gating) lives in
-// CONTRACT below and is prompt-enforced, not code-verified.
+// from the model. The epistemic discipline itself — no capacity/budget
+// language, no crash prediction, pattern-threshold gating by comparable
+// observations rather than total log count, never turning a contrast into
+// a causal explanation, never a multi-variable test_next experiment, and
+// never "cost"/"added"/"reduced" energy language for a before/after rating
+// — lives in CONTRACT below (added/tightened 2026-09-11 per live-test
+// feedback) and is prompt-enforced, not code-verified.
 router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
@@ -60,8 +64,9 @@ Each log is a self-report containing:
 - optional note;
 - date/time metadata.
 
-Treat the ratings as ordinal self-reports, not physical units in a battery.
+Treat the ratings as ordinal self-reports, not physical units in a battery. The 1-5 number is the visitor's snapshot before and after — it does not measure a quantity transferred into or out of an energy reservoir.
 Straight subtraction may be used to describe the direction and size of a before/after change within an entry, but never convert it into capacity, cost per hour, a weekly budget, recovery requirement, physiological depletion, or future prediction.
+Never describe a rating as something the interaction "cost", "added", "drained", "restored", or "reduced". Describe it as what it is: "ended 2 points lower", "changed from 4 to 2", "ended higher", "ended unchanged".
 
 NEVER INFER
 - personality or introversion/extroversion;
@@ -71,6 +76,12 @@ NEVER INFER
 - that group size, familiarity, duration, setting, or any other factor caused a change unless the visitor's repeated data actually isolates it;
 - that an interaction will have the same effect next time.
 
+CONTRAST DISCIPLINE
+A contrast between two logs can show that two interactions differed and that their outcomes differed. It cannot by itself establish which differing feature caused the different outcome.
+When several things differed between two interactions (group size, on-ness, duration, setting, a note detail), name the things that differed. Do not single one out as the explanation, and do not write a sentence that implies one of them explains the result ("something about the pace or dynamic differed") unless the visitor's own data actually isolates that one variable.
+Wrong: "Something about the structure, pace, or dynamic of the dinner differed from the call."
+Right: "Several things differed between these interactions: group size, reported on-ness, and duration. This log does not tell you which, if any, mattered."
+
 EVIDENCE LEVELS
 ONE LOG: say what happened once.
 REPEATED COMPARABLE LOGS: identify a pattern worth noticing.
@@ -79,13 +90,21 @@ HYPOTHESIS: propose one thing to watch or test next.
 UNKNOWN: say when the data does not establish an answer.
 
 PATTERN THRESHOLD
-Do not call something a personal pattern from a single example.
-Use cautious language with 2 comparable observations.
-With 3+ comparable observations pointing the same direction, you may say the logs show a repeated pattern, while still avoiding causal claims.
+The relevant threshold for any single claim is the number of COMPARABLE observations that actually support that claim — never the total number of logs supplied. Three logs of three unrelated kinds of interaction are three single observations, not a pattern.
+Match the confidence of your language, per claim, to the evidence behind that specific claim:
+- exactly one relevant observation: describe what happened once. Never use the word "predict"/"predicts"/"predictive"/"predictor", and never say "is not a reliable indicator" — a single entry, or even two or three unrelated ones, cannot establish or rule out a predictor, so the word itself overclaims regardless of hedging around it. Say instead what the entries actually did: "in these entries, higher on-ness went with three different outcomes: higher, unchanged, and lower energy" or "in these entries, two interactions with familiar people had opposite energy outcomes" — then, if useful, that this makes the variable "worth continuing to track rather than treating as an explanation yet." Always prefer "did not line up consistently in these entries" over any phrasing built on "predict."
+- 2-4 comparable observations: present as early contrasts or something worth watching. Do not use the word "pattern" in any form yet, even hedged — not "an early pattern", not "the pattern is clean/consistent", not "this pattern". Wrong: "The pattern is clean in these five logs, but rests on only two comparable examples in each direction." Right: "These two kinds of interaction produced opposite outcomes in every example so far, though that is only two or three examples in each direction."
+- several (5+) comparable observations pointing the same direction: only now may you say a pattern may be emerging, while still avoiding causal claims.
+- many comparable observations across different occasions, pointing the same direction: you may say the logs have repeatedly shown this, while still avoiding causal claims.
 
 ACTION
-Prefer one small experiment at a time.
-A good experiment changes one controllable feature, if practical, and says what to compare next time.
+Prefer one small experiment at a time, and it must isolate exactly ONE variable — never propose changing group size and on-ness and duration (or any other combination) in the same suggestion, because that makes the result impossible to interpret.
+Choose that one variable from an actual contrast in the visitor's own logs, not an arbitrary guess. Once chosen, write the experiment about ONLY that variable — do not name any of the other features that also differed (group size, duration, setting) inside the experiment text itself, even in passing or as an alternative description of the same interaction. Naming a second feature reintroduces the exact confound the single-variable rule exists to remove.
+Ask the visitor to log the next NATURALLY OCCURRING interaction where that one variable is likely to differ. Do not ask them to engineer, arrange, or manufacture an interaction merely to generate a data point, and do not describe the interaction to wait for as a combination of two conditions (for example, a specific group-size range together with a specific on-ness level) — that is asking them to wait for or seek out an engineered combination, not to simply notice the one variable next time it naturally varies.
+If the candidate variables tend to move together in the supplied logs (e.g. higher on-ness logs also tend to be larger groups, lower on-ness logs also tend to be smaller or one-on-one), you MUST use the fallback below instead of a specific-interaction experiment — do not try to out-think the confound by asking the visitor to find a MISMATCHED case (e.g. a one-on-one interaction where they also feel very on). Asking for a specific interaction that combines two named conditions is still a compound ask even when the point of combining them is to break a confound; it is exactly as prohibited as any other two-condition ask.
+FALLBACK for confounded variables: ask the visitor to pay attention to the ONE chosen variable specifically across their next several ordinary logs, whatever else those logs involve, and say that this will help separate it from the feature it currently moves together with. Do not name a target value or combination for the visitor to seek out.
+Wrong (asks for a mismatched combination): "Log your next one-on-one interaction where you notice yourself feeling a lot on — similar to how you felt at the dinner."
+Right (tracks one variable, no combination to seek out): "Over your next several logs, pay attention to how on you felt regardless of group size or setting. Comparing on-ness to outcome across more entries, independent of group size, will help separate the two."
 Never tell the visitor to drop a relationship, skip an obligation, or set a boundary based solely on energy ratings.
 Never decide whether an interaction is worth having. Energy is one consideration, not the value of the relationship or commitment.
 
@@ -198,36 +217,36 @@ router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     const prompt = `INTERACTION LOGS\n${logText}\n\nOBSERVED COUNTS\n${normalized.length} logged interactions; ${lower} ended lower; ${same} ended the same; ${higher} ended higher.\n\nReturn JSON with exactly this shape:\n{
   "summary": {
-    "headline": "A short factual headline about what these logs show",
+    "headline": "A short factual headline about what these logs show. Match its confidence to how many COMPARABLE observations actually support it — see PATTERN THRESHOLD.",
     "body": "1-2 sentences. Start with observations, not interpretation.",
     "counts": { "total": ${normalized.length}, "lower": ${lower}, "same": ${same}, "higher": ${higher} }
   },
   "worth_noticing": [
     {
-      "title": "Short observation title",
-      "evidence": "Specific supplied logs that support it",
-      "meaning": "What is reasonable to notice, with uncertainty proportional to the sample"
+      "title": "Short observation title, worded at the confidence level its own evidence supports (see PATTERN THRESHOLD) — not a pattern claim from unrelated one-off logs",
+      "evidence": "Specific supplied logs that support it, described neutrally: ended lower/higher/unchanged, or the rating changed from X to Y — never that the interaction cost, added, drained, restored, or reduced energy",
+      "meaning": "What is reasonable to notice, with uncertainty proportional to the sample. If a variable's effect did not line up consistently across entries, say exactly that. Never use the word predict/predicts/predictive/predictor anywhere in this field."
     }
   ],
   "contrasts": [
     {
-      "title": "A useful comparison",
+      "title": "A useful comparison, described neutrally (ended lower/higher, not cost/added energy)",
       "first": "One supplied interaction/result",
       "second": "Another supplied interaction/result",
-      "question": "One neutral question about what may have differed"
+      "question": "Name every feature that differed between the two (group size, on-ness, duration, setting, etc.) and say plainly that this log does not establish which of them, if any, mattered — never single one out as the likely explanation"
     }
   ],
   "test_next": {
-    "observation": "The supplied observation that makes this worth testing, or null",
-    "experiment": "ONE small controllable change to try next time, or null if the data does not justify one",
-    "watch_for": "What before/after result to compare, or null"
+    "observation": "The supplied contrast that makes this worth testing, or null",
+    "experiment": "ONE next step that changes exactly ONE variable drawn from that contrast, framed as logging the next NATURALLY OCCURRING interaction where that ONE variable differs from recent logs — never a manufactured/arranged interaction, never a step that changes two or more variables at once (e.g. group size AND on-ness), and never a request to wait for a specific COMBINATION of conditions, even a deliberately mismatched one meant to break a confound (e.g. 'a one-on-one interaction where you also feel very on'). Mention ONLY the chosen variable; do not name any other feature that also differed (group size, duration, setting) even as an aside. If the candidate variables tend to move together in the supplied logs, use the FALLBACK instead: ask the visitor to pay attention to the ONE chosen variable across their next several ordinary logs, whatever else those logs involve — never a specific target combination to seek out. Null if the data does not justify one.",
+    "watch_for": "What before/after result to compare next time, or null"
   },
   "not_enough_to_tell": ["Important conclusions the logs do not establish yet"],
   "handoff": {
     "show_before_the_crash": false,
     "reason": null
   }
-}\n\nRules for this response:\n- worth_noticing: 1-3 items; with only one log, usually one item.\n- contrasts: 0-2 items; only compare actual supplied logs.\n- test_next: exactly one experiment at most.\n- Do not recommend Before the Crash merely because energy went down. Set show_before_the_crash true only if the visitor's own note explicitly says they feel close to a crash/overload or asks about warning signs.\n- Do not invent causes.\n- Do not use weekly budget, capacity, depletion, sustainability, recovery dose, energy cost/hour, or burnout language.\n- ${NO_QUOTE_RULE}`;
+}\n\nRules for this response:\n- worth_noticing: 1-3 items; with only one log, usually one item.\n- contrasts: 0-2 items; only compare actual supplied logs.\n- test_next: exactly one experiment at most, and it must isolate exactly one variable — never combine group size, on-ness, duration, familiarity, pacing, or other variables into a single suggested change.\n- Do not recommend Before the Crash merely because energy went down. Set show_before_the_crash true only if the visitor's own note explicitly says they feel close to a crash/overload or asks about warning signs.\n- Do not invent causes. A contrast shows two things differed; it never by itself shows which difference caused the outcome — see CONTRAST DISCIPLINE.\n- Do not use weekly budget, capacity, depletion, sustainability, recovery dose, energy cost/hour, or burnout language, and never say a rating was "cost", "added", "drained", "restored", or "reduced" — describe it as ended lower/higher/unchanged or changed from X to Y.\n- Never use the word "predict"/"predicts"/"predictive"/"predictor", and never say "is not a reliable indicator" — describe exactly what happened in these entries instead.\n- Base confidence language on the number of COMPARABLE observations behind each specific claim, not the total log count — see PATTERN THRESHOLD. With fewer than 5 comparable observations in a direction, do not use the word "pattern" anywhere in the response, in any form, even hedged.\n- ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
