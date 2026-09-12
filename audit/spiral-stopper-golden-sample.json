@@ -5,8 +5,9 @@
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 1 job",
     "baseline_commit": "spiralstopper-v2",
     "why_v2": "Ground-up rebuild, installed from an owner-supplied rewrite per audit/REWRITE-INSTALL-KIT.md. The v1 five-mode design (spiral/unfreeze/recover/reflect/patterns — severity scoring, an automatic breathing banner, cognitive-distortion labels, nervous-system explanations, recovery protocols, episode/trigger pattern analysis) is gone entirely, replaced with one job: separate what happened from what the visitor's mind added (pinned to a PREDICTION/INTERPRETATION/CONCLUSION enum), name what's genuinely unknown, and offer at most one grounded next move. Recurring-pattern recognition across time is deliberately NOT this tool's job any more — that's Before the Crash. The v1 cases below (de-spiral-work-email-catastrophizing, de-recover-burnout-crash) tested endpoints and fields (action: spiral/recover, distortion_label, stages, permissions, recovery_signs) that no longer exist and have been replaced wholesale, not diffed.",
-    "why_v2_1": "Live verification of v2 surfaced the CONTRACT's own heavy use of the word 'visitor' (in field descriptions like \"the visitor's words\", plus prompt headers VISITOR'S LOOP / VISITOR'S OPTIONAL FACTUAL ANCHOR) leaking into the model's actual output as third-person voice — 'The visitor is scared their choices have fallen behind' instead of 'You're scared your choices have fallen behind' — the same class of bug already fixed once this session on SomeoneSaidItBetter. Fixed by adding an explicit VOICE section to CONTRACT with a wrong/right example pair, renaming the prompt's own section headers away from 'VISITOR'S', and rewriting every schema field description to say 'addressed as you/your' instead of 'the visitor's'. Re-verified live: all three cases below now render consistent second-person voice end to end.",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden spiral-stopper). Diff for QUALITY not exact match: HTTP 200, no truncation, SENSITIVE mental-health domain. GUARDS: validateResult() in backend/routes/spiral-stopper.js keys on top-level `safety_redirect` (boolean) being present; caps what_happened<=3, what_the_spiral_added<=4, what_is_unknown<=4; pins what_the_spiral_added[].status to the fixed PREDICTION/INTERPRETATION/CONCLUSION enum (unrecognized value falls back to INTERPRETATION, never crashes); next_move.available requires a genuine non-empty action string, never a placeholder. A true safety_redirect returns ONLY {safety_redirect:true, message} with every other field forced to its empty/null shape — ordinary analysis fields never coexist with a safety redirect. DO NOT reverse: the enum whitelist, the array caps, the safety_redirect field-zeroing, or the no-inner-double-quote rule (NO_QUOTE_RULE) on all quote-heavy fields."
+    "why_v2_1": "Live verification of v2 surfaced the CONTRACT's own heavy use of the word 'visitor' (in field descriptions like \"the visitor's words\", plus prompt headers VISITOR'S LOOP / VISITOR'S OPTIONAL FACTUAL ANCHOR) leaking into the model's actual output as third-person voice — 'The visitor is scared their choices have fallen behind' instead of 'You're scared your choices have fallen behind' — the same class of bug already fixed once this session on SomeoneSaidItBetter. Fixed by adding an explicit VOICE section to CONTRACT with a wrong/right example pair, renaming the prompt's own section headers away from 'VISITOR'S', and rewriting every schema field description to say 'addressed as you/your' instead of 'the visitor's'.",
+    "why_v2_2": "A second owner review, after living with v2.1's output, found the tool re-elaborating uncertainty it had just cut: (1) what_is_unknown was enumerating 3-4 NEW invented alternative scenarios ('whether she's noticed, is waiting, or has simply moved on') to fight the one story the visitor supplied, instead of restoring the single uncertainty already implied by their own concern — fixed at the CODE level (validateResult's cap dropped from 4 to 2, so this is now impossible regardless of prompt compliance) plus a new WHAT'S UNKNOWN DISCIPLINE section with a wrong/right example; (2) the PREDICTION/INTERPRETATION/CONCLUSION status badges on each what_the_spiral_added item were accurate but added classification flavor without helping — removed from the frontend render (backend still computes the enum internally, harmless); (3) next_move overstated what the action accomplishes ('it ends the gap, which is the only concrete thing in play', 'that question can only answer itself after contact') — rewrote NEXT MOVE with an explicit no-promise rule and required the 'why' field to describe what the action gives them to do now, never what it will resolve; while live-testing this fix, the identical overclaim resurfaced in a different field ('after_this': 'that becomes clearer only when there is actual contact to go on', then even after a first fix attempt: 'that question can only be answered by actual contact') — broadened the rule to every field and named the exact recurring phrase construction as banned, verified clean across 5 repeated runs; (4) what_the_spiral_added's thought field was paraphrasing/psychologizing the visitor's own words instead of preserving them — added an explicit preserve-their-words rule in GROUNDING DISCIPLINE. Re-verified live end to end (English and German): what_is_unknown consistently 1 item, no status badges in the rendered UI, no resolution-promising language in why/after_this across repeated runs, and what_the_spiral_added now closely mirrors the visitor's actual phrasing.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden spiral-stopper). Diff for QUALITY not exact match: HTTP 200, no truncation, SENSITIVE mental-health domain. GUARDS: validateResult() in backend/routes/spiral-stopper.js keys on top-level `safety_redirect` (boolean) being present; caps what_happened<=3, what_the_spiral_added<=4, what_is_unknown<=2 (not 4 — deliberately tightened); pins what_the_spiral_added[].status to the fixed PREDICTION/INTERPRETATION/CONCLUSION enum (unrecognized value falls back to INTERPRETATION, never crashes — the enum is still computed and returned, just no longer rendered as a badge in the frontend); next_move.available requires a genuine non-empty action string, never a placeholder. A true safety_redirect returns ONLY {safety_redirect:true, message} with every other field forced to its empty/null shape. DO NOT reverse: the enum whitelist, the array caps (especially what_is_unknown's cap of 2), the safety_redirect field-zeroing, or the no-inner-double-quote rule (NO_QUOTE_RULE). When eyeballing new captures, grep for 'can only' / 'becomes clear' in why/after_this (banned overclaim), count what_is_unknown items (should be 1, rarely 2), and compare what_the_spiral_added's thought text against the visitor's own supplied words for embellishment."
   },
   "cases": [
     {
@@ -23,39 +24,35 @@
       "output": {
         "safety_redirect": false,
         "what_happened": [
-          "Du hast eine E-Mail mit einem Tippfehler an deinen Chef geschickt.",
-          "Die E-Mail ist bereits abgesendet."
+          "Du hast eine E-Mail mit einem Tippfehler an deinen Chef geschickt."
         ],
         "what_the_spiral_added": [
           {
-            "thought": "Dein Chef denkt jetzt, du bist unprofessionell und inkompetent.",
+            "thought": "Er denkt jetzt, ich bin unprofessionell und inkompetent.",
             "status": "INTERPRETATION",
-            "grounded_version": "Du weißt nicht, was dein Chef über die E-Mail denkt oder ob er den Tippfehler überhaupt bemerkt hat."
+            "grounded_version": "Du weißt nicht, was dein Chef über dich denkt."
           },
           {
-            "thought": "Er wird das bei deiner nächsten Bewertung erwähnen.",
+            "thought": "Er wird das bei meiner nächsten Bewertung erwähnen.",
             "status": "PREDICTION",
-            "grounded_version": "Ob dieser Tippfehler jemals in einer Bewertung eine Rolle spielen wird, ist dir nicht bekannt."
+            "grounded_version": "Ob der Tippfehler bei deiner Bewertung eine Rolle spielt, steht offen."
           },
           {
-            "thought": "Du verlierst die Beförderung, auf die du seit Monaten hinarbeitest.",
+            "thought": "Ich verliere die Beförderung, auf die ich seit Monaten hinarbeite.",
             "status": "CONCLUSION",
-            "grounded_version": "Der Ausgang deines Beförderungsprozesses ist offen. Ob dieser Tippfehler daran irgendetwas ändert, steht nicht fest."
+            "grounded_version": "Ob die Beförderung davon betroffen ist, lässt sich aus diesem Vorfall allein nicht ableiten."
           }
         ],
         "what_is_unknown": [
-          "Ob dein Chef den Tippfehler bemerkt hat.",
-          "Wie dein Chef die E-Mail insgesamt wahrgenommen hat.",
-          "Ob der Fehler bei deiner Bewertung oder Beförderungsentscheidung irgendeine Rolle spielen wird.",
-          "Was dein Chef aktuell über deine Arbeit denkt."
+          "Du weißt nicht, ob der Tippfehler irgendeinen Einfluss auf die Einschätzung deines Chefs oder deine Beförderungschancen hat."
         ],
-        "anchor": "Du hast eine E-Mail mit einem Tippfehler geschickt. Was daraus folgt, ist im Moment noch unbekannt.",
+        "anchor": "Was feststeht: Du hast eine E-Mail mit einem Tippfehler geschickt. Was daraus folgt, ist noch offen.",
         "next_move": {
           "available": true,
-          "action": "Wenn es sich inhaltlich anbietet, kannst du eine kurze Folge-E-Mail schicken, die den Tippfehler beiläufig korrigiert oder die korrekte Information liefert.",
-          "why": "So weißt du, dass du das Mögliche getan hast, ohne die Sache größer zu machen als sie ist."
+          "action": "Du könntest eine kurze Folge-E-Mail schicken, die die korrekte Version oder eine sachliche Richtigstellung enthält.",
+          "why": "Das gibt dir etwas Konkretes zu tun, anstatt weiter im Unklaren zu sitzen."
         },
-        "after_this": "Die Frage, ob das Auswirkungen auf deine Beförderung hat, musst du jetzt nicht lösen."
+        "after_this": "Was dein Chef denkt oder wie die Bewertung ausfällt, musst du jetzt nicht klären."
       }
     },
     {
@@ -72,7 +69,7 @@
       "output": {
         "safety_redirect": false,
         "what_happened": [
-          "You shared hard news about your marriage with your best friend.",
+          "You told your best friend some hard news about your marriage.",
           "She has not replied in four days.",
           "Her usual pattern is to reply quickly."
         ],
@@ -80,12 +77,12 @@
           {
             "thought": "She is pulling away from you.",
             "status": "INTERPRETATION",
-            "grounded_version": "She has not responded yet. Whether that means distance is not established."
+            "grounded_version": "You have not heard from her. What that silence means is not yet known."
           },
           {
             "thought": "She is judging you.",
             "status": "INTERPRETATION",
-            "grounded_version": "You do not know what she is thinking or feeling about what you shared."
+            "grounded_version": "You shared hard news and got silence. Whether she has formed a judgment is not something her silence establishes."
           },
           {
             "thought": "She probably talked to her husband about how messy your life has become.",
@@ -93,24 +90,21 @@
             "grounded_version": "You do not have any information about what she has or has not said to anyone."
           },
           {
-            "thought": "Your friendship is basically over.",
+            "thought": "Your friendship is basically over now.",
             "status": "CONCLUSION",
-            "grounded_version": "Four days of silence is the only thing you can point to right now. That is not enough to establish where the friendship stands."
+            "grounded_version": "One four-day silence after difficult news does not establish that the friendship is over."
           }
         ],
         "what_is_unknown": [
-          "Why she has not replied — you do not know her reason.",
-          "What she is thinking or feeling about what you told her.",
-          "Whether something unrelated to you is occupying her right now.",
-          "What her silence means for the friendship going forward."
+          "You do not know whether the silence has anything to do with how she feels about you or your news."
         ],
-        "anchor": "Your friend has not replied in four days after you shared something hard — and right now, that is all you actually know.",
+        "anchor": "Your best friend has not replied in four days after you shared hard news — and that is all you know for certain right now.",
         "next_move": {
           "available": true,
-          "action": "Send her one short, low-pressure message — something like: 'No rush, just wanted to check in on you.' This keeps the door open without demanding a response.",
-          "why": "It gives her a clear, easy way to re-engage and removes any chance that she is simply unsure whether you need space too."
+          "action": "Send her one short, low-pressure message — something like: 'Hey, just checking in on you. No rush.' Nothing that demands a response or explanation.",
+          "why": "It gives you something concrete to do with this feeling instead of sitting with a one-sided silence."
         },
-        "after_this": "You do not need to figure out the future of this friendship before she has even had a chance to respond."
+        "after_this": "You do not need to figure out right now what she thinks, what she said, or where the friendship stands."
       }
     },
     {

@@ -70,12 +70,6 @@ const SpiralStopper = ({ tool }) => {
   const canSubmit = thoughts.trim().length > 0;
   const hasInput = !!(thoughts.trim() || actualEvent.trim() || results);
 
-  const statusLabel = (status) => {
-    if (status === 'PREDICTION') return t('sps_status_prediction');
-    if (status === 'CONCLUSION') return t('sps_status_conclusion');
-    return t('sps_status_interpretation');
-  };
-
   const handleReset = useCallback(() => {
     setThoughts(''); setActualEvent(''); setShowActualEvent(false); setShowGrounding(false);
     setResults(null); setError('');
@@ -274,10 +268,7 @@ const SpiralStopper = ({ tool }) => {
               <div className="mt-3 space-y-4">
                 {results?.what_the_spiral_added.map((x, i) => (
                   <div key={i}>
-                    <div className="flex items-start gap-2 flex-wrap">
-                      <span className={`text-[10px] font-bold tracking-wide px-2 py-1 rounded-full border ${c.border} ${c.textMuted}`}>{statusLabel(x.status)}</span>
-                      <p className={`text-sm font-semibold ${c.text}`}>{x.thought}</p>
-                    </div>
+                    <p className={`text-sm font-semibold ${c.text}`}>{x.thought}</p>
                     {x.grounded_version && <p className={`text-sm mt-2 ms-1 ${c.textSecondary}`}>→ {x.grounded_version}</p>}
                   </div>
                 ))}
