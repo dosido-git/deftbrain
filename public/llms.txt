@@ -70,7 +70,7 @@
 - [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
 - [Quote Check](https://deftbrain.com/QuoteCheck): Know what you're paying for before you approve the repair.
 - [Scam Radar](https://deftbrain.com/ScamRadar): 🎣 Spot the warning signs before you click, pay, or reply.
-- [Subscription Tamer](https://deftbrain.com/SubscriptionTamer): Tame the subscriptions quietly draining you
+- [Subscription Tamer](https://deftbrain.com/SubscriptionTamer): ⚔ Find the subscriptions that aren't earning their place.
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? Build your appeal — or find out it's not worth fighting.
 - [Upsell Shield](https://deftbrain.com/UpsellShield): Walk into high-pressure sales prepared.
 

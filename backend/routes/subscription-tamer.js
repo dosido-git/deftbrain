@@ -4,259 +4,275 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-// 2026-07-24 staleness probe: the tool cited the right statute but hedged it
-// into uselessness ("könnte unwirksam sein") and strategized as if the user
-// were bound — pin the settled post-2022 German rule; ban invented specifics.
-const NO_QUOTE_RULE = ' Never place a double-quote (") character inside any JSON string value — cancellation scripts, negotiation lines, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
+// Ground-up rebuild (2026-09-12), installed from an owner-supplied rewrite
+// per audit/REWRITE-INSTALL-KIT.md. Replaces the nine-mode subscription
+// suite (Sweep/Radar/Optimize/Negotiate/Splits/Trials/Budgets/Tracker/
+// Timeline — keep/cancel verdicts, cost-per-use math from rough frequency
+// labels, invented cancellation steps/scripts/retention tactics, "wasted
+// money" framing, guilt/permission copy) with one job: turn a recurring-
+// charge list into a short, thoughtful review that groups subscriptions
+// into three review-priority buckets and, for anything non-obvious, asks
+// the one question that could change the visitor's mind. The one piece of
+// arithmetic this tool still does (What If savings) is pure code, never
+// modeled.
+//
+// validateResult() below IS the check router.outputStandard='v2' declares:
+// every item's bucket is pinned to the fixed three-value enum (an
+// unrecognized value falls back to a usage-derived bucket, never crashes),
+// question is force-nulled for probably_leave_alone, and totals are always
+// recomputed in code from the actual submitted subscriptions rather than
+// trusted from the model. The epistemic discipline itself — no "wasted"
+// language, no keep/cut verdicts, no invented cancellation difficulty/
+// steps/retention offers/current plans, no cost-per-use from a rough
+// usage label, no population claims — lives in CONTRACT below and is
+// prompt-enforced, not code-verified.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'bucket_outside_the_fixed_three_value_enum',
+    'a_question_present_for_the_probably_leave_alone_bucket',
+    'totals_disagreeing_with_the_actual_submitted_subscriptions',
+    'malformed_item_passed_through_unfiltered',
+  ],
+  require: ['fulfills_tool_promise'],
+};
 
-const CONTRACT_LAW_NOTE = ` LEGAL CURRENCY: for consumer contracts under German law concluded on/after 2022-03-01, auto-renewal beyond the minimum term is monthly-cancellable with at most one month's notice (§ 309 Nr. 9 lit. b BGB) — state this as settled law, not a mere possibility; the online cancellation-button duty (§ 312k BGB) applies since July 2022. For other jurisdictions, cite cancellation rules only with their effective date, or advise verifying. NEVER invent phone numbers, court case citations, or company contact details — name only what you are certain exists, otherwise say how to find it.`;
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON. Return ONLY valid JSON.';
+
+const CONTRACT = `You are Subscription Tamer.
+
+PURPOSE
+Help the visitor review recurring subscriptions using only the prices, billing periods, usage descriptions, and context they supplied.
+
+NORTH STAR
+DO THE MATH. USE THEIR JUDGMENT. FIND WHAT DESERVES ANOTHER LOOK.
+
+BOUNDARIES
+Subscription Tamer does not decide what is worth paying for. It identifies subscriptions where the visitor's own price, usage, and context create the strongest reason to reconsider.
+
+You may:
+- summarize supplied subscription data;
+- compare the visitor's own usage descriptions;
+- point out an obvious mismatch such as 'Forgot about it' plus a recurring charge;
+- ask the one question that could overturn an obvious recommendation;
+- suggest reconsidering, reviewing, or leaving something alone for now.
+
+You must not:
+- call money 'wasted';
+- say a subscription 'earns its keep';
+- assign KEEP/CUT verdicts;
+- invent cancellation difficulty, cancellation steps, retention offers, current plans, current prices, bundles, discounts, or company policies;
+- infer family usage, work need, cancellation penalties, grandfathered pricing, or other context not supplied;
+- calculate cost per use from rough frequency labels;
+- tell the visitor what is financially responsible;
+- congratulate or shame them;
+- make population claims about subscription creep;
+- imply that 'barely use it' necessarily means cancel;
+- use outside knowledge about a named service to evaluate its value.
+
+VOICE
+Write directly to the visitor as 'you'. Never write "the visitor" or any third-person stand-in inside an output field — every string you return must speak to them directly.
+
+CLASSIFICATION
+Use exactly one review bucket:
+- start_here: the strongest mismatch in the visitor's own data, especially Forgot about it or Barely use it without supplied context that clearly explains keeping it;
+- take_another_look: mixed or uncertain value, including Sometimes, Not sure, or context that makes a low-use subscription non-obvious;
+- probably_leave_alone: the visitor says they use it a lot and supplied no concern that creates an obvious reason to review it.
+
+These are review priorities, not verdicts.
+
+QUESTION
+For every subscription in start_here or take_another_look, give one short question that could materially change the visitor's decision. The question must arise from the information supplied, not invented scenarios.
+
+WRITING
+Be concise. No generic finance advice. No moralizing. No AI-report voice.
+
+CONFORM TO DEFTBRAIN_OUTPUT_STANDARD_V2.
+Reason freely. Assert carefully.
+
+${NO_QUOTE_RULE}`;
+
+function n(v) {
+  const x = Number(v);
+  return Number.isFinite(x) && x >= 0 ? x : 0;
+}
+
+function monthlyEquivalent(cost, cycle) {
+  const c = n(cost);
+  if (cycle === 'yearly') return c / 12;
+  if (cycle === 'weekly') return c * 52 / 12;
+  return c;
+}
+
+function money(x) {
+  return Math.round((n(x) + Number.EPSILON) * 100) / 100;
+}
+
+const BUCKETS = new Set(['start_here', 'take_another_look', 'probably_leave_alone']);
+
+function fallbackBucket(usage) {
+  if (usage === 'forgot' || usage === 'barely') return 'start_here';
+  if (usage === 'a_lot') return 'probably_leave_alone';
+  return 'take_another_look';
+}
+
+// Structural sanitization only — see the file-header comment. This does NOT
+// verify the model avoided "wasted"/verdict language or an invented
+// cancellation step; that discipline is prompt-enforced (CONTRACT above),
+// not code-checkable.
+function validateResult(parsed, clean, totals) {
+  const allowed = new Set(clean.map(s => s.id));
+  const itemMap = new Map(
+    (Array.isArray(parsed?.items) ? parsed.items : [])
+      .filter(x => x && typeof x === 'object' && allowed.has(String(x.id)))
+      .map(x => [String(x.id), x])
+  );
+
+  const items = clean.map(s => {
+    const ai = itemMap.get(s.id) || {};
+    const bucket = BUCKETS.has(ai.bucket) ? ai.bucket : fallbackBucket(s.usage);
+    const reason = typeof ai.reason === 'string' && ai.reason.trim()
+      ? ai.reason.trim()
+      : (bucket === 'start_here'
+          ? 'Your own usage description makes this one worth reviewing first.'
+          : bucket === 'probably_leave_alone'
+            ? 'Nothing you supplied makes this an obvious place to start.'
+            : 'Your usage description leaves the value less clear.');
+    const question = bucket === 'probably_leave_alone'
+      ? null
+      : (typeof ai.question === 'string' && ai.question.trim()
+          ? ai.question.trim()
+          : 'Is there something important about this subscription that the usage label does not capture?');
+    return { ...s, bucket, reason, question };
+  });
+
+  return {
+    totals,
+    summary: typeof parsed?.summary === 'string' && parsed.summary.trim()
+      ? parsed.summary.trim()
+      : `You listed ${items.length} recurring subscription${items.length === 1 ? '' : 's'}.`,
+    items,
+  };
+}
 
 router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { action } = req.body;
-
   try {
-    switch (action) {
+    const { action } = req.body || {};
 
-      // ════════════════════════════════════════════════════════
-      // ACTION: PARSE — scan statement text for subscriptions
-      // ════════════════════════════════════════════════════════
-      case 'parse': {
-        const { statement, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-        if (!statement || !statement.trim()) {
-          return res.status(400).json({ error: 'No statement text provided' });
-        }
+    if (action === 'parse') {
+      const { statement, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+      if (!statement || !String(statement).trim()) {
+        return res.status(400).json({ error: 'Paste statement text first.' });
+      }
 
-        const parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-          messages: [{
-            role: 'user',
-            content: `Parse this statement and identify RECURRING SUBSCRIPTION charges. Ignore one-time purchases, groceries, gas, etc. Currency: ${currency || '$'}
+      const system = `You review pasted bank or card statement text for POSSIBLE recurring subscription charges.
+
+This is candidate extraction, not merchant identification.
+
+Rules:
+- Preserve the merchant wording from the statement whenever possible.
+- Do not translate a cryptic merchant string into a famous brand unless the statement itself establishes that identity.
+- Do not claim a charge is recurring from one occurrence alone.
+- A repeated same/similar merchant and amount can support 'likely recurring'.
+- A single plausible subscription-like merchant can be returned as 'possible' for the visitor to confirm.
+- Ignore ordinary one-time purchases when clearly identifiable.
+- Do not infer usage.
+- Do not infer billing cycle unless repetition in the pasted data supports it.
+- Every returned item requires visitor confirmation before it becomes part of the subscription list.
+
+${NO_QUOTE_RULE}`;
+
+      const prompt = `CURRENCY: ${currency || '$'}
 
 STATEMENT TEXT:
-${statement.substring(0, 30000)}
+${String(statement).slice(0, 30000)}
 
 Return ONLY valid JSON:
 {
-  "subscriptions": [
+  "candidates": [
     {
-      "name": "Human-readable service name (e.g., 'Netflix' not 'NFLX*STREAMING') — 3-6 words",
-      "cost": 15.49,
-      "cycle": "monthly",
-      "usage_guess": "unknown"
+      "merchant_text": "Merchant text as it appears in the statement",
+      "display_name": "Same merchant text, lightly cleaned for readability only",
+      "amount": 12.99,
+      "cycle": "monthly | yearly | weekly | unknown",
+      "status": "likely recurring | possible",
+      "why_flagged": "One short sentence tied only to the pasted statement"
     }
-  ]
-}
-
-"cycle" MUST be EXACTLY one of: monthly | yearly | weekly — a single word, no other text (it is consumed by code). "usage_guess" MUST be a single short phrase.`
-          }],
-        }, { label: 'SubscriptionTamerParse' });
-        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
-        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
-      }
-      return res.json(parsed);
-      }
-
-      // ════════════════════════════════════════════════════════
-      // ACTION: ANALYZE — full subscription audit
-      // ════════════════════════════════════════════════════════
-      case 'analyze': {
-        const { subscriptions, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-        if (!subscriptions || !subscriptions.length) {
-          return res.status(400).json({ error: 'No subscriptions provided' });
-        }
-
-        const sym = currency || '$';
-        const totalMonthly = subscriptions.reduce((s, sub) => s + (sub.monthly_cost || sub.cost || 0), 0);
-
-        const subList = subscriptions.map((s, i) => {
-          const monthlyCost = s.monthly_cost || s.cost || 0;
-          return `${i + 1}. ${s.name} — ${sym}${s.cost || 0}/${s.cycle || 'monthly'} (${sym}${monthlyCost.toFixed(2)}/mo) — Usage: ${s.usage || 'unknown'}`;
-        }).join('\n');
-
-        const systemPrompt = `You are a subscription audit expert. You help people identify waste, calculate real costs, and take action. Be brutally honest but not judgmental — people feel shame about forgotten subscriptions, so normalize it. Give them permission to cancel.${CONTRACT_LAW_NOTE}`;
-
-        const userPrompt = `SUBSCRIPTION AUDIT
-Currency: ${sym}
-Total monthly: ${sym}${totalMonthly.toFixed(2)} (${sym}${(totalMonthly * 12).toFixed(0)}/year)
-
-SUBSCRIPTIONS:
-${subList}
-
-Analyze every subscription. Return ONLY valid JSON:
-{
-  "wasted_monthly": 25.50,
-
-  "breakdown": {
-    "used": 45.00,
-    "underused": 20.00,
-    "forgotten": 15.00
-  },
-
-  "subscriptions": [
-    {
-      "name": "Netflix — 3-6 words",
-      "verdict": "keep | cancel | consider",
-      "honesty": "One brutally honest sentence about this subscription's value. Be specific to their usage level. — one sentence",
-      "cost_per_use": "4.12",
-      "would_you_pay": "Would you pay ${sym}4.12 every time you watch a show? That's actually reasonable for unlimited entertainment. — one sentence",
-      "free_alternative": "Free/cheaper alternative or null if verdict is keep — one sentence",
-      "cancellation_difficulty": "easy | medium | hard",
-      "cancellation_steps": "Step by step how to cancel (e.g., 'Go to Netflix.com → Account → Cancel Membership'). Only for cancel/consider verdicts. — one sentence",
-      "cancellation_script": "Ready-to-send cancellation message if applicable (for services requiring contact). null if self-service. — 2-4 sentences",
-      "seasonal_note": "If this could be paused seasonally, explain when. null otherwise. — one sentence",
-      "retention_tactics": ["List specific tactics this company uses to prevent cancellation", "e.g., 'They'll offer 3 months at 50% off — say no, the next offer is usually better'", "null if easy self-service cancel"]
-    }
-  ],
-
-  "savings_equivalents": [
-    "If user cut all 'cancel' items, translate annual savings into 2-3 real things: e.g., 'a weekend trip to the coast', '47 really good coffees', 'a new PS5 game every other month'. Use culturally appropriate examples."
-  ],
-
-  "overall": "2-3 sentence bottom line. How much they're wasting, what to cut first, and one encouraging line about how normal subscription creep is.",
-
-  "permission_statements": [
-    "2-3 guilt-free permission statements. Examples: 'Cancelling a service you don't use isn't wasteful — keeping it is.', 'You are not obligated to pay for something just because you signed up once.', 'The financially responsible choice is to cancel what you don't use, not to keep paying out of inertia.'"
   ]
 }`;
 
-        const parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'SubscriptionTamerAnalyze' });
-        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
-        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 3000,
+        system: withLanguage(system, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'subscription-tamer-parse' });
+
+      return res.json({ candidates: Array.isArray(parsed?.candidates) ? parsed.candidates : [] });
+    }
+
+    if (action === 'analyze') {
+      const { subscriptions, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+      if (!Array.isArray(subscriptions) || !subscriptions.length) {
+        return res.status(400).json({ error: 'Add at least one subscription.' });
       }
-      return res.json(parsed);
-      }
 
-      // ════════════════════════════════════════════════════════
-      // ACTION: OPTIMIZE — find plan upgrades/downgrades/bundles
-      // ════════════════════════════════════════════════════════
-      case 'optimize': {
-        const { subscriptions, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-        if (!subscriptions || !subscriptions.length) {
-          return res.status(400).json({ error: 'No subscriptions provided' });
-        }
+      const clean = subscriptions
+        .filter(s => String(s?.name || '').trim() && n(s?.cost) >= 0)
+        .map((s, i) => ({
+          id: String(s.id ?? i + 1),
+          name: String(s.name).trim(),
+          cost: money(s.cost),
+          cycle: ['weekly', 'monthly', 'yearly'].includes(s.cycle) ? s.cycle : 'monthly',
+          monthly_cost: money(monthlyEquivalent(s.cost, s.cycle)),
+          usage: ['a_lot', 'sometimes', 'barely', 'forgot', 'not_sure'].includes(s.usage) ? s.usage : 'not_sure',
+          context: String(s.context || '').trim().slice(0, 600),
+        }));
 
-        const sym = currency || '$';
-        const subList = subscriptions.map((s, i) =>
-          `${i + 1}. ${s.name} — ${sym}${s.cost}/${s.cycle} — Plan: ${s.planTier || 'unknown'}`
-        ).join('\n');
+      if (!clean.length) return res.status(400).json({ error: 'Add at least one valid subscription.' });
 
-        const parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-          messages: [{
-            role: 'user',
-            content: `OPTIMIZE THESE SUBSCRIPTIONS:
-${subList}
+      const totalMonthly = money(clean.reduce((sum, s) => sum + s.monthly_cost, 0));
+      const totalAnnual = money(totalMonthly * 12);
+      const sym = currency || '$';
 
-For each subscription, check for savings opportunities. Return ONLY valid JSON:
+      const rows = clean.map((s, i) => `${i + 1}. ID ${s.id}\nName: ${s.name}\nPrice: ${sym}${s.cost}/${s.cycle}\nMonthly equivalent: ${sym}${s.monthly_cost}\nUsage: ${s.usage}\nContext: ${s.context || 'None supplied'}`).join('\n\n');
+
+      const prompt = `REVIEW THESE SUBSCRIPTIONS
+Currency symbol: ${sym}
+Total monthly equivalent: ${sym}${totalMonthly}
+Total annual equivalent: ${sym}${totalAnnual}
+
+${rows}
+
+Return ONLY valid JSON:
 {
-  "optimizations": [
+  "summary": "One short you/your sentence about the review, based only on the supplied entries.",
+  "items": [
     {
-      "service": "Spotify — one sentence",
-      "current_cost": 10.99,
-      "current_plan": "Individual Monthly — one sentence",
-      "opportunities": [
-        {
-          "type": "annual_switch|family_plan|student_discount|bundle|downgrade|competitor_switch",
-          "description": "Switch to annual plan — 1-2 sentences",
-          "new_cost": 9.17,
-          "savings_monthly": 1.82,
-          "savings_annual": 21.84,
-          "how": "Go to spotify.com/account → Manage Plan → Switch to Annual — one sentence",
-          "caveat": "Billed as one payment of ${sym}109.99/year — one sentence"
-        }
-      ]
+      "id": "Exact input ID",
+      "bucket": "start_here | take_another_look | probably_leave_alone",
+      "reason": "One concise you/your sentence grounded only in the supplied price, usage, and context.",
+      "question": "One short decision-changing question for start_here/take_another_look, otherwise null"
     }
-  ],
-  "bundle_opportunities": [
-    {
-      "services_involved": ["Hulu", "Disney+", "ESPN+"],
-      "bundle_name": "Disney Bundle — 3-6 words",
-      "bundle_cost": 14.99,
-      "current_separate_cost": 38.97,
-      "savings_monthly": 23.98,
-      "how": "Sign up at disneyplus.com/bundle — one sentence"
-    }
-  ],
-  "total_potential_savings_monthly": 25.50,
-  "total_potential_savings_annual": 306.00,
-  "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year — one sentence"
-}`
-          }],
-        }, { label: 'SubscriptionTamerOptimize' });
-        if (!parsed.optimizations) {
-        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
+  ]
+}`;
+
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 3500,
+        system: withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'subscription-tamer-analyze' });
+
+      const result = validateResult(parsed, clean, { monthly: totalMonthly, annual: totalAnnual });
+      if (!Array.isArray(result.items) || !result.items.length) {
+        return res.status(500).json({ error: 'Could not review your subscriptions. Please try again.' });
       }
-      return res.json(parsed);
-      }
-
-      // ════════════════════════════════════════════════════════
-      // ACTION: NEGOTIATE — retention scripts for a specific service
-      // ════════════════════════════════════════════════════════
-      case 'negotiate': {
-        const { serviceName, cost, cycle, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-        if (!serviceName?.trim()) {
-          return res.status(400).json({ error: 'Service name required' });
-        }
-
-        const sym = currency || '$';
-
-        const parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.${CONTRACT_LAW_NOTE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-          messages: [{
-            role: 'user',
-            content: `RETENTION NEGOTIATION SCRIPT for: ${serviceName}
-Current cost: ${sym}${cost || '?'}/${cycle || 'monthly'}
-
-Generate a complete retention negotiation script. Return ONLY valid JSON:
-{
-  "service": "${serviceName}",
-  "contact_method": "How to reach retention dept (phone, chat, or both). Include actual phone numbers or paths if known. — one sentence",
-  "best_time_to_call": "When retention reps have more authority to give discounts — one sentence",
-  "opening_line": "Exact opening sentence to say — one sentence",
-  "script_steps": [
-    {
-      "step": 1,
-      "you_say": "Exact words to say — one sentence",
-      "they_will_say": "What the rep will likely respond with — one sentence",
-      "your_response": "How to counter their response — one sentence",
-      "tip": "Why this works — one sentence"
-    }
-  ],
-  "known_offers": [
-    {
-      "offer": "50% off for 3 months — one sentence",
-      "likelihood": "high|medium|low",
-      "should_accept": true,
-      "why": "This is their standard retention offer — take it — one sentence"
-    }
-  ],
-  "magic_phrases": ["Specific phrases that trigger better deals or escalation to retention"],
-  "walk_away_threshold": "The best deal you can realistically expect. If they won't match this, cancel. — one sentence",
-  "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.) — one sentence"
-}`
-          }],
-        }, { label: 'SubscriptionTamerNegotiate' });
-        if (!parsed.service) {
-        return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
-      }
-      return res.json(parsed);
-      }
-
-      default:
-        return res.status(400).json({ error: `Unknown action: ${action}` });
+      res.json(result);
+      return;
     }
 
+    return res.status(400).json({ error: 'Unknown action.' });
   } catch (error) {
     console.error('SubscriptionTamer error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

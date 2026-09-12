@@ -920,7 +920,24 @@ for name, fpath in tools:
                          # include safety_redirect content) is exactly the
                          # kind of thing that should not sit in a browser's
                          # storage by default.
-                         'SpiralStopper'}
+                         'SpiralStopper',
+                         # SubscriptionTamer joined on 2026-09-12 with the
+                         # ground-up rebuild. This tool's persisted state
+                         # (`subs`, the subscription list itself) already is
+                         # the working data a visitor builds and edits over
+                         # time — it is not a session log sitting alongside
+                         # a separate "history" feature, so there is no
+                         # second history-shaped store to add. `result` (the
+                         # bucketed review) is deliberately kept as plain
+                         # useState rather than persisted: it is a snapshot
+                         # tied to the subs list at the moment of the last
+                         # review and goes stale the instant a subscription
+                         # is edited, so persisting it risks showing a review
+                         # that no longer matches the visitor's own current
+                         # list — the same staleness reasoning as SBA's
+                         # auto-clear-on-new-log, just resolved by never
+                         # writing it in the first place.
+                         'SubscriptionTamer'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

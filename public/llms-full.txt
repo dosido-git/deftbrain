@@ -1714,38 +1714,34 @@ Output: Scam Radar would put the immediate action first: don't use the message's
 ### Subscription Tamer
 
 URL: https://deftbrain.com/SubscriptionTamer
-Tagline: Tame the subscriptions quietly draining you
+Tagline: ⚔ Find the subscriptions that aren't earning their place.
 Categories: Loot
 
-Subscription management across 9 views: honest keep/cancel verdicts with cost-per-use math, renewal alerts, price hike detection, plan optimization, retention scripts to negotiate discounts, shared-cost splitting, free trial tracking, category budgets, and a cancellation savings timeline.
+See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider.
 
-**What it does.** Subscription Tamer manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.
+**What it does.** Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list persists so you can build it up over time.
 
 **How to use it.**
 
-1. 🧹 Sweep: Add subs manually or scan a statement. Set category + renewal date. Get verdicts, cost-per-use, and cancellation steps
-2. 🔔 Radar: See upcoming renewals (this week, this month, 90 days) plus price hike alerts with one-click negotiate links
-3. ⚡ Optimize: Find annual discounts, family plans, student deals, and bundle opportunities
-4. 📞 Negotiate: Service-specific retention scripts with step-by-step dialogue and magic phrases
-5. 👥 Splits: Mark subs as shared, add members, see per-person costs and a copy-ready 'who owes what' summary
-6. 🆓 Trials: Track free trials with end dates, usage counters, cost-per-use verdicts, and one-click convert to subscription
-7. 📊 Budgets: Set monthly limits per category (streaming, music, etc.). Visual budget bars with over-limit alerts
-8. 📋 Tracker: Status management (active/cancelling/paused/cancelled) with running savings since cancellation
-9. 📈 Timeline: Monthly spending bar chart with trend analysis — proof that subscription creep is real
+1. Add each subscription: name, the price you actually pay, billing period, and how you'd describe using it
+2. Optionally add context that makes one hard to judge — family uses it, you need it occasionally for work, it's bundled with something else
+3. Or paste a bank/card statement — the tool flags possible recurring charges for you to confirm and add
+4. Submit to get three groups: Start Here (the clearest mismatches), Take Another Look (mixed or uncertain), and Probably Leave Alone For Now
+5. Read the one question attached to anything non-obvious — it's designed to be the question that could actually change your mind
+6. Check any subscriptions to see the exact monthly/annual total if you stopped them — pure arithmetic, not a suggestion
 
 **Tips.**
 
-- Set renewal dates on annual subs — that's where surprise charges happen
-- Update prices when they change — Subscription Tamer tracks the history and alerts you to increases
-- Add trials the moment you sign up — tap the usage counter each time you use them
-- Set category budgets even if approximate — the visual bar makes overspending obvious
-- Run a fresh Sweep analysis each month to take a timeline snapshot
+- Use the price you're actually paying now, not the introductory rate — that's what the math needs
+- A rough usage description is enough — don't try to calculate an exact frequency
+- The context field is for whatever makes a subscription hard to judge on price and usage alone — it changes how the review reads it
+- Statement scanning only flags possible matches — you decide what each one actually is before it's added
 
 **Example.**
 
-Input: You have 10 subscriptions, share Netflix with roommates, just started a Paramount+ trial, and suspect your internet went up in price.
+Input: You have a video streaming service you barely open, a music service you use daily, design software for occasional client work, and a gym membership you forgot you were paying for.
 
-Output: Radar shows 3 renewals this month totaling $87. Price Watch catches the $5/month internet hike and links to Negotiate. Splits calculates roommates owe you $8.33/month each. Trial tracker warns: 'Zero uses of Paramount+ and trial ends in 3 days — cancel now.' Budget view shows you're $12 over your streaming limit.
+Output: Start Here: the video service and the forgotten gym membership, each with a question about whether there's a reason you're still holding onto it. Take Another Look: the design software, since occasional paid work makes its value genuinely unclear. Probably Leave Alone For Now: the music service, which matches your stated daily use.
 
 ### Ticket Tackler
 

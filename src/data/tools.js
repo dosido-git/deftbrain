@@ -5321,58 +5321,50 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-12",
   id: "SubscriptionTamer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You don't know what's charging you every month.",
-    give: "Your subscriptions, or a statement to scan.",
-    get: "Cost per use, verdicts on what to cut, renewal warnings, and cancellation steps for each.",
-    edge: "Cost per use is the number that settles it — a service you love and open twice a year is still a bad subscription.",
+    when: "You suspect a few subscriptions aren't earning their place, but you're not sure which.",
+    give: "Each subscription's real price, how you'd describe using it, and anything that makes it hard to judge.",
+    get: "Three review-priority groups and, for anything non-obvious, one question that could change your mind.",
+    edge: "This isn't a verdict machine — it won't tell you what to cancel. It finds where your own price, usage, and context create the strongest reason to look again.",
   },
-  seoTitle: "Subscription Tracker & Cancellation Tool — Cost-Per-Use Audit",
-  seoDescription: "Tame the subscriptions quietly draining you. Subscription Tamer audits every subscription by real cost-per-use, catches price hikes and duplicates, writes cancellation scripts that beat retention tactics, and gives you guilt-free permission to cancel. Free, no signup.",
+  seoTitle: "Subscription Review Tool",
+  seoDescription: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider. Free, no signup.",
   title: "Subscription Tamer",
-  tagline: "Tame the subscriptions quietly draining you",
-  tags: ['subscription', 'cancel', 'unsubscribe', 'charges', 'recurring', 'cost per use', 'retention', 'money', 'audit', 'tracker'],
+  tagline: "⚔ Find the subscriptions that aren't earning their place.",
+  tags: ['subscription', 'cancel', 'unsubscribe', 'recurring charges', 'money', 'review', 'statement scan', 'budget'],
   icon: "⚔️",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Subscription management across 9 views: honest keep/cancel verdicts with cost-per-use math, renewal alerts, price hike detection, plan optimization, retention scripts to negotiate discounts, shared-cost splitting, free trial tracking, category budgets, and a cancellation savings timeline.",
+  description: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider.",
   guide: {
-    overview: "Subscription Tamer manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
-
+    overview: "Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list persists so you can build it up over time.",
     howToUse: [
-      "🧹 Sweep: Add subs manually or scan a statement. Set category + renewal date. Get verdicts, cost-per-use, and cancellation steps",
-      "🔔 Radar: See upcoming renewals (this week, this month, 90 days) plus price hike alerts with one-click negotiate links",
-      "⚡ Optimize: Find annual discounts, family plans, student deals, and bundle opportunities",
-      "📞 Negotiate: Service-specific retention scripts with step-by-step dialogue and magic phrases",
-      "👥 Splits: Mark subs as shared, add members, see per-person costs and a copy-ready 'who owes what' summary",
-      "🆓 Trials: Track free trials with end dates, usage counters, cost-per-use verdicts, and one-click convert to subscription",
-      "📊 Budgets: Set monthly limits per category (streaming, music, etc.). Visual budget bars with over-limit alerts",
-      "📋 Tracker: Status management (active/cancelling/paused/cancelled) with running savings since cancellation",
-      "📈 Timeline: Monthly spending bar chart with trend analysis — proof that subscription creep is real"
+      "Add each subscription: name, the price you actually pay, billing period, and how you'd describe using it",
+      "Optionally add context that makes one hard to judge — family uses it, you need it occasionally for work, it's bundled with something else",
+      "Or paste a bank/card statement — the tool flags possible recurring charges for you to confirm and add",
+      "Submit to get three groups: Start Here (the clearest mismatches), Take Another Look (mixed or uncertain), and Probably Leave Alone For Now",
+      "Read the one question attached to anything non-obvious — it's designed to be the question that could actually change your mind",
+      "Check any subscriptions to see the exact monthly/annual total if you stopped them — pure arithmetic, not a suggestion"
     ],
-
     example: {
-      scenario: "You have 10 subscriptions, share Netflix with roommates, just started a Paramount+ trial, and suspect your internet went up in price.",
-      action: "Add all 10 in Sweep with categories and renewal dates. Mark Netflix as shared in Splits, add roommate names. Add Paramount+ trial with end date. Update internet price — Subscription Tamer detects the increase.",
-      result: "Radar shows 3 renewals this month totaling $87. Price Watch catches the $5/month internet hike and links to Negotiate. Splits calculates roommates owe you $8.33/month each. Trial tracker warns: 'Zero uses of Paramount+ and trial ends in 3 days — cancel now.' Budget view shows you're $12 over your streaming limit."
+      scenario: "You have a video streaming service you barely open, a music service you use daily, design software for occasional client work, and a gym membership you forgot you were paying for.",
+      action: "Add all four with their real prices and an honest usage description for each — no need to overthink the labels.",
+      result: "Start Here: the video service and the forgotten gym membership, each with a question about whether there's a reason you're still holding onto it. Take Another Look: the design software, since occasional paid work makes its value genuinely unclear. Probably Leave Alone For Now: the music service, which matches your stated daily use."
     },
-
     tips: [
-      "Set renewal dates on annual subs — that's where surprise charges happen",
-      "Update prices when they change — Subscription Tamer tracks the history and alerts you to increases",
-      "Add trials the moment you sign up — tap the usage counter each time you use them",
-      "Set category budgets even if approximate — the visual bar makes overspending obvious",
-      "Run a fresh Sweep analysis each month to take a timeline snapshot"
+      "Use the price you're actually paying now, not the introductory rate — that's what the math needs",
+      "A rough usage description is enough — don't try to calculate an exact frequency",
+      "The context field is for whatever makes a subscription hard to judge on price and usage alone — it changes how the review reads it",
+      "Statement scanning only flags possible matches — you decide what each one actually is before it's added"
     ],
-
     pitfalls: [
-      "Prices and cancellation steps may vary — always verify on the service's website",
-      "Retention offers change frequently — scripts give the general approach, not guaranteed deals",
-      "Statement scanning works best with copy-pasted text, not screenshots"
+      "This tool doesn't decide what's worth paying for — it only points out where your own data creates the strongest reason to look again",
+      "'Barely use it' isn't a verdict to cancel — some subscriptions are worth keeping for exactly the reason you'd put in the context field",
+      "The What If total is pure math for whatever you select — not a recommendation about what to actually change"
     ]
   }
 },
