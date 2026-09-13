@@ -1493,7 +1493,7 @@ const TheFinalWord = ({ tool }) => {
                   return (
                     <div key={i} className={`p-4 ${i === 0 ? `border-e ${c.border}` : ''} ${isWinner ? isDark ? 'bg-emerald-900/10' : 'bg-green-50/50' : ''}`}>
                       <div className="flex items-center gap-2 mb-2">{isWinner && <span>🏆</span>}<p className={`text-sm font-bold ${c.text}`}>{person?.name}</p></div>
-                      <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (person?.accuracy || 0) >= 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-500')}`}>{person?.accuracy ?? '?'}%</div>
+                      <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (person?.accuracy || 0) >= 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-500')}`}>{t('tfw_pct_support', { pct: person?.accuracy ?? '?' })}</div>
                       {person?.what_they_got_right && <p className={`text-xs mb-1 ${c.textSecondary}`}><span className={c.success}>✓</span> {person.what_they_got_right}</p>}
                       {person?.what_they_got_wrong && <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {person.what_they_got_wrong}</p>}
                     </div>
@@ -1676,13 +1676,13 @@ const TheFinalWord = ({ tool }) => {
             <div className="grid grid-cols-2 gap-0 border-b" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
               <div className={`p-4 border-e ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_your_position')}</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{daResult.user_score?.accuracy}%</div>
+                <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{t('tfw_pct_support', { pct: daResult.user_score?.accuracy })}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.user_score?.strengths}</p>
                 <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.user_score?.weaknesses}</p>
               </div>
               <div className="p-4">
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_counter')}</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.counter_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{daResult.counter_score?.accuracy}%</div>
+                <div className={`text-3xl font-black mb-2 ${(daResult.counter_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{t('tfw_pct_support', { pct: daResult.counter_score?.accuracy })}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.counter_score?.strengths}</p>
                 <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.counter_score?.weaknesses}</p>
               </div>
