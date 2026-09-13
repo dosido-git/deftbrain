@@ -16,13 +16,6 @@ const REASONS = [
   { value: 'unfamiliar', labelKey: 'tab_reason_unfamiliar' },
 ];
 
-const TIME_OPTIONS = [
-  { value: '2', labelKey: 'tab_time_2' },
-  { value: '5', labelKey: 'tab_time_5' },
-  { value: '10', labelKey: 'tab_time_10' },
-  { value: '20', labelKey: 'tab_time_20' },
-];
-
 // Five rotated scenarios spanning the range of real blockers CORE REASONING
 // looks for: excessive size with no obvious entry point (marketing plan),
 // emotionally difficult content as much as size (garage), an unresolved
@@ -30,11 +23,11 @@ const TIME_OPTIONS = [
 // choices that can't be made in isolation (wedding), and plain tedium/
 // procrastination rather than complexity (expense receipts).
 const EXAMPLES = [
-  { projectKey: 'tab_ex1_project', reasons: ['too_many_steps', 'dont_know_start', 'unfamiliar'], time: '5' },
-  { projectKey: 'tab_ex2_project', reasons: ['too_many_steps', 'emotionally_difficult', 'dont_know_start'], time: '5' },
-  { projectKey: 'tab_ex3_project', reasons: ['dont_know_start', 'too_many_steps'], time: '10' },
-  { projectKey: 'tab_ex4_project', reasons: ['too_many_steps', 'dont_know_start'], time: '10' },
-  { projectKey: 'tab_ex5_project', reasons: ['boring', 'too_many_steps'], time: '5' },
+  { projectKey: 'tab_ex1_project', reasons: ['too_many_steps', 'dont_know_start', 'unfamiliar'] },
+  { projectKey: 'tab_ex2_project', reasons: ['too_many_steps', 'emotionally_difficult', 'dont_know_start'] },
+  { projectKey: 'tab_ex3_project', reasons: ['dont_know_start', 'too_many_steps'] },
+  { projectKey: 'tab_ex4_project', reasons: ['too_many_steps', 'dont_know_start'] },
+  { projectKey: 'tab_ex5_project', reasons: ['boring', 'too_many_steps'] },
 ];
 
 const TaskAvalancheBreaker = ({ tool }) => {
@@ -74,7 +67,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   const [project, setProject] = useState('');
   const [reasons, setReasons] = useState([]);
-  const [time, setTime] = useState('5');
   const [result, setResult] = useState(null);
   const [showSmaller, setShowSmaller] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
@@ -85,7 +77,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
   const handleReset = useCallback(() => {
     setProject('');
     setReasons([]);
-    setTime('5');
     setResult(null);
     setShowSmaller(false);
     setStepIndex(0);
@@ -96,7 +87,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
     const ex = pickExample('TaskAvalancheBreaker', EXAMPLES);
     setProject(t(ex.projectKey));
     setReasons(ex.reasons);
-    setTime(ex.time);
     setResult(null);
     setShowSmaller(false);
     setStepIndex(0);
@@ -115,7 +105,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
       const data = await callToolEndpoint('task-avalanche-breaker', {
         project: project.trim(),
         stuckReasons: reasons,
-        availableTime: time,
       });
       setResult(data);
       setShowSmaller(false);
@@ -123,7 +112,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
     } catch (e) {
       setError(e?.message || t('tab_error_generic'));
     }
-  }, [project, reasons, time, callToolEndpoint, t]);
+  }, [project, reasons, callToolEndpoint, t]);
 
   // Cmd/Ctrl+Enter submits from anywhere on the form.
   useEffect(() => {
@@ -192,20 +181,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
                   onClick={() => toggleReason(r.value)}
                   className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${reasons.includes(r.value) ? c.pillActive : c.pillInactive}`}
                 >{t(r.labelKey)}</button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <div className={`text-sm font-semibold ${c.text}`}>{t('tab_time_label')}</div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {TIME_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setTime(opt.value)}
-                  className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${time === opt.value ? c.pillActive : c.pillInactive}`}
-                >{t(opt.labelKey)}</button>
               ))}
             </div>
           </div>

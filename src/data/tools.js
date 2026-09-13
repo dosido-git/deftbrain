@@ -4403,17 +4403,17 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-12",
+  modified: "2026-09-13",
   id: "TaskAvalancheBreaker",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A project so big you can't find anywhere to start.",
-    give: "The project, what makes starting hard, and how much time you actually have right now.",
-    get: "One concrete first move sized to your time, a smaller fallback if it's still too much, and a preview of what comes after.",
-    edge: "This isn't a task list — you already have too much list. It's one foothold, not a plan for the whole project.",
+    give: "The project, and optionally what makes starting hard.",
+    get: "One useful first move grounded in what you actually said, a smaller fallback if it's still too much, and a preview of what comes after.",
+    edge: "This isn't a task list — you already have too much list. It's one foothold, not a plan for the whole project. It won't invent structure your project doesn't have just to sound clever.",
   },
-  seoDescription: "Stuck on a project that feels too big to start? Get one concrete first move sized to the time you actually have — not another giant to-do list. Free, no signup.",
+  seoDescription: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list. Free, no signup.",
   seoTitle: "Find One Foothold in an Overwhelming Project",
   title: "Task Avalanche Breaker",
   tagline: "Find one foothold in a project that feels too big to start",
@@ -4421,34 +4421,33 @@ tagline: "Work with the energy you have.",
   icon: "⛏️",
   categories: ['Energy', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one concrete first move sized to the time you actually have — not another giant to-do list.",
+  description: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list.",
   guide: {
-    overview: "Task Avalanche Breaker exists for the moment a project already feels too big to look at, not the moment you want it broken into a full plan. Describe what's looming, optionally say what makes starting hard, and say how much time you actually have right now — 2, 5, 10, or 20 minutes. You get back one concrete first move that fits that time, why it's the useful place to start, a visible done condition, and a genuinely smaller fallback if even that is too much. Up to three later footholds are there as a preview of what comes after, not a project plan to work through. The tool never diagnoses why something is hard, never invents facts about your project, and never promises the first move will resolve how you feel about the rest of it — it just gives you one thing to actually do.",
+    overview: "Task Avalanche Breaker exists for the moment a project already feels too big to look at, not the moment you want it broken into a full plan. Describe what's looming and optionally say what makes starting hard. You get back one first move — grounded only in facts, constraints, and relationships you actually described, never a plausible-sounding project theory invented to make the move look smarter than it is — why it's the useful place to start, a visible done condition, and a genuinely smaller fallback if even that is too much. When an important dependency isn't clear from what you said, the first move may simply be finding it out, rather than the tool guessing. Up to two later footholds are there as a preview of what comes after, not a project plan to work through. The tool never diagnoses why something is hard and never invents facts, deadlines, stakeholders, or structure your project doesn't have — it just gives you one grounded thing to actually do.",
     howToUse: [
       "Describe what feels too big to start right now",
       "Optionally note what's making it hard — too many moving parts, not knowing where to start, it being emotionally difficult, having put it off, or it being unfamiliar",
-      "Say how much room you have for this right now: about 2, 5, 10, or 20 minutes",
-      "Get one first move sized to that time, with why it's useful and a visible done condition",
+      "Get one first move grounded in what you actually described, with why it's useful and a visible done condition",
       "If even that feels like too much, open 'Still too much?' for a genuinely smaller version of the same move",
       "Do the move, then click 'I did it — what's next?' to move to the next foothold, or stop — either is a complete use of the tool",
-      "Optionally expand 'See the path ahead' for up to three later footholds — a preview, not a plan to finish in one sitting"
+      "Optionally expand 'See the path ahead' for up to two later footholds — a preview, not a plan to finish in one sitting"
     ],
     example: {
       scenario: "You need to clean out your late father's garage. There are decades of tools, boxes, and paperwork, it's emotionally difficult, and you don't know where to start.",
-      action: "Describe the project, check 'It feels emotionally difficult' and \"I don't know where to start\", and say you have about 5 minutes right now.",
-      result: "One first move sized to 5 minutes — something concrete you can actually do, not 'start sorting the garage.' A visible done condition, a smaller fallback if it's still too much, and up to three later footholds you can look at or ignore."
+      action: "Describe the project and check 'It feels emotionally difficult' and \"I don't know where to start.\"",
+      result: "One first move grounded in what you actually described — something concrete you can do, not 'start sorting the garage' and not an invented claim about which part of the garage matters most. A visible done condition, a smaller fallback if it's still too much, and up to two later footholds you can look at or ignore."
     },
     tips: [
-      "The time you pick shapes the move you get — be honest about what you actually have right now, not what you wish you had",
       "The reasons you check aren't diagnosed or explained back to you — they just help size the first move to what's actually in the way",
       "'Still too much?' gives a smaller version of the SAME move, not a different, easier task",
+      "If the right first move depends on something you haven't said, the tool will often make finding that out the move itself, rather than guess",
       "The later footholds are a preview, not a commitment — nothing requires you to do more than the one you're on"
     ],
     pitfalls: [
       "This tool won't turn your project into a full task list — it deliberately gives one move at a time, because a list is what already felt too big",
       "It doesn't diagnose why the project is hard, and a reason you check describes your experience, not a cause the tool has identified",
       "Completing the first move isn't guaranteed to make the rest of the project feel resolved — it's one available thing to do, not a fix for the whole project",
-      "It won't invent deadlines, requirements, or details about your project that you didn't supply"
+      "It won't invent deadlines, requirements, stakeholder positions, or details about your project that you didn't supply"
     ]
   }
 },
