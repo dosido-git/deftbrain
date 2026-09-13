@@ -43,6 +43,87 @@ const EXAMPLES = [
   },
 ];
 
+// Headline mode — five real-shaped headline/study pairs, each a different
+// flavor of overreach a visitor would actually paste from a news app: a
+// causal claim from an observational study, a hard number from a small
+// early trial, "outperforms doctors" from one narrow imaging task, and so on.
+const HEADLINE_EXAMPLES = [
+  {
+    hlHeadline: 'Study Proves Coffee Prevents Cancer',
+    hlResearchText: "In this prospective cohort of 470,000 adults followed for 11 years, those who drank 3-4 cups of coffee daily had a 12% lower incidence of colorectal cancer than non-drinkers (HR 0.88, 95% CI 0.81-0.95), after adjustment for smoking, alcohol, BMI, and diet quality. The association was weaker and not statistically significant for other cancer types. As an observational study, residual confounding cannot be excluded — coffee drinkers in this cohort also had higher average income and were less likely to smoke.",
+  },
+  {
+    hlHeadline: 'New Study Shows Video Games Cause Violence in Teens',
+    hlResearchText: "In a cross-sectional survey of 1,200 adolescents, self-reported hours of violent video game play correlated weakly with self-reported aggressive behavior in the past month (r=0.14, p=0.03). The study did not measure violence longitudinally, did not control for pre-existing aggression or home environment, and cannot establish which came first. The authors explicitly note the design cannot support causal claims.",
+  },
+  {
+    hlHeadline: 'Scientists Discover Miracle Diet That Melts Fat Overnight',
+    hlResearchText: "In a 12-week randomized trial, 86 overweight adults following a time-restricted eating protocol (8-hour eating window) lost an average of 3.1 kg more than a control group eating the same calories across a normal schedule (p=0.04). Weight loss occurred gradually over the full 12 weeks, not overnight, and the difference from the control group was modest. Two participants dropped out citing difficulty sustaining the eating window.",
+  },
+  {
+    hlHeadline: 'AI Now Outperforms Doctors at Diagnosing Cancer, Study Finds',
+    hlResearchText: "A deep learning model was trained to classify skin lesion images from a single benchmark dataset as malignant or benign, achieving 94% accuracy versus 88% for a panel of 21 dermatologists reviewing the same static images without patient history, touch, or follow-up questions. The authors note the model has not been tested against dermatologists working under normal clinical conditions, nor validated on images from different cameras, skin tones, or lesion types than those in the training set.",
+  },
+  {
+    hlHeadline: 'New Vaccine Wipes Out Disease X, Trial Finds',
+    hlResearchText: "In a phase 3 trial of 14,000 participants, the vaccine reduced symptomatic infection by 76% and severe disease by 91% compared to placebo over a 12-month follow-up period. The trial did not measure long-term duration of protection beyond 12 months, and breakthrough infections, while less severe, still occurred in vaccinated participants. Elimination of the disease was not a study endpoint and was not observed.",
+  },
+];
+
+// Compare mode — five pairs of real-shaped studies on the same question
+// that a visitor would plausibly want reconciled: one showing an effect,
+// one showing a weaker or null one, for a genuinely common reason (different
+// population, different measure, different study design) rather than one
+// study simply being "wrong."
+const COMPARE_EXAMPLES = [
+  {
+    cmpPaper1: "In a 12-month randomized trial, 137 adults with obesity following 16:8 intermittent fasting lost an average of 6.3% of body weight, compared with 5.9% in a matched calorie-restriction group eating three meals a day — a difference that was not statistically significant (p=0.61). Adherence was self-reported as easier in the fasting group.",
+    cmpPaper2: "A separate 12-week trial of 42 adults with type 2 diabetes found that an 18:6 intermittent fasting schedule produced significantly greater reductions in fasting insulin and HbA1c than continuous calorie restriction at the same total daily calories (p=0.02), independent of the modest weight difference between groups.",
+  },
+  {
+    cmpPaper1: "A survey-based study of 2,800 remote knowledge workers found self-reported productivity increased 13% after switching to full-time remote work, with respondents citing fewer interruptions and no commute as the main drivers.",
+    cmpPaper2: "A separate study tracking patent filings and internal idea-submission rates at four companies before and after a shift to majority-remote work found a 21% decline in cross-team collaborative output, though individual task completion metrics were unchanged or slightly improved.",
+  },
+  {
+    cmpPaper1: "A longitudinal study of 3,000 teenagers found that heavy social media use (over 3 hours/day) was associated with a 35% higher rate of reported depressive symptoms one year later, even after adjusting for baseline mental health.",
+    cmpPaper2: "A separate study using the same longitudinal dataset but additionally controlling for family conflict, sleep duration, and in-person social time found the association between social media use and later depressive symptoms was no longer statistically significant (p=0.09), suggesting those other factors may explain much of the original association.",
+  },
+  {
+    cmpPaper1: "A phase 2 trial of 96 patients found Drug Y reduced migraine frequency by 58% compared to placebo over 8 weeks, with a favorable side-effect profile.",
+    cmpPaper2: "The phase 3 trial of 1,450 patients, run across a more diverse and less selectively enrolled patient population, found Drug Y reduced migraine frequency by 31% compared to placebo — still a meaningful effect, but roughly half the size seen in the smaller phase 2 trial.",
+  },
+  {
+    cmpPaper1: "The PREDIMED randomized trial of 7,447 adults at high cardiovascular risk found a Mediterranean diet supplemented with olive oil reduced major cardiovascular events by about 30% compared to a low-fat diet advice group over about 5 years.",
+    cmpPaper2: "A meta-analysis pooling 15 observational cohort studies (total n over 500,000) found adherence to a Mediterranean-style diet was associated with only a 10% reduction in cardiovascular mortality, a smaller effect that the authors attribute partly to residual confounding common in observational designs, versus the randomized design of the trial.",
+  },
+];
+
+// Term mode — five genuinely confusing research-literacy terms, each with
+// the kind of surrounding context (a specific sentence or situation) that
+// makes a visitor stop and paste it in rather than just skip the word.
+const TERM_EXAMPLES = [
+  {
+    termText: 'hazard ratio',
+    termContext: "Reading a paper about a new blood pressure drug: 'treatment was associated with a hazard ratio of 0.82 for cardiovascular death (95% CI 0.71-0.95).' Not sure what the number itself means beyond 'lower is better.'",
+  },
+  {
+    termText: 'confidence interval',
+    termContext: "A friend in med school keeps saying a finding 'crossed 1' or 'didn't cross 1' on the confidence interval and it's not clicking why that matters more than the main number.",
+  },
+  {
+    termText: 'statistically significant but not clinically significant',
+    termContext: "A news article about a new drug says the result was 'highly statistically significant' but a doctor friend called the effect 'clinically meaningless.' Trying to understand how both can be true at once.",
+  },
+  {
+    termText: 'p-hacking',
+    termContext: "Came across the term while reading about why so many psychology findings fail to replicate. Want to understand what researchers are actually doing that counts as p-hacking, not just that it's 'bad statistics.'",
+  },
+  {
+    termText: 'number needed to treat (NNT)',
+    termContext: "A doctor mentioned the NNT for a cholesterol medication is '50' and it wasn't clear if that's a good number or a bad one, or how to compare it to the NNT for a different treatment.",
+  },
+];
+
 const INTEREST_OPTIONS = [
   ['UNDERSTAND', 'rd_interest_understand'],
   ['FINDING', 'rd_interest_finding'],
@@ -272,15 +353,36 @@ const ResearchDecoder = ({ tool }) => {
     } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   }, [termText, termContext, callToolEndpoint, saveToRecentLog, userLocale, userCurrency, userRegion, t]);
 
+  // Rotated per mode — Decode/Headline/Compare/Term each ask for different
+  // fields, so each of the four tabs keeps its own counter and pool rather
+  // than Try Example always forcing you back to Decode.
   const loadExample = useCallback(() => {
-    const ex = pickExample('ResearchDecoder', EXAMPLES);
-    setMode('decode');
+    if (mode === 'headline') {
+      const ex = pickExample('ResearchDecoder:headline', HEADLINE_EXAMPLES);
+      if (!ex) return;
+      setHlHeadline(ex.hlHeadline); setHlResearchText(ex.hlResearchText);
+      setHlPdfBase64(null); setHlArticleExcerpt(''); setHlResult(null);
+      return;
+    }
+    if (mode === 'compare') {
+      const ex = pickExample('ResearchDecoder:compare', COMPARE_EXAMPLES);
+      if (!ex) return;
+      setCmpPaper1(ex.cmpPaper1); setCmpPaper2(ex.cmpPaper2); setCmpResult(null);
+      return;
+    }
+    if (mode === 'term') {
+      const ex = pickExample('ResearchDecoder:term', TERM_EXAMPLES);
+      if (!ex) return;
+      setTermText(ex.termText); setTermContext(ex.termContext); setTermResult(null);
+      return;
+    }
+    const ex = pickExample('ResearchDecoder:decode', EXAMPLES);
     setPaperTitle(ex.paperTitle);
     setPaperText(ex.paperText);
     setPdfBase64(null); setFileName('');
     setInterest('UNDERSTAND'); setInterestOther('');
     setDecodeResult(null); setShowRelevance(false); setRelResult(null);
-  }, []);
+  }, [mode]);
 
   const handleReset = useCallback(() => {
     setMode('decode');
