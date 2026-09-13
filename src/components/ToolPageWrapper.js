@@ -258,8 +258,16 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             )}
           </header>
 
-          {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
-          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 mb-2 gap-2 relative">
+          {/* Bookmark hint + Theme Toggle (above card, right-aligned).
+              -mb-6 lg:mb-2: the same doubled-gap fix as the locale-selector
+              row above (see its comment) — below lg this row and <main>
+              stack into separate grid rows for the first time, so the
+              grid's own gap-8 (32px) row-gap applies for the first time too,
+              stacking on top of this row's own mb-2 (8px) rather than
+              collapsing with it, for 40px where 8px was intended. At lg+
+              the row sits right above <main> with lg:gap-y-0, so mb-2 alone
+              already gave the right 8px there — lg:mb-2 keeps it unchanged. */}
+          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 -mb-6 lg:mb-2 gap-2 relative">
             <div className="flex gap-2">
             <button
               onClick={handleBookmarkHint}
