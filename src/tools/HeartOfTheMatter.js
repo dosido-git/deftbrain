@@ -121,6 +121,7 @@ const HeartOfTheMatter = ({ tool }) => {
   const [error, setError]               = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showHistory, setShowHistory]   = useState(false);
+  const [selectedHistoryIds, setSelectedHistoryIds] = useState([]);
   const [extracting, setExtracting]     = useState(false);
 
   // ── Refs ──
@@ -236,11 +237,31 @@ const HeartOfTheMatter = ({ tool }) => {
         });
       }
       setResults(data);
+      // The takeaway IS the point of Past Sessions — what the material said,
+      // not just what was fed in. Each mode already produces a one-line
+      // distillation of its own (lecture_summary / overview / course_
+      // narrative); reuse it rather than inventing a fifth thing to generate.
+      const takeaway = mode === 'distill' ? data?.lecture_summary
+        : mode === 'understand' ? data?.overview
+        : data?.course_narrative; // connect
+      const modeLabel = mode === 'distill' ? t('rec_mode_distill_label')
+        : mode === 'understand' ? t('rec_mode_understand_label')
+        : t('rec_mode_connect_label');
+      const validLectures = mode === 'connect' ? lectures.filter(l => l.transcript?.trim()) : [];
       setSessionHistory(prev => [{
         id: 'rc_' + Date.now(), date: new Date().toISOString(), mode,
-        title: lectureTitle.trim() || subject.trim() || data?.lecture_summary?.substring(0, 40) || mode,
+        title: lectureTitle.trim() || subject.trim() || takeaway?.slice(0, 60) || modeLabel,
+        preview: (lectureTitle.trim() || subject.trim() || takeaway || modeLabel).slice(0, 40),
         subject: data?.subject_detected || subject.trim() || '',
-        preview: (lectureTitle.trim() || subject.trim() || mode).slice(0, 40),
+        takeaway: takeaway || '',
+        results: data,
+        // Snapshot of the input, kept so a session can be reopened AND so
+        // "Use with Connect" has real source material to work from — not
+        // just the summary of it.
+        lectureTitle: lectureTitle.trim() || '',
+        bulletCount, priority,
+        transcript: mode !== 'connect' ? transcript.trim() : '',
+        lectures: mode === 'connect' ? validLectures.map(l => ({ title: l.title?.trim() || '', transcript: l.transcript.trim() })) : [],
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('rec_err_failed')); }
   }, [mode, transcript, subject, lectureTitle, bulletCount, priority, lectures, callToolEndpoint, setResults, setSessionHistory,
@@ -251,6 +272,53 @@ const HeartOfTheMatter = ({ tool }) => {
     setResults(null); setError('');
     setLectures([{ title: '', transcript: '' }, { title: '', transcript: '' }]);
   }, [setResults]);
+
+  // ── Past Sessions: reopen, and combine into a new Connect run ──
+  // A session card is a memory of what was UNDERSTOOD, not a saved document —
+  // reopening shows the same takeaway again rather than re-running anything.
+  const reopenSession = useCallback((entry) => {
+    if (!entry?.results) return;
+    setMode(entry.mode);
+    setResults(entry.results);
+    setSubject(entry.subject || '');
+    setLectureTitle(entry.lectureTitle || '');
+    setBulletCount(entry.bulletCount || 10);
+    setPriority(entry.priority || 'balanced');
+    if (entry.mode === 'connect') {
+      setLectures(entry.lectures?.length >= 2 ? entry.lectures : [{ title: '', transcript: '' }, { title: '', transcript: '' }]);
+      setTranscript('');
+    } else {
+      setTranscript(entry.transcript || '');
+      setLectures([{ title: '', transcript: '' }, { title: '', transcript: '' }]);
+    }
+    setError('');
+    setShowHistory(false);
+    setSelectedHistoryIds([]);
+  }, [setResults]);
+
+  const toggleHistorySelection = useCallback((id) => {
+    setSelectedHistoryIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  }, []);
+
+  // A past Connect session already flattens to the lectures it combined;
+  // reusing it just spreads those back in rather than nesting a summary of
+  // a summary. Capped at 5 — the same limit Connect's own "add lecture" has.
+  const useSelectedWithConnect = useCallback(() => {
+    const chosen = sessionHistory.filter(e => selectedHistoryIds.includes(e.id));
+    const built = [];
+    chosen.forEach(e => {
+      if (e.mode === 'connect' && e.lectures?.length) built.push(...e.lectures);
+      else if (e.transcript?.trim()) built.push({ title: e.lectureTitle || e.title || '', transcript: e.transcript });
+    });
+    if (built.length < 2) return;
+    setMode('connect');
+    setLectures(built.slice(0, 5));
+    setSubject('');
+    setResults(null);
+    setError('');
+    setSelectedHistoryIds([]);
+    setShowHistory(false);
+  }, [sessionHistory, selectedHistoryIds, setResults]);
 
   // Rotated per mode — Distill/Understand/Connect each keep their own counter
   // and pool rather than Try Example always forcing you back to Distill.
@@ -406,7 +474,7 @@ const HeartOfTheMatter = ({ tool }) => {
           ) : (
             <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
               placeholder={t('rec_input_ph')}
-              className={`w-full h-40 p-4 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
+              className={`w-full min-h-[10rem] p-4 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-y text-sm font-mono`} />
           )}
           {charCount > 0 && (
             <p className={`text-xs ${c.textMuted} mt-1`}>
@@ -437,7 +505,7 @@ const HeartOfTheMatter = ({ tool }) => {
               ) : (
                 <textarea value={lec.transcript} onChange={e => updateLecture(idx, 'transcript', e.target.value)}
                   placeholder={t('rec_lecture_transcript_ph')}
-                  className={`w-full h-24 p-3 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-none text-xs font-mono`} />
+                  className={`w-full min-h-[6rem] p-3 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-y text-xs font-mono`} />
               )}
             </div>
           ))}
@@ -703,12 +771,20 @@ const HeartOfTheMatter = ({ tool }) => {
   const renderHistory = () => {
     if (sessionHistory.length === 0) return null;
     const modeEmoji = (m) => MODE_EMOJI[m] || '🧠';
+    const modeLabelFor = (m) => m === 'distill' ? t('rec_mode_distill_label')
+      : m === 'understand' ? t('rec_mode_understand_label')
+      : t('rec_mode_connect_label');
     const formatDate = (iso) => {
       try {
         const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000);
         return diff === 0 ? t('rec_today') : diff === 1 ? t('rec_yesterday') : diff < 7 ? t('rec_days_ago', { n: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' });
       } catch { return ''; }
     };
+    // Only a session with its own source material still attached can feed a
+    // new Connect run — an entry saved before this feature existed has
+    // neither transcript nor lectures, so it stays reopenable but not
+    // selectable.
+    const eligibleForConnect = (entry) => !!(entry.transcript?.trim() || entry.lectures?.length);
     return (
       <div className={`p-4 rounded-2xl border ${c.histBg}`}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
@@ -719,15 +795,39 @@ const HeartOfTheMatter = ({ tool }) => {
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {sessionHistory.map(entry => (
-              <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
-                <span className="text-lg">{modeEmoji(entry.mode)}</span>
-                <div className="flex-1 min-w-0">
-                  <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.title}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.subject ? ` · ${entry.subject}` : ''}</div>
+            {sessionHistory.map(entry => {
+              const selected = selectedHistoryIds.includes(entry.id);
+              const canSelect = eligibleForConnect(entry);
+              const metaParts = [entry.subject, modeLabelFor(entry.mode), formatDate(entry.date)].filter(Boolean);
+              const takeaway = entry.takeaway?.length > 140 ? entry.takeaway.slice(0, 140).trim() + '…' : entry.takeaway;
+              return (
+                <div key={entry.id}
+                  onClick={() => reopenSession(entry)}
+                  role="button" tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reopenSession(entry); } }}
+                  className={`rounded-xl border ${c.histCard} p-3 flex items-start gap-3 cursor-pointer hover:opacity-90 transition-opacity`}>
+                  {canSelect && (
+                    <input type="checkbox" checked={selected}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => toggleHistorySelection(entry.id)}
+                      aria-label={t('rec_history_select')} title={t('rec_history_select')}
+                      className="mt-1 flex-shrink-0" />
+                  )}
+                  <span className="text-lg flex-shrink-0">{modeEmoji(entry.mode)}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.title}</div>
+                    <div className={`text-xs ${c.textMuted} mt-0.5`}>{metaParts.join(' · ')}</div>
+                    {takeaway && <p className={`text-xs ${c.textSecondary} mt-1 leading-snug`}>{takeaway}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+            {selectedHistoryIds.length >= 2 && (
+              <button onClick={useSelectedWithConnect}
+                className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnPrimary}`}>
+                🔗 {t('rec_history_use_connect', { count: selectedHistoryIds.length })}
+              </button>
+            )}
           </div>
         )}
       </div>
