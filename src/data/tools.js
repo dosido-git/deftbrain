@@ -2380,11 +2380,11 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "An hour of material where maybe ten minutes actually matters.",
-    give: "The transcript or text. Pick Distill, Study Guide, Test Prep or Connect.",
-    get: "The ideas doing the most work — as notes, a study guide, source-grounded practice, or themes across sources.",
-    edge: "Everything content-specific stays grounded in what you pasted — it won't predict an exam, guess a professor's intent, or add outside facts to fill a gap.",
+    give: "The transcript or text — paste it, or upload a text file, PDF, or audio recording. Pick Distill, Understand, or Connect.",
+    get: "The ideas doing the most work — as ranked notes, a plainer breakdown of what to understand, or themes across sources.",
+    edge: "Everything content-specific stays grounded in what you supplied — it won't predict an exam, guess a professor's intent, or add outside facts to fill a gap.",
   },
-  seoDescription: "Paste a talk, lecture, podcast transcript, sermon, article, or notes and find the ideas doing the most work — the signal without the noise. Distill, study guide, test prep, and connect modes. Free.",
+  seoDescription: "Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes (text, PDF, or audio) and find the ideas doing the most work — the signal without the noise. Distill, Understand, and Connect modes. Free.",
   seoTitle: "Find What Matters in a Long Talk, Lecture, or Article",
   title: "Heart of the Matter",
   tagline: "🎯 Find what matters in something long.",
@@ -2392,33 +2392,32 @@ export const tools = [
   icon: "🎯",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Paste a talk, lecture, podcast transcript, sermon, article, or notes. Heart of the Matter finds the ideas doing the most work, turns them into a study guide or source-grounded practice, or connects themes across multiple pieces.",
+  description: "Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.",
     guide: {
-    overview: "Heart of the Matter solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. Heart of the Matter detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long article. Everything content-specific stays grounded in what you actually pasted: it reorganizes, compares, and generates practice from the material, but it does not silently add outside facts, predict what will be on an exam, guess a professor's intent, or invent common mistakes. When the source doesn't establish something, that stays a gap rather than getting filled in. Four modes cover different needs, from quick-reference bullets to full practice questions.",
+    overview: "Heart of the Matter solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. Heart of the Matter detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long article. Everything content-specific stays grounded in what you actually supplied: it reorganizes, compares, and generates practice from the material, but it does not silently add outside facts, predict what will be on an exam, guess a professor's intent, or invent common mistakes. When the source doesn't establish something, that stays a gap rather than getting filled in. Three modes cover different needs, from quick-reference bullets to a fuller breakdown to cross-source themes — and the material itself can be pasted, or uploaded as a text file, PDF, or audio recording.",
     howToUse: [
-      "Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (source-grounded practice questions), or Connect (cross-source themes)",
-      "Paste your material — a talk or podcast transcript, a YouTube caption dump, lecture notes, or the text of a long article",
+      "Pick a mode: Distill (ranked bullet points), Understand (a plainer breakdown of what to understand), or Connect (cross-source themes)",
+      "Paste your material, or upload it — a .txt/.md file, a PDF, or an audio recording (lecture, talk, podcast) — and it's read in for you",
       "Optionally add the subject and topic for sharper context",
-      "Set mode-specific options: point count, priority type, question format, question types, difficulty",
-      "Review results — each mode produces output optimized for its use case, grounded only in what you pasted"
+      "Set mode-specific options: point count and priority type for Distill",
+      "Review results — each mode produces output optimized for its use case, grounded only in what you supplied"
     ],
     example: {
       scenario: "You just watched a 20-minute TED talk on behavioral economics and want the core ideas without rewatching it.",
-      action: "Paste the transcript, enter 'Behavioral economics' as the subject, and run Distill (8 points, balanced priority) for the key ideas.",
+      action: "Paste the transcript (or upload the audio), enter 'Behavioral economics' as the subject, and run Distill (8 points, balanced priority) for the key ideas.",
       result: "Distill produces 8 ranked points — #1 is the talk's central claim, flagging the line the speaker repeated three times and the story used to anchor it. Each point notes what role it plays in the material, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that are actually supported across them."
     },
     tips: [
       "Auto-captions are fine — Heart of the Matter handles imperfect transcription (typos, missed words) well",
       "The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times — only when the material actually says them",
       "Distill's point types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point",
-      "Test Prep's 'why wrong' explanations for multiple choice are often more educational than the right answer — and every option traces back to the source",
-      "Connect mode shines across sources — paste 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them",
-      "Study Guide mnemonics won't always be clever, but they're personalized to the actual content, not generic memory tricks"
+      "Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them",
+      "An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode"
     ],
     pitfalls: [
       "This isn't exam prediction — it won't guess what a professor will actually ask, how much time to budget per topic, or what's coming in a future lecture",
       "A gap or unresolved point stays a gap — it won't invent an outside fact or a plausible-sounding explanation to fill in what the material didn't cover",
-      "Practice questions are answerable from what you pasted, not real exam questions — treat them as source-grounded practice, not a prediction"
+      "An uploaded file over 20MB won't go through — try a shorter clip or the text version instead"
     ]
   }
 },

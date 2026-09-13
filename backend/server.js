@@ -123,8 +123,8 @@ const LARGE_BODY_PREFIXES = [
 // PDF (~26.7MB encoded) and still lands under the Anthropic API's own 32MB
 // request ceiling once the prompt is added.
 const PDF_BODY_PREFIXES = [
-  '/api/bill-rescue', '/api/doctor-visit-translator', '/api/jargon-assassin',
-  '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
+  '/api/bill-rescue', '/api/doctor-visit-translator', '/api/heart-of-the-matter',
+  '/api/jargon-assassin', '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
   '/api/document-detective',
 ];
 const matches = (path, prefixes) => prefixes.some(p => path === p || path.startsWith(p + '/'));

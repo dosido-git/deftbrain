@@ -5,12 +5,16 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Rebrand + CONTRACT rewrite (2026-09-13, owner-supplied): "The Crux" ->
-// "Heart of the Matter". Per naming-consistency-rule, this tool was already
-// locked (golden sample + prior rename history, Recall -> The Crux
-// 2026-07-16), so the route filename/endpoints (/the-crux, .../study-guide,
-// .../test-prep, .../connect) and the i18n prefix (rec_, from the original
-// "Recall") deliberately stay put — only the frontend component file,
-// catalog id/title/copy, and this CONTRACT change.
+// "Heart of the Matter". The naming-consistency-rule's already-locked
+// exception (keep the route/endpoint on a rename) applied for that first
+// pass — but a second owner-supplied change the same day explicitly asked
+// for the mismatch fixed anyway: route filename `the-crux.js` ->
+// `heart-of-the-matter.js`, and all 4 endpoints `/the-crux*` ->
+// `/heart-of-the-matter*`. Per the rule's own exception list, the i18n
+// filename/prefix (recall.js / rec_) and localStorage keys stay put — a
+// re-key would touch every key × 13 languages, and the storage key would
+// silently wipe every existing user's saved history, for zero user-facing
+// benefit. See audit/RENAMES.md and the golden sample for the full history.
 //
 // The CONTRACT itself: the old PERSONALITY was "Study coach and memory
 // expert... give exam strategy based on how professors actually test" —
@@ -112,9 +116,9 @@ function validateResult(kind, parsed) {
 }
 
 // ════════════════════════════════════════════════════════════
-// POST /the-crux — Distill: transcript → key bullet points
+// POST /heart-of-the-matter — Distill: transcript → key bullet points
 // ════════════════════════════════════════════════════════════
-router.post('/the-crux', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/heart-of-the-matter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, bulletCount, priority, userLanguage } = req.body;
 
@@ -182,7 +186,7 @@ LIMITS (keep the response compact so it never gets cut off): vocabulary AT MOST 
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-crux' });
+    }, { label: 'heart-of-the-matter' });
 
     const result = validateResult('distill', parsed);
     if (!result) return res.status(500).json({ error: 'Could not process this. Please try again.' });
@@ -195,9 +199,9 @@ LIMITS (keep the response compact so it never gets cut off): vocabulary AT MOST 
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /the-crux/study-guide — Structured study guide
+// POST /heart-of-the-matter/study-guide — Structured study guide
 // ════════════════════════════════════════════════════════════
-router.post('/the-crux/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/heart-of-the-matter/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, examFormat, userLanguage } = req.body;
 
@@ -270,7 +274,7 @@ LIMITS (keep the response compact so it never gets cut off): concepts_to_know AT
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-crux-2' });
+    }, { label: 'heart-of-the-matter-2' });
 
     const result = validateResult('study_guide', parsed);
     if (!result) return res.status(500).json({ error: 'Could not process this. Please try again.' });
@@ -283,9 +287,9 @@ LIMITS (keep the response compact so it never gets cut off): concepts_to_know AT
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /the-crux/test-prep — Generate practice exam questions
+// POST /heart-of-the-matter/test-prep — Generate practice exam questions
 // ════════════════════════════════════════════════════════════
-router.post('/the-crux/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/heart-of-the-matter/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, questionTypes, difficulty, questionCount, userLanguage } = req.body;
 
@@ -378,13 +382,13 @@ LIMITS: study_tips AT MOST 5. ${CRUX_LIMITS}`;
         max_tokens: 3500,
         system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
         messages: [{ role: 'user', content: promptFirstHalf }],
-      }, { label: 'the-crux-3-first' }),
+      }, { label: 'heart-of-the-matter-3-first' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 3500,
         system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
         messages: [{ role: 'user', content: promptSecondHalf }],
-      }, { label: 'the-crux-3-second' }),
+      }, { label: 'heart-of-the-matter-3-second' }),
     ]);
     // Each half numbers from 1; restore one continuous run in lecture order.
     const merged = {
@@ -406,9 +410,9 @@ LIMITS: study_tips AT MOST 5. ${CRUX_LIMITS}`;
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /the-crux/connect — Compare 2+ lectures, find themes
+// POST /heart-of-the-matter/connect — Compare 2+ lectures, find themes
 // ════════════════════════════════════════════════════════════
-router.post('/the-crux/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/heart-of-the-matter/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { lectures, subject, userLanguage } = req.body;
 
@@ -475,7 +479,7 @@ LIMITS (keep the response compact so it never gets cut off): recurring_themes AT
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-crux-4' });
+    }, { label: 'heart-of-the-matter-4' });
 
     const result = validateResult('connect', parsed);
     if (!result) return res.status(500).json({ error: 'Could not process this. Please try again.' });
@@ -484,6 +488,91 @@ LIMITS (keep the response compact so it never gets cut off): recurring_themes AT
   } catch (error) {
     console.error('HeartOfTheMatter connect error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /heart-of-the-matter/extract — file upload → plain text
+// ════════════════════════════════════════════════════════════
+// Owner-supplied addition: "add the ability to upload a file: text, pdf,
+// etc., or sound." Deliberately NOT wired into the 4 endpoints above — it
+// only ever produces plain text that lands in the same `transcript` (or
+// per-lecture) textarea a visitor would otherwise paste into, so distill/
+// study-guide/test-prep/connect need no changes at all. Plain text files
+// (.txt, .md) never reach here — the frontend reads those directly via
+// FileReader, no round trip needed.
+//
+// PDF: sent to Claude as a native `document` content block (same pattern as
+// doctor-visit-translator.js / document-detective.js) rather than a local
+// parsing library — one fewer dependency, and Claude's PDF support already
+// handles scanned/image-only pages the way a text-layer-only parser cannot.
+// Capped at ~28,000 characters of output, matching the 30,000-character
+// substring every one of the 4 endpoints above already truncates the
+// transcript to — extracting further than that would be thrown away anyway.
+//
+// Audio: ElevenLabs' speech-to-text (scribe_v1), reusing the same
+// ELEVENLABS_API_KEY already configured for pronounce-it-right-audio.js's
+// text-to-speech — no new credential, no new vendor decision.
+router.post('/heart-of-the-matter/extract', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { fileData, mediaType } = req.body;
+    if (!fileData || !mediaType) {
+      return res.status(400).json({ error: 'No file received.' });
+    }
+
+    if (mediaType === 'application/pdf') {
+      // withLanguage is applied (S7.4 requires every Anthropic call to wrap
+      // one) but immediately overridden for the one field it would otherwise
+      // corrupt: extraction must reproduce the document's OWN language
+      // verbatim, not translate it into the visitor's UI language. A French
+      // PDF opened by an English-UI visitor should come back in French.
+      const extractSystem = withLanguage(
+        'Extract the readable text from this document, verbatim and in reading order — do not summarize, paraphrase, or comment on it. If it runs past roughly 28,000 characters, stop cleanly at a paragraph boundary rather than cutting a sentence in half; do not try to fit more by compressing it. If the document has no readable text (blank pages, an unreadable scan), return an empty string. Return ONLY valid JSON: {"text": "the extracted text"}. Never place a double-quote (") character inside the string value — it breaks the JSON.',
+        req.body.userLanguage
+      ) + '\n\nOVERRIDE: the "text" field is a verbatim transcription, not a response to the visitor — write it in the DOCUMENT\'S OWN language exactly as it appears, regardless of the LANGUAGE instruction above. Do not translate it.';
+
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 8000,
+        system: extractSystem,
+        messages: [{
+          role: 'user',
+          content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileData } }],
+        }],
+      }, { label: 'heart-of-the-matter-extract-pdf' });
+      return res.json({ text: typeof parsed?.text === 'string' ? parsed.text : '' });
+    }
+
+    if (mediaType.startsWith('audio/')) {
+      const apiKey = process.env.ELEVENLABS_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ error: 'Audio transcription is not available right now.' });
+      }
+
+      const buffer = Buffer.from(fileData, 'base64');
+      const form = new FormData();
+      form.append('model_id', 'scribe_v1');
+      form.append('file', new Blob([buffer], { type: mediaType }), 'audio');
+
+      const elevenRes = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+        method: 'POST',
+        headers: { 'xi-api-key': apiKey },
+        body: form,
+      });
+      if (!elevenRes.ok) {
+        const errText = await elevenRes.text().catch(() => '');
+        console.error('HeartOfTheMatter audio transcription error:', elevenRes.status, errText);
+        return res.status(502).json({ error: 'Could not transcribe this audio. Please try again.' });
+      }
+      const data = await elevenRes.json();
+      return res.json({ text: typeof data?.text === 'string' ? data.text : '' });
+    }
+
+    return res.status(400).json({ error: 'Unsupported file type.' });
+
+  } catch (error) {
+    console.error('HeartOfTheMatter extract error:', error);
+    res.status(500).json({ error: 'Could not read this file. Please try again.' });
   }
 });
 
