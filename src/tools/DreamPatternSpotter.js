@@ -26,6 +26,37 @@ const EXAMPLES = [
   { mode: 'single', descriptionKey: 'dps_example5' },
 ];
 
+// Pattern mode needs 2+ dreams to analyze, so its examples are sets, not
+// single descriptions — each set is a real recurring-dream shape (same
+// pursuit, same symbol, same setting) spaced across real time, which is
+// what makes "pattern" the right word rather than five isolated dreams.
+// daysAgo is resolved to an actual date at load time so the spacing always
+// reads as current rather than a hardcoded date drifting into the past.
+const PATTERN_EXAMPLES = [
+  { dreams: [
+    { descriptionKey: 'dps_pat1_dream1', daysAgo: 35 },
+    { descriptionKey: 'dps_pat1_dream2', daysAgo: 16 },
+    { descriptionKey: 'dps_pat1_dream3', daysAgo: 2 },
+  ] },
+  { dreams: [
+    { descriptionKey: 'dps_pat2_dream1', daysAgo: 40 },
+    { descriptionKey: 'dps_pat2_dream2', daysAgo: 4 },
+  ] },
+  { dreams: [
+    { descriptionKey: 'dps_pat3_dream1', daysAgo: 58 },
+    { descriptionKey: 'dps_pat3_dream2', daysAgo: 26 },
+    { descriptionKey: 'dps_pat3_dream3', daysAgo: 5 },
+  ] },
+  { dreams: [
+    { descriptionKey: 'dps_pat4_dream1', daysAgo: 22 },
+    { descriptionKey: 'dps_pat4_dream2', daysAgo: 3 },
+  ] },
+  { dreams: [
+    { descriptionKey: 'dps_pat5_dream1', daysAgo: 33 },
+    { descriptionKey: 'dps_pat5_dream2', daysAgo: 6 },
+  ] },
+];
+
 const DreamPatternSpotter = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -195,9 +226,23 @@ const DreamPatternSpotter = ({ tool }) => {
     setDreams(dreams.map(d => d.id === id ? { ...d, [field]: value } : d));
   };
 
+  // Rotated per mode — Pattern needs a set of dreams, Single needs one, so
+  // each mode keeps its own counter and pool rather than sharing one.
   const loadExample = useCallback(() => {
-    const ex = pickExample('DreamPatternSpotter', EXAMPLES);
-    setMode(ex.mode);
+    if (mode === 'pattern') {
+      const ex = pickExample('DreamPatternSpotter:pattern', PATTERN_EXAMPLES);
+      if (!ex) return;
+      setDreams(ex.dreams.map((d, i) => ({
+        id: Date.now() + i,
+        description: t(d.descriptionKey),
+        date: new Date(Date.now() - d.daysAgo * 86400000).toISOString().slice(0, 10),
+        emotions: [],
+        lifeContext: '',
+      })));
+      setResults(null);
+      return;
+    }
+    const ex = pickExample('DreamPatternSpotter:single', EXAMPLES);
     // Preserve every field of the state's initial shape (emotions object, lifeContext) —
     // replacing the whole object crashes the emotion checkboxes.
     setSingleDream(prev => ({
@@ -206,7 +251,7 @@ const DreamPatternSpotter = ({ tool }) => {
       date: new Date().toISOString().slice(0, 10),
     }));
     setResults(null);
-  }, [setSingleDream, setResults, t]);
+  }, [mode, setDreams, setSingleDream, setResults, t]);
 
   const handleReset = () => {
     setSingleDream({
