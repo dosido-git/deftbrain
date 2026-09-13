@@ -43,6 +43,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Write a 6-month marketing plan for our product launch. It needs competitive analysis, channel strategy, a budget, a content calendar, and success metrics. It's due in two weeks and I have no idea where to start.",
     tab_ex2_project: "Clean out my late father's garage. There are decades of tools, boxes, and paperwork and I don't know what to keep.",
+    tab_ex3_project: "I need to redesign our pricing page. We currently have three tiers but marketing wants to test a usage-based model instead, and nobody has decided which direction we're actually going. Design, engineering, and sales all have opinions.",
+    tab_ex4_project: "We need to plan our wedding. The venue, date, guest list, budget, and caterer all depend on each other, and we can't seem to lock down any single one without knowing the others first.",
+    tab_ex5_project: "I need to reconcile two years of expense receipts for taxes. It's tedious enough that I keep finding reasons to do something else instead.",
   },
   es: {
     tab_tagline: "Encuentra un punto de apoyo en un proyecto que se siente demasiado grande para empezar.",
@@ -80,6 +83,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Escribe un plan de marketing de 6 meses para el lanzamiento de nuestro producto. Necesita análisis de la competencia, estrategia de canales, un presupuesto, un calendario de contenido y métricas de éxito. Vence en dos semanas y no tengo idea de por dónde empezar.",
     tab_ex2_project: "Vaciar el garaje de mi difunto padre. Hay décadas de herramientas, cajas y papeles, y no sé qué conservar.",
+    tab_ex3_project: "Necesito rediseñar nuestra página de precios. Ahora tenemos tres planes, pero marketing quiere probar un modelo por uso en su lugar, y nadie ha decidido qué dirección vamos a tomar. Diseño, ingeniería y ventas tienen opiniones distintas.",
+    tab_ex4_project: "Tenemos que planear nuestra boda. El lugar, la fecha, la lista de invitados, el presupuesto y el catering dependen unos de otros, y no logramos fijar ninguno sin saber los demás primero.",
+    tab_ex5_project: "Tengo que conciliar dos años de recibos de gastos para los impuestos. Es tan tedioso que siempre encuentro una excusa para hacer otra cosa.",
   },
   zh: {
     tab_tagline: "在感觉大到无从下手的项目里，找到一个立足点。",
@@ -117,6 +123,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "为产品发布写一份为期6个月的营销计划，需要竞品分析、渠道策略、预算、内容日历和成功指标。两周后就要交了，完全不知道从哪里开始。",
     tab_ex2_project: "清理已故父亲的车库。里面堆了几十年的工具、箱子和文件，不知道该留下什么。",
+    tab_ex3_project: "我需要重新设计我们的定价页面。目前是三个档位，但市场部想改成按使用量计费，可是没人决定到底走哪个方向。设计、工程和销售各有各的意见。",
+    tab_ex4_project: "我们要筹备婚礼。场地、日期、宾客名单、预算和餐饮相互牵制，不知道其他几项就没法先定下任何一项。",
+    tab_ex5_project: "我要为报税整理两年的报销单据。太繁琐了，我总能找到借口先去做别的事。",
   },
   hi: {
     tab_tagline: "जो प्रोजेक्ट शुरू करने के लिए बहुत बड़ा लगे, उसमें एक शुरुआती कदम खोजें।",
@@ -154,6 +163,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "हमारे प्रोडक्ट लॉन्च के लिए 6 महीने की मार्केटिंग योजना लिखनी है। इसमें प्रतिस्पर्धी विश्लेषण, चैनल रणनीति, बजट, कंटेंट कैलेंडर और सफलता के मापदंड चाहिए। दो हफ़्ते में देनी है और समझ नहीं आ रहा कहाँ से शुरू करूँ।",
     tab_ex2_project: "अपने दिवंगत पिता का गैराज साफ़ करना है। उसमें दशकों पुराने औज़ार, डिब्बे और काग़ज़ात भरे हैं और समझ नहीं आ रहा क्या रखूँ।",
+    tab_ex3_project: "हमें अपना प्राइसिंग पेज फिर से डिज़ाइन करना है। अभी तीन टियर हैं, पर मार्केटिंग टीम इसकी जगह यूज़ेज-बेस्ड मॉडल आज़माना चाहती है, और यह तय ही नहीं हुआ कि किस दिशा में जाना है। डिज़ाइन, इंजीनियरिंग और सेल्स — सबकी अलग राय है।",
+    tab_ex4_project: "हमें अपनी शादी की योजना बनानी है। वेन्यू, तारीख, मेहमानों की सूची, बजट और कैटरिंग — ये सब एक-दूसरे पर निर्भर हैं, और बाकी तय हुए बिना किसी एक को भी तय नहीं कर पा रहे।",
+    tab_ex5_project: "मुझे टैक्स के लिए दो साल की खर्च रसीदें मिलानी हैं। यह इतना उबाऊ है कि हर बार कोई और काम करने का बहाना मिल जाता है।",
   },
   ar: {
     tab_tagline: "ابحث عن موطئ قدم واحد في مشروع يبدو أكبر من أن تبدأه.",
@@ -191,6 +203,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "كتابة خطة تسويقية لستة أشهر لإطلاق منتجنا. تحتاج تحليل المنافسين، واستراتيجية القنوات، وميزانية، وتقويم محتوى، ومقاييس نجاح. الموعد النهائي بعد أسبوعين ولا أعرف من أين أبدأ.",
     tab_ex2_project: "تنظيف مرآب والدي الراحل. فيه عقود من الأدوات والصناديق والأوراق ولا أعرف ماذا أحتفظ به.",
+    tab_ex3_project: "أحتاج إلى إعادة تصميم صفحة الأسعار لدينا. لدينا حاليًا ثلاث فئات، لكن التسويق يريد تجربة نموذج قائم على الاستخدام بدلاً من ذلك، ولم يقرر أحد أي اتجاه سنسلكه فعليًا. التصميم والهندسة والمبيعات لكل منهم رأي مختلف.",
+    tab_ex4_project: "نحتاج إلى التخطيط لزفافنا. المكان والتاريخ وقائمة الضيوف والميزانية وشركة التموين كلها مترابطة، ولا يمكننا حسم أي واحد منها دون معرفة البقية أولاً.",
+    tab_ex5_project: "أحتاج إلى تسوية إيصالات المصاريف لسنتين من أجل الضرائب. الأمر مملّ لدرجة أنني دائمًا أجد عذرًا لفعل شيء آخر بدلاً من ذلك.",
   },
   pt: {
     tab_tagline: "Encontre um ponto de apoio em um projeto que parece grande demais para começar.",
@@ -228,6 +243,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Escrever um plano de marketing de 6 meses para o lançamento do nosso produto. Precisa de análise da concorrência, estratégia de canais, orçamento, calendário de conteúdo e métricas de sucesso. O prazo é em duas semanas e não tenho ideia de por onde começar.",
     tab_ex2_project: "Limpar a garagem do meu falecido pai. Há décadas de ferramentas, caixas e papéis, e não sei o que guardar.",
+    tab_ex3_project: "Preciso redesenhar nossa página de preços. Hoje temos três planos, mas o marketing quer testar um modelo por uso, e ninguém decidiu qual direção vamos seguir de fato. Design, engenharia e vendas têm opiniões diferentes.",
+    tab_ex4_project: "Precisamos planejar nosso casamento. Local, data, lista de convidados, orçamento e buffet dependem uns dos outros, e não conseguimos fechar nenhum sem saber os demais primeiro.",
+    tab_ex5_project: "Preciso conciliar dois anos de recibos de despesas para o imposto de renda. É tão chato que sempre acho uma desculpa para fazer outra coisa.",
   },
   fr: {
     tab_tagline: "Trouvez un point d'appui dans un projet qui semble trop gros pour commencer.",
@@ -265,6 +283,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Écrire un plan marketing de 6 mois pour le lancement de notre produit. Il faut une analyse concurrentielle, une stratégie de canaux, un budget, un calendrier de contenu et des indicateurs de succès. C'est à rendre dans deux semaines et je n'ai aucune idée par où commencer.",
     tab_ex2_project: "Vider le garage de mon père décédé. Il y a des décennies d'outils, de cartons et de papiers, et je ne sais pas quoi garder.",
+    tab_ex3_project: "Je dois repenser notre page de tarifs. On a trois formules actuellement, mais le marketing veut tester un modèle à l'usage à la place, et personne n'a tranché sur la direction à prendre. Le design, l'ingénierie et les ventes ont chacun leur avis.",
+    tab_ex4_project: "Nous devons organiser notre mariage. Le lieu, la date, la liste des invités, le budget et le traiteur dépendent tous les uns des autres, et on n'arrive à fixer aucun sans connaître les autres d'abord.",
+    tab_ex5_project: "Je dois faire correspondre deux ans de reçus de dépenses pour les impôts. C'est tellement fastidieux que je trouve toujours une excuse pour faire autre chose.",
   },
   de: {
     tab_tagline: "Finde einen Ansatzpunkt in einem Projekt, das zu groß zum Anfangen wirkt.",
@@ -302,6 +323,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Einen 6-Monats-Marketingplan für unseren Produktlaunch schreiben. Braucht Wettbewerbsanalyse, Kanalstrategie, Budget, Content-Kalender und Erfolgskennzahlen. Abgabe in zwei Wochen, und ich habe keine Ahnung, wo ich anfangen soll.",
     tab_ex2_project: "Die Garage meines verstorbenen Vaters ausräumen. Jahrzehnte an Werkzeug, Kisten und Papieren, und ich weiß nicht, was ich behalten soll.",
+    tab_ex3_project: "Ich muss unsere Preisseite neu gestalten. Wir haben aktuell drei Tarife, aber das Marketing will stattdessen ein nutzungsbasiertes Modell testen, und niemand hat entschieden, welche Richtung wir tatsächlich einschlagen. Design, Entwicklung und Vertrieb haben alle unterschiedliche Meinungen.",
+    tab_ex4_project: "Wir müssen unsere Hochzeit planen. Location, Datum, Gästeliste, Budget und Catering hängen alle voneinander ab, und wir bekommen keins davon festgelegt, ohne die anderen zu kennen.",
+    tab_ex5_project: "Ich muss zwei Jahre Spesenbelege für die Steuer abgleichen. Es ist so mühsam, dass ich immer einen Grund finde, stattdessen etwas anderes zu tun.",
   },
   ja: {
     tab_tagline: "始めるには大きすぎると感じるプロジェクトに、最初の一歩を見つける。",
@@ -339,6 +363,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "製品ローンチのための6か月分のマーケティングプランを書く必要がある。競合分析、チャネル戦略、予算、コンテンツカレンダー、成功指標が必要。締め切りは2週間後で、どこから手をつければいいか全くわからない。",
     tab_ex2_project: "亡くなった父のガレージを片付ける。何十年分もの工具や箱、書類があり、何を残せばいいかわからない。",
+    tab_ex3_project: "料金ページを作り直す必要がある。今は3つの料金プランだが、マーケティングは従量課金モデルを試したがっていて、どちらの方向に進むかまだ誰も決めていない。デザイン、開発、営業それぞれ意見が違う。",
+    tab_ex4_project: "結婚式の準備をしなければならない。会場、日程、ゲストリスト、予算、ケータリングがすべて絡み合っていて、他が決まらないとどれも一つも決められない。",
+    tab_ex5_project: "確定申告のために2年分の経費領収書を整理しなければならない。あまりに面倒で、ついつい他のことを理由にして後回しにしてしまう。",
   },
   ko: {
     tab_tagline: "시작하기엔 너무 커 보이는 프로젝트에서 첫걸음을 찾아보세요.",
@@ -376,6 +403,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "제품 출시를 위한 6개월 마케팅 계획을 작성해야 함. 경쟁 분석, 채널 전략, 예산, 콘텐츠 캘린더, 성과 지표가 필요함. 마감은 2주 후인데 어디서부터 시작해야 할지 전혀 모르겠음.",
     tab_ex2_project: "돌아가신 아버지의 창고를 정리해야 함. 수십 년치 공구, 상자, 서류가 있는데 무엇을 남겨야 할지 모르겠음.",
+    tab_ex3_project: "가격 페이지를 다시 디자인해야 함. 지금은 요금제가 세 단계인데, 마케팅팀은 사용량 기반 모델을 시도하고 싶어 하고, 어느 방향으로 갈지 아직 아무도 결정하지 않음. 디자인, 개발, 영업 모두 의견이 다름.",
+    tab_ex4_project: "결혼식을 준비해야 함. 장소, 날짜, 하객 명단, 예산, 케이터링이 서로 얽혀 있어서 다른 것들이 정해지지 않으면 어느 하나도 확정하지 못함.",
+    tab_ex5_project: "세금 신고를 위해 2년치 지출 영수증을 정리해야 함. 너무 지루해서 매번 다른 일을 핑계 삼아 미루게 됨.",
   },
   ru: {
     tab_tagline: "Найдите первую точку опоры в проекте, который кажется слишком большим, чтобы начать.",
@@ -413,6 +443,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Нужно написать 6-месячный маркетинговый план для запуска продукта. Нужны анализ конкурентов, стратегия каналов, бюджет, контент-календарь и показатели успеха. Срок — через две недели, и я понятия не имею, с чего начать.",
     tab_ex2_project: "Разобрать гараж покойного отца. Там десятилетия инструментов, коробок и бумаг, и я не знаю, что оставить.",
+    tab_ex3_project: "Нужно переделать нашу страницу с тарифами. Сейчас у нас три тарифных плана, но маркетинг хочет протестировать модель оплаты по использованию, и никто так и не решил, в каком направлении мы вообще движемся. У дизайна, разработки и продаж — разные мнения.",
+    tab_ex4_project: "Нужно спланировать свадьбу. Место, дата, список гостей, бюджет и кейтеринг — всё взаимосвязано, и мы не можем определиться ни с одним пунктом, не зная остальных.",
+    tab_ex5_project: "Нужно свести чеки по расходам за два года для налоговой. Это настолько скучно, что я постоянно нахожу повод заняться чем-то другим.",
   },
   th: {
     tab_tagline: "หาจุดเริ่มต้นแรกในโปรเจกต์ที่รู้สึกว่าใหญ่เกินกว่าจะเริ่มได้",
@@ -450,6 +483,9 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "ต้องเขียนแผนการตลาด 6 เดือนสำหรับการเปิดตัวผลิตภัณฑ์ ต้องมีการวิเคราะห์คู่แข่ง กลยุทธ์ช่องทาง งบประมาณ ปฏิทินคอนเทนต์ และตัวชี้วัดความสำเร็จ กำหนดส่งในสองสัปดาห์ และไม่รู้เลยว่าจะเริ่มจากตรงไหน",
     tab_ex2_project: "ต้องเก็บกวาดโรงรถของพ่อที่เสียชีวิตไปแล้ว มีเครื่องมือ กล่อง และเอกสารสะสมมาหลายสิบปี ไม่รู้ว่าจะเก็บอะไรไว้ดี",
+    tab_ex3_project: "ต้องออกแบบหน้าราคาใหม่ ตอนนี้มีสามแพ็กเกจ แต่ฝ่ายการตลาดอยากทดลองใช้โมเดลคิดตามการใช้งานแทน และยังไม่มีใครตัดสินใจว่าจะไปทิศทางไหนกันแน่ ฝ่ายดีไซน์ วิศวกรรม และฝ่ายขายต่างก็มีความเห็นไม่ตรงกัน",
+    tab_ex4_project: "ต้องวางแผนงานแต่งงาน สถานที่ วันที่ รายชื่อแขก งบประมาณ และผู้จัดเลี้ยงล้วนเกี่ยวโยงกันหมด ตัดสินใจอะไรไม่ได้เลยถ้ายังไม่รู้อีกเรื่องที่เหลือ",
+    tab_ex5_project: "ต้องกระทบยอดใบเสร็จค่าใช้จ่ายสองปีเพื่อยื่นภาษี มันน่าเบื่อมากจนหาข้ออ้างไปทำอย่างอื่นตลอด",
   },
   vi: {
     tab_tagline: "Tìm một điểm tựa đầu tiên trong một dự án cảm thấy quá lớn để bắt đầu.",
@@ -487,5 +523,8 @@ export const taskAvalancheBreaker = {
     tab_copy_header: "TASK AVALANCHE BREAKER",
     tab_ex1_project: "Cần viết kế hoạch marketing 6 tháng cho đợt ra mắt sản phẩm. Cần phân tích đối thủ, chiến lược kênh, ngân sách, lịch nội dung và các chỉ số thành công. Hạn chót trong hai tuần và không biết bắt đầu từ đâu.",
     tab_ex2_project: "Dọn nhà kho của người cha đã khuất. Có hàng chục năm dụng cụ, thùng đồ và giấy tờ, không biết nên giữ lại gì.",
+    tab_ex3_project: "Cần thiết kế lại trang bảng giá. Hiện có ba gói, nhưng bên marketing muốn thử mô hình tính theo mức sử dụng, và chưa ai quyết định sẽ đi theo hướng nào. Thiết kế, kỹ thuật và kinh doanh đều có ý kiến khác nhau.",
+    tab_ex4_project: "Cần lên kế hoạch đám cưới. Địa điểm, ngày cưới, danh sách khách mời, ngân sách và dịch vụ ăn uống đều phụ thuộc lẫn nhau, không thể chốt cái nào nếu chưa biết những cái còn lại.",
+    tab_ex5_project: "Cần đối chiếu hóa đơn chi tiêu hai năm để khai thuế. Việc này tẻ nhạt đến mức lúc nào cũng tìm được lý do để làm việc khác trước.",
   },
 };

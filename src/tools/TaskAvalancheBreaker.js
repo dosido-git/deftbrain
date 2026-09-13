@@ -23,12 +23,18 @@ const TIME_OPTIONS = [
   { value: '20', labelKey: 'tab_time_20' },
 ];
 
-// Two rotated scenarios spanning the tool's range: a logistics-heavy project
-// with no obvious first move, and an emotionally difficult one where the
-// overwhelm is as much about the content as the size.
+// Five rotated scenarios spanning the range of real blockers CORE REASONING
+// looks for: excessive size with no obvious entry point (marketing plan),
+// emotionally difficult content as much as size (garage), an unresolved
+// decision blocking everything else (pricing page), several interdependent
+// choices that can't be made in isolation (wedding), and plain tedium/
+// procrastination rather than complexity (expense receipts).
 const EXAMPLES = [
   { projectKey: 'tab_ex1_project', reasons: ['too_many_steps', 'dont_know_start', 'unfamiliar'], time: '5' },
   { projectKey: 'tab_ex2_project', reasons: ['too_many_steps', 'emotionally_difficult', 'dont_know_start'], time: '5' },
+  { projectKey: 'tab_ex3_project', reasons: ['dont_know_start', 'too_many_steps'], time: '10' },
+  { projectKey: 'tab_ex4_project', reasons: ['too_many_steps', 'dont_know_start'], time: '10' },
+  { projectKey: 'tab_ex5_project', reasons: ['boring', 'too_many_steps'], time: '5' },
 ];
 
 const TaskAvalancheBreaker = ({ tool }) => {
