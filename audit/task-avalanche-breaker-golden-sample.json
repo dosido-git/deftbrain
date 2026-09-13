@@ -1,13 +1,48 @@
 {
   "_meta": {
     "tool": "TaskAvalancheBreaker",
-    "generated": "2026-09-12",
+    "generated": "2026-09-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route",
-    "baseline_commit": "taskavalanchebreaker-v2",
-    "why_v2": "Ground-up rebuild, installed from an owner-supplied rewrite per audit/REWRITE-INSTALL-KIT.md. Replaces a nine-plus-field micro-task generator (quick modes, an energy-level slider driving task count/complexity, habit stacking, an accountability partner, a reorder action, a raw anthropic.messages.create call with hand-rolled JSON repair, and 25-task gamified lists with points and momentum checkpoints) with one job: find ONE useful foothold in an overwhelming project, sized to the time the visitor actually has right now. The v1 case below (garage-habit-stack) tested fields (overwhelmReasons, energyLevel, existingHabit, project_breakdown, micro_tasks, anti_paralysis_strategies, momentum_checkpoints) that no longer exist and was replaced wholesale.",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden task-avalanche-breaker). Diff for QUALITY not exact match: HTTP 200, no truncation, after_that capped at 3. GUARDS: validateResult() in backend/routes/task-avalanche-breaker.js requires a non-empty first_move.action (returns null / 500 otherwise), caps after_that at 3 and drops any item missing an action. The epistemic discipline itself — no giant task list, no diagnosis of executive dysfunction/anxiety/ADHD/depression/burnout, no invented project facts, no promised momentum/motivation/relief, no manufactured precise time estimates, a genuinely smaller (not different) if_too_hard fallback — is prompt-enforced (CONTRACT), not code-checkable. When eyeballing new captures, check that first_move.action is something concretely doable within the stated time (not 'plan' or 'organize' or 'think about'), and that after_that items follow naturally from the supplied project rather than inventing new requirements. Verified live in German (de) for truncation/JSON-validity headroom — clean, no truncation, correct du-form address. DO NOT reverse: the after_that cap at 3, or the non-empty first_move.action guard."
+    "baseline_commit": "taskavalanchebreaker-v3-core-reasoning",
+    "why_v2": "Ground-up rebuild, installed from an owner-supplied rewrite per audit/REWRITE-INSTALL-KIT.md. Replaces a nine-plus-field micro-task generator (quick modes, an energy-level slider driving task count/complexity, habit stacking, an accountability partner, a reorder action, a raw anthropic.messages.create call with hand-rolled JSON repair, and 25-task gamified lists with points and momentum checkpoints) with one job: find ONE useful foothold in an overwhelming project, sized to the time the visitor actually has right now.",
+    "why_v3_core_reasoning": "2026-09-13, owner-supplied CONTRACT replacement. v2 reasoned from 'make it small' — a first move sized to the time budget and not fake progress, but nothing forced the model to identify what was actually BLOCKING the visitor before picking a move, so it could (and on the pricing-decision case below, would have) default to a plain task-size-reducer no different in spirit from the old design. v3 requires reasoning through: what makes the project difficult to begin (missing information / an unresolved decision / unclear scope / too many simultaneous choices / an irreversible decision faced too early / lack of usable structure / excessive size) BEFORE choosing a foothold, then requires the foothold to pass a 'so what is now better' test — completing it must leave something specific and statable easier, not just 'the visitor has started.' All old language about micro-tasks, five-minute actions, momentum, and quick wins was deliberately removed — the owner's framing: that language is what let the model default to ceremonial busywork (open the document, write the title, set a timer) over real progress. The pricing-decision case is the clearest before/after: the actual blocker is an undecided pricing model needing escalation to specific stakeholders, not a lack of task breakdown — v3 correctly surfaces and escalates the decision instead of proposing generic pricing-page busywork.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden task-avalanche-breaker). Diff for QUALITY not exact match: HTTP 200, no truncation, after_that capped at 3. GUARDS: validateResult() in backend/routes/task-avalanche-breaker.js requires a non-empty first_move.action (returns null / 500 otherwise), caps after_that at 3 and drops any item missing an action. The CORE REASONING discipline itself — identify the real blocker before choosing, SMALLEST MEANINGFUL PROGRESS not smallest possible action, the SO WHAT test, rejecting ceremonial actions (open the document / write the title / set a timer) unless genuinely load-bearing for this project, no diagnosis, no invented blockers, no promised momentum — is prompt-enforced (CONTRACT), not code-checkable. When eyeballing new captures: (1) does why_this name a SPECIFIC thing that becomes true, or could it accompany almost any project? (2) for a project whose real blocker is a decision/unknown/prerequisite rather than pure size, does the model surface THAT rather than defaulting to a generic organizing action? (3) is if_too_hard a genuine smaller version of the same move, not a different easier gesture? Verified live in German (de) for truncation/JSON-validity headroom — clean, correct du-form. DO NOT reverse: the after_that cap at 3, the non-empty first_move.action guard, or CORE REASONING's ordering (identify the blocker before choosing the foothold)."
   },
   "cases": [
+    {
+      "name": "en-pricing-page-real-blocker-is-an-undecided-decision",
+      "endpoint": "/api/task-avalanche-breaker",
+      "input": {
+        "project": "I need to redesign our pricing page. We currently have three tiers but marketing wants to test a usage-based model instead, and nobody has decided which direction we are actually going. Design, engineering, and sales all have opinions.",
+        "stuckReasons": ["dont_know_start", "too_many_steps"],
+        "availableTime": "10",
+        "userLanguage": "en"
+      },
+      "output": {
+        "project_read": "You need to redesign the pricing page, but the fundamental model — tiered vs. usage-based — has not been decided, and design, engineering, and sales each have a stake in that decision.",
+        "first_move": {
+          "action": "Open a blank doc or note and write down the one question that, if answered, would unblock everything else — something like: 'Does leadership want to commit to usage-based, keep tiers, or run a live test of both?' Then write the names of the two or three people who actually have the authority to answer it.",
+          "why_this": "The pricing page cannot be redesigned in a useful direction until the model decision is made, so the real first move is surfacing that decision to the people who can make it.",
+          "done_when": "You have one written question and at least one name next to it.",
+          "if_too_hard": "Write only the question — skip the names for now."
+        },
+        "after_that": [
+          {
+            "action": "Send that question to the person most likely to own the decision, framing it as a blocker: 'Before design or engineering can move forward on the pricing page, we need a call on this one thing.'",
+            "done_when": "The message is sent and you have noted when you expect a response."
+          },
+          {
+            "action": "Once the model direction is confirmed, write a single short brief — two to three bullet points per stakeholder group covering what design, engineering, and sales each need the new page to accomplish.",
+            "done_when": "Each group has at least one concrete requirement written down and you have shared the doc with them to correct or add to it."
+          },
+          {
+            "action": "With requirements confirmed, sketch or wireframe the new page structure — just boxes and labels, no polish.",
+            "done_when": "You have something you can show to one other person and get a yes or a specific objection."
+          }
+        ],
+        "permission_to_stop": "Getting the decision question written down and owned is real, necessary work — stopping there is a complete session."
+      }
+    },
     {
       "name": "en-marketing-plan-no-clear-entry-point",
       "endpoint": "/api/task-avalanche-breaker",
@@ -20,26 +55,26 @@
       "output": {
         "project_read": "You need to deliver a structured 6-month marketing plan covering five distinct components within two weeks, and the scope is making it hard to find an entry point.",
         "first_move": {
-          "action": "Write five headings on a blank page or document: Competitive Analysis, Channel Strategy, Budget, Content Calendar, Success Metrics. Under each, write one sentence describing what you already know or assume about that area for this launch — even a rough or uncertain sentence counts.",
-          "why_this": "The plan has five required components and five minutes of blank-page paralysis is usually the biggest blocker; naming what you already know about each makes the document real and shows you where the gaps actually are.",
-          "done_when": "Five headings exist and each has at least one sentence beneath it, even a placeholder.",
-          "if_too_hard": "Write only the five headings and leave the rest blank — a structured empty document is a real starting point."
+          "action": "Open a blank document and write five headings: Competitive Analysis, Channel Strategy, Budget, Content Calendar, Success Metrics. Under each heading, write one sentence describing what you already know or assume about that area for this launch.",
+          "why_this": "Five sentences is a real first draft of the plan skeleton, and the sentences will surface what you know versus where the gaps are.",
+          "done_when": "The document has five headings and at least one sentence under each.",
+          "if_too_hard": "Write just the five headings and leave the rest blank, so the structure exists and nothing is hiding inside an undifferentiated pile."
         },
         "after_that": [
           {
-            "action": "Pick the one component you know the most about and write two or three bullet points expanding what you already know — specific names, numbers, or decisions if you have them.",
-            "done_when": "That section has enough detail that a colleague could read it and understand the current thinking, even if incomplete."
+            "action": "Look at your five sentences and mark the one section where your assumptions feel shakiest or where a wrong call would most hurt the plan.",
+            "done_when": "One section is marked and you have written one sentence explaining what you would need to know to feel confident in it."
           },
           {
-            "action": "List the three to five competitors or alternative products your audience might consider instead of yours, and note one thing about each — pricing tier, primary channel, or positioning angle.",
-            "done_when": "You have a short list with at least one concrete note per competitor."
+            "action": "Draft the Success Metrics section in full: list three to five specific, measurable outcomes the launch will be judged against.",
+            "done_when": "Each metric has a name and a target number or threshold, even if the numbers are provisional."
           },
           {
-            "action": "Draft the success metrics section: name two or three measurable outcomes that would tell you the launch worked, and write down how you would check each one.",
-            "done_when": "Each metric has a number or observable condition attached to it, not just a category name like engagement."
+            "action": "Draft the Channel Strategy section by listing every channel under consideration, then writing one sentence per channel on why it is in or out for this launch.",
+            "done_when": "Every channel on your list has a clear in-or-out decision with a stated reason."
           }
         ],
-        "permission_to_stop": "Five headings with one sentence each is a real deliverable for a five-minute session — you have started the document."
+        "permission_to_stop": "Once the five headings and sentences exist, you have a plan document, not a blank page, and that is enough for this session."
       }
     },
     {
@@ -52,28 +87,28 @@
         "userLanguage": "en"
       },
       "output": {
-        "project_read": "You need to clear out decades of your late father's belongings from his garage, with no clear sense of where to begin or what to keep.",
+        "project_read": "You are clearing out a garage full of decades of tools, boxes, and paperwork that belonged to your late father, and you are not sure what to keep.",
         "first_move": {
-          "action": "Walk into the garage and pick one small area — a single shelf, one corner, or the spot nearest the door — and take a photo of it.",
-          "why_this": "A photo gives you a concrete anchor point so your first real working session starts from something seen, not something remembered.",
-          "done_when": "You have one photo on your phone showing a specific section of the garage.",
-          "if_too_hard": "Stand in the doorway, look at the garage, and send yourself a voice memo describing what you see in that first corner — no need to go in."
+          "action": "Walk into the garage, pick one surface or corner you can see in full, and count how many distinct categories of things are on it — tools, paper, boxes, unknown. Write the categories down on paper or your phone.",
+          "why_this": "Naming what is actually there turns an overwhelming mass into a short, concrete list you can make decisions about one category at a time.",
+          "done_when": "You have a written list of the categories visible in that one spot.",
+          "if_too_hard": "Stand at the garage door without going in and write down the three largest things you can see from where you are standing."
         },
         "after_that": [
           {
-            "action": "Spend 20 minutes on that one photographed area only. Place each item into one of three physical spots: keep, donate, or unsure. Nothing needs to leave the garage yet.",
-            "done_when": "Everything from that one area is in a pile or zone — even if most of it is in the unsure pile."
+            "action": "Return for 20-30 minutes and sort only the items from that first spot into three physical zones: keep, donate, decide-later.",
+            "done_when": "Every item from that spot is in one of the three zones and the surface is clear."
           },
           {
-            "action": "For the keep pile, decide on one place inside or outside the garage where those items will live, and move them there.",
-            "done_when": "The keep items from that first area have a designated spot and are in it."
+            "action": "Before touching anything that feels significant, photograph the garage from a few angles so you have a record of how it looked.",
+            "done_when": "Photos are saved somewhere you can find them."
           },
           {
-            "action": "Arrange for the donate pile to leave — a box near the door ready for a trip to a donation center, or a message to someone who can pick it up.",
-            "done_when": "The donate items are out of the garage or have a concrete removal plan with a date."
+            "action": "Pick one category from your list — paperwork, hand tools, or boxes — and make a single rule for it, such as: keep anything with his handwriting, donate duplicates, recycle blank paper.",
+            "done_when": "The rule is written down and you can apply it without deciding case by case."
           }
         ],
-        "permission_to_stop": "Taking that photo is the whole job for today."
+        "permission_to_stop": "Getting that list written is a real piece of work done — the garage will still be there, and so will you."
       }
     }
   ]
