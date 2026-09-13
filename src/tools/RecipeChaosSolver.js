@@ -42,6 +42,39 @@ const EXAMPLES = [
   { dishKey: 'rcs_ex5_dish', problemKey: 'rcs_ex5_problem' },
 ];
 
+// Five per tab below, each a distinct real-shaped situation for that tab's
+// own job — swapping ingredients, resizing a recipe, checking equipment/
+// timing before starting, or fixing a dish that's already gone wrong in a
+// specific direction.
+const SUBSTITUTE_EXAMPLES = [
+  { ingredientKeys: ['rcs_sub1_ing1', 'rcs_sub1_ing2'], contextKey: 'rcs_sub1_context' },
+  { ingredientKeys: ['rcs_sub2_ing1', 'rcs_sub2_ing2'], contextKey: 'rcs_sub2_context' },
+  { ingredientKeys: ['rcs_sub3_ing1', 'rcs_sub3_ing2'], contextKey: 'rcs_sub3_context', dietKey: 'rcs_sub3_diet' },
+  { ingredientKeys: ['rcs_sub4_ing1', 'rcs_sub4_ing2'], contextKey: 'rcs_sub4_context', dietKey: 'rcs_sub4_diet' },
+  { ingredientKeys: ['rcs_sub5_ing1', 'rcs_sub5_ing2'], contextKey: 'rcs_sub5_context' },
+];
+const SCALE_EXAMPLES = [
+  { recipeKey: 'rcs_scale1_recipe', original: 4, target: 12 },
+  { recipeKey: 'rcs_scale2_recipe', original: 24, target: 6 },
+  { recipeKey: 'rcs_scale3_recipe', original: 6, target: 20 },
+  { recipeKey: 'rcs_scale4_recipe', original: 1, target: 8 },
+  { recipeKey: 'rcs_scale5_recipe', original: 8, target: 2 },
+];
+const PREFLIGHT_EXAMPLES = [
+  { recipeKey: 'rcs_pf1_recipe', equipmentKey: 'rcs_pf1_equipment' },
+  { recipeKey: 'rcs_pf2_recipe', equipmentKey: 'rcs_pf2_equipment' },
+  { recipeKey: 'rcs_pf3_recipe', equipmentKey: 'rcs_pf3_equipment' },
+  { recipeKey: 'rcs_pf4_recipe', equipmentKey: 'rcs_pf4_equipment' },
+  { recipeKey: 'rcs_pf5_recipe', equipmentKey: 'rcs_pf5_equipment' },
+];
+const FLAVOR_EXAMPLES = [
+  { dishKey: 'rcs_ff1_dish', wrongKey: 'rcs_ff1_wrong' },
+  { dishKey: 'rcs_ff2_dish', wrongKey: 'rcs_ff2_wrong' },
+  { dishKey: 'rcs_ff3_dish', wrongKey: 'rcs_ff3_wrong' },
+  { dishKey: 'rcs_ff4_dish', wrongKey: 'rcs_ff4_wrong' },
+  { dishKey: 'rcs_ff5_dish', wrongKey: 'rcs_ff5_wrong' },
+];
+
 // Qualitative bands only — never a number. Badge color leans on the same
 // warning/success tokens every other tool uses for a read, not a score.
 const ASSESSMENT_META = {
@@ -250,8 +283,44 @@ const RecipeChaosSolver = ({ tool }) => {
   }, [setRecentLog]);
   const hasRecentLog = recentLog.length > 0;
 
+  // Rotated per view — Rescue/Substitute/Scale/Preflight/Flavor each ask for
+  // different fields, so each of the five tabs keeps its own counter and
+  // pool rather than Try Example always forcing you back to Rescue.
   const loadExample = () => {
-    const ex = pickExample('RecipeChaosSolver', EXAMPLES);
+    if (view === 'substitute') {
+      const ex = pickExample('RecipeChaosSolver:substitute', SUBSTITUTE_EXAMPLES);
+      if (!ex) return;
+      setSubIngredients(ex.ingredientKeys.map(k => t(k)));
+      setSubContext(ex.contextKey ? t(ex.contextKey) : '');
+      setSubDiet(ex.dietKey ? t(ex.dietKey) : '');
+      return;
+    }
+    if (view === 'scale') {
+      const ex = pickExample('RecipeChaosSolver:scale', SCALE_EXAMPLES);
+      if (!ex) return;
+      setScaleRecipe(t(ex.recipeKey));
+      setScaleOriginal(String(ex.original));
+      setScaleTarget(String(ex.target));
+      return;
+    }
+    if (view === 'preflight') {
+      const ex = pickExample('RecipeChaosSolver:preflight', PREFLIGHT_EXAMPLES);
+      if (!ex) return;
+      setPfRecipe(t(ex.recipeKey));
+      setPfIngredients(ex.ingredientsKey ? t(ex.ingredientsKey) : '');
+      setPfEquipment(ex.equipmentKey ? t(ex.equipmentKey) : '');
+      return;
+    }
+    if (view === 'flavor') {
+      const ex = pickExample('RecipeChaosSolver:flavor', FLAVOR_EXAMPLES);
+      if (!ex) return;
+      setFfDish(t(ex.dishKey));
+      setFfWrong(ex.wrongKey ? t(ex.wrongKey) : '');
+      setFfIngredients(ex.ingredientsKey ? t(ex.ingredientsKey) : '');
+      setFfDiet(ex.dietKey ? t(ex.dietKey) : '');
+      return;
+    }
+    const ex = pickExample('RecipeChaosSolver:rescue', EXAMPLES);
     setQuickDish(t(ex.dishKey));
     setProblemDescription(t(ex.problemKey));
   };
