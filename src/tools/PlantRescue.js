@@ -76,12 +76,58 @@ const EXAMPLES = [
     hasChildren: false,
   },
   {
+    mode: 'rescue',
+    plantDescription: "Basil on the kitchen windowsill, in a self-watering pot. Leaves have gone limp and a few stems near the soil are turning black. Started about four days ago.",
+    symptoms: ['drooping'],
+    symptomDuration: 'few_days',
+    recentChanges: [],
+    lightLevel: 'partial-shade',
+    wateringMethod: 'schedule',
+    wateringFreqText: 'Self-watering reservoir, refilled weekly',
+    hasDrainage: 'no',
+    location: 'indoor',
+    hasPets: false,
+    hasChildren: false,
+  },
+  {
     mode: 'care',
     careSpecies: 'Monstera deliciosa, about 18 inches tall, just bought',
     careWhereIsIt: 'indoor',
     careLight: 'bright_indirect',
     careHelpWith: 'repotting',
   },
+  {
+    mode: 'care',
+    careSpecies: 'Snake plant (Sansevieria), had it about six months, still in the pot it came in',
+    careWhereIsIt: 'indoor',
+    careLight: 'low',
+    careHelpWith: 'watering',
+  },
+  {
+    mode: 'care',
+    careSpecies: 'Potted Meyer lemon tree on the patio, second growing season',
+    careWhereIsIt: 'outdoor',
+    careLight: 'lots_direct',
+    careHelpWith: 'feeding',
+  },
+  {
+    mode: 'care',
+    careSpecies: 'African violet, inherited from a grandmother, not sure what it actually needs',
+    careWhereIsIt: 'indoor',
+    careLight: 'medium',
+    careHelpWith: 'placement',
+  },
+  {
+    mode: 'care',
+    careSpecies: 'Hibiscus, moved outside for the summer and brought back in every winter',
+    careWhereIsIt: 'both',
+    careLight: 'some_direct',
+    careHelpWith: 'general',
+  },
+  // No 'identify' examples — that mode requires an actual photo (canSubmitRef
+  // gates it on `!!imageBase64` alone, no text fallback) and its form doesn't
+  // even render a plantDescription field. There is nothing a text example
+  // could fill in; see the Try Example button below, hidden in this mode.
 ];
 
 const CHANGE_CATEGORY_MAP = {
@@ -363,10 +409,14 @@ const PlantRescue = ({ tool }) => {
       careSpecies, careWhereIsIt, careLight, careHelpWith,
       mode, plantName, callToolEndpoint, userLocale, userCurrency, userRegion, priorObservationsForCurrent, t]);
 
+  // Rotated per mode — each of the three tabs (rescue/care/identify) keeps
+  // its own counter and pool, so Try Example always fills the tab you're
+  // actually looking at instead of possibly switching you to another one.
   const loadExample = useCallback(() => {
-    const ex = pickExample('PlantRescue', EXAMPLES);
-    setMode(ex.mode);
-    if (ex.mode === 'care') {
+    const pool = EXAMPLES.filter(e => e.mode === mode);
+    const ex = pickExample(`PlantRescue:${mode}`, pool);
+    if (!ex) return;
+    if (mode === 'care') {
       setCareSpecies(ex.careSpecies || '');
       setCareWhereIsIt(ex.careWhereIsIt || '');
       setCareLight(ex.careLight || '');
@@ -384,7 +434,7 @@ const PlantRescue = ({ tool }) => {
     setLocation(ex.location);
     setHasPets(ex.hasPets);
     setHasChildren(ex.hasChildren);
-  }, []);
+  }, [mode]);
 
   const handleFollowUp = async () => {
     if (!followUpQuestion.trim() || !results) return;
@@ -615,7 +665,9 @@ const PlantRescue = ({ tool }) => {
                     blended with a dark one, so both flip with isDark. Alpha
                     stays the standard '80' (PF-17b: the header pill regex
                     matches that literal). */}
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold border ${isDark ? 'border-white/25 text-zinc-50' : 'border-black/25 text-zinc-900'} shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
+                {mode !== 'identify' && (
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold border ${isDark ? 'border-white/25 text-zinc-50' : 'border-black/25 text-zinc-900'} shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
+                )}
               </div>
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 {(results || plantDescription.trim() || imagePreview) && (
