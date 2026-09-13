@@ -31,17 +31,37 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // actions, momentum, and quick wins is deliberately gone — it's exactly
 // the framing that let the model default to ceremonial busywork (open the
 // document, write the title, set a timer) over real progress.
+//
+// PATH AHEAD addition (2026-09-13, owner-supplied): after_that was
+// previously just "meet the same standard as first_move" with no
+// requirement that the items relate to EACH OTHER — three individually
+// fine footholds could still be a disconnected grab-bag rather than a
+// sequence. Now capped at 2 (was 3) and required to be one coherent
+// sequence: each later foothold must follow from completing the prior one
+// and keep addressing the SAME blocker identified in step 1, not drift to
+// a different aspect of the project. Also explicit: the whole sequence is
+// generated in one shot before the visitor does anything, so later
+// footholds must not be phrased as if the model observed how the first
+// one went — "once this is done" framing, never "since you finished
+// that...". The frontend already only reveals after_that behind "See the
+// path ahead" and advances through it via "I did it — what's next?"
+// without a second API call, so no frontend change was needed for either
+// of those two behaviors.
 router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'first_move_missing_or_empty',
-    'more_than_three_later_footholds',
+    'more_than_two_later_footholds',
     'malformed_later_foothold_passed_through_unfiltered',
-    // Prompt-enforced, not code-checkable — see CONTRACT's steps 1-6: a
-    // foothold whose why_this could accompany almost any project (too
-    // generic), or one that names a blocker the visitor never implied.
+    // Prompt-enforced, not code-checkable — see CONTRACT's steps 1-6 and
+    // PATH AHEAD: a foothold whose why_this could accompany almost any
+    // project (too generic), a blocker the visitor never implied, a later
+    // foothold that drifts from the blocker the first move addressed, or
+    // one phrased as if it were written after observing the first move's
+    // outcome rather than alongside it.
     'ceremonial_action_disguised_as_meaningful_progress',
     'invented_blocker_not_implied_by_visitor',
+    'later_foothold_disconnected_from_the_same_blocker',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -190,13 +210,29 @@ Do enough reasoning to choose the right beginning.
 The visitor came here because the whole project feels overwhelming.
 Do not hand the whole project back to them in organized form.
 
+PATH AHEAD
+
+Generate the current foothold plus up to two likely next footholds as
+one coherent sequence from the information the visitor supplied.
+
+Each later foothold must:
+- follow logically from completion of the prior one,
+- continue addressing the same underlying blocker identified in step 1,
+- and move the project into a meaningfully better state.
+
+Do not imply that new reasoning occurred, or that anything about the
+project has changed, between the first move and a later foothold —
+the whole sequence is generated now, before the visitor has done
+anything. Write each later foothold as a conditional next step ("once
+this is done, ..."), never as if you have observed how the first one
+went.
+
 BOUNDARIES
 - Do not invent requirements, deadlines, documents, people, constraints, or project facts the visitor did not supply.
 - Do not diagnose executive dysfunction, anxiety, ADHD, depression, burnout, or any other condition.
 - A visitor-selected reason such as "it feels emotionally difficult" describes their experience of the project — weigh it as one signal in step 1, not as an established explanation of the blocker on its own.
 - Do not promise momentum, motivation, relief, or productivity.
 - The visitor's time budget is real and should be respected, but it does not override SMALLEST MEANINGFUL PROGRESS. When the consequential first move takes longer than a trivially tiny action, prefer a genuine partial step toward it over an arbitrarily small unrelated one. Do not manufacture a precise duration either way.
-- Later footholds (after_that) must meet the same standard as the first move — genuine progress that would pass its own SO WHAT test, not a decomposition of busywork.
 - Write directly to the visitor as you.
 - Be calm, concise, practical, and specific.
 
@@ -207,9 +243,10 @@ Reason freely. Assert carefully.
 
 // Structural sanitization only — the CONTRACT's epistemic discipline (no
 // diagnosis, no invented project facts, no fake progress, no promised
-// momentum) is prompt-enforced, not code-checkable. This pins the shape:
-// first_move always present with every field a string, after_that capped
-// at 3 and stripped of any item missing an action.
+// momentum, no disconnected later footholds) is prompt-enforced, not
+// code-checkable. This pins the shape: first_move always present with
+// every field a string, after_that capped at 2 (PATH AHEAD) and stripped
+// of any item missing an action.
 function validateResult(parsed) {
   const firstMove = parsed?.first_move && typeof parsed.first_move === 'object' ? parsed.first_move : {};
   const action = String(firstMove.action || '').trim();
@@ -218,7 +255,7 @@ function validateResult(parsed) {
   const later = Array.isArray(parsed?.after_that) ? parsed.after_that : [];
   const after_that = later
     .filter(x => x && typeof x === 'object' && String(x.action || '').trim())
-    .slice(0, 3)
+    .slice(0, 2)
     .map(x => ({
       action: String(x.action || '').trim(),
       done_when: String(x.done_when || '').trim(),
@@ -266,14 +303,14 @@ Return ONLY valid JSON:
   },
   "after_that": [
     {
-      "action": "A later foothold meeting the same SMALLEST MEANINGFUL PROGRESS standard as first_move — a preview, not a full project plan.",
+      "action": "A later foothold per PATH AHEAD — follows logically from completing the prior one, keeps addressing the SAME blocker as first_move (do not drift to a different aspect of the project), and meets the same SMALLEST MEANINGFUL PROGRESS standard. Phrase as a conditional next step ('once this is done, ...'), never as if you observed how the first move actually went.",
       "done_when": "A concrete stopping condition."
     }
   ],
   "permission_to_stop": "One short sentence making clear that completing the current foothold is enough for this session."
 }
 
-after_that: 1 to 3 items only.
+after_that: 0 to 2 items, forming one coherent sequence with first_move — not a grab-bag of independently valid but unrelated next steps.
 Never use double-quote characters inside JSON string values.`;
 
     const parsed = await callClaudeWithRetry({
