@@ -31,12 +31,25 @@ const TIMELINE = [
 // The freeform text is a locale key, not a literal — a visitor reading the tool
 // in Spanish should not be handed an English account of someone's father dying
 // to "try". Resolved through t() at click time in loadExample.
+// Each mode has its own 5 — "both" previously had none at all (the tab was
+// selectable but Try Example never touched it), and myself/helping shared
+// a pool of 5 between them rather than 5 each.
 const EXAMPLES = [
   { mode: 'myself',  lossType: 'death_person', timeline: 'weeks',  freeformKey: 'gg2_ex1', country: '' },
   { mode: 'myself',  lossType: 'health',       timeline: 'months', freeformKey: 'gg2_ex2', country: '' },
-  { mode: 'helping', lossType: 'death_person', timeline: 'days',   freeformKey: 'gg2_ex3', country: '' },
   { mode: 'myself',  lossType: 'death_pet',    timeline: 'just',   freeformKey: 'gg2_ex4', country: '' },
+  { mode: 'myself',  lossType: 'relationship', timeline: 'months', freeformKey: 'gg2_ex6', country: '' },
+  { mode: 'myself',  lossType: 'identity',     timeline: 'years',  freeformKey: 'gg2_ex7', country: '' },
+  { mode: 'helping', lossType: 'death_person', timeline: 'days',   freeformKey: 'gg2_ex3', country: '' },
   { mode: 'helping', lossType: 'job',          timeline: 'years',  freeformKey: 'gg2_ex5', country: '' },
+  { mode: 'helping', lossType: 'pregnancy',    timeline: 'weeks',  freeformKey: 'gg2_ex8', country: '' },
+  { mode: 'helping', lossType: 'home',         timeline: 'just',   freeformKey: 'gg2_ex9', country: '' },
+  { mode: 'helping', lossType: 'friendship',   timeline: 'months', freeformKey: 'gg2_ex10', country: '' },
+  { mode: 'both',    lossType: 'death_person', timeline: 'weeks',  freeformKey: 'gg2_ex11', country: '' },
+  { mode: 'both',    lossType: 'death_pet',    timeline: 'days',   freeformKey: 'gg2_ex12', country: '' },
+  { mode: 'both',    lossType: 'job',          timeline: 'months', freeformKey: 'gg2_ex13', country: '' },
+  { mode: 'both',    lossType: 'health',       timeline: 'years',  freeformKey: 'gg2_ex14', country: '' },
+  { mode: 'both',    lossType: 'pregnancy',    timeline: 'just',   freeformKey: 'gg2_ex15', country: '' },
 ];
 
 function GriefGuide({ tool }) {
@@ -111,16 +124,19 @@ function GriefGuide({ tool }) {
     setError('');
   }, [setResults]);
 
+  // Rotated per mode — each tab keeps its own counter and pool so Try
+  // Example never bounces you to a different tab than the one you're on.
   const loadExample = useCallback(() => {
-    const ex = pickExample('GriefGuide', EXAMPLES);
-    setMode(ex.mode);
+    const pool = EXAMPLES.filter(e => e.mode === mode);
+    const ex = pickExample(`GriefGuide:${mode}`, pool);
+    if (!ex) return;
     setLossType(ex.lossType);
     setTimeline(ex.timeline);
     setFreeform(t(ex.freeformKey));
     setCountry(ex.country);
     setResults(null);
     setError('');
-  }, [setResults, t]);
+  }, [mode, setResults, t]);
 
   const handleGuide = useCallback(async () => {
     if (!canSubmit || loading) return;
