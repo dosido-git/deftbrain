@@ -204,15 +204,44 @@ const TheDebrief = ({ tool }) => {
     } catch (err) { setError(err.message || t('td_err_failed')); }
   }, [mode, transcript, meetingType, attendees, context, focus, tone, meetings, callToolEndpoint, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
 
+  // Rotated per mode — Distill/Followup ask for a single transcript, Series
+  // asks for 2+ meetings, so each of the three tabs keeps its own counter
+  // and pool instead of Try Example always forcing you back to Distill.
+  const DISTILL_EXAMPLES = [
+    { n: '', meetingType: 'auto', tone: 'professional' },
+    { n: '2', meetingType: 'auto', tone: 'professional' },
+    { n: '3', meetingType: 'retro', tone: 'casual' },
+    { n: '4', meetingType: 'one_on_one', tone: 'formal' },
+    { n: '5', meetingType: 'client', tone: 'professional' },
+  ];
+  const FOLLOWUP_EXAMPLES = [
+    { n: 'fu1', meetingType: 'standup',    tone: 'professional' },
+    { n: 'fu2', meetingType: 'client',     tone: 'formal' },
+    { n: 'fu3', meetingType: 'brainstorm', tone: 'casual' },
+    { n: 'fu4', meetingType: 'planning',   tone: 'professional' },
+    { n: 'fu5', meetingType: 'one_on_one', tone: 'casual' },
+  ];
+  const SERIES_EXAMPLES = [
+    { n: 'se1' }, { n: 'se2' }, { n: 'se3' }, { n: 'se4' }, { n: 'se5' },
+  ];
+
   const loadExample = useCallback(() => {
-    setMode('distill');
-    const ex = pickExample('TheDebrief', [
-      { n: '', meetingType: 'auto', tone: 'professional' },
-      { n: '2', meetingType: 'auto', tone: 'professional' },
-      { n: '3', meetingType: 'retro', tone: 'casual' },
-      { n: '4', meetingType: 'one_on_one', tone: 'formal' },
-      { n: '5', meetingType: 'client', tone: 'professional' },
-    ]);
+    if (mode === 'series') {
+      const ex = pickExample('TheDebrief:series', SERIES_EXAMPLES);
+      if (!ex) return;
+      const k = f => `td_${ex.n}_${f}`;
+      setContext(t(k('context')));
+      setFocus('');
+      setMeetings([
+        { title: t(k('m1_title')), date: '', transcript: t(k('m1_transcript')) },
+        { title: t(k('m2_title')), date: '', transcript: t(k('m2_transcript')) },
+      ]);
+      setResults(null);
+      return;
+    }
+    const pool = mode === 'followup' ? FOLLOWUP_EXAMPLES : DISTILL_EXAMPLES;
+    const ex = pickExample(`TheDebrief:${mode}`, pool);
+    if (!ex) return;
     const k = f => `td_ex${ex.n}_${f}`;
     setMeetingType(ex.meetingType);
     setAttendees(t(k('attendees')));
@@ -220,7 +249,7 @@ const TheDebrief = ({ tool }) => {
     setTone(ex.tone);
     setTranscript(t(k('transcript')));
     setResults(null);
-  }, [setMode, setMeetingType, setAttendees, setContext, setTone, setTranscript, setResults, t]);
+  }, [mode, setMeetingType, setAttendees, setContext, setFocus, setTone, setTranscript, setMeetings, setResults, t]);
 
   const handleReset = useCallback(() => {
     setTranscript(''); setAttendees(''); setContext(''); setFocus(''); setMeetingType('auto'); setTone('professional');
