@@ -1,14 +1,109 @@
 {
   "_meta": {
-    "tool": "Recall",
-    "generated": "2026-07-14",
+    "tool": "HeartOfTheMatter",
+    "generated": "2026-09-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 4 endpoints",
-    "baseline_commit": "recall-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden recall). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) test-prep schema emits top-level `questions` + `study_tips` — its guard MUST key `!parsed.questions` (was a copy-paste `!parsed.answer && !parsed.facts && !parsed.response`; `answer` is nested in questions[].answer → 500 on EVERY test-prep call). (2) /connect max_tokens 4000 (was 2500) + 5 arrays capped (themes<=5, chain<=5, contradictions<=4, focus<=5, gaps<=4). (3) /recall + study-guide arrays capped; test-prep study_tips<=5. (4) no-inner-double-quote rule on test-prep + study-guide + connect (quote-prone passage fields). (5) other 3 guards correct: lecture_summary / title / course_narrative. (6) no annotation suffixes. DO NOT reverse: test-prep guard !parsed.questions; connect 4000 + caps; the no-inner-quote rule; array caps; no annotation suffixes."
+    "baseline_commit": "heart-of-the-matter-v1",
+    "why_v1_rename_and_rewrite": "2026-09-13, owner-supplied. Renamed TheCrux -> HeartOfTheMatter (second hop from the original Recall) alongside a CONTRACT rewrite. The old PERSONALITY was \"Study coach and memory expert... give exam strategy based on how professors actually test\" -- every mode leaned on inferring exam likelihood, professor intent, and future lecture content the supplied material never established. The stored v_recall cases below (kept only in this note, not as cases) were full of exactly that: \"vom Professor ausdruecklich als klausurrelevant markiert,\" \"Klausurfragen werden sicher verlangen,\" a cumulative_exam_focus full of predicted exam topics, and gaps predicting what \"eine spaetere Vorlesung wird wahrscheinlich nachholen.\" The replacement PERSONALITY is source-first: the supplied material is the only authority for content-specific claims; the model may reorganize/compare/generate practice FROM it but must not add outside facts, predict exams, infer professor intent, or predict future material. exam_strategy and cumulative_exam_focus are now hardcoded to null/[] by validateResult() regardless of what the model returns -- a live capture during this rewrite still had the model returning content for study_tips referencing the professor's OWN explicit exam remark from the transcript (correctly grounded, since the transcript itself states it) while cumulative_exam_focus came back non-empty on a stale dev-server capture and correctly empty once the server actually loaded the new code, confirming the code guard does the real work rather than the prompt alone. Output labels changed to match: Testable -> Practice, Gaps/Coming Next -> Unresolved in the Material, Course Narrative -> Throughline, Gaps Between Lectures -> Unresolved Connections (i18n only, no schema field renamed). router.outputStandard='v2' and router.outputGuard were added -- this route had neither before. All 4 endpoints, the route filename (the-crux.js), and the i18n filename/prefix (recall.js / rec_) deliberately stay put across this rename, per naming-consistency-rule (already-locked tool) -- only the frontend component file and catalog copy moved.",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden the-crux). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS (all via validateResult(kind, parsed) in backend/routes/the-crux.js, added in this rewrite -- there was no shared validator before): distill requires lecture_summary, caps vocabulary<=8/connections<=4/professor_signals<=5/gaps<=4; study_guide requires title, caps concepts_to_know<=8/key_definitions<=10/processes_and_formulas<=6/relationships<=6, and forces exam_strategy to null always; test_prep requires a non-empty questions array, caps questions<=20/study_tips<=5; connect requires course_narrative, caps recurring_themes<=5/concept_chain<=5/contradictions_or_nuance<=4/gaps_between_lectures<=4, and forces cumulative_exam_focus to [] always. The source-grounding discipline itself (no invented facts, no professor-intent inference, no exam prediction) is prompt-enforced (PERSONALITY), not code-checkable -- when eyeballing new captures, check that every why_important/why_recurring/gaps entry traces back to something the transcript actually says, and that a professor-related claim (like the test-prep study_tips example below) is only present when the TRANSCRIPT ITSELF states it, not inferred from repetition or topic importance alone. DO NOT reverse: the forced-null/forced-empty guards on exam_strategy and cumulative_exam_focus, or the array caps."
   },
   "cases": [
     {
-      "name": "de-testprep-was-DOWN",
+      "name": "en-distill-compound-interest-talk",
+      "endpoint": "/api/the-crux",
+      "input": {
+        "userLanguage": "en",
+        "transcript": "Todays talk is about compound interest. Most people massively underestimate how fast money grows when returns compound. If you invest $10,000 at 7% annual return, after 30 years you have about $76,000 -- more than seven times your original investment, and you never added another dollar. The key insight is that the LAST decade does almost all the work. In our example, the money grows from about 38,000 to 76,000 in the final ten years alone -- that is more growth than the first twenty years combined. This is why starting early matters so much more than the amount you start with. A 25 year old investing a small amount beats a 35 year old investing three times as much, purely because of the extra decade of compounding. The mistake almost everyone makes is waiting until they feel like they have enough money to start seriously investing. But time in the market, not the amount, is the variable that matters most.",
+        "subject": "Personal finance",
+        "bulletCount": 6
+      },
+      "output": {
+        "lecture_summary": "Compound interest causes money to grow exponentially over time, and starting early is the single most important variable in personal investing.",
+        "subject_detected": "Personal Finance",
+        "bullets": [
+          {
+            "rank": 1,
+            "point": "The final decade of a compounding investment does more work than all previous decades combined: in a $10,000 investment at 7% over 30 years, the last ten years produce roughly $38,000 in growth, more than the first twenty years together.",
+            "why_important": "This is the central evidence the lecture uses to demonstrate why time horizon is so powerful — it shows compounding acceleration is back-loaded, not linear.",
+            "type": "fact",
+            "testable": true,
+            "test_hint": "Using the $10,000 / 7% / 30-year example from the lecture, explain how much growth occurs in the final decade versus the first two decades combined."
+          },
+          {
+            "rank": 2,
+            "point": "Starting time, not starting amount, is identified as the variable that matters most in compounding — a 25-year-old investing a small amount outpaces a 35-year-old investing three times as much purely because of the extra decade.",
+            "why_important": "This comparison is the lectures core practical conclusion, directly challenging the common assumption that the amount invested is the primary driver of outcomes.",
+            "type": "comparison",
+            "testable": true,
+            "test_hint": "According to the lecture, why does a 25-year-old investing a small amount beat a 35-year-old investing three times as much?"
+          },
+          {
+            "rank": 3,
+            "point": "A $10,000 investment at 7% annual return grows to approximately $76,000 after 30 years — more than seven times the original amount — without any additional contributions.",
+            "why_important": "This specific numerical example is the lectures primary evidence for how dramatically compounding multiplies an investment over a long horizon.",
+            "type": "fact",
+            "testable": true,
+            "test_hint": "What does the lecture say a $10,000 investment at 7% annual return becomes after 30 years, and what does that illustrate about compounding?"
+          },
+          {
+            "rank": 4,
+            "point": "Compound interest means returns are earned not just on the original principal but on previously accumulated returns, which causes growth to accelerate over time rather than increase at a steady rate.",
+            "why_important": "This is the foundational definition underpinning every other point in the lecture; without it, the back-loaded growth pattern has no explanation.",
+            "type": "definition",
+            "testable": true,
+            "test_hint": "Based on the lecture, explain what compounding means and why it causes growth to speed up over time rather than stay constant."
+          },
+          {
+            "rank": 5,
+            "point": "The most common investing mistake identified in the lecture is waiting until one feels they have enough money to start — this delays compounding and sacrifices the most valuable early years.",
+            "why_important": "This frames the lectures practical warning and directly supports the argument that starting early outweighs starting with more money.",
+            "type": "application",
+            "testable": true,
+            "test_hint": "What specific mistake does the lecture say most people make, and how does it connect to the logic of compounding?"
+          },
+          {
+            "rank": 6,
+            "point": "People massively underestimate how fast money grows under compounding — the lecture frames this underestimation as the root problem the entire talk is addressing.",
+            "why_important": "This establishes the motivating premise of the lecture: correcting an intuitive failure that leads people to act too late.",
+            "type": "framework",
+            "testable": true,
+            "test_hint": "What does the lecture say most people get wrong about compounding, and what evidence does it offer to correct that misperception?"
+          }
+        ],
+        "vocabulary": [
+          {
+            "term": "Compound interest",
+            "definition": "Returns earned not only on the original investment but on all previously accumulated returns, causing growth to accelerate over time."
+          },
+          {
+            "term": "Time in the market",
+            "definition": "The duration money is invested, identified in the lecture as the most important variable in compounding outcomes."
+          },
+          {
+            "term": "Compounding",
+            "definition": "The process by which investment returns generate their own returns in subsequent periods, producing exponential rather than linear growth."
+          },
+          {
+            "term": "Annual return",
+            "definition": "The percentage by which an investment grows each year, used in the lecture at 7% for the illustrative example."
+          }
+        ],
+        "connections": [
+          "Because growth is back-loaded, the decision of when to start investing has a larger effect on final wealth than the decision of how much to invest.",
+          "The underestimation of compounding speed (the behavioral problem) connects directly to the mistake of waiting to start (the practical error).",
+          "The $10,000 numerical example is used to make the abstract claim about back-loaded growth concrete and measurable.",
+          "The 25-year-old versus 35-year-old comparison translates the abstract principle of time value into a human decision with a visible cost."
+        ],
+        "professor_signals": [],
+        "gaps": [
+          "The lecture does not explain what rate of return the 25-year-old versus 35-year-old comparison assumes, or what specific amounts are being compared.",
+          "No guidance is given on where or how to invest — the lecture focuses entirely on timing and compounding mechanics, not on investment vehicles or risk.",
+          "The lecture states the $10,000 grows to about $76,000 and passes through about $38,000 at year 20 but does not show the year-by-year compounding calculation."
+        ]
+      }
+    },
+    {
+      "name": "de-testprep-zellatmung",
       "endpoint": "/api/the-crux/test-prep",
       "input": {
         "userLanguage": "de",
@@ -27,196 +122,201 @@
             "number": 1,
             "type": "multiple_choice",
             "difficulty": "easy",
-            "question": "Wo findet die Glykolyse in der Zelle statt?",
+            "question": "Was ist das Hauptprodukt der Zellatmung, das aus Glukose gewonnen wird?",
             "options": [
-              "A) In der Mitochondrienmatrix",
-              "B) Im Zytoplasma",
-              "C) An der inneren Mitochondrienmembran",
-              "D) Im Zellkern"
+              "A) NADH",
+              "B) ATP",
+              "C) FADH2",
+              "D) CO2"
             ],
-            "answer": "B) Im Zytoplasma – die Glykolyse ist der erste Schritt der Zellatmung und läuft vollständig im Zytoplasma ab, ohne Beteiligung der Mitochondrien.",
+            "answer": "B) ATP – laut Vorlesungsinhalt ist die Zellatmung genau der Prozess, bei dem Zellen Glukose in ATP umwandeln.",
             "why_wrong": {
-              "A": "Die Mitochondrienmatrix ist der Ort des Zitronensäurezyklus, nicht der Glykolyse.",
-              "C": "An der inneren Mitochondrienmembran findet die Elektronentransportkette statt.",
-              "D": "Der Zellkern ist für die Genexpression zuständig, nicht für Stoffwechselprozesse wie die Glykolyse."
+              "A": "NADH ist ein Elektronenüberträger, der im Prozess entsteht, aber nicht das Hauptprodukt der Zellatmung.",
+              "C": "FADH2 ist ebenfalls ein Elektronenüberträger und kein Endprodukt im Sinne des Energiegewinns.",
+              "D": "CO2 ist ein Abfallprodukt, aber nicht das Zielprodukt der Zellatmung."
             },
-            "points_hint": "Korrekter Ort der Glykolyse mit kurzer Begründung.",
-            "source_concept": "Glykolyse – Ort im Zytoplasma"
+            "points_hint": null,
+            "source_concept": "Definition der Zellatmung"
           },
           {
             "number": 2,
             "type": "multiple_choice",
             "difficulty": "easy",
-            "question": "Wie viele ATP-Moleküle werden durch die Glykolyse netto produziert?",
+            "question": "Wo findet die Glykolyse in der Zelle statt?",
             "options": [
-              "A) 4 ATP",
-              "B) 36 ATP",
-              "C) 2 ATP",
-              "D) 0 ATP"
+              "A) In der Mitochondrienmatrix",
+              "B) An der inneren Mitochondrienmembran",
+              "C) Im Zytoplasma",
+              "D) Im Zellkern"
             ],
-            "answer": "C) 2 ATP – die Glykolyse erzeugt brutto 4 ATP, verbraucht jedoch 2 ATP, sodass der Nettogewinn 2 ATP beträgt.",
+            "answer": "C) Im Zytoplasma – der Vorlesungsinhalt gibt explizit an, dass die Glykolyse im Zytoplasma stattfindet.",
             "why_wrong": {
-              "A": "4 ATP ist der Bruttoertrag, nicht der Nettoertrag nach Abzug des Energieverbrauchs.",
-              "B": "36 ATP ist der Gesamtertrag der vollständigen aeroben Zellatmung, nicht allein der Glykolyse.",
-              "D": "0 ATP wäre falsch – die Glykolyse ist gerade deshalb bedeutsam, weil sie Netto-ATP liefert."
+              "A": "Die Mitochondrienmatrix ist laut Vorlesung der Ort des Zitronensäurezyklus, nicht der Glykolyse.",
+              "B": "Die innere Mitochondrienmembran ist der Ort der Elektronentransportkette, nicht der Glykolyse.",
+              "D": "Der Zellkern wird im Vorlesungsinhalt nicht als Ort eines Zellatmungsschrittes genannt."
             },
-            "points_hint": "Unterscheidung zwischen Brutto- und Netto-ATP-Gewinn der Glykolyse.",
-            "source_concept": "ATP-Bilanz der Glykolyse"
+            "points_hint": null,
+            "source_concept": "Glykolyse – Ort im Zytoplasma"
           },
           {
             "number": 3,
-            "type": "multiple_choice",
-            "difficulty": "medium",
-            "question": "Welche Aussage zur Funktion von NADH in der Zellatmung ist korrekt?",
-            "options": [
-              "A) NADH wird direkt zu ATP umgewandelt",
-              "B) NADH überträgt Elektronen an die Elektronentransportkette",
-              "C) NADH ist ein Enzym, das Glukose spaltet",
-              "D) NADH entsteht ausschließlich im Zitronensäurezyklus"
-            ],
-            "answer": "B) NADH ist ein Elektronenüberträger, der Elektronen mit hoher Energie an den Komplex I der Elektronentransportkette abgibt und so die Chemiosmose antreibt.",
-            "why_wrong": {
-              "A": "NADH wird nicht direkt in ATP umgewandelt; es gibt Elektronen ab, die indirekt ATP-Synthese ermöglichen.",
-              "C": "NADH ist ein Coenzym bzw. Elektronenträger, kein Enzym mit katalytischer Funktion auf Glukose.",
-              "D": "NADH entsteht sowohl bei der Glykolyse als auch im Zitronensäurezyklus, also an mehreren Stellen."
-            },
-            "points_hint": "Funktion als Elektronenüberträger und Verbindung zur Elektronentransportkette klar benennen.",
-            "source_concept": "NADH als Elektronenüberträger – Klausurschwerpunkt laut Professor"
+            "type": "short_answer",
+            "difficulty": "easy",
+            "question": "Wie viel ATP netto erzeugt die Glykolyse?",
+            "options": null,
+            "answer": "Die Glykolyse erzeugt netto 2 ATP, wie im Vorlesungsinhalt ausdrücklich angegeben.",
+            "why_wrong": null,
+            "points_hint": null,
+            "source_concept": "ATP-Ausbeute der Glykolyse"
           },
           {
             "number": 4,
-            "type": "multiple_choice",
+            "type": "true_false",
             "difficulty": "medium",
-            "question": "Was unterscheidet FADH2 von NADH im Kontext der Elektronentransportkette?",
+            "question": "Der Zitronensäurezyklus findet im Zytoplasma statt.",
             "options": [
-              "A) FADH2 liefert Elektronen an einen späteren Komplex und erzeugt daher weniger ATP",
-              "B) FADH2 erzeugt mehr ATP als NADH, da es mehr Energie trägt",
-              "C) FADH2 wird nur bei der anaeroben Atmung produziert",
-              "D) FADH2 und NADH sind funktional identisch und austauschbar"
+              "A) Wahr",
+              "B) Falsch"
             ],
-            "answer": "A) FADH2 gibt seine Elektronen an Komplex II ab, überspringt dadurch Komplex I und pumpt weniger Protonen, was zu einem geringeren ATP-Ertrag (ca. 1,5 ATP) im Vergleich zu NADH (ca. 2,5 ATP) führt.",
+            "answer": "B) Falsch – laut Vorlesungsinhalt läuft der Zitronensäurezyklus in der Mitochondrienmatrix, nicht im Zytoplasma ab.",
             "why_wrong": {
-              "B": "FADH2 trägt weniger Energie als NADH und erzeugt deshalb weniger ATP, nicht mehr.",
-              "C": "FADH2 entsteht im Zitronensäurezyklus der aeroben Atmung, nicht ausschließlich bei der anaeroben.",
-              "D": "FADH2 und NADH sind nicht austauschbar; sie speisen die Kette an verschiedenen Punkten ein."
+              "A": "Das Zytoplasma ist der Ort der Glykolyse; der Zitronensäurezyklus ist laut Vorlesung in der Mitochondrienmatrix lokalisiert."
             },
-            "points_hint": "Einspeisepunkt in die Kette, Protonengradient und resultierender ATP-Unterschied müssen erklärt werden.",
-            "source_concept": "FADH2 vs. NADH – Elektronenüberträger im Vergleich"
+            "points_hint": null,
+            "source_concept": "Zitronensäurezyklus – Ort in der Mitochondrienmatrix"
           },
           {
             "number": 5,
             "type": "multiple_choice",
-            "difficulty": "hard",
-            "question": "Ein Forscher hemmt die ATP-Synthase in Mitochondrien vollständig. Welche der folgenden Konsequenzen ist die wichtigste direkte Folge?",
+            "difficulty": "medium",
+            "question": "Welche drei Hauptphasen der Zellatmung werden im Vorlesungsinhalt genannt?",
             "options": [
-              "A) Die Glykolyse stoppt sofort, da kein ATP mehr vorhanden ist",
-              "B) Der Protonengradient über der inneren Mitochondrienmembran baut sich auf, weil Protonen nicht mehr durch ATP-Synthase fließen können",
-              "C) NADH und FADH2 werden nicht mehr produziert",
-              "D) Der Zitronensäurezyklus läuft schneller, um den ATP-Mangel zu kompensieren"
+              "A) Glykolyse, Zitronensäurezyklus und oxidative Phosphorylierung",
+              "B) Glykolyse, Fotosynthese und Chemiosmose",
+              "C) Glykolyse, Zitronensäurezyklus und Fermentation",
+              "D) Oxidation, Reduktion und Phosphorylierung"
             ],
-            "answer": "B) Ohne funktionierende ATP-Synthase können Protonen nicht durch sie hindurchfließen; die Elektronentransportkette pumpt jedoch weiter Protonen, sodass sich ein übermäßiger Protonengradient aufbaut und die Kette letztlich zum Stillstand kommt.",
+            "answer": "A) Glykolyse, Zitronensäurezyklus und oxidative Phosphorylierung – diese drei Phasen werden im Vorlesungsinhalt ausdrücklich als Hauptphasen aufgeführt.",
             "why_wrong": {
-              "A": "Die Glykolyse ist unabhängig von der Mitochondrienfunktion und läuft zunächst weiter, solange ADP und Glukose vorhanden sind.",
-              "C": "Die Produktion von NADH und FADH2 im Zitronensäurezyklus ist von der ATP-Synthase unabhängig und wäre nicht die direkte Sofortfolge.",
-              "D": "Der Zitronensäurezyklus würde eher verlangsamen, da NADH und FADH2 nicht mehr regeneriert werden können."
+              "B": "Fotosynthese ist kein Teil der Zellatmung und wird im Vorlesungsinhalt nicht als Phase genannt.",
+              "C": "Fermentation wird im Vorlesungsinhalt nicht als eine der drei Hauptphasen der Zellatmung aufgeführt.",
+              "D": "Diese allgemeinen chemischen Begriffe entsprechen nicht den im Vorlesungsinhalt genannten Phasennamen."
             },
-            "points_hint": "Verständnis des Protonengradienten als treibende Kraft und Rückkopplungseffekt auf die gesamte Kette.",
-            "source_concept": "Chemiosmose und oxidative Phosphorylierung"
+            "points_hint": null,
+            "source_concept": "Drei Hauptphasen der Zellatmung"
           },
           {
             "number": 6,
-            "type": "short_answer",
-            "difficulty": "easy",
-            "question": "Nennen Sie die drei Hauptphasen der aeroben Zellatmung in der richtigen Reihenfolge.",
+            "type": "essay",
+            "difficulty": "hard",
+            "question": "Beschreibe die drei Hauptphasen der Zellatmung, benenne jeweils den Ort in der Zelle und erkläre, welche Phase wie viel ATP netto erzeugt, soweit dies aus dem Vorlesungsinhalt hervorgeht.",
             "options": null,
-            "answer": "1. Glykolyse (im Zytoplasma), 2. Zitronensäurezyklus (in der Mitochondrienmatrix), 3. Oxidative Phosphorylierung / Elektronentransportkette (an der inneren Mitochondrienmembran).",
+            "answer": "Die Glykolyse findet im Zytoplasma statt und erzeugt 2 ATP netto; der Zitronensäurezyklus läuft in der Mitochondrienmatrix ab; die oxidative Phosphorylierung erzeugt den Großteil des ATP durch Chemiosmose – konkrete ATP-Zahlen für die letzten beiden Phasen sind im bereitgestellten Vorlesungsinhalt nicht angegeben.",
             "why_wrong": null,
-            "points_hint": "Alle drei Phasen genannt, korrekte Reihenfolge, je ein Punkt pro Phase.",
-            "source_concept": "Überblick Zellatmung – drei Hauptphasen"
+            "points_hint": null,
+            "source_concept": "Überblick Zellatmung – Phasen, Orte und ATP-Ausbeute"
           },
           {
             "number": 7,
-            "type": "short_answer",
-            "difficulty": "medium",
-            "question": "Erklären Sie in zwei bis drei Sätzen, warum NADH und FADH2 als Elektronenüberträger für die ATP-Produktion unverzichtbar sind.",
-            "options": null,
-            "answer": "NADH und FADH2 transportieren Elektronen mit hoher Energie aus Glykolyse und Zitronensäurezyklus zur Elektronentransportkette. Dort geben sie diese Elektronen ab, was die Protonenpumpen antreibt und einen Protonengradienten erzeugt. Dieser Gradient treibt die ATP-Synthase an, die ADP zu ATP phosphoryliert (Chemiosmose).",
-            "why_wrong": null,
-            "points_hint": "Energietransport zur Kette, Protonengradient und Verbindung zur ATP-Synthase müssen erwähnt werden.",
-            "source_concept": "NADH/FADH2 als Elektronenüberträger – Klausurschwerpunkt"
+            "type": "multiple_choice",
+            "difficulty": "easy",
+            "question": "Wo findet der Zitronensäurezyklus statt?",
+            "options": [
+              "A) Im Zytoplasma",
+              "B) In der Mitochondrienmatrix",
+              "C) An der inneren Mitochondrienmembran",
+              "D) Im Zellkern"
+            ],
+            "answer": "B) In der Mitochondrienmatrix – das gibt der Vorlesungstext ausdrücklich an.",
+            "why_wrong": {
+              "A": "Das Zytoplasma ist der Ort der Glykolyse, nicht des Zitronensäurezyklus.",
+              "C": "Die innere Mitochondrienmembran ist der Ort der Elektronentransportkette, nicht des Zitronensäurezyklus.",
+              "D": "Der Zellkern wird im Zusammenhang mit der Zellatmung im Material nicht genannt."
+            },
+            "points_hint": null,
+            "source_concept": "Zitronensäurezyklus – Ort"
           },
           {
             "number": 8,
             "type": "short_answer",
-            "difficulty": "medium",
-            "question": "Wo genau in der Mitochondrie findet der Zitronensäurezyklus statt, und welche energiereichen Moleküle werden dabei hauptsächlich produziert?",
+            "difficulty": "easy",
+            "question": "Welche Funktion erfüllen NADH und FADH2 im Rahmen der Zellatmung?",
             "options": null,
-            "answer": "Der Zitronensäurezyklus findet in der Mitochondrienmatrix statt. Dabei werden hauptsächlich NADH und FADH2 als Elektronenüberträger sowie eine geringe Menge ATP (bzw. GTP) und CO2 als Abfallprodukt produziert.",
+            "answer": "Laut Vorlesung fungieren NADH und FADH2 als Elektronenüberträger – sie transportieren Elektronen zur Elektronentransportkette.",
             "why_wrong": null,
-            "points_hint": "Korrekter Ort (Matrix), Hauptprodukte NADH und FADH2 explizit nennen, CO2 als Nebenprodukt erwähnen.",
-            "source_concept": "Zitronensäurezyklus – Ort und Produkte"
+            "points_hint": null,
+            "source_concept": "NADH und FADH2 als Elektronenüberträger"
           },
           {
             "number": 9,
-            "type": "short_answer",
-            "difficulty": "hard",
-            "question": "Beschreiben Sie den Mechanismus der Chemiosmose und erklären Sie, warum Sauerstoff für diesen Prozess notwendig ist.",
-            "options": null,
-            "answer": "Bei der Chemiosmose werden Protonen durch die Elektronentransportkette über die innere Mitochondrienmembran in den Intermembranraum gepumpt, wodurch ein elektrochemischer Gradient entsteht. Dieser Gradient treibt Protonen durch die ATP-Synthase zurück in die Matrix, was ATP-Synthese antreibt. Sauerstoff ist notwendig, weil er als finaler Elektronenakzeptor am Ende der Kette fungiert; ohne ihn würde die Kette zum Stillstand kommen und keine Elektronen mehr fließen.",
-            "why_wrong": null,
-            "points_hint": "Protonengradient, ATP-Synthase, Sauerstoff als finaler Elektronenakzeptor – alle drei Aspekte erforderlich.",
-            "source_concept": "Chemiosmose und Rolle des Sauerstoffs bei aerober Atmung"
+            "type": "multiple_choice",
+            "difficulty": "medium",
+            "question": "Welcher Prozess erzeugt laut Vorlesungsmaterial den Großteil des ATP in der Zellatmung?",
+            "options": [
+              "A) Glykolyse",
+              "B) Zitronensäurezyklus",
+              "C) Chemiosmose im Rahmen der oxidativen Phosphorylierung",
+              "D) Anaerobe Gärung"
+            ],
+            "answer": "C) Die Elektronentransportkette erzeugt den Großteil des ATP durch Chemiosmose – so steht es ausdrücklich im Material.",
+            "why_wrong": {
+              "A": "Die Glykolyse erzeugt laut Material nur 2 ATP netto und wird der ersten Hälfte zugeordnet.",
+              "B": "Der Zitronensäurezyklus wird im Material nicht als Hauptquelle des ATP genannt.",
+              "D": "Anaerobe Atmung wird als Gegenstück zur aeroben Atmung erwähnt, nicht als Hauptquelle des ATP."
+            },
+            "points_hint": null,
+            "source_concept": "Oxidative Phosphorylierung und Chemiosmose"
           },
           {
             "number": 10,
             "type": "true_false",
             "difficulty": "easy",
-            "question": "Wahr oder Falsch: Anaerobe Atmung produziert mehr ATP pro Glukosemolekül als aerobe Atmung.",
+            "question": "NADH und FADH2 sind laut Vorlesung garantiert ein Klausurthema.",
             "options": [
               "A) Wahr",
               "B) Falsch"
             ],
-            "answer": "Falsch – aerobe Atmung produziert ca. 30–38 ATP pro Glukosemolekül, während anaerobe Gärung nur die 2 Netto-ATP der Glykolyse liefert, da ohne Sauerstoff keine oxidative Phosphorylierung möglich ist.",
+            "answer": "A) Wahr – das Material hält ausdrücklich fest, dass der Professor die Rolle von NADH und FADH2 als Elektronenüberträger mehrfach betont und als garantierten Klausurinhalt bezeichnet hat.",
             "why_wrong": {
-              "A": "Anaerobe Atmung ist hinsichtlich der ATP-Ausbeute deutlich ineffizienter, da der Hauptteil des ATP durch die Elektronentransportkette erzeugt wird, die Sauerstoff benötigt."
+              "B": "Falsch, weil das Material diese Aussage explizit enthält."
             },
-            "points_hint": "Korrekter Vergleich der ATP-Mengen und Begründung warum aerob effizienter ist.",
-            "source_concept": "Aerobe vs. anaerobe Atmung – Effizienzvergleich"
+            "points_hint": null,
+            "source_concept": "NADH und FADH2 – Klausurrelevanz"
           },
           {
             "number": 11,
-            "type": "fill_blank",
+            "type": "short_answer",
             "difficulty": "medium",
-            "question": "Ergänzen Sie die Lücken: Die Elektronentransportkette befindet sich an der __________ Mitochondrienmembran. Der finale Elektronenakzeptor ist __________. Das dabei entstehende Wasser entsteht, weil Elektronen, Protonen und __________ miteinander reagieren.",
+            "question": "Was unterscheidet aerobe von anaerober Atmung, und warum hebt das Vorlesungsmaterial diesen Unterschied als wichtig hervor?",
             "options": null,
-            "answer": "Inneren Mitochondrienmembran; Sauerstoff (O2); Sauerstoff reagiert mit Elektronen und Protonen zu Wasser (H2O) – die vollständige Aussage lautet: Elektronen, Protonen (H+) und Sauerstoff (O2) reagieren zu Wasser.",
+            "answer": "Das Material benennt den Unterschied zwischen aerober und anaerober Atmung als wichtigen Punkt, ohne ihn weiter auszuführen. Eine vollständige Antwort sollte festhalten, dass dieser Unterschied laut Vorlesung ausdrücklich als lernrelevant markiert wurde – die genauen inhaltlichen Details sind im gelieferten Material nicht ausgeführt und sollten aus anderen Unterlagen ergänzt werden.",
             "why_wrong": null,
-            "points_hint": "Alle drei Lücken korrekt ausgefüllt, je ein Punkt; Sauerstoff muss als finaler Elektronenakzeptor benannt werden.",
-            "source_concept": "Elektronentransportkette – Aufbau und Sauerstoff als Elektronenakzeptor"
+            "points_hint": null,
+            "source_concept": "Aerobe vs. anaerobe Atmung"
           },
           {
             "number": 12,
             "type": "essay",
             "difficulty": "hard",
-            "question": "Vergleichen Sie aerobe und anaerobe Zellatmung hinsichtlich Ablauf, ATP-Ausbeute und biologischer Bedeutung. Gehen Sie dabei explizit auf die Rolle von NADH und FADH2 ein und erläutern Sie, warum die oxidative Phosphorylierung den Großteil des ATPs liefert.",
+            "question": "Erkläre, wie NADH und FADH2 mit der Elektronentransportkette und der Chemiosmose zusammenwirken, um ATP zu erzeugen. Beziehe dabei die Rolle des Zitronensäurezyklus als vorgelagerte Phase ein.",
             "options": null,
-            "answer": "Ein vollständiger Essay sollte folgende Punkte enthalten: Beide Wege beginnen mit der Glykolyse (2 Netto-ATP, NADH-Produktion). Bei aerober Atmung folgen Zitronensäurezyklus (weitere NADH, FADH2, wenig ATP) und oxidative Phosphorylierung (ca. 26–34 ATP durch Chemiosmose). NADH und FADH2 sind entscheidend, weil sie Elektronen zur Kette transportieren, die den Protonengradienten erzeugt, der die ATP-Synthase antreibt. Bei anaerober Atmung fehlt Sauerstoff als Elektronenakzeptor, die Elektronentransportkette kann nicht laufen, NADH muss durch Gärung regeneriert werden, und der ATP-Ertrag bleibt bei 2 ATP. Biologisch ermöglicht anaerobe Atmung kurzfristig Energie ohne Sauerstoff (z.B. Muskelzellen bei Belastung), ist aber langfristig ineffizient.",
+            "answer": "Eine vollständige Antwort verknüpft folgende im Material genannte Punkte: Der Zitronensäurezyklus läuft in der Mitochondrienmatrix ab und liefert – implizit – Elektronen an NADH und FADH2. Diese fungieren laut Material als Elektronenüberträger. Die Elektronentransportkette nutzt diese Elektronen, und durch Chemiosmose wird der Großteil des ATP erzeugt. Das Material liefert keine weiteren mechanistischen Details; die Antwort sollte sich auf diese Verbindungen beschränken und Lücken als solche kennzeichnen.",
             "why_wrong": null,
-            "points_hint": "Struktur (Einleitung, Vergleich, Schluss), Einbezug beider Wege, explizite Nennung von NADH/FADH2-Funktion, ATP-Zahlen, biologische Relevanz – mindestens 5 inhaltliche Punkte für volle Punktzahl.",
-            "source_concept": "Aerobe vs. anaerobe Atmung, NADH/FADH2, oxidative Phosphorylierung – Gesamtsyntheseaufgabe"
+            "points_hint": null,
+            "source_concept": "Zusammenspiel von Zitronensäurezyklus, Elektronenüberträgern und oxidativer Phosphorylierung"
           }
         ],
         "study_tips": [
-          "Lerne NADH und FADH2 als absoluten Schwerpunkt: Der Professor hat dies mehrfach betont – verstehe nicht nur was sie sind, sondern warum sie ATP-Produktion ermöglichen.",
-          "Visualisiere die drei Phasen als Orte in der Zelle: Zytoplasma (Glykolyse), Matrix (Zitronensäurezyklus), innere Membran (Elektronentransportkette) – räumliches Denken hilft bei Klausurfragen.",
-          "Übe den Vergleich aerob vs. anaerob als Tabelle: Ort, Sauerstoffbedarf, ATP-Ertrag, Endprodukte – dieser Vergleich ist ein klassisches Klausurformat.",
-          "Verstehe Chemiosmose als Mechanismus, nicht nur als Begriff: Protonengradient aufbauen, durch ATP-Synthase leiten, ATP erzeugen – erkläre es laut, bis es ohne Stocken geht.",
-          "Fokussiere bei den ATP-Zahlen auf die Logik (warum FADH2 weniger ATP gibt als NADH), nicht nur auf das Auswendiglernen der Zahlen – Professoren fragen oft nach dem Grund."
+          "NADH und FADH2 wurden laut Material mehrfach als Elektronenüberträger betont – diesen Begriff und seine Bedeutung für die Elektronentransportkette sicher einprägen.",
+          "Die drei Phasen der Zellatmung finden an verschiedenen Orten statt: Glykolyse im Zytoplasma, Zitronensäurezyklus in der Mitochondrienmatrix, oxidative Phosphorylierung an der Elektronentransportkette.",
+          "Den Unterschied zwischen aerober und anaerober Atmung kennt das Material als wichtigen Lernpunkt – falls die Vorlesungsfolien oder das Lehrbuch diesen Unterschied weiter ausführen, diese Stellen gesondert durcharbeiten.",
+          "Chemiosmose ist laut Material der Mechanismus hinter dem Großteil der ATP-Produktion – den Begriff und seinen Zusammenhang mit der Elektronentransportkette klären.",
+          "Die Glykolyse erzeugt nur 2 ATP netto – diesen Wert im Verhältnis zum ATP-Ertrag der oxidativen Phosphorylierung einordnen können."
         ]
       }
     },
     {
-      "name": "de-connect-truncation",
+      "name": "de-connect-three-lectures-no-exam-prediction",
       "endpoint": "/api/the-crux/connect",
       "input": {
         "userLanguage": "de",
@@ -240,77 +340,66 @@
         ]
       },
       "output": {
-        "course_narrative": "Der Kurs erzählt die Geschichte des zellulären Energieflusses: wie Lebewesen Energie aus der Umwelt aufnehmen, umwandeln und kontrollieren. Photosynthese und Zellatmung bilden dabei zwei Seiten derselben Medaille, während Enzyme als molekulare Schalter beide Prozesse regulieren.",
+        "course_narrative": "Die drei Vorlesungen behandeln zusammen die zentralen Mechanismen des zellulären Energiestoffwechsels: Zellatmung und Photosynthese als gegensätzliche Energieumwandlungsprozesse, verbunden durch Enzyme, die beide Vorgänge regulieren. Ein roter Faden ist die Frage, wie Zellen chemische Energie gewinnen, speichern und kontrollieren.",
         "recurring_themes": [
           {
-            "theme": "Energieumwandlung als zentrales Lebensprinzip",
+            "theme": "Energieumwandlung in Zellen",
             "appearances": [
-              "Vorlesung 1: Glukose wird schrittweise in ATP zerlegt über Glykolyse, Zitronensäurezyklus und Elektronentransportkette",
-              "Vorlesung 2: Lichtenergie wird in chemische Energie (ATP, NADPH) und schliesslich in Zucker umgewandelt"
+              "Vorlesung 1: Glukose wird schrittweise zu ATP abgebaut (Zellatmung)",
+              "Vorlesung 2: Lichtenergie wird in chemische Energie (Glukose/ATP) umgewandelt (Photosynthese)"
             ],
-            "why_recurring": "Der Professor baut den gesamten Kurs um dieses Thema auf — Klausurfragen werden sicher verlangen, beide Prozesse zu vergleichen und den Energiefluss durchzuzeichnen."
+            "why_recurring": "Beide Prozesse beschreiben denselben Grundvorgang aus entgegengesetzter Richtung, was den Vergleich zu einem tragenden Thema der Materialien macht"
           },
           {
-            "theme": "Elektronenüberträger als Verbindungsglied",
+            "theme": "Elektronenüberträger als Verbindungsglieder",
             "appearances": [
-              "Vorlesung 1: NADH und FADH2 transportieren Elektronen zur Elektronentransportkette — vom Professor ausdrücklich als klausurrelevant markiert",
-              "Vorlesung 2: NADPH übernimmt eine analoge Rolle in der Lichtreaktion der Photosynthese"
+              "Vorlesung 1: NADH und FADH2 transportieren Elektronen zur Elektronentransportkette",
+              "Vorlesung 2: Analoge Elektronenüberträger (z. B. NADPH) spielen in den Lichtreaktionen eine Rolle"
             ],
-            "why_recurring": "Da der Professor NADH und FADH2 mehrfach betont hat, ist ein Vergleich mit NADPH aus der Photosynthese eine klassische Prüfungsfalle — die Ähnlichkeit der Moleküle bei unterschiedlichen Rollen."
+            "why_recurring": "Das Prinzip des Elektronentransports verbindet Zellatmung und Photosynthese strukturell, auch wenn die Materialien es in Vorlesung 2 nicht ausführlich ausarbeiten"
           },
           {
-            "theme": "Kompartimentierung als Organisationsprinzip",
+            "theme": "Enzymsteuerung als übergreifendes Regulationsprinzip",
+            "appearances": [
+              "Vorlesung 1: Enzyme regulieren die Phasen der Zellatmung implizit",
+              "Vorlesung 3: Enzyme steuern laut Material ausdrücklich sowohl Atmung als auch Photosynthese"
+            ],
+            "why_recurring": "Vorlesung 3 stellt Enzyme explizit als gemeinsamen Regulationsmechanismus beider Hauptprozesse dar und schlägt damit eine Brücke zwischen Vorlesung 1 und 2"
+          },
+          {
+            "theme": "Kompartimentierung von Stoffwechselprozessen",
             "appearances": [
               "Vorlesung 1: Glykolyse im Zytoplasma, Zitronensäurezyklus in der Mitochondrienmatrix, Elektronentransportkette an der inneren Mitochondrienmembran",
-              "Vorlesung 2: Lichtreaktionen in den Thylakoiden, Calvin-Zyklus im Stroma des Chloroplasten"
+              "Vorlesung 2: Lichtreaktionen in den Thylakoiden, Calvin-Zyklus im Stroma"
             ],
-            "why_recurring": "Die räumliche Trennung von Reaktionsschritten ist kein Zufall — der Professor zeigt ein Muster, das auf eine Frage nach dem Warum dieser Trennung hindeutet."
-          },
-          {
-            "theme": "Enzymkontrolle als regulatorisches Grundprinzip",
-            "appearances": [
-              "Vorlesung 3: Enzyme senken Aktivierungsenergie, Km und Vmax beschreiben ihre Effizienz, Hemmung reguliert ihre Aktivität",
-              "Vorlesung 1 und 2: implizit — alle Schritte der Atmung und Photosynthese werden durch spezifische Enzyme katalysiert"
-            ],
-            "why_recurring": "Vorlesung 3 liefert das Werkzeug, um Vorlesungen 1 und 2 zu verstehen — der Professor erwartet wahrscheinlich, dass Studierende Enzymhemmung auf konkrete Schritte der Atmung oder Photosynthese anwenden können."
+            "why_recurring": "Beide Vorlesungen zeigen, dass räumliche Trennung von Teilreaktionen ein wiederkehrendes Organisationsprinzip der Zelle ist"
           }
         ],
         "concept_chain": [
           {
-            "concept": "ATP-Synthese",
-            "progression": "Vorlesung 1 etabliert Chemiosmose als Hauptmechanismus der ATP-Produktion in der Zellatmung — Vorlesung 2 zeigt, dass dieselbe Chemiosmose in Thylakoiden ATP für den Calvin-Zyklus erzeugt — ein und dasselbe Prinzip trägt beide Lebensprozesse."
+            "concept": "ATP als Energiewährung",
+            "progression": "Vorlesung 1 erklärt, wie ATP durch Zellatmung erzeugt wird → Vorlesung 2 zeigt, dass Photosynthese ATP für den Calvin-Zyklus nutzt → Vorlesung 3 setzt voraus, dass ATP-abhängige Enzymreaktionen beide Prozesse antreiben"
           },
           {
-            "concept": "Redoxreaktionen",
-            "progression": "Vorlesung 1 führt NADH und FADH2 als Elektronenträger ein — Vorlesung 2 spiegelt dies mit NADPH in der Photosynthese — Vorlesung 3 verankert das Prinzip biochemisch: Enzyme katalysieren genau diese Redoxschritte."
+            "concept": "Verhältnis von Zellatmung und Photosynthese",
+            "progression": "Vorlesung 1 beschreibt Zellatmung als Glukoseabbau → Vorlesung 2 führt Photosynthese als Gegenprozess (Glukoseaufbau) ein und stellt den Vergleich explizit her → Vorlesung 3 ergänzt, dass Enzyme beide Seiten dieses Kreislaufs regulieren"
           },
           {
-            "concept": "Regulation biologischer Prozesse",
-            "progression": "Vorlesung 1 zeigt, dass Atmung viele kontrollierte Schritte hat — Vorlesung 2 deutet an, dass Photosynthese ähnlich reguliert ist — Vorlesung 3 gibt mit Michaelis-Menten und Hemmungsmodellen das theoretische Fundament für diese Regulation."
+            "concept": "Enzymatische Kontrolle des Stoffwechsels",
+            "progression": "Vorlesung 1 und 2 beschreiben die Prozesse, ohne Hemmungsmechanismen zu vertiefen → Vorlesung 3 liefert mit Michaelis-Menten-Kinetik und kompetitiver/nicht-kompetitiver Hemmung das konzeptuelle Werkzeug, um zu verstehen, wie diese Prozesse reguliert werden"
           }
         ],
         "contradictions_or_nuance": [
           {
-            "topic": "Aerobe vs. anaerobe Atmung — scheinbar binäre Unterscheidung",
-            "evolution": "Vorlesung 1 stellt aerobes und anaerobes als klaren Gegensatz dar, aber die Glykolyse läuft in beiden Fällen identisch ab — die Nuance ist, dass die meisten Zellen flexibel schalten können, was in der Klausur als Fallbeispiel erscheinen könnte."
-          },
-          {
-            "topic": "Enzymeffizienz klingt absolut, ist aber kontextabhängig",
-            "evolution": "Vorlesung 3 präsentiert Km und Vmax zunächst als feste Kennwerte, aber kompetitive Hemmung verändert den scheinbaren Km — das bedeutet, dass kein enzymkinetischer Wert ohne Kenntnis der Bedingungen interpretiert werden kann."
+            "topic": "Aerobe vs. anaerobe Atmung",
+            "evolution": "Vorlesung 1 benennt den Unterschied als wichtig, arbeitet ihn aber laut Material nicht weiter aus — die Nuance bleibt in den vorliegenden Materialien unaufgelöst"
           }
         ],
-        "cumulative_exam_focus": [
-          "Vergleich Zellatmung vs. Photosynthese: Richtung des Energieflusses, beteiligte Moleküle, Orte der Reaktionen",
-          "Rolle von NADH, FADH2 und NADPH — Gemeinsamkeiten und Unterschiede zwischen den drei Elektronenträgern",
-          "Chemiosmose als gemeinsames Prinzip in Mitochondrien und Chloroplasten",
-          "Anwendung der Enzymhemmung auf einen konkreten Schritt der Zellatmung oder Photosynthese",
-          "Kompartimentierung: welche Reaktion findet wo statt und warum ist das funktional sinnvoll"
-        ],
+        "cumulative_exam_focus": [],
         "gaps_between_lectures": [
-          "Konkrete Enzyme der Glykolyse und des Zitronensäurezyklus wurden noch nicht mit der Michaelis-Menten-Kinetik verknüpft — eine spätere Vorlesung wird dies wahrscheinlich nachholen",
-          "Die Regulation der Photosynthese durch Enzymhemmung wurde bisher nur angedeutet, nicht ausgearbeitet",
-          "Der Einfluss von Temperatur und pH auf Enzyme wurde in Vorlesung 3 nicht thematisiert, ist aber für Atmung und Photosynthese hochrelevant",
-          "Stöchiometrie der Gesamt-ATP-Ausbeute über alle drei Phasen der Zellatmung wurde noch nicht explizit durchgerechnet"
+          "Vorlesung 2 erwähnt keine konkreten Elektronenüberträger der Photosynthese, obwohl Vorlesung 1 NADH und FADH2 detailliert behandelt — der strukturelle Vergleich beider Systeme bleibt in den Materialien offen",
+          "Vorlesung 3 behauptet, Enzyme steuern sowohl Atmung als auch Photosynthese, liefert aber keine konkreten Beispiele aus Vorlesung 1 oder 2, sodass die Verbindung nicht ausgearbeitet ist",
+          "Die anaerobe Atmung wird in Vorlesung 1 als wichtig markiert, taucht in Vorlesung 2 und 3 aber nicht auf — ob und wie sie sich zu den anderen Prozessen verhält, lässt sich aus den Materialien nicht ableiten"
         ]
       }
     }

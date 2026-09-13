@@ -343,7 +343,7 @@ const MissingLink = ({ tool }) => {
       </button>
       <p className={'text-xs text-center ' + c.textMuted}>{t('tg_ai_disclaimer')}</p>
       <p className={'text-xs ' + c.textMuted}>
-        {t('tg_braindump_q')} <a href="/TheCrux" className={linkStyle}>🎯 {t('tg_braindump_link')}</a> {t('tg_braindump_rest')}
+        {t('tg_braindump_q')} <a href="/HeartOfTheMatter" className={linkStyle}>🎯 {t('tg_braindump_link')}</a> {t('tg_braindump_rest')}
       </p>
     </div>
   );

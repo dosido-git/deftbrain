@@ -244,7 +244,7 @@ const TOOL_IDS = [
   'JustifyMyMeeting','MeetingHijackStopper','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
-  'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','TheCrux',
+  'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','HeartOfTheMatter',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','WhatsThatMean','SomeoneSaidItBetter',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','TripRecon','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor',
@@ -408,13 +408,19 @@ const LEGACY_REDIRECTS = {
   '/WhatIf':                     '/WhichLife',
   '/what-if':                    '/WhichLife',
 
-  // Renamed 2026-07-16 (c8d966b) — broadened beyond lectures. The rename
-  // shipped with a CLIENT-side alias only (TOOL_ALIASES in ToolRenderer.js),
-  // which a crawler never reaches: the server 404s first and the React
-  // redirect never runs. Confirmed live — /Recall returned 404, not 301 — so
-  // every old link and any accrued signal was being dropped on the floor.
-  '/Recall':                     '/TheCrux',
-  '/recall':                     '/TheCrux',
+  // Renamed 2026-07-16 (c8d966b) — broadened beyond lectures, "Recall" ->
+  // "The Crux". The rename shipped with a CLIENT-side alias only
+  // (TOOL_ALIASES in ToolRenderer.js), which a crawler never reaches: the
+  // server 404s first and the React redirect never runs. Confirmed live —
+  // /Recall returned 404, not 301 — so every old link and any accrued
+  // signal was being dropped on the floor.
+  // "The Crux" -> "Heart of the Matter" 2026-09-13 (rebrand + CONTRACT
+  // rewrite, source-grounding discipline) — chain collapsed to the final
+  // name per convention. Deliberately NO /TheCrux redirect this time (owner
+  // decision) — visiting it 404s rather than forwarding, unlike Recall
+  // above.
+  '/Recall':                     '/HeartOfTheMatter',
+  '/recall':                     '/HeartOfTheMatter',
 
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose

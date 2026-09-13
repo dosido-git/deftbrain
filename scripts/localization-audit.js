@@ -131,7 +131,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/AwkwardSilenceFiller.js',
   'src/tools/MiseEnPlace.js',
   'src/tools/TheDebrief.js',
-  'src/tools/TheCrux.js',
+  'src/tools/HeartOfTheMatter.js',
   'src/tools/BatchFlow.js',
   'src/tools/MicroAdventureMapper.js',
   'src/tools/MagicMouth.js',

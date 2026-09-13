@@ -11,7 +11,9 @@ import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 // Renamed tools keep their old URL alive: old id → current id. A client-side
 // 301-equivalent so existing links, bookmarks, and search results don't break.
 const TOOL_ALIASES = {
-  Recall: 'TheCrux',          // renamed 2026-07-22 (broadened beyond lectures)
+  Recall: 'HeartOfTheMatter', // renamed 2026-07-22 (broadened beyond lectures), then 2026-09-13 (rebrand) — chain collapsed
+  // TheCrux deliberately has NO alias here (owner decision, 2026-09-13):
+  // unlike Recall, visiting /TheCrux now 404s rather than forwarding.
   IdeaAutopsy: 'ConceptCoach', // renamed 2026-08-31
   LuckSurface: 'GetNoticed',   // renamed 2026-09-02
   MeetingBSDetector: 'JustifyMyMeeting', // renamed 2026-09-02

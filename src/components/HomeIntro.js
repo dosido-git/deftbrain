@@ -47,11 +47,11 @@ const SITUATIONS = [
   { key: 'sit_saywhat',     tools: ['DifficultTalkCoach', 'ConflictCoach', 'ComplaintEscalationWriter', 'ToastWriter', 'VelvetHammer', 'GhostWriter', 'MagicMouth'] },
   { key: 'sit_overwhelmed', tools: ['CrisisPrioritizer', 'BrainDumpBuddy', 'TaskAvalancheBreaker'] },
   { key: 'sit_overcharged', tools: ['MarkupDetective', 'QuoteCheck', 'BillRescue'] },
-  { key: 'sit_decision',    tools: ['DecisionCoach', 'TheCrux', 'BreakMyPlan'] },
+  { key: 'sit_decision',    tools: ['DecisionCoach', 'HeartOfTheMatter', 'BreakMyPlan'] },
   { key: 'sit_misled',      tools: ['ScamRadar', 'FakeReviewDetective', 'JustifyMyMeeting', 'LeaseTrapDetector'] },
   { key: 'sit_organized',   tools: ['BatchFlow', 'TaskAvalancheBreaker', 'BrainDumpBuddy', 'ChaosPilot'] },
   { key: 'sit_planning',    tools: ['PartyArchitect', 'MicroAdventureMapper', 'LayoverMaximizer', 'BreakMyPlan'] },
-  { key: 'sit_learn',       tools: ['AnalogyEngine', 'ResearchDecoder', 'SkillGapMap', 'TheCrux'] },
+  { key: 'sit_learn',       tools: ['AnalogyEngine', 'ResearchDecoder', 'SkillGapMap', 'HeartOfTheMatter'] },
   { key: 'sit_curious',     tools: ['BrainRoulette', 'FanTheory', 'PetBehaviorDecoder'] },
 ];
 

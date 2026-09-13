@@ -856,7 +856,7 @@ const TheDebrief = ({ tool }) => {
           and this is where to say so without interrupting the form. */}
       {!results && (
         <p className={'text-xs ' + c.textMuted}>
-          {t('td_xref_crux_q')} <a href="/TheCrux" className={linkStyle}>🎯 {t('td_xref_crux')}</a> {t('td_xref_crux_tail')}
+          {t('td_xref_crux_q')} <a href="/HeartOfTheMatter" className={linkStyle}>🎯 {t('td_xref_crux')}</a> {t('td_xref_crux_tail')}
         </p>
       )}
 
