@@ -211,15 +211,32 @@ const HeartOfTheMatter = ({ tool }) => {
     setLectures([{ title: '', transcript: '' }, { title: '', transcript: '' }]);
   }, [setResults]);
 
+  // Rotated per mode — Distill/StudyGuide/TestPrep each take one transcript,
+  // Connect takes 2+, so each of the four tabs keeps its own counter and
+  // pool rather than Try Example always forcing you back to Distill.
   const loadExample = useCallback(() => {
-    setMode('distill');
-    const ex = pickExample('HeartOfTheMatter', [{ n: '' }, { n: '2' }, { n: '3' }, { n: '4' }, { n: '5' }]);
+    if (mode === 'connect') {
+      const ex = pickExample('HeartOfTheMatter:connect', [{ n: 'c1' }, { n: 'c2' }, { n: 'c3' }, { n: 'c4' }, { n: 'c5' }]);
+      const k = f => `rec_${ex.n}_${f}`;
+      setSubject(t(k('subject')));
+      setLectures([
+        { title: t(k('l1_title')), transcript: t(k('l1_transcript')) },
+        { title: t(k('l2_title')), transcript: t(k('l2_transcript')) },
+      ]);
+      setResults(null); setError(''); setShowAnswers({});
+      return;
+    }
+    const prefix = mode === 'study_guide' ? 'sg' : mode === 'test_prep' ? 'tp' : '';
+    const pool = prefix
+      ? [{ n: `${prefix}1` }, { n: `${prefix}2` }, { n: `${prefix}3` }, { n: `${prefix}4` }, { n: `${prefix}5` }]
+      : [{ n: '' }, { n: '2' }, { n: '3' }, { n: '4' }, { n: '5' }];
+    const ex = pickExample(`HeartOfTheMatter:${mode}`, pool);
     const k = f => `rec_ex${ex.n}_${f}`;
     setSubject(t(k('subject')));
     setLectureTitle(t(k('title')));
     setTranscript(t(k('transcript')));
     setResults(null); setError(''); setShowAnswers({});
-  }, [setResults, t]);
+  }, [mode, setResults, t]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
