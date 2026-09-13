@@ -51,13 +51,55 @@ const EXAMPLES = [
     hoursPerWeek: 10,
   },
 ];
+
+// Explore mode has no target role, so no destination to pick against — these
+// five are people who don't yet know what to aim for, not people with a
+// role in mind. Kept distinct from the map-mode roster above (no repeat
+// professions) so the tool's examples read as varied as a whole, not just
+// within one mode.
+const EXPLORE_EXAMPLES = [
+  {
+    currentRoleKey: 'sgm_explore1_current_role',
+    currentSkillsKey: 'sgm_explore1_skills',
+    interestsKey: 'sgm_explore1_interests',
+  },
+  {
+    currentRoleKey: 'sgm_explore2_current_role',
+    currentSkillsKey: 'sgm_explore2_skills',
+    interestsKey: 'sgm_explore2_interests',
+  },
+  {
+    currentRoleKey: 'sgm_explore3_current_role',
+    currentSkillsKey: 'sgm_explore3_skills',
+    interestsKey: 'sgm_explore3_interests',
+  },
+  {
+    currentRoleKey: 'sgm_explore4_current_role',
+    currentSkillsKey: 'sgm_explore4_skills',
+    interestsKey: 'sgm_explore4_interests',
+  },
+  {
+    currentRoleKey: 'sgm_explore5_current_role',
+    currentSkillsKey: 'sgm_explore5_skills',
+    interestsKey: 'sgm_explore5_interests',
+  },
+];
 const SkillGapMap = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
+  // Rotated per mode — Explore has no target role or hours picker, so it
+  // needs its own pool rather than sharing Map's counter and fields.
   const loadExample = () => {
-    const ex = pickExample('SkillGapMap', EXAMPLES);
+    if (mode === 'explore') {
+      const ex = pickExample('SkillGapMap:explore', EXPLORE_EXAMPLES);
+      setCurrentRole(t(ex.currentRoleKey));
+      setCurrentSkills(t(ex.currentSkillsKey));
+      setInterests(t(ex.interestsKey));
+      return;
+    }
+    const ex = pickExample('SkillGapMap:map', EXAMPLES);
     setCurrentRole(t(ex.currentRoleKey));
     setTargetRole(t(ex.targetRoleKey));
     setCurrentSkills(t(ex.currentSkillsKey));
