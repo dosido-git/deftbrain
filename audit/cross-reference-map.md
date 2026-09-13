@@ -94,15 +94,13 @@ Tools are grouped by natural relationship clusters, not categories.
 ---
 
 ## CLUSTER 6: ENERGY & WELLNESS
-> PEP ↔ SpiralStopper ↔ BrainStateDeejay ↔ SocialEnergyAudit
+> PEP ↔ BrainStateDeejay ↔ SocialEnergyAudit
 
-*Note: PEP absorbed DopamineMenuBuilder, BurnoutBreadcrumbTracker, SpoonBudgeter, and RoutineRuptureManager. FreezeStateUnblocker and CriticismBuffer no longer exist. SocialBatteryForecaster renamed to SocialEnergyAudit.*
+*Note: PEP absorbed DopamineMenuBuilder, BurnoutBreadcrumbTracker, SpoonBudgeter, and RoutineRuptureManager. FreezeStateUnblocker and CriticismBuffer no longer exist. SocialBatteryForecaster renamed to SocialEnergyAudit. SpiralStopper (formerly in this cluster) was deleted 2026-09-13 — see audit/RENAMES.md.*
 
 | Tool | Cross-Ref | Placement | Copy |
 |------|-----------|-----------|------|
 | **PEP** | ← BrainStateDeejay | Post-result | "Want music to match your energy state? [Brain State Deejay](/BrainStateDeejay) builds a soundtrack for what you're about to do." |
-| **PEP** | ⚡ SpiralStopper | Conditional | If energy plan reveals high overwhelm: "Thoughts spiraling? [Spiral Stopper](/SpiralStopper) breaks the loop first." |
-| **SpiralStopper** | ← PEP | Post-result | "Spiral stopped? [PEP](/PEP) helps you map your energy and plan the rest of the day." |
 | **BrainStateDeejay** | ← PEP | Post-result | "Need to plan the actual block? [PEP](/PEP) maps your energy across the day." |
 | **SocialEnergyAudit** | ← PEP | Post-result | "Factor this into your full energy plan with [PEP](/PEP)." |
 | **SocialEnergyAudit** | → AwkwardSilenceFiller | Pre-result | "Heading into a specific event? [Awkward Silence Filler](/AwkwardSilenceFiller) preps the conversation moves." |
@@ -171,7 +169,6 @@ Tools are grouped by natural relationship clusters, not categories.
 | Tool | When to Reference | Suggested Copy |
 |------|-------------------|----------------|
 | **DecisionCoach** | Any tool where user faces a choice in results | "Stuck between options? [Decision Coach](/DecisionCoach) helps you think it through." |
-| **SpiralStopper** | Any tool dealing with stress/anxiety output | "Thoughts racing? [Spiral Stopper](/SpiralStopper) can help." |
 | **BrainDumpBuddy** | Any tool where input is messy/unstructured | "Thoughts jumbled? Organize them with [Brain Dump Buddy](/BrainDumpBuddy) first." |
 | **PEP** | Any tool where user mentions feeling drained, low energy, or burnt out | "Energy running low? [PEP](/PEP) helps you plan around it." |
 | **WhereDidTheTimeGo** | Any tool dealing with calendars, schedules, time tracking | "Lost track of where time went? [Where Did The Time Go](/WhereDidTheTimeGo) maps it out." |

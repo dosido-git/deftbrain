@@ -3167,7 +3167,6 @@ export const toolFinderMetadata = {
     handoffs: [
       { when: "the user needs to prepare the substance of a difficult or sensitive conversation", toolId: "DifficultTalkCoach" },
       { when: "the user specifically needs quick lines for an awkward silence rather than broader social navigation", toolId: "AwkwardSilenceFiller" },
-      { when: "the user is spiraling after an interaction and primarily needs help interrupting the rumination", toolId: "SpiralStopper" },
       { when: "the user is hosting and needs to design the gathering itself rather than navigate it as a participant", toolId: "PartyArchitect" },
     ],
     primaryIntent: "help the user prepare for, navigate, interpret, and follow up on ordinary social situations without inventing other people's inner states",
@@ -3385,7 +3384,6 @@ export const toolFinderMetadata = {
       "forcing a schedule change despite near-total sleep loss, unsafe fatigue, rotating-shift transitions, or other circumstances that deserve clinical guidance",
     ],
     handoffs: [
-      { when: "racing thoughts or acute stress is the main immediate problem and the user wants help settling the mind rather than running a sleep experiment", toolId: "SpiralStopper" },
       { when: "the user plans to discuss persistent sleep symptoms with a clinician and wants help preparing for that appointment", toolId: "DoctorVisitPrep" },
       { when: "the sleep question is secondary and the user's main problem is managing limited daytime energy", toolId: "PEP" },
     ],

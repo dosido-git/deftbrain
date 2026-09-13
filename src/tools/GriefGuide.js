@@ -285,7 +285,6 @@ function GriefGuide({ tool }) {
           <p className={`text-[10px] font-bold uppercase mb-2 ${c.textMuted}`}>🔗 {t('gg_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('gg_difficult_talk_coach')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('gg_spiral_stopper')}</a>
           </div>
         </div>
       </div>

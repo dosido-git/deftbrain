@@ -247,8 +247,8 @@ const TOOL_IDS = [
   'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','WhatsThatMean','SomeoneSaidItBetter',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','TripRecon','SignalVsNoise',
-  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
-  'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheWholeStory','TheDebrief',
+  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor',
+  'TaskAvalancheBreaker','TheWholeStory','TheDebrief',
   'TheFinalWord','MissingLink','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
   'WaitingModeLiberator','WardrobeChaosHelper','WhichLife','WhatsMyVibe',
@@ -349,19 +349,36 @@ const LEGACY_REDIRECTS = {
   '/SocialBatteryForecaster':    '/SocialBatteryAdvisor',
   '/SpoonBudgeter':              '/PEP',
 
-  // Merged tools — Subscription Guilt Trip folded into Subscription Slayer
-  // (the superset: cost-per-use verdicts, cancellation scripts, AND the
-  // guilt-free permission framing, plus 8 more views). Consolidates two
-  // competing "cancel subscriptions" pages into one for SEO.
-  // SubSweep was the interim merge name; renamed to Subscription Slayer
-  // 2026-07-06, then Subscription Tamer 2026-07-10. All old slugs point
-  // straight to the final URL — single hop, no chain.
-  '/SubscriptionGuiltTrip':      '/SubscriptionTamer',
-  '/subscription-guilt-trip':    '/SubscriptionTamer',
-  '/SubSweep':                   '/SubscriptionTamer',
-  '/sub-sweep':                  '/SubscriptionTamer',
-  '/SubscriptionSlayer':         '/SubscriptionTamer',
-  '/subscription-slayer':        '/SubscriptionTamer',
+  // SubscriptionTamer retired 2026-09-13 (see audit/RENAMES.md) — AI's
+  // actual contribution didn't clear the bar on live testing (the
+  // generated question always reduced to "is this worth it," which a
+  // spreadsheet column already prompts for free). Per this file's own
+  // "deleting a tool that DID ship, treat it as a rename" rule, every slug
+  // in its lineage — SubSweep (interim merge name) → Subscription Guilt
+  // Trip (folded in) → Subscription Slayer (renamed 2026-07-06) →
+  // Subscription Tamer (renamed 2026-07-10) — now single-hops to Bill
+  // Rescue, the closest live tool (Subscription Tamer's own cross-ref
+  // target), rather than 404ing bookmarks and backlinks with no warning.
+  '/SubscriptionTamer':          '/BillRescue',
+  '/subscriptiontamer':          '/BillRescue',
+  '/subscription-tamer':         '/BillRescue',
+  '/SubscriptionGuiltTrip':      '/BillRescue',
+  '/subscription-guilt-trip':    '/BillRescue',
+  '/SubSweep':                   '/BillRescue',
+  '/sub-sweep':                  '/BillRescue',
+  '/SubscriptionSlayer':         '/BillRescue',
+  '/subscription-slayer':        '/BillRescue',
+
+  // SpiralStopper retired 2026-09-13 (see audit/RENAMES.md) — live testing
+  // showed the model's "exit" collapsing to the visitor's own already-
+  // obvious next action ("reply to the text") whenever the spiral was
+  // procrastination/avoidance rather than an actual fact-vs-story
+  // confusion, with no reliable way to tell those apart in advance.
+  // Redirects to PEP, its established reciprocal cross-ref partner
+  // (energy/overwhelm) rather than 404ing.
+  '/SpiralStopper':              '/PEP',
+  '/spiralstopper':              '/PEP',
+  '/spiral-stopper':             '/PEP',
 
   // Merged tools — Recharge Radar folded into Social Battery Advisor (its
   // superset: SEA has an Energy Forecast mode that IS Recharge Radar's whole

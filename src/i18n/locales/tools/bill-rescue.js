@@ -1,6 +1,6 @@
 // BillRescue — br_* keys for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
-// {{count}} is a numeric count. Brand/tool names (Bill Rescue, Subscription Tamer,
+// {{count}} is a numeric count. Brand/tool names (Bill Rescue, Markup Detective,
 // MoneyDiplomat, CrisisPrioritizer) stay as-is across languages.
 export const billRescue = {
   "en": {
@@ -304,8 +304,8 @@ export const billRescue = {
     "br_pick_one": "Pick one",
     "br_log_win": "Log Win",
     "br_your_victories": "Your victories",
-    "br_subsweep_pre": "Drowning in subscriptions too?",
-    "br_subsweep_post": "finds what you're paying for and helps you cut it.",
+    "br_subsweep_pre": "Wondering if you're being overcharged elsewhere too?",
+    "br_subsweep_post": "follows the money on any price that feels inflated.",
     "br_err_upload_type": "Please upload an image or PDF",
     "br_err_file_read": "File read failed",
     "br_err_image": "Image processing failed",
@@ -347,7 +347,7 @@ export const billRescue = {
     "br_copy_action": "Action",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATEGY",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Clear all call logs?"
   },
   "es": {
@@ -651,8 +651,8 @@ export const billRescue = {
     "br_pick_one": "Elige uno",
     "br_log_win": "Registrar logro",
     "br_your_victories": "Tus victorias",
-    "br_subsweep_pre": "¿También ahogado en suscripciones?",
-    "br_subsweep_post": "encuentra por qué estás pagando y te ayuda a recortarlo.",
+    "br_subsweep_pre": "¿Te preguntas si te están cobrando de más en otro lado?",
+    "br_subsweep_post": "sigue el rastro del dinero en cualquier precio que se sienta inflado.",
     "br_err_upload_type": "Sube una imagen o un PDF",
     "br_err_file_read": "Error al leer el archivo",
     "br_err_image": "Error al procesar la imagen",
@@ -694,7 +694,7 @@ export const billRescue = {
     "br_copy_action": "Acción",
     "br_copy_budget": "Presupuesto",
     "br_copy_strategy_label": "ESTRATEGIA",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "¿Borrar todos los registros de llamadas?"
   },
   "zh": {
@@ -998,8 +998,8 @@ export const billRescue = {
     "br_pick_one": "选择一项",
     "br_log_win": "记录战果",
     "br_your_victories": "你的胜利",
-    "br_subsweep_pre": "订阅也多到喘不过气？",
-    "br_subsweep_post": "帮你查清在为什么付费，并帮你削减。",
+    "br_subsweep_pre": "想知道自己是不是在别处也被多收费了？",
+    "br_subsweep_post": "帮你追查任何感觉被抬高的价格。",
     "br_err_upload_type": "请上传图片或 PDF",
     "br_err_file_read": "文件读取失败",
     "br_err_image": "图片处理失败",
@@ -1041,7 +1041,7 @@ export const billRescue = {
     "br_copy_action": "行动",
     "br_copy_budget": "预算",
     "br_copy_strategy_label": "策略",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "清除所有通话记录？"
   },
   "hi": {
@@ -1345,8 +1345,8 @@ export const billRescue = {
     "br_pick_one": "एक चुनें",
     "br_log_win": "जीत दर्ज करें",
     "br_your_victories": "आपकी जीतें",
-    "br_subsweep_pre": "सब्सक्रिप्शन में भी डूब रहे हैं?",
-    "br_subsweep_post": "पता लगाता है कि आप किसके लिए भुगतान कर रहे हैं और उसे घटाने में मदद करता है।",
+    "br_subsweep_pre": "सोच रहे हैं कि कहीं और भी ज़्यादा चार्ज तो नहीं हो रहा?",
+    "br_subsweep_post": "किसी भी कीमत के ज़्यादा लगने पर पैसे का पूरा हिसाब खोजता है।",
     "br_err_upload_type": "कृपया एक छवि या PDF अपलोड करें",
     "br_err_file_read": "फ़ाइल पढ़ने में विफल",
     "br_err_image": "छवि प्रसंस्करण विफल",
@@ -1388,7 +1388,7 @@ export const billRescue = {
     "br_copy_action": "कार्य",
     "br_copy_budget": "बजट",
     "br_copy_strategy_label": "रणनीति",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "सभी कॉल लॉग साफ़ करें?"
   },
   "ar": {
@@ -1692,8 +1692,8 @@ export const billRescue = {
     "br_pick_one": "اختر واحداً",
     "br_log_win": "سجّل الانتصار",
     "br_your_victories": "انتصاراتك",
-    "br_subsweep_pre": "غارق في الاشتراكات أيضاً؟",
-    "br_subsweep_post": "يكتشف ما تدفع مقابله ويساعدك على تقليصه.",
+    "br_subsweep_pre": "هل تتساءل إن كنت تُحاسَب أكثر من اللازم في مكان آخر أيضًا؟",
+    "br_subsweep_post": "يتتبع أي سعر يبدو مبالغًا فيه.",
     "br_err_upload_type": "يرجى رفع صورة أو ملف PDF",
     "br_err_file_read": "فشل قراءة الملف",
     "br_err_image": "فشلت معالجة الصورة",
@@ -1735,7 +1735,7 @@ export const billRescue = {
     "br_copy_action": "إجراء",
     "br_copy_budget": "الميزانية",
     "br_copy_strategy_label": "الاستراتيجية",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "مسح كل سجلات المكالمات؟"
   },
   "pt": {
@@ -2039,8 +2039,8 @@ export const billRescue = {
     "br_pick_one": "Escolha um",
     "br_log_win": "Registrar vitória",
     "br_your_victories": "Suas vitórias",
-    "br_subsweep_pre": "Afogado em assinaturas também?",
-    "br_subsweep_post": "descobre pelo que você está pagando e ajuda a cortar.",
+    "br_subsweep_pre": "Também se pergunta se está pagando a mais em outro lugar?",
+    "br_subsweep_post": "rastreia qualquer preço que pareça inflado.",
     "br_err_upload_type": "Envie uma imagem ou PDF",
     "br_err_file_read": "Falha ao ler o arquivo",
     "br_err_image": "Falha ao processar a imagem",
@@ -2082,7 +2082,7 @@ export const billRescue = {
     "br_copy_action": "Ação",
     "br_copy_budget": "Orçamento",
     "br_copy_strategy_label": "ESTRATÉGIA",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Limpar todos os registros de chamadas?"
   },
   "fr": {
@@ -2386,8 +2386,8 @@ export const billRescue = {
     "br_pick_one": "Choisissez-en un",
     "br_log_win": "Enregistrer la victoire",
     "br_your_victories": "Vos victoires",
-    "br_subsweep_pre": "Noyé sous les abonnements aussi ?",
-    "br_subsweep_post": "trouve ce que vous payez et vous aide à le réduire.",
+    "br_subsweep_pre": "Vous vous demandez si vous payez trop cher ailleurs aussi ?",
+    "br_subsweep_post": "remonte la piste de tout prix qui semble gonflé.",
     "br_err_upload_type": "Veuillez téléverser une image ou un PDF",
     "br_err_file_read": "Échec de lecture du fichier",
     "br_err_image": "Échec du traitement de l'image",
@@ -2429,7 +2429,7 @@ export const billRescue = {
     "br_copy_action": "Action",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATÉGIE",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Effacer tous les journaux d'appels ?"
   },
   "de": {
@@ -2733,8 +2733,8 @@ export const billRescue = {
     "br_pick_one": "Wähle eins",
     "br_log_win": "Erfolg eintragen",
     "br_your_victories": "Deine Erfolge",
-    "br_subsweep_pre": "Auch in Abos ertrinkend?",
-    "br_subsweep_post": "findet heraus, wofür du zahlst, und hilft dir beim Kürzen.",
+    "br_subsweep_pre": "Fragst du dich, ob du woanders auch zu viel zahlst?",
+    "br_subsweep_post": "geht jedem Preis nach, der überhöht wirkt.",
     "br_err_upload_type": "Bitte lade ein Bild oder PDF hoch",
     "br_err_file_read": "Datei konnte nicht gelesen werden",
     "br_err_image": "Bildverarbeitung fehlgeschlagen",
@@ -2776,7 +2776,7 @@ export const billRescue = {
     "br_copy_action": "Aktion",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATEGIE",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Alle Anrufprotokolle löschen?"
   },
   "ja": {
@@ -3080,8 +3080,8 @@ export const billRescue = {
     "br_pick_one": "1つ選ぶ",
     "br_log_win": "成果を記録",
     "br_your_victories": "勝利",
-    "br_subsweep_pre": "サブスクにも溺れていますか？",
-    "br_subsweep_post": "が何に払っているかを見つけ、削減を手伝います。",
+    "br_subsweep_pre": "他でも払いすぎていないか気になりますか？",
+    "br_subsweep_post": "が、割高に感じる価格を徹底的に調べます。",
     "br_err_upload_type": "画像または PDF をアップロードしてください",
     "br_err_file_read": "ファイルの読み込みに失敗しました",
     "br_err_image": "画像処理に失敗しました",
@@ -3123,7 +3123,7 @@ export const billRescue = {
     "br_copy_action": "アクション",
     "br_copy_budget": "予算",
     "br_copy_strategy_label": "戦略",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "すべての通話記録を消去しますか？"
   },
   "ko": {
@@ -3427,8 +3427,8 @@ export const billRescue = {
     "br_pick_one": "하나 선택",
     "br_log_win": "성과 기록",
     "br_your_victories": "당신의 승리",
-    "br_subsweep_pre": "구독에도 허덕이고 있나요?",
-    "br_subsweep_post": "이(가) 무엇에 돈을 내고 있는지 찾아 줄이도록 도와줍니다.",
+    "br_subsweep_pre": "다른 곳에서도 바가지를 쓰고 있는 건 아닌지 궁금하신가요?",
+    "br_subsweep_post": "이(가) 부풀려진 것 같은 가격을 끝까지 추적해요.",
     "br_err_upload_type": "이미지나 PDF를 업로드하세요",
     "br_err_file_read": "파일 읽기 실패",
     "br_err_image": "이미지 처리 실패",
@@ -3470,7 +3470,7 @@ export const billRescue = {
     "br_copy_action": "조치",
     "br_copy_budget": "예산",
     "br_copy_strategy_label": "전략",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "모든 통화 기록을 지우시겠습니까?"
   },
   "ru": {
@@ -3774,8 +3774,8 @@ export const billRescue = {
     "br_pick_one": "Выберите один",
     "br_log_win": "Записать победу",
     "br_your_victories": "Ваши победы",
-    "br_subsweep_pre": "Тоже тонете в подписках?",
-    "br_subsweep_post": "находит, за что вы платите, и помогает это сократить.",
+    "br_subsweep_pre": "Задумываетесь, не переплачиваете ли вы где-то ещё?",
+    "br_subsweep_post": "прослеживает происхождение любой цены, которая кажется завышенной.",
     "br_err_upload_type": "Пожалуйста, загрузите изображение или PDF",
     "br_err_file_read": "Не удалось прочитать файл",
     "br_err_image": "Не удалось обработать изображение",
@@ -3817,7 +3817,7 @@ export const billRescue = {
     "br_copy_action": "Действие",
     "br_copy_budget": "Бюджет",
     "br_copy_strategy_label": "СТРАТЕГИЯ",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Очистить все журналы звонков?"
   },
   "th": {
@@ -4121,8 +4121,8 @@ export const billRescue = {
     "br_pick_one": "เลือกหนึ่งอย่าง",
     "br_log_win": "บันทึกชัยชนะ",
     "br_your_victories": "ชัยชนะของคุณ",
-    "br_subsweep_pre": "จมอยู่กับการสมัครสมาชิกด้วยใช่ไหม?",
-    "br_subsweep_post": "ช่วยค้นหาว่าคุณจ่ายค่าอะไรอยู่และช่วยตัดทิ้ง",
+    "br_subsweep_pre": "สงสัยไหมว่าคุณอาจโดนคิดราคาสูงเกินไปที่อื่นด้วย?",
+    "br_subsweep_post": "ช่วยตามรอยราคาที่รู้สึกว่าสูงเกินจริง",
     "br_err_upload_type": "โปรดอัปโหลดรูปภาพหรือ PDF",
     "br_err_file_read": "อ่านไฟล์ไม่สำเร็จ",
     "br_err_image": "ประมวลผลรูปภาพไม่สำเร็จ",
@@ -4164,7 +4164,7 @@ export const billRescue = {
     "br_copy_action": "การกระทำ",
     "br_copy_budget": "งบประมาณ",
     "br_copy_strategy_label": "กลยุทธ์",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "ล้างบันทึกการโทรทั้งหมดหรือไม่?"
   },
   "vi": {
@@ -4468,8 +4468,8 @@ export const billRescue = {
     "br_pick_one": "Chọn một",
     "br_log_win": "Ghi chiến thắng",
     "br_your_victories": "Chiến thắng của bạn",
-    "br_subsweep_pre": "Cũng chìm trong các gói đăng ký?",
-    "br_subsweep_post": "tìm ra bạn đang trả tiền cho cái gì và giúp bạn cắt giảm.",
+    "br_subsweep_pre": "Bạn có tự hỏi liệu mình có đang bị tính giá quá cao ở nơi khác không?",
+    "br_subsweep_post": "truy tìm bất kỳ mức giá nào có vẻ bị đội lên.",
     "br_err_upload_type": "Vui lòng tải lên hình ảnh hoặc PDF",
     "br_err_file_read": "Đọc tệp thất bại",
     "br_err_image": "Xử lý hình ảnh thất bại",
@@ -4511,7 +4511,7 @@ export const billRescue = {
     "br_copy_action": "Hành động",
     "br_copy_budget": "Ngân sách",
     "br_copy_strategy_label": "CHIẾN LƯỢC",
-    "br_xref_subsweep": "Subscription Tamer",
+    "br_xref_subsweep": "Markup Detective",
     "br_confirm_clear_logs": "Xóa tất cả nhật ký cuộc gọi?"
   }
 };

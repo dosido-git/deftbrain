@@ -1007,7 +1007,6 @@ function TripRecon({ tool }) {
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
-              <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('smm_xref_spiralstopper')}</a>
             </div>
           </div>
         )}
@@ -1018,7 +1017,6 @@ function TripRecon({ tool }) {
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
-              <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('smm_xref_spiralstopper')}</a>
             </div>
           </div>
         )}

@@ -472,7 +472,6 @@ function SleepArchitect({ tool }) {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('sa_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('sa_spiral_stopper')}</a>
             <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('sa_recharge_radar')}</a>
             <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>🎯 {t('sa_focus_pocus')}</a>
           </div>
@@ -507,7 +506,7 @@ function SleepArchitect({ tool }) {
           </div>
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('sa_xref_stress')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}</p>}
+      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('sa_xref_stress')} <a href="/BrainStateDeejay" className={linkStyle}>🎧 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>

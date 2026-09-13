@@ -5296,58 +5296,6 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-09-12",
-  id: "SubscriptionTamer",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
-  primer: {
-    when: "You suspect a few subscriptions are worth another look, but you're not sure which.",
-    give: "Each subscription's real price, how you'd describe using it, and anything that makes it hard to judge.",
-    get: "Three review-priority groups, one decision-changing question for anything non-obvious, and a place to mark Keep, Cancel, or Decide later so the review turns into something you actually acted on.",
-    edge: "This isn't a verdict machine — it won't tell you what to cancel. It finds where your own price, usage, and context create the strongest reason to look again.",
-  },
-  seoTitle: "Subscription Review Tool",
-  seoDescription: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider. Free, no signup.",
-  title: "Subscription Tamer",
-  tagline: "⚔ Find the subscriptions worth another look.",
-  tags: ['subscription', 'cancel', 'unsubscribe', 'recurring charges', 'money', 'review', 'statement scan', 'budget'],
-  icon: "⚔️",
-  categories: ['Loot'],
-  headerColor: "#c0d8b8",
-  description: "See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider.",
-  guide: {
-    overview: "Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. Mark each one Keep, Cancel, or Decide later — a canceled subscription moves its cost from Planned Reduction into Actually Canceled once you check it off, so the review tracks through to what you actually did. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list and your decisions both persist so you can build the review up over time.",
-    howToUse: [
-      "Add each subscription: name, the price you actually pay, billing period, and how you'd describe using it",
-      "Optionally add context that makes one hard to judge — family uses it, you need it occasionally for work, it's bundled with something else",
-      "Or paste a bank/card statement — the tool flags possible recurring charges for you to confirm and add",
-      "Submit to get three groups: Start Here (the clearest mismatches), Take Another Look (mixed or uncertain), and Probably Leave Alone For Now",
-      "Read the one question attached to anything non-obvious — it's designed to be the question that could actually change your mind",
-      "Mark each one Keep, Cancel, or Decide later — Decide later can note what's still missing before you commit",
-      "Check off 'I canceled it' once you've actually done it, and watch the amount move from Planned Reduction into Actually Canceled",
-      "Check any subscriptions to see the exact monthly/annual total if you stopped them — pure arithmetic, not a suggestion"
-    ],
-    example: {
-      scenario: "You have a video streaming service you barely open, a music service you use daily, design software for occasional client work, and a gym membership you forgot you were paying for.",
-      action: "Add all four with their real prices and an honest usage description for each — no need to overthink the labels.",
-      result: "Start Here: the video service and the forgotten gym membership, each with a question about whether there's a reason you're still holding onto it. Take Another Look: the design software, since occasional paid work makes its value genuinely unclear. Probably Leave Alone For Now: the music service, which matches your stated daily use."
-    },
-    tips: [
-      "Use the price you're actually paying now, not the introductory rate — that's what the math needs",
-      "A rough usage description is enough — don't try to calculate an exact frequency",
-      "The context field is for whatever makes a subscription hard to judge on price and usage alone — it changes how the review reads it",
-      "Statement scanning only flags possible matches — you decide what each one actually is before it's added",
-      "Editing a subscription clears any decision already made on it, since the review that decision was based on no longer applies"
-    ],
-    pitfalls: [
-      "This tool doesn't decide what's worth paying for — it only points out where your own data creates the strongest reason to look again",
-      "'Barely use it' isn't a verdict to cancel — some subscriptions are worth keeping for exactly the reason you'd put in the context field",
-      "The What If total is pure math for whatever you select — not a recommendation about what to actually change"
-    ]
-  }
-},
-
-{
   modified: "",
   id: "Mend",
   // Preamble — the four questions a new visitor has, in order.
@@ -5860,58 +5808,6 @@ tagline: "Work with the energy you have.",
   }
 },
 
-{
-  modified: "2026-09-12",
-  id: "SpiralStopper",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
-  primer: {
-    when: "Your mind won't let something go and you can't tell if there's actually anything left to do about it.",
-    give: "Whatever is looping in your head, unfiltered. A factual anchor too, if you have one.",
-    get: "What's real, what's still unknown, whether there's really a problem to solve — and, if so, exactly one way out.",
-    edge: "This is for one loop, right now — not a freeze, a crash, or a pattern across time. For a trigger that keeps recurring, see Before the Crash.",
-  },
-  seoDescription: "Stuck replaying something, imagining what might happen, or thinking the same thought over and over? Tell Spiral Stopper what's looping. It finds out if there's something to solve, something to learn, or nothing more you can usefully do right now — then gives you a way out. Free.",
-  seoTitle: "Stop a Racing-Thought Spiral",
-  title: "Spiral Stopper",
-  tagline: "🌀 When your mind won't let something go, find the way out.",
-  tags: [
-    'anxiety', 'spiral', 'rumination', 'worry', 'catastrophize', 'racing thoughts',
-    'overthinking', 'grounding', 'reality check', 'prediction', 'assumption',
-    'worst case', 'jumping to conclusions', 'crisis', 'stuck thought'
-  ],
-  icon: "🌀",
-  categories: ['Energy', 'Me'],
-  headerColor: "#2a5248",
-  description: "Stuck replaying something, imagining what might happen, or thinking the same thought over and over? Tell Spiral Stopper what's looping. It helps you figure out whether there's something to solve, something to learn, or nothing more you can usefully do right now — then gives you a concrete way out of the loop.",
-  guide: {
-    overview: "Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It separates what's actually real from what's still unknown, then makes the key judgment: is there a genuine, actionable problem here right now, or not? Based on that, you get exactly one exit — act on the one useful thing, take the lesson and stop replaying it, wait for the specific information that would actually change things, or deliberately leave the loop because another pass won't add anything new — plus a short stopping rule you can reuse if the same loop starts again. If you need a moment before writing it all out, 'Get me out of my head' walks through a brief, no-input attention shift.",
-    howToUse: [
-      "Type out the loop exactly as it's running, unfiltered — the messier and more repetitive, the more useful the result",
-      "Optionally add the one factual anchor you're sure of, stated plainly (what you'd put on a timeline, not what it means)",
-      "If you're too keyed up to write clearly, tap 'Get me out of my head' for a short attention shift, then come back",
-      "Submit and read the breakdown: the loop restated plainly, what's real, what's still unknown, and the judgment on whether there's really something to solve right now",
-      "Read your one exit and what it means to be done with it, plus the stopping rule to reuse if the loop restarts",
-      "If this keeps happening with the same trigger, that's a different question — Spiral Stopper hands off to Before the Crash for that"
-    ],
-    example: {
-      scenario: "You're waiting on biopsy results and your mind keeps jumping straight to the worst case, running the whole story before there's anything to run it on.",
-      action: "Type out the spiral exactly as it's happening. Add the factual anchor: 'I am waiting for biopsy results. I do not have the results yet.'",
-      result: "What's real: you're waiting for results, you don't have them yet. What's unknown: what the results will show. The judgment: NOT YET — there's nothing to solve until the results arrive, because the story your mind is running can't be verified either way. Your exit: WAIT — stop at the edge of what's established, and let the actual result be the thing that makes this actionable. A stopping rule to reuse: 'I don't have the result yet — there's nothing established here to solve.'"
-    },
-    tips: [
-      "Don't clean up what you type — the whole point is to hand over the story exactly as your mind is telling it, worst parts included",
-      "The factual-anchor field is optional but sharpens the split — one plain sentence, not your interpretation of what it means",
-      "The exit won't always be an action — sometimes the honest answer is that there's nothing to do until something changes, or nothing to do at all",
-      "This tool doesn't keep a log of your spirals on purpose — it's built to help with the one in front of you, not to track you over time"
-    ],
-    pitfalls: [
-      "If what you're describing is immediate danger or an inability to stay safe, the tool stops the ordinary breakdown and gives you crisis resources instead — that's not a bug, take it seriously",
-      "This isn't a substitute for professional support — if the same spiral keeps recurring, a person trained for that is the better next step",
-      "It only works with what you tell it — it won't guess at anyone else's intentions, and it won't promise that taking the exit will settle what's still unknown"
-    ]
-  }
-},
 {
   modified: "",
   id: "VelvetHammer",

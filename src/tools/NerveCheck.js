@@ -942,7 +942,6 @@ const NerveCheck = ({ tool }) => {
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('nck_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('nck_xref_dtc_short')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>{t('nck_xref_spiral')}</a>
             {situationType === 'medical' && <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>{t('nck_xref_dvt')}</a>}
           </div>
         </div>

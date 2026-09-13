@@ -751,7 +751,7 @@ const DecisionCoach = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dc_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('dc_xref_spiral')}</a>
+            <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('dc_xref_spiral')}</a>
           </div>
         </div>
       </div>

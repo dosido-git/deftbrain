@@ -969,10 +969,14 @@ const BrainStateDeejay = ({ tool }) => {
       </div>
       {(!results || showInputs) && renderInputForm()}
       {results && renderResults()}
+      {/* SpiralStopper was deleted 2026-09-13; this pre-result cross-ref
+          now points to PEP instead (keeps the required pre-result ref —
+          see S5.5). The bsd_xref_spiral_* / bsd_spiralstopper key names are
+          stale but harmless; their VALUES were repointed to PEP. */}
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>
           {t('bsd_xref_spiral_pre')}{' '}
-          <a href="/SpiralStopper" className={linkStyle}>🌀 {t('bsd_spiralstopper')}</a>{' '}
+          <a href="/PEP" className={linkStyle}>✨ {t('bsd_spiralstopper')}</a>{' '}
           {t('bsd_xref_spiral_post')}
         </p>
       )}

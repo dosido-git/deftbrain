@@ -824,7 +824,6 @@ const NameThatFeeling = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ntf_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('ntf_spiralstopper')}</a>
             <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>🫁 {t('ntf_nervecheck')}</a>
           </div>
         </div>

@@ -398,7 +398,7 @@ const PEP = ({ tool }) => {
 
     {!results && (
       <p className={`text-xs ${c.textMuted} px-1`}>
-        {t('pep_spiral_intro')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('pep_spiral_stopper')}</a> {t('pep_spiral_first')}
+        {t('pep_spiral_intro')} <a href="/CrisisPrioritizer" className={linkStyle}>🚨 {t('pep_spiral_stopper')}</a> {t('pep_spiral_first')}
       </p>
     )}
 

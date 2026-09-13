@@ -910,34 +910,10 @@ for name, fpath in tools:
                          # or shape patterns (no top-level *History
                          # usePersistentState, no literal `preview:` field).
                          'PlantRescue',
-                         # SpiralStopper joined on 2026-09-11 with the
-                         # ground-up rebuild. README: "longitudinal history
-                         # as a product feature" removed on purpose — the
-                         # whole point of the redesign is separating this
-                         # tool from Before the Crash, whose job IS
-                         # recurring-pattern recognition across time. A saved
-                         # log of someone's spiraling thoughts (which can
-                         # include safety_redirect content) is exactly the
-                         # kind of thing that should not sit in a browser's
-                         # storage by default.
-                         'SpiralStopper',
-                         # SubscriptionTamer joined on 2026-09-12 with the
-                         # ground-up rebuild. This tool's persisted state
-                         # (`subs`, the subscription list itself) already is
-                         # the working data a visitor builds and edits over
-                         # time — it is not a session log sitting alongside
-                         # a separate "history" feature, so there is no
-                         # second history-shaped store to add. `result` (the
-                         # bucketed review) is deliberately kept as plain
-                         # useState rather than persisted: it is a snapshot
-                         # tied to the subs list at the moment of the last
-                         # review and goes stale the instant a subscription
-                         # is edited, so persisting it risks showing a review
-                         # that no longer matches the visitor's own current
-                         # list — the same staleness reasoning as SBA's
-                         # auto-clear-on-new-log, just resolved by never
-                         # writing it in the first place.
-                         'SubscriptionTamer',
+                         # SpiralStopper and SubscriptionTamer were both
+                         # deleted 2026-09-13 (see audit/RENAMES.md) — their
+                         # _NO_HISTORY_TOOLS entries and justifications went
+                         # with them.
                          # TaskAvalancheBreaker joined on 2026-09-12 with the
                          # ground-up rebuild. README lists "export/import
                          # progress" among the removed features on purpose —
@@ -996,7 +972,7 @@ for name, fpath in tools:
     # (tools with many persistent states likely manage results as session state by design)
     # and for _NO_HISTORY_TOOLS (S1.5's opt-in exemption list): a tool that
     # deliberately keeps no history has usually made the same call about its
-    # single most-recent result for the same reason — see the SpiralStopper
+    # single most-recent result for the same reason — see the GratitudeDebtClearer
     # entry in that list.
     res_state = re.search(r'const \[(results|result)\b[^\]]*\]\s*=\s*(useState|usePersistentState)', content)
     persistent_count = len(re.findall(r'usePersistentState\(', content))

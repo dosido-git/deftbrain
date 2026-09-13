@@ -2464,7 +2464,7 @@ const BillRescue = ({ tool }) => {
       {view === 'rescue' && !results && (
         <p className={`text-xs text-center ${c.textMuted} mt-3`}>
           {t('br_subsweep_pre')}{' '}
-          <a href="/SubscriptionTamer" className={linkStyle}>⚔️ {t('br_xref_subsweep')}</a>{' '}
+          <a href="/MarkupDetective" className={linkStyle}>🏷️ {t('br_xref_subsweep')}</a>{' '}
           {t('br_subsweep_post')}
         </p>
       )}

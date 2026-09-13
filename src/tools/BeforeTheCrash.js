@@ -650,7 +650,6 @@ export default function BeforeTheCrash() {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
           <p className={`text-xs ${c.textMuted}`}>
             {t('cpv2_xref_post')}{' '}
-            <a href="/SpiralStopper" className={linkStyle}>🌀 {t('cpr_xref_spiral')}</a>{' · '}
             <a href="/PEP" className={linkStyle}>✨ {t('cpr_xref_pep')}</a>
           </p>
         </div>

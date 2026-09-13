@@ -82,7 +82,7 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
   "what_you_described": <1-2 sentence warm, non-clinical reflection of what they've shared — help them feel heard>,
   "deftbrain_next": [
     {
-      "tool": "One id copied exactly from this list and NOTHING else — no description, no brackets, no spaces: SpiralStopper | CrisisPrioritizer | GriefGuide | SleepArchitect | BrainStateDeejay | CrashPredictor | SocialBatteryAdvisor | NerveCheck. The value builds a link, so anything extra makes it dead.",
+      "tool": "One id copied exactly from this list and NOTHING else — no description, no brackets, no spaces: CrisisPrioritizer | GriefGuide | SleepArchitect | BrainStateDeejay | CrashPredictor | SocialBatteryAdvisor | NerveCheck. The value builds a link, so anything extra makes it dead.",
       "why": "What it would help with while they arrange the real support — one sentence, addressed to them."
     }
   ],
@@ -104,7 +104,7 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
 
 Guidelines:
 - SAFETY (overrides the rest): if the person hints at suicidal thoughts, wanting to die, self-harm, or immediate danger, lead what_you_described with warmth and safety, and make the FIRST recommended_support a crisis line (name a concrete number: 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local crisis/emergency number). Do not route a person in crisis into ordinary find-a-therapist steps.
-- deftbrain_next — what each id is for: SpiralStopper (thoughts racing right now), CrisisPrioritizer (too many urgent things at once), GriefGuide (loss), SleepArchitect (not sleeping), BrainStateDeejay (cannot settle or focus), CrashPredictor (heading for burnout), SocialBatteryAdvisor (people are draining), NerveCheck (one specific dreaded event).
+- deftbrain_next — what each id is for: CrisisPrioritizer (too many urgent things at once), GriefGuide (loss), SleepArchitect (not sleeping), BrainStateDeejay (cannot settle or focus), CrashPredictor (heading for burnout), SocialBatteryAdvisor (people are draining), NerveCheck (one specific dreaded event).
 - deftbrain_next: AT MOST 2. Include one where it clearly matches something they described — someone who cannot sleep should be pointed at SleepArchitect, someone grieving at GriefGuide. These are companions for the wait, not stand-ins: name them alongside the real support above, never instead of it. Leave the array out when nothing genuinely matches.
 - recommended_support: list 2-3 options, ordered by best fit. First option should be primary recommendation.
 - Be specific to their country when provided — name actual resources, directories, or services where possible

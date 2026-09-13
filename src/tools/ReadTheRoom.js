@@ -1549,7 +1549,6 @@ const ReadTheRoom = ({ tool }) => {
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('rr_related_velvet')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('rr_related_difficult')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>{t('rr_related_spiral')}</a>
           </div>
         </div>
       )}
@@ -1560,7 +1559,6 @@ const ReadTheRoom = ({ tool }) => {
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('rr_related_velvet')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('rr_related_difficult')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>{t('rr_related_spiral')}</a>
           </div>
         </div>
       )}

@@ -498,7 +498,6 @@ function MentalHealthNavigator({ tool }) {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mhn_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('mhn_spiralstopper')}</a>
             <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('mhn_rechargeradar')}</a>
           </div>
         </div>
@@ -532,7 +531,7 @@ function MentalHealthNavigator({ tool }) {
           </div>
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('mhn_sleep_note')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('mhn_spiralstopper')}</a> {t('mhn_sleep_note_tail')}</p>}
+      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('mhn_sleep_note')} <a href="/SleepArchitect" className={linkStyle}>😴 {t('mhn_spiralstopper')}</a> {t('mhn_sleep_note_tail')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>
