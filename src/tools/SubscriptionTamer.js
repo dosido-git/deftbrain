@@ -120,7 +120,6 @@ const SubscriptionTamer = ({ tool }) => {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const [result, setResult] = useState(null);
-  const [selected, setSelected] = useState({});
   const [error, setError] = useState('');
   const [showStatement, setShowStatement] = useState(false);
   const [statement, setStatement] = useState('');
@@ -132,7 +131,6 @@ const SubscriptionTamer = ({ tool }) => {
   const handleReset = useCallback(() => {
     setSubs([blankSub()]);
     setResult(null);
-    setSelected({});
     setDecisions({});
     setStatement('');
     setCandidates([]);
@@ -149,7 +147,6 @@ const SubscriptionTamer = ({ tool }) => {
       context: item.contextKey ? t(item.contextKey) : '',
     })));
     setResult(null);
-    setSelected({});
     setDecisions({});
     setError('');
   }, [t, setSubs, setDecisions]);
@@ -213,7 +210,6 @@ const SubscriptionTamer = ({ tool }) => {
         })),
       });
       setResult(data);
-      setSelected({});
     } catch (e) {
       setError(e?.message || t('sut_error_generic'));
     }
@@ -260,12 +256,6 @@ const SubscriptionTamer = ({ tool }) => {
       }),
     ]);
   };
-
-  const selectedSavings = useMemo(() => {
-    const chosen = (result?.items || []).filter(item => selected[item.id]);
-    const monthly = chosen.reduce((sum, s) => sum + monthlyEquivalent(s.cost, s.cycle), 0);
-    return { chosen, monthly, annual: monthly * 12 };
-  }, [result, selected]);
 
   const groups = useMemo(() => {
     const items = result?.items || [];
@@ -318,69 +308,71 @@ const SubscriptionTamer = ({ tool }) => {
     return found ? t(found.labelKey) : value;
   };
 
+  // Compact table: two lines per subscription instead of a padded card, so a
+  // list of many subscriptions doesn't turn into a long scroll. Line 1 is the
+  // scannable row (name, price/cycle/usage, decision); line 2 is the same
+  // reason + question prose the card version showed, just without its own
+  // border/box around it.
   const renderGroup = (titleKey, subtitleKey, items, className) => {
     if (!items?.length) return null;
     return (
-      <section className={`border rounded-2xl p-4 sm:p-5 ${className}`}>
-        <h3 className={`text-sm font-black tracking-wide uppercase ${c.text}`}>{t(titleKey)}</h3>
-        <p className={`mt-1 text-sm ${c.textSecondary}`}>{t(subtitleKey)}</p>
-        <div className="mt-4 space-y-3">
-          {items.map(item => (
-            <div key={item.id} className={`rounded-xl border p-4 ${c.card} ${c.border}`}>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                <div>
-                  <div className={`font-bold ${c.text}`}>{item.name}</div>
-                  <div className={`text-sm ${c.textMuted}`}>{fmt(item.cost)}/{t(CYCLES.find(x => x.value === item.cycle)?.labelKey || 'sut_cycle_monthly')} · {usageLabel(item.usage)}</div>
+      <section className={`border rounded-2xl overflow-hidden ${className}`}>
+        <div className="p-4 sm:p-5 pb-3">
+          <h3 className={`text-sm font-black tracking-wide uppercase ${c.text}`}>{t(titleKey)}</h3>
+          <p className={`mt-1 text-sm ${c.textSecondary}`}>{t(subtitleKey)}</p>
+        </div>
+        <div className={`divide-y ${c.border}`}>
+          {items.map(item => {
+            const choice = decisions[item.id]?.choice;
+            return (
+              <div key={item.id} className="px-4 sm:px-5 py-3">
+                {/* Line 1: name, price/cycle/usage, decision */}
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="min-w-0 flex items-baseline gap-2 flex-wrap">
+                    <span className={`font-bold ${c.text}`}>{item.name}</span>
+                    <span className={`text-xs whitespace-nowrap ${c.textMuted}`}>
+                      {fmt(item.cost)}/{t(CYCLES.find(x => x.value === item.cycle)?.labelKey || 'sut_cycle_monthly')} · {usageLabel(item.usage)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {[
+                      ['keep', 'sut_decision_keep'],
+                      ['cancel', 'sut_decision_cancel'],
+                      ['later', 'sut_decision_later'],
+                    ].map(([value, labelKey]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setDecision(item.id, value)}
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors ${choice === value ? c.pillActive : c.pillInactive}`}
+                      >{t(labelKey)}</button>
+                    ))}
+                  </div>
                 </div>
-                <label className={`inline-flex items-center gap-2 text-sm ${c.textSecondary}`}>
-                  <input
-                    type="checkbox"
-                    checked={!!selected[item.id]}
-                    onChange={e => setSelected(prev => ({ ...prev, [item.id]: e.target.checked }))}
-                  />
-                  {t('sut_what_if_checkbox')}
-                </label>
-              </div>
-              <p className={`mt-3 text-sm leading-6 ${c.textSecondary}`}>{item.reason}</p>
-              {item.question && (
-                <div className={`mt-3 rounded-lg p-3 text-sm ${c.cardAlt} border ${c.border}`}>
-                  <span className={`font-semibold ${c.text}`}>{t('sut_before_you_decide')} </span>
-                  <span className={c.textSecondary}>{item.question}</span>
-                </div>
-              )}
-              <div className={`mt-4 pt-4 border-t ${c.border}`}>
-                <div className={`text-xs font-black uppercase tracking-wide ${c.textMuted}`}>{t('sut_your_decision')}</div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {[
-                    ['keep', 'sut_decision_keep'],
-                    ['cancel', 'sut_decision_cancel'],
-                    ['later', 'sut_decision_later'],
-                  ].map(([value, labelKey]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setDecision(item.id, value)}
-                      className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${decisions[item.id]?.choice === value ? c.pillActive : c.pillInactive}`}
-                    >{t(labelKey)}</button>
-                  ))}
-                </div>
-                {decisions[item.id]?.choice === 'later' && (
+                {/* Line 2: reason + the one question, as prose */}
+                <p className={`mt-1 text-xs leading-5 ${c.textSecondary}`}>
+                  {item.reason}
+                  {item.question && (
+                    <> <span className={c.textMuted}>·</span> <span className={`font-semibold ${c.text}`}>{t('sut_before_you_decide')}</span> {item.question}</>
+                  )}
+                </p>
+                {choice === 'later' && (
                   <input
                     value={decisions[item.id]?.note || ''}
                     onChange={e => setLaterNote(item.id, e.target.value)}
                     placeholder={t('sut_decision_later_ph')}
-                    className={`mt-3 w-full rounded-lg border px-3 py-2 text-sm ${c.input}`}
+                    className={`mt-2 w-full rounded-lg border px-2.5 py-1.5 text-xs ${c.input}`}
                   />
                 )}
-                {decisions[item.id]?.choice === 'cancel' && (
-                  <label className={`mt-3 inline-flex items-center gap-2 text-sm ${c.textSecondary}`}>
+                {choice === 'cancel' && (
+                  <label className={`mt-2 inline-flex items-center gap-2 text-xs ${c.textSecondary}`}>
                     <input type="checkbox" checked={!!decisions[item.id]?.completed} onChange={() => toggleCompleted(item.id)} />
                     {t('sut_decision_canceled_it')}
                   </label>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     );
@@ -527,7 +519,7 @@ const SubscriptionTamer = ({ tool }) => {
         <>
           <div className={`border rounded-2xl p-5 ${c.card} ${c.border}`}>
             <div className={`text-sm font-black uppercase tracking-wide ${c.textMuted}`}>{t('sut_your_subs_title')}</div>
-            <div className="mt-3 grid grid-cols-2 gap-3 max-w-xl">
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
                 <div className={`text-xs ${c.textMuted}`}>{t('sut_monthly_label')}</div>
                 <div className={`text-2xl font-black mt-1 ${c.text}`}>{fmt(result.totals?.monthly)}</div>
@@ -535,6 +527,16 @@ const SubscriptionTamer = ({ tool }) => {
               <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
                 <div className={`text-xs ${c.textMuted}`}>{t('sut_annual_label')}</div>
                 <div className={`text-2xl font-black mt-1 ${c.text}`}>{fmt(result.totals?.annual)}</div>
+              </div>
+              {/* Live: recalculates the moment a subscription is marked Cancel or Keep — this is
+                  the number the old opt-in "What if I stopped this?" checkboxes used to require
+                  manual selection to see. Now it just reflects the decisions already made. */}
+              <div className={`rounded-xl border p-4 col-span-2 sm:col-span-1 ${c.startHere}`}>
+                <div className={`text-xs font-semibold ${c.textMuted}`}>{t('sut_projected_monthly')}</div>
+                <div className={`text-2xl font-black mt-1 ${c.text}`}>{fmt((result.totals?.monthly || 0) - decisionStats.plannedMonthly)}</div>
+                {decisionStats.cancel > 0 && (
+                  <div className={`text-xs mt-1 ${c.textSecondary}`}>{t('sut_projected_monthly_hint', { count: decisionStats.cancel })}</div>
+                )}
               </div>
             </div>
             {result.summary && <p className={`mt-4 text-sm leading-6 ${c.textSecondary}`}>{result.summary}</p>}
@@ -576,20 +578,6 @@ const SubscriptionTamer = ({ tool }) => {
                 <div className={`text-sm ${c.textSecondary}`}>{t('sut_per_year_annualized', { amount: fmt(decisionStats.completedMonthly * 12) })} · {t('sut_completed_suffix', { count: decisionStats.completed })}</div>
               </div>
             </div>
-          </div>
-
-          <div className={`border rounded-2xl p-5 ${c.card} ${c.border}`}>
-            <h3 className={`font-bold uppercase tracking-wide text-sm ${c.text}`}>{t('sut_what_if_title')}</h3>
-            <p className={`mt-1 text-sm ${c.textMuted}`}>{t('sut_what_if_hint')}</p>
-            {selectedSavings.chosen.length ? (
-              <div className="mt-4">
-                <div className={`text-sm ${c.textSecondary}`}>{selectedSavings.chosen.map(x => x.name).join(' + ')}</div>
-                <div className={`mt-2 text-2xl font-black ${c.text}`}>{fmt(selectedSavings.monthly)}/{t('sut_cycle_monthly').toLowerCase()}</div>
-                <div className={`text-lg font-bold ${c.textSecondary}`}>{fmt(selectedSavings.annual)}/{t('sut_cycle_yearly').toLowerCase()}</div>
-              </div>
-            ) : (
-              <div className={`mt-4 text-sm ${c.textMuted}`}>{t('sut_what_if_select_prompt')}</div>
-            )}
           </div>
 
           <p className={`text-xs text-center ${c.textMuted}`}>
