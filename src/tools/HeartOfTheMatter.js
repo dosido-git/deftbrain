@@ -840,13 +840,19 @@ const HeartOfTheMatter = ({ tool }) => {
       {results ? (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
           <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
                   <span className="me-2 text-lg">{tool?.icon ?? '🧠'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
                 </p>
               </div>
+              {/* PF-16: "Edit Input" below only offers a partial reset (keeps
+                  the pasted material); a full Start Over was missing here
+                  entirely once results existed. */}
+              <button onClick={() => handleReset()} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↺ {t('rec_start_over')}
+              </button>
             </div>
           </div>
         </div>
