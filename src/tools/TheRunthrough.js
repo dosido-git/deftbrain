@@ -39,16 +39,36 @@ const TheRunthrough = ({ tool }) => {
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
+  // Rotated per mode — Cut/Anticipate/Hook ask for different fields
+  // (time budget vs. audience+stakes vs. tone), so each keeps its own
+  // counter and pool rather than sharing one and bouncing between tabs.
+  const CUT_EXAMPLES = [
+    { content: 'trt_ex3_content', context: 'trt_ex3_context', minutes: 3 },
+    { content: 'trt_ex6_content', context: 'trt_ex6_context', minutes: 5 },
+    { content: 'trt_ex7_content', context: 'trt_ex7_context', minutes: 2 },
+    { content: 'trt_ex8_content', context: 'trt_ex8_context', minutes: 5 },
+    { content: 'trt_ex9_content', context: 'trt_ex9_context', minutes: 10 },
+  ];
+  const HOOK_EXAMPLES = [
+    { content: 'trt_ex4_content',  tone: 'provocative' },
+    { content: 'trt_ex10_content', tone: 'conversational' },
+    { content: 'trt_ex11_content', tone: 'authoritative' },
+    { content: 'trt_ex12_content', tone: 'inspirational' },
+    { content: 'trt_ex13_content', tone: 'provocative' },
+  ];
+  const ANTICIPATE_EXAMPLES = [
+    { content: 'trt_ex_content',  context: 'trt_ex_context', stakes: 'trt_ex_stakes',  audience: 'general',    minutes: 10 },
+    { content: 'trt_ex2_content', context: 'trt_ex2_goal',   stakes: 'trt_ex2_stakes', audience: 'executives', minutes: 15 },
+    { content: 'trt_ex5_content', stakes: 'trt_ex5_stakes', audience: 'investors', minutes: 10 },
+    { content: 'trt_ex14_content', context: 'trt_ex14_context', stakes: 'trt_ex14_stakes', audience: 'academic', minutes: 10 },
+    { content: 'trt_ex15_content', context: 'trt_ex15_context', stakes: 'trt_ex15_stakes', audience: 'team', minutes: 10 },
+  ];
+
   const loadExample = () => {
-    const ex = pickExample('TheRunthrough', [
-      { mode: 'anticipate', content: 'trt_ex_content',  context: 'trt_ex_context', stakes: 'trt_ex_stakes',  audience: 'general', minutes: 10 },
-      { mode: 'anticipate', content: 'trt_ex2_content', context: 'trt_ex2_goal',   stakes: 'trt_ex2_stakes', audience: 'executives', minutes: 15 },
-      { mode: 'cut', content: 'trt_ex3_content', context: 'trt_ex3_context', minutes: 3 },
-      { mode: 'hook', content: 'trt_ex4_content', tone: 'provocative' },
-      { mode: 'anticipate', content: 'trt_ex5_content', stakes: 'trt_ex5_stakes', audience: 'investors', minutes: 10 },
-    ]);
+    const pool = mode === 'cut' ? CUT_EXAMPLES : mode === 'hook' ? HOOK_EXAMPLES : ANTICIPATE_EXAMPLES;
+    const ex = pickExample(`TheRunthrough:${mode}`, pool);
+    if (!ex) return;
     setContent(t(ex.content, { sym }));
-    setMode(ex.mode);
     setTimeMinutes(ex.minutes || 10);
     setContext(ex.context ? t(ex.context) : '');
     setAudience(ex.audience || 'general');
