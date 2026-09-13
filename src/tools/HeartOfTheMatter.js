@@ -262,7 +262,10 @@ const HeartOfTheMatter = ({ tool }) => {
         bulletCount, priority,
         transcript: mode !== 'connect' ? transcript.trim() : '',
         lectures: mode === 'connect' ? validLectures.map(l => ({ title: l.title?.trim() || '', transcript: l.transcript.trim() })) : [],
-      }, ...prev].slice(0, 6));
+        // Drop any entry saved before this shape existed the first time
+        // there's a fresh one to replace it with, rather than carrying dead
+        // weight in storage indefinitely.
+      }, ...prev.filter(e => e?.results)].slice(0, 6));
     } catch (err) { setError(err.message || t('rec_err_failed')); }
   }, [mode, transcript, subject, lectureTitle, bulletCount, priority, lectures, callToolEndpoint, setResults, setSessionHistory,
       userLocale, userCurrency, userRegion, t]);
@@ -769,7 +772,12 @@ const HeartOfTheMatter = ({ tool }) => {
   // HISTORY
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => {
-    if (sessionHistory.length === 0) return null;
+    // Entries saved before this feature shipped (or from an interrupted
+    // save) carry no `results` — nothing to reopen, no takeaway to show, no
+    // source to connect. They fail every one of Past Sessions' three jobs,
+    // so they are not shown at all rather than rendered as a dead click.
+    const validHistory = sessionHistory.filter(e => e?.results);
+    if (validHistory.length === 0) return null;
     const modeEmoji = (m) => MODE_EMOJI[m] || '🧠';
     const modeLabelFor = (m) => m === 'distill' ? t('rec_mode_distill_label')
       : m === 'understand' ? t('rec_mode_understand_label')
@@ -790,12 +798,12 @@ const HeartOfTheMatter = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>{tool?.icon ?? '🎯'}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('rec_past_sessions')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{validHistory.length}</span>
           <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {sessionHistory.map(entry => {
+            {validHistory.map(entry => {
               const selected = selectedHistoryIds.includes(entry.id);
               const canSelect = eligibleForConnect(entry);
               const metaParts = [entry.subject, modeLabelFor(entry.mode), formatDate(entry.date)].filter(Boolean);
