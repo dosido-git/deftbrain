@@ -30,7 +30,8 @@ CORE PRINCIPLES:
 - MATCH THE OCCASION. Memorials require care; roasts require affection and boundaries; weddings should not manufacture intimacy with a spouse the user barely described; awards should not invent achievements.
 - DELIVERY CUES should be sparse and useful. Do not choreograph every glance and pause.
 - LENGTH IS A CEILING, NOT A QUOTA. A strong 75-second toast is better than padding to two minutes.
-- Never identify the speaker by name unless the user supplied it. Use [YOUR NAME] only if an introduction is actually useful.`;
+- Never identify the speaker by name unless the user supplied it. Use [YOUR NAME] only if an introduction is actually useful.
+- DO NOT CONVERT AN INFERENCE INTO CHARACTERIZATION. A story may illustrate something, but do not claim it 'reveals his character,' proves commitment, shows dedication, or establishes what someone felt unless the user supplied that meaning. Describe what the material IS (which stories it draws on), not what it PROVES about the person.`;
 
     const userPrompt = `PERSON / PEOPLE BEING HONORED: ${person}
 OCCASION: ${occasion}
@@ -44,10 +45,10 @@ ${avoid}` : 'DO NOT MENTION OR ALLUDE TO: nothing specified'}
 
 FIRST, silently check the fields for contradictions. Never invent a fact to reconcile them. Base the speech only on details that can coexist safely.
 
-Create THREE usable versions, but do NOT force three unrelated personalities. The selected tone is the center of gravity for all three. Make the versions differ mainly in structure and emphasis:
-1. a direct, natural version;
-2. a more story-led version if the supplied material supports one;
-3. a slightly more polished or concise version appropriate to the same occasion and requested tone.
+Create THREE usable versions, but do NOT force three unrelated personalities. The selected tone is the center of gravity for all three. Make the versions differ mainly in structure and emphasis, not tone or content:
+1. Straightforward — direct and conversational, moves through the material efficiently in the order it was supplied.
+2. Story-led — leads with the strongest supplied story and builds from it, if the supplied material supports one (otherwise make it structurally distinct some other way — never invent a story to lead with).
+3. Concise — the same material as the other two, landing faster with fewer words.
 
 If the occasion or supplied material makes humor inappropriate, do not force humor merely to differentiate the versions. If the user selected Roast-y, keep every joke affectionate and based only on supplied details.
 
@@ -61,11 +62,11 @@ Every version must:
 
 Return ONLY valid JSON:
 {
-  "occasion_read": "One concise sentence stating what this toast is really honoring, using only supported facts.",
+  "occasion_read": "One concise sentence stating what stories or material this toast draws on — NOT what it proves about the honoree's character, commitment, or feelings unless the user explicitly said so. Bad (overreaches): 'two specific moments that reveal his character before marriage'. Good (describes the material): 'An affectionate groomsman's roast built around Jordan's proposal-dinner mishap and his relentless vow practice.'",
   "versions": [
     {
-      "style": "A plain-language description of this take, consistent with the requested tone",
-      "label": "A short useful label",
+      "label": "One of exactly: Straightforward | Story-led | Concise — matching which of the three versions above this is",
+      "style": "3-6 words naming what makes THIS version different, e.g. 'Direct and conversational' or 'Let the proposal dinner lead' or 'Same material, quicker landing' — never a paragraph of analysis, never a critique of the speech, never words like 'evidence of' or 'reveals'",
       "speech": "Complete ready-to-deliver toast",
       "opening_line": "The actual first spoken line from the speech",
       "closing_line": "The actual final spoken line from the speech",
@@ -87,7 +88,8 @@ RULES:
 3. opening_line and closing_line must be copied from that version's speech, not invented separately.
 4. If the source details are thin, write a simpler toast rather than fabricating specificity.
 5. Keep occasion_read, labels, tips, mistakes, and emergency_closer concise.
-6. Never place a double-quote (") character inside any JSON string value; use no inner quotation marks so the JSON remains valid.`;
+6. Never place a double-quote (") character inside any JSON string value; use no inner quotation marks so the JSON remains valid.
+7. FACT-PRESERVATION CHECK: Before returning the JSON, compare every concrete statement in every speech, opening, closing, delivery tip, mistake, and emergency closer against the user's supplied facts. Remove or rewrite anything that adds a person, event, quantity, consequence, reaction, motive, dialogue, outcome, or relationship detail the user did not provide. Comedic exaggeration does not exempt a claim from this rule. You may make the wording funny; you may not make the facts bigger.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.FAST,

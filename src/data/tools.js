@@ -1212,7 +1212,7 @@ export const tools = [
   icon: "🥂",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "When the room matters and the words do too, give Toast Writer the person, the occasion, and the stories you want to tell. It turns your own details into a toast that sounds natural out loud — without inventing a relationship you never described.",
+  description: "You know the stories. You know what the person means to you. Toast Writer helps you turn that into something worth saying out loud.",
   guide: {
     overview: "ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 takes on your requested tone, each with inline delivery cues like [PAUSE] and [LOOK AT THEM], built only from what you actually supplied. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.",
     howToUse: [
