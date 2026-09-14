@@ -698,8 +698,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // One 'llm_usage' record per model call, written by lib/claude.js and keyed
     // by the route slug the request scope carries. Dollar figures come from the
     // price table in lib/models.js — estimates, reconcile against the console.
-    // Rows are already range-filtered above, so this follows the range picker.
-    const usageRows = rows.filter(r => r.kind === 'llm_usage');
+    // Fixed trailing 7 days from the moment the report loads, independent of
+    // the range picker above — like the Ledger below, this answers "what did
+    // the last week cost," which shouldn't silently shrink to a single day
+    // just because "Past day" is selected up top for the rest of the report.
+    const usageCutoffISO = new Date(now.getTime() - 7 * 24 * 3600 * 1000).toISOString();
+    const usageRows = allRows.filter(r => r.kind === 'llm_usage' && (r.at || '') >= usageCutoffISO);
     const usage = {};
     let usageTotals = { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0 };
     for (const r of usageRows) {
@@ -711,14 +715,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       usageTotals.calls++; usageTotals.input += r.input || 0; usageTotals.output += r.output || 0; usageTotals.cache_read += r.cache_read || 0; usageTotals.cache_write += r.cache_write || 0;
       if (typeof r.usd === 'number') usageTotals.usd += r.usd; else usageTotals.unpriced++;
     }
-    // Requests per route = tool_run events for the matching frontend tool. The
-    // two keys differ (route slug vs PascalCase tool id), so this is joined by
-    // normalising both to lowercase alphanumerics — 'signal-vs-noise' ↔
-    // 'SignalVsNoise'. Where no run event matches, cost per request shows '—'
-    // rather than dividing by a guess.
+    // Requests per route = tool_run events for the matching frontend tool, in
+    // the SAME fixed 7-day window as usageRows above (not the range-filtered
+    // `runs`) — otherwise "Past day" up top would divide a week of cost by a
+    // single day of requests and every $/request figure would be nonsense.
+    // The two keys differ (route slug vs PascalCase tool id), so this is
+    // joined by normalising both to lowercase alphanumerics —
+    // 'signal-vs-noise' ↔ 'SignalVsNoise'. Where no run event matches, cost
+    // per request shows '—' rather than dividing by a guess.
     const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const usageWindowRuns = allRows.filter(r => r.kind === 'event' && r.event === 'tool_run' && (r.at || '') >= usageCutoffISO);
     const runsByNorm = {};
-    for (const e of runs) { const k = norm(toolOf(e)); runsByNorm[k] = (runsByNorm[k] || 0) + 1; }
+    for (const e of usageWindowRuns) { const k = norm(toolOf(e)); runsByNorm[k] = (runsByNorm[k] || 0) + 1; }
     const fmtK = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n);
     const fmtUsd = (n, unpriced) => (n || unpriced) ? `$${n.toFixed(2)}${unpriced ? '*' : ''}` : '—';
     const usageRowsHtml = Object.entries(usage).sort((a, b) => b[1].usd - a[1].usd || b[1].calls - a[1].calls).slice(0, 60)
@@ -1073,6 +1081,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // table with summary rows interleaved between the days that make them up
     // — the interleaved version buried each summary between its own days,
     // which read as noise rather than a rollup you could scan on its own. ──
+    // Daily is capped to the most recent 2 weeks for the same reason the
+    // weekly table is capped to 4 weeks below: the ledger's day-list can run
+    // back a full year (LEDGER_MAX_DAYS), but a day-by-day view only earns
+    // its granularity for a recent stretch — older than that, the weekly and
+    // monthly rollups already answer "how's it going." Sliced AFTER mapping
+    // (not by pre-truncating ledgerDayList), so a day just outside the
+    // window still exists in ledgerByDay for the oldest displayed day's
+    // "vs yesterday" delta to compare against.
+    const DAILY_DISPLAY_COUNT = 14;
     const dayRows = ledgerDayList.map(d => {
       const db = ledgerByDay[d];
       const isToday = d === todayDay;
@@ -1083,7 +1100,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         weekStart: isMonday,
         ...(isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : {}),
       });
-    });
+    }).slice(-DAILY_DISPLAY_COUNT);
     // Displayed rows are capped to the most recent 4 weeks (current week +
     // the 3 before it) — the ledger's day-list can span up to LEDGER_MAX_DAYS,
     // but the weekly rollup only needs to answer "how are the last few weeks
@@ -1186,7 +1203,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's date/label to see the pages and tools behind its numbers (Esc closes that panel).</p>
     <div id="ledgerTables">
-      <h3 style="font-size:13px;margin:16px 0 6px">Daily</h3>
+      <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
@@ -1238,7 +1255,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
-    <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>
+    <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log.</p>
     <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
     <h2>Prompt-cache viability</h2>
