@@ -3560,4 +3560,187 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user already has presentation content and wants a last-mile check on length, audience questions, opening, closing, transitions, or delivery.",
     whenNotToRecommend: "Do not recommend when the user needs a presentation written from scratch, wants unsupported facts invented, or needs an extended adversarial Q&A drill rather than a final run-through.",
   },
+
+  TimeWarp: {
+    problems: [
+      "I want to imagine what a modern thing would look like in another historical world",
+      "I want a funny collision between something familiar today and the past",
+      "I want an imaginative way to make a modern habit, technology, or institution look strange again",
+    ],
+    capabilities: [
+      "drops a modern thing into a historical setting and builds one coherent comic collision around it",
+      "chooses the form that best serves the pairing rather than forcing the user to select a format",
+      "adds a short Warp reflection that surfaces an irony, resemblance, tension, or question about the modern thing without pretending the collision proves a hidden truth",
+      "suggests one adjacent collision designed to make the user want to try another Warp",
+      "keeps historical detail in the realm of playful setting rather than presenting the result as a factual history lesson",
+    ],
+    accepts: [
+      "a modern thing, behavior, technology, institution, or cultural habit",
+      "a historical period, past world, or era",
+      "either side alone when the user wants Time Warp to choose the missing half",
+    ],
+    notFor: [
+      "teaching factual history or providing historically verified claims, dates, laws, prices, or customs",
+      "changing one real historical event and tracing a plausible alternate timeline",
+      "finding a real historical parallel for a current event or modern pattern",
+      "pure nonsense where historical texture and the collision itself do not matter",
+    ],
+    handoffs: [
+      { when: "the user wants to change a real historical event and trace what might have happened next", toolId: "AlternatePath" },
+      { when: "the user wants a grounded historical parallel for something happening now", toolId: "HistoryToday" },
+      { when: "the user wants deliberately absurd answers without needing a modern-versus-past collision", toolId: "WrongAnswersOnly" },
+    ],
+    primaryIntent: "create a playful modern-versus-past collision that makes the familiar thing look newly strange, funny, or revealing",
+    whenToRecommend: "Recommend when the user wants imaginative historical comedy built around a modern thing landing in another era, especially when the goal is wonder, amusement, or a fresh perspective rather than factual history.",
+    whenNotToRecommend: "Do not recommend for factual history, alternate-history timelines, source-backed historical comparison, or generic nonsense unrelated to a modern-versus-past collision.",
+  },
+
+  ToastWriter: {
+    problems: [
+      "I have to give a toast, tribute, short speech, or memorial remark and do not know how to shape what I want to say",
+      "I know the stories and details I want to use but need help turning them into something natural to say aloud",
+      "I want a wedding, birthday, retirement, anniversary, baby-shower, farewell, award, roast, or memorial toast that sounds like me rather than generic speechwriting",
+      "I am worried I will freeze or lose my place while delivering a short personal speech",
+    ],
+    capabilities: [
+      "turns the user's supplied relationship details, stories, and memories into three different takes on the same material",
+      "keeps all versions centered on the selected tone and target length rather than inventing unrelated personalities",
+      "preserves facts, attribution, detail, and meaning instead of enlarging anecdotes or using them as evidence for traits the user did not supply",
+      "provides an opening, closing, sparse delivery cues, practical delivery tips, and an emergency closer grounded in the supplied material",
+      "supports occasions including weddings, birthdays, retirements, roasts, memorials, graduations, farewells, awards, baby showers, anniversaries, and other personal events",
+    ],
+    accepts: [
+      "who the speech is for",
+      "the occasion",
+      "the user's relationship to the person",
+      "specific stories, memories, details, or qualities the user wants included",
+      "preferred tone, approximate length, and topics to avoid",
+    ],
+    notFor: [
+      "inventing stories, dialogue, achievements, personality traits, emotional meaning, or relationship history to make a speech more moving",
+      "writing a business presentation, pitch, proposal, or conference talk",
+      "rehearsing delivery in real time when the user already has a finished script",
+      "rewriting an angry or difficult message to send to one recipient",
+    ],
+    handoffs: [
+      { when: "the user already has the toast or speech and wants help rehearsing how to deliver it", toolId: "MagicMouth" },
+      { when: "the user has a presentation or pitch and wants a final check on timing, Q&A, opening, closing, or transitions", toolId: "TheRunthrough" },
+      { when: "the need is a difficult one-to-one conversation rather than a toast or tribute", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "turn the user's own stories and feelings into a short personal toast, tribute, or occasion speech that sounds natural out loud without inventing the story",
+    whenToRecommend: "Recommend when the user needs a personal toast, tribute, roast, memorial remark, wedding speech, anniversary speech, retirement speech, or similar short spoken piece and can supply at least some real details about the person or occasion.",
+    whenNotToRecommend: "Do not recommend for business presentations, live rehearsal, difficult-conversation coaching, or any request that depends on fabricating personal stories or emotional meaning.",
+  },
+
+  TruthBomb: {
+    problems: [
+      "There is something important I have not said and I do not know whether saying it would help",
+      "I am mixing what I know with what I fear, assume, or predict about another person's reaction",
+      "I want to understand what speaking and staying silent would each actually change before I decide",
+      "I need language for raising a difficult truth without pretending I know more than I do",
+    ],
+    capabilities: [
+      "separates what the user actually knows from assumptions, interpretations, predictions, and unresolved uncertainty",
+      "clarifies the tension in the user's own framing without inventing a deeper psychological or moral story",
+      "shows what staying silent currently preserves and leaves unresolved without presuming silence is harmful",
+      "explains what speaking can and cannot realistically accomplish",
+      "offers three distinct ways to say the thing while preserving scope, attribution, uncertainty, and the user's actual evidence",
+      "adds a brief safety note only when the situation raises a meaningful safety, health, substance-use, coercion, retaliation, legal, or similar high-stakes concern",
+    ],
+    accepts: [
+      "the thing the user has not said",
+      "who it is about or who they might say it to",
+      "why they have not said it",
+      "relationship or situational context",
+    ],
+    notFor: [
+      "diagnosing another person, assigning motives, or treating the user's suspicion as established fact",
+      "pushing the user toward disclosure as the inherently brave, healthy, or correct choice",
+      "predicting exactly how another person will react",
+      "full conversation rehearsal after the user has already decided to speak",
+      "rewriting an existing angry written message for tone",
+    ],
+    handoffs: [
+      { when: "the user has decided to have the conversation and wants help preparing the full exchange", toolId: "DifficultTalkCoach" },
+      { when: "the user already has a written message and wants to preserve the point while changing how it lands", toolId: "VelvetHammer" },
+      { when: "the issue has become an active conflict and the user wants help responding within that conflict", toolId: "ConflictCoach" },
+    ],
+    primaryIntent: "help the user get clear on an unsaid issue by separating evidence from assumption and comparing what speaking versus staying silent would actually do",
+    whenToRecommend: "Recommend when the user is carrying an unsaid concern, truth, boundary, change of mind, or difficult observation and has not yet decided whether or how to raise it.",
+    whenNotToRecommend: "Do not recommend when the user mainly needs live conflict strategy, a polished written message, or full conversation rehearsal after already deciding to speak.",
+  },
+
+  UpsellShield: {
+    problems: [
+      "I am about to enter a sales, purchase, quote, membership, or service conversation and want to stay anchored to what I actually want",
+      "I tend to lose track of my budget or priorities when a sales conversation gets complicated or pressured",
+      "I want short phrases I can use if add-ons, urgency, bundling, financing, or other pressure moves pull the conversation away from my plan",
+      "I want to know what questions or transaction details I should clarify before I commit",
+    ],
+    capabilities: [
+      "turns the user's stated priorities, limits, and already-made decisions into a concise pre-purchase plan",
+      "identifies plausible pressure or decision moments without pretending to know exactly what a seller will do",
+      "provides short responses that protect the user's plan without inventing leverage, competing offers, or facts",
+      "surfaces relevant unstated considerations when they are inherent to the transaction and could materially affect the user's stated limits, while leaving the decision to the user",
+      "provides questions worth asking, a before-you-commit checklist, a polite exit line, and a firmer response if pressure continues",
+      "avoids fabricating market prices, margins, inventory, quotas, seller motives, policies, or transaction-specific facts",
+    ],
+    accepts: [
+      "the sales or purchasing situation",
+      "what the user actually wants",
+      "budget, price ceiling, monthly limit, or other constraints",
+      "concerns based on prior experience or what has already happened in the current interaction",
+    ],
+    notFor: [
+      "fetching current prices, inventory, availability, or live offers",
+      "claiming to know the seller's exact playbook, motives, margin, quota pressure, or next move",
+      "deciding whether a product is worth buying based on price and ownership tradeoffs",
+      "analyzing whether a quoted markup or fee is inflated",
+      "evaluating whether online reviews are fake or trustworthy",
+    ],
+    handoffs: [
+      { when: "the user wants to evaluate whether a price they already have is fair, whether to buy now or wait, or the broader ownership tradeoff", toolId: "BuyWise" },
+      { when: "the user wants to inspect a quoted markup, surcharge, or inflated line item", toolId: "MarkupDetective" },
+      { when: "the user wants help judging whether reviews for the seller or product are suspicious", toolId: "FakeReviewDetective" },
+    ],
+    primaryIntent: "prepare the user to stay anchored to their own priorities and limits during a potentially high-pressure sales or purchasing conversation",
+    whenToRecommend: "Recommend before a dealership visit, phone-store upgrade, contractor quote, furniture showroom, gym or timeshare pitch, insurance conversation, real-estate sales interaction, or similar situation where the user expects persuasion and wants to stay on plan.",
+    whenNotToRecommend: "Do not recommend for live price lookup, product-value analysis, markup detection, fake-review analysis, or adversarial negotiation tactics that depend on inventing facts or leverage.",
+  },
+
+  VelvetHammer: {
+    problems: [
+      "I wrote an angry, frustrated, or sharp message and need to make it sendable without losing the point",
+      "I need to set a boundary, push back, correct a problem, or ask for a change in writing without sounding more hostile than I intend",
+      "I want several versions of the same message at different levels of directness without changing the underlying facts or boundary",
+      "I know what I want to say but not how to say it so the recipient can actually hear it",
+    ],
+    capabilities: [
+      "removes insults, accusation, exaggeration, and heat while preserving the user's actual facts, effects, request, and boundary",
+      "produces Clear, Tactful, and Firm versions that differ in delivery rather than substance",
+      "uses recipient, goal, and power dynamic to calibrate wording without inventing leverage, consequences, warmth, apologies, shared goals, or concessions",
+      "preserves the scope of the user's boundary instead of silently broadening it",
+      "keeps the message concise and natural rather than turning a short grievance into a conflict-resolution memo",
+    ],
+    accepts: [
+      "the raw message the user really wants to send",
+      "recipient type or relationship",
+      "the user's goal, such as setting a boundary, changing behavior, pushing back, or clarifying a problem",
+      "the relevant power dynamic",
+    ],
+    notFor: [
+      "deciding what new solution, compromise, policy, consequence, or escalation the user should demand when they did not supply one",
+      "inventing facts, motives, relationship sentiment, prior attempts, or mutual goals to make the message sound more constructive",
+      "coaching an in-person difficult conversation",
+      "managing an ongoing two-sided conflict when the user needs strategy beyond one written message",
+    ],
+    handoffs: [
+      { when: "the user needs to have the difficult conversation in person rather than send a written message", toolId: "DifficultTalkCoach" },
+      { when: "the message is part of an active conflict and the user needs broader response strategy rather than a single rewrite", toolId: "ConflictCoach" },
+      { when: "the user has not decided whether to say the thing at all and first needs clarity about speaking versus staying silent", toolId: "TruthBomb" },
+    ],
+    primaryIntent: "turn an angry or emotionally hot draft into a sendable message that preserves the user's point, facts, and boundary while changing how it lands",
+    whenToRecommend: "Recommend when the user already has the substance of a written message but wants it clearer, more professional, more tactful, or firmer without changing the underlying case.",
+    whenNotToRecommend: "Do not recommend when the user needs to decide whether to raise the issue at all, prepare for an in-person conversation, or manage a broader ongoing conflict.",
+  },
 };
