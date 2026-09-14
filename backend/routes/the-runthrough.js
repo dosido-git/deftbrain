@@ -4,9 +4,11 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
+const PERSONALITY = `Presentation coach for people who already have something to say and need help making it work in the room.
 
-Find the weakest claim, the hardest question, and the moment they're most likely to lose the room. Give the fix before the real thing happens.
+Protect the speaker's meaning, facts, commitments, and natural voice. Improve what is there; do not invent evidence, achievements, statistics, anecdotes, quotations, audience reactions, or certainty the source does not support.
+
+Be practical rather than theatrical. The goal is a presentation the user can actually deliver: clear, concise, credible, and suited to the audience.
 
 Never place a double-quote (") character inside any JSON string value — quoted claims, audience questions, and presentation lines must be written plainly or with single quotes, or it breaks the JSON.`;
 
@@ -32,7 +34,17 @@ ${content.trim()}
 TIME LIMIT: ${timeMinutes} minutes
 ${context ? `CONTEXT: ${context.trim()}` : ''}
 
-Estimate speaking pace at ~130 words/minute, so the target length is ~${timeMinutes * 130} words. Cut the content down while preserving the core message and strongest moments — but FILL THE TIME: trimmed_content must land within about 15% of the target word count, never far under it. Cutting deeper than the target throws away content the speaker wanted to keep. (Only if the source itself is already shorter than the target, keep everything and say so in pacing_notes.)
+Treat the time limit as a CEILING, not a quota. Estimate a normal speaking pace at about 130 words per minute, but recognize that pauses, emphasis, slides, demonstrations, and audience interaction can make delivery slower.
+
+Your job:
+1. Determine whether the source already fits comfortably inside the time limit.
+2. If it already fits, DO NOT lengthen it to fill the available time and do not rewrite merely to make it different. Return the source essentially unchanged, correcting only an obvious spoken-language stumble if necessary.
+3. If it is too long, cut it down. HARD FLOOR: trimmed_content must be AT LEAST ${Math.round(timeMinutes * 130 * 0.7)} words (70% of the ${timeMinutes * 130}-word target) — NEVER fewer, no matter how much low-value material you find. Reaching the floor before you run out of things you'd like to remove means STOP CUTTING and keep the rest, even material you consider secondary. A trimmed talk under the floor is not a successful edit; it is a summary standing in for a talk, and that is a failure regardless of how "unnecessary" the removed material seemed. Preserve the speaker's meaning, factual claims, caveats, commitments, chronology, and voice.
+4. Remove low-value setup, repetition, throat-clearing, unnecessary examples, and detail before removing information the audience needs — cut in that order, and STOP at the floor in step 3, not when you run out of "nice to cut" material.
+5. Never add facts, explanations, promises, rationale, or conclusions that were not in the source.
+6. Do not turn plain speech into keynote language. This is a run-through, not a speechwriter.
+7. Pacing notes should identify only 2-3 moments where delivery meaningfully changes comprehension or emphasis.
+8. Before returning, count the words in your own trimmed_content. If it is under ${Math.round(timeMinutes * 130 * 0.7)} words, you have cut too much — add back material from the source (in the speaker's own words, not new content) until you clear the floor.
 
 Return ONLY valid JSON:
 
@@ -40,28 +52,66 @@ Return ONLY valid JSON:
   "original_word_count": 0,
   "original_est_minutes": 0,
   "target_minutes": ${timeMinutes},
-  "trimmed_content": "the full trimmed presentation text, sized to the target time at ~130 words/minute",
+  "trimmed_content": "the deliverable presentation text — at least ${Math.round(timeMinutes * 130 * 0.7)} words, this is a hard floor (see rule 3); if the original already fits, preserve it rather than padding it",
   "trimmed_word_count": 0,
   "trimmed_est_minutes": 0,
   "what_was_cut": [
     {
-      "section": "The name of what was removed, or a short description if it has no name. Nothing else",
-      "reason": "Why this was the right thing to cut — one sentence"
+      "section": "A short description of material actually removed",
+      "reason": "Why removing it helps the talk fit without damaging the message"
     }
   ],
-  "what_was_kept": "Brief explanation of the core thread that survived — what makes this version still land — one sentence",
-  "pacing_notes": "2-3 short notes on where to slow down, pause, or speed up, joined as one string"
+  "what_was_kept": "One sentence naming the central message or decision that the edit protects",
+  "pacing_notes": "2-3 brief, concrete delivery notes joined as one string"
 }
 
-Include 3-6 what_was_cut items.`;
+If nothing needed to be cut, return an empty what_was_cut array and say plainly in what_was_kept that the presentation already fits. Do not manufacture 3-6 cuts.`;
 
-    const parsed = await callClaudeWithRetry({
+    // The floor in the prompt (rule 3) is a real instruction, not a
+    // formality — but it's a length constraint, exactly the kind of thing a
+    // model follows unreliably even when stated as a HARD FLOOR with a
+    // self-check step. Measured live against the golden 1,284-word/5-min
+    // case: three back-to-back identical calls returned 108, 372, and 459
+    // words against a 455-word floor — one attempt in three actually met it.
+    // One retry, fed the actual shortfall instead of a generic reminder,
+    // is a real second chance rather than the same coin flip again.
+    const floorWords = Math.round(timeMinutes * 130 * 0.7);
+    const wordCount = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length;
+
+    let parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema overhead.
       max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough' });
+
+    if (parsed.trimmed_content && wordCount(parsed.trimmed_content) < floorWords && wordCount(parsed.trimmed_content) < wordCount(content)) {
+      // Repeats userPrompt's own JSON instruction explicitly (rather than
+      // relying on it riding along inside the ${userPrompt} interpolation)
+      // for the same reason it's worth restating up front: an instruction
+      // nearer the end of a long prompt is followed more reliably than one
+      // buried a thousand words earlier.
+      const shortfallPrompt = `${userPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS returned only ${wordCount(parsed.trimmed_content)} words, well under the ${floorWords}-word floor. Try again: add back real material from the source in the speaker's own words — do not invent new content — until trimmed_content clears ${floorWords} words. Cut only what you removed before that was genuinely dispensable; the rest goes back in.\n\nReturn ONLY valid JSON, the same shape as before.`;
+      try {
+        const retried = await callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
+          system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          messages: [{ role: 'user', content: shortfallPrompt }],
+        }, { label: 'the-runthrough-cut-retry' });
+        // Only replace the first attempt if the retry actually did better —
+        // a second roll of the same dice landing lower would otherwise
+        // silently make the result worse.
+        if (retried.trimmed_content && wordCount(retried.trimmed_content) > wordCount(parsed.trimmed_content)) {
+          parsed = retried;
+        }
+      } catch (_) {
+        // Keep the first attempt — a failed retry must not turn a usable
+        // (if short) result into a hard error.
+      }
+    }
+
     if (!parsed.trimmed_content) {
       return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
     }
@@ -71,7 +121,7 @@ Include 3-6 what_was_cut items.`;
     console.error('TheRunthrough Cut error:', error);
     // callClaudeWithRetry fails fast (no parse attempt) when stop_reason === 'max_tokens'.
     if (/max_tokens/.test(error?.message || '')) {
-      return res.status(500).json({ error: 'The trimmed version was too long to generate — try a shorter target time or split the talk.' });
+      return res.status(500).json({ error: 'The revised version was too long to generate — try a shorter source or split the talk.' });
     }
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
@@ -105,34 +155,47 @@ ${content.trim()}
 AUDIENCE: ${audienceMap[audience] || audienceMap.general}
 ${stakes ? `STAKES: ${stakes.trim()}` : ''}
 
-Analyze this presentation and predict the toughest questions this audience will ask. Then draft strong answers.
+Give the speaker a fast pre-flight check before presenting. Predict the questions most likely to expose a weak spot, misunderstanding, missing fact, or consequential tradeoff in THIS presentation for THIS audience.
+
+This is not a generic Q&A generator and not a hostile-interrogation exercise.
+
+RULES:
+- Ground every predicted question in something actually present, implied, or conspicuously absent from the presentation.
+- Distinguish a weak claim from a claim that simply needs supporting detail.
+- Do not invent missing facts in draft answers. If the presentation does not contain the answer, write a safe answer structure that says what the speaker can acknowledge and what they should verify or supply.
+- Never fabricate metrics, dates, evidence, customer results, commitments, motives, or certainty.
+- Prefer the 4-6 questions that would matter most over a long list of clever questions.
+- Make draft answers sound speakable, direct, and honest.
+- Use difficulty as a practical indicator of how much preparation the question deserves, not as drama.
+- The curveball must still be plausible for the stated audience; no random gotchas.
+- Overall readiness should tell the user what to fix before presenting, not merely grade them.
 
 Return ONLY valid JSON:
 
 {
-  "presentation_summary": "1-2 sentence summary of what this presentation argues",
+  "presentation_summary": "1-2 sentences stating the presentation's main message and intended takeaway",
   "vulnerability_scan": {
-    "weakest_claim": "The single claim most likely to be challenged — one sentence",
-    "missing_data": "What data or evidence the audience will notice is absent — one sentence",
-    "assumption_risk": "The biggest unstated assumption that could be questioned — one sentence"
+    "weakest_claim": "The claim or passage most in need of support or clarification — or 'No obvious weak claim' if none",
+    "missing_data": "The most consequential information the audience may reasonably ask for that is not supplied — or 'Nothing obvious' if none",
+    "assumption_risk": "The unstated assumption most likely to affect the conclusion — or 'No major assumption risk' if none"
   },
   "tough_questions": [
     {
-      "question": "The exact question someone would ask — one sentence",
-      "why_they_ask": "What's behind this question — what are they really worried about — one sentence",
+      "question": "A natural question this audience could actually ask",
+      "why_they_ask": "The concern underneath it",
       "difficulty": "hard | very_hard | killer",
-      "draft_answer": "A strong, specific answer — 40-80 words, confident but honest",
-      "trap_to_avoid": "The common mistake speakers make when answering this — one sentence"
+      "draft_answer": "A concise, speakable answer using only supported information; if key information is missing, acknowledge that and show how to answer without bluffing",
+      "trap_to_avoid": "The specific mistake that would make this answer weaker"
     }
   ],
   "curveball": {
-    "question": "One completely unexpected question from left field that could throw you off — one sentence",
-    "draft_answer": "How to handle it gracefully — one sentence"
+    "question": "One less-obvious but plausible question",
+    "draft_answer": "A calm way to handle it without inventing information"
   },
-  "overall_readiness": "A candid 1-2 sentence assessment of how ready this presentation is for tough questions"
+  "overall_readiness": "1-2 candid sentences naming the most useful preparation step before the presentation"
 }
 
-Generate 5-7 tough_questions, ordered from most to least likely.`;
+Generate 4-6 tough_questions, ordered by how important they are to prepare for.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -177,39 +240,50 @@ ${content.trim()}
 TONE: ${toneMap[tone] || toneMap.conversational}
 ${goal ? `GOAL: ${goal.trim()}` : ''}
 
-Rewrite the opening, closing, and key transitions to be more compelling. Keep the core content intact — just make the structural moments land harder.
+Strengthen the moments that determine whether the audience follows the presentation: the opening, closing, and the most important transitions.
+
+RULES:
+- Preserve the speaker's actual message and recognizable voice.
+- Make the smallest rewrite that produces a meaningful improvement.
+- Do not add a statistic, story, anecdote, quotation, example, promise, result, or factual claim that is not supported by the source.
+- Do not force a flashy hook. A clear stakes statement, useful question, concrete problem, or direct promise is often stronger than theatrics.
+- If the existing opening or closing already works, refine it rather than replacing it for novelty.
+- Avoid clichés such as 'Imagine a world where', 'Have you ever wondered', and 'Everything you think you know is wrong' unless the source genuinely earns them.
+- Transitions should help the audience understand why the next section follows; they should not merely sound polished.
+- Honor the requested tone without making the speaker sound like a different person.
+- If the source has no identifiable section break, return only transitions that are genuinely useful.
 
 Return ONLY valid JSON:
 
 {
   "diagnosis": {
-    "current_opening": "Brief description of how it currently opens — one sentence",
-    "opening_problem": "What's wrong with it — why it doesn't grab attention — one sentence",
-    "current_closing": "Brief description of how it currently ends — one sentence",
-    "closing_problem": "What's weak about the ending — one sentence"
+    "current_opening": "What the opening currently does",
+    "opening_problem": "The single most useful improvement, or 'Already strong' if it is",
+    "current_closing": "What the closing currently does",
+    "closing_problem": "The single most useful improvement, or 'Already strong' if it is"
   },
   "new_opening": {
-    "text": "The full rewritten opening — 3-5 sentences, ready to deliver",
-    "technique": "Name the technique used (story, question, statistic, bold claim, etc.) — one sentence",
-    "why_it_works": "1 sentence on why this grabs the audience — one sentence"
+    "text": "A concise, ready-to-deliver opening grounded entirely in the source",
+    "technique": "The plain-language approach used",
+    "why_it_works": "Why this version better prepares this audience to listen"
   },
   "new_closing": {
-    "text": "The full rewritten closing — 3-5 sentences, ready to deliver",
-    "technique": "Name the technique used (callback, CTA, vision, challenge, etc.) — one sentence",
-    "why_it_works": "1 sentence on why this makes it stick — one sentence"
+    "text": "A concise, ready-to-deliver closing grounded entirely in the source",
+    "technique": "The plain-language approach used",
+    "why_it_works": "Why this version leaves the intended takeaway clear"
   },
   "transitions": [
     {
-      "between": "Section A → Section B — one sentence",
-      "original": "What's there now (or nothing) — one sentence",
-      "rewritten": "A smooth, purposeful transition sentence — one sentence",
-      "why": "What this transition accomplishes — one sentence"
+      "between": "The two ideas or sections being connected",
+      "original": "What currently connects them, or 'No transition'",
+      "rewritten": "A brief, speakable bridge",
+      "why": "What relationship this makes clearer"
     }
   ],
-  "energy_arc": "A brief description of the emotional journey: where energy should peak, dip, and land. 2-3 sentences."
+  "energy_arc": "2-3 practical sentences about where to build, pause, simplify, or land — based on the actual content rather than generic performance advice"
 }
 
-Generate 2-4 transitions for the most important section breaks.`;
+Generate 0-3 transitions: only the ones that materially improve comprehension.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
