@@ -4,6 +4,7 @@ const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = requ
 const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
 const { rateLimit, DEFAULT_LIMITS, GAME_LIMITS, POLL_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
 // ═══════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -86,6 +87,71 @@ const normalizeNullStrings = (val) => {
   return val;
 };
 
+// Prose-field walker for the v2 output guard below — same pattern used across
+// other v2 routes (see read-the-room.js). Only strings long enough to carry a
+// real claim are worth an adversarial check; short enums and labels aren't.
+function collectProseFields(parsed) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  return fields;
+}
+
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'invented_source_study_statistic_quote_or_url',
+    'invented_origin_story_for_a_myth_or_claim',
+    'motive_intent_dishonesty_or_character_inferred_beyond_what_either_side_actually_said',
+    'a_supplied_fact_or_position_contradicted_or_swapped_for_a_different_one',
+    'certainty_manufactured_for_a_current_or_fast_changing_claim',
+    'support_or_confidence_category_treated_as_a_computed_percentage_rather_than_a_qualitative_judgment',
+    'a_winner_or_ruling_declared_where_the_supplied_evidence_is_genuinely_insufficient',
+  ],
+  require: ['fulfills_tool_promise'],
+};
+
+// What each guarded mode promises to deliver, and which field(s) a repair may
+// never leave hollowed out — the one thing the visitor actually came for.
+// Plain trivia-question generation and Deep Dissect are deliberately absent:
+// neither reasons about facts a visitor supplied about their own situation or
+// position, which is the specific failure this guard exists to catch — see
+// the 7-mode scope agreed with the owner, 2026-09-14.
+const MODE_GUARD = {
+  question: {
+    promise: "Answer the visitor's question directly, separating established fact from interpretation, opinion, prediction, or current information — never manufacturing precision, a source, or confidence the evidence does not support.",
+    requiredNonEmpty: ['answer'],
+  },
+  dispute: {
+    promise: "Settle the verifiable part of a two-sided disagreement fairly, separating fact from blame or preference, without inventing intent, motive, or character beyond what either side actually said.",
+    requiredNonEmpty: ['the_actual_answer'],
+  },
+  factcheck: {
+    promise: "Rule on a specific claim as written, identifying exactly what evidence supports or undermines it, without inventing an origin story, a statistic, or a source.",
+    requiredNonEmpty: ['explanation'],
+  },
+  'trivia-check': {
+    promise: "Fairly re-evaluate a trivia-answer challenge from scratch, with no presumption that the original answer was correct.",
+    requiredNonEmpty: ['ruling'],
+  },
+  'follow-up': {
+    promise: "Go deeper on the visitor's follow-up question, using the previous answer only as context and correcting it if the follow-up exposes a problem — never preserving confidence merely for consistency with the earlier answer.",
+    requiredNonEmpty: ['answer'],
+  },
+  appeal: {
+    promise: "Reconsider a prior dispute verdict against the new evidence or argument actually presented, deciding to uphold, modify, or overturn it on the merits — not on the original verdict's standing.",
+    requiredNonEmpty: ['ruling_headline', 'final_answer'],
+  },
+  'devils-advocate': {
+    promise: "Steelman the strongest real counter-position to the visitor's stated position, then compare both fairly — without artificially inflating either side.",
+    requiredNonEmpty: ['counter_position'],
+  },
+};
+
 // GAME_LIMITS + its own keyPrefix, not DEFAULT_LIMITS: this endpoint also
 // serves Trivia Night, which the tool itself brands "quick-fire" — a real
 // round is one small, cheap call (~500 tokens) per question, well inside
@@ -99,7 +165,7 @@ router.post('/the-final-word', rateLimit(GAME_LIMITS, 'tfw-game:'), async (req, 
     const { mode, userLanguage } = req.body;
     if (!mode) return res.status(400).json({ error: 'Please select a mode' });
 
-    let prompt, maxTokens;
+    let prompt, maxTokens, supplied;
     const DATE_CONTEXT = getDateContext();
 
     // ════════════════════════════════════════
@@ -109,6 +175,7 @@ router.post('/the-final-word', rateLimit(GAME_LIMITS, 'tfw-game:'), async (req, 
       const { question } = req.body;
       if (!question?.trim()) return res.status(400).json({ error: 'Please ask a question' });
 
+      supplied = `QUESTION: "${question.trim()}"`;
       maxTokens = 1400;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD. Your job is not to sound certain; your job is to make the answer clear enough that the user knows what is known, what is uncertain, and what would settle the question.
 
@@ -151,6 +218,7 @@ Return ONLY this JSON:
       const nameB = personB?.trim() || 'Person B';
       const ctx = context ? `\nCONTEXT: ${context.trim()}` : '';
 
+      supplied = `${nameA} SAYS: "${claimA.trim()}"\n${nameB} SAYS: "${claimB.trim()}"${ctx}`;
       maxTokens = 1800;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD. Two people disagree. Identify the part that can actually be settled, separate facts from blame or preference, and give a fair verdict without pretending that every disagreement has an objective winner.
 
@@ -193,6 +261,7 @@ Return ONLY this JSON:
       const { claim } = req.body;
       if (!claim?.trim()) return res.status(400).json({ error: 'Please enter a claim to fact-check' });
 
+      supplied = `CLAIM: "${claim.trim()}"`;
       maxTokens = 1600;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD. Evaluate the claim precisely. The goal is not a dramatic TRUE/FALSE stamp; it is a ruling that matches the evidence and makes the misleading part easy to see.
 
@@ -255,6 +324,7 @@ Return ONLY this JSON — no other text:
         return res.status(400).json({ error: 'Question and challenge text required' });
       }
 
+      supplied = `ORIGINAL QUESTION & ANSWER: ${originalQuestion}\nUSER'S CHALLENGE: "${userChallenge}"`;
       maxTokens = 800;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD. A user is challenging a trivia answer. Re-check the question and answer from scratch; the original answer receives no presumption of correctness.
 
@@ -282,6 +352,7 @@ Return ONLY this JSON:
       if (!followUpQuestion?.trim()) return res.status(400).json({ error: 'Please enter a follow-up question' });
       if (!originalAnswer) return res.status(400).json({ error: 'No original answer to follow up on' });
 
+      supplied = `ORIGINAL QUESTION/CLAIM: "${originalQuestion || 'Not provided'}"\nPREVIOUS ANSWER: "${typeof originalAnswer === 'string' ? originalAnswer : JSON.stringify(originalAnswer)}"\nFOLLOW-UP QUESTION: "${followUpQuestion.trim()}"`;
       maxTokens = 1400;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD. The user wants to go deeper. Treat the previous answer as context, not as an authority; correct it if the follow-up exposes a problem.
 
@@ -315,6 +386,7 @@ Return ONLY this JSON:
       if (!originalVerdict) return res.status(400).json({ error: 'No original verdict to appeal' });
       if (!newEvidence?.trim()) return res.status(400).json({ error: 'You must present new evidence or arguments for your appeal' });
 
+      supplied = `ORIGINAL VERDICT: ${JSON.stringify(originalVerdict)}\nAPPELLANT: ${appellantName || 'The losing party'}\nNEW EVIDENCE/ARGUMENT: "${newEvidence.trim()}"`;
       maxTokens = 1800;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD — APPEALS COURT. Reconsider a previous dispute verdict in light of new evidence or reasoning. The original verdict has no special status; the goal is a better conclusion, not institutional theater.
 
@@ -355,6 +427,7 @@ Return ONLY this JSON:
       const { position, topic } = req.body;
       if (!position?.trim()) return res.status(400).json({ error: 'Please state your position' });
 
+      supplied = `TOPIC: "${topic?.trim() || 'Not specified'}"\nTHEIR POSITION: "${position.trim()}"`;
       maxTokens = 2000;
       prompt = `${DATE_CONTEXT}You are THE FINAL WORD — DEVIL'S ADVOCATE MODE. Steelman the strongest reasonable counter-position, then show the user where each side is strongest, weakest, and dependent on values or uncertain facts.
 
@@ -416,6 +489,21 @@ Return ONLY this JSON:
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(textContent);
     parsed._mode = mode;
+
+    // v2 output guard — only the 7 modes that reason about facts either party
+    // actually supplied (see MODE_GUARD above). Mutates parsed in place.
+    if (MODE_GUARD[mode]) {
+      await runOutputGuard(parsed, {
+        label: `the-final-word-${mode}`,
+        fields: collectProseFields(parsed),
+        supplied,
+        promise: MODE_GUARD[mode].promise,
+        guard: router.outputGuard,
+        userLanguage,
+        requiredNonEmpty: MODE_GUARD[mode].requiredNonEmpty,
+      });
+    }
+
     res.json(normalizeNullStrings(parsed));
 
   } catch (error) {
