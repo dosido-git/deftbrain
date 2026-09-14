@@ -48,7 +48,7 @@ Return ONLY valid JSON:
   "the_thing_examined": {
     "what_its_really_about": "A concise interpretation of the underlying tension, explicitly framed as an interpretation when it is not established fact",
     "why_its_hard_to_say": "The specific conflict or fear supported by the user's own account",
-    "what_hiding_it_costs": "A concrete possible cost of continued silence, without pretending that cost is certain"
+    "what_hiding_it_costs": "WHAT SILENCE IS COSTING NOW — describe only a cost already evident in the user's own account, or a possible future cost explicitly labeled as possible. Do not assume the current situation will continue, or that silence will damage the relationship — that is a prediction, not an observation."
   },
 
   "reality_check": {
@@ -107,7 +107,8 @@ RULES:
 7. Do not treat speaking as inherently braver, healthier, or more honest than silence.
 8. If the user selected myself or no one yet — just myself, adapt the three versions into three ways of stating the truth to themselves; do not fabricate a conversation partner.
 9. For workplace power, abuse, threats, coercion, self-harm, violence, medical emergencies, or other high-stakes risks, do not default to confrontation. safety_note should direct the user toward an appropriate safer next step.
-10. Never place a double-quote (") character inside any JSON string value.`;
+10. Never place a double-quote (") character inside any JSON string value.
+11. Do not impose a moral or psychological narrative on the user's situation ("being wronged", "self-betrayal", "the real issue", "what you truly want") unless the user supplied it. Prefer describing the tension without naming a hidden story for them.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.SMART,

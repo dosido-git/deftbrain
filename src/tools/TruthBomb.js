@@ -141,7 +141,7 @@ const TruthBomb = ({ tool }) => {
     }
     txt += `${t('tb_copy_three_ways')}\n\n`;
     results?.three_ways_to_say_it?.forEach(v => {
-      txt += `${v.version} (${t('tb_copy_directness')} ${v.directness}/3)\n"${v.the_words}"\n${v.tradeoff || v.what_it_accomplishes || ''}\n\n`;
+      txt += `${v.version}\n"${v.the_words}"\n${v.tradeoff || v.what_it_accomplishes || ''}\n\n`;
     });
     return txt + BRAND;
   }, [results, theUnsaidThing, t]);
@@ -308,14 +308,12 @@ const TruthBomb = ({ tool }) => {
                 const dcfg = DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0];
                 return (
                   <div key={i} className={`rounded-xl border p-5 space-y-3 ${dcfg.bg(isDark)}`}>
-                    <div className="flex items-center justify-between">
-                      <p className={`text-xs font-black uppercase tracking-widest ${dcfg.text(isDark)}`}>{v.version}</p>
-                      <div className="flex gap-1">
-                        {[1, 2, 3].map(n => (
-                          <div key={n} className={`w-2 h-2 rounded-full ${dcfg.dot(isDark)} ${n <= v.directness ? 'opacity-100' : 'opacity-20'}`} />
-                        ))}
-                      </div>
-                    </div>
+                    {/* No directness dots: three choices, not an escalation
+                        ladder — a 1-2-3 fill implied Full Truth was the
+                        "most" or "best" option, which is the opposite of
+                        what the prompt now says. The label + when_to_use
+                        already say enough. */}
+                    <p className={`text-xs font-black uppercase tracking-widest ${dcfg.text(isDark)}`}>{v.version}</p>
                     {v.when_to_use && (
                       <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('tb_when')}</span> {v.when_to_use}</p>
                     )}
