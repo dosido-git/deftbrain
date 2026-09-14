@@ -195,14 +195,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             with a negative margin to bring it down to the 8px this row
             actually wants. Dropped that entirely — it depended on this
             margin collapsing through into the grid's own gap track, which
-            Safari and Firefox do not reliably do the same way Chrome does
-            (reproduced live in Safari DevTools at 1010px: gap read correctly
-            in Chrome, doubled in Safari, no shared breakpoint involved — see
-            THERUNTHROUGH/ToolPageWrapper history for the two earlier reports
-            that turned out to be the same root cause). mb-2 here is now a
-            plain, direct margin on this grid item — no cancellation, no
-            collapse-through, nothing for an engine to disagree about. At lg+
-            the pills sit beside the header in the same row, so margin here
+            is unreliable: confirmed present in Safari, Firefox (including a
+            private window, ruling out cache), AND Chrome, on the same Mac —
+            not a per-engine split, and not tied to any one breakpoint (three
+            different reported trigger widths turned out to be the same root
+            cause, not three bugs — see THERUNTHROUGH/ToolPageWrapper
+            history). mb-2 here is now a plain, direct margin on this grid
+            item — no cancellation, no collapse-through, nothing left to be
+            unreliable. At lg+ the pills sit beside the header in the same
+            row, so margin here
             is moot — kept at 0 for clarity. */}
         <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
