@@ -227,9 +227,12 @@ const TheRunthrough = ({ tool }) => {
 
   // ─── Build text helpers ───
   const buildCutText = (d) => {
+    const status = ['unchanged', 'tightened'].includes(d.revision_status) ? d.revision_status : 'cut';
     let out = `✂️ ${t('trt_copy_cut_header')}\n`;
     out += `${t('trt_copy_original')} ~${d.original_word_count} ${t('trt_copy_words_short')} (~${d.original_est_minutes} ${t('trt_copy_min_short')})\n`;
     out += `${t('trt_copy_trimmed')} ~${d.trimmed_word_count} ${t('trt_copy_words_short')} (~${d.trimmed_est_minutes} ${t('trt_copy_min_short')}) → ${t('trt_copy_target')} ${d.target_minutes} ${t('trt_copy_min_short')}\n\n`;
+    if (status === 'unchanged') out += `${t('trt_fits_no_change')}\n\n`;
+    if (status === 'tightened') out += `${t('trt_fits_tightened')}\n\n`;
     out += `━━ ${t('trt_copy_trimmed_content')} ━━\n${d.trimmed_content}\n\n`;
     if (d.what_was_cut?.length) {
       out += `━━ ${t('trt_copy_what_cut')} ━━\n`;
@@ -311,15 +314,38 @@ const TheRunthrough = ({ tool }) => {
   };
 
   // ─── Render: Cut Results ───
-  const CutResults = ({ data: d }) => (
-    <div className="space-y-5">
-      {/* Stats bar */}
-      <div className={`grid grid-cols-3 gap-3`}>
-        {[
+  const CutResults = ({ data: d }) => {
+    // revision_status distinguishes three outcomes the model can return:
+    // 'unchanged' (already fit, nothing to gain from tightening),
+    // 'tightened' (already fit, but brevity genuinely helps — optional),
+    // 'cut' (didn't fit, had to trim to the time limit). Older/golden
+    // responses without the field default to 'cut' — the only behavior
+    // that existed before this field was added, so nothing regresses.
+    const status = ['unchanged', 'tightened'].includes(d.revision_status) ? d.revision_status : 'cut';
+    const fits = d.trimmed_est_minutes <= d.target_minutes;
+
+    const stats = status === 'unchanged'
+      ? [
+          { label: t('trt_stat_current'), value: t('trt_min_value', { count: d.trimmed_est_minutes }), sub: t('trt_words', { count: d.trimmed_word_count }) },
+          { label: t('trt_stat_limit'), value: t('trt_target_value', { count: d.target_minutes }), sub: fits ? t('trt_fits') : t('trt_close') },
+        ]
+      : status === 'tightened'
+      ? [
+          { label: t('trt_stat_original'), value: t('trt_min_value', { count: d.original_est_minutes }), sub: t('trt_words', { count: d.original_word_count }) },
+          { label: t('trt_stat_tighter'), value: t('trt_min_value', { count: d.trimmed_est_minutes }), sub: t('trt_words', { count: d.trimmed_word_count }) },
+          { label: t('trt_stat_limit'), value: t('trt_target_value', { count: d.target_minutes }), sub: fits ? t('trt_fits') : t('trt_close') },
+        ]
+      : [
           { label: t('trt_stat_original'), value: t('trt_min_value', { count: d.original_est_minutes }), sub: t('trt_words', { count: d.original_word_count }) },
           { label: t('trt_stat_trimmed'), value: t('trt_min_value', { count: d.trimmed_est_minutes }), sub: t('trt_words', { count: d.trimmed_word_count }) },
-          { label: t('trt_stat_target'), value: t('trt_target_value', { count: d.target_minutes }), sub: d.trimmed_est_minutes <= d.target_minutes ? t('trt_fits') : t('trt_close') },
-        ].map((s, i) => (
+          { label: t('trt_stat_target'), value: t('trt_target_value', { count: d.target_minutes }), sub: fits ? t('trt_fits') : t('trt_close') },
+        ];
+
+    return (
+    <div className="space-y-4">
+      {/* Stats bar */}
+      <div className={`grid ${stats.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
+        {stats.map((s, i) => (
           <div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-3 text-center`}>
             <p className={`text-xs ${c.textMuted} uppercase font-semibold`}>{s.label}</p>
             <p className={`text-lg font-bold ${c.text}`}>{s.value}</p>
@@ -335,6 +361,11 @@ const TheRunthrough = ({ tool }) => {
             <span>📄</span> {t('trt_trimmed_presentation')}
           </h3>
         </div>
+        {(status === 'unchanged' || status === 'tightened') && (
+          <p className={`text-xs ${c.accentTxt} ${c.accentBox} rounded-lg px-3 py-2 mb-3`}>
+            {status === 'unchanged' ? t('trt_fits_no_change') : t('trt_fits_tightened')}
+          </p>
+        )}
         <div className={`${c.input} ${c.border} border rounded-xl p-4`}>
           <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>
             {d.trimmed_content}
@@ -387,7 +418,8 @@ const TheRunthrough = ({ tool }) => {
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   // ─── Render: Anticipate Results ───
   const AnticipateResults = ({ data: d }) => (

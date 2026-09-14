@@ -38,34 +38,38 @@ Treat the time limit as a CEILING, not a quota. Estimate a normal speaking pace 
 
 Your job:
 1. Determine whether the source already fits comfortably inside the time limit.
-2. If it already fits, DO NOT lengthen it to fill the available time and do not rewrite merely to make it different. Return the source essentially unchanged, correcting only an obvious spoken-language stumble if necessary.
-3. If it is too long, cut it down. HARD FLOOR: trimmed_content must be AT LEAST ${Math.round(timeMinutes * 130 * 0.7)} words (70% of the ${timeMinutes * 130}-word target) — NEVER fewer, no matter how much low-value material you find. Reaching the floor before you run out of things you'd like to remove means STOP CUTTING and keep the rest, even material you consider secondary. A trimmed talk under the floor is not a successful edit; it is a summary standing in for a talk, and that is a failure regardless of how "unnecessary" the removed material seemed. Preserve the speaker's meaning, factual claims, caveats, commitments, chronology, and voice.
+2. If it already fits: treat the time limit as a CEILING, not a target. Do not shorten the presentation merely to use less of the available time, and do not rewrite it just to make it sound different. But use the supplied context (audience, stakes, setting) to judge whether genuinely greater brevity would materially improve the presentation regardless of the time limit — for example a notoriously impatient audience, a context that signals "keep this tight," or material that is clearly over-explained on its own terms, independent of the clock.
+   - If tightening would NOT materially help: return the source essentially unchanged (correcting only an obvious spoken-language stumble if necessary), set revision_status to "unchanged", and leave what_was_cut empty.
+   - If tightening WOULD materially help: return a tightened version, set revision_status to "tightened", and say so plainly in what_was_kept — make clear that the original already fit the time limit and this is an optional improvement, not a forced cut. There is no minimum length for this case: remove only what genuinely improves clarity or pacing, never to hit a number.
+3. If it does not fit, cut it down. Set revision_status to "cut". HARD FLOOR: trimmed_content must be AT LEAST ${Math.round(timeMinutes * 130 * 0.7)} words (70% of the ${timeMinutes * 130}-word target) — NEVER fewer, no matter how much low-value material you find. Reaching the floor before you run out of things you'd like to remove means STOP CUTTING and keep the rest, even material you consider secondary. A trimmed talk under the floor is not a successful edit; it is a summary standing in for a talk, and that is a failure regardless of how "unnecessary" the removed material seemed. Preserve the speaker's meaning, factual claims, caveats, commitments, chronology, and voice.
 4. Remove low-value setup, repetition, throat-clearing, unnecessary examples, and detail before removing information the audience needs — cut in that order, and STOP at the floor in step 3, not when you run out of "nice to cut" material.
 5. Never add facts, explanations, promises, rationale, or conclusions that were not in the source.
 6. Do not turn plain speech into keynote language. This is a run-through, not a speechwriter.
 7. Pacing notes should identify only 2-3 moments where delivery meaningfully changes comprehension or emphasis.
-8. Before returning, count the words in your own trimmed_content. If it is under ${Math.round(timeMinutes * 130 * 0.7)} words, you have cut too much — add back material from the source (in the speaker's own words, not new content) until you clear the floor.
+8. Before returning, count the words in your own trimmed_content. If revision_status is "cut" and the count is under ${Math.round(timeMinutes * 130 * 0.7)} words, you have cut too much — add back material from the source (in the speaker's own words, not new content) until you clear the floor.
+9. Never report a cut, tightening, or change that the returned text does not actually contain. trimmed_content, trimmed_word_count, trimmed_est_minutes, what_was_cut, and what_was_kept must all describe the same, actual edit — if nothing changed, say so exactly; if you tightened, describe only material you actually removed.
 
 Return ONLY valid JSON:
 
 {
+  "revision_status": "unchanged" | "tightened" | "cut" — MUST be exactly one of these three lowercase English words, never translated or rephrased regardless of the output language; pick the one that matches what you actually did (see rules 2-3),
   "original_word_count": 0,
   "original_est_minutes": 0,
   "target_minutes": ${timeMinutes},
-  "trimmed_content": "the deliverable presentation text — at least ${Math.round(timeMinutes * 130 * 0.7)} words, this is a hard floor (see rule 3); if the original already fits, preserve it rather than padding it",
+  "trimmed_content": "the deliverable presentation text — if revision_status is 'cut', at least ${Math.round(timeMinutes * 130 * 0.7)} words, a hard floor (see rule 3); if 'unchanged' or 'tightened', whatever length is actually right — no minimum",
   "trimmed_word_count": 0,
   "trimmed_est_minutes": 0,
   "what_was_cut": [
     {
       "section": "A short description of material actually removed",
-      "reason": "Why removing it helps the talk fit without damaging the message"
+      "reason": "Why removing it helps — fitting the time limit if revision_status is 'cut', or improving clarity/pacing if 'tightened'"
     }
   ],
-  "what_was_kept": "One sentence naming the central message or decision that the edit protects",
+  "what_was_kept": "One sentence naming the central message or decision the edit protects; if revision_status is 'unchanged' or 'tightened', also say plainly here that the presentation already fit the time limit",
   "pacing_notes": "2-3 brief, concrete delivery notes joined as one string"
 }
 
-If nothing needed to be cut, return an empty what_was_cut array and say plainly in what_was_kept that the presentation already fits. Do not manufacture 3-6 cuts.`;
+If nothing needed to change, return an empty what_was_cut array. Do not manufacture cuts to justify a "cut" or "tightened" status — most presentations that already fit should come back as "unchanged".`;
 
     // The floor in the prompt (rule 3) is a real instruction, not a
     // formality — but it's a length constraint, exactly the kind of thing a
@@ -86,7 +90,12 @@ If nothing needed to be cut, return an empty what_was_cut array and say plainly 
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough' });
 
-    if (parsed.trimmed_content && wordCount(parsed.trimmed_content) < floorWords && wordCount(parsed.trimmed_content) < wordCount(content)) {
+    // The floor only means anything when a cut was actually required for
+    // time — "unchanged" and "tightened" are legitimately allowed to be
+    // short (or even shorter than the mechanical floor) if that's just what
+    // the source is. Gating on revision_status stops the retry from forcing
+    // padding back into a presentation that was never asked to hit a length.
+    if (parsed.revision_status === 'cut' && parsed.trimmed_content && wordCount(parsed.trimmed_content) < floorWords && wordCount(parsed.trimmed_content) < wordCount(content)) {
       // Repeats userPrompt's own JSON instruction explicitly (rather than
       // relying on it riding along inside the ${userPrompt} interpolation)
       // for the same reason it's worth restating up front: an instruction
