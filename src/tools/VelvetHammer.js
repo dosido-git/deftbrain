@@ -69,6 +69,7 @@ const EXAMPLES = [
     power: 'neutral',
   },
 ];
+
 const VelvetHammer = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -113,9 +114,12 @@ const VelvetHammer = ({ tool }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   // ─── Persistent state ───
-  const [draft, setDraft] = usePersistentState('velvethammer-draft', '');
-  const [results, setResults] = usePersistentState('velvethammer-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('velvethammer-history', []);
+  // -v2 keys: the old schema (rage_audit, collaborative/balanced/firm tones)
+  // has nothing in common with this one — a restored v1 result would render
+  // with a mislabeled section and dead tone-color switching.
+  const [draft, setDraft] = usePersistentState('velvethammer-draft-v2', '');
+  const [results, setResults] = usePersistentState('velvethammer-result-v2', null);
+  const [sessionHistory, setSessionHistory] = usePersistentState('velvethammer-history-v2', []);
 
   const resultsRef = useRef(null);
 
@@ -137,15 +141,19 @@ const VelvetHammer = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
+      // Full result, not a raw-draft preview: this is what lets a session
+      // card show something recognizable (and not embarrassing) instead of
+      // the user's angry wording, and lets it actually reopen.
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: draft.trim().slice(0, 40),
+        relationship, goal,
+        coreMessage: data?.core_message || '',
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('vh_error'));
-    } };
+    }
+  };
 
   // ─── Keyboard: SELECT-only guard with stale-closure-safe refs ───
   const handleTransformRef = useRef(null);
@@ -168,9 +176,20 @@ const VelvetHammer = ({ tool }) => {
 
   const handleReset = () => { setResults(null); setError(''); setDraft(''); };
 
+  const openSession = (s) => {
+    setRelationship(s.relationship || 'colleague');
+    setGoal(s.goal || 'behavior_change');
+    setResults(s.result || null);
+    setError('');
+    setShowHistory(false);
+  };
+
   const buildAllText = () => {
     if (!results?.variants) return '';
-    return results.variants.map(v => `${v.label}:\n${v.message}`).join('\n\n---\n\n') + BRAND;
+    const lines = [];
+    if (results.core_message) lines.push(`${t('vh_point_title')}: ${results.core_message}`, '');
+    lines.push(results.variants.map(v => `${v.label}:\n${v.message}`).join('\n\n---\n\n'));
+    return lines.join('\n') + BRAND;
   };
 
   // ─── Register export content ───
@@ -184,125 +203,173 @@ const VelvetHammer = ({ tool }) => {
   }, [results]);
 
   const toneColor = (tone) => {
-    if (tone === 'collaborative') return isDark ? 'text-emerald-400' : 'text-emerald-600';
-    if (tone === 'balanced') return isDark ? 'text-amber-400' : 'text-amber-600';
+    if (tone === 'clear') return isDark ? 'text-emerald-400' : 'text-emerald-600';
+    if (tone === 'tactful') return isDark ? 'text-amber-400' : 'text-amber-600';
     return isDark ? 'text-red-400' : 'text-red-600';
   };
 
   const toneBg = (tone) => {
-    if (tone === 'collaborative') return isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300';
-    if (tone === 'balanced') return isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300';
+    if (tone === 'clear') return isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300';
+    if (tone === 'tactful') return isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300';
     return isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200';
   };
 
-  return (<div className={`space-y-4 ${c.text}`}>
-
-      {/* Header */} {/* Input card */} <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-
-        {/* Header inside card */} <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+      {/* Input card */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+        <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
               <span className="me-2 text-lg">{tool?.icon ?? '🔨'}</span>{t('vh_tagline')}
             </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+              ✨ {t('try_example')}
+            </button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            {sessionHistory.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                📋 {sessionHistory.length} </button>
+            {sessionHistory.length > 0 && (
+              <button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                📋 {sessionHistory.length}
+              </button>
             )}
             {(results || draft.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
                 ↺ {t('start_over')}
               </button>
             )}
-          </div> </div>
+          </div>
+        </div>
 
-        {/* History panel */} {showHistory && sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+        {/* History panel — reopens the complete past result, no raw draft shown */}
+        {showHistory && sessionHistory.length > 0 && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1.5`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('vh_recent')}</p>
-            {sessionHistory.map(h => (<div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
-                <span className="truncate">{h.preview}</span>
-                <span className={`ms-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
-              </div>
-            ))} </div>
-        )} {/* Rage box */} <div>
+            {sessionHistory.filter(h => h.result).map(h => (
+              <button
+                key={h.id}
+                onClick={() => openSession(h)}
+                className={`w-full text-start ${c.card} border ${c.border} rounded-lg px-3 py-2.5 hover:brightness-105 transition`}
+              >
+                <p className={`text-xs font-semibold ${c.text} truncate`}>
+                  {t(RELATIONSHIPS.find(r => r.value === h.relationship)?.tKey || 'vh_rel_other')} — {h.coreMessage}
+                </p>
+                <div className="flex items-center justify-between mt-0.5">
+                  <p className={`text-[10px] ${c.textMuted} truncate`}>
+                    {t('vh_goal')}: {t(GOALS.find(g => g.value === h.goal)?.tKey || 'vh_goal_clarify')}
+                  </p>
+                  <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(h.date).toLocaleDateString()}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Draft box */}
+        <div>
           <label className={`text-sm font-semibold ${c.text} block mb-2`}>
-            🤬 <em>{t('vh_rage_label')}</em> <span className={c.required}>*</span>
+            {t('vh_rage_label')} <span className={c.required}>*</span>
           </label>
           <p className={`text-xs ${c.textMuted} mb-2`}>{t('vh_rage_hint')}</p>
           <textarea
-            value={draft} onChange={e => setDraft(e.target.value)} placeholder={t('vh_rage_ph')}
-            rows={5} className={`w-full p-3 border rounded-lg text-sm resize-none outline-none focus:ring-2 transition-colors ${c.input} ${c.rageBg}`} />
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            placeholder={t('vh_rage_ph')}
+            rows={5}
+            className={`w-full p-3 border rounded-lg text-sm resize-none outline-none focus:ring-2 transition-colors ${c.input} ${c.rageBg}`}
+          />
         </div>
 
-        {/* Context row */} <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Context row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_recipient')}</label>
             <select value={relationship} onChange={e => setRelationship(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.tKey)}</option>)} </select>
+              {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.tKey)}</option>)}
+            </select>
           </div>
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_goal')}</label>
             <select value={goal} onChange={e => setGoal(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {GOALS.map(g => <option key={g.value} value={g.value}>{t(g.tKey)}</option>)} </select>
+              {GOALS.map(g => <option key={g.value} value={g.value}>{t(g.tKey)}</option>)}
+            </select>
           </div>
           <div>
             <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_power')}</label>
             <select value={power} onChange={e => setPower(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
-              {POWER.map(p => <option key={p.value} value={p.value}>{t(p.tKey)}</option>)} </select>
+              {POWER.map(p => <option key={p.value} value={p.value}>{t(p.tKey)}</option>)}
+            </select>
           </div>
         </div>
 
-        <button title={t('cmd_enter')}
-          onClick={handleTransform} disabled={loading || !draft.trim()} className={`relative w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${(!draft.trim()) ? c.btnIdle : c.btnPrimary}`}>
+        <button
+          title={t('cmd_enter')}
+          onClick={handleTransform}
+          disabled={loading || !draft.trim()}
+          className={`relative w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${(!draft.trim()) ? c.btnIdle : c.btnPrimary}`}
+        >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> {t('vh_transforming')}</>
-            : <><span>{tool?.icon ?? '🔨'}</span> {t('vh_transform')}</>} {!loading && (
-          <kbd aria-hidden="true"
-            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-            ⌘↵
-          </kbd>
-        )}
+            : <><span>{tool?.icon ?? '🔨'}</span> {t('vh_transform')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
         </button>
-
-
 
         <p className={`text-xs text-center ${c.textMuted}`}>{t('vh_disclaimer')}</p>
         <p className={`text-xs text-center ${c.textMuted} mt-1`}>
           {t('vh_in_person_pre')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('vh_difficult_talk')}</a> {t('vh_in_person_post')}
         </p>
 
-        {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>} </div>
+        {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>}
+      </div>
 
-      {/* Results */} {results && (<div className="space-y-4">
-          <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
+      {/* Results — The Point, then Clear / Tactful / Firm. No additional
+          coaching sections: vent → recover the point → choose a sendable
+          version is the whole tool. */}
+      {results && (
+        <div className="space-y-4">
+          <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
 
-          {/* Rage audit */} {results.rage_audit && (<div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold mb-1`}>🔬 {t('vh_rage_audit')}</p>
-              <p className={`text-sm`}>{results.rage_audit}</p>
+          {results.core_message && (
+            <div className={`${c.warning} border rounded-xl p-4`}>
+              <p className="text-xs font-bold mb-1">🎯 {t('vh_point_title')}</p>
+              <p className="text-sm">{results.core_message}</p>
             </div>
-          )} {/* Variants */} {results.variants?.map((variant, i) => (<div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+          )}
+
+          {results.variants?.map((variant, i) => (
+            <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
               <div className="flex items-center justify-between">
                 <div>
                   <span className={`text-sm font-bold ${toneColor(variant.tone)}`}>{variant.label}</span>
-                  {variant.when_to_use && (<p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
-                  )} </div>
+                  {variant.when_to_use && (
+                    <p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
+                  )}
+                </div>
                 <span className={`text-xs px-2 py-1 rounded-full border font-medium ${toneBg(variant.tone)}`}>
-                  {variant.label} </span>
+                  {variant.label}
+                </span>
               </div>
               <div className={`${isDark ? 'bg-zinc-900/50' : 'bg-slate-100'} rounded-lg p-4`}>
                 <p className={`text-sm ${c.text} whitespace-pre-wrap leading-relaxed`}>{variant.message}</p>
               </div>
             </div>
-          ))} {/* Cross-tool links */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('vh_related')}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/ConflictCoach" className={`text-xs ${linkStyle}`}>⚔️ {t('vh_conflict_coach')}</a>
-              <a href="/ComebackCooker" className={`text-xs ${linkStyle}`}>🗣️ {t('vh_comeback_cooker')}</a>
-            </div>
-          </div>
+          ))}
+
+          {/* One quiet link, not a "Related tools" box: the page already
+              supplies Related Tools immediately after this component, and
+              a second box here would be redundant with it. */}
+          <p className={`text-xs text-center ${c.textMuted}`}>
+            <a href="/ConflictCoach" className={linkStyle}>⚔️ {t('vh_conflict_coach')}</a>
+          </p>
         </div>
-      )} </div>
+      )}
+    </div>
   );
 };
 

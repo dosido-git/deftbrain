@@ -5844,54 +5844,58 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "VelvetHammer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You've drafted something you shouldn't send.",
     give: "The angry version, unfiltered. Your relationship to the recipient helps.",
-    get: "The same point, professionally, with the substance intact.",
-    edge: "The complaint survives the rewrite. It removes the damage, not the argument.",
+    get: "The point, recovered — plus three sendable versions of it.",
+    edge: "The complaint survives the rewrite. It removes the heat, not the history.",
   },
-  seoDescription: "Turn your furious draft into a professional message in seconds. Three polished versions that keep your point and lose the fire. Free, no signup.",
-  seoTitle: "Angry Email Rewriter: Stay Professional",
+  // 2026-09-14: rewrite. "Collaborative" instructed the model to assume
+  // good intent — a stance the user never expressed. The old output also
+  // invented increasingly serious facts as it got firmer (internal
+  // sign-off, real cost, diminished confidence, reassessing the
+  // relationship) that never came from the draft. Firmness now comes from
+  // wording, not invented consequences, and the three tones are named for
+  // what they do (Clear / Tactful / Firm) rather than a stance assumed
+  // on the user's behalf.
+  seoDescription: "Turn your furious draft into a message you could actually send. Clear, Tactful, and Firm versions that keep your point and lose the fire — no invented facts, no manufactured graciousness.",
+  seoTitle: "Angry Draft Rewriter: Keep the Point, Lose the Heat",
   title: "Velvet Hammer",
-  tagline: "Transform furious drafts into professional messages",
+  tagline: "Say the hard thing without losing the point.",
   tags: ['angry message', 'professional email', 'negotiate', 'persuade', 'firm', 'boundary', 'pushback', 'assertive', 'conflict', 'rewrite', 'workplace', 'communication'],
   icon: "🔨",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "Transform angry draft messages into professional communication. Type what you really want to say, then get three polished versions that preserve your point while removing the fire.",
+  description: "Sometimes the message you need to send starts out angrier than you want it to land. Velvet Hammer helps you keep what matters, lose what doesn't, and say it in a way the other person can actually hear.",
   guide: {
-    overview: "Velvet Hammer helps you communicate assertively without burning bridges. When you're furious and need to send a professional message, type your raw, unfiltered thoughts—insults, sarcasm, and all. The tool analyzes your legitimate concerns and rewrites them into three professional variants: Collaborative (assumes good faith), Balanced (clear boundaries), and Firm (direct but professional). Your anger gets validated, your point gets preserved, but the inflammatory language disappears.",
-    
+    overview: "Velvet Hammer removes the heat without rewriting the history. Type your raw, unfiltered draft — insults, sarcasm, and all. The tool separates what you actually reported (facts, effects, what you want) from language that doesn't need to survive into the final message, then gives you The Point (what's left once the heat is gone) and three versions of it: Clear (the cleanest statement), Tactful (softer delivery, same substance), and Firm (unmistakable emphasis, never a threat). Nothing is added that you didn't already say.",
     howToUse: [
-      "Type or paste your angry draft message in the 'What I want to say' box—don't hold back",
+      "Type or paste your angry draft message — don't hold back",
       "Optionally add context: your relationship to the recipient (boss, colleague, landlord, etc.)",
-      "Optionally specify what you're trying to achieve (apology, compensation, behavior change, etc.)",
-      "Optionally indicate the power dynamic (you have leverage, you're equals, they have power over you)",
-      "Click 'Transform Message' and review three professionally reworded versions"
+      "Optionally specify your goal (apology, compensation, behavior change, etc.)",
+      "Optionally indicate the power dynamic — it only calibrates directness, never invents leverage",
+      "Read The Point first, then pick the version you'd actually send"
     ],
-    
     example: {
       scenario: "Your colleague took credit for your work in a meeting. You want to type: 'You're a backstabbing liar who steals other people's work. This is the third time you've done this and I'm sick of it.'",
       action: "Paste that angry message, select 'colleague' as relationship, 'behavior change' as goal, and 'neutral' power dynamic. Generate.",
-      result: "You get three options: Collaborative ('I wanted to address some concerns about project attribution...'), Balanced ('I need to discuss instances where my work was presented without acknowledgment...'), and Firm ('There have been multiple occasions where you've presented my work as your own. This pattern is unacceptable...'). Each preserves your factual claim while removing personal attacks."
+      result: "The Point: this is the third time your work was presented as someone else's, and you want it to stop. Clear: a direct, factual statement of the pattern and the ask. Tactful: the same substance, delivered to lower defensiveness. Firm: unmistakable emphasis on the pattern and the ask — with no invented consequence attached."
     },
-    
     tips: [
-      "The angrier your draft, the better—the tool is designed for maximum rage translation",
-      "Add context fields for better calibration: 'boss' relationships get more diplomatic, 'you have leverage' makes messages firmer",
-      "The 'Collaborative' version assumes good intentions—use when you want to preserve relationships",
-      "The 'Firm' version is direct and sets clear boundaries—use when previous attempts have failed",
+      "The angrier your draft, the better — the tool is designed to find the point underneath it",
+      "Context fields calibrate directness only — they never invent leverage or soften a boundary you stated plainly",
+      "Firm is direct, not a threat — it should never contain a consequence you didn't actually state",
+      "Read The Point before the three versions — it's the plain fact of what survived",
       "Your original angry draft stays completely private and is never stored anywhere"
     ],
-    
     pitfalls: [
-      "Don't use the 'Firm' version as your first contact—it's for escalation after polite attempts fail",
-      "Context matters: review all three variants and choose based on your actual relationship and goal",
-      "The tool preserves your factual claims but removes absolutes like 'always' and 'never'—if your draft has exaggerations, they'll be toned down to what's defensible"
+      "Don't assume Firm means aggressive — it means unmistakable, not escalating",
+      "Review all three variants and choose based on your actual relationship and goal, not just how satisfying a version feels",
+      "The tool preserves your factual claims exactly — quantities, timing, and scope stay as you stated them, never strengthened"
     ]
   }
 },
