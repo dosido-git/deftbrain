@@ -139,14 +139,16 @@ const TimeWarp = ({ tool }) => {
         userRegion,
       });
       setResults(data);
+      // Full input + full result, not a truncated preview: this is what
+      // lets a history card actually be reopened instead of just logged.
+      // See openSession() below.
       setSessionHistory(prev => [{
         id: 'tw_' + Date.now(),
         date: new Date().toISOString(),
-        title: data?.title || '',
         modernThing: modernThing.trim(),
         historicalPeriod: historicalPeriod.trim(),
-        preview: (modernThing + ' × ' + historicalPeriod).slice(0, 64),
         format,
+        data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('tw_copy_failed'));
@@ -157,6 +159,18 @@ const TimeWarp = ({ tool }) => {
     setModernThing(combo.modernKey ? t(combo.modernKey) : combo.modern);
     setHistoricalPeriod(t(combo.periodKey));
     setResults(null);
+  };
+
+  // Reopens a past warp exactly as it was — no re-call. "Same Combo,
+  // Different Take" in the results view already re-runs off modernThing/
+  // historicalPeriod/format state, so restoring those here is what makes
+  // it work correctly from a reopened session too.
+  const openSession = (s) => {
+    setModernThing(s.modernThing || '');
+    setHistoricalPeriod(s.historicalPeriod || '');
+    setFormat(s.format || 'explain');
+    setResults(s.data || null);
+    setError('');
   };
 
   // ── Copy text builder ──
@@ -357,28 +371,44 @@ const TimeWarp = ({ tool }) => {
         </div>
       )}
 
-      {/* Session sessionHistory */}
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('tw_recent')}</p>
-          <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {sessionHistory.map(s => (
-              <div key={s.id} className={`py-1.5 ${c.border} border-b last:border-b-0`}>
-                <div className="flex items-center justify-between gap-3">
-                  <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.title || s.preview}</span>
-                  <span className={`text-[10px] ${c.textMuted} shrink-0 uppercase`}>{s.format}</span>
-                </div>
-                {s.title && s.preview && (
-                  <p className={`text-[10px] ${c.textMuted} truncate mt-0.5`}>{s.preview}</p>
-                )}
-              </div>
-            ))}
+      {/* Recent warps — each card reopens the complete past session (no
+          re-call); "Same Combo, Different Take" in the results view works
+          correctly from a reopened session too, since openSession restores
+          modernThing/historicalPeriod/format state, not just the display. */}
+      {sessionHistory.length > 0 && (() => {
+        const validSessions = sessionHistory.filter(s => s.data);
+        if (!validSessions.length) return null;
+        return (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('tw_recent')}</p>
+            <div className="space-y-2">
+              {validSessions.map(s => {
+                const fmtInfo = FORMATS.find(f => f.value === s.format);
+                return (
+                  <div
+                    key={s.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openSession(s)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') openSession(s); }}
+                    className={`${c.card} ${c.border} border rounded-lg p-3 cursor-pointer transition-colors hover:border-cyan-500/50`}
+                  >
+                    <p className={`text-sm font-semibold ${c.text} truncate`}>{s.data?.title || ''}</p>
+                    <p className={`text-xs ${c.textMuted} mt-0.5`}>
+                      {s.modernThing} × {s.historicalPeriod}{fmtInfo ? ` · ${t(fmtInfo.labelKey)}` : ''}
+                    </p>
+                    {s.data?.anachronism_alert && (
+                      <p className={`text-[10px] ${c.textMuted} truncate mt-1`}>
+                        {t('tw_best_moment')}: {s.data.anachronism_alert}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Post-result cross-tool links */}
       {results && (

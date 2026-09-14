@@ -61,11 +61,12 @@ HISTORY CHECK RULES:
 - historical_footnotes contains 0-3 genuinely factual, high-confidence notes connected to the piece.
 - Each note must distinguish fact from analogy. Do not say 'this was basically the first X' unless that comparison is explicitly framed as an analogy rather than historical fact.
 - If a fact is disputed, highly specific, or outside your confidence, leave it out.
+- Each footnote must be an independently factual historical claim, not an interpretation written in factual-sounding language. Avoid universal claims — 'did not exist', 'would not', 'always', 'never' — unless literally supportable for the stated period: the telegraph and telephone existed by the Victorian era, so 'remote communication technology did not exist' is false, and 'a Victorian gentleman would not alter his appearance based on whether others could see him' is an inference about behavior, not a fact about the period. Before returning each footnote, silently ask whether a knowledgeable historian could reasonably object to its wording; if so, narrow it or omit it.
 
 Return ONLY valid JSON:
 {
   "title": "A concise, funny title for the collision",
-  "era_context": "One short, high-confidence historical context sentence. Keep it broad if precision is uncertain.",
+  "era_context": "One modest, directly relevant historical fact that orients the joke — not a sweeping characterization of how people in the period lived or behaved. Prefer something like 'Letters and face-to-face meetings played important roles in Victorian business and social life' over a categorical claim about what was THE primary means of communication.",
   "main_content": "The fictional/hypothetical piece in the selected format",
   "fiction_note": "One brief sentence clarifying what was invented for the scenario. Example: The people, dialogue, and incident above are fictional; the history notes below are the factual part.",
   "historical_footnotes": [
