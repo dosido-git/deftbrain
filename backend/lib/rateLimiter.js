@@ -30,6 +30,28 @@ const DIVERSION_LIMITS = {
   perDay:    30,
 };
 
+// ── "Quick-fire game" limits (The Final Word's Trivia Night: a genuine
+// round of one small, cheap call — ~500 tokens on the fast model — per
+// question, at a pace the tool itself advertises as "quick-fire"). Needs
+// its own keyPrefix wherever it's used, not just a bigger number: without
+// one it shares DEFAULT_LIMITS' bucket with every other tool the same
+// visitor happens to use, so a few minutes of trivia could get capped by
+// something that has nothing to do with trivia. ──
+const GAME_LIMITS = {
+  perMinute: 30,
+  perDay:    300,
+};
+
+// ── "Game polling / scoring" limits — state reads and score updates with
+// NO model call at all (a multiplayer lobby polls room state every 2s per
+// player). Rate-limiting these against the same budget that protects
+// Claude spend makes no sense; they cost nothing to serve. Generous on
+// purpose, and still bounded so a runaway client can't hammer the server. ──
+const POLL_LIMITS = {
+  perMinute: 60,
+  perDay:    2000,
+};
+
 // ── Storage ──
 const shortWindow = new Map();  // key: ip -> { count, resetAt }
 const dailyWindow = new Map();  // key: ip -> { count, resetAt }
@@ -170,4 +192,5 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
 
 module.exports = {
   AUTOMATIC_ACTIONS,
-  AUTOMATIC_LIMITS, rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS };
+  AUTOMATIC_LIMITS, rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS,
+  GAME_LIMITS, POLL_LIMITS };

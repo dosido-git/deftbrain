@@ -3,7 +3,7 @@ const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
-const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS, GAME_LIMITS, POLL_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -86,7 +86,15 @@ const normalizeNullStrings = (val) => {
   return val;
 };
 
-router.post('/the-final-word', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+// GAME_LIMITS + its own keyPrefix, not DEFAULT_LIMITS: this endpoint also
+// serves Trivia Night, which the tool itself brands "quick-fire" — a real
+// round is one small, cheap call (~500 tokens) per question, well inside
+// DEFAULT_LIMITS' 12/minute if a visitor also happens to be using another
+// tool at the same time. Without a distinct keyPrefix this would share
+// that global per-IP bucket with every other DEFAULT_LIMITS route in the
+// app, which is what made a normal-paced trivia session hit "Too many
+// requests" in the first place.
+router.post('/the-final-word', rateLimit(GAME_LIMITS, 'tfw-game:'), async (req, res) => {
   try {
     const { mode, userLanguage } = req.body;
     if (!mode) return res.status(400).json({ error: 'Please select a mode' });
@@ -428,7 +436,7 @@ Return ONLY this JSON:
 // ═══════════════════════════════════════════════════
 
 // Create a room
-router.post('/the-final-word/room/create', rateLimit(DEFAULT_LIMITS), (req, res) => {
+router.post('/the-final-word/room/create', rateLimit(DEFAULT_LIMITS, 'tfw-room:'), (req, res) => {
   try {
     const { hostName, settings } = req.body;
     if (!hostName?.trim()) return res.status(400).json({ error: 'Host name required' });
@@ -483,7 +491,7 @@ router.post('/the-final-word/room/create', rateLimit(DEFAULT_LIMITS), (req, res)
 });
 
 // Join a room
-router.post('/the-final-word/room/:code/join', rateLimit(DEFAULT_LIMITS), (req, res) => {
+router.post('/the-final-word/room/:code/join', rateLimit(DEFAULT_LIMITS, 'tfw-room:'), (req, res) => {
   try {
     const { playerName } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -512,7 +520,7 @@ router.post('/the-final-word/room/:code/join', rateLimit(DEFAULT_LIMITS), (req, 
 });
 
 // Get room state (polling endpoint — NOT rate-limited since it's GET)
-router.get('/the-final-word/room/:code/state', rateLimit(DEFAULT_LIMITS), (req, res) => {
+router.get('/the-final-word/room/:code/state', rateLimit(POLL_LIMITS, 'tfw-poll:'), (req, res) => {
   try {
     const room = rooms.get(req.params.code.toUpperCase());
     if (!room) return res.status(404).json({ error: 'Room not found' });
@@ -562,7 +570,7 @@ router.get('/the-final-word/room/:code/state', rateLimit(DEFAULT_LIMITS), (req, 
 });
 
 // Host: generate next question
-router.post('/the-final-word/room/:code/next', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/the-final-word/room/:code/next', rateLimit(GAME_LIMITS, 'tfw-game:'), async (req, res) => {
   try {
     const { playerId, userLanguage } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -633,7 +641,7 @@ Return ONLY this JSON — no other text:
 });
 
 // Player: submit answer
-router.post('/the-final-word/room/:code/answer', rateLimit(DEFAULT_LIMITS), (req, res) => {
+router.post('/the-final-word/room/:code/answer', rateLimit(POLL_LIMITS, 'tfw-poll:'), (req, res) => {
   try {
     const { playerId, answerIndex } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -658,7 +666,7 @@ router.post('/the-final-word/room/:code/answer', rateLimit(DEFAULT_LIMITS), (req
 });
 
 // Host: reveal answer and score
-router.post('/the-final-word/room/:code/reveal', rateLimit(DEFAULT_LIMITS), (req, res) => {
+router.post('/the-final-word/room/:code/reveal', rateLimit(POLL_LIMITS, 'tfw-poll:'), (req, res) => {
   try {
     const { playerId } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());

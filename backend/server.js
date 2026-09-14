@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const { rateLimit, DEFAULT_LIMITS } = require('./lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS, GAME_LIMITS, POLL_LIMITS } = require('./lib/rateLimiter');
 const { observeJson } = require('./lib/completeness');
 
 const app = express();
@@ -183,9 +183,27 @@ if (IS_PRODUCTION) {
 
 // ── Rate limiting ──
 // Apply default rate limit to all API POST routes (the ones that call Claude)
+//
+// This layer runs BEFORE every route file's own rateLimit() call, and
+// rateLimiter.js's own de-dup ("first limiter to see it decides, any later
+// one on the SAME key is a no-op") only works when both layers agree on the
+// key. A route asking for a different limit — The Final Word's Trivia Night
+// needs GAME_LIMITS/POLL_LIMITS, not DEFAULT_LIMITS, see backend/routes/
+// the-final-word.js — otherwise gets overruled right here before its own,
+// more permissive check ever runs: this layer's stricter 429 fires first
+// and the request never reaches the route. Matched by path so both layers
+// use the SAME key/limit for these; keep this in sync with the rateLimit()
+// calls in the-final-word.js if either changes.
+const TFW_GAME_PATHS = /^\/the-final-word(\/room\/[^/]+\/next)?$/;
+const TFW_POLL_PATHS = /^\/the-final-word\/room\/[^/]+\/(answer|reveal)$/;
+const TFW_ROOM_PATHS = /^\/the-final-word\/room\/(create|[^/]+\/join)$/;
 app.use('/api', (req, res, next) => {
-  // Only rate-limit POST requests (the ones that cost money)
+  // Only rate-limit POST requests (the ones that cost money) — GET routes
+  // (e.g. room state polling) are cheap reads with their own limit already.
   if (req.method !== 'POST') return next();
+  if (TFW_GAME_PATHS.test(req.path)) return rateLimit(GAME_LIMITS, 'tfw-game:')(req, res, next);
+  if (TFW_POLL_PATHS.test(req.path)) return rateLimit(POLL_LIMITS, 'tfw-poll:')(req, res, next);
+  if (TFW_ROOM_PATHS.test(req.path)) return rateLimit(DEFAULT_LIMITS, 'tfw-room:')(req, res, next);
   rateLimit(DEFAULT_LIMITS)(req, res, next);
 });
 
