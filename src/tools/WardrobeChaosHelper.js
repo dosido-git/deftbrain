@@ -398,7 +398,7 @@ const WardrobeChaosHelper = ({ tool }) => {
       {toast && (<div className={`fixed top-4 end-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${toast.type==='success'?(c.toastSuccess):toast.type==='error'?(c.toastError):(c.toastInfo)}`}>{toast.type==='success'&&<span className="me-2">✅</span>}{toast.type==='error'&&<span className="me-2">❌</span>}{toast.message}</div>)} {/* HEADER */} <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -409,10 +409,10 @@ const WardrobeChaosHelper = ({ tool }) => {
               ↺ {t('wch_start_over')}
             </button>
           ) : null}
-          {getTotalItems()>=3 && step!=='results' && (<button onClick={handleJustDressMe} disabled={loading} className={`${c.btnPrimary} px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 disabled:opacity-40 shadow-lg`}>
-              {loading?<span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span>:<span>{tool?.icon ?? '👗👔'}</span>} {t('wch_just_dress_me')}
-            </button>
-          )} </div>
+          {/* No header "Just Dress Me" button here — the hero card below
+              (once ≥3 items) is the one dominant entry point for it. Two
+              submit buttons on screen at once was the bug being fixed. */}
+          </div>
         </div>
 
         <div className="flex gap-2 flex-wrap mb-3">
