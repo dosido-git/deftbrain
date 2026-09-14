@@ -7,6 +7,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { encodeSharePayload } from '../utils/shareEncode';
 
 // Disputes span both genuinely different kinds — a fact that can be looked
 // up, a he-said-she-said with no record, a long-running family grievance —
@@ -269,7 +270,6 @@ const TheFinalWord = ({ tool }) => {
 
   // Shareable Link
   const [shareId, setShareId] = useState(null);
-  const [shareLoading, setShareLoading] = useState(false);
 
   // Deep Dissect (FactOrFiction fold-in)
   const [dissectMode, setDissectMode] = useState(false); // toggle within factcheck mode
@@ -593,23 +593,19 @@ const TheFinalWord = ({ tool }) => {
   };
 
   // Share link
-  const handleCreateShareLink = async () => {
+  // Self-contained link — the verdict rides in the URL itself, so there is
+  // no server-side record that a redeploy (or, before that fix, a plain
+  // process restart) can lose. A prior version POSTed to the backend for an
+  // id and looked it up again on open; that id 404'd in production even
+  // after adding disk persistence for it, almost certainly because a real
+  // deploy replaces the whole container rather than restarting the same
+  // process on the same disk. A link that carries its own data sidesteps
+  // the question entirely.
+  const handleCreateShareLink = () => {
     if (!result && !daResult) return;
-    setShareLoading(true);
-    try {
-      const resp = await fetch(`${BACKEND_URL}/api/the-final-word/share`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verdict: result || daResult, inputSummary: result?.answer || result?.verdict_headline || daResult?.verdict_headline || '' }),
-      });
-      const data = await resp.json();
-      if (data.id) {
-        setShareId(data.id);
-        const link = `${window.location.origin}/verdict/${data.id}`;
-        navigator.clipboard?.writeText(link);
-      }
-    } catch (err) { setError(t('tfw_err_share')); }
-    finally { setShareLoading(false); }
+    const id = encodeSharePayload({ verdict: result || daResult, inputSummary: result?.answer || result?.verdict_headline || daResult?.verdict_headline || '' });
+    setShareId(id);
+    navigator.clipboard?.writeText(`${window.location.origin}/verdict/${id}`);
   };
 
   // Fact-check related claim
@@ -834,6 +830,25 @@ const TheFinalWord = ({ tool }) => {
 
   const confBarColor = (conf) => conf === 'certain' ? 'bg-emerald-500' : conf === 'high' ? 'bg-emerald-500' : conf === 'moderate' ? 'bg-amber-500' : conf === 'low' ? 'bg-amber-500' : 'bg-red-500';
 
+  // How well a position holds up, in the model's own qualitative terms —
+  // not a percentage bucketed into a word after the fact. Two people (or a
+  // position and its counter) can land on the same category for entirely
+  // different reasons; the label says how supported the position is, not
+  // how it compares to the other side's number.
+  const SUPPORT_LABEL_KEY = {
+    strongly_supported: 'tfw_support_strongly',
+    mostly_supported: 'tfw_support_mostly',
+    partly_supported: 'tfw_support_partly',
+    weakly_supported: 'tfw_support_weakly',
+    not_supported: 'tfw_support_not',
+  };
+  const getSupportLabel = (support) => t(SUPPORT_LABEL_KEY[support] || 'tfw_support_partly');
+  const getSupportColor = (support) => {
+    if (support === 'strongly_supported' || support === 'mostly_supported') return isDark ? 'text-emerald-400' : 'text-emerald-600';
+    if (support === 'partly_supported') return isDark ? 'text-amber-400' : 'text-amber-600';
+    return isDark ? 'text-red-400' : 'text-red-500'; // weakly_supported, not_supported, or missing
+  };
+
   // ─── Reusable Sub-Components ───
   const VoiceButton = () => {
     if (!voiceSupported) return null;
@@ -881,8 +896,8 @@ const TheFinalWord = ({ tool }) => {
         <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
           <span>💬</span> {t('tfw_actually')}
         </button>
-        <button onClick={handleCreateShareLink} disabled={shareLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary} disabled:opacity-40`}>
-          <span>{shareLoading ? (tool?.icon ?? '⚖️') : '🔗'}</span> {shareId ? t('tfw_linked') : t('tfw_get_link')}
+        <button onClick={handleCreateShareLink} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
+          <span>🔗</span> {shareId ? t('tfw_linked') : t('tfw_get_link')}
         </button>
         {showAppealBtn && (
           <button onClick={() => setShowAppeal(!showAppeal)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
@@ -1572,7 +1587,7 @@ const TheFinalWord = ({ tool }) => {
                   return (
                     <div key={i} className={`p-4 ${i === 0 ? `border-e ${c.border}` : ''} ${isWinner ? isDark ? 'bg-emerald-900/10' : 'bg-green-50/50' : ''}`}>
                       <div className="flex items-center gap-2 mb-2">{isWinner && <span>🏆</span>}<p className={`text-sm font-bold ${c.text}`}>{person?.name}</p></div>
-                      <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (person?.accuracy || 0) >= 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-500')}`}>{t('tfw_pct_support', { pct: person?.accuracy ?? '?' })}</div>
+                      <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(person?.support)}`}>{getSupportLabel(person?.support)}</div>
                       {person?.what_they_got_right && <p className={`text-xs mb-1 ${c.textSecondary}`}><span className={c.success}>✓</span> {person.what_they_got_right}</p>}
                       {person?.what_they_got_wrong && <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {person.what_they_got_wrong}</p>}
                     </div>
@@ -1755,13 +1770,13 @@ const TheFinalWord = ({ tool }) => {
             <div className="grid grid-cols-2 gap-0 border-b" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
               <div className={`p-4 border-e ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_your_position')}</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{t('tfw_pct_support', { pct: daResult.user_score?.accuracy })}</div>
+                <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(daResult.user_score?.support)}`}>{getSupportLabel(daResult.user_score?.support)}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.user_score?.strengths}</p>
                 <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.user_score?.weaknesses}</p>
               </div>
               <div className="p-4">
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_counter')}</p>
-                <div className={`text-3xl font-black mb-2 ${(daResult.counter_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{t('tfw_pct_support', { pct: daResult.counter_score?.accuracy })}</div>
+                <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(daResult.counter_score?.support)}`}>{getSupportLabel(daResult.counter_score?.support)}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.counter_score?.strengths}</p>
                 <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.counter_score?.weaknesses}</p>
               </div>

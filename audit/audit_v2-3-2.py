@@ -195,7 +195,17 @@ BANNED_COLOR_FAMILIES = ['blue', 'purple', 'violet', 'indigo', 'teal', 'stone',
 _BANNED_COLOR_RE = re.compile(
     r'\b[a-z][a-z-]*-(?:' + '|'.join(BANNED_COLOR_FAMILIES) + r')(?:-\d{2,3})?\b'
 )
-SKIP = {'usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression', 'ToolFinderWizard'}
+SKIP = {'usePersistentState','tools','ActionButtons','printBranding','BrandMark','GlobalHeader','ToolPageWrapper','server','index','rateLimiter','useTheme','useDocumentHead','useSurvivalMath','usePersistentState','imageCompression', 'ToolFinderWizard',
+        # Non-catalog files this audit still gets run against because
+        # diff-audit.py sends "everything else" here regardless of
+        # directory — SharedVerdict.js (src/components/) is a standalone
+        # page, not a tool; shareEncode.js (src/utils/) is a plain
+        # encode/decode helper. Neither has a tool?.title header, a c-block,
+        # a PF-16 reset, or an ActionBar to register, because none of that
+        # applies. NotFound.js and friends have never tripped this only
+        # because nobody has edited them since diff-audit.py started gating
+        # pushes; add any other non-tool file here if it ever does.
+        'SharedVerdict', 'shareEncode'}
 
 def get_c_block(content):
     c_start = content.find('const c = {')

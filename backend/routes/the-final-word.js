@@ -3,8 +3,6 @@ const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -57,70 +55,16 @@ function generateRoomCode() {
 }
 
 // ─── In-Memory Stores ───
-// Production: replace with Redis or database
-const sharedVerdicts = new Map();  // id → { verdict, createdAt }
-const rooms = new Map();           // code → room state — real-time and short-
-                                    // lived (24h TTL); not persisted, a lost
-                                    // room just means starting a new one.
+const rooms = new Map(); // code → room state — real-time and short-lived
+                          // (24h TTL); a lost room just means starting a new
+                          // one. Shared verdicts used to live here too (then
+                          // in a JSON file); both were removed after the
+                          // link still 404'd in production — see the note by
+                          // handleCreateShareLink in TheFinalWord.js.
 
-// ── Shared-verdict persistence ──────────────────────────────────────────
-// A share link is meant to last up to 30 days, but the Map above starts
-// empty on every process restart — including a routine deploy. A link
-// created, then opened after the next deploy (this repo pushes often),
-// 404'd even though it was well inside its 30-day window. Debounced,
-// atomic, best-effort — same shape as lib/groundedFacts.js's cache file —
-// because a write here must never delay or fail the request that
-// triggered it, and a half-written file must never be readable at boot.
-const SHARED_VERDICTS_PATH = process.env.SHARED_VERDICTS_PATH
-  || path.join(__dirname, '..', 'data', 'shared-verdicts.json');
-
-(function hydrateSharedVerdicts() {
-  let raw;
-  try { raw = fs.readFileSync(SHARED_VERDICTS_PATH, 'utf8'); } catch { return; }
-  let parsed;
-  try { parsed = JSON.parse(cleanJsonResponse(raw)); } catch (err) {
-    console.error('[the-final-word] shared-verdicts.json is not valid JSON, ignoring:', err.message);
-    return;
-  }
-  const now = Date.now();
-  let restored = 0;
-  for (const [id, entry] of Object.entries(parsed || {})) {
-    if (entry && typeof entry.createdAt === 'number' && now - entry.createdAt <= 30 * 24 * 60 * 60 * 1000) {
-      sharedVerdicts.set(id, entry);
-      restored++;
-    }
-  }
-  if (restored) console.log(`[the-final-word] restored ${restored} shared verdict(s) from disk`);
-})();
-
-let verdictFlushTimer = null;
-function scheduleVerdictFlush() {
-  if (verdictFlushTimer) return;
-  verdictFlushTimer = setTimeout(() => {
-    verdictFlushTimer = null;
-    const out = Object.fromEntries(sharedVerdicts);
-    const tmp = `${SHARED_VERDICTS_PATH}.tmp`;
-    try {
-      fs.mkdirSync(path.dirname(SHARED_VERDICTS_PATH), { recursive: true });
-      fs.writeFileSync(tmp, JSON.stringify(out));
-      fs.renameSync(tmp, SHARED_VERDICTS_PATH);
-    } catch (err) {
-      console.error('[the-final-word] could not persist shared verdicts:', err.message);
-    }
-  }, 2000);
-  if (typeof verdictFlushTimer.unref === 'function') verdictFlushTimer.unref();
-}
-
-// Cleanup old entries every 30 minutes
+// Cleanup old rooms every 30 minutes
 setInterval(() => {
   const now = Date.now();
-  // Shared verdicts: 30-day TTL
-  let verdictsChanged = false;
-  for (const [id, entry] of sharedVerdicts) {
-    if (now - entry.createdAt > 30 * 24 * 60 * 60 * 1000) { sharedVerdicts.delete(id); verdictsChanged = true; }
-  }
-  if (verdictsChanged) scheduleVerdictFlush();
-  // Rooms: 24-hour TTL
   for (const [code, room] of rooms) {
     if (now - room.createdAt > 24 * 60 * 60 * 1000) rooms.delete(code);
   }
@@ -212,7 +156,7 @@ RULES:
 - If both people are partly right, say exactly where each is right.
 - If the evidence supplied is insufficient, identify what missing fact would change the verdict.
 - For current or rapidly changing claims, do not present remembered information as current.
-- "accuracy" is a rough claim-support score for this playful interface, not a probability, truth percentage, or measure of a person's credibility. Use it only to summarize how well each stated position is supported.
+- Judge how well each person's position holds up as one of five QUALITATIVE categories — strongly_supported, mostly_supported, partly_supported, weakly_supported, or not_supported. This is not a probability, a truth percentage, or a measure of a person's credibility, and it is not a number you privately compute and then round to a label — reason in these categories directly. Two people can land on the same category for entirely different reasons; that is fine and expected for an ambiguous or old disagreement.
 - Do not infer intent, negligence, dishonesty, or character unless the supplied facts establish it.
 - Prefer a useful resolution over theatrical winner-picking.
 ${SOURCES_INSTRUCTION}
@@ -223,8 +167,8 @@ Return ONLY this JSON:
   "winner_name": "${nameA}" or "${nameB}" or "Neither" or "Both",
   "verdict_headline": "One-line verdict that says what can actually be concluded",
   "score": {
-    "person_a": { "name": "${nameA}", "accuracy": 0-100, "what_they_got_right": "...", "what_they_got_wrong": "..." },
-    "person_b": { "name": "${nameB}", "accuracy": 0-100, "what_they_got_right": "...", "what_they_got_wrong": "..." }
+    "person_a": { "name": "${nameA}", "support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported", "what_they_got_right": "...", "what_they_got_wrong": "..." },
+    "person_b": { "name": "${nameB}", "support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported", "what_they_got_right": "...", "what_they_got_wrong": "..." }
   },
   "explanation": "2-4 sentences separating the factual issue from interpretation or blame",
   "the_actual_answer": "The most complete answer supported by the available facts — one sentence",
@@ -416,6 +360,7 @@ RULES:
 - Don't go easy on the user — if their position is weak, say so
 - But also don't artificially make the counter-argument win — be genuinely fair
 - The goal is to stress-test their thinking, not to agree or disagree
+- Judge how well each position holds up as one of five QUALITATIVE categories — strongly_supported, mostly_supported, partly_supported, weakly_supported, or not_supported — not a probability or a number you privately compute and then round to a label. Reason in these categories directly; both sides can land on the same one for different reasons.
 ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
@@ -425,12 +370,12 @@ Return ONLY this JSON:
   "verdict": "user_wins" | "counter_wins" | "both_valid" | "both_weak" | "its_complicated",
   "verdict_headline": "Bold one-line verdict — one sentence",
   "user_score": {
-    "accuracy": 0-100,
+    "support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported",
     "strengths": "What's strong about their position — one sentence",
     "weaknesses": "Where their position falls short — one sentence"
   },
   "counter_score": {
-    "accuracy": 0-100,
+    "support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported",
     "strengths": "What's strong about the counter-argument — one sentence",
     "weaknesses": "Where the counter falls short — one sentence"
   },
@@ -471,42 +416,12 @@ Return ONLY this JSON:
   }
 });
 
-// ═══════════════════════════════════════════════════
-// SHAREABLE VERDICT ROUTES
-// ═══════════════════════════════════════════════════
-
-// Save a verdict for sharing
-router.post('/the-final-word/share', rateLimit(DEFAULT_LIMITS), (req, res) => {
-  try {
-    const { verdict, inputSummary } = req.body;
-    if (!verdict) return res.status(400).json({ error: 'No verdict to share' });
-
-    const id = generateId(10);
-    sharedVerdicts.set(id, {
-      verdict,
-      inputSummary: inputSummary || '',
-      createdAt: Date.now(),
-    });
-    scheduleVerdictFlush();
-
-    res.json({ id, url: `/verdict/${id}` });
-  } catch (error) {
-    console.error('Share error:', error);
-    res.status(500).json({ error: 'Failed to create share link' });
-  }
-});
-
-// Retrieve a shared verdict
-router.get('/the-final-word/share/:id', rateLimit(DEFAULT_LIMITS), (req, res) => {
-  try {
-    const entry = sharedVerdicts.get(req.params.id);
-    if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
-    res.json({ verdict: entry.verdict, inputSummary: entry.inputSummary });
-  } catch (error) {
-    console.error('TheFinalWord share fetch error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-});
+// Shareable verdict links used to be server-side: POST here for an id,
+// GET it back at open time. Removed after it 404'd in production even with
+// disk persistence added for it (most likely a real deploy replaces the
+// whole container, not just the process) — the frontend now encodes the
+// verdict directly into the link itself (src/utils/shareEncode.js), which
+// needs no route here at all. See src/components/SharedVerdict.js.
 
 // ═══════════════════════════════════════════════════
 // MULTIPLAYER TRIVIA — Room Management

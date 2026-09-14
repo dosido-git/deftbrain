@@ -1,13 +1,17 @@
-// A verdict shared from The Final Word (handleCreateShareLink →
-// POST /api/the-final-word/share) lands here when someone opens the copied
-// link. Standalone page, not a "tool" — no ToolPageWrapper, no catalog
-// lookup, just the verdict the backend has on file for this id (30-day TTL,
-// see backend/routes/the-final-word.js `sharedVerdicts`).
-import React, { useEffect, useState } from 'react';
+// A verdict shared from The Final Word (handleCreateShareLink) lands here
+// when someone opens the copied link. Standalone page, not a "tool" — no
+// ToolPageWrapper, no catalog lookup.
+//
+// The verdict is encoded directly into `id` (see src/utils/shareEncode.js)
+// rather than looked up from a server-side record. Two earlier versions
+// stored it server-side — first in memory, then in a JSON file — and both
+// 404'd once the backend process (in production, the whole container) had
+// cycled since the link was created. A link that carries its own data
+// can't go stale that way.
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { decodeSharePayload } from '../utils/shareEncode';
 
 const SourcesList = ({ sources, c }) => {
   if (!sources?.length) return null;
@@ -23,6 +27,19 @@ const SourcesList = ({ sources, c }) => {
 // (question / dispute / factcheck / devils-advocate — the only modes
 // handleCreateShareLink ever POSTs) to one common {headline, body, extras}
 // so the page has a single render path instead of four near-duplicate ones.
+// English-only labels — this page isn't wired into the i18n system, same
+// as its headline/body text below. Mirrors TheFinalWord.js's
+// SUPPORT_LABEL_KEY / getSupportLabel (kept in sync by hand; there's no
+// shared module between a localized tool component and this standalone,
+// unlocalized page).
+const SUPPORT_LABEL = {
+  strongly_supported: 'Strongly supported',
+  mostly_supported: 'Mostly supported',
+  partly_supported: 'Partly supported',
+  weakly_supported: 'Weakly supported',
+  not_supported: 'Not supported',
+};
+
 function summarize(verdict) {
   const mode = verdict._mode;
   if (mode === 'question') {
@@ -39,8 +56,8 @@ function summarize(verdict) {
     return {
       kicker: 'Settle It', headline: verdict.verdict_headline, body: verdict.explanation,
       extras: [
-        verdict.score?.person_a && { label: verdict.score.person_a.name, value: `${verdict.score.person_a.accuracy}% support — ${verdict.score.person_a.what_they_got_right}` },
-        verdict.score?.person_b && { label: verdict.score.person_b.name, value: `${verdict.score.person_b.accuracy}% support — ${verdict.score.person_b.what_they_got_right}` },
+        verdict.score?.person_a && { label: verdict.score.person_a.name, value: `${SUPPORT_LABEL[verdict.score.person_a.support] || 'Partly supported'} — ${verdict.score.person_a.what_they_got_right}` },
+        verdict.score?.person_b && { label: verdict.score.person_b.name, value: `${SUPPORT_LABEL[verdict.score.person_b.support] || 'Partly supported'} — ${verdict.score.person_b.what_they_got_right}` },
         verdict.settlement_suggestion && { label: 'A way to move on', value: verdict.settlement_suggestion },
       ].filter(Boolean),
     };
@@ -77,28 +94,12 @@ function summarize(verdict) {
 export default function SharedVerdict() {
   const { id } = useParams();
   const { isDark } = useTheme();
-  const [state, setState] = useState('loading'); // loading | ready | notfound | error
-  const [verdict, setVerdict] = useState(null);
-  const [inputSummary, setInputSummary] = useState('');
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const resp = await fetch(`${BACKEND_URL}/api/the-final-word/share/${id}`);
-        if (resp.status === 404) { if (!cancelled) setState('notfound'); return; }
-        if (!resp.ok) { if (!cancelled) setState('error'); return; }
-        const data = await resp.json();
-        if (cancelled) return;
-        setVerdict(data.verdict);
-        setInputSummary(data.inputSummary || '');
-        setState('ready');
-      } catch (_) {
-        if (!cancelled) setState('error');
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [id]);
+  // Decoding is synchronous and pure — computed once per `id` via the
+  // lazy initializer, no request and no loading state to show.
+  const [payload] = useState(() => decodeSharePayload(id));
+  const state = payload?.verdict ? 'ready' : 'notfound';
+  const verdict = payload?.verdict || null;
+  const inputSummary = payload?.inputSummary || '';
 
   const c = {
     bg: isDark ? 'bg-zinc-950' : 'bg-[#faf8f5]',
@@ -122,28 +123,12 @@ export default function SharedVerdict() {
           </span>
         </Link>
 
-        {state === 'loading' && (
-          <div className={`${c.card} border rounded-2xl p-8 text-center`}>
-            <span className="inline-block animate-spin text-2xl">⚖️</span>
-            <p className={`text-sm mt-3 ${c.textMuted}`}>Loading the verdict…</p>
-          </div>
-        )}
-
         {state === 'notfound' && (
           <div className={`${c.card} border rounded-2xl p-8 text-center space-y-3`}>
             <span className="text-3xl">⚖️</span>
-            <h1 className={`text-lg font-bold ${c.text}`}>This verdict is gone.</h1>
-            <p className={`text-sm ${c.textSecondary}`}>Shared verdicts expire after 30 days, or this link was never valid. The argument may be over — or it may need a fresh ruling.</p>
+            <h1 className={`text-lg font-bold ${c.text}`}>This isn't a valid verdict link.</h1>
+            <p className={`text-sm ${c.textSecondary}`}>The link may have been cut off in copying, or mistyped. Settle a new one and share the full link this time.</p>
             <Link to="/TheFinalWord" className={`inline-block mt-2 px-5 py-2.5 rounded-xl font-semibold text-sm ${c.primary}`}>⚖️ Settle a new one</Link>
-          </div>
-        )}
-
-        {state === 'error' && (
-          <div className={`${c.card} border rounded-2xl p-8 text-center space-y-3`}>
-            <span className="text-3xl">⚠️</span>
-            <h1 className={`text-lg font-bold ${c.text}`}>Couldn't load this verdict.</h1>
-            <p className={`text-sm ${c.textSecondary}`}>Something went wrong on our end. Try reloading, or settle a new one.</p>
-            <Link to="/TheFinalWord" className={`inline-block mt-2 px-5 py-2.5 rounded-xl font-semibold text-sm ${c.primary}`}>⚖️ Go to The Final Word</Link>
           </div>
         )}
 

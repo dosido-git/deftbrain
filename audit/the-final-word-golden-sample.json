@@ -52,13 +52,13 @@
         "score": {
           "person_a": {
             "name": "Sam",
-            "accuracy": 5,
+            "support": "not_supported",
             "what_they_got_right": "Nothing meaningful — the 'thicker at the bottom' observation is real, but the explanation is completely wrong.",
             "what_they_got_wrong": "Glass is NOT a slow-moving liquid. This is one of the most persistent science myths in existence. Glass does not flow at room temperature — or even over centuries. The viscosity of glass at room temperature is so astronomically high (~10^40 Pa·s) that it would take longer than the age of the universe to show measurable flow. The uneven thickness in old windows has nothing to do with liquid movement."
           },
           "person_b": {
             "name": "Alex",
-            "accuracy": 97,
+            "support": "strongly_supported",
             "what_they_got_right": "Both claims are correct. Glass is an amorphous solid — it lacks the long-range crystalline order of true solids but behaves mechanically as a solid. Old windows are thicker at the bottom because of 'crown glass' manufacturing: molten glass was spun into a disc, and when cut into panes, the thicker outer edges often ended up at the bottom by glaziers' convention (or random chance).",
             "what_they_got_wrong": "Virtually nothing. A minor pedantic note: 'amorphous solid' vs. 'supercooled liquid' is a nuanced materials science debate, but for all practical purposes, Alex's framing is correct."
           }
