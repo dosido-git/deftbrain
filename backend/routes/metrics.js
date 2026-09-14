@@ -481,6 +481,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
     const rangeDays = RANGE_DAYS[rangeParam] || null;
     const rangeText = { '1d': 'yesterday', '7d': 'last 7 days', '14d': 'last 14 days', '30d': 'last 30 days', '90d': 'last 90 days', all: 'all time' }[rangeParam];
+    // "Past day" is the one range whose own name already IS the relative-day
+    // word ("yesterday") that the "vs ... in the previous X" template plugs
+    // in — saying "in the previous yesterday" doubles up on it. Every other
+    // range names a span ("last 7 days") that "in the previous" reads fine in
+    // front of, so this only special-cases '1d'.
+    const isPastDay = rangeParam === '1d';
 
     const allRows = readMetrics();
     const now = new Date();
@@ -549,7 +555,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
     // Same text under the number, where it cannot be missed on a touch screen
     // that has no hover.
-    const vsPrev = (prev) => (prev == null ? null : `vs ${prev} in the previous ${prevWindowText}`);
+    const vsPrev = (prev) => (prev == null ? null : isPastDay ? `vs ${prev} yesterday` : `vs ${prev} in the previous ${prevWindowText}`);
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
     // Canonical per-tool key = the frontend tool id from the page path
@@ -1078,6 +1084,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         ...(isToday ? { tag: '(so far, ' + Math.max(1, Math.round((now.getTime() - todayStart.getTime()) / 3600000)) + 'h)' } : {}),
       });
     });
+    // Displayed rows are capped to the most recent 4 weeks (current week +
+    // the 3 before it) — the ledger's day-list can span up to LEDGER_MAX_DAYS,
+    // but the weekly rollup only needs to answer "how are the last few weeks
+    // trending," not replay a year of history. Delta still compares against
+    // the FULL weekGroups array (sliced after mapping), so the oldest
+    // displayed week's ▲▼ still has a real previous week behind it rather
+    // than reading as "new" just because its neighbor scrolled off.
+    const WEEKLY_DISPLAY_COUNT = 4;
     const weekRows = weekGroups.map((g, i) => {
       const isCurrent = g.days[g.days.length - 1] === todayDay && g.days.length < 7;
       const [wStart, wEnd] = weekBounds(g.key);
@@ -1085,7 +1099,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const prevB = periodDelta(weekGroups, i, isCurrent);
       const label = `Week of ${wStart.slice(5)}–${wEnd.slice(5)}`;
       return ledgerTr(label, b, prevB, { summary: true, tag: isCurrent ? `(so far, ${g.days.length}/7 days)` : (g.days[0] !== wStart ? '(partial — data starts here)' : '') });
-    });
+    }).slice(-WEEKLY_DISPLAY_COUNT);
     const monthRows = monthGroups.map((g, i) => {
       const [, mEnd] = monthBounds(g.key);
       const isCurrent = g.days[g.days.length - 1] === todayDay && g.days[g.days.length - 1] !== mEnd;
@@ -1161,7 +1175,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
-    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace(/^(last|yesterday)\s?/, ''))} (${prevMetrics.events} events in that window)</p>` : ''}
+    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs ${isPastDay ? 'yesterday' : 'the previous ' + escH(rangeText.replace(/^(last|yesterday)\s?/, ''))} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>So far today <span style="font-weight:400;font-size:12px;color:#888">(${todaySoFar.hours}h into ${escH(TZ)} — not in the range above)</span></h2>
     <div class="cards">
       ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
@@ -1174,7 +1188,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily</h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
-      <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun)</span></h3>
+      <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
