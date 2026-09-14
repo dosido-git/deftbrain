@@ -2164,15 +2164,20 @@ export const tools = [
     give: "A modern thing and a historical period. Pick a format.",
     get: "The collision written as an explainer, review, news report, letter, debate or ad.",
   },
-  seoDescription: "Collide anything modern with any historical era and get the funny, historically accurate result — reviews, news reports, ads, and real footnotes.",
+  seoDescription: "Collide anything modern with any historical era and get a funny fictional result — reviews, news reports, ads, letters — plus real historical footnotes kept separate from the bit.",
   seoTitle: "Modern Meets History: Comedy Generator",
   title: "Time Warp",
-  tagline: "Collide anything modern with any historical period",
+  tagline: "Collide anything modern with any historical period.",
   tags: ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
   icon: "⏰",
   categories: ['Diversions', 'What If?'],
   headerColor: "#b8dcd8",
-  description: "Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.",
+  // 2026-09-14: dropped the "historically accurate" claim (and the same
+  // claim in seoDescription above) — the rewritten prompt makes the main
+  // piece explicitly fictional/hypothetical and reserves real history for
+  // historical_footnotes specifically. Claiming the whole piece was
+  // accurate was never true and the prompt no longer even tries.
+  description: "What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.",
   guide: {
     overview: "Time Warp creates collisions between the modern and historical that are both genuinely funny and surprisingly educational. The AI knows enough real history to make the comedy specific.",
     howToUse: [

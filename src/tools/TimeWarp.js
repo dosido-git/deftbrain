@@ -142,8 +142,10 @@ const TimeWarp = ({ tool }) => {
       setSessionHistory(prev => [{
         id: 'tw_' + Date.now(),
         date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: (modernThing + ' in ' + historicalPeriod).slice(0, 40),
+        title: data?.title || '',
+        modernThing: modernThing.trim(),
+        historicalPeriod: historicalPeriod.trim(),
+        preview: (modernThing + ' × ' + historicalPeriod).slice(0, 64),
         format,
       }, ...prev].slice(0, 6));
     } catch (err) {
@@ -311,6 +313,12 @@ const TimeWarp = ({ tool }) => {
             </div>
           )}
 
+          {results?.fiction_note && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl px-4 py-3`}>
+              <p className={`text-xs ${c.textMuted} italic`}>🎭 {results.fiction_note}</p>
+            </div>
+          )}
+
           {/* Historical footnotes */}
           {results?.historical_footnotes?.length > 0 && (
             <div className={`${c.infoBox} border rounded-xl p-4`}>
@@ -358,9 +366,14 @@ const TimeWarp = ({ tool }) => {
             {/* eslint-disable-next-line no-restricted-globals */}
 
             {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{s.format}</span>
+              <div key={s.id} className={`py-1.5 ${c.border} border-b last:border-b-0`}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.title || s.preview}</span>
+                  <span className={`text-[10px] ${c.textMuted} shrink-0 uppercase`}>{s.format}</span>
+                </div>
+                {s.title && s.preview && (
+                  <p className={`text-[10px] ${c.textMuted} truncate mt-0.5`}>{s.preview}</p>
+                )}
               </div>
             ))}
           </div>
