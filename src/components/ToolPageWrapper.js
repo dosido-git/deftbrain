@@ -173,9 +173,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
       {/* lg:gap-y-0 — the header is its own grid item now, so the 32px row gap
           landed between the action bar and the tool card, where there used to
           be only the action row's own mb-2. Column gap is untouched (main to
-          sidebar), and below lg the single column keeps the full gap-8 so the
-          stacked sections still breathe. */}
-      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-y-0">
+          sidebar).
+
+          No base row-gap on this grid (gap only applies at lg:, for the
+          column split) — see 2026-09-14 note below for why. */}
+      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
         {/* Locale controls — the trailing columns of row 1, beside the page
             header. They used to be absolutely positioned here, which meant row
             1 sized itself as if they did not exist: nothing stopped them
@@ -189,15 +191,20 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             a tool page these two pills are the only language control there is
             (GlobalHeader does not render here), so burying them below the form
             would strand anyone who landed in the wrong language. */}
-        {/* -mb-6 cancels most of the grid's own gap-8 (32px) row-gap below lg,
-            which stacks on top of any margin here since grid gaps add to an
-            item's margins rather than collapsing with them. Net visible gap
-            below lg: 32px - 24px = 8px — the amount this block always wanted
-            (it was mb-2 before the row/col grid restructure introduced the
-            32px gap it now has to share with every other stacked section). At
-            lg+ the pills sit beside the header in the same row, so margin
-            here is moot either way — kept at 0 for clarity. */}
-        <div data-print-hide className="flex justify-end pt-4 -mb-6 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
+        {/* 2026-09-14: this grid used to carry a base gap-8, cancelled here
+            with a negative margin to bring it down to the 8px this row
+            actually wants. Dropped that entirely — it depended on this
+            margin collapsing through into the grid's own gap track, which
+            Safari and Firefox do not reliably do the same way Chrome does
+            (reproduced live in Safari DevTools at 1010px: gap read correctly
+            in Chrome, doubled in Safari, no shared breakpoint involved — see
+            THERUNTHROUGH/ToolPageWrapper history for the two earlier reports
+            that turned out to be the same root cause). mb-2 here is now a
+            plain, direct margin on this grid item — no cancellation, no
+            collapse-through, nothing for an engine to disagree about. At lg+
+            the pills sit beside the header in the same row, so margin here
+            is moot — kept at 0 for clarity. */}
+        <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
         </div>
 
@@ -207,8 +214,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             the tool card's gradient rather than with the page title. Width is
             unchanged (still 8 of 12), so nothing inside this block moves or
             resizes. Below `lg` the grid is one column and the DOM order is
-            what it always was. */}
-        <div className="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+            what it always was.
+
+            mb-2 here (not on the action-row child below) is deliberate: it's
+            this div's OWN margin as a grid item, so it directly sets this
+            item's box size — no reliance on a descendant's margin collapsing
+            through the grid-item boundary, which is the part that varied by
+            engine (see note above). Same 8px at lg+ and below, so no
+            responsive variant needed. */}
+        <div className="lg:col-start-1 lg:col-span-8 lg:row-start-1 mb-2">
 
           {/* Print-only header */}
           {/* Height matters here, not style. Measured 2026-08-31: this block was
@@ -268,15 +282,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned).
-              -mb-6 lg:mb-2: the same doubled-gap fix as the locale-selector
-              row above (see its comment) — below lg this row and <main>
-              stack into separate grid rows for the first time, so the
-              grid's own gap-8 (32px) row-gap applies for the first time too,
-              stacking on top of this row's own mb-2 (8px) rather than
-              collapsing with it, for 40px where 8px was intended. At lg+
-              the row sits right above <main> with lg:gap-y-0, so mb-2 alone
-              already gave the right 8px there — lg:mb-2 keeps it unchanged. */}
-          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 -mb-6 lg:mb-2 gap-2 relative">
+              No margin on this row itself any more — the 8px gap to <main>
+              below it is now the wrapper div's own mb-2 (see above), not a
+              cancelled grid gap on this descendant. Same reasoning as the
+              2026-09-14 note on the locale-selector row. */}
+          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 gap-2 relative">
             <div className="flex gap-2">
             <button
               onClick={handleBookmarkHint}
@@ -317,7 +327,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         </div>
 
         {/* Main Content Area */}
-        <main data-print-main className="lg:col-span-8">
+        {/* mb-8 lg:mb-0: this is the one transition that always wanted the
+            grid's full 32px (main → sidebar breathing room below lg). Now
+            that the grid carries no base gap, that has to be explicit here
+            instead of inherited — see the 2026-09-14 note above. */}
+        <main data-print-main className="lg:col-span-8 mb-8 lg:mb-0">
           <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               // Two stops instead of one, and a derived value in dark mode
               // rather than the light-mode hex. Same geometry as before —
