@@ -4,7 +4,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { MODELS, ALL_MODELS } = require('./models');
 const { withEpistemics } = require('./epistemics');
-const { currentRoute } = require('./outputStandard');
+const { currentRoute, currentIsTestClient } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
 const { withOutputStandard } = require('./outputStandard');
@@ -385,6 +385,10 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       try {
         logMetric('llm_usage', {
           route: currentRoute(),
+          // Direct API hit (curl, a script, an audit-session verification
+          // step) vs. a real page load — see lib/requestClient.js. Recorded,
+          // never excluded: the report still counts this cost, just labeled.
+          testClient: currentIsTestClient(),
           label,
           model: requestParams.model,
           input: u.input_tokens || 0,

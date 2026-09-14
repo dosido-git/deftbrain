@@ -253,8 +253,14 @@ const requestStandard = new AsyncLocalStorage();
 // it is the one per-tool key every model call underneath a request can reach
 // without being told — the per-call `label` is free-form and one tool uses
 // up to twenty-five of them. lib/claude.js reads it to attribute token usage.
-function enterRouteStandard(standard, route) {
-  requestStandard.enterWith({ standard: standard || null, route: route || null });
+//
+// `testClient` rides along the same way: whether THIS request looks like a
+// direct API hit (curl, a script, an audit-session verification step) rather
+// than a page load through the site — see lib/requestClient.js. lib/claude.js
+// stamps it onto every llm_usage record so the metrics report can label
+// audit/dev-testing cost instead of it silently passing as visitor demand.
+function enterRouteStandard(standard, route, testClient) {
+  requestStandard.enterWith({ standard: standard || null, route: route || null, testClient: !!testClient });
 }
 
 function currentStandard() {
@@ -265,6 +271,11 @@ function currentStandard() {
 function currentRoute() {
   const s = requestStandard.getStore();
   return (s && s.route) || null;
+}
+
+function currentIsTestClient() {
+  const s = requestStandard.getStore();
+  return !!(s && s.testClient);
 }
 
 // Prepended below the epistemic rules, so the universal contract stays the
@@ -283,5 +294,6 @@ module.exports = {
   enterRouteStandard,
   currentStandard,
   currentRoute,
+  currentIsTestClient,
   withOutputStandard,
 };

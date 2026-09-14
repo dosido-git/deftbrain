@@ -6,6 +6,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { enterRouteStandard } = require('../lib/outputStandard');
+const { isTestClient } = require('../lib/requestClient');
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ files.forEach(file => {
     // The slug travels with the standard so every model call under this
     // request can attribute its token usage to the tool (see lib/claude.js).
     const slug = file.replace(/\.js$/, '');
-    router.use('/', (req, res, next) => { enterRouteStandard(declared, slug); next(); });
+    router.use('/', (req, res, next) => { enterRouteStandard(declared, slug, isTestClient(req)); next(); });
     router.use('/', routeModule);
   } catch (err) {
     console.error(`  ❌ Failed to load route ${file}:`, err.message);
