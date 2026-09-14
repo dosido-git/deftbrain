@@ -13,6 +13,7 @@ import RelatedLinks from './components/RelatedLinks';
 import ToolFaq from './components/ToolFaq';
 import EmailCapture from './components/EmailCapture';
 import NotFound from './components/NotFound';
+import SharedVerdict from './components/SharedVerdict';
 
 export default function App() {
   const [college] = useState("");
@@ -40,6 +41,7 @@ export default function App() {
                     />
                   </div>
                 } />
+                <Route path="/verdict/:id" element={<SharedVerdict />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

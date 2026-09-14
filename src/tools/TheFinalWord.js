@@ -295,6 +295,16 @@ const TheFinalWord = ({ tool }) => {
   // first question, when the setup form unmounts the same way) keeps
   // keyboard/screen-reader users on the flow instead of losing their place.
   const questionHeadingRef = useRef(null);
+  // The move to questionHeadingRef only happens once the next question has
+  // actually arrived — for however long the request takes, focus still sat
+  // on nothing. This is focused SYNCHRONOUSLY inside advanceTrivia's click
+  // handler, before the request even starts, so focus moves the instant
+  // the button is clicked rather than after waiting on the model.
+  const triviaStatusRef = useRef(null);
+  // "Actually..." (setShowChallenge(true)) opens the Challenge panel below
+  // the result it was clicked from — without this, focus stayed on the
+  // button while a new textarea appeared elsewhere on the page.
+  const challengeTextRef = useRef(null);
   // ─── Voice Setup ───
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -361,6 +371,10 @@ const TheFinalWord = ({ tool }) => {
   useEffect(() => {
     if (triviaQuestion) questionHeadingRef.current?.focus();
   }, [triviaQuestion]);
+
+  useEffect(() => {
+    if (showChallenge) challengeTextRef.current?.focus();
+  }, [showChallenge]);
 
   // ─── Stats Tracking ───
   const trackStat = (mode, result) => {
@@ -487,7 +501,17 @@ const TheFinalWord = ({ tool }) => {
         previousQuestions,
       });
       setTriviaQuestion(data);
-    } catch (err) { setError(err.message || t('tfw_err_question')); }
+    } catch (err) {
+      setError(err.message || t('tfw_err_question'));
+      // A failed generate (a transient 502, a dropped connection mid-round)
+      // must not strand the visitor on a bare mode-picker with their team
+      // names, round count, category and difficulty invisible but still
+      // held in state — and questionCount/scores untouched either way.
+      // Returning to the setup form makes "Start Local Game" a one-click
+      // retry instead of the only visible way forward being a full reset
+      // that looks like it wiped everything.
+      setTriviaSetup(true);
+    }
   };
 
   const handleTriviaAnswer = (idx) => {
@@ -516,6 +540,7 @@ const TheFinalWord = ({ tool }) => {
 
   const advanceTrivia = () => {
     if (questionCount >= roundLimit) { setTriviaFinished(true); return; }
+    triviaStatusRef.current?.focus();
     setActiveTeamIdx((activeTeamIdx + 1) % teams.length);
     handleTrivia();
   };
@@ -734,13 +759,24 @@ const TheFinalWord = ({ tool }) => {
     setShareId(null); setDissectResult(null);
   };
 
+  // Stays within the CURRENT mode's own example pool — previously this
+  // always drew from all three pools combined, so clicking "Try an
+  // example" while looking at Fact Check could silently switch you to
+  // Settle It or Quick Answer instead of showing a fact-check example.
+  // Only when no mode is picked yet (the mode-selector screen) is there no
+  // "current mode" to stay within, so that case alone still surprises you
+  // with any of the three. Trivia has no example data — nothing to load.
   const loadExample = () => {
-    const flat = [
-      ...EXAMPLES.dispute.map(e => ({ mode: 'dispute', ...e })),
-      ...EXAMPLES.question.map(e => ({ mode: 'question', ...e })),
-      ...EXAMPLES.factcheck.map(e => ({ mode: 'factcheck', ...e })),
-    ];
-    const ex = pickExample('TheFinalWord', flat);
+    if (mode === 'trivia') return;
+    const pool = mode === 'dispute' ? EXAMPLES.dispute.map(e => ({ mode: 'dispute', ...e }))
+      : mode === 'question' ? EXAMPLES.question.map(e => ({ mode: 'question', ...e }))
+      : mode === 'factcheck' ? EXAMPLES.factcheck.map(e => ({ mode: 'factcheck', ...e }))
+      : [
+          ...EXAMPLES.dispute.map(e => ({ mode: 'dispute', ...e })),
+          ...EXAMPLES.question.map(e => ({ mode: 'question', ...e })),
+          ...EXAMPLES.factcheck.map(e => ({ mode: 'factcheck', ...e })),
+        ];
+    const ex = pickExample(mode ? `TheFinalWord:${mode}` : 'TheFinalWord', pool);
     resetAll();
     setMode(ex.mode);
     if (ex.mode === 'dispute') {
@@ -762,6 +798,19 @@ const TheFinalWord = ({ tool }) => {
     setTeams(prev => prev.map(t => ({ ...t, score: 0, streak: 0, bestStreak: 0 })));
     setQuestionCount(0); setActiveTeamIdx(0); setPreviousQuestions([]); setCategoryBreakdown({});
     setMode(null);
+  };
+
+  // The one reset every "New"/"Start over" button on the title row calls.
+  // resetAll() only ever cleared the non-trivia modes' fields — clicking it
+  // mid-trivia (or mid multiplayer-room) left the question, or the room,
+  // on screen with nothing visibly reset, because neither resetTrivia()'s
+  // nor exitMultiplayer()'s clearing lived here. Folding both in means
+  // every reset button actually ends whatever is currently running,
+  // regardless of which mode that happens to be.
+  const resetEverything = () => {
+    resetAll();
+    resetTrivia();
+    if (mpMode) exitMultiplayer();
   };
 
   // ─── Style Helpers ───
@@ -903,7 +952,9 @@ const TheFinalWord = ({ tool }) => {
                 <p className={`text-base ${c.textSecondary}`}>
                   <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('tfw_tagline')}
                 </p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                {mode !== 'trivia' && (
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                )}
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first
                   keystroke — ONE button. hasInput folds in triviaQuestion/
@@ -912,7 +963,7 @@ const TheFinalWord = ({ tool }) => {
                   condition covers what used to need a second "Start over"
                   button rendered alongside it, doing the identical reset. */}
               {hasInput ? (
-                <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                <button onClick={resetEverything} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   <span>🔄</span> {t('tfw_new')}
                 </button>
               ) : null}
@@ -1046,6 +1097,19 @@ const TheFinalWord = ({ tool }) => {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Always-mounted trivia focus/announce target — see triviaStatusRef.
+            advanceTrivia unmounts the whole question card the instant it's
+            clicked (the button itself disappears), so this is the one
+            element still around to receive focus immediately, before the
+            next question has even been requested. aria-live announces the
+            loading state to a screen reader in the gap; questionHeadingRef
+            takes over once the real question lands. */}
+        {mode === 'trivia' && (
+          <div ref={triviaStatusRef} tabIndex={-1} aria-live="polite" className="sr-only focus:outline-none">
+            {loading ? t('tfw_setup_generating') : ''}
           </div>
         )}
 
@@ -1710,7 +1774,7 @@ const TheFinalWord = ({ tool }) => {
               <SourcesList sources={daResult.sources} />
             </div>
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
-              <button onClick={() => { resetAll(); setMode(null); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>🔄</span> {t('tfw_new')}</button>
+              <button onClick={resetEverything} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>🔄</span> {t('tfw_new')}</button>
             </div>
           </div>
         )}
@@ -1797,7 +1861,7 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl p-5 border space-y-3 ${c.card}`}>
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accentTxt}>💬</span>{t('tfw_challenge_title')}</h4>
             <label className="sr-only" htmlFor="tfw-challenge-text">{t('tfw_challenge_label')}</label>
-            <textarea id="tfw-challenge-text" value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder={t('tfw_challenge_ph')} rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+            <textarea ref={challengeTextRef} id="tfw-challenge-text" value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder={t('tfw_challenge_ph')} rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_challenge_submit')}</button>
             {challengeResult && (
               <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
@@ -1850,7 +1914,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ POST-RESULT CROSS-REF ═══════ */}
         {result && (
-          <p className={`text-xs ${c.textMuted} px-1`}>
+          <p className={`text-xs ${c.textMuted} px-1 mt-8`}>
             {t('tfw_xref_simmering').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
@@ -1884,7 +1948,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ NAVIGATION ═══════ */}
         {(result || daResult || triviaQuestion) && !showChallenge && !showAppeal && mode !== 'trivia' && !triviaFinished && (
-          <button onClick={() => { resetAll(); setMode(null); }} className={`w-full py-2 text-center text-sm font-semibold ${c.textMuted} transition-colors`}>{t('tfw_nav_different_mode')}</button>
+          <button onClick={resetEverything} className={`w-full py-2 text-center text-sm font-semibold ${c.textMuted} transition-colors`}>{t('tfw_nav_different_mode')}</button>
         )}
         {mode === 'trivia' && triviaQuestion && !triviaFinished && !mpMode && (
           <button onClick={resetTrivia} className={`w-full py-2 text-center text-sm font-semibold ${c.textMuted} transition-colors`}>{t('tfw_nav_end_trivia')}</button>
