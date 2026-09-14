@@ -3391,4 +3391,173 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user wants practical help with sleep and can describe their schedule, recurring pattern, or possible disruptors, especially when generic sleep-hygiene advice has not helped them decide what to test first.",
     whenNotToRecommend: "Do not recommend for diagnosis, medication or supplement advice, clinician-supervised CBT-I treatment, or aggressive schedule manipulation when the user reports severe sleep loss or another situation that warrants professional evaluation.",
   },
+
+  SocialBatteryAdvisor: {
+    problems: [
+      "Some interactions leave me with more energy and others leave me drained, and I want to see the difference",
+      "I want to track what happens to my energy before and after meetings, calls, visits, meals, dates, or gatherings",
+      "I suspect how much I have to be 'on' may matter, but I want to learn from my own experience rather than assume",
+    ],
+    capabilities: [
+      "logs one interaction at a time with self-reported energy before and after plus how much the user felt they had to be 'on'",
+      "compares logged interactions and surfaces contrasts or recurring patterns only as strongly as the user's own history supports",
+      "distinguishes a one-off observation from a repeated pattern and avoids treating correlation as proof of causation",
+      "can suggest one small reversible experiment worth testing next when the logs support a useful question",
+    ],
+    accepts: [
+      "the interaction that just happened",
+      "energy before and energy after",
+      "how much the user felt they had to be 'on'",
+      "an optional note about group size, familiarity, pace, setting, or anything else worth remembering",
+    ],
+    notFor: [
+      "diagnosing introversion, social anxiety, burnout, depression, or another medical or psychological condition",
+      "assigning a weekly energy budget, performance score, or social-capacity rating",
+      "predicting a future crash or claiming one kind of interaction will always drain or recharge the user",
+      "choosing an activity for the user's current low-energy moment when there is no interaction pattern to review",
+    ],
+    handoffs: [
+      { when: "the user wants to track broader daily signals and what tends to happen before self-marked crash or hit-a-wall days", toolId: "BeforeTheCrash" },
+      { when: "the user wants one manageable thing to do right now based on their current capacity rather than interaction-pattern tracking", toolId: "PEP" },
+    ],
+    primaryIntent: "learn which kinds of social or interpersonal interactions tend to leave this user with more, less, or unchanged energy by comparing their own logs",
+    whenToRecommend: "Recommend when the user wants to track how specific interactions affect their energy over time and learn what patterns or contrasts emerge from their own experience.",
+    whenNotToRecommend: "Do not recommend for diagnosis, social-personality labeling, future energy prediction, weekly energy budgeting, or a one-off request for something restorative to do right now.",
+  },
+
+  TaskAvalancheBreaker: {
+    problems: [
+      "One project feels so large or tangled that I cannot find a place to start",
+      "Several parts of a project depend on each other and the whole thing feels like one undifferentiated mass",
+      "I do not need another giant task list; I need one concrete foothold I can actually take",
+    ],
+    capabilities: [
+      "identifies one useful first move grounded in the facts, constraints, dependencies, and relationships the user actually supplied",
+      "explains why that move is a useful place to begin and gives a visible done condition",
+      "offers a genuinely smaller fallback when the first move still feels like too much",
+      "can show a short preview of what may come after without turning the result into a full project plan",
+      "uses finding out one missing dependency as the first move when guessing would create false structure",
+    ],
+    accepts: [
+      "a description of the project that feels too big to start",
+      "optional context about what makes starting hard",
+      "known constraints, dependencies, people, deliverables, deadlines, or unknowns that matter",
+    ],
+    notFor: [
+      "sorting a mixed brain dump containing many unrelated tasks, worries, decisions, and obligations",
+      "ranking several competing tasks by urgency or consequence",
+      "building a complete project plan, detailed schedule, streak system, or gamified task program",
+      "inventing project structure, stakeholder needs, deadlines, or dependencies the user did not supply",
+    ],
+    handoffs: [
+      { when: "the user's problem is a mixed mental pile rather than one project", toolId: "BrainDumpBuddy" },
+      { when: "several tasks are competing and the main question is what deserves attention first", toolId: "CrisisPrioritizer" },
+      { when: "the user already knows the tasks and wants them grouped into a lower-switching day plan", toolId: "BatchFlow" },
+    ],
+    primaryIntent: "find one grounded, startable foothold in a project that feels too big or tangled to begin",
+    whenToRecommend: "Recommend when the user has one overwhelming project and needs a concrete first move rather than a full decomposition or another to-do list.",
+    whenNotToRecommend: "Do not recommend when the main problem is sorting many unrelated thoughts, prioritizing multiple tasks, building a full project plan, or getting live accountability while working.",
+  },
+
+  HeartOfTheMatter: {
+    problems: [
+      "I have a long talk, lecture, podcast, sermon, article, transcript, or set of notes and want to know what actually matters",
+      "I understand the words but need the important ideas broken down so they click",
+      "I have multiple pieces of material and want to see the throughline, recurring themes, and how the ideas connect or evolve",
+    ],
+    capabilities: [
+      "Distill mode extracts and ranks the ideas doing the most work and identifies useful key terms",
+      "Understand mode breaks the supplied material into important ideas, definitions, processes or formulas, and relationships",
+      "Connect mode synthesizes multiple supplied pieces into a throughline, recurring themes, concept chains, and evolving ideas",
+      "keeps content-specific claims grounded in the supplied material and leaves unsupported gaps as gaps instead of filling them with outside facts",
+      "accepts pasted text and supported text, PDF, or audio uploads",
+    ],
+    accepts: [
+      "a talk, lecture, podcast transcript, sermon, article, notes, or other long-form material",
+      "one source for Distill or Understand",
+      "multiple related sources for Connect",
+      "optional subject or topic context when it helps orient the material",
+    ],
+    notFor: [
+      "exam prediction, test preparation, flashcards, memorization plans, or turning the tool into a study-guide program",
+      "adding outside facts, examples, professor intent, or common mistakes that are not established by the supplied material",
+      "finding one missing prerequisite concept when the user's difficulty is a specific conceptual gap rather than long-form material",
+      "external research or source verification beyond what the user supplied",
+    ],
+    handoffs: [
+      { when: "the user's notes are still a mixed brain dump and need organizing before analysis", toolId: "BrainDumpBuddy" },
+      { when: "the user is stuck on one concept and suspects a missing prerequisite rather than needing long material distilled", toolId: "MissingLink" },
+    ],
+    primaryIntent: "extract, explain, and connect the most important ideas in long-form material the user supplies",
+    whenToRecommend: "Recommend when the user has one or more long sources and wants the signal, a clearer understanding of the important ideas, or connections across the sources.",
+    whenNotToRecommend: "Do not recommend for exam prep, generic tutoring without source material, external research, or filling gaps with facts that are not in the supplied material.",
+  },
+
+  TheFinalWord: {
+    problems: [
+      "I have a factual question and want a clear answer with uncertainty stated honestly",
+      "Two people disagree and I want to separate what can actually be settled from interpretation, preference, or blame",
+      "I want to check whether a claim is true, false, misleading, or more complicated than it sounds",
+      "I want quick-fire trivia with a way to challenge an answer that seems wrong",
+    ],
+    capabilities: [
+      "Quick Answer gives the clearest supported answer first and calibrates confidence instead of performing certainty",
+      "Settle It separates factual claims from interpretation, preference, and responsibility and shows what supports or weakens each side",
+      "Fact Check uses nuanced rulings such as mostly true, mostly false, misleading, complicated, or unverifiable when binary labels would overstate the evidence",
+      "provides specific source leads only when they are confidently known and treats them as things to verify rather than proof they were consulted",
+      "Trivia Night generates quick-fire rounds and supports challenges when an answer or question deserves another look",
+    ],
+    accepts: [
+      "a factual question",
+      "two sides of a disagreement plus optional names and context",
+      "a claim to fact-check",
+      "trivia category, difficulty, and team setup",
+    ],
+    notFor: [
+      "pretending current or fast-changing information has been live-verified when it has not",
+      "turning feelings, motives, fairness, blame, or relationship dynamics into fake factual certainty",
+      "inventing sources, studies, quotations, statistics, or precise probabilities",
+      "adversarial debate practice when the user wants a strong opponent rather than a verdict or fact check",
+    ],
+    handoffs: [
+      { when: "the user wants the strongest opposing case or live debate practice rather than a verdict", toolId: "ArgueSmarter" },
+      { when: "the user has a real tense message or conflict and needs help choosing what to say next", toolId: "ConflictCoach" },
+    ],
+    primaryIntent: "sort factual questions, disputed claims, and disagreements into what is supported, uncertain, interpretive, or opinion without manufacturing certainty",
+    whenToRecommend: "Recommend when the user wants a clear factual answer, a fair ruling on two competing accounts, a nuanced fact check, or a trivia round with challenge handling.",
+    whenNotToRecommend: "Do not recommend when the user primarily wants adversarial debate practice, relationship-response coaching, or live verification of rapidly changing facts the tool cannot actually check.",
+  },
+
+  TheRunthrough: {
+    problems: [
+      "My presentation is written, but I want one last check before I deliver it",
+      "I need to know whether to cut anything, what tough questions I should prepare for, or where the opening and closing need more impact",
+      "I want presentation coaching that preserves my facts and voice instead of rewriting the whole thing into generic keynote language",
+    ],
+    capabilities: [
+      "Cut treats the time limit as a ceiling, trims only when needed, and can offer an optional tighter version when context makes brevity materially better",
+      "Anticipate identifies the most consequential audience-specific vulnerabilities and likely questions, with answer scaffolds that do not invent missing facts",
+      "Hook strengthens the opening, closing, and only the transitions that materially improve comprehension without creating new claims or lessons",
+      "adds practical pacing or energy-arc guidance tied to the actual presentation",
+      "preserves the speaker's facts, commitments, caveats, and recognizable voice across modes",
+    ],
+    accepts: [
+      "presentation text, speaker notes, or an outline",
+      "a time limit and optional context for Cut",
+      "audience and optional stakes for Anticipate",
+      "tone and optional goal for Hook",
+    ],
+    notFor: [
+      "writing an entire presentation from scratch when the user has not supplied one",
+      "inventing metrics, evidence, anecdotes, case-study conclusions, commitments, or audience reactions",
+      "deep hostile-question drilling when the user wants repeated objection practice rather than a final presentation run-through",
+      "general writing polish unrelated to an upcoming presentation, pitch, proposal, talk, or speech",
+    ],
+    handoffs: [
+      { when: "the user wants deeper repeated practice against the hardest objections after the presentation itself is ready", toolId: "HecklerPrep" },
+    ],
+    primaryIntent: "give a finished presentation a practical final run-through for timing, likely Q&A, and the moments that most affect how it lands",
+    whenToRecommend: "Recommend when the user already has presentation content and wants a last-mile check on length, audience questions, opening, closing, transitions, or delivery.",
+    whenNotToRecommend: "Do not recommend when the user needs a presentation written from scratch, wants unsupported facts invented, or needs an extended adversarial Q&A drill rather than a final run-through.",
+  },
 };
