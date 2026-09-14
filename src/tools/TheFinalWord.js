@@ -6,7 +6,7 @@ import { ShareBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
-import { revealSection } from '../utils/revealSection';
+import { revealSection, focusSection } from '../utils/revealSection';
 import { encodeSharePayload } from '../utils/shareEncode';
 
 // Disputes span both genuinely different kinds — a fact that can be looked
@@ -270,6 +270,11 @@ const TheFinalWord = ({ tool }) => {
 
   // Shareable Link
   const [shareId, setShareId] = useState(null);
+  // What was actually asked/argued/challenged, shown just above the verdict
+  // headline — captured at submit time so it reflects what was actually
+  // sent, not whatever is currently sitting in the (possibly since-edited)
+  // input field.
+  const [resultInputSummary, setResultInputSummary] = useState('');
 
   // Deep Dissect (FactOrFiction fold-in)
   const [dissectMode, setDissectMode] = useState(false); // toggle within factcheck mode
@@ -305,6 +310,19 @@ const TheFinalWord = ({ tool }) => {
   // the result it was clicked from — without this, focus stayed on the
   // button while a new textarea appeared elsewhere on the page.
   const challengeTextRef = useRef(null);
+  // The main question/dispute/factcheck/devil's-advocate result was ALREADY
+  // covered — see the revealSection(resultsRef.current) effect below, which
+  // fires on [result, daResult]. Appeal and follow-up are not: they render
+  // in their own panels, appended below a form that stays on screen, so
+  // they get the lighter focusSection() (no scroll — nothing moved).
+  const appealHeadingRef = useRef(null);       // appeal ruling
+  const followUpRef = useRef(null);            // most recent follow-up answer
+  const pickerHeadingRef = useRef(null);        // mode-picker, after "New" clears everything
+  // "🔄 New Claim" (Deep Dissect result) clears dissectResult and the claim
+  // text, unmounting the panel the button itself sits in — the fact-check
+  // form underneath was already mounted the whole time, so this is focused
+  // directly in the click handler rather than via an effect.
+  const claimTextareaRef = useRef(null);
   // ─── Voice Setup ───
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -369,12 +387,45 @@ const TheFinalWord = ({ tool }) => {
   }, [teams.length]);
 
   useEffect(() => {
-    if (triviaQuestion) questionHeadingRef.current?.focus();
+    if (triviaQuestion) focusSection(questionHeadingRef.current);
   }, [triviaQuestion]);
 
   useEffect(() => {
+    // Plain .focus(), not focusSection: this is a real <textarea>, already
+    // in the natural tab order — focusSection would inject tabindex="-1"
+    // on it (meant for otherwise-inert elements like a heading or a
+    // results div) and permanently pull a real form field out of Tab order.
     if (showChallenge) challengeTextRef.current?.focus();
   }, [showChallenge]);
+
+  // result/daResult are already handled below by
+  // revealSection(resultsRef.current) — that scrolls AND focuses the whole
+  // results container, which is the right target for a full form → result
+  // transition. Appeal and follow-up render in their own panels appended
+  // below a form that stays on screen, so they get focusSection alone: the
+  // content did not move, only appeared, so nothing should scroll.
+  useEffect(() => {
+    if (appealResult) focusSection(appealHeadingRef.current);
+  }, [appealResult]);
+
+  useEffect(() => {
+    if (followUpResults.length) focusSection(followUpRef.current);
+  }, [followUpResults.length]);
+
+  // Fires when "New" clears everything back to the mode picker — the
+  // header's own New button vanishes the instant hasInput goes false
+  // (it's conditionally rendered), so the click that caused this is gone
+  // from the DOM at the same moment. Guarded on a mount flag so this
+  // doesn't ALSO fire (and steal focus from the page) on first load, when
+  // every one of these is at rest for the same reason but nothing was
+  // actually reset.
+  const hasMountedRef = useRef(false);
+  useEffect(() => {
+    if (!hasMountedRef.current) { hasMountedRef.current = true; return; }
+    if (!mode && !result && !daResult && !triviaQuestion && !triviaFinished && !mpMode) {
+      focusSection(pickerHeadingRef.current);
+    }
+  }, [mode, result, daResult, triviaQuestion, triviaFinished, mpMode]);
 
   // ─── Stats Tracking ───
   const trackStat = (mode, result) => {
@@ -417,7 +468,13 @@ const TheFinalWord = ({ tool }) => {
   };
 
   // ─── Submit Handlers ───
-  const handleSubmit = async () => {
+  // Accepts optional overrides ({ mode, claim }) for a caller that just
+  // changed those via setState — which doesn't land until the next render —
+  // and needs to submit the FRESH value immediately. handleCheckRelatedClaim
+  // below is the one caller that needs this: its own comment always said
+  // "then submit," but nothing ever actually called submit.
+  const handleSubmit = async (overrides = {}) => {
+    const activeMode = overrides.mode ?? mode;
     setError('');
     setResult(null);
     setShowChallenge(false);
@@ -428,29 +485,31 @@ const TheFinalWord = ({ tool }) => {
     setAppealResult(null);
     setShareId(null);
 
-    let payload = { mode };
+    let payload = { mode: activeMode };
     let inputSummary = '';
 
-    if (mode === 'question') {
+    if (activeMode === 'question') {
       payload.question = question.trim();
       inputSummary = question.trim();
-    } else if (mode === 'dispute') {
+    } else if (activeMode === 'dispute') {
       payload.claimA = claimA.trim();
       payload.claimB = claimB.trim();
       payload.personA = personA.trim() || undefined;
       payload.personB = personB.trim() || undefined;
       payload.context = disputeContext.trim() || undefined;
-      inputSummary = `${personA || t('tfw_default_a')} vs ${personB || t('tfw_default_b')}`;
-    } else if (mode === 'factcheck') {
-      payload.claim = claim.trim();
-      inputSummary = claim.trim();
+      inputSummary = `"${claimA.trim()}" vs "${claimB.trim()}"`;
+    } else if (activeMode === 'factcheck') {
+      const activeClaim = overrides.claim ?? claim;
+      payload.claim = activeClaim.trim();
+      inputSummary = activeClaim.trim();
     }
 
     try {
       const data = await callToolEndpoint('the-final-word', payload);
       setResult(data);
+      setResultInputSummary(inputSummary);
       saveToHistory(data, inputSummary);
-      trackStat(mode, data);
+      trackStat(activeMode, data);
     } catch (err) {
       setError(err.message || t('tfw_err_verdict'));
     }
@@ -480,6 +539,7 @@ const TheFinalWord = ({ tool }) => {
         topic: daTopic.trim() || undefined,
       });
       setDaResult(data);
+      setResultInputSummary(daTopic.trim() ? `${daTopic.trim()}: "${daPosition.trim()}"` : `"${daPosition.trim()}"`);
       saveToHistory({ ...data, _mode: 'devils-advocate' }, `DA: ${daTopic || daPosition.substring(0, 40)}`);
       trackStat('devils-advocate', data);
     } catch (err) {
@@ -540,7 +600,7 @@ const TheFinalWord = ({ tool }) => {
 
   const advanceTrivia = () => {
     if (questionCount >= roundLimit) { setTriviaFinished(true); return; }
-    triviaStatusRef.current?.focus();
+    focusSection(triviaStatusRef.current);
     setActiveTeamIdx((activeTeamIdx + 1) % teams.length);
     handleTrivia();
   };
@@ -618,17 +678,17 @@ const TheFinalWord = ({ tool }) => {
     navigator.clipboard?.writeText(`${window.location.origin}/verdict/${id}`);
   };
 
-  // Fact-check related claim
+  // Fact-check related claim — previously this pre-filled the claim and
+  // switched to factcheck mode but never actually submitted it despite its
+  // own comment saying it would, leaving the visitor looking at a filled-in
+  // form they had to submit themselves a second time. handleSubmit's
+  // overrides let this hand it the claim directly rather than waiting on
+  // setClaim/setMode to land on the next render.
   const handleCheckRelatedClaim = (relatedClaim) => {
     setClaim(relatedClaim);
-    setResult(null);
-    setFollowUpResults([]);
-    setShowChallenge(false);
-    setShareId(null);
-    // Small delay to let state update, then submit
-    setTimeout(() => {
-      setMode('factcheck');
-    }, 50);
+    setMode('factcheck');
+    setDissectMode(false);
+    handleSubmit({ mode: 'factcheck', claim: relatedClaim });
   };
 
   // Multiplayer
@@ -762,7 +822,7 @@ const TheFinalWord = ({ tool }) => {
     setFollowUpText(''); setFollowUpResults([]);
     setShowAppeal(false); setAppealResult(null); setAppealEvidence('');
     setDevilsAdvocate(false); setDaResult(null); setDaPosition(''); setDaTopic('');
-    setShareId(null); setDissectResult(null);
+    setShareId(null); setDissectResult(null); setResultInputSummary('');
   };
 
   // Stays within the CURRENT mode's own example pool — previously this
@@ -1140,7 +1200,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ MODE SELECTION ═══════ */}
         {!result && !daResult && !triviaQuestion && !triviaFinished && !mpMode && (
-          <div className={`${c.card} border rounded-2xl p-5 space-y-4`}>
+          <div ref={pickerHeadingRef} tabIndex={-1} className={`${c.card} border rounded-2xl p-5 space-y-4 focus:outline-none`}>
             <div className="grid grid-cols-2 gap-3">
               {MODES.map(m => {
                 const isActive = mode === m.id;
@@ -1175,7 +1235,7 @@ const TheFinalWord = ({ tool }) => {
                   <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleSubmit()} placeholder={t('tfw_q_ph')} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                   <VoiceButton />
                 </div>
-                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!question.trim()) ? c.btnIdle : c.btnPrimary}`}>
+                <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!question.trim()) ? c.btnIdle : c.btnPrimary}`}>
                   {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? t('tfw_q_deliberating') : t('tfw_q_submit')}
                 {!loading && (
                   <kbd aria-hidden="true"
@@ -1253,7 +1313,7 @@ const TheFinalWord = ({ tool }) => {
                       <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_context_label')}</label>
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
-                    <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
+                    <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
                       {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}
                     {!loading && (
                       <kbd aria-hidden="true"
@@ -1272,7 +1332,7 @@ const TheFinalWord = ({ tool }) => {
               <div className="space-y-3">
                 <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_fc_label')} <span className={c.required}>*</span></label>
                 <div className="flex gap-2">
-                  <textarea value={claim} onChange={(e) => setClaim(e.target.value)} placeholder={t('tfw_fc_ph')} rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
+                  <textarea ref={claimTextareaRef} value={claim} onChange={(e) => setClaim(e.target.value)} placeholder={t('tfw_fc_ph')} rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                   <VoiceButton />
                 </div>
                 {/* Mode toggle */}
@@ -1289,7 +1349,7 @@ const TheFinalWord = ({ tool }) => {
                 {dissectMode && (
                   <p className={`text-xs ${c.textMuted}`}>{t('tfw_fc_dissect_hint')}</p>
                 )}
-                <button onClick={dissectMode ? handleDissect : handleSubmit} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                <button onClick={() => (dissectMode ? handleDissect() : handleSubmit())} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                   {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
                   {loading ? (dissectMode ? t('tfw_fc_dissecting') : t('tfw_fc_factchecking')) : (dissectMode ? t('tfw_fc_dissect_submit') : t('tfw_fc_check_submit'))}
                 </button>
@@ -1570,6 +1630,7 @@ const TheFinalWord = ({ tool }) => {
               </div>
             </div>
             <div className="px-6 py-5">
+              {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>"{resultInputSummary}"</p>}
               <h2 className={`text-xl font-black leading-snug mb-4 ${c.text}`}>{result.answer}</h2>
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed mb-4 ${c.textSecondary}`}>{result.explanation}</p>
@@ -1588,6 +1649,7 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-5 text-center ${isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100'}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>{t('tfw_verdict_header')}</p>
+              {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>{resultInputSummary}</p>}
               <h2 className={`text-2xl font-black leading-snug ${c.text}`}>{result.verdict_headline}</h2>
             </div>
             {result.score && (
@@ -1622,6 +1684,7 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-6 text-center ${getRulingStyle(result.ruling)}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.textMuted}`}>{t('tfw_ruling')}</p>
+              {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>"{resultInputSummary}"</p>}
               <h2 className="text-3xl font-black tracking-tight">{result.ruling_display}</h2>
             </div>
             <div className="px-6 py-4 space-y-3">
@@ -1753,7 +1816,7 @@ const TheFinalWord = ({ tool }) => {
             <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
               <div className="flex gap-1.5">
               </div>
-              <button onClick={() => { setDissectResult(null); setClaim(''); }}
+              <button onClick={() => { setDissectResult(null); setClaim(''); claimTextareaRef.current?.focus(); }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
                 <span>🔄</span> {t('tfw_result_new_claim')}
               </button>
@@ -1766,6 +1829,7 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-5 text-center ${isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100'}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>{t('tfw_da_verdict_header')}</p>
+              {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>{resultInputSummary}</p>}
               <h2 className={`text-2xl font-black leading-snug ${c.text}`}>{daResult.verdict_headline}</h2>
             </div>
 
@@ -1915,7 +1979,7 @@ const TheFinalWord = ({ tool }) => {
               }`}>
                 <div className="text-center">
                   <span className="text-2xl">{appealResult.appeal_ruling === 'overturned' ? '⚖️' : appealResult.appeal_ruling === 'modified' ? '📝' : '🔨'}</span>
-                  <p className={`text-lg font-black mt-1 ${c.text}`}>{appealResult.ruling_headline}</p>
+                  <p ref={appealHeadingRef} tabIndex={-1} className={`text-lg font-black mt-1 ${c.text} focus:outline-none`}>{appealResult.ruling_headline}</p>
                 </div>
                 {appealResult.new_evidence_assessment && <p className={`text-sm ${c.textSecondary}`}><span className="font-bold">{t('tfw_appeal_evidence_assessment')}</span> {appealResult.new_evidence_assessment}</p>}
                 <p className={`text-sm ${c.textSecondary}`}>{appealResult.explanation}</p>
@@ -1961,7 +2025,7 @@ const TheFinalWord = ({ tool }) => {
             {followUpResults.map((fu, i) => (
               <div key={i} className={`p-4 rounded-xl border space-y-2 ${c.cardAlt}`}>
                 <p className={`text-xs font-bold ${c.accentTxt}`}>💬 {fu.question}</p>
-                <p className={`text-sm font-bold ${c.text}`}>{fu.result.answer}</p>
+                <p ref={i === followUpResults.length - 1 ? followUpRef : null} tabIndex={-1} className={`text-sm font-bold ${c.text} focus:outline-none`}>{fu.result.answer}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{fu.result.explanation}</p>
                 {fu.result.changes_original && <div className={`p-2.5 rounded-lg border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold mb-0.5 ${c.accentTxt}`}>{t('tfw_followup_updates')}</p><p className={`text-xs ${c.textSecondary}`}>{fu.result.changes_original}</p></div>}
                 {fu.result.supporting_facts?.length > 0 && fu.result.supporting_facts.map((f, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
