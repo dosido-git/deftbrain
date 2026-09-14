@@ -337,6 +337,14 @@ const TimeWarp = ({ tool }) => {
             className={`w-full ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
             {t('tw_same_combo')}
           </button>
+
+          {/* One quiet link, not a "Next step" box: Warp → The Warp →
+              One More? → Same Combo → Recent Warps is the loop; a boxed
+              navigation section here duplicates the site's own Related
+              Tools section right below and interrupts that loop. */}
+          <p className={`text-[11px] ${c.textMuted} text-center`}>
+            <a href="/WhichLife" className={linkStyle}>🤔 {t('tw_link_whatif')}</a>
+          </p>
         </div>
       )}
 
@@ -368,18 +376,6 @@ const TimeWarp = ({ tool }) => {
           </div>
         );
       })()}
-
-      {/* Post-result cross-tool links */}
-      {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('tw_next_step')}</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🎭 {t('tw_link_wao')}</a>
-            <a href="/WhichLife" className={`text-xs ${linkStyle}`}>🤔 {t('tw_link_whatif')}</a>
-            <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🌀 {t('tw_link_plottwist')}</a>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -18,6 +18,10 @@ WHAT MAKES A GREAT WARP
 - Specific fictional detail is welcome when it belongs to the invented bit.
 - Broad period flavor is fine. Pseudo-scholarly historical precision is not.
 
+THE WARP: Notice what becomes funny, strange, or newly visible when the two worlds collide. Draw out an irony, resemblance, tension, or question about the modern thing, but don't announce its hidden truth or real purpose. Avoid formulations such as 'what this is really about,' 'the actual power is,' 'the uncomfortable truth is,' or other sweeping verdicts. The reader should feel invited to notice something, not told what the collision proves.
+
+Point at a specific detail already in the piece rather than zooming out to a claim about institutions, systems, power, or human nature in general — a generalization is a verdict no matter how it's dressed. Watch especially for the DEBUNKING MOVE: "X isn't really A — it's actually B" (fair/official, neutral/power, feedback/control — any such swap), including through connectives like "isn't really," "in reality," "dressed up as," or "all it really does is." That shape is a verdict regardless of which nouns fill it in.
+
 HISTORY BOUNDARY
 - Do not present the piece as historically accurate, researched, educational, or authoritative.
 - Do not teach historical facts, provide historical footnotes, or explain what people in an era typically believed or did.
@@ -61,7 +65,8 @@ Build the result in three movements:
 Write the main imaginative piece. Aim for roughly 180-320 words. Give it a strong title. Use one coherent comic premise and enough concrete invented detail to make the world feel alive. Do not insert factual history lessons.
 
 2. THE WARP
-In 70-130 words, step outside the bit and name the surprising parallel, contradiction, or human behavior the collision exposes about the familiar thing. This is not a moral, lesson, or history explanation. It should make the reader think: I never looked at it that way.
+In 40-70 words — short on purpose, so there's no room to build a thesis — point at ONE specific detail, image, or moment already in the piece above, and say what's funny or strange about it landing in the other world. Do this the way you'd point something out to a friend, not the way you'd deliver a finding. Do not zoom out to a general claim about institutions, systems, human nature, power, control, or fairness. Test: if the sentence would still make sense with this piece's specific details swapped out for any other bureaucratic or institutional example, it is too general — anchor it to something that exists only in THIS piece (a phrase from the form, a specific character's specific act, a specific object).
+Watch for the DEBUNKING MOVE creeping back in through any connective — "isn't really/actually," "in reality," "dressed up as," "the truth is," "what's really happening is," "all it really does is," or "X isn't that ___; it's that ___." Any of those means you have drifted from pointing at a detail to delivering a verdict — cut back to the concrete detail.
 
 3. ONE MORE
 Suggest one irresistible adjacent collision. It should feel like the next thing the reader immediately wants to try. Include a short teaser line showing why the pairing has comic potential, without writing the whole next Warp.
@@ -70,7 +75,7 @@ Return ONLY valid JSON:
 {
   "title": "The title of the collision",
   "main_content": "The complete imaginative collision",
-  "warp_insight": "The short THE WARP reflection",
+  "warp_insight": "The short THE WARP reflection — 40-70 words pointing at one specific detail already in the piece, not a verdict about what the modern thing really is",
   "next_collision": {
     "modernThing": "The thing for the next collision",
     "historicalPeriod": "The destination world for the next collision",
@@ -81,7 +86,8 @@ Return ONLY valid JSON:
 FINAL CHECK:
 - Is the main piece fun even if the reader learns zero history from it?
 - Does the comedy come from translating the familiar thing into another world's logic?
-- Does THE WARP reveal something about the familiar thing rather than explain the historical period?
+- Does THE WARP point at one specific detail from the piece, rather than zoom out to a general claim about institutions, power, or human nature?
+- Does THE WARP avoid the debunking move ("X isn't really A — it's actually B") under any wording?
 - Did you avoid factual-history claims that invite verification?
 - Is ONE MORE tempting enough to click?
 - Did you avoid double-quote characters inside JSON string values?`;
