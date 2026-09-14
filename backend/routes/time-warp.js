@@ -63,16 +63,20 @@ HISTORY CHECK RULES:
 - If a fact is disputed, highly specific, or outside your confidence, leave it out.
 - Each footnote must be an independently factual historical claim, not an interpretation written in factual-sounding language. Avoid universal claims — 'did not exist', 'would not', 'always', 'never' — unless literally supportable for the stated period: the telegraph and telephone existed by the Victorian era, so 'remote communication technology did not exist' is false, and 'a Victorian gentleman would not alter his appearance based on whether others could see him' is an inference about behavior, not a fact about the period. Before returning each footnote, silently ask whether a knowledgeable historian could reasonably object to its wording; if so, narrow it or omit it.
 
+HISTORICAL FACT RULE: Include only facts that are both high-confidence and narrowly stated enough to remain true across the specific place and period being invoked. Do not generalize about 'medieval Europe', 'Victorians', 'Romans', or another broad population when practices varied by century, region, class, religion, or social setting. If the collision requires a historical claim you cannot state confidently and narrowly, remove that claim from both the fictional piece and the factual notes. The fictional label does not permit the scenario to depend on false history — 'medieval marriage was typically arranged by families' and 'the Church required parental consent as doctrine' are both far too sweeping (canon law placed real weight on the consent of the marrying parties themselves, and practice varied enormously by region and class); if a claim like that is what makes the joke work, either narrow it to a specific setting you are actually confident about (e.g. 'in some wealthy households, marriages were negotiated between families') or find a different premise.
+
+FINAL CROSS-CHECK: Every historical premise used INSIDE the fictional piece must obey the same factual standard as historical_footnotes. Fiction may invent the event, people, dialogue, product, price, and comic situation; it may not invent the historical rules that make the joke work. Before returning, check every historical claim the fictional piece relies on — not just what you wrote in historical_footnotes — against this same bar.
+
 Return ONLY valid JSON:
 {
   "title": "A concise, funny title for the collision",
-  "era_context": "One modest, directly relevant historical fact that orients the joke — not a sweeping characterization of how people in the period lived or behaved. Prefer something like 'Letters and face-to-face meetings played important roles in Victorian business and social life' over a categorical claim about what was THE primary means of communication.",
+  "era_context": "One modest, directly relevant historical fact that orients the joke — not a sweeping characterization of how people in the period lived or behaved. Prefer something like 'Letters and face-to-face meetings played important roles in Victorian business and social life' over a categorical claim about what was THE primary means of communication. If the supplied period is broad (e.g. 'medieval Europe'), explicitly narrow the SETTING for this scenario — a particular century, region, or social milieu, e.g. 'wealthy households in 14th-century England' — rather than making a claim about the entire period. Narrower is funnier: specificity gives the comedy texture a vague era can't.",
   "main_content": "The fictional/hypothetical piece in the selected format",
   "fiction_note": "One brief sentence clarifying what was invented for the scenario. Example: The people, dialogue, and incident above are fictional; the history notes below are the factual part.",
   "historical_footnotes": [
     "0-3 high-confidence historical facts only"
   ],
-  "anachronism_alert": "The funniest or most revealing single image created by the collision",
+  "anachronism_alert": "The funniest or most revealing single image ALREADY PRESENT in main_content — identify or concisely restate a joke or image from the piece you just wrote. Do not invent a new detail, image, or joke here that never appeared above.",
   "flip_it": "A one-sentence teaser for a reverse or adjacent collision that would reveal a different historical parallel"
 }`;
 
