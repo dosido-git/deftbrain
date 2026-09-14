@@ -475,6 +475,19 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // always lands inside the previous local day, whatever DST is doing.
     const fmtDay = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
     const backDays = (start, n) => { let t = start; for (let i = 0; i < n; i++) t = dayStart(new Date(t.getTime() - 12 * 3600 * 1000)); return t; };
+    // The calendar day a stored event (`at`, UTC ISO) falls on IN METRICS_TZ —
+    // not the UTC date slice of its timestamp. UTC's midnight lands hours
+    // before local midnight (e.g. 8pm the previous day in America/New_York
+    // during EDT), so a raw `.slice(0,10)` on `at` puts a whole evening's
+    // worth of events one calendar day ahead of where every day-bucketed view
+    // in this report (daily series, Ledger) should place them relative to
+    // "So far today" and dayStart(), which are already TZ-aware.
+    const dayOf = (r) => {
+      const t = r && r.at;
+      if (!t) return '';
+      const d = new Date(t);
+      return isNaN(d.getTime()) ? '' : fmtDay(d);
+    };
 
     const RANGE_DAYS = { '1d': 1, '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
     const rangeParam = RANGE_DAYS[req.query.range] ? String(req.query.range)
@@ -590,7 +603,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // ── daily series ──
     const byDay = {};
     for (const e of events) {
-      const day = (e.at || '').slice(0, 10); if (!day) continue;
+      const day = dayOf(e); if (!day) continue;
       byDay[day] = byDay[day] || { day, views: 0, runs: 0, sessions: 0 };
       if (e.event === 'page_view') { byDay[day].views++; if (e.props && e.props.newSession) byDay[day].sessions++; }
       if (e.event === 'tool_run') byDay[day].runs++;
@@ -942,7 +955,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const ledgerEvents = allRows.filter(r => r.kind === 'event');
     const todayDay = fmtDay(now);
     const earliestDay = ledgerEvents.reduce((min, e) => {
-      const d = (e.at || '').slice(0, 10);
+      const d = dayOf(e);
       return d && (!min || d < min) ? d : min;
     }, null);
     function daysBetween(fromStr, toStr) {
@@ -969,7 +982,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const ledgerByDay = {};
     for (const d of ledgerDayList) ledgerByDay[d] = emptyBucket();
     for (const e of ledgerEvents) {
-      const day = (e.at || '').slice(0, 10);
+      const day = dayOf(e);
       const b = ledgerByDay[day];
       if (!b) continue; // older than the ledger window
       if (e.event === 'page_view') {
