@@ -14,6 +14,22 @@ Never place a double-quote (") character inside any JSON string value — quoted
 
 // ─── CUT: Trim content to fit a time limit ───
 router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  // Keep-alive heartbeat (same pattern as party-architect — see its
+  // tool-notes for the original incident). A single SMART generation
+  // already ran 10-11s locally at typical length; the shortfall-retry path
+  // below can run it TWICE with zero response bytes sent in between, and
+  // long source text pushes token count further still. Reported live as a
+  // 502 with no app-level error body — the signature of an upstream proxy
+  // deciding a silent connection is dead, not a code failure (this route
+  // never returns a bare "502"; that string can only come from in front of
+  // us). Writing a whitespace byte periodically keeps the connection
+  // visibly active; JSON.parse ignores leading/trailing whitespace, so the
+  // success path needs no frontend change. The error path DOES rely on a
+  // frontend change already in place (useClaudeAPI.js): once any byte is
+  // written the HTTP status is committed to 200, so a failure discovered
+  // after that point is reported as a bare {error} body instead of a status
+  // code — the frontend already treats that shape as a failure.
+  let keepAlive = null;
   try {
     const { content, timeMinutes, context, userLanguage } = req.body;
 
@@ -23,6 +39,12 @@ router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) =
     if (!timeMinutes || timeMinutes < 1) {
       return res.status(400).json({ error: 'Set a time limit (in minutes).' });
     }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.flushHeaders();
+    keepAlive = setInterval(() => {
+      try { res.write(' '); } catch { /* connection already gone */ }
+    }, 10000);
 
     const userPrompt = `PRESENTATION CUT MODE:
 
@@ -84,14 +106,43 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
     // is a real second chance rather than the same coin flip again.
     const floorWords = Math.round(timeMinutes * 130 * 0.7);
     const wordCount = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length;
+    // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema
+    // overhead. Base bumped 1200→2000 on 2026-09-14 for the two new short
+    // fields (session_title, context_label) and the extra RULES text added
+    // this session. NOT bumped further to "fix" the truncation below —
+    // measured live on the golden 1284w/5min case, the SAME input produced
+    // 1721 output tokens on one call and ran the ceiling dry at 4100 on the
+    // next: that is model variance, not underbudgeting, and no ceiling
+    // reliably absorbs it without making every call slower (directly
+    // fighting the point of the heartbeat above). A concise-mode retry
+    // handles it instead — see below.
+    const maxTokens = Math.min(8000, 2000 + Number(timeMinutes) * 220);
 
-    let parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema overhead.
-      max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-runthrough' });
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: maxTokens,
+        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'the-runthrough' });
+    } catch (err) {
+      // callClaudeWithRetry fails fast (no parse attempt) on max_tokens —
+      // the model ran out of room before finishing valid JSON, a different
+      // failure than the floor-shortfall case below (that one gets a
+      // parsed-but-short response; this one gets nothing parseable at all).
+      // One retry with an explicit instruction to be concise, rather than
+      // failing the request outright on what measured as a genuinely
+      // variable failure rate, not a rare fluke.
+      if (!/max_tokens/.test(err?.message || '')) throw err;
+      const concisePrompt = `${userPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS ran out of room before finishing — it was too long to complete within the response limit. Try again meaningfully more concise: one clear sentence per what_was_cut entry (not several), no restating the rules back, no repeated phrasing anywhere. Keep every field as tight as the job allows while still meeting the HARD FLOOR in rule 3.\n\nReturn ONLY valid JSON, the same shape as before.`;
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: maxTokens,
+        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: concisePrompt }],
+      }, { label: 'the-runthrough-concise-retry' });
+    }
 
     // The floor only means anything when a cut was actually required for
     // time — "unchanged" and "tightened" are legitimately allowed to be
@@ -108,7 +159,7 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
       try {
         const retried = await callClaudeWithRetry({
           model: MODELS.SMART,
-          max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
+          max_tokens: maxTokens,
           system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: shortfallPrompt }],
         }, { label: 'the-runthrough-cut-retry' });
@@ -124,29 +175,48 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
       }
     }
 
+    clearInterval(keepAlive);
     if (!parsed.trimmed_content) {
-      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+      return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
-    res.json(parsed);
+    // res.end, not res.json: the heartbeat already sent and flushed headers
+    // (Express's res.json() would try to set them again and throw).
+    res.end(JSON.stringify(parsed));
 
   } catch (error) {
+    if (keepAlive) clearInterval(keepAlive);
     console.error('TheRunthrough Cut error:', error);
     // callClaudeWithRetry fails fast (no parse attempt) when stop_reason === 'max_tokens'.
-    if (/max_tokens/.test(error?.message || '')) {
-      return res.status(500).json({ error: 'The revised version was too long to generate — try a shorter source or split the talk.' });
+    const message = /max_tokens/.test(error?.message || '')
+      ? 'The revised version was too long to generate — try a shorter source or split the talk.'
+      : 'Something went wrong. Please try again.';
+    if (!res.headersSent) {
+      res.status(500).json({ error: message });
+    } else {
+      res.end(JSON.stringify({ error: message }));
     }
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ─── ANTICIPATE: Predict tough Q&A ───
 router.post('/the-runthrough-anticipate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  // Keep-alive heartbeat — see the Cut route above for why. Measured live
+  // at 56s for a single generation here (4-6 questions with full draft
+  // answers is a genuinely large completion), the slowest of the three
+  // modes and the one most likely to trip an upstream proxy timeout.
+  let keepAlive = null;
   try {
     const { content, audience, stakes, userLanguage } = req.body;
 
     if (!content?.trim()) {
       return res.status(400).json({ error: 'Paste your presentation content.' });
     }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.flushHeaders();
+    keepAlive = setInterval(() => {
+      try { res.write(' '); } catch { /* connection already gone */ }
+    }, 10000);
 
     const audienceMap = {
       executives: 'C-suite executives — care about ROI, risk, and bottom line. Short attention spans. Will interrupt.',
@@ -216,25 +286,40 @@ Generate 4-6 tough_questions, ordered by how important they are to prepare for.`
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });
+    clearInterval(keepAlive);
     if (!parsed.presentation_summary) {
-      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+      return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
-    res.json(parsed);
+    res.end(JSON.stringify(parsed));
 
   } catch (error) {
+    if (keepAlive) clearInterval(keepAlive);
     console.error('TheRunthrough Anticipate error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    const message = 'Something went wrong. Please try again.';
+    if (!res.headersSent) {
+      res.status(500).json({ error: message });
+    } else {
+      res.end(JSON.stringify({ error: message }));
+    }
   }
 });
 
 // ─── HOOK: Rewrite opening, closing, transitions ───
 router.post('/the-runthrough-hook', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  // Keep-alive heartbeat — see the Cut route above for why.
+  let keepAlive = null;
   try {
     const { content, tone, goal, userLanguage } = req.body;
 
     if (!content?.trim()) {
       return res.status(400).json({ error: 'Paste your presentation content.' });
     }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.flushHeaders();
+    keepAlive = setInterval(() => {
+      try { res.write(' '); } catch { /* connection already gone */ }
+    }, 10000);
 
     const toneMap = {
       authoritative: 'AUTHORITATIVE — Confident, commanding, "I know this cold." Think keynote energy.',
@@ -306,14 +391,21 @@ Generate 0-3 transitions: only the ones that materially improve comprehension.`;
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-3' });
+    clearInterval(keepAlive);
     if (!parsed.diagnosis) {
-      return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
+      return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
-    res.json(parsed);
+    res.end(JSON.stringify(parsed));
 
   } catch (error) {
+    if (keepAlive) clearInterval(keepAlive);
     console.error('TheRunthrough Hook error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    const message = 'Something went wrong. Please try again.';
+    if (!res.headersSent) {
+      res.status(500).json({ error: message });
+    } else {
+      res.end(JSON.stringify({ error: message }));
+    }
   }
 });
 

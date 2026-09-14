@@ -77,6 +77,12 @@ const TheRunthrough = ({ tool }) => {
   };
 
   const resultsRef = useRef(null);
+  // Target for revealSection when a history action changes mode/content
+  // without going through the results panel (Run again, Continue prep) — a
+  // plain div, never the textarea itself: revealSection adds tabindex="-1"
+  // to whatever it focuses, which would silently pull an already-focusable
+  // element like a textarea out of the normal Tab order.
+  const inputCardRef = useRef(null);
 
   // ─── Colors ───
   const c = {
@@ -297,12 +303,16 @@ const TheRunthrough = ({ tool }) => {
 
   // Restores the original inputs so the visitor can tweak and resubmit —
   // deliberately does NOT restore the old output as if it were new source.
+  // Clears `results`, so the results-panel effect below never fires here —
+  // this has to move focus itself, or the click leaves the visitor scrolled
+  // at the history list looking at a form that silently changed above them.
   const runAgainSession = (s) => {
     setMode(s.mode);
     restoreSessionInput(s);
     setResults(null);
     setError('');
     setExpandedSections({});
+    setTimeout(() => revealSection(inputCardRef.current), 50);
   };
 
   const deleteSession = (id) => {
@@ -311,13 +321,16 @@ const TheRunthrough = ({ tool }) => {
 
   // Carries the ORIGINAL PRESENTATION into the next mode, never the
   // generated output — Cut/Anticipate/Hook become complementary passes over
-  // the same talk rather than three disconnected tools.
+  // the same talk rather than three disconnected tools. Same reveal as
+  // runAgainSession and for the same reason: `results` goes to null, so
+  // nothing else moves focus off the history card the visitor just clicked.
   const continuePrep = (s) => {
     setMode(NEXT_MODE[s.mode]);
     setContent(s.input.content || '');
     setResults(null);
     setError('');
     setExpandedSections({});
+    setTimeout(() => revealSection(inputCardRef.current), 50);
   };
 
   // ─── Build text helpers ───
@@ -769,7 +782,7 @@ const TheRunthrough = ({ tool }) => {
         </p>
 
         {/* Input card */}
-        <div className={`${c.card} ${c.border} border rounded-2xl p-5 shadow-sm space-y-4`}>
+        <div ref={inputCardRef} className={`${c.card} ${c.border} border rounded-2xl p-5 shadow-sm space-y-4`}>
 
           {/* Content textarea (all modes) */}
           <div className="space-y-2">
@@ -894,10 +907,20 @@ const TheRunthrough = ({ tool }) => {
           )}
 
           {/* Submit */}
+          {/* Style keys off `loading || content.trim()`, not `content.trim()`
+              alone: the textarea has no disabled={loading}, so a visitor can
+              edit or clear it while a request is in flight. With the old
+              condition, clearing the box mid-request flipped this button to
+              the low-contrast idle look (transparent bg, cyan-300 text) while
+              it was STILL showing the loading message — text that was
+              technically there but unreadable against the card, which reads
+              as "the text disappeared". Loading now always forces the
+              solid, high-contrast look regardless of what the textarea says
+              at that moment. */}
           <button title={t('cmd_enter')}
             onClick={handleSubmit}
             disabled={loading || !content.trim()}
-            className={`relative w-full ${(!content.trim()) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+            className={`relative w-full ${(loading || content.trim()) ? c.btnPrimary : c.btnIdle} py-3 rounded-xl font-semibold text-sm shadow-md
               disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
           >
             {loading ? (
