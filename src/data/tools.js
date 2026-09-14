@@ -1355,43 +1355,49 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "UpsellShield",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Before you walk into a dealership, a showroom, or a sales call.",
     give: "Where you're going, what you want, and your budget.",
-    get: "The specific tactics that industry uses, your counters, and the lines to hold.",
-    edge: "Preparation before, not damage control after. Named tactics are much easier to resist.",
+    get: "Your plan, your exit line, and what to watch for if the conversation drifts.",
+    edge: "The easiest time to resist pressure is before you're under it.",
   },
-  seoDescription: "Walk into any high-pressure sale prepared. See the tactics they'll use, the phrases that deflect each one, and your walk-away line. Leave with what you wanted.",
-  seoTitle: "Beat High-Pressure Sales Tactics Prep",
+  // 2026-09-14: rewrite. The old copy assumed sales environments are
+  // scripted and adversarial before knowing the situation, and promised
+  // an "exact playbook" the tool can't actually know (real margins, an
+  // insider price, quota timing were fabricated to sustain that promise).
+  // Reframed around the user's own priorities first, tactics described as
+  // possibilities the user may encounter rather than predictions.
+  seoDescription: "Walk into any high-pressure sale knowing what matters and what you'll say. Your plan, your exit line, and the moments worth watching for — no invented margins or insider tricks.",
+  seoTitle: "Walk Into a Sale Prepared",
   title: "Upsell Shield",
-  tagline: "Walk into high-pressure sales prepared.",
+  tagline: "Walk in knowing what matters—and what you'll say.",
   tags: ['upsell', 'sales', 'car dealership', 'pressure', 'negotiate', 'buying', 'pushy', 'negotiation', 'consumer', 'tactics', 'high pressure', 'defense'],
   icon: "🛡️",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "About to visit a car dealership, phone store, furniture showroom, or contractor? Describe what you want and UpsellShield preps you with the exact sales tactics they'll use, the phrases that deflect each one, your walk-away line, and the questions that shift power back to you. Enter prepared, leave with what you actually wanted.",
+  description: "Sometimes it's hard to keep track of what you wanted in the first place once you're in the room. Upsell Shield helps you go in with your priorities clear, recognize the moments that tend to pull people off course, and know what to say when the conversation starts drifting from your plan.",
   guide: {
-    overview: "UpsellShield is pre-game preparation for high-pressure sales situations. Tell it where you're going and what you want, and it maps out the specific tactics that industry uses — anchoring, artificial urgency, the good-cop/bad-cop manager routine, add-on bundling — with the exact counter-phrases for each. Includes your walk-away script and the questions that make salespeople respect you.",
+    overview: "Upsell Shield is preparation, not a script for outplaying anyone. Tell it where you're going, what you want, and your budget, and it restates your own priorities back to you first, then walks through the pressure or decision moments plausibly relevant to this kind of conversation — described as things you may encounter, not predictions — with a grounded response for each. Includes questions worth asking, what to verify before you commit, and a plain exit line for if you need one.",
     howToUse: [
       "Describe where you're going and what you plan to buy or negotiate",
       "Add your budget and any constraints",
-      "Review the tactics they'll use and the counter-phrases",
-      "Memorize your walk-away line before you go in",
-      "Reference the power questions during the conversation"
+      "Start with Your Plan — it's your own priorities, restated",
+      "Read Watch For and keep your exit line ready",
+      "Check Questions Worth Asking and Before You Commit before you agree to anything"
     ],
     example: {
-      scenario: "Buying a used car at a dealership. Budget: $18,000.",
-      action: "Enter the situation and budget.",
-      result: "Maps out: they'll anchor high ($22k), use 'monthly payment' framing to hide total cost, push extended warranty, create urgency ('someone else is looking at this'), and try to sell you on financing. Counter-phrases for each, walk-away line, and the question that forces transparency: 'What's the out-the-door price with zero add-ons?'"
+      scenario: "Buying a used car at a dealership. Budget: $18,000, no extended warranty.",
+      action: "Enter the situation, what you want, and your budget.",
+      result: "Your Plan restates the $18,000 ceiling and no-warranty limit as decided. Watch For names moments like payment framed monthly instead of total, or an add-on offered late in the visit — each with a grounded response, not a bluff. Before You Commit flags the out-the-door price as something to verify in writing. Your exit line: a plain, polite way to leave and think it over."
     },
     tips: [
-      "Read through the entire prep before you walk in — not during",
-      "The walk-away line is your most powerful tool — practice saying it out loud",
-      "Power questions work because they signal you know the game",
+      "Read through Your Plan before you walk in — it's your own priorities, not the seller's",
+      "Your exit line requires no excuse — practice saying it once out loud",
+      "Questions Worth Asking are for getting real information, not for sounding sophisticated",
       "Works for any high-pressure situation, not just cars"
     ]
   }

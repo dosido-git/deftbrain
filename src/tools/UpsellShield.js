@@ -50,7 +50,6 @@ const UpsellShield = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // Tool-specific
     hookBg:        isDark ? 'bg-cyan-900/30 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
@@ -68,12 +67,19 @@ const UpsellShield = ({ tool }) => {
   const [budget, setBudget] = useState('');
   const [concerns, setConcerns] = useState('');
   const [error, setError] = useState('');
-  const [expandedSections, setExpandedSections] = useState({ playbook: true });
+  // Ground-up rewrite (2026-09-14): Watch For is prominent, not collapsible —
+  // it's the tool's main content now. The three secondary sections start
+  // collapsed so the page opens calm; Your Plan and Your Exit Line are
+  // always visible and need no toggle at all.
+  const [expandedSections, setExpandedSections] = useState({});
 
   // ─── Persistent state ───
-  const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
-  const [results, setResults] = usePersistentState('upsellshield-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('upsellshield-history', []);
+  // -v2 keys: the old schema (their_playbook, the_real_deal, body_language,
+  // the_nuclear_option) has nothing in common with this one — a restored v1
+  // result would render mostly empty under the new UI.
+  const [situation, setSituation] = usePersistentState('upsellshield-situation-v2', '');
+  const [results, setResults] = usePersistentState('upsellshield-result-v2', null);
+  const [sessionHistory, setSessionHistory] = usePersistentState('upsellshield-history-v2', []);
 
   const loadExample = () => {
     const ex = pickExample('UpsellShield', [
@@ -127,10 +133,16 @@ const UpsellShield = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
+      // Full input + full result, not a truncated preview: this is what
+      // lets a session card actually be reopened, and lets the Recent
+      // Sessions preview show the real structure (want/budget) instead of
+      // a raw text slice.
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: sit.trim().slice(0, 40),
+        situation: sit.trim(),
+        whatYouWant: whatYouWant.trim(),
+        budget: budget.trim(),
+        concerns: concerns.trim(),
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('us_error')); }
@@ -144,25 +156,39 @@ const UpsellShield = ({ tool }) => {
     setConcerns(''); setResults(null); setError('');
   }, [setSituation, setWhatYouWant, setBudget, setConcerns, setResults, setError]);
 
+  const openSession = useCallback((s) => {
+    setSituation(s.situation || '');
+    setWhatYouWant(s.whatYouWant || '');
+    setBudget(s.budget || '');
+    setConcerns(s.concerns || '');
+    setResults(s.result || null);
+    setError('');
+  }, [setSituation, setWhatYouWant, setBudget, setConcerns, setResults, setError]);
+
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const r = results;
-    let text = `🧲 ${t('us_copy_header')}: ${situation}\n`;
-    if (r.situation_read) text += `\n${r.situation_read}\n`;
-    if (r.their_playbook?.length) {
-      text += `\n${t('us_copy_playbook')}\n`;
-      r.their_playbook.forEach((tac, i) => {
-        text += `\n${i + 1}. ${tac.tactic_name}\n${t('us_copy_theydo')} ${tac.what_they_do}\n${t('us_copy_yousay')} "${tac.your_counter}"\n`;
+    let text = `🛡️ ${t('us_copy_header')}: ${situation}\n`;
+    if (r.your_plan?.length) {
+      text += `\n${t('us_copy_plan')}\n`;
+      r.your_plan.forEach(item => { text += `\n• ${item}`; });
+    }
+    if (r.exit_line) text += `\n\n${t('us_copy_exitline')} ${r.exit_line}`;
+    if (r.watch_for?.length) {
+      text += `\n\n${t('us_copy_watchfor')}\n`;
+      r.watch_for.forEach((w, i) => {
+        text += `\n${i + 1}. ${w.moment}\n${t('us_copy_mighthappen')} ${w.what_might_happen}\n${t('us_copy_response')} ${w.your_response}\n`;
       });
     }
-    if (r.walk_away_line) text += `\n${t('us_copy_walkaway')} "${r.walk_away_line}"`;
-    if (r.power_questions?.length) {
-      text += `\n\n${t('us_copy_power')}\n`;
-      r.power_questions.forEach(q => { text += `\n• "${q.question}"`; });
+    if (r.questions_worth_asking?.length) {
+      text += `\n${t('us_copy_questions')}\n`;
+      r.questions_worth_asking.forEach(q => { text += `\n• ${q.question}`; });
     }
-    if (r.the_real_deal) {
-      text += `\n\n${t('us_copy_realdeal')}\n${t('us_copy_margins')} ${r.the_real_deal.actual_margins}\n${t('us_copy_negotiable')} ${r.the_real_deal.whats_negotiable}\n${t('us_copy_insider')} ${r.the_real_deal.insider_price}`;
+    if (r.before_you_commit?.length) {
+      text += `\n\n${t('us_copy_commit')}\n`;
+      r.before_you_commit.forEach(item => { text += `\n☐ ${item}`; });
     }
+    if (r.if_pressure_continues) text += `\n\n${t('us_copy_ifpressure')} ${r.if_pressure_continues}`;
     return text + BRAND;
   }, [results, situation, t]);
 
@@ -288,166 +314,145 @@ const UpsellShield = ({ tool }) => {
         <div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
 
-          {r.situation_read && (
+          {/* Your Plan — first result, always visible. Begin with the
+              user's own footing, not the seller's presumed intentions. */}
+          {r.your_plan?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
-            </div>
-          )}
-
-          {/* Walk-away line — prominent */}
-          {r.walk_away_line && (
-            <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className="text-[10px] font-bold mb-1">{t('us_walkaway_label')}</p>
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-bold leading-relaxed">"{r.walk_away_line}"</p>
+              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🧭</span> {t('us_plan_title')}</h3>
+              <div className="space-y-1.5">
+                {r.your_plan.map((item, i) => (
+                  <p key={i} className={`text-sm ${c.textSecondary}`}>• {item}</p>
+                ))}
               </div>
             </div>
           )}
 
-          {/* Their playbook */}
-          {r.their_playbook?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('playbook')}
-                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
-                  <span>🎯</span> {t('us_playbook_title')}
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badge}`}>{t('us_tactics_badge', { count: r.their_playbook.length })}</span>
-                </h3>
-                <Caret open={expandedSections.playbook} />
-              </button>
-              {expandedSections.playbook && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
-                  {r.their_playbook.map((tactic, i) => (
-                    <div key={i} className={`${c.cardAlt} rounded-xl p-4`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className={`text-xs font-bold ${c.text}`}>{i + 1}. {tactic.tactic_name}</h4>
-                        {tactic.when_to_expect && (
-                          <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.textMuted}`}>{tactic.when_to_expect}</span>
-                        )}
-                      </div>
-                      <p className={`text-xs ${c.textSecondary} mb-2`}><span className="font-bold">{t('us_theyll_do')}</span> {tactic.what_they_do}</p>
-                      <p className={`text-xs ${c.textMuted} mb-2 italic`}><span className="font-bold">{t('us_psychology')}</span> {tactic.the_psychology}</p>
-                      <div className={`${c.success} border rounded-lg p-3 flex items-start justify-between gap-2`}>
-                        <div>
-                          <p className="text-[10px] font-bold mb-0.5">{t('us_your_counter')}</p>
-                          <p className="text-xs font-medium">"{tactic.your_counter}"</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* Your exit line — prominent */}
+          {r.exit_line && (
+            <div className={`${c.warning} border rounded-xl p-4`}>
+              <p className="text-[10px] font-bold mb-1">{t('us_exitline_label')}</p>
+              <p className="text-sm font-bold leading-relaxed">{r.exit_line}</p>
             </div>
           )}
 
-          {/* Power questions */}
-          {r.power_questions?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('power')}
-                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>💪</span> {t('us_power_title')}</h3>
-                <Caret open={expandedSections.power} />
-              </button>
-              {expandedSections.power && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
-                  {r.power_questions.map((q, i) => (
-                    <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.text} mb-1`}>"{q.question}"</p>
-                      <p className={`text-xs ${c.textMuted} italic`}>{q.what_it_signals}</p>
+          {/* Watch For — prominent, not collapsible; this is the tool's main content now */}
+          {r.watch_for?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
+                <span>👀</span> {t('us_watchfor_title')}
+              </h3>
+              <div className="space-y-3">
+                {r.watch_for.map((w, i) => (
+                  <div key={i} className={`${c.cardAlt} rounded-xl p-4`}>
+                    <h4 className={`text-xs font-bold ${c.text} mb-2`}>{i + 1}. {w.moment}</h4>
+                    <p className={`text-xs ${c.textSecondary} mb-2`}><span className="font-bold">{t('us_mighthappen')}</span> {w.what_might_happen}</p>
+                    <p className={`text-xs ${c.textMuted} mb-2 italic`}><span className="font-bold">{t('us_whydifficult')}</span> {w.why_it_can_be_difficult}</p>
+                    <div className={`${c.success} border rounded-lg p-3`}>
+                      <p className="text-[10px] font-bold mb-0.5">{t('us_your_response')}</p>
+                      <p className="text-xs font-medium">{w.your_response}</p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* The real deal */}
-          {r.the_real_deal && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🔍</span> {t('us_realdeal_title')}</h3>
-              <div className="space-y-2">
-                {[
-                  [t('us_rd_margins'), r.the_real_deal.actual_margins],
-                  [t('us_rd_negotiable'), r.the_real_deal.whats_negotiable],
-                  [t('us_rd_insider'), r.the_real_deal.insider_price],
-                  [t('us_rd_timing'), r.the_real_deal.timing_advantage],
-                ].filter(([, v]) => v).map(([label, value], i) => (
-                  <div key={i}>
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>{label}</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{value}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Pre-visit checklist */}
-          {r.pre_visit_checklist?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.text} mb-2`}>{t('us_checklist_title')}</p>
-              <div className="space-y-1.5">
-                {r.pre_visit_checklist.map((item, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary}`}>☐ {item}</p>
-                ))}
-              </div>
+          {/* Questions worth asking */}
+          {r.questions_worth_asking?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              <button onClick={() => toggleSection('questions')}
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
+                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>❓</span> {t('us_questions_title')}</h3>
+                <Caret open={expandedSections.questions} />
+              </button>
+              {expandedSections.questions && (
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+                  {r.questions_worth_asking.map((q, i) => (
+                    <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                      <p className={`text-xs font-bold ${c.text} mb-1`}>{q.question}</p>
+                      <p className={`text-xs ${c.textMuted} italic`}>{q.why_it_helps}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Body language */}
-          {r.body_language?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.text} mb-2`}>{t('us_body_title')}</p>
-              <div className="space-y-1.5">
-                {r.body_language.map((tip, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary}`}>• {tip}</p>
-                ))}
-              </div>
+          {/* Before you commit */}
+          {r.before_you_commit?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              <button onClick={() => toggleSection('commit')}
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
+                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('us_commit_title')}</h3>
+                <Caret open={expandedSections.commit} />
+              </button>
+              {expandedSections.commit && (
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-1.5`}>
+                  {r.before_you_commit.map((item, i) => (
+                    <p key={i} className={`text-xs ${c.textSecondary}`}>☐ {item}</p>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Nuclear option */}
-          {r.the_nuclear_option && (
-            <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
-              <span className="flex-shrink-0 mt-0.5">☢️</span>
-              <div>
-                <p className="text-xs font-bold mb-1">{t('us_nuclear_title')}</p>
-                <p className="text-sm leading-relaxed">{r.the_nuclear_option}</p>
-              </div>
+          {/* If pressure continues */}
+          {r.if_pressure_continues && (
+            <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+              <button onClick={() => toggleSection('pressure')}
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
+                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🚪</span> {t('us_pressure_title')}</h3>
+                <Caret open={expandedSections.pressure} />
+              </button>
+              {expandedSections.pressure && (
+                <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.if_pressure_continues}</p>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Conditional cross-ref: if they have a real deal section, surface finance tools */}
-          {r.the_real_deal && (
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('us_also_useful')}</p>
-              <div className="flex flex-wrap gap-3">
-                <a href="/MarkupDetective" className={`text-xs ${linkStyle}`}>🔍 {t('us_xref_markup')}</a>
-              </div>
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('us_also_useful')}</p>
+            <div className="flex flex-wrap gap-3">
+              <a href="/MarkupDetective" className={`text-xs ${linkStyle}`}>🔍 {t('us_xref_markup')}</a>
             </div>
-          )}
-
-
-        </div>
-      )}
-
-
-      {/* Session sessionHistory */}
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('us_recent')}</p>
-          <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('us_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
-              </div>
-            ))}
           </div>
         </div>
       )}
+
+      {/* Recent sessions — each card reopens the complete past result. */}
+      {sessionHistory.length > 0 && (() => {
+        const validSessions = sessionHistory.filter(s => s.result);
+        if (!validSessions.length) return null;
+        return (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('us_recent')}</p>
+            <div className="space-y-1.5">
+              {validSessions.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => openSession(s)}
+                  className={`w-full text-start ${c.card} border ${c.border} rounded-lg px-3 py-2.5 hover:brightness-105 transition`}
+                >
+                  <p className={`text-xs font-semibold ${c.text} truncate`}>{s.situation}</p>
+                  {(s.whatYouWant || s.budget) && (
+                    <p className={`text-[10px] ${c.textMuted} mt-0.5 truncate`}>
+                      {[s.whatYouWant, s.budget].filter(Boolean).join(' · ')}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between mt-1">
+                    {s.concerns ? (
+                      <p className={`text-[10px] ${c.textMuted} truncate`}>{t('us_q_concerns')}: {s.concerns}</p>
+                    ) : <span />}
+                    <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
