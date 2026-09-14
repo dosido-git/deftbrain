@@ -327,9 +327,14 @@ const TimeWarp = ({ tool }) => {
             </div>
           )}
 
-          {results?.fiction_note && (
+          {/* Fixed interface copy, not model-generated: the LLM's own
+              fiction_note used to certify "the historical details ... are
+              factual" for the WHOLE piece, which is exactly the blanket
+              seal of accuracy the HISTORY CHECK RULES exist to prevent.
+              This line can't overreach because nothing here is generated. */}
+          {results?.main_content && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl px-4 py-3`}>
-              <p className={`text-xs ${c.textMuted} italic`}>🎭 {results.fiction_note}</p>
+              <p className={`text-xs ${c.textMuted} italic`}>🎭 {t('tw_fiction_note')}</p>
             </div>
           )}
 

@@ -12,7 +12,7 @@ Never fabricate a real person, law, quotation, court record, census rule, price,
 
 The humor should come from a real mismatch in incentives, customs, technology, social norms, or everyday life. Find a surprising parallel rather than relying on 'old person confused by modern thing.'
 
-Historical footnotes must contain only high-confidence, stable facts. If you cannot produce at least two facts you are confident about, return fewer. Never turn an inference or analogy into a fact.
+Historical facts are optional, not a quota to fill. Include one only when you recognize it as broad, well-established background knowledge you would know independent of this scenario — never because it would make the joke's premise plausible. Zero facts is a correct, complete answer when none genuinely clear that bar. Never turn an inference or analogy into a fact.
 
 Never place a double-quote (") character inside any JSON string value — use single quotes or no quotation marks so the JSON remains valid.`;
 
@@ -57,27 +57,25 @@ CORE RULES:
 - The joke must still work if every historical fact is removed; facts should enrich the joke, not be manufactured to support it.
 - Keep the main piece roughly 180-320 words.
 
-HISTORY CHECK RULES:
-- historical_footnotes contains 0-3 genuinely factual, high-confidence notes connected to the piece.
-- Each note must distinguish fact from analogy. Do not say 'this was basically the first X' unless that comparison is explicitly framed as an analogy rather than historical fact.
-- If a fact is disputed, highly specific, or outside your confidence, leave it out.
-- Each footnote must be an independently factual historical claim, not an interpretation written in factual-sounding language. Avoid universal claims — 'did not exist', 'would not', 'always', 'never' — unless literally supportable for the stated period: the telegraph and telephone existed by the Victorian era, so 'remote communication technology did not exist' is false, and 'a Victorian gentleman would not alter his appearance based on whether others could see him' is an inference about behavior, not a fact about the period. Before returning each footnote, silently ask whether a knowledgeable historian could reasonably object to its wording; if so, narrow it or omit it.
-
-HISTORICAL FACT RULE: Include only facts that are both high-confidence and narrowly stated enough to remain true across the specific place and period being invoked. Do not generalize about 'medieval Europe', 'Victorians', 'Romans', or another broad population when practices varied by century, region, class, religion, or social setting. If the collision requires a historical claim you cannot state confidently and narrowly, remove that claim from both the fictional piece and the factual notes. The fictional label does not permit the scenario to depend on false history — 'medieval marriage was typically arranged by families' and 'the Church required parental consent as doctrine' are both far too sweeping (canon law placed real weight on the consent of the marrying parties themselves, and practice varied enormously by region and class); if a claim like that is what makes the joke work, either narrow it to a specific setting you are actually confident about (e.g. 'in some wealthy households, marriages were negotiated between families') or find a different premise.
-
-FINAL CROSS-CHECK: Every historical premise used INSIDE the fictional piece must obey the same factual standard as historical_footnotes. Fiction may invent the event, people, dialogue, product, price, and comic situation; it may not invent the historical rules that make the joke work. Before returning, check every historical claim the fictional piece relies on — not just what you wrote in historical_footnotes — against this same bar.
+HISTORY CHECK RULES — read this before writing historical_footnotes or era_context:
+Three rounds of tightening this prompt to ask you to be more careful about historical confidence have not worked: each time, you produced a new plausible-sounding claim you could not actually support (communication tech that already existed by the stated era; a sweeping claim about medieval marriage; a legal-progress claim in flip_it). Policing your own confidence after the fact is not enough, because a claim invented TO SUPPORT THE JOKE always sounds confident to the one inventing it. So the instruction now is structural, not a request for more care:
+- Do not generate a historical_footnotes entry, or an era_context sentence, merely because it supports the joke. Historical facts are OPTIONAL in both fields.
+- Include a fact only if you recognize it as broad, well-established background knowledge you would know independent of this specific scenario — not something you are inferring because it would make the collision plausible.
+- COUNTERFACTUAL TEST, silently, before including any historical claim in either field: 'Would I have produced this claim if I were not trying to make this particular joke work?' If no, omit it.
+- historical_footnotes may contain 0, 1, 2, or 3 items. If fewer than two genuinely pass the test above, return fewer — including zero. An empty historical_footnotes array is a correct, complete answer, not a failure.
+- era_context may be an empty string. Only fill it when you can state one modest, broadly-established fact relevant to the collision WITHOUT reconstructing how people in the period behaved, communicated, married, transacted, or lived. Never use era_context to make the fictional premise sound historically documented.
+- flip_it is a creative teaser, not historical commentary. Do not introduce a factual claim, a comparison about historical progress, or an assertion about how laws or society changed between the two eras.
 
 Return ONLY valid JSON:
 {
   "title": "A concise, funny title for the collision",
-  "era_context": "One modest, directly relevant historical fact that orients the joke — not a sweeping characterization of how people in the period lived or behaved. Prefer something like 'Letters and face-to-face meetings played important roles in Victorian business and social life' over a categorical claim about what was THE primary means of communication. If the supplied period is broad (e.g. 'medieval Europe'), explicitly narrow the SETTING for this scenario — a particular century, region, or social milieu, e.g. 'wealthy households in 14th-century England' — rather than making a claim about the entire period. Narrower is funnier: specificity gives the comedy texture a vague era can't.",
+  "era_context": "One modest, broadly-established historical fact that orients the joke, OR an empty string — see HISTORY CHECK RULES. Never a sweeping characterization of how people in the period lived, communicated, married, or behaved.",
   "main_content": "The fictional/hypothetical piece in the selected format",
-  "fiction_note": "One brief sentence clarifying what was invented for the scenario. Example: The people, dialogue, and incident above are fictional; the history notes below are the factual part.",
   "historical_footnotes": [
-    "0-3 high-confidence historical facts only"
+    "0-3 items — genuinely factual, high-confidence, and independent of what would make this scenario's joke work. See HISTORY CHECK RULES; an empty array is a correct answer."
   ],
   "anachronism_alert": "The funniest or most revealing single image ALREADY PRESENT in main_content — identify or concisely restate a joke or image from the piece you just wrote. Do not invent a new detail, image, or joke here that never appeared above.",
-  "flip_it": "A one-sentence teaser for a reverse or adjacent collision that would reveal a different historical parallel"
+  "flip_it": "A one-sentence creative teaser for a reverse or adjacent collision — no factual claims, see HISTORY CHECK RULES."
 }`;
 
     const parsed = await callClaudeWithRetry({
