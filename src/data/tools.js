@@ -1868,7 +1868,7 @@ export const tools = [
   icon: "🎙️",
   categories: ['Pursuits', 'The Office'],
   headerColor: "#ccdfc4",
-  description: "Paste your presentation and pick a mode: Cut trims it to fit your time limit, Anticipate predicts the toughest Q&A and drafts answers, and Hook rewrites your opening, closing, and transitions to land harder.",
+  description: "A presentation can look ready on the page and still stumble in the room. The Run-Through helps you find what to cut, what to prepare for, and what needs a stronger landing — before you're standing in front of an audience.",
   guide: {
     overview: "The Runthrough is a 3-mode presentation coaching tool. Cut mode trims your content to fit a time limit while preserving the core message. Anticipate mode predicts the hardest questions your audience will ask and drafts strong answers with traps to avoid. Hook mode rewrites your opening, closing, and key transitions to grab attention and stick in memory.",
     howToUse: [

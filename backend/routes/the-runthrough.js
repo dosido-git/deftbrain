@@ -40,7 +40,7 @@ Your job:
 1. Determine whether the source already fits comfortably inside the time limit.
 2. If it already fits: treat the time limit as a CEILING, not a target. Do not shorten the presentation merely to use less of the available time, and do not rewrite it just to make it sound different. But use the supplied context (audience, stakes, setting) to judge whether genuinely greater brevity would materially improve the presentation regardless of the time limit — for example a notoriously impatient audience, a context that signals "keep this tight," or material that is clearly over-explained on its own terms, independent of the clock.
    - If tightening would NOT materially help: return the source essentially unchanged (correcting only an obvious spoken-language stumble if necessary), set revision_status to "unchanged", and leave what_was_cut empty.
-   - If tightening WOULD materially help: return a tightened version, set revision_status to "tightened", and say so plainly in what_was_kept — make clear that the original already fit the time limit and this is an optional improvement, not a forced cut. There is no minimum length for this case: remove only what genuinely improves clarity or pacing, never to hit a number.
+   - If tightening WOULD materially help: return a tightened version, set revision_status to "tightened". There is no minimum length for this case: remove only what genuinely improves clarity or pacing, never to hit a number.
 3. If it does not fit, cut it down. Set revision_status to "cut". HARD FLOOR: trimmed_content must be AT LEAST ${Math.round(timeMinutes * 130 * 0.7)} words (70% of the ${timeMinutes * 130}-word target) — NEVER fewer, no matter how much low-value material you find. Reaching the floor before you run out of things you'd like to remove means STOP CUTTING and keep the rest, even material you consider secondary. A trimmed talk under the floor is not a successful edit; it is a summary standing in for a talk, and that is a failure regardless of how "unnecessary" the removed material seemed. Preserve the speaker's meaning, factual claims, caveats, commitments, chronology, and voice.
 4. Remove low-value setup, repetition, throat-clearing, unnecessary examples, and detail before removing information the audience needs — cut in that order, and STOP at the floor in step 3, not when you run out of "nice to cut" material.
 5. Never add facts, explanations, promises, rationale, or conclusions that were not in the source.
@@ -48,10 +48,13 @@ Your job:
 7. Pacing notes should identify only 2-3 moments where delivery meaningfully changes comprehension or emphasis.
 8. Before returning, count the words in your own trimmed_content. If revision_status is "cut" and the count is under ${Math.round(timeMinutes * 130 * 0.7)} words, you have cut too much — add back material from the source (in the speaker's own words, not new content) until you clear the floor.
 9. Never report a cut, tightening, or change that the returned text does not actually contain. trimmed_content, trimmed_word_count, trimmed_est_minutes, what_was_cut, and what_was_kept must all describe the same, actual edit — if nothing changed, say so exactly; if you tightened, describe only material you actually removed.
+10. what_was_kept names ONE thing: the central message or decision this presentation exists to deliver — the sentence you'd say if someone asked "what is this actually about?" It is never a list or summary of what got preserved (topics covered, figures retained, sections kept) — that is an inventory, not a thesis, and applies whether revision_status is "unchanged", "tightened", or "cut". Whether the source already fit the time limit is reported elsewhere; do not restate it here.
 
 Return ONLY valid JSON:
 
 {
+  "session_title": "3-6 word neutral label naming what this presentation is about, e.g. 'Q3 Budget Review' or 'Team Standup Update' — for a history list, never shown as the deliverable itself",
+  "context_label": "2-3 word label for the setting, e.g. 'Team Standup', 'Investor Pitch', 'Conference Talk' — derived from CONTEXT above if one was given, otherwise null. Never invent a setting that was not stated or clearly implied.",
   "revision_status": "unchanged" | "tightened" | "cut" — MUST be exactly one of these three lowercase English words, never translated or rephrased regardless of the output language; pick the one that matches what you actually did (see rules 2-3),
   "original_word_count": 0,
   "original_est_minutes": 0,
@@ -65,7 +68,7 @@ Return ONLY valid JSON:
       "reason": "Why removing it helps — fitting the time limit if revision_status is 'cut', or improving clarity/pacing if 'tightened'"
     }
   ],
-  "what_was_kept": "One sentence naming the central message or decision the edit protects; if revision_status is 'unchanged' or 'tightened', also say plainly here that the presentation already fit the time limit",
+  "what_was_kept": "One sentence naming the single central message or decision this presentation exists to deliver — never a list or summary of what was retained (see rule 10)",
   "pacing_notes": "2-3 brief, concrete delivery notes joined as one string"
 }
 
@@ -171,7 +174,7 @@ This is not a generic Q&A generator and not a hostile-interrogation exercise.
 RULES:
 - Ground every predicted question in something actually present, implied, or conspicuously absent from the presentation.
 - Distinguish a weak claim from a claim that simply needs supporting detail.
-- Do not invent missing facts in draft answers. If the presentation does not contain the answer, write a safe answer structure that says what the speaker can acknowledge and what they should verify or supply.
+- Draft answers may use only facts contained in the presentation or supplied context. Never turn a plausible explanation, plan, capability, or assumption into something the speaker can state as fact. When information needed to answer is missing, use an explicit placeholder or give the speaker a safe response structure that acknowledges what must be checked before presenting.
 - Never fabricate metrics, dates, evidence, customer results, commitments, motives, or certainty.
 - Prefer the 4-6 questions that would matter most over a long list of clever questions.
 - Make draft answers sound speakable, direct, and honest.
@@ -182,6 +185,7 @@ RULES:
 Return ONLY valid JSON:
 
 {
+  "session_title": "3-6 word neutral label naming what this presentation is about, e.g. 'Checkout Redesign — Budget Request' — for a history list, never shown as the deliverable itself",
   "presentation_summary": "1-2 sentences stating the presentation's main message and intended takeaway",
   "vulnerability_scan": {
     "weakest_claim": "The claim or passage most in need of support or clarification — or 'No obvious weak claim' if none",
@@ -254,17 +258,19 @@ Strengthen the moments that determine whether the audience follows the presentat
 RULES:
 - Preserve the speaker's actual message and recognizable voice.
 - Make the smallest rewrite that produces a meaningful improvement.
-- Do not add a statistic, story, anecdote, quotation, example, promise, result, or factual claim that is not supported by the source.
+- Improve rhetoric, structure, emphasis, and transitions without adding a new factual claim, causal conclusion, characterization, or lesson that the source does not establish. A memorable line may sharpen an existing idea, but it must not create a new idea and then attribute it to the speaker or their examples.
 - Do not force a flashy hook. A clear stakes statement, useful question, concrete problem, or direct promise is often stronger than theatrics.
 - If the existing opening or closing already works, refine it rather than replacing it for novelty.
 - Avoid clichés such as 'Imagine a world where', 'Have you ever wondered', and 'Everything you think you know is wrong' unless the source genuinely earns them.
-- Transitions should help the audience understand why the next section follows; they should not merely sound polished.
+- Transitions should help the audience understand why the next section follows; they should not merely sound polished. When a transition would require knowledge of material not supplied, write a neutral bridge rather than inventing what the later material proves.
 - Honor the requested tone without making the speaker sound like a different person.
 - If the source has no identifiable section break, return only transitions that are genuinely useful.
 
 Return ONLY valid JSON:
 
 {
+  "session_title": "3-6 word neutral label naming what this presentation is about, e.g. 'Why Roadmaps Fail' — for a history list, never shown as the deliverable itself",
+  "central_idea": "One sentence naming the core idea this presentation argues or delivers — the thesis itself, not the technique used to open or close it, and never a summary of the diagnosis or transitions",
   "diagnosis": {
     "current_opening": "What the opening currently does",
     "opening_problem": "The single most useful improvement, or 'Already strong' if it is",

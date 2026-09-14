@@ -173,12 +173,17 @@ const TheRunthrough = ({ tool }) => {
 
       const res = await callToolEndpoint(endpoint, payload);
       setResults({ mode, data: res });
+      // Full input + full result, not a truncated preview: this is what lets
+      // a history entry actually be reopened (read the old result), rerun
+      // (resubmit the same inputs), or continued into another mode (carry
+      // just the presentation text) instead of being a dead log line. See
+      // summarizeSession() below for what gets derived from this at render.
       setSessionHistory(prev => [{
         id: 'tr_' + Date.now(),
         date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: content.trim().slice(0, 40),
         mode,
+        input: { content: content.trim(), timeMinutes, context, audience, stakes, tone, goal },
+        data: res,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('trt_error_generic'));
@@ -225,14 +230,104 @@ const TheRunthrough = ({ tool }) => {
     setExpandedSections({});
   };
 
+  // ─── Session history: derive display fields from stored input+data ───
+  // Everything here reads from what the model actually returned — the
+  // interface renders what happened, it does not decide what happened.
+  // Legacy entries from before this card redesign have no `data`/`input` at
+  // all; they're filtered out at render (see the JSX below) rather than
+  // migrated, since this is disposable local history, not data worth a
+  // migration path.
+  const NEXT_MODE = { cut: 'anticipate', anticipate: 'hook', hook: 'cut' };
+  const CONTINUE_LABEL_KEY = { cut: 'trt_hist_continue_anticipate', anticipate: 'trt_hist_continue_hook', hook: 'trt_hist_continue_cut' };
+
+  const summarizeSession = (s) => {
+    const d = s.data;
+    const fallbackTitle = s.input.content.trim().slice(0, 40);
+    if (s.mode === 'cut') {
+      const status = ['unchanged', 'tightened'].includes(d.revision_status) ? d.revision_status : 'cut';
+      const statusKey = status === 'unchanged' ? 'trt_fits_no_change' : status === 'tightened' ? 'trt_fits_tightened' : 'trt_trimmed_to_fit';
+      return {
+        title: d.session_title || fallbackTitle,
+        chip: d.context_label || null,
+        statsLine: `${t('trt_min_value', { count: d.original_est_minutes })} → ${t('trt_min_value', { count: d.trimmed_est_minutes })} · ${t(statusKey)}`,
+        takeaway: d.what_was_kept || null,
+      };
+    }
+    if (s.mode === 'anticipate') {
+      const questions = d.tough_questions || [];
+      // "Killer" and "very hard" both signal a real gap the speaker needs to
+      // close before presenting — an enum comparison, not a guess at what
+      // counts as critical.
+      const critical = questions.filter(q => q.difficulty === 'killer' || q.difficulty === 'very_hard').length;
+      return {
+        title: d.session_title || fallbackTitle,
+        chip: s.input.audience ? t(AUDIENCE_OPTIONS.find(a => a.id === s.input.audience)?.labelKey || 'trt_aud_general') : null,
+        statsLine: `${t('trt_hist_questions', { count: questions.length })} · ${t('trt_hist_critical', { count: critical })}`,
+        takeaway: d.overall_readiness || null,
+      };
+    }
+    // hook
+    const transitions = (d.transitions || []).length;
+    return {
+      title: d.session_title || fallbackTitle,
+      chip: s.input.tone ? t(TONE_OPTIONS.find(tn => tn.id === s.input.tone)?.labelKey || 'trt_tone_conversational') : null,
+      statsLine: `${t('trt_hist_opening')} · ${t('trt_hist_closing')} · ${t('trt_hist_transitions_strengthened', { count: transitions })}`,
+      takeaway: d.central_idea ? `${t('trt_hist_central_idea')} ${d.central_idea}` : null,
+    };
+  };
+
+  const restoreSessionInput = (s) => {
+    setContent(s.input.content || '');
+    setTimeMinutes(s.input.timeMinutes || 5);
+    setContext(s.input.context || '');
+    setAudience(s.input.audience || 'general');
+    setStakes(s.input.stakes || '');
+    setTone(s.input.tone || 'conversational');
+    setGoal(s.input.goal || '');
+  };
+
+  // Reopens the complete previous result — no re-call, no re-cost.
+  const openSession = (s) => {
+    setMode(s.mode);
+    restoreSessionInput(s);
+    setResults({ mode: s.mode, data: s.data });
+    setError('');
+    setExpandedSections({});
+  };
+
+  // Restores the original inputs so the visitor can tweak and resubmit —
+  // deliberately does NOT restore the old output as if it were new source.
+  const runAgainSession = (s) => {
+    setMode(s.mode);
+    restoreSessionInput(s);
+    setResults(null);
+    setError('');
+    setExpandedSections({});
+  };
+
+  const deleteSession = (id) => {
+    setSessionHistory(prev => prev.filter(s => s.id !== id));
+  };
+
+  // Carries the ORIGINAL PRESENTATION into the next mode, never the
+  // generated output — Cut/Anticipate/Hook become complementary passes over
+  // the same talk rather than three disconnected tools.
+  const continuePrep = (s) => {
+    setMode(NEXT_MODE[s.mode]);
+    setContent(s.input.content || '');
+    setResults(null);
+    setError('');
+    setExpandedSections({});
+  };
+
   // ─── Build text helpers ───
   const buildCutText = (d) => {
     const status = ['unchanged', 'tightened'].includes(d.revision_status) ? d.revision_status : 'cut';
     let out = `✂️ ${t('trt_copy_cut_header')}\n`;
     out += `${t('trt_copy_original')} ~${d.original_word_count} ${t('trt_copy_words_short')} (~${d.original_est_minutes} ${t('trt_copy_min_short')})\n`;
-    out += `${t('trt_copy_trimmed')} ~${d.trimmed_word_count} ${t('trt_copy_words_short')} (~${d.trimmed_est_minutes} ${t('trt_copy_min_short')}) → ${t('trt_copy_target')} ${d.target_minutes} ${t('trt_copy_min_short')}\n\n`;
-    if (status === 'unchanged') out += `${t('trt_fits_no_change')}\n\n`;
-    if (status === 'tightened') out += `${t('trt_fits_tightened')}\n\n`;
+    out += `${t('trt_copy_trimmed')} ~${d.trimmed_word_count} ${t('trt_copy_words_short')} (~${d.trimmed_est_minutes} ${t('trt_copy_min_short')}) → ${t('trt_copy_limit')} ${d.target_minutes} ${t('trt_copy_min_short')}\n\n`;
+    const statusMsgKey = status === 'unchanged' ? 'trt_fits_no_change' : status === 'tightened' ? 'trt_fits_tightened' : 'trt_trimmed_to_fit';
+    out += `${t(statusMsgKey)}\n\n`;
     out += `━━ ${t('trt_copy_trimmed_content')} ━━\n${d.trimmed_content}\n\n`;
     if (d.what_was_cut?.length) {
       out += `━━ ${t('trt_copy_what_cut')} ━━\n`;
@@ -338,8 +433,16 @@ const TheRunthrough = ({ tool }) => {
       : [
           { label: t('trt_stat_original'), value: t('trt_min_value', { count: d.original_est_minutes }), sub: t('trt_words', { count: d.original_word_count }) },
           { label: t('trt_stat_trimmed'), value: t('trt_min_value', { count: d.trimmed_est_minutes }), sub: t('trt_words', { count: d.trimmed_word_count }) },
-          { label: t('trt_stat_target'), value: t('trt_target_value', { count: d.target_minutes }), sub: fits ? t('trt_fits') : t('trt_close') },
+          { label: t('trt_stat_limit'), value: t('trt_target_value', { count: d.target_minutes }), sub: fits ? t('trt_fits') : t('trt_close') },
         ];
+
+    // One status line for every outcome — "Target" never appears anywhere in
+    // this UI (the whole point of the ceiling-not-target rewrite), and the
+    // reader gets an explicit answer to "did this need to change?" regardless
+    // of which of the three things actually happened.
+    const statusMessageKey = status === 'unchanged' ? 'trt_fits_no_change'
+      : status === 'tightened' ? 'trt_fits_tightened'
+      : 'trt_trimmed_to_fit';
 
     return (
     <div className="space-y-4">
@@ -361,11 +464,9 @@ const TheRunthrough = ({ tool }) => {
             <span>📄</span> {t('trt_trimmed_presentation')}
           </h3>
         </div>
-        {(status === 'unchanged' || status === 'tightened') && (
-          <p className={`text-xs ${c.accentTxt} ${c.accentBox} rounded-lg px-3 py-2 mb-3`}>
-            {status === 'unchanged' ? t('trt_fits_no_change') : t('trt_fits_tightened')}
-          </p>
-        )}
+        <p className={`text-xs ${c.accentTxt} ${c.accentBox} rounded-lg px-3 py-2 mb-3`}>
+          {t(statusMessageKey)}
+        </p>
         <div className={`${c.input} ${c.border} border rounded-xl p-4`}>
           <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>
             {d.trimmed_content}
@@ -617,15 +718,24 @@ const TheRunthrough = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <div className="min-w-0">
+                {/* PF-30 — the wrapper already prints the name as the page <h1>.
+                    Button pulled out of the <p> as its own sibling (matching
+                    Mend.js/ApologyCalibrator's header) rather than sharing a
+                    line with the tagline text — it was rendering right after
+                    the tagline with no break. data-print-hide on both buttons
+                    and the mode-tab row below: this whole row is on-screen
+                    chrome with no print value (the wrapper's own print-only
+                    header already carries the tool's name/description), and
+                    printing it added height that pushed a printout of this
+                    tool into a large blank gap on the page before. */}
                 <p className={`text-base ${c.textSecondary}`}>
                   <span className="me-2 text-lg">{tool?.icon ?? '🎙️'}</span>{tool?.tagline ?? t('trt_tagline')}
-                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 </p>
+                <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {(results || content.trim()) && (
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                <button data-print-hide onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                   ↺ {t('start_over')}
                 </button>
               )}
@@ -634,7 +744,7 @@ const TheRunthrough = ({ tool }) => {
         </div>
 
         {/* Mode tabs */}
-        <div className={`flex border-b ${c.border}`}>
+        <div data-print-hide className={`flex border-b ${c.border}`}>
           {MODES.map(m => (
             <button
               key={m.id}
@@ -836,23 +946,60 @@ const TheRunthrough = ({ tool }) => {
         )}
       </div>
 
-      {/* Session sessionHistory */}
-      {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('trt_recent_sessions')}</p>
-          <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */}
-
-            {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{s.mode}</span>
-              </div>
-            ))}
+      {/* Session history — a presentation prep history, not a log. Each card
+          answers "which presentation was this?" and "what did The Run-
+          Through find?", and turns into the next useful step: reopen it,
+          rerun it with tweaks, or carry the same talk into a different mode. */}
+      {sessionHistory.length > 0 && (() => {
+        const validSessions = sessionHistory.filter(s => s.data && s.input);
+        if (!validSessions.length) return null;
+        return (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-3`}>📋 {t('trt_recent_sessions')}</p>
+            <div className="space-y-2">
+              {validSessions.map(s => {
+                const sum = summarizeSession(s);
+                const modeInfo = MODES.find(m => m.id === s.mode);
+                return (
+                  <div
+                    key={s.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openSession(s)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') openSession(s); }}
+                    className={`${c.card} ${c.border} border rounded-lg p-3 cursor-pointer transition-colors hover:border-cyan-500/50`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-sm font-semibold ${c.text} truncate`}>{sum.title}</p>
+                        <p className={`text-xs ${c.textMuted} mt-0.5`}>
+                          <span className="me-1">{modeInfo?.icon}</span>{t(modeInfo?.labelKey)}{sum.chip ? ` · ${sum.chip}` : ''}
+                        </p>
+                      </div>
+                      {/* stopPropagation: these sit inside the card's own
+                          onClick (Open), so each needs to swallow the click
+                          or every action would also reopen the session. */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button onClick={(e) => { e.stopPropagation(); openSession(s); }} title={t('trt_hist_open')} aria-label={t('trt_hist_open')} className={`${c.btnSecondary} rounded-md p-1.5 text-xs leading-none`}>👁️</button>
+                        <button onClick={(e) => { e.stopPropagation(); runAgainSession(s); }} title={t('trt_hist_run_again')} aria-label={t('trt_hist_run_again')} className={`${c.btnSecondary} rounded-md p-1.5 text-xs leading-none`}>↺</button>
+                        <button onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }} title={t('trt_hist_delete')} aria-label={t('trt_hist_delete')} className={`${c.btnSecondary} rounded-md p-1.5 text-xs leading-none`}>🗑️</button>
+                      </div>
+                    </div>
+                    <p className={`text-xs ${c.textSecondary} mt-2`}>{sum.statsLine}</p>
+                    {sum.takeaway && <p className={`text-xs ${c.textMuted} mt-1 leading-relaxed`}>{sum.takeaway}</p>}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); continuePrep(s); }}
+                      className={`text-xs font-semibold ${c.accentTxt} mt-2 hover:underline`}
+                    >
+                      → {t(CONTINUE_LABEL_KEY[s.mode])}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
