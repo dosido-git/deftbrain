@@ -2166,16 +2166,23 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "TimeWarp",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You want something funny that's also secretly educational.",
-    give: "A modern thing and a historical period. Pick a format.",
-    get: "The collision written as an explainer, review, news report, letter, debate or ad.",
+    when: "You want something funny, not a history lesson.",
+    give: "A modern thing and a historical period.",
+    get: "A playful collision, a short reflection on what it reveals, and a next collision to try.",
   },
-  seoDescription: "Collide anything modern with any historical era and get a funny fictional result — reviews, news reports, ads, letters — plus real historical footnotes kept separate from the bit.",
+  // 2026-09-14: ground-up redesign. Time Warp no longer offers a format
+  // menu (explain/review/news/letter/debate/ad) or historical footnotes —
+  // the model picks whatever form makes the collision funniest, and
+  // history is deliberately kept modest rather than positioned as
+  // something the user learns. See backend/routes/time-warp.js
+  // PERSONALITY: "Time Warp is not a history tool. History is the
+  // playground." Replaces the prior "secretly educational" framing.
+  seoDescription: "Collide anything modern with any historical era and get a playful, imaginative result, plus a short reflection on what the collision reveals about the modern thing.",
   seoTitle: "Modern Meets History: Comedy Generator",
   title: "Time Warp",
   tagline: "Collide anything modern with any historical period.",
@@ -2183,29 +2190,24 @@ export const tools = [
   icon: "⏰",
   categories: ['Diversions', 'What If?'],
   headerColor: "#b8dcd8",
-  // 2026-09-14: dropped the "historically accurate" claim (and the same
-  // claim in seoDescription above) — the rewritten prompt makes the main
-  // piece explicitly fictional/hypothetical and reserves real history for
-  // historical_footnotes specifically. Claiming the whole piece was
-  // accurate was never true and the prompt no longer even tries.
   description: "What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.",
   guide: {
-    overview: "Time Warp creates collisions between the modern and historical that are both genuinely funny and surprisingly educational. The AI knows enough real history to make the comedy specific.",
+    overview: "Time Warp creates collisions between the modern and historical that are genuinely funny first. History is the playground, not the point — the model picks whatever form (a scene, a listing, a letter, an ad, and more) makes each specific collision funniest, then names the surprising thing the collision reveals about the familiar modern thing.",
     howToUse: [
       "Pick a modern thing and a historical period, or use a Quick Combo",
-      "Choose your format: Explain It, Review, News Report, Letter, Debate, or Ad",
-      "Hit 'Warp It' and travel through time",
-      "Check the 'Actually True' footnotes — you'll learn real history"
+      "Hit 'Warp It' and let the collision find its own form",
+      "Read 'The Warp' — the short reflection on what the collision reveals",
+      "Try 'One More?' for an irresistible adjacent collision"
     ],
     example: {
-      scenario: "Modern thing: Uber. Historical period: 1920s New York. Format: News Report.",
+      scenario: "Modern thing: Uber. Historical period: 1920s New York.",
       action: "Hit Warp It.",
-      result: "A period-authentic 1920s newspaper article about mysterious horseless carriages summoned by pocket devices, with quotes from concerned taxi medallion holders and footnotes explaining real 1930s taxi regulation history."
+      result: "A fictional 1920s newspaper notice about mysterious horseless carriages summoned by pocket devices, followed by a short reflection on what the panic over 'letting a stranger's car pick you up' still says about trust and convenience today."
     },
     tips: [
       "The more specific your modern thing, the funnier the result",
-      "Try the same combo in different formats",
-      "The 'Flip It' suggestion teases the reverse collision"
+      "'Same Combo, Different Warp' reruns the pairing for a fresh take",
+      "'One More?' teases the next collision worth trying"
     ]
   }
 },

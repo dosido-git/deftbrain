@@ -3,12 +3,12 @@
     "tool": "TimeWarp",
     "generated": "2026-09-14",
     "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-    "baseline_commit": "timewarp-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden time-warp). Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) the review/letter/debate formats produce quoted speech/dialogue inside main_content -> German unescaped double-quotes -> 500; the no-inner-double-quote rule. (2) guard keys top-level title + main_content. (3) frontend c block got PF-2 aliases (labelText already existed). No truncation risk (single 200-400 word prose piece + a bounded footnotes array at 4000). DO NOT reverse: the no-inner-double-quote rule; the PF-2 aliases; no annotation suffixes. 2026-09-14: historical_footnotes is now legitimately EMPTY by design (round-3 fix makes historical facts optional + adds a COUNTERFACTUAL TEST so the model stops inventing plausible-sounding claims to support the joke) -- do not treat an empty array here as a regression, and do not re-add a 'must be non-empty' expectation to this golden. fiction_note field was removed from the schema entirely (now fixed, translated interface copy in the frontend, tw_fiction_note) -- do not expect it in output."
+    "baseline_commit": "timewarp-ground-up-v3",
+    "how_to_regression_diff": "Re-run (npm run check:golden time-warp). Diff for QUALITY not exact match: HTTP 200. 2026-09-14: GROUND-UP REDESIGN — response shape changed completely. The route no longer accepts `format` and no longer returns era_context / historical_footnotes / anachronism_alert / flip_it / fiction_note. New shape: title, main_content, warp_insight (\"The Warp\" reflection), next_collision {modernThing, historicalPeriod, teaser} (\"One More?\"). Do not resurrect the old sections in a golden case or expect them in output — their absence is correct, not a regression. GUARDS: (1) the model can produce quoted dialogue inside main_content -> German unescaped double-quotes -> 500; the no-inner-double-quote rule. (2) guard keys top-level title + main_content + warp_insight. (3) frontend c block got PF-2 aliases (labelText already existed). No truncation risk (single ~180-320 word piece + a ~70-130 word reflection + a short teaser, at 3500 tokens). DO NOT reverse: the no-inner-double-quote rule; the PF-2 aliases; no annotation suffixes; the removed format selector."
   },
   "cases": [
     {
-      "name": "de-medieval-smartphone-review",
+      "name": "de-medieval-smartphone",
       "endpoint": "/api/time-warp",
       "input": {
         "userLanguage": "de",
@@ -16,16 +16,17 @@
         "userCurrency": "EUR",
         "userRegion": "Germany",
         "modernThing": "Smartphone",
-        "historicalPeriod": "Mittelalter (1347)",
-        "format": "review"
+        "historicalPeriod": "Mittelalter (1347)"
       },
       "output": {
-        "title": "Das Schwarze Rechteck des Teufels: Eine Kaufmanns-Warnung aus Köln, 1347",
-        "era_context": "Im 14. Jahrhundert waren Zinn, Glas und metallische Legierungen bekannte Materialien für Handwerk und Schmuck.",
-        "main_content": "WARNUNG AN ALLE CHRISTLICHEN KÄUFER\n\nIch bin Hinrich, Kaufmann zu Köln, und ich muss euch vor einer fremden Maschine berichten, die mir ein Wanderer angeboten hat. Er nennt sie 'Smar-Tele-Fon' — ein Wort, das in keiner bekannten Sprache Sinn ergibt.\n\nDAS OBJEKT: Ein schwarzes Rechteck aus Materials, das weder Holz noch Stein ist. In der Hand liegt es schwer wie drei Bleigroschen. Es trägt kein Krüzifix, keine Heiligenbilder — nur blanke Fläche.\n\nDER BETRUG: Der Verkäufer versprach mir, ich könne damit 'mit Menschen in Rom sprechen, ohne sie zu sehen'. Ich zahle 40 Silbergroschen. Für diesen Preis erhalte ich … ein Rechteck, das nicht spricht. Es verlangt regelmäßig, dass ich es an einem glühenden Draht anschließe, oder es 'stirbt'. \n\nDas Ding zeigt mir Malereien von Menschen, die ich nicht kenne. Manchmal flammt es nachts auf und erschreckt das Vieh.\n\nICH RATE EUCH: Gebt euer Geld nicht aus. Ein echter Bote auf einem Pferd kostet weniger und verlangt nicht, dass die ganze Christenheit an einer unsichtbaren Kraft beteiligt ist. Auch lügt ein Bote nicht täglich, dass es Zeit zum Gebete sei.\n\nZum Verkauf: Rechteck, kaum genutzt. Kauf auf eigenes Risiko.",
-        "historical_footnotes": [],
-        "anachronism_alert": "Der Kaufmann bezahlt mit 'Silbergroschen' und versucht, ein Smartphone an einen 'glühenden Draht' anzuschließen — die Absurdität, dass ein mittelalterlicher Zins sein Gerät jeden Tag zum Aufladen braucht, ohne eine Steckdose zu haben.",
-        "flip_it": "Ein römischer Diplomat von 117 n.Chr. muss einen Brief mit einem modernen SMS-System verschicken und verzweifelt daran, dass seine Botschaft auf 160 Zeichen begrenzt ist."
+        "title": "Das heilige Reliquiar – Beichtbrief eines Pilgers, 1347",
+        "main_content": "Mein Beichtvater hat mir befohlen, über die Sünde zu schreiben, in die ich gefallen bin.\n\nIch kaufte das Ding auf der Messe von Köln. Der Händler sagte, es sei ein Fenster zur Heiligen Jungfrau selbst – klein, glatt, aus kostbarem dunklem Stein gefertigt, das Antlitz darin leuchtend wie eine Monstranz. Für drei Silbergroschen.\n\nZuerst trug ich es wie eine Hostie in meinem Beutel. Ich zeigte es Pilgern unterwegs. Sie knieten nieder. Ein Priester bot mir Ablass an, nur um es zu berühren.\n\nDann begann ich, es überall zu kratzen und zu drücken. Mein Daumen fand winzige Rillen an der Seite – ich rieb und rieb, bis kleine glühende Schriften erschienen. Nicht lateinisch. Nicht Arabisch. Ein Dämonisches Alphabet, das mir zeigte, was morgen geschah: eine Pest in Avignon, Ernten, die verdorrten, Tode, die kommen würden.\n\nIch zeigte es dem Bischoff. Er nahm es mir weg und schloss es weg.\n\nAber nachts träume ich noch davon, wie ich es hielt. Wie es wusste.\n\nIch gestehe: Ich wünsche mir, es zurückzuhaben. Nicht weil ich es für heilig halte. Sondern weil es mehr sah als ich, und das machte mich weniger allein.",
+        "warp_insight": "Das Smartphone ist der erste Objekt, das wir obsessiv betasten, um die Zukunft zu sehen – während wir tun, als ob wir bloß Nachrichten checken. Der Mittelalter-Mensch hätte das sofort erkannt: Ein tragbares Orakel. Wir haben nicht aufgehört, Reliquien zu suchen. Wir haben sie nur digitalisiert und in die Tasche gesteckt.",
+        "next_collision": {
+          "modernThing": "TikTok-Algorithmus",
+          "historicalPeriod": "Alchemistisches Labor, 1500er Jahre",
+          "teaser": "Ein Alchemist entdeckt, dass er jeden Stoff verwandeln kann, wenn er ihn nur lange genug in den richtigen Behälter legt – genau wie der Algorithmus."
+        }
       }
     }
   ]
