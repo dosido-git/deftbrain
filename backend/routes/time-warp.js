@@ -18,9 +18,11 @@ WHAT MAKES A GREAT WARP
 - Specific fictional detail is welcome when it belongs to the invented bit.
 - Broad period flavor is fine. Pseudo-scholarly historical precision is not.
 
-THE WARP: Notice what becomes funny, strange, or newly visible when the two worlds collide. Draw out an irony, resemblance, tension, or question about the modern thing, but don't announce its hidden truth or real purpose. Avoid formulations such as 'what this is really about,' 'the actual power is,' 'the uncomfortable truth is,' or other sweeping verdicts. The reader should feel invited to notice something, not told what the collision proves.
+THE WARP: Notice an irony, resemblance, tension, or absurdity exposed by the collision. Do not declare the modern thing's hidden truth, real purpose, or universal meaning. Avoid unsupported claims about either world. Invite the reader to notice; don't tell them what the collision proves.
 
-Point at a specific detail already in the piece rather than zooming out to a claim about institutions, systems, power, or human nature in general — a generalization is a verdict no matter how it's dressed. Watch especially for the DEBUNKING MOVE: "X isn't really A — it's actually B" (fair/official, neutral/power, feedback/control — any such swap), including through connectives like "isn't really," "in reality," "dressed up as," or "all it really does is." That shape is a verdict regardless of which nouns fill it in.
+ONE MORE: Tease the next collision through an amusing image, predicament, or question. Do not explain the joke with historical claims or assertions about what has 'always' been true.
+
+Point at a specific detail already in the piece rather than zooming out to a claim about institutions, systems, power, economies, trust, or human nature in general — a generalization is a verdict no matter how it's dressed, and an unsupported claim about how either world actually works ('the entire economy runs on reputation,' 'trust was never quantified') is exactly that, whether it's phrased as a discovery about the modern world or a fact about the historical one. Watch especially for the DEBUNKING MOVE: "X isn't really A — it's actually B" (fair/official, neutral/power, pretends to flatten/here it just makes visible — any such swap), including through connectives like "isn't really," "in reality," "dressed up as," "pretends to," or "all it really does is." That shape is a verdict regardless of which nouns fill it in.
 
 HISTORY BOUNDARY
 - Do not present the piece as historically accurate, researched, educational, or authoritative.
@@ -69,7 +71,7 @@ In 40-70 words — short on purpose, so there's no room to build a thesis — po
 Watch for the DEBUNKING MOVE creeping back in through any connective — "isn't really/actually," "in reality," "dressed up as," "the truth is," "what's really happening is," "all it really does is," or "X isn't that ___; it's that ___." Any of those means you have drifted from pointing at a detail to delivering a verdict — cut back to the concrete detail.
 
 3. ONE MORE
-Suggest one irresistible adjacent collision. It should feel like the next thing the reader immediately wants to try. Include a short teaser line showing why the pairing has comic potential, without writing the whole next Warp.
+Suggest one irresistible adjacent collision. It should feel like the next thing the reader immediately wants to try. Tease it through an amusing image, predicament, or question — do not explain the joke with a historical claim or an assertion about what has 'always' been true (e.g. not 'X and Y have been the same transaction for two thousand years,' just the funny scenario itself).
 
 Return ONLY valid JSON:
 {
@@ -79,17 +81,17 @@ Return ONLY valid JSON:
   "next_collision": {
     "modernThing": "The thing for the next collision",
     "historicalPeriod": "The destination world for the next collision",
-    "teaser": "One short teaser line"
+    "teaser": "One short teaser line — an amusing image, predicament, or question, never a historical claim or an 'always been true' assertion"
   }
 }
 
 FINAL CHECK:
 - Is the main piece fun even if the reader learns zero history from it?
 - Does the comedy come from translating the familiar thing into another world's logic?
-- Does THE WARP point at one specific detail from the piece, rather than zoom out to a general claim about institutions, power, or human nature?
+- Does THE WARP point at one specific detail from the piece, rather than zoom out to a general claim about institutions, power, economies, trust, or human nature?
 - Does THE WARP avoid the debunking move ("X isn't really A — it's actually B") under any wording?
-- Did you avoid factual-history claims that invite verification?
-- Is ONE MORE tempting enough to click?
+- Did you avoid factual-history claims that invite verification, in both THE WARP and the ONE MORE teaser?
+- Is ONE MORE tempting enough to click, and does it tease through an image or question rather than an "always been true" claim?
 - Did you avoid double-quote characters inside JSON string values?`;
 
     const parsed = await callClaudeWithRetry({
