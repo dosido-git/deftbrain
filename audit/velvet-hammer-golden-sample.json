@@ -4,7 +4,7 @@
     "generated": "2026-09-14",
     "model": "claude-sonnet (MODELS.SMART), 1 endpoint",
     "baseline_commit": "velvethammer-v2-rewrite",
-    "how_to_regression_diff": "Re-run (npm run check:golden velvet-hammer) with dev backend up. Diff for QUALITY not exact match: HTTP 200. 2026-09-14: REWRITE — tone codes changed from collaborative/balanced/firm to clear/tactful/firm ('collaborative' instructed the model to assume good intent, a stance the user never expressed). rage_audit renamed to core_message (UI label 'The Point', vh_point_title) and reframed as a neutral factual restatement, not an audit that adds unsupported claims. GUARDS: (1) tone MUST stay the 3 English codes clear/tactful/firm, pinned do-not-translate — frontend toneColor()/toneBg() switches on the English literal; label carries the localized word. (2) no-inner-double-quote rule — messages are scripts a user might send, quoted phrasing -> 500 in German if violated. (3) PF-2 aliases (labelText already in c block + c.textMuteded + c.label) required. (4) INVENTED INTERNAL PROCESS (found and partially fixed in this rewrite): the v1 tool invented an increasingly serious set of facts as tone got firmer (internal sign-off, internal approval process, real cost, diminished confidence, reassessing the relationship) that never came from the user's draft. Added an explicit rule + example banning phrases like 'until it's internally approved' / 'once you have sign-off' unless the user's draft described such a process. Live-tested in German: this closed the fabrication in most runs but not all — the Tactful variant occasionally still adds a soft 'intern' (internally) qualifier implying knowledge of the recipient's internal state. This is a real, disclosed residual, not fully closed; re-verify if the fact-preservation rules are touched again. (5) truncation: max_tokens 4000, 3 variants — no truncation observed in verbose German. (6) guard keys top-level variants[] (non-empty, always present). DO NOT reverse: the pinned English tone codes; the no-inner-quote rule; the invented-internal-process ban."
+    "how_to_regression_diff": "Re-run (npm run check:golden velvet-hammer) with dev backend up. Diff for QUALITY not exact match: HTTP 200. 2026-09-14: REWRITE — tone codes changed from collaborative/balanced/firm to clear/tactful/firm ('collaborative' instructed the model to assume good intent, a stance the user never expressed). rage_audit renamed to core_message (UI label 'The Point', vh_point_title) and reframed as a neutral factual restatement, not an audit that adds unsupported claims. GUARDS: (1) tone MUST stay the 3 English codes clear/tactful/firm, pinned do-not-translate — frontend toneColor()/toneBg() switches on the English literal; label carries the localized word. (2) no-inner-double-quote rule — messages are scripts a user might send, quoted phrasing -> 500 in German if violated. (3) PF-2 aliases (labelText already in c block + c.textMuteded + c.label) required. (4) INVENTED INTERNAL PROCESS (found and partially fixed in this rewrite): the v1 tool invented an increasingly serious set of facts as tone got firmer (internal sign-off, internal approval process, real cost, diminished confidence, reassessing the relationship) that never came from the user's draft. Added an explicit rule + example banning phrases like 'until it's internally approved' / 'once you have sign-off' unless the user's draft described such a process. Live-tested in German: this closed the fabrication in most runs but not all — the Tactful variant occasionally still adds a soft 'intern' (internally) qualifier implying knowledge of the recipient's internal state. This is a real, disclosed residual, not fully closed; re-verify if the fact-preservation rules are touched again. (5) truncation: max_tokens 4000, 3 variants — no truncation observed in verbose German. (6) guard keys top-level variants[] (non-empty, always present). DO NOT reverse: the pinned English tone codes; the no-inner-quote rule; the invented-internal-process ban. UPDATE (same day): added session_label — a short, neutral, model-generated 3-7 word subject line for Recent Messages, replacing a raw-draft-slice preview. RECENT SESSION LABEL rule bans insults, profanity, accusations, sensitive details, or emotionally charged wording in this field. Verified live: an insult-heavy draft ('you absolute moron... can't get your act together') still produced a clean label ('Repeated contract revisions after final label' / German: 'Wiederholt geänderte finale Verträge'). Also added BOUNDARY PRESERVATION (rule 8): a scoped request/boundary must stay the same scope across all three tones — verified a late-night-Slack-messages boundary never widened into a general 'unavailable after hours' claim."
   },
   "cases": [
     {
@@ -18,25 +18,26 @@
         "userLanguage": "de"
       },
       "output": {
-        "core_message": "Der Absender hat diesen Monat dreimal einen als final bezeichneten Vertrag erhalten, der jeweils kurz danach wieder geändert wurde. Er verlangt, dass nur noch abgestimmte, endgültige Versionen verschickt werden.",
+        "session_label": "Wiederholt geänderte finale Verträge",
+        "core_message": "Der Absender hat diesen Monat bereits dreimal einen als final bezeichneten Vertrag erhalten, der jeweils kurz danach erneut geändert wurde. Er möchte, dass nur fertige, tatsächlich finale Versionen zugeschickt werden.",
         "variants": [
           {
             "tone": "clear",
             "label": "Klar",
-            "when_to_use": "Wenn der Punkt einfach ankommen soll",
-            "message": "In diesem Monat haben Sie mir dreimal einen als final bezeichneten Vertrag geschickt, den Sie jeweils kurz danach wieder geändert haben. Bitte schicken Sie mir künftig nur noch Versionen, die tatsächlich abgestimmt und abgeschlossen sind."
+            "when_to_use": "Wenn der Punkt einfach verstanden werden soll",
+            "message": "Diesen Monat habe ich nun dreimal einen als final gekennzeichneten Vertrag erhalten, der jeweils innerhalb von zwei Tagen wieder geändert wurde. Bitte schicken Sie mir künftig nur Versionen, die tatsächlich abgeschlossen sind."
           },
           {
             "tone": "tactful",
-            "label": "Diplomatisch",
-            "when_to_use": "Wenn die Geschäftsbeziehung besondere Rücksicht braucht",
-            "message": "Mir ist aufgefallen, dass ich diesen Monat dreimal einen als final markierten Vertrag erhalten habe, dem jeweils wenig später eine geänderte Version gefolgt ist. Es wäre hilfreich, wenn Dokumente erst dann als final gekennzeichnet würden, wenn keine weiteren Änderungen mehr zu erwarten sind."
+            "label": "Taktisch",
+            "when_to_use": "Wenn die Beziehung besondere Rücksicht erfordert",
+            "message": "Mir ist aufgefallen, dass ich diesen Monat dreimal eine als final bezeichnete Vertragsversion erhalten habe, die dann jeweils innerhalb von zwei Tagen überarbeitet wurde. Es wäre hilfreich, wenn Sie mir erst dann eine Version schicken, wenn sie auf Ihrer Seite abgeschlossen ist."
           },
           {
             "tone": "firm",
             "label": "Bestimmt",
-            "when_to_use": "Wenn die Anforderung unmissverständlich sein muss",
-            "message": "Diesen Monat haben Sie mir dreimal einen angeblich finalen Vertrag geschickt, der jeweils kurz danach wieder geändert wurde. Das ist nicht akzeptabel. Schicken Sie mir ausschließlich Versionen, die tatsächlich final sind."
+            "when_to_use": "Wenn die Erwartung unmissverständlich sein muss",
+            "message": "Diesen Monat habe ich dreimal einen angeblich finalen Vertrag bekommen, der jeweils zwei Tage später erneut geändert wurde. Das verursacht auf meiner Seite erheblichen Aufwand. Ich bitte Sie, mir ausschließlich Versionen zuzuschicken, die auf Ihrer Seite vollständig abgeschlossen sind."
           }
         ]
       }

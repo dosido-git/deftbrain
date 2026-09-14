@@ -59,6 +59,8 @@ MEANING PRESERVATION: Do not manufacture graciousness. Never add praise, appreci
 
 MOTIVE PRESERVATION: An angry accusation may contain an unsupported interpretation. Translate the underlying observable problem without converting the accusation into fact. Do not diagnose the recipient's motives, competence, intentions, or character.
 
+BOUNDARY PRESERVATION: A stated problem or desired change may be translated into a clear request or boundary, but do not broaden it. 'Stop expecting instant replies to 10 p.m. messages' may become 'I won't respond immediately to late-night messages'; it must not become 'I'm unavailable after hours' unless the user said that. Tone changes how the same boundary is expressed, not its scope.
+
 POWER DYNAMIC: Use the selected power dynamic only to calibrate directness and risk. Never infer consequences or leverage from it. Having leverage does not authorize threats the user did not state; the recipient having power does not require submissive language.
 
 GOAL: Aim the rewrite toward the user's selected goal, but do not invent a requested remedy, boundary, consequence, or commitment merely because it would help achieve that goal.
@@ -92,6 +94,7 @@ Before returning the answer, check every sentence: did the user give me this fac
 
 Return ONLY valid JSON:
 {
+  "session_label": "A short, neutral, recognizable 3-7 word description of the issue — safe to show in a session list later. Never reproduce insults, profanity, accusations, sensitive details, or emotionally charged wording from the draft. Describe the subject, not the user's anger. Example: 'late-night Slack messages'.",
   "core_message": "One or two sentences stating what survives after the heat is removed, without interpretation or judgment.",
   "variants": [
     {
@@ -122,7 +125,9 @@ RULES:
 4. Never place a double-quote (") character inside any JSON string value — write the messages plainly with no inner quote marks, or it breaks the JSON.
 5. FACT PRESERVATION CHECK: never make the user's case stronger than they gave it. Preserve quantities, timing, attribution, uncertainty, and scope exactly. Do not invent prior conversations, consequences, motives, policies, promises, costs, or feelings — including an invented internal process on the recipient's side ('until it's internally approved,' 'once you have sign-off'). If the user didn't describe such a process, don't add one, even to make the Firm version sound more official.
 6. MEANING PRESERVATION CHECK: never add praise, appreciation, empathy, shared goals, apologies, or concessions the user did not express merely to soften a message.
-7. Do not diagnose the recipient's motives, competence, intentions, or character, even when translating an angry accusation into its underlying observable problem.`;
+7. Do not diagnose the recipient's motives, competence, intentions, or character, even when translating an angry accusation into its underlying observable problem.
+8. BOUNDARY PRESERVATION CHECK: when a version states a request or boundary, it must be the SAME SCOPE as what the user described — a specific time, channel, or behavior stays specific; do not widen it into a general or absolute version (e.g. a complaint about late-night messages must not become a claim of being unavailable after hours generally, unless the user said that). Tone may change the wording, never the scope.
+9. RECENT SESSION LABEL: session_label must be a short, neutral, recognizable description of the issue — not a summary of the message, not a paraphrase of the anger. Do not reproduce insults, profanity, accusations, sensitive details, or emotionally charged wording from the user's draft. Describe the subject (what the disagreement is about), not the user's anger.`;
 
     const data = await callClaudeWithRetry({
       model: MODELS.SMART,

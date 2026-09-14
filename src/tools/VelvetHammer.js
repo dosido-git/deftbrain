@@ -111,7 +111,6 @@ const VelvetHammer = ({ tool }) => {
   const [goal, setGoal] = useState('behavior_change');
   const [power, setPower] = useState('neutral');
   const [error, setError] = useState('');
-  const [showHistory, setShowHistory] = useState(false);
 
   // ─── Persistent state ───
   // -v2 keys: the old schema (rage_audit, collaborative/balanced/firm tones)
@@ -143,11 +142,12 @@ const VelvetHammer = ({ tool }) => {
       setResults(data);
       // Full result, not a raw-draft preview: this is what lets a session
       // card show something recognizable (and not embarrassing) instead of
-      // the user's angry wording, and lets it actually reopen.
+      // the user's angry wording, and lets it actually reopen. session_label
+      // is the model's own neutral 3-7 word subject line — never the draft.
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         relationship, goal,
-        coreMessage: data?.core_message || '',
+        sessionLabel: data?.session_label || '',
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
@@ -181,7 +181,6 @@ const VelvetHammer = ({ tool }) => {
     setGoal(s.goal || 'behavior_change');
     setResults(s.result || null);
     setError('');
-    setShowHistory(false);
   };
 
   const buildAllText = () => {
@@ -229,11 +228,6 @@ const VelvetHammer = ({ tool }) => {
             </button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            {sessionHistory.length > 0 && (
-              <button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                📋 {sessionHistory.length}
-              </button>
-            )}
             {(results || draft.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
                 ↺ {t('start_over')}
@@ -241,30 +235,6 @@ const VelvetHammer = ({ tool }) => {
             )}
           </div>
         </div>
-
-        {/* History panel — reopens the complete past result, no raw draft shown */}
-        {showHistory && sessionHistory.length > 0 && (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1.5`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('vh_recent')}</p>
-            {sessionHistory.filter(h => h.result).map(h => (
-              <button
-                key={h.id}
-                onClick={() => openSession(h)}
-                className={`w-full text-start ${c.card} border ${c.border} rounded-lg px-3 py-2.5 hover:brightness-105 transition`}
-              >
-                <p className={`text-xs font-semibold ${c.text} truncate`}>
-                  {t(RELATIONSHIPS.find(r => r.value === h.relationship)?.tKey || 'vh_rel_other')} — {h.coreMessage}
-                </p>
-                <div className="flex items-center justify-between mt-0.5">
-                  <p className={`text-[10px] ${c.textMuted} truncate`}>
-                    {t('vh_goal')}: {t(GOALS.find(g => g.value === h.goal)?.tKey || 'vh_goal_clarify')}
-                  </p>
-                  <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(h.date).toLocaleDateString()}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Draft box */}
         <div>
@@ -361,14 +331,49 @@ const VelvetHammer = ({ tool }) => {
             </div>
           ))}
 
-          {/* One quiet link, not a "Related tools" box: the page already
-              supplies Related Tools immediately after this component, and
-              a second box here would be redundant with it. */}
+          {/* One quiet link, not a "Related tools" box: the page's own
+              Related Tools section already surfaces ConflictCoach and
+              DifficultTalkCoach for this tool (tag/category overlap), so
+              linking either of those here duplicated it. TruthBomb isn't
+              in that auto-picked pair. */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            <a href="/ConflictCoach" className={linkStyle}>⚔️ {t('vh_conflict_coach')}</a>
+            <a href="/TruthBomb" className={linkStyle}>💣 {t('vh_truthbomb_link')}</a>
           </p>
         </div>
       )}
+
+      {/* Recent messages — bottom of page. Answers "which conversation was
+          that?" via recipient + neutral issue + goal + date, never the raw
+          angry draft. Reopens the complete past result, not just the form. */}
+      {sessionHistory.length > 0 && (() => {
+        const validSessions = sessionHistory.filter(s => s.result);
+        if (!validSessions.length) return null;
+        return (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('vh_recent')}</p>
+            <div className="space-y-1.5">
+              {validSessions.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => openSession(s)}
+                  className={`w-full text-start ${c.card} border ${c.border} rounded-lg px-3 py-2.5 hover:brightness-105 transition`}
+                >
+                  <p className={`text-xs font-semibold ${c.text} truncate`}>
+                    {t(RELATIONSHIPS.find(r => r.value === s.relationship)?.tKey || 'vh_rel_other')}
+                    {s.sessionLabel ? ` — ${s.sessionLabel}` : ''}
+                  </p>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <p className={`text-[10px] ${c.textMuted} truncate`}>
+                      {t(GOALS.find(g => g.value === s.goal)?.tKey || 'vh_goal_clarify')}
+                    </p>
+                    <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
