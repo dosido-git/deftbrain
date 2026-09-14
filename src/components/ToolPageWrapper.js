@@ -233,7 +233,16 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
           {/* ── Header ── */}
           <header data-print-hide className={`${colors.bg} pb-6 space-y-2`}>
-            <div className={`flex items-center gap-3 ${colors.accent} mb-2 pt-4`}>
+            {/* pt-4, not lg:pt-4 by accident: it exists to line up the category
+                pill's top with the locale selectors' when they share a row at
+                lg+ (both carry pt-4 for that reason — see the locale-selector
+                row above). Below lg they stack instead, and this same 16px
+                just piled onto the 8px stack gap every other transition on
+                the page uses, making this one 24px — the third instance of
+                the doubled-gap pattern already fixed twice tonight, just
+                from padding instead of a margin/grid-gap collision. Since
+                this is the shared wrapper, it was showing up on every tool. */}
+            <div className={`flex items-center gap-3 ${colors.accent} mb-2 lg:pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
                 {detectedTool?.categories?.[0] || 'General'}
               </span>
