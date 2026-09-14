@@ -207,32 +207,41 @@ const HeartOfTheMatter = ({ tool }) => {
   }, [callToolEndpoint, t, updateLecture]);
 
   // ── API ──
-  const submit = useCallback(async () => {
+  // Accepts optional overrides for mode/lectures/subject so a caller that
+  // just changed those via setState (which doesn't land until the next
+  // render) can submit with the FRESH values immediately, rather than
+  // firing on the stale closure or waiting a tick — see
+  // useSelectedWithConnect below, which needs to submit the lectures it
+  // just built, not whatever was on screen before.
+  const submit = useCallback(async (overrides = {}) => {
+    const activeMode = overrides.mode ?? mode;
+    const activeLectures = overrides.lectures ?? lectures;
+    const activeSubject = overrides.subject ?? subject;
     setError(''); setResults(null);
     try {
       let data;
-      if (mode === 'distill') {
+      if (activeMode === 'distill') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
         data = await callToolEndpoint('heart-of-the-matter', {
-          transcript: transcript.trim(), subject: subject.trim() || null,
+          transcript: transcript.trim(), subject: activeSubject.trim() || null,
           lectureTitle: lectureTitle.trim() || null, bulletCount, priority,
           userLocale, userCurrency, userRegion,
         });
-      } else if (mode === 'understand') {
+      } else if (activeMode === 'understand') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
         // Reuse the existing comprehension endpoint, but deliberately omit
         // exam-format controls. The UI also filters study/test-oriented output.
         data = await callToolEndpoint('heart-of-the-matter/study-guide', {
-          transcript: transcript.trim(), subject: subject.trim() || null,
+          transcript: transcript.trim(), subject: activeSubject.trim() || null,
           lectureTitle: lectureTitle.trim() || null,
           userLocale, userCurrency, userRegion,
         });
-      } else if (mode === 'connect') {
-        const valid = lectures.filter(l => l.transcript?.trim());
+      } else if (activeMode === 'connect') {
+        const valid = activeLectures.filter(l => l.transcript?.trim());
         if (valid.length < 2) { setError(t('rec_err_two_lectures')); return; }
         data = await callToolEndpoint('heart-of-the-matter/connect', {
           lectures: valid.map(l => ({ title: l.title.trim() || null, transcript: l.transcript.trim() })),
-          subject: subject.trim() || null,
+          subject: activeSubject.trim() || null,
           userLocale, userCurrency, userRegion,
         });
       }
@@ -241,18 +250,18 @@ const HeartOfTheMatter = ({ tool }) => {
       // not just what was fed in. Each mode already produces a one-line
       // distillation of its own (lecture_summary / overview / course_
       // narrative); reuse it rather than inventing a fifth thing to generate.
-      const takeaway = mode === 'distill' ? data?.lecture_summary
-        : mode === 'understand' ? data?.overview
+      const takeaway = activeMode === 'distill' ? data?.lecture_summary
+        : activeMode === 'understand' ? data?.overview
         : data?.course_narrative; // connect
-      const modeLabel = mode === 'distill' ? t('rec_mode_distill_label')
-        : mode === 'understand' ? t('rec_mode_understand_label')
+      const modeLabel = activeMode === 'distill' ? t('rec_mode_distill_label')
+        : activeMode === 'understand' ? t('rec_mode_understand_label')
         : t('rec_mode_connect_label');
-      const validLectures = mode === 'connect' ? lectures.filter(l => l.transcript?.trim()) : [];
+      const validLectures = activeMode === 'connect' ? activeLectures.filter(l => l.transcript?.trim()) : [];
       setSessionHistory(prev => [{
-        id: 'rc_' + Date.now(), date: new Date().toISOString(), mode,
-        title: lectureTitle.trim() || subject.trim() || takeaway?.slice(0, 60) || modeLabel,
-        preview: (lectureTitle.trim() || subject.trim() || takeaway || modeLabel).slice(0, 40),
-        subject: data?.subject_detected || subject.trim() || '',
+        id: 'rc_' + Date.now(), date: new Date().toISOString(), mode: activeMode,
+        title: lectureTitle.trim() || activeSubject.trim() || takeaway?.slice(0, 60) || modeLabel,
+        preview: (lectureTitle.trim() || activeSubject.trim() || takeaway || modeLabel).slice(0, 40),
+        subject: data?.subject_detected || activeSubject.trim() || '',
         takeaway: takeaway || '',
         results: data,
         // Snapshot of the input, kept so a session can be reopened AND so
@@ -260,8 +269,8 @@ const HeartOfTheMatter = ({ tool }) => {
         // just the summary of it.
         lectureTitle: lectureTitle.trim() || '',
         bulletCount, priority,
-        transcript: mode !== 'connect' ? transcript.trim() : '',
-        lectures: mode === 'connect' ? validLectures.map(l => ({ title: l.title?.trim() || '', transcript: l.transcript.trim() })) : [],
+        transcript: activeMode !== 'connect' ? transcript.trim() : '',
+        lectures: activeMode === 'connect' ? validLectures.map(l => ({ title: l.title?.trim() || '', transcript: l.transcript.trim() })) : [],
         // Drop any entry saved before this shape existed the first time
         // there's a fresh one to replace it with, rather than carrying dead
         // weight in storage indefinitely.
@@ -314,14 +323,18 @@ const HeartOfTheMatter = ({ tool }) => {
       else if (e.transcript?.trim()) built.push({ title: e.lectureTitle || e.title || '', transcript: e.transcript });
     });
     if (built.length < 2) return;
+    const picked = built.slice(0, 5);
     setMode('connect');
-    setLectures(built.slice(0, 5));
+    setLectures(picked);
     setSubject('');
-    setResults(null);
-    setError('');
     setSelectedHistoryIds([]);
     setShowHistory(false);
-  }, [sessionHistory, selectedHistoryIds, setResults]);
+    // Submit right away with the lectures just built — setLectures/setMode
+    // above won't land until the next render, so `submit` is handed them
+    // directly rather than reading its own (still-stale) closure. It
+    // already clears results/error itself.
+    submit({ mode: 'connect', lectures: picked, subject: '' });
+  }, [sessionHistory, selectedHistoryIds, submit]);
 
   // Rotated per mode — Distill/Understand/Connect each keep their own counter
   // and pool rather than Try Example always forcing you back to Distill.
@@ -563,7 +576,7 @@ const HeartOfTheMatter = ({ tool }) => {
       </div>
 
       <div className="flex gap-2">
-        <button title={t('cmd_enter')} onClick={submit} disabled={loading || !canSubmit}
+        <button title={t('cmd_enter')} onClick={() => submit()} disabled={loading || !canSubmit}
           className={`relative flex-1 ${(!canSubmit) ? c.btnIdle : c.btnPrimary} py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('rec_processing')}</>
