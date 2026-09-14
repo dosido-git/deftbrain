@@ -92,44 +92,49 @@ const ToastWriter = ({ tool }) => {
   const [results, setResults] = usePersistentState('toastwriter-result', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('toastwriter-history', []);
 
-  // Localized example seeds.
+  // Example seeds are complete, internally consistent form states.
   const EXAMPLES = [
     {
-      occasion: "Wedding — I'm best man",
-      relationship: 'Best friend for 15 years since college',
+      person: 'my best friend Paul',
+      occasion: 'wedding',
+      relationship: 'Best friend for 15 years since college; I am the best man',
       stories: "The time he got us both kicked out of a cooking class. How he drove 4 hours to help me move with a truck he'd never driven. The way he looked when he first told me about his now-wife.",
       tone: 'warm_and_funny',
       duration: '3_minutes',
       avoid: 'Anything too sentimental or embarrassing about the ex',
     },
     {
-      occasion: "Retirement party — I'm a colleague",
-      relationship: 'Worked together for 12 years, she was my mentor',
-      stories: "She stayed late to help me through my first big presentation. Always remembered everyone's birthday. Started every Monday with a corny joke that somehow made the week better.",
+      person: 'Maria',
+      occasion: 'retirement',
+      relationship: 'Worked together for 12 years; she was my mentor',
+      stories: "She stayed late to help me through my first big presentation. She remembered everyone's birthday. She started every Monday with a corny joke that somehow made the week better.",
       tone: 'warm_and_funny',
       duration: '2_minutes',
       avoid: '',
     },
     {
-      occasion: "Baby shower — I'm the grandmother-to-be",
-      relationship: 'My daughter, about to have her first child',
-      stories: "How scared and excited she was calling to tell us the news. The nursery she's been painting herself every weekend for a month. The way she already talks to her belly like the baby can understand every word.",
+      person: 'my daughter Elena',
+      occasion: 'baby_shower',
+      relationship: 'I am her mother; she is expecting her first child',
+      stories: "How scared and excited she was when she called to tell us the news. The nursery she's been painting herself every weekend for a month. The way she already talks to her belly like the baby can understand every word.",
       tone: 'heartfelt',
-      duration: '5_minutes',
+      duration: '2_minutes',
       avoid: 'Nothing about my own difficult pregnancy with her',
     },
     {
-      occasion: "Bachelor party — I'm the groomsman",
-      relationship: 'College roommate, now getting married in two weeks',
-      stories: "The time he tried to cook a proposal dinner and set off the fire alarm three times. How he practiced his vows in the car so much we all had them memorized. The infamous Vegas trip.",
+      person: 'Jordan',
+      occasion: 'roast',
+      relationship: 'College roommate; I am one of the groomsmen',
+      stories: "He tried to cook a proposal dinner and set off the fire alarm three times. He practiced his vows in the car so much that a few of us had them memorized.",
       tone: 'roast_style',
       duration: '1_minute',
-      avoid: 'The ex-girlfriend, and the Vegas incident specifically — everyone knows, nobody needs it in a speech',
+      avoid: 'The ex-girlfriend and the Vegas incident',
     },
     {
-      occasion: "25th wedding anniversary dinner — I'm the spouse",
-      relationship: 'Married 25 years, met in our twenties',
-      stories: "The apartment with no furniture we were somehow happy in. Raising two kids through the hard years and still choosing each other every single day. The quiet, ordinary Tuesday nights that turned out to be the best part.",
+      person: 'my spouse',
+      occasion: 'other',
+      relationship: 'Married 25 years; we met in our twenties',
+      stories: "The apartment with almost no furniture we were somehow happy in. Raising two kids through the hard years. The quiet, ordinary Tuesday nights that turned out to be the best part.",
       tone: 'elegant',
       duration: '3_minutes',
       avoid: '',
@@ -138,6 +143,7 @@ const ToastWriter = ({ tool }) => {
 
   const loadExample = () => {
     const ex = pickExample('ToastWriter', EXAMPLES);
+    setPerson(ex.person);
     setOccasion(ex.occasion);
     setRelationship(ex.relationship);
     setStories(ex.stories);
@@ -169,7 +175,12 @@ const ToastWriter = ({ tool }) => {
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        preview: (person.trim() + ' — ' + occasion).slice(0, 40), // Exception: preview truncation, not history cap
+        person: person.trim(),
+        occasion,
+        relationship: relationship.trim() || '',
+        tone,
+        preview: `${person.trim()} — ${OCCASIONS.find(o => o.value === occasion)?.label || occasion}`.slice(0, 64),
+        takeaway: data?.occasion_read || '',
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
@@ -416,9 +427,12 @@ const ToastWriter = ({ tool }) => {
       )} {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('tst_recent_sessions')}</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('tst_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className={`py-1.5 border-b last:border-b-0 ${c.border}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.preview || t('tst_session')}</span>
+                  <span className={`text-[10px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                </div>
+                {s.takeaway && <p className={`text-[10px] ${c.textMuted} mt-0.5 line-clamp-2`}>{s.takeaway}</p>}
               </div>
             ))} </div>
         </div>

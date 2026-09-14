@@ -1191,19 +1191,24 @@ export const tools = [
   primer: {
     when: "You have to stand up and say something, and you're dreading it.",
     give: "Who it's for, the occasion, your relationship, and any stories or details.",
-    get: "Three complete speeches at different lengths and warmth levels, with delivery notes.",
+    get: "Three takes on your requested tone, built only from what you supplied, with delivery notes.",
   },
-  seoDescription: "Write a toast, speech, or tribute that lands. Three versions — warm, funny, elegant — with delivery cues and an emergency closer if you freeze. Free.",
+  // 2026-09-14: rewrite made the 3 versions structural takes on the ONE
+  // requested tone (not independent warm/funny/elegant personas regardless
+  // of selection) and made non-fabrication a first-class rule, not just a
+  // style preference. Copy updated to match — "warm, funny, elegant" as a
+  // fixed set was never accurate to what got generated.
+  seoDescription: "Write a toast, speech, or tribute that sounds like you. Three takes on your tone, built only from the details you give it, with delivery cues and an emergency closer if you freeze. Free.",
   seoTitle: "Toast & Speech Writer for Any Occasion",
   title: "Toast Writer",
-  tagline: "Toasts, speeches, and tributes that land.",
+  tagline: "Toasts, speeches, and tributes that sound like you.",
   tags: ['toast', 'speech', 'wedding', 'tribute', 'public speaking', 'celebration', 'best man', 'retirement', 'birthday', 'roast', 'memorial', 'farewell'],
   icon: "🥂",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "Need to give a toast, speech, or tribute? Describe the person, the occasion, and any stories you want to include. ToastWriter generates 3 versions at different styles — warm, funny, elegant — each with delivery cues, the opening hook, the closing line, and an emergency closer if you freeze. Because nobody should have to wing it.",
+  description: "When the room matters and the words do too, give Toast Writer the person, the occasion, and the stories you want to tell. It turns your own details into a toast that sounds natural out loud — without inventing a relationship you never described.",
   guide: {
-    overview: "ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 complete speeches at different warmth/humor levels, each with inline delivery cues like [PAUSE] and [LOOK AT THEM]. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.",
+    overview: "ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 takes on your requested tone, each with inline delivery cues like [PAUSE] and [LOOK AT THEM], built only from what you actually supplied. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.",
     howToUse: [
       "Enter who the toast is for and your relationship to them",
       "Pick the occasion — wedding, birthday, retirement, roast, memorial, etc.",
