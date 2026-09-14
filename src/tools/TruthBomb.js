@@ -92,8 +92,11 @@ const TruthBomb = ({ tool }) => {
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: theUnsaidThing.trim().slice(0, 40),
+        // Exception: 64-char preview-text truncation, not a history-array
+        // cap — the array itself is still capped at 6 below.
+        preview: theUnsaidThing.trim().slice(0, 64),
+        who: whoItsAbout.trim() || '',
+        takeaway: data?.reality_check?.what_you_dont_know || data?.the_thing_examined?.what_its_really_about || '',
         result: data,
       }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || t('tb_error')); }
@@ -133,9 +136,12 @@ const TruthBomb = ({ tool }) => {
       txt += `${t('tb_copy_really_about')}\n${results?.the_thing_examined?.what_its_really_about}\n\n`;
       txt += `${t('tb_copy_hiding_costs')}\n${results?.the_thing_examined?.what_hiding_it_costs}\n\n`;
     }
+    if (results?.reality_check) {
+      txt += `${t('tb_would_happen')}\n${t('tb_you_know')} ${results.reality_check.what_you_know || ''}\n${t('tb_you_dont_know')} ${results.reality_check.what_you_dont_know || ''}\n\n`;
+    }
     txt += `${t('tb_copy_three_ways')}\n\n`;
     results?.three_ways_to_say_it?.forEach(v => {
-      txt += `${v.version} (${t('tb_copy_directness')} ${v.directness}/3)\n"${v.the_words}"\n${v.what_it_accomplishes}\n\n`;
+      txt += `${v.version} (${t('tb_copy_directness')} ${v.directness}/3)\n"${v.the_words}"\n${v.tradeoff || v.what_it_accomplishes || ''}\n\n`;
     });
     return txt + BRAND;
   }, [results, theUnsaidThing, t]);
@@ -268,22 +274,29 @@ const TruthBomb = ({ tool }) => {
             </div>
           )}
 
-          {/* What would actually happen */}
-          {results?.what_would_actually_happen && (
+          {/* Reality check */}
+          {results?.reality_check && (
             <div className={`rounded-xl border p-5 space-y-3 ${c.success}`}>
               <p className="text-xs font-black uppercase tracking-widest">🌿 {t('tb_would_happen')}</p>
-              {results?.what_would_actually_happen?.most_likely_scenario && (
-                <p className="text-sm">{results?.what_would_actually_happen?.most_likely_scenario}</p>
+              {results?.reality_check?.what_you_know && (
+                <p className="text-sm"><span className="font-semibold">{t('tb_you_know')}</span> {results.reality_check.what_you_know}</p>
               )}
-              {results?.what_would_actually_happen?.the_fear_vs_reality_gap && (
-                <p className="text-xs"><span className="font-semibold">{t('tb_the_gap')}</span> {results?.what_would_actually_happen?.the_fear_vs_reality_gap}</p>
+              {results?.reality_check?.what_you_dont_know && (
+                <p className="text-sm"><span className="font-semibold">{t('tb_you_dont_know')}</span> {results.reality_check.what_you_dont_know}</p>
               )}
-              {results?.what_would_actually_happen?.what_it_would_change && (
-                <p className="text-xs"><span className="font-semibold">{t('tb_what_changes')}</span> {results?.what_would_actually_happen?.what_it_would_change}</p>
+              {results?.reality_check?.what_saying_it_can_do && (
+                <p className="text-xs"><span className="font-semibold">{t('tb_can_do')}</span> {results.reality_check.what_saying_it_can_do}</p>
               )}
-              {results?.what_would_actually_happen?.what_wouldnt_change && (
-                <p className="text-xs"><span className="font-semibold">{t('tb_wont_change')}</span> {results?.what_would_actually_happen?.what_wouldnt_change}</p>
+              {results?.reality_check?.what_saying_it_cant_do && (
+                <p className="text-xs"><span className="font-semibold">{t('tb_cant_do')}</span> {results.reality_check.what_saying_it_cant_do}</p>
               )}
+            </div>
+          )}
+
+          {results?.safety_note && (
+            <div className={`rounded-xl border p-4 ${c.warning}`}>
+              <p className="text-xs font-black uppercase tracking-widest mb-1">⚠️ {t('tb_before_you_act')}</p>
+              <p className="text-sm">{results.safety_note}</p>
             </div>
           )}
 
@@ -313,8 +326,8 @@ const TruthBomb = ({ tool }) => {
                         </p>
                       </div>
                     )}
-                    {v.what_it_accomplishes && (
-                      <p className={`text-xs ${c.textMuted}`}>{v.what_it_accomplishes}</p>
+                    {(v.tradeoff || v.what_it_accomplishes) && (
+                      <p className={`text-xs ${c.textMuted}`}>{v.tradeoff || v.what_it_accomplishes}</p>
                     )}
                   </div>
                 );
@@ -398,9 +411,12 @@ const TruthBomb = ({ tool }) => {
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('tb_recent')}</p>
           <div className="space-y-1">
             {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('tb_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+              <div key={s.id} className={`py-1.5 border-b last:border-b-0 ${c.border}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.preview || t('tb_session')}</span>
+                  <span className={`text-[10px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                </div>
+                {s.takeaway && <p className={`text-[10px] ${c.textMuted} mt-0.5 line-clamp-2`}>{t('tb_uncertainty_remember')} {s.takeaway}</p>}
               </div>
             ))}
           </div>

@@ -1063,20 +1063,26 @@ export const tools = [
   primer: {
     when: "There's something you haven't said and it's costing you.",
     give: "The thing you're hiding, who it's about, and why you haven't said it.",
-    get: "What's really driving the silence, what it costs to keep it, what would realistically happen, and three ways to say it.",
+    get: "What's really driving the silence, an honest reality check instead of a prediction, and three ways to say it.",
     edge: "It costs something to say nothing, and that side is usually invisible. This prices both.",
   },
-  seoDescription: "Say the hard thing you've been hiding. See what it costs to keep silent, then get it scripted three ways — gentle opening, direct statement, full truth.",
+  // 2026-09-14: rewrite replaced "what would actually happen" (a prediction
+  // of a real person's reaction the tool cannot actually make) with a
+  // reality_check that separates what's known from what's genuinely
+  // uncertain. Copy updated to stop promising a forecast the tool doesn't
+  // give. "Direct Statement" also renamed "Clear Statement" — the three
+  // scripts are options, not an escalation ladder.
+  seoDescription: "Say the hard thing you've been hiding. See what silence is really costing, get an honest reality check instead of a guess, and get it scripted three ways — gentle opening, clear statement, full truth.",
   seoTitle: "How to Say the Hard Thing: Truth Script",
   title: "Truth Bomb",
-  tagline: "The thing about yourself you don't reveal.",
+  tagline: "Get clear on the thing you haven't said.",
   tags: ['honest', 'hard conversation', 'truth', 'unsaid', 'relationship', 'conflict', 'feelings', 'scared', 'say it', 'communication', 'hiding', 'difficult'],
   icon: "💣",
   categories: ['Me'],
   headerColor: "#e0b8b8",
-  description: "We all have things about ourselves we don't reveal to others. Truth Bomb examines what it's about, identifies what it costs you to hide it; explores what would actually happen if you said it, and scripts it three ways: gentle opening, direct statement, and full truth. Ends with permission to not say it — and the honest cost of that choice.",
+  description: "Some truths feel urgent because they have been sitting unsaid for a long time. Truth Bomb helps you separate what you know from what you fear, see what silence is costing, and decide whether saying something would actually help.",
   guide: {
-      overview: "TruthBomb handles the unsaid thing — not with therapy, but with clarity. It examines what's really driving the silence, what it's costing you to maintain it, and what would realistically happen if you said it. Then it scripts three versions: a gentle opening, a direct statement, and the full unfiltered truth.",
+      overview: "TruthBomb handles the unsaid thing — not with therapy, but with clarity. It examines what's really driving the silence and what it's costing you to maintain it, then gives an honest reality check — what you actually know versus what you're only fearing — rather than a prediction of how anyone will react. Then it scripts three versions: a gentle opening, a clear statement, and the full unfiltered truth.",
       howToUse: [
         "Type the thing you're hiding — to yourself or to someone else. Be honest.",
         "Select who it's about and optionally why you haven't said it",
@@ -1087,7 +1093,7 @@ export const tools = [
       example: {
         scenario: "I don't love my job anymore and I've been hiding it from my partner because they sacrificed for me to get it",
         action: "Enter the truth, note the relationship and the guilt driving the silence",
-        result: "What it's really about: afraid their sacrifice feels wasted — and afraid they'll tell you to stay. What hiding it costs: distance already building as they sense your disengagement. What would happen: probably relief — they've noticed something is off. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job because of everything you gave up, and that's not fair to either of us.'"
+        result: "What it's really about: afraid their sacrifice feels wasted — and afraid they'll tell you to stay. What hiding it costs: distance already building as they sense your disengagement. Reality check: you know the distance is real; you don't know how they'd actually respond — that's a fear, not a fact. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job because of everything you gave up, and that's not fair to either of us.'"
       },
       tips: [
         "This tool doesn't tell you whether to say it — that decision is yours",
