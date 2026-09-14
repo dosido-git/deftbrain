@@ -288,6 +288,13 @@ const TheFinalWord = ({ tool }) => {
 
   const teamsInputRefs = useRef([]);
   const shouldFocusNewTeamsRef = useRef(false);
+  // Clicking "Team X's turn" (advanceTrivia) unmounts the whole question
+  // card while the next one loads — the button the user just clicked is
+  // gone from the DOM, and focus silently drops to <body>. Moving focus to
+  // the new question's heading once it lands (same fix covers the very
+  // first question, when the setup form unmounts the same way) keeps
+  // keyboard/screen-reader users on the flow instead of losing their place.
+  const questionHeadingRef = useRef(null);
   // ─── Voice Setup ───
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -350,6 +357,10 @@ const TheFinalWord = ({ tool }) => {
       shouldFocusNewTeamsRef.current = false;
     }
   }, [teams.length]);
+
+  useEffect(() => {
+    if (triviaQuestion) questionHeadingRef.current?.focus();
+  }, [triviaQuestion]);
 
   // ─── Stats Tracking ───
   const trackStat = (mode, result) => {
@@ -872,32 +883,35 @@ const TheFinalWord = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════
   // Any sign the user has begun — drives the PF-16 reset on the title row.
-  const hasInput = !!(appealResult || challengeResult || daResult || dissectResult || result || shareId || appealEvidence.trim() || challengeText.trim() || claim.trim() || claimA.trim() || claimB.trim() || daPosition.trim() || daTopic.trim() || disputeContext.trim() || followUpResults.length || followUpText.trim() || personA.trim() || personB.trim() || question.trim());
+  // triviaQuestion/triviaFinished/mpMode are included because an active
+  // trivia or multiplayer session has no text field to detect otherwise —
+  // this used to need a second "Start over" button just for those three.
+  const hasInput = !!(appealResult || challengeResult || daResult || dissectResult || result || shareId || appealEvidence.trim() || challengeText.trim() || claim.trim() || claimA.trim() || claimB.trim() || daPosition.trim() || daTopic.trim() || disputeContext.trim() || followUpResults.length || followUpText.trim() || personA.trim() || personB.trim() || question.trim() || triviaQuestion || triviaFinished || mpMode);
 
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── Persistent header ── */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      {/* PF-30 header treatment: no in-card title (ToolPageWrapper already
+          renders the tool name as the page <h1>) — icon moves onto the
+          tagline line instead. px-5 pt-2.5, not p-5: 20px of top padding
+          reads as a blank line above the tagline. */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
+        <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                      <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
-                    </h2>
-                    <p className={`text-sm ${c.textSecondary}`}>{t('tfw_tagline')}</p>
-                    <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-                  </div>
-                  {(result || triviaQuestion || triviaFinished || mpMode) && (
-                    <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                      ↺ {t('start_over')}
-                    </button>
-                  )}
-                </div>
+              <div className="min-w-0">
+                <p className={`text-base ${c.textSecondary}`}>
+                  <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('tfw_tagline')}
+                </p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(hasInput) ? (
+              {/* PF-16: the tool's one reset, on the title row, from the first
+                  keystroke — ONE button. hasInput folds in triviaQuestion/
+                  triviaFinished/mpMode (an active trivia or multiplayer
+                  session has no text field to detect) so this single
+                  condition covers what used to need a second "Start over"
+                  button rendered alongside it, doing the identical reset. */}
+              {hasInput ? (
                 <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   <span>🔄</span> {t('tfw_new')}
                 </button>
@@ -919,6 +933,7 @@ const TheFinalWord = ({ tool }) => {
             </div>
           )}
         </div>
+      </div>
 
         {/* ═══════ STATS DASHBOARD ═══════ */}
         {showStats && !result && !triviaQuestion && (
@@ -1719,7 +1734,7 @@ const TheFinalWord = ({ tool }) => {
             </div>
             {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accentTxt}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
             <div className="px-6 py-5">
-              <h3 className={`text-lg font-bold mb-5 ${c.text}`}>{triviaQuestion.question}</h3>
+              <h3 ref={questionHeadingRef} tabIndex={-1} className={`text-lg font-bold mb-5 ${c.text} focus:outline-none`}>{triviaQuestion.question}</h3>
               <div className="space-y-2">
                 {triviaQuestion.options?.map((option, idx) => (
                   <TriviaOption key={idx} option={option} idx={idx} isSelected={selectedAnswer === idx} isCorrect={idx === triviaQuestion.correct_index} revealed={triviaRevealed} onClick={() => handleTriviaAnswer(idx)} disabled={triviaRevealed} />
