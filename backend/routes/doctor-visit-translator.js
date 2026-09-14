@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
-const { MODELS } = require('../lib/models');
+const { MODELS, estimateCostUSD } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { logMetric } = require('../lib/metricsSink');
+const { currentRoute } = require('../lib/outputStandard');
 
 // Defense-in-depth strip of the model-generated diagram markup. The frontend
 // also runs DOMPurify; this ensures the API itself never emits <script>,
@@ -336,6 +338,7 @@ Rules:
     let text = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
+        const startedAt = Date.now();
         const msg = await anthropic.messages.create({
           model: MODELS.DEEP,
           // SVG/HTML output: 1500 truncated it (no closing tag → regex failed).
@@ -343,6 +346,23 @@ Rules:
           max_tokens: 8000,
           messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
         });
+        // Raw markup output (SVG/HTML div), not JSON — can't go through
+        // callClaudeWithRetry (it JSON.parses the response), so the usage
+        // metric that call would normally log is recorded inline here.
+        try {
+          const u = msg.usage || {};
+          logMetric('llm_usage', {
+            route: currentRoute(),
+            label: 'doctor-visit-translator/generate-diagram',
+            model: MODELS.DEEP,
+            input: u.input_tokens || 0,
+            output: u.output_tokens || 0,
+            cache_read: u.cache_read_input_tokens || 0,
+            cache_write: u.cache_creation_input_tokens || 0,
+            ms: Date.now() - startedAt,
+            usd: estimateCostUSD(MODELS.DEEP, u),
+          });
+        } catch (_) { /* never let accounting break a request */ }
         text = (msg.content.find(i => i.type === 'text')?.text || '').trim();
         break;
       } catch (retryErr) {

@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { MODELS } = require('../lib/models');
+const { MODELS, estimateCostUSD } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { logMetric } = require('../lib/metricsSink');
+const { currentRoute } = require('../lib/outputStandard');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted statute names or checklist notes must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -168,10 +170,29 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
       let lastErr;
       for (let _att = 1; _att <= 3; _att++) {
         try {
+          const _startedAt = Date.now();
           const msg = await anthropic.messages.create({
             model: MODELS.SMART, max_tokens: maxTokens, system,
             messages: [{ role: 'user', content: prompt }],
           });
+          // Each SSE section is its own independent call with its own
+          // truncate-and-degrade behavior (below), so this can't share
+          // callClaudeWithRetry's throw-on-truncation control flow — the
+          // usage metric it would otherwise log is recorded inline here.
+          try {
+            const u = msg.usage || {};
+            logMetric('llm_usage', {
+              route: currentRoute(),
+              label: `renters-deposit-saver/${label}`,
+              model: MODELS.SMART,
+              input: u.input_tokens || 0,
+              output: u.output_tokens || 0,
+              cache_read: u.cache_read_input_tokens || 0,
+              cache_write: u.cache_creation_input_tokens || 0,
+              ms: Date.now() - _startedAt,
+              usd: estimateCostUSD(MODELS.SMART, u),
+            });
+          } catch (_) { /* never let accounting break a request */ }
           if (msg.stop_reason === 'max_tokens') {
             console.error(`[RentersDepositSaver/stream] ${label} truncated at max_tokens=${maxTokens} — failing fast`);
             sendEvent({ error: 'A report section was cut off while generating. Please try again.' });

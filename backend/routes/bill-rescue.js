@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
@@ -99,21 +99,6 @@ const PERSONALITY = `Financial advocate who helps people deal with bills without
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.
 
 ${NO_INVENTED_FACTS}`
-
-async function createParseRetry(params, attempts = 3) {
-  let lastErr;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      const message = await anthropic.messages.create(params);
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      return JSON.parse(cleanJsonResponse(text));
-    } catch (err) {
-      lastErr = err;
-      if (!(err instanceof SyntaxError)) throw err; // API/network error — bubble up unchanged
-    }
-  }
-  throw lastErr;
-}
 
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
@@ -587,14 +572,14 @@ Return ONLY valid JSON.`
       });
     }
 
-    // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
-    // rehearsal requires a multi-turn conversation history array, not a single string prompt.
-    const parsed = await createParseRetry({
+    // Multi-turn conversation history array — callClaudeWithRetry's full-request
+    // mode forwards `messages` as-is, so it works the same as a single-turn call.
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages,
-    });
+    }, { label: 'bill-rescue/rehearse' });
     if (!parsed.rep_response) {
       return res.status(500).json({ error: 'Could not generate the rehearsal response. Please try again.' });
     }

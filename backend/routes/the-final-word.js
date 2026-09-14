@@ -1,9 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { MODELS } = require('../lib/models');
+const { MODELS, estimateCostUSD } = require('../lib/models');
 const crypto = require('crypto');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { logMetric } = require('../lib/metricsSink');
+const { currentRoute } = require('../lib/outputStandard');
+
+// Both direct anthropic.messages.create call sites below (main mode-dispatch,
+// trivia next-question) keep their own retry loop instead of migrating to
+// callClaudeWithRetry — the main one shares a single loop across 8 modes with
+// mode-specific parsing (safeParseJSON, not the shared cleanJsonResponse
+// pipeline), so folding it into the shared helper would be a rewrite of that
+// control flow, not a call-site swap. logMetric('llm_usage', ...) only fires
+// from inside callClaudeWithRetry, so it's logged inline here to match.
+function logLlmUsage({ label, model, usage, ms }) {
+  try {
+    const u = usage || {};
+    logMetric('llm_usage', {
+      route: currentRoute(),
+      label,
+      model,
+      input: u.input_tokens || 0,
+      output: u.output_tokens || 0,
+      cache_read: u.cache_read_input_tokens || 0,
+      cache_write: u.cache_creation_input_tokens || 0,
+      ms,
+      usd: estimateCostUSD(model, u),
+    });
+  } catch (_) { /* never let accounting break a request */ }
+}
 
 // ═══════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -394,11 +420,13 @@ Return ONLY this JSON:
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
+        const _startedAt = Date.now();
         message = await anthropic.messages.create({
       model: MODELS.SMART,
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
     });
+        logLlmUsage({ label: `the-final-word/${mode}`, model: MODELS.SMART, usage: message.usage, ms: Date.now() - _startedAt });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -635,11 +663,13 @@ Return ONLY this JSON — no other text:
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
+        const _startedAt = Date.now();
         message = await anthropic.messages.create({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
     });
+        logLlmUsage({ label: 'the-final-word/trivia-next', model: MODELS.SMART, usage: message.usage, ms: Date.now() - _startedAt });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;

@@ -28,8 +28,10 @@ async function assertPublicUrl(u) {
 }
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { MODELS } = require('../lib/models');
+const { MODELS, estimateCostUSD } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { logMetric } = require('../lib/metricsSink');
+const { currentRoute } = require('../lib/outputStandard');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted review phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -435,12 +437,30 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
         let message;
         for (let _att = 1; _att <= 3; _att++) {
           try {
+            const _startedAt = Date.now();
             message = await anthropic.messages.create({
           model: MODELS.SMART,
           max_tokens: 1250,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });
+            // Plain-text review extraction, not JSON — can't go through
+            // callClaudeWithRetry (it JSON.parses the response), so the usage
+            // metric that call would normally log is recorded inline here.
+            try {
+              const u = message.usage || {};
+              logMetric('llm_usage', {
+                route: currentRoute(),
+                label: 'fake-review-detective/extract',
+                model: MODELS.SMART,
+                input: u.input_tokens || 0,
+                output: u.output_tokens || 0,
+                cache_read: u.cache_read_input_tokens || 0,
+                cache_write: u.cache_creation_input_tokens || 0,
+                ms: Date.now() - _startedAt,
+                usd: estimateCostUSD(MODELS.SMART, u),
+              });
+            } catch (_) { /* never let accounting break a request */ }
             break;
           } catch (_e) {
             if (_att === 3) throw _e;

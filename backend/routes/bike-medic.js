@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
@@ -415,28 +415,16 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     prompt += '\n\n' + NO_QUOTE_RULE;
 
     // ── Types 1 & 2: Freeform Diagnosis + Post-Fix Follow-up ──
-    // NOTE: These use anthropic.messages.create directly (not callClaudeWithRetry) because
-    // the photo attachment path requires a multipart content array (image + text blocks).
-    // callClaudeWithRetry accepts a string prompt only. Refactor once lib supports multipart.
+    // Multipart content array (image + text blocks) — callClaudeWithRetry's
+    // full-request mode forwards `messages` as-is (see bill-rescue's image/PDF
+    // calls for the same pattern), so this no longer needs its own retry loop.
     const messageContent = buildMessageContent(prompt, photo);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          messages: [{ role: 'user', content: messageContent }]
-        });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = JSON.parse(cleanJsonResponse(textContent));
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: messageContent }],
+    }, { label: 'bike-medic/diagnose' });
 
     if (!parsed.diagnosis && !parsed.title && !parsed.tasks) {
       return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
