@@ -18,6 +18,10 @@ backend/.env
 npm-debug.log*
 metrics.jsonl
 
+# Runtime data written by the app itself — not the committed grounded-seed.json
+backend/data/shared-verdicts.json
+backend/data/shared-verdicts.json.tmp
+
 # OS files
 .DS_Store
 Thumbs.db

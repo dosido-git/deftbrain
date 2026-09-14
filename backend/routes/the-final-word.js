@@ -3,6 +3,8 @@ const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -57,15 +59,67 @@ function generateRoomCode() {
 // ─── In-Memory Stores ───
 // Production: replace with Redis or database
 const sharedVerdicts = new Map();  // id → { verdict, createdAt }
-const rooms = new Map();           // code → room state
+const rooms = new Map();           // code → room state — real-time and short-
+                                    // lived (24h TTL); not persisted, a lost
+                                    // room just means starting a new one.
+
+// ── Shared-verdict persistence ──────────────────────────────────────────
+// A share link is meant to last up to 30 days, but the Map above starts
+// empty on every process restart — including a routine deploy. A link
+// created, then opened after the next deploy (this repo pushes often),
+// 404'd even though it was well inside its 30-day window. Debounced,
+// atomic, best-effort — same shape as lib/groundedFacts.js's cache file —
+// because a write here must never delay or fail the request that
+// triggered it, and a half-written file must never be readable at boot.
+const SHARED_VERDICTS_PATH = process.env.SHARED_VERDICTS_PATH
+  || path.join(__dirname, '..', 'data', 'shared-verdicts.json');
+
+(function hydrateSharedVerdicts() {
+  let raw;
+  try { raw = fs.readFileSync(SHARED_VERDICTS_PATH, 'utf8'); } catch { return; }
+  let parsed;
+  try { parsed = JSON.parse(cleanJsonResponse(raw)); } catch (err) {
+    console.error('[the-final-word] shared-verdicts.json is not valid JSON, ignoring:', err.message);
+    return;
+  }
+  const now = Date.now();
+  let restored = 0;
+  for (const [id, entry] of Object.entries(parsed || {})) {
+    if (entry && typeof entry.createdAt === 'number' && now - entry.createdAt <= 30 * 24 * 60 * 60 * 1000) {
+      sharedVerdicts.set(id, entry);
+      restored++;
+    }
+  }
+  if (restored) console.log(`[the-final-word] restored ${restored} shared verdict(s) from disk`);
+})();
+
+let verdictFlushTimer = null;
+function scheduleVerdictFlush() {
+  if (verdictFlushTimer) return;
+  verdictFlushTimer = setTimeout(() => {
+    verdictFlushTimer = null;
+    const out = Object.fromEntries(sharedVerdicts);
+    const tmp = `${SHARED_VERDICTS_PATH}.tmp`;
+    try {
+      fs.mkdirSync(path.dirname(SHARED_VERDICTS_PATH), { recursive: true });
+      fs.writeFileSync(tmp, JSON.stringify(out));
+      fs.renameSync(tmp, SHARED_VERDICTS_PATH);
+    } catch (err) {
+      console.error('[the-final-word] could not persist shared verdicts:', err.message);
+    }
+  }, 2000);
+  if (typeof verdictFlushTimer.unref === 'function') verdictFlushTimer.unref();
+}
 
 // Cleanup old entries every 30 minutes
 setInterval(() => {
   const now = Date.now();
   // Shared verdicts: 30-day TTL
+  let verdictsChanged = false;
   for (const [id, entry] of sharedVerdicts) {
-    if (now - entry.createdAt > 30 * 24 * 60 * 60 * 1000) sharedVerdicts.delete(id);
+    if (now - entry.createdAt > 30 * 24 * 60 * 60 * 1000) { sharedVerdicts.delete(id); verdictsChanged = true; }
   }
+  if (verdictsChanged) scheduleVerdictFlush();
   // Rooms: 24-hour TTL
   for (const [code, room] of rooms) {
     if (now - room.createdAt > 24 * 60 * 60 * 1000) rooms.delete(code);
@@ -433,6 +487,7 @@ router.post('/the-final-word/share', rateLimit(DEFAULT_LIMITS), (req, res) => {
       inputSummary: inputSummary || '',
       createdAt: Date.now(),
     });
+    scheduleVerdictFlush();
 
     res.json({ id, url: `/verdict/${id}` });
   } catch (error) {
