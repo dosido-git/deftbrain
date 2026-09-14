@@ -4278,47 +4278,51 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "WardrobeChaosHelper",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Standing in front of the wardrobe with nothing decided.",
-    give: "Your wardrobe once, then just the day's weather, plans and mood.",
-    get: "A complete outfit and why it works for that day — plus a packing list for trips and a record of what you have actually been wearing.",
+    give: "Your wardrobe once, then just the day's weather, plans and comfort priority.",
+    get: "One workable outfit, or three to pick from and why each fits today — plus a packing list for trips and a record of what you have actually been wearing.",
     edge: "Everything it suggests is clothing you already own, so no recommendation ends in a purchase.",
   },
-  seoDescription: "Get complete outfits picked from your own closet based on weather, mood, and comfort needs. Beat decision fatigue every morning — free, no signup.",
+  // 2026-09-14: rewrite. The AI's job is not to judge style — it's to
+  // reduce the search space. Removed comfort/style scores, "Sensory OK"
+  // (most items don't have enough sensory data to support that claim),
+  // confidence_boost decoration, mandatory color coordination, automatic
+  // shopping suggestions, and generic tips. Promoted Just Dress Me — one
+  // workable outfit, no alternatives — to the dominant path.
+  seoDescription: "Get a workable outfit from your own closet based on weather, activities, and comfort — no invented style claims, no shopping suggestions. Free, no signup.",
   seoTitle: "Outfit Picker From Your Own Wardrobe",
   title: 'Wardrobe Chaos Helper',
-  tagline: "AI picks your outfit. No more decision fatigue.",
+  tagline: "Less deciding. More getting dressed.",
   tags: ['clothes', 'outfit', 'closet', 'wardrobe', 'wear', 'fashion', 'dressing', 'style help', 'packing', 'laundry'],
   icon: '👗👔',
   ogIcon: '👗',
   categories: ['The Grind'],
   headerColor: "#d4dde8",
-  description: "AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.",
+  description: "Getting dressed can become one more decision than you want to make. Wardrobe Chaos Helper uses the clothes you already own, today's needs, and what you know about your own comfort to narrow the choices and give you a few workable outfits.",
   guide: {
-    overview: "Decision fatigue is real, especially when it comes to picking outfits. This tool learns your wardrobe and suggests complete outfit combinations based on your day's needs. It considers weather, activities, your mood, comfort preferences, and sensory requirements. Particularly helpful for anyone who finds daily outfit decisions overwhelming.",
-    
+    overview: "The tool's job is not to judge your style — it's to reduce the search space. Tell it what's actually in your wardrobe, what's clean, today's weather and activities, and how much comfort matters, and it narrows things down: Just Dress Me hands you one complete outfit with no alternatives; the fuller path gives you a Best Fit, an Easiest (highest-comfort), and — when the wardrobe supports it — a genuinely different Alternative, each with a short grounded reason, never a style score or an invented affirmation.",
     howToUse: [
       "STEP 1: Build your wardrobe inventory (one-time setup, then just maintain)",
       "Add items to each category (tops, bottoms, dresses, outerwear, shoes)",
-      "Include comfort ratings and sensory notes (soft fabric, no tags, etc.)",
+      "Include comfort ratings and sensory notes; warmth and fit feel are optional",
       "Upload photos to help remember what items look like",
-      "STEP 2: Describe today's needs - weather, activities, mood",
-      "STEP 3: Get 3-5 complete outfit suggestions with comfort/style ratings"
+      "STEP 2: Just Dress Me for one outfit right away, or describe today's weather, activities, and comfort priority for a fuller set"
     ],
     example: {
-      scenario: "It's a rainy Tuesday. You have a work meeting and need to feel confident, but you're low energy and need sensory-friendly clothes (soft fabrics, loose fit). Comfort priority is 8/10.",
-      action: "Input: Weather = Rainy, Activities = Work + Meeting, Mood = Confident, Comfort = 8/10, Sensory = Soft fabrics + Loose fit",
-      result: "Outfit #1: Navy cotton t-shirt (comfort 9/10) + Black jogger pants (comfort 10/10) + White sneakers + Gray hoodie (for rain). Comfort: 9/10, Style: 6/10, Sensory-friendly ✓. Why: The cotton and joggers are your softest items. The dark colors look pulled-together for video calls while feeling like pajamas. Hoodie keeps you dry without a jacket. Confidence boost: You'll look professional from the waist up on camera and feel maximum comfort all day. Outfit #2: Green sweater (soft merino, comfort 8/10) + Black leggings + Canvas slip-ons. Plus 2-3 more options. Tips: Lay out clothes tonight so morning is easier. If stuck choosing, pick the softest option - you can't think clearly if uncomfortable. Backup: If overwhelmed, just wear the black joggers + any soft t-shirt + hoodie. Done."
+      scenario: "It's a rainy Tuesday. You have a work meeting and it's low-energy, so comfort priority is 8/10.",
+      action: "Input: Weather = Rainy, Activities = Work + Meeting, Comfort priority = 8/10 (mood left blank).",
+      result: "Best fit: navy cotton t-shirt, black joggers, white sneakers, gray hoodie for the rain — why: uses your two highest-comfort pieces and the hoodie covers the weather without a jacket. Easiest: green merino sweater, black leggings, canvas slip-ons — why: the single highest-comfort combination available today. Don't make me choose: 'Black joggers, any soft t-shirt, hoodie. Put this on.'"
     },
     tips: [
       "Do the wardrobe setup once when you have energy - then it's just maintenance",
       "Add sensory notes to items: 'scratchy wool', 'tags removed', 'loose fit'",
-      "Higher comfort numbers (comfort level 7+) will be suggested more on low-energy days",
-      "The 'backup option' is always the simplest possible outfit - use it when overwhelmed",
+      "Warmth and fit feel are optional but help on days when comfort matters most",
+      "Just Dress Me is the fastest path — use it when you don't want to think at all",
       "Save favorite combinations (star icon) to repeat them without thinking",
       "Update weather/activities daily but wardrobe stays constant",
       "Photos help A LOT if you have trouble visualizing items from text"
@@ -4326,9 +4330,9 @@ tagline: "Work with the energy you have.",
     pitfalls: [
       "Don't overthink the wardrobe setup - add items gradually over time",
       "Be honest about comfort ratings - a '10' should be like wearing pajamas",
-      "If suggestions don't match your style, adjust mood/comfort priority settings",
-      "The tool can't see your clothes - accurate descriptions matter (colors, style)",
-      "Don't try to build entire wardrobe in one sitting - add 5-10 items to start"
+      "The tool can't see your clothes - accurate descriptions matter (colors, warmth, fit)",
+      "Don't try to build entire wardrobe in one sitting - add 5-10 items to start",
+      "If a 'check' note appears on an outfit, it's a real uncertainty (like an unconfirmed sensory fit) — not a suggestion to buy something new"
     ]
   }
 },
