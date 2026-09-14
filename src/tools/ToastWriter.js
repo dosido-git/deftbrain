@@ -21,6 +21,7 @@ const OCCASIONS = [
   { value: 'farewell', label: 'Farewell / going-away', labelKey: 'tst_occ_farewell', emoji: '✈️' },
   { value: 'award', label: 'Award / recognition', labelKey: 'tst_occ_award', emoji: '🏆' },
   { value: 'baby_shower', label: 'Baby shower', labelKey: 'tst_occ_baby_shower', emoji: '🍼' },
+  { value: 'anniversary', label: 'Anniversary', labelKey: 'tst_occ_anniversary', emoji: '💍' },
   { value: 'other', label: 'Other', labelKey: 'tst_occ_other', emoji: '🎤' },
 ];
 
@@ -132,7 +133,7 @@ const ToastWriter = ({ tool }) => {
     },
     {
       person: 'my spouse',
-      occasion: 'other',
+      occasion: 'anniversary',
       relationship: 'Married 25 years; we met in our twenties',
       stories: "The apartment with almost no furniture we were somehow happy in. Raising two kids through the hard years. The quiet, ordinary Tuesday nights that turned out to be the best part.",
       tone: 'elegant',

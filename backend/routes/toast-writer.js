@@ -79,7 +79,7 @@ Return ONLY valid JSON:
   "common_mistakes": [
     "2-3 mistakes that are especially relevant to this input or occasion"
   ],
-  "emergency_closer": "One short line the speaker can say if they lose their place, using only supported facts"
+  "emergency_closer": "One short, GROUNDED line built only from facts and phrasing the speaker actually supplied — a plain callback to the supplied material (e.g. 'Twenty-five years, two kids, and all those ordinary Tuesday nights. Here's to us.'), never a superlative or conclusion the speaker didn't state ('the best decision I ever made', 'this proves...')"
 }
 
 RULES:
@@ -89,7 +89,8 @@ RULES:
 4. If the source details are thin, write a simpler toast rather than fabricating specificity.
 5. Keep occasion_read, labels, tips, mistakes, and emergency_closer concise.
 6. Never place a double-quote (") character inside any JSON string value; use no inner quotation marks so the JSON remains valid.
-7. FACT-PRESERVATION CHECK: Before returning the JSON, compare every concrete statement in every speech, opening, closing, delivery tip, mistake, and emergency closer against the user's supplied facts. Remove or rewrite anything that adds a person, event, quantity, consequence, reaction, motive, dialogue, outcome, or relationship detail the user did not provide. Comedic exaggeration does not exempt a claim from this rule. You may make the wording funny; you may not make the facts bigger.`;
+7. FACT-PRESERVATION CHECK: Before returning the JSON, compare every concrete statement in every speech, opening, closing, delivery tip, mistake, and emergency closer against the user's supplied facts. Remove or rewrite anything that adds a person, event, quantity, consequence, reaction, motive, dialogue, outcome, or relationship detail the user did not provide. Comedic exaggeration does not exempt a claim from this rule. You may make the wording funny; you may not make the facts bigger.
+8. MEANING-PRESERVATION CHECK: Do not merely audit concrete facts. Audit interpretations too. Never tell the audience what an event meant, what it taught the speaker, what mattered most, what someone realized, what a memory proves, or what an experience says about a person unless the user supplied that meaning. You may arrange, compress, contrast, and elegantly restate the user's own meaning; you may not create meaning to give the toast an emotional arc. Apply this to the speech, occasion_read, opening/closing, delivery tips, mistakes, and emergency closer.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.FAST,
