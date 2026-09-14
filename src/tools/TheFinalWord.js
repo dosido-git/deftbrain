@@ -603,7 +603,17 @@ const TheFinalWord = ({ tool }) => {
   // the question entirely.
   const handleCreateShareLink = () => {
     if (!result && !daResult) return;
-    const id = encodeSharePayload({ verdict: result || daResult, inputSummary: result?.answer || result?.verdict_headline || daResult?.verdict_headline || '' });
+    // What was actually asked/argued, not the verdict's own headline or
+    // answer restated — those already render as the shared page's
+    // headline, so reusing them here just showed the same sentence twice
+    // ("The sky appears blue..." as both a quoted line and the heading
+    // right under it).
+    const inputSummary = daResult ? daPosition.trim()
+      : result?._mode === 'question' ? question.trim()
+      : result?._mode === 'dispute' ? `"${claimA.trim()}" vs "${claimB.trim()}"`
+      : result?._mode === 'factcheck' ? claim.trim()
+      : '';
+    const id = encodeSharePayload({ verdict: result || daResult, inputSummary });
     setShareId(id);
     navigator.clipboard?.writeText(`${window.location.origin}/verdict/${id}`);
   };
