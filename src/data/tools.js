@@ -4868,6 +4868,49 @@ tagline: "Work with the energy you have.",
   categories: ['The Grind', 'Loot'],
   headerColor: "#c0d8b8",
   description: "Leases are full of language most renters never question until something goes wrong. Upload your lease, and DeftBrain will flag unusual clauses, explain them in plain English, and help you spot problems before they become expensive surprises.",
+
+  // Public, reviewed demonstration. This is deliberately static: the React page
+  // and scripts/prerender.js both render this same object, so visitors and
+  // crawlers see the same substantive example. It is sample analysis, not a
+  // jurisdiction-specific legal conclusion.
+  exampleOutput: {
+    title: "See what Lease Trap Detector gives you",
+    expandLabel: "See example ↓",
+    nextStepLabel: "What happens with your lease",
+    intro: "Not ready to upload a lease? Here is a shortened fictional example showing the kind of analysis you can expect.",
+    sampleLabel: "Sample lease language",
+    sampleText: "Tenant shall pay a $350 non-refundable cleaning fee. Landlord may enter the premises at reasonable times for inspection. Tenant is responsible for all repairs under $250.",
+    context: "Fictional apartment lease · location not specified",
+    sections: [
+      {
+        label: "What stands out",
+        tone: "red",
+        text: "Three clauses deserve a closer look: the non-refundable cleaning fee, the undefined entry language, and the broad repair-cost shift to the tenant."
+      },
+      {
+        label: "Why it matters",
+        tone: "yellow",
+        text: "Each could create costs or reduce your control later. Whether any clause is enforceable depends on the law where the property is located and on the rest of the lease."
+      },
+      {
+        label: "What to verify",
+        tone: "neutral",
+        text: "Check local rules for deposits and cleaning charges, landlord notice before entry, and which repair obligations can legally be assigned to a tenant. Also check whether another section defines these terms more precisely."
+      },
+      {
+        label: "Questions worth asking before signing",
+        tone: "green",
+        items: [
+          "When exactly can the $350 cleaning fee be charged, and what does it cover?",
+          "What notice will I receive before a non-emergency entry?",
+          "Which repairs count toward the $250 tenant responsibility, and are there exceptions for building systems or normal wear?"
+        ]
+      }
+    ],
+    nextStep: "With your full lease and location, Lease Trap Detector can examine these clauses in context, surface other provisions worth attention, and identify local rules you may want to verify before signing.",
+    disclaimer: "This example is educational and uses fictional lease language. It is not legal advice or a statement that any sample clause is lawful or unlawful in a particular jurisdiction."
+  },
+
   guide: {
     overview: "Lease Trap Detector analyzes rental agreements to protect tenants from predatory practices. Upload your lease or paste the text, specify your location (for local law comparison), and get comprehensive analysis: RED flags for serious concerns (illegal clauses, landlord overreach, exploitative fees), YELLOW flags for questionable provisions (vague language, missing details), GREEN flags for good tenant protections. Each flag includes the actual clause text, plain-language explanation of the problem, legal status (illegal/unenforceable/exploitative), your rights under local law, and specific negotiation strategies. Also identifies missing protections, unusual fees, and provides negotiation scripts plus local tenant rights resources.",
     

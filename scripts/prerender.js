@@ -96,6 +96,7 @@ function loadTools() {
       seoDescription: t.seoDescription || '',
       guide:          t.guide || null,
       faq:            Array.isArray(t.faq) ? t.faq : null,
+      exampleOutput:  t.exampleOutput || null,
       tags:           Array.isArray(t.tags) ? t.tags : [],
       categories:     Array.isArray(t.categories) ? t.categories : [],
     }));
@@ -495,7 +496,7 @@ function injectToolIndex(html, indexHtml) {
 // INSIDE #root: the app mounts with createRoot().render(), which REPLACES the
 // container's contents on load — so there's no hydration mismatch; React simply
 // swaps this for the live app. Keep in sync with ToolPageWrapper's guide layout.
-function buildBodyContent({ title, tagline, description, guide, faq }) {
+function buildBodyContent({ title, tagline, description, guide, faq, exampleOutput }) {
   const e = escapeHtml;
   const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
   const LI = 'margin:.4rem 0;line-height:1.55';
@@ -506,6 +507,27 @@ function buildBodyContent({ title, tagline, description, guide, faq }) {
   if (description) out.push(`<p style="line-height:1.6;margin:0 0 1rem">${e(description)}</p>`);
 
   const g = guide || {};
+  // A reviewed, public demonstration of the product's actual output. This is
+  // sourced from the same tools.js object the React tool renders.
+  if (exampleOutput) {
+    const x = exampleOutput;
+    const sections = Array.isArray(x.sections) ? x.sections.map(section => {
+      const body = Array.isArray(section.items)
+        ? `<ul style="padding-left:1.25rem;margin:.35rem 0 0">${section.items.map(item => `<li style="${LI}">${e(String(item))}</li>`).join('')}</ul>`
+        : `<p style="line-height:1.6;margin:.25rem 0 0">${e(String(section.text || ''))}</p>`;
+      return `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .2rem;color:#0f172a">${e(String(section.label || ''))}</h3>${body}`;
+    }).join('') : '';
+    out.push(`<section aria-label="Example Lease Trap Detector analysis">`
+      + `<h2 style="${H2}">${e(String(x.title || 'Example analysis'))}</h2>`
+      + (x.intro ? `<p style="line-height:1.6;margin:0 0 .8rem">${e(x.intro)}</p>` : '')
+      + (x.sampleText ? `<p style="font-size:.9rem;font-weight:600;margin:.8rem 0 .2rem">${e(x.sampleLabel || 'Sample input')}</p><blockquote style="line-height:1.6;margin:.2rem 0 1rem;padding:.75rem 1rem;border-left:3px solid #94a3b8;background:#f8fafc">${e(x.sampleText)}</blockquote>` : '')
+      + (x.context ? `<p style="font-size:.85rem;color:#64748b;margin:-.5rem 0 .75rem">${e(x.context)}</p>` : '')
+      + sections
+      + (x.nextStep ? `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .2rem;color:#0f172a">${e(x.nextStepLabel || 'What happens with your lease')}</h3><p style="line-height:1.6;margin:.25rem 0 0">${e(x.nextStep)}</p>` : '')
+      + (x.disclaimer ? `<p style="font-size:.82rem;color:#64748b;line-height:1.5;margin:1rem 0 0">${e(x.disclaimer)}</p>` : '')
+      + `</section>`);
+  }
+
   if (g.overview) {
     out.push(`<h2 style="${H2}">Overview</h2><p style="line-height:1.6;margin:0">${e(g.overview)}</p>`);
   }

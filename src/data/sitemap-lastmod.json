@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "ade293e5528667846e2b9bb69b343ef951d80934",
+  "hash": "eab939edf76dff16a33682289e4dd99285a1fc98",
   "lastmod": "2026-09-15"
  },
  "static:about": {
@@ -84,8 +84,8 @@
   "lastmod": "2026-08-23"
  },
  "tool:LeaseTrapDetector": {
-  "hash": "fd843d9c4586a21fb0e0b98156d4fef92be45cae",
-  "lastmod": "2026-08-23"
+  "hash": "5e94f8355693c84cc8a08d504219eb657a99b0c0",
+  "lastmod": "2026-09-15"
  },
  "tool:MarkupDetective": {
   "hash": "8ce5260ebf8b450af6cd7ef8f74bfaa37fdd91b1",
