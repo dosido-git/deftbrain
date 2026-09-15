@@ -93,14 +93,8 @@ const TicketTackler = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    meterBar:      isDark ? 'bg-cyan-500' : 'bg-cyan-600',
-    meterTrack:    isDark ? 'bg-zinc-700' : 'bg-gray-200',
   };
   c.label = c.labelText;
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── State ──
   const [ticketType, setTicketType] = useState('parking');
@@ -165,7 +159,7 @@ const TicketTackler = ({ tool }) => {
       });
       setResults(data);
       setSessionHistory(prev => [
-        { id: Date.now(), preview: `${city.trim()} · ${(whatHappened || ticketText).trim().slice(0, 40)}`, verdict: data?.case_assessment?.verdict, city, ticketType },
+        { id: Date.now(), preview: `${city.trim()} · ${(whatHappened || ticketText).trim().slice(0, 40)}`, verdict: data?.assessment?.verdict, city, ticketType },
         ...prev,
       ].slice(0, 6));
     } catch (_) { /* error state handled by hook */ }
@@ -180,7 +174,7 @@ const TicketTackler = ({ tool }) => {
         question: followupQ,
         city,
         ticketType,
-        analysisContext: `${results?.case_assessment?.verdict}: ${results?.case_assessment?.summary}`,
+        analysisContext: `${results?.assessment?.verdict}: ${results?.assessment?.reason}`,
       });
       setFollowup(data);
     } catch (_) { /* error state handled by hook */ }
@@ -210,33 +204,33 @@ const TicketTackler = ({ tool }) => {
 
   const verdictMeta = (v) => {
     switch (v) {
-      case 'FIGHT':      return { cls: c.success, label: t('tt_verdict_fight'), icon: '🥊' };
-      case 'JUST PAY':   return { cls: c.danger, label: t('tt_verdict_pay'), icon: '💸' };
-      case 'BORDERLINE':
-      default:           return { cls: c.warning, label: t('tt_verdict_borderline'), icon: '⚖️' };
+      case 'WORTH_CONTESTING': return { cls: c.success, label: t('tt_verdict_worth_contesting'), icon: '🥊' };
+      case 'PROBABLY_PAY':     return { cls: c.danger, label: t('tt_verdict_probably_pay'), icon: '💸' };
+      case 'VERIFY_FIRST':
+      default:                 return { cls: c.warning, label: t('tt_verdict_verify_first'), icon: '⚖️' };
     }
   };
-  const strengthCls = (s) => (s === 'strong' ? c.successTxt : s === 'weak' ? c.textMuted : c.warningTxt);
-  const strengthLabel = (s) => (s === 'strong' ? t('tt_strength_strong') : s === 'weak' ? t('tt_strength_weak') : t('tt_strength_moderate'));
-  const worthiness = Math.min(10, Math.max(0, Number(results?.case_assessment?.fight_worthiness) || 0));
 
   const buildFullText = () => {
     if (!results) return '';
     const parts = [];
-    const ca = results?.case_assessment;
-    if (ca) parts.push(`${ca.verdict} (${ca.fight_worthiness}/10)\n${ca.summary}`);
-    if (results?.defense_angles?.length) {
-      parts.push(t('tt_angles_title') + ':\n' + results.defense_angles.map(a => `• [${a?.strength}] ${a?.angle} — ${a?.how_to_argue} (${a?.evidence_needed})`).join('\n'));
+    const asmt = results?.assessment;
+    if (asmt) parts.push(`${verdictMeta(asmt.verdict).label}\n${asmt.reason}`);
+    if (results?.what_may_matter?.length) {
+      parts.push(t('tt_matter_title') + ':\n' + results.what_may_matter.map(a => `• ${a?.issue} — ${a?.supports_it} (${t('tt_matter_verify')}: ${a?.needs_verification}; ${t('tt_matter_helps')}: ${a?.evidence_that_would_help})`).join('\n'));
     }
-    if (results?.evidence_checklist?.length) {
-      parts.push(t('tt_evidence_title') + ':\n' + results.evidence_checklist.map(ev => `• (${ev?.urgency}) ${ev?.item} — ${ev?.why}`).join('\n'));
+    if (results?.what_to_verify?.length) {
+      parts.push(t('tt_verify_title') + ':\n' + results.what_to_verify.map(v => `• ${v}`).join('\n'));
+    }
+    if (results?.evidence_to_get?.length) {
+      parts.push(t('tt_evidence_title') + ':\n' + results.evidence_to_get.map(ev => `• (${ev?.urgency}) ${ev?.item} — ${ev?.why}`).join('\n'));
     }
     if (results?.appeal_letter) parts.push(t('tt_letter_title') + ':\n' + results.appeal_letter);
     if (results?.how_to_file) {
       parts.push(`${t('tt_file_title')}:\n${t('tt_file_where')}: ${results.how_to_file?.where}\n${t('tt_file_tips')}: ${results.how_to_file?.method_tips}\n${t('tt_file_deadline')}: ${results.how_to_file?.deadline_note}`);
     }
-    if (results?.decision_math) {
-      parts.push(`${t('tt_math_title')}:\n${t('tt_math_pay')}: ${results.decision_math?.cost_of_paying}\n${t('tt_math_fight')}: ${results.decision_math?.cost_of_fighting}\n${t('tt_math_bottom')}: ${results.decision_math?.bottom_line}`);
+    if (results?.pay_or_contest) {
+      parts.push(`${t('tt_pay_or_contest_title')}:\n${verdictMeta(results.pay_or_contest?.recommendation).label} — ${results.pay_or_contest?.reasoning}`);
     }
     if (results?.dont_say?.length) parts.push(t('tt_dontsay_title') + ':\n' + results.dont_say.map(d => `• ${d}`).join('\n'));
     return parts.join('\n\n') + BRAND;
@@ -286,7 +280,7 @@ const TicketTackler = ({ tool }) => {
                   onClick={() => { setCity(h.city || ''); setTicketType(h.ticketType || 'parking'); setShowHistory(false); }}
                   className={`w-full text-start flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
                   <span className={`text-sm ${c.textSecondary} truncate`}>{h.preview}</span>
-                  {h.verdict && <span className={`text-xs font-bold ms-2 shrink-0 ${h.verdict === 'FIGHT' ? c.successTxt : h.verdict === 'JUST PAY' ? c.textMuted : c.warningTxt}`}>{h.verdict}</span>}
+                  {h.verdict && <span className={`text-xs font-bold ms-2 shrink-0 ${h.verdict === 'WORTH_CONTESTING' ? c.successTxt : h.verdict === 'PROBABLY_PAY' ? c.textMuted : c.warningTxt}`}>{verdictMeta(h.verdict).label}</span>}
                 </button>
               ))}
             </div>
@@ -349,10 +343,6 @@ const TicketTackler = ({ tool }) => {
             </div>
           </div>
 
-          <p className={`text-xs ${c.textMuted}`}>
-            {t('tt_xref_pre')} <a href="/BillRescue" className={linkStyle}>💸 {t('tt_billrescue')}</a>
-          </p>
-
           <button title={t('cmd_enter')} onClick={handleSubmit}
             disabled={loading || !city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())}
             className={`relative w-full py-3 ${(!city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())) ? c.btnIdle : c.btnPrimary} rounded-xl font-semibold`}>
@@ -376,49 +366,51 @@ const TicketTackler = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
           {/* Verdict */}
-          {results?.case_assessment ? (
+          {results?.assessment ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-              <div className={`border rounded-xl px-4 py-3 ${verdictMeta(results.case_assessment?.verdict).cls}`}>
+              <div className={`border rounded-xl px-4 py-3 ${verdictMeta(results.assessment?.verdict).cls}`}>
                 <div className="text-lg font-bold">
-                  <span className="me-2">{verdictMeta(results.case_assessment?.verdict).icon}</span>
-                  {verdictMeta(results.case_assessment?.verdict).label}
+                  <span className="me-2">{verdictMeta(results.assessment?.verdict).icon}</span>
+                  {verdictMeta(results.assessment?.verdict).label}
                 </div>
-                <p className="text-sm mt-1">{results.case_assessment?.summary}</p>
-              </div>
-              <div className="mt-3">
-                <div className={`flex items-center justify-between text-xs font-medium ${c.textMuted}`}>
-                  <span>{t('tt_worthiness')}</span><span>{worthiness}/10</span>
-                </div>
-                <div className={`mt-1 h-2 rounded-full ${c.meterTrack}`}>
-                  <div className={`h-2 rounded-full ${c.meterBar}`} style={{ width: `${worthiness * 10}%` }} />
-                </div>
+                <p className="text-sm mt-1">{results.assessment?.reason}</p>
               </div>
             </div>
           ) : null}
 
-          {/* Defense angles */}
-          {results?.defense_angles?.length ? (
+          {/* What may matter */}
+          {results?.what_may_matter?.length ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-3`}>
-              <h3 className={`font-bold ${c.text}`}>🛡️ {t('tt_angles_title')}</h3>
-              {results.defense_angles.map((a, i) => (
+              <h3 className={`font-bold ${c.text}`}>🔍 {t('tt_matter_title')}</h3>
+              {results.what_may_matter.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`font-semibold text-sm ${c.text}`}>{a?.angle}</span>
-                    <span className={`text-xs font-bold uppercase ${strengthCls(a?.strength)}`}>{strengthLabel(a?.strength)}</span>
-                  </div>
-                  <p className={`text-sm mt-1 ${c.textSecondary}`}>{a?.how_to_argue}</p>
-                  <p className={`text-xs mt-1 ${c.textMuted}`}>📎 {a?.evidence_needed}</p>
+                  <span className={`font-semibold text-sm ${c.text}`}>{a?.issue}</span>
+                  <p className={`text-sm mt-1 ${c.textSecondary}`}>{a?.supports_it}</p>
+                  <p className={`text-xs mt-1 ${c.warningTxt}`}>❓ {t('tt_matter_verify')}: {a?.needs_verification}</p>
+                  <p className={`text-xs mt-1 ${c.textMuted}`}>📎 {t('tt_matter_helps')}: {a?.evidence_that_would_help}</p>
                 </div>
               ))}
             </div>
           ) : null}
 
-          {/* Evidence checklist */}
-          {results?.evidence_checklist?.length ? (
+          {/* What to verify */}
+          {results?.what_to_verify?.length ? (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+              <h3 className={`font-bold ${c.text}`}>❓ {t('tt_verify_title')}</h3>
+              <ul className="mt-2 space-y-1.5 list-disc ps-5">
+                {results.what_to_verify.map((v, i) => (
+                  <li key={i} className={`text-sm ${c.textSecondary}`}>{v}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* Evidence to get */}
+          {results?.evidence_to_get?.length ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <h3 className={`font-bold ${c.text}`}>📸 {t('tt_evidence_title')}</h3>
               <ul className="mt-2 space-y-2">
-                {results.evidence_checklist.map((ev, i) => (
+                {results.evidence_to_get.map((ev, i) => (
                   <li key={i} className={`text-sm ${c.textSecondary}`}>
                     <span className={`me-2 text-xs font-bold uppercase ${ev?.urgency === 'today' ? c.warningTxt : c.textMuted}`}>
                       {ev?.urgency === 'today' ? t('tt_urgency_today') : t('tt_urgency_before')}
@@ -430,7 +422,7 @@ const TicketTackler = ({ tool }) => {
             </div>
           ) : null}
 
-          {/* Appeal letter */}
+          {/* Appeal letter — only rendered when the model concluded there's a basis for one */}
           {results?.appeal_letter ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <div className="flex items-center justify-between gap-2">
@@ -441,7 +433,7 @@ const TicketTackler = ({ tool }) => {
             </div>
           ) : null}
 
-          {/* How to file + decision math */}
+          {/* How to file + pay or contest */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {results?.how_to_file ? (
               <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
@@ -451,12 +443,14 @@ const TicketTackler = ({ tool }) => {
                 <p className={`text-sm mt-1 ${c.warningTxt}`}><span className="font-semibold">⏰ {t('tt_file_deadline')}:</span> {results.how_to_file?.deadline_note}</p>
               </div>
             ) : null}
-            {results?.decision_math ? (
+            {results?.pay_or_contest ? (
               <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-                <h3 className={`font-bold ${c.text}`}>🧮 {t('tt_math_title')}</h3>
-                <p className={`text-sm mt-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_math_pay')}:</span> {results.decision_math?.cost_of_paying}</p>
-                <p className={`text-sm mt-1 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_math_fight')}:</span> {results.decision_math?.cost_of_fighting}</p>
-                <p className={`text-sm mt-1 font-medium ${c.accentTxt}`}>{results.decision_math?.bottom_line}</p>
+                <h3 className={`font-bold ${c.text}`}>{t('tt_pay_or_contest_title')}</h3>
+                <div className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-xs font-bold ${verdictMeta(results.pay_or_contest?.recommendation).cls}`}>
+                  <span>{verdictMeta(results.pay_or_contest?.recommendation).icon}</span>
+                  {verdictMeta(results.pay_or_contest?.recommendation).label}
+                </div>
+                <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.pay_or_contest?.reasoning}</p>
               </div>
             ) : null}
           </div>
@@ -494,13 +488,6 @@ const TicketTackler = ({ tool }) => {
               </div>
             ) : null}
           </div>
-
-          {/* Cross-references */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
-            <a href="/BillRescue" className={linkStyle}>💸 {t('tt_billrescue')}</a>
-            <span className="mx-2">·</span>
-            <a href="/ComplaintEscalationWriter" className={linkStyle}>📣 {t('tt_cew')}</a>
-          </p>
         </div>
       )}
     </div>

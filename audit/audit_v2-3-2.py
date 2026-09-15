@@ -584,7 +584,7 @@ for name, fpath in tools:
     # Pocus, Task Avalanche Breaker) and the "Focus Pocus structures the
     # actual session around it" post-result line were removed at the
     # owner's request as part of the tool's rewrite.
-    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect'}
+    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect', 'TicketTackler'}
 
     # S1.1: linkStyle standalone
     if name in NO_CROSSREF:
@@ -1173,7 +1173,11 @@ for name, fpath in tools:
     # actual session around it" post-result line) were removed at the
     # owner's request as part of the tool's rewrite — zero links at either
     # end, by decision. Also in NO_CROSSREF below for the same reason.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect')
+    # TicketTackler joined the same day: both its cross-refs (a pre-submit
+    # "Fighting a bigger bill? BillRescue" line, and a post-result BillRescue +
+    # ComplaintEscalationWriter pair) were removed at the owner's request as
+    # part of the same rewrite pattern — zero links at either end.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect', 'TicketTackler')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

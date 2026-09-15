@@ -2,9 +2,9 @@
   "_meta": {
     "tool": "TicketTackler",
     "generated": "2026-07-26",
-    "model": "MODELS.SMART; main = parallel split (case 3500 + appeal 3500) + groundedFacts pre-pass (ticket-appeal:{city}:{type}, 14d cache); followup 2000",
-    "baseline_commit": "ticket-tackler-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) case_assessment.verdict MUST be an exact English token FIGHT|BORDERLINE|JUST PAY and defense_angles[].strength / evidence_checklist[].urgency exact English tokens — the frontend switches badge colors/labels on them; withLanguage would otherwise translate them in 12 langs. (2) fight_worthiness is a BARE integer (frontend renders {n}/10 and a width meter). (3) Verdict/bottom_line CONSISTENCY: decision_math.bottom_line must recommend paying when the account has no defense (2026-07-26 probe caught the parallel appeal call recommending filing under a JUST PAY banner — the bottom_line rule pins it). (4) defense_angles must be grounded in the user's account — no hypothetical stolen/leased-vehicle boilerplate. (5) how_to_file must NEVER invent portals/phones/deadlines: specifics come from the VERIFIED APPEAL PROCESS block (grounding) or the response points to the ticket/official channel generically; deadline day-counts only if VERIFIED or user-provided. (6) Quote-heavy German input → NO_QUOTE_RULE in both split prompts + followup. (7) Statute sections cited only when certain (probe caught § 45 StVO cited slightly wrong). DO NOT reverse: English enum pins; bare-integer fight_worthiness; the grounded-or-generic how_to_file rule; the bottom_line pay-consistency rule; user-grounded defense_angles; 3500+3500 split budgets."
+    "baseline_commit": "tickettackler-v2",
+    "model": "MODELS.SMART; single call (was parallel split case+appeal) + groundedFacts pre-pass (ticket-appeal:{city}:{type}, 14d cache); followup 2000",
+    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) assessment.verdict and pay_or_contest.recommendation MUST be an exact English token WORTH_CONTESTING|VERIFY_FIRST|PROBABLY_PAY, and evidence_to_get[].urgency MUST be exactly today|before_filing — the frontend switches badge colors/labels on them; withLanguage would otherwise translate them in 12 langs. (2) NO numeric case-strength score and NO strength enum anywhere (2026-09-15 rewrite deliberately removed fight_worthiness and defense_angles[].strength — a 9/10 score or a strong/moderate/weak label implies predictive precision the tool does not have; do not reintroduce either). (3) pay_or_contest.reasoning must NEVER invent filing fees, hearing costs, preparation time, or a probability of success — the pre-rewrite decision_math routinely fabricated '20-30 minutes', '$10-20 reduction', 'roughly 15-30 minutes online'; the rewrite's reasoning weighs strength/evidence/amount-at-stake/procedural-burden in prose, with no invented numbers except the user-supplied fine amount. (4) appeal_letter MUST be null when there is no plausible supported basis for contesting (see weak-case) — do not always draft one 'to be helpful'; what_may_matter and what_to_verify MAY legitimately be empty arrays for a hopeless case — an empty array is a correct answer, not a broken response, so do not treat case-to-case count as an invariant the way non-empty arrays are. (5) dont_say MUST be null (not an empty array, not filler) unless the user's own account/wording actually contains something that could hurt their case. (6) how_to_file must NEVER invent portals/phones/deadlines: specifics come from the VERIFIED RULES block (grounding) or the response points to the ticket/official channel generically; deadline day-counts only if VERIFIED or user-provided. (7) what_may_matter items must be grounded in the user's account — no hypothetical stolen/leased-vehicle boilerplate, and each item distinguishes THE CITATION / THE USER'S ACCOUNT / SUPPORTING EVIDENCE / VERIFIED RULES rather than silently upgrading one into another (e.g. 'the sign as you describe it', not 'the sign'). (8) Quote-heavy German input → NO_QUOTE_RULE. (9) Statute sections cited only when certain (probe caught § 45 StVO cited slightly wrong in the pre-rewrite version — same caution applies to the rewritten prompt). DO NOT reverse: English enum pins; no numeric/categorical strength scoring anywhere; the grounded-or-generic how_to_file rule; the no-invented-decision-math rule; user-grounded what_may_matter; appeal_letter nullability; single-call architecture (letter drafting is now coupled to the assessment, so splitting it back into an unconditional parallel call would draft appeals for hopeless cases again — the exact bug this rewrite fixed)."
   },
   "cases": [
     {
@@ -22,84 +22,57 @@
         "userRegion": "US"
       },
       "output": {
-        "appeal_letter": "July 25, 2026\n\nCity of Pocatello Parking Violations\n[CITATION #]\n\nTo Whom It May Concern,\n\nI am respectfully requesting review and dismissal of Citation [CITATION #], issued July 21, 2026 at approximately 2:14 PM on the 300 block of N Main St for an alleged expired meter violation under Code 10-24-2.\n\nUpon parking, I inserted two quarters into the meter; however, the meter display was entirely blank — no time registered, no error message, no response of any kind. Believing the meter to be malfunctioning, I placed a written note on my dashboard indicating the meter appeared broken. I returned to my vehicle approximately 25 minutes later to find the citation.\n\nImmediately upon discovering the ticket, I photographed the meter, which still showed a blank screen. This photo is attached and is timestamped 07/21/2026. A malfunctioning city-owned meter that accepts payment but fails to display or credit time should not create a valid violation against a good-faith patron.\n\nI respectfully request dismissal of this citation. Please contact me with any questions.\n\nSincerely,\n[YOUR NAME]",
-        "how_to_file": {
-          "where": "Submit your appeal in person at the Pocatello Police Department (911 North 7th Avenue) or via the drop box in front of City Hall; no online contest portal is available as of July 2026.",
-          "method_tips": "Bring or attach a printed copy of your timestamped meter photo; submit everything together in a single envelope labeled with your citation number, and ask for a dated receipt or confirmation if submitting in person.",
-          "deadline_note": "No official contest deadline has been published by the City of Pocatello — check the citation itself for any stated deadline and act before it passes, as the ticket notes payment is due within 14 days."
+        "assessment": {
+          "verdict": "WORTH_CONTESTING",
+          "reason": "As you describe it, a timestamped photo of a blank/dead meter screen taken minutes after the citation is contemporaneous evidence that the city's own equipment failed to register your payment — a factual basis distinct from simply disliking the fine."
         },
-        "decision_math": {
-          "cost_of_paying": "Paying costs you $25 with no further time investment.",
-          "cost_of_fighting": "Filing costs nothing in fees, but requires a trip to the police department or city hall, a written appeal, and follow-up time if a hearing is scheduled.",
-          "bottom_line": "Your case is genuinely solid — a timestamped photo of a blank meter screen is objective, contemporaneous evidence that directly undermines the 'expired meter' charge, and your dashboard note shows good faith; this is worth filing."
+        "what_may_matter": [
+          {
+            "issue": "Meter showed no time or error after payment was made",
+            "supports_it": "Your account is that you inserted two quarters and the screen stayed blank, and your photo (taken shortly after finding the citation) shows a blank display.",
+            "needs_verification": "Whether the photo's timestamp is close enough to the citation time to establish the meter was in that state when Officer #217 wrote the ticket, not only 25 minutes later when you returned.",
+            "evidence_that_would_help": "The photo's original file with metadata/timestamp intact, and, if obtainable, any city maintenance or complaint record for that meter around that date."
+          },
+          {
+            "issue": "Note left on dashboard indicating the meter appeared broken",
+            "supports_it": "You report leaving a note before walking away, which is consistent with a good-faith attempt to pay rather than an attempt to avoid payment.",
+            "needs_verification": "Whether a photo or other record of the note exists, since the citation record alone won't show it.",
+            "evidence_that_would_help": "A photo of the note on the dashboard, ideally timestamped the same day."
+          }
+        ],
+        "what_to_verify": [
+          "Whether Pocatello publishes a formal appeal deadline or process for parking citations — none was found in this search, so confirm directly with the issuing office.",
+          "Whether the meter at that location has any prior reported malfunctions on record."
+        ],
+        "evidence_to_get": [
+          {
+            "item": "The original photo file of the blank meter screen, with its timestamp preserved",
+            "why": "This is the single fact the whole issue rests on — it needs to be clearly dated.",
+            "urgency": "today"
+          },
+          {
+            "item": "A photo of the note left on the dashboard, if one can still be taken or was already taken",
+            "why": "Corroborates that you attempted to comply rather than skip payment.",
+            "urgency": "today"
+          },
+          {
+            "item": "The original citation",
+            "why": "Preserves the exact violation code, officer number, time, and location for reference in the appeal.",
+            "urgency": "today"
+          }
+        ],
+        "appeal_letter": "July 25, 2026\n\nCity of Pocatello Parking Violations\n[CITATION #]\n\nTo Whom It May Concern,\n\nI am requesting review and dismissal of Citation [CITATION #], issued July 21, 2026 at approximately 2:14 PM on the 300 block of N Main St for an alleged expired meter violation under Code 10-24-2.\n\nWhen I parked, I inserted two quarters into the meter; the display remained blank, showing no time and no error. I left a note on my dashboard indicating the meter appeared broken, and returned approximately 25 minutes later to find the citation. I photographed the meter shortly afterward, and it still showed a blank screen.\n\nI am enclosing that photograph. I respectfully request that this citation be dismissed on the basis that the meter did not register payment or display any time, which I believe indicates a malfunction rather than an expired term.\n\nThank you for your consideration.\n\n[YOUR NAME]",
+        "how_to_file": {
+          "where": "No online contest portal was found for Pocatello parking citations as of this search — check the citation itself for a stated address or phone number, or contact the Pocatello Police Department directly.",
+          "method_tips": "Attach a printed copy of your timestamped meter photo, and ask for a dated receipt or confirmation if submitting in person.",
+          "deadline_note": "No official contest deadline was found for this jurisdiction — the citation states payment is due within 14 days, so contact the issuing office before that date to ask about the contest process and any separate deadline."
+        },
+        "pay_or_contest": {
+          "recommendation": "WORTH_CONTESTING",
+          "reasoning": "The fine is small ($25), but the factual basis is concrete and rests on a single piece of contemporaneous photo evidence you already have — there's little to lose by raising it. The main friction is procedural: no published appeal process was found, so reaching the right office and confirming a deadline takes a direct call or visit rather than an online form."
         },
         "dont_say": [
-          "Do not say 'I only ran in for a minute' — duration is irrelevant to a broken-meter defense and shifts focus away from your strong equipment-failure evidence.",
-          "Do not say 'this feels unfair' or use emotional language — hearing officers respond to documented facts, and frustration framing can undercut an otherwise credible mechanical argument.",
-          "Do not claim the meter was 'definitely broken for everyone' unless you have evidence of prior complaints — overstating what you know invites credibility challenges."
-        ],
-        "case_assessment": {
-          "verdict": "FIGHT",
-          "fight_worthiness": 8,
-          "summary": "A photo of a blank/dead meter screen taken within minutes of ticketing is genuinely strong evidence that the city's own equipment failed — you fed the meter in good faith and received nothing in return. The weak point is that Pocatello publishes no formal appeal procedure, so you will need to contact the Pocatello Police Department or City Hall directly to find the right person and any deadline, which adds friction and uncertainty. The case rests on whether a hearing officer treats a malfunctioning meter as the city's liability rather than the driver's, which is a widely accepted principle even where unwritten."
-        },
-        "defense_angles": [
-          {
-            "angle": "Malfunctioning city equipment — no valid meter to expire",
-            "strength": "strong",
-            "how_to_argue": "You cannot be cited for an 'expired meter' when the meter displayed nothing at all — there was no countdown to expire, making the violation code technically inapplicable to your situation. Argue that the city cannot enforce a time-limit it failed to display, and that the equipment failure breaks the chain of liability.",
-            "evidence_needed": "Your timestamped phone photo of the blank meter screen taken on 07/21/2026 shortly after 2:14 PM, which anchors the malfunction to the exact citation window."
-          },
-          {
-            "angle": "Good-faith payment and notice left on dash",
-            "strength": "moderate",
-            "how_to_argue": "You inserted two quarters — attempted compliance — and proactively left a written note on your dashboard alerting anyone who checked the vehicle that the meter appeared broken, demonstrating you were not trying to park for free. This shows intent to comply, not intent to evade.",
-            "evidence_needed": "Any photo of the note on the dash taken the same day, or a contemporaneous text or email to yourself or someone else describing what you did, to corroborate the account."
-          },
-          {
-            "angle": "No functioning notice of time limit — due process concern",
-            "strength": "moderate",
-            "how_to_argue": "A driver is entitled to meaningful notice of the parking restriction being enforced; a dead screen gives no notice of how much time was purchased or remaining, making enforcement arbitrary in this instance. Frame this as a procedural fairness argument, not a technical loophole.",
-            "evidence_needed": "The meter photo is again central; any city maintenance records showing prior reported faults on that meter would significantly strengthen this angle."
-          },
-          {
-            "angle": "Officer's basis for the citation is undermined by meter state",
-            "strength": "moderate",
-            "how_to_argue": "Officer #217 issued a citation for an 'expired meter,' but if the meter showed nothing, the officer could not have observed an expired display — the factual premise of the citation is flawed on its face. Raise this directly: ask what the officer observed that supported the 'expired' determination on a blank screen.",
-            "evidence_needed": "The citation itself (which you have) plus your meter photo; a public-records request for the officer's notes or activity log for that location at 2:14 PM could be decisive."
-          }
-        ],
-        "evidence_checklist": [
-          {
-            "item": "Timestamped phone photo of the blank meter screen taken 07/21/2026",
-            "why": "This is your single strongest exhibit — it directly contradicts the premise of an 'expired' meter and proves the city's equipment was not functioning at the time of the citation.",
-            "urgency": "today"
-          },
-          {
-            "item": "Photo or written description of the dash note you left",
-            "why": "Corroborates your good-faith compliance attempt and pre-existing notice of the malfunction, countering any inference that you simply skipped paying.",
-            "urgency": "today"
-          },
-          {
-            "item": "The original citation (physical copy)",
-            "why": "Preserves the exact violation code, officer number, time, and location — all details you will need to reference precisely in your written appeal.",
-            "urgency": "today"
-          },
-          {
-            "item": "Contact the Pocatello Police Department (911 North 7th Avenue) to ask about the parking citation contest process and any deadline",
-            "why": "No official appeal deadline or procedure is published online — you must get the correct process and deadline directly from the issuing authority before your 14-day payment due date passes on 08/04/2026.",
-            "urgency": "today"
-          },
-          {
-            "item": "Public-records request for maintenance logs on the meter at 300 block N Main St around 07/21/2026",
-            "why": "Prior reported faults or maintenance visits would independently confirm the meter was known to be defective, removing any doubt about your account.",
-            "urgency": "before_filing"
-          },
-          {
-            "item": "Written account of the full sequence of events drafted while memory is fresh",
-            "why": "A detailed, dated narrative you write now will be consistent and credible in a hearing, and timestamps your recollection before any details fade.",
-            "urgency": "today"
-          }
+          "Avoid saying 'this feels unfair' — a hearing officer responds to the documented facts (the photo, the note), not to how the situation felt."
         ]
       }
     },
@@ -118,78 +91,62 @@
         "userRegion": "DE"
       },
       "output": {
-        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nStadt Schwäbisch Gmünd\nRechts- und Ordnungsamt / Bußgeldstelle\nWaisenhausgasse 1–3\n73525 Schwäbisch Gmünd\n\nBetreff: Widerspruch zur Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der oben genannten Verwarnung vom [DATUM DES KNÖLLCHENS] über 25,00 EUR wegen angeblicher Überschreitung der Höchstparkdauer in der Ledergasse, Bewohnerparkzone B.\n\nIch bin Inhaber eines gültigen Anwohnerparkausweises für die Zone B. Als berechtigter Anwohner bin ich von der allgemeinen Höchstparkdauer in dieser Zone ausgenommen, sodass der Tatvorwurf dem Grunde nach nicht zutrifft.\n\nMein Parkausweis lag zum Kontrollzeitpunkt sichtbar auf dem Armaturenbrett. Er hatte sich beim Schließen der Fahrzeugtür leicht verschoben, war jedoch aus dem Fahrzeuginnern weiterhin erkennbar. Ein unmittelbar nach Vorfinden des Verwarnungszettels aufgenommenes Foto belege ich als Anlage.\n\nIch bitte daher um Einstellung des Verfahrens und um Bestätigung dieser Entscheidung.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
-        "how_to_file": {
-          "where": "Den Widerspruch schriftlich einreichen bei: Stadt Schwäbisch Gmünd, Rechts- und Ordnungsamt / Bußgeldstelle, Waisenhausgasse 1–3, 73525 Schwäbisch Gmünd – alternativ persönlich zur Niederschrift vor Ort.",
-          "method_tips": "Senden Sie den Brief per Einschreiben mit Rückschein, um den Eingang nachweisen zu können; legen Sie das Foto des Armaturenbretts sowie eine Kopie Ihres Anwohnerparkausweises als Anlagen bei.",
-          "deadline_note": "Das Verwarnungsgeld ist laut Ticket binnen einer Woche fällig; zahlen Sie NICHT, da Nichtzahlung als Ablehnung der Verwarnung gilt und das formelle Verfahren auslöst, in dem Sie dann Ihren Einwand vollständig vorbringen können – handeln Sie daher sofort."
+        "assessment": {
+          "verdict": "WORTH_CONTESTING",
+          "reason": "Als Inhaber eines gültigen Anwohnerparkausweises für Zone B gilt die Höchstparkdauer laut Ihrer Schilderung nicht für Sie, und Sie haben ein Foto, das den Ausweis sichtbar auf dem Armaturenbrett zeigt — ein klarer sachlicher Ansatzpunkt."
         },
-        "decision_math": {
-          "cost_of_paying": "Bei Zahlung verlieren Sie 25,00 EUR endgültig und verzichten auf einen rechtlich anerkannten Einwand.",
-          "cost_of_fighting": "Der Widerspruch kostet etwa 30–60 Minuten Aufwand und Portokosten; ein Kostenrisiko entsteht erst, wenn die Sache vor das Amtsgericht geht, was bei einem Verwarnungsgeld von 25,00 EUR selten passiert.",
-          "bottom_line": "Ihr Einwand ist sachlich stark: Als Anwohner mit gültigem Ausweis gilt die Höchstparkdauer nicht für Sie, und Sie haben einen Fotobeweis – das Verfahren dürfte von der Bußgeldstelle eingestellt werden. Widerspruch einlegen ist hier klar empfehlenswert."
-        },
-        "dont_say": [
-          "Vermeiden Sie die Aussage 'Der Kontrolleur war unfreundlich und hat mich nicht ausreden lassen' – persönliche Kritik am Beamten wirkt unsachlich und schwächt Ihre glaubwürdige Sachdarstellung.",
-          "Sagen Sie nicht 'Das hätte ich doch sofort gesehen' – Spekulationen über das Wahrnehmungsvermögen des Kontrolleurs sind nicht belegbar und lenken vom eigentlichen Rechtspunkt ab.",
-          "Vermeiden Sie Formulierungen wie 'Das ist doch lächerlich für 25 Euro' – Empörung über die Höhe des Betrags ist kein rechtlicher Einwand und hinterlässt einen schlechten Eindruck beim Sachbearbeiter."
-        ],
-        "case_assessment": {
-          "verdict": "FIGHT",
-          "fight_worthiness": 8,
-          "summary": "Als berechtigter Anwohner mit gültigem Parkausweis für die Bewohnerparkzone B in der Ledergasse sind Sie grundsätzlich von der Höchstparkdauer ausgenommen – das ist der Kern Ihrer Verteidigung. Die Schwäche liegt darin, dass der Ausweis beim Zuschlagen der Tür verrutscht war und der Kontrolleur ihn möglicherweise als nicht ausreichend lesbar eingestuft hat. Da Sie ein Foto unmittelbar nach dem Auffinden des Knöllchens gemacht haben und der Ausweis objektiv gültig und vorhanden war, ist der Fall gut angreifbar."
-        },
-        "defense_angles": [
+        "what_may_matter": [
           {
-            "angle": "Anwohnerparkausweis hebt Höchstparkdauer auf",
-            "strength": "strong",
-            "how_to_argue": "Inhaber eines gültigen Bewohnerparkausweises für die Zone B sind in eben dieser Zone von der Höchstparkdauer befreit – der Tatvorwurf 'Überschreitung der zulässigen Höchstparkdauer' trifft Sie rechtlich schlicht nicht, solange Ihr Ausweis für Ort und Zone gültig ist.",
-            "evidence_needed": "Kopie des Anwohnerparkausweises mit Angabe der Gültigkeitsdauer, des Kennzeichens und der zugewiesenen Zone B."
+            "issue": "Anwohnerparkausweis befreit von der Höchstparkdauer in Zone B",
+            "supports_it": "Sie berichten, einen gültigen Ausweis für genau diese Zone zu besitzen — die zitierte Regel zur Höchstparkdauer träfe damit nicht zu.",
+            "needs_verification": "Dass der Ausweis zum Tatzeitpunkt tatsächlich gültig war (Datum, Kennzeichen, Zonenzuordnung B) — noch nicht durch etwas anderes als Ihre eigene Aussage belegt.",
+            "evidence_that_would_help": "Eine Kopie des Ausweises mit Gültigkeitsdauer, Kennzeichen und Zone."
           },
           {
-            "angle": "Ausweis war tatsächlich sichtbar ausgelegt",
-            "strength": "strong",
-            "how_to_argue": "Das Foto, das Sie direkt nach dem Auffinden des Knöllchens gemacht haben, belegt, dass der Ausweis auf dem Armaturenbrett lag und von außen erkennbar war – die bloße Schräglage genügt nicht, um die Auslagemöglichkeit zu verneinen.",
-            "evidence_needed": "Das Unmittelbar-nach-Knöllchen-Foto mit sichtbarem Zeitstempel (EXIF-Daten oder Kamera-Zeitstempel), das den Ausweis auf dem Armaturenbrett zeigt."
-          },
-          {
-            "angle": "Zweifel an der Feststellung des Kontrolleurs",
-            "strength": "moderate",
-            "how_to_argue": "Der Kontrolleur hat laut Ihrer Schilderung selbst eingeräumt, dass ein Ausweis vorhanden war ('Ihr Ausweis war nicht lesbar'), was zeigt, dass er ihn wahrgenommen hat – dies begründet Zweifel, ob die Feststellung 'nicht lesbar' korrekt protokolliert wurde und ob wirklich eine tatbestandsmäßige Ordnungswidrigkeit vorlag.",
-            "evidence_needed": "Ihr schriftlich niedergelegter Gesprächsvermerk mit dem Kontrolleur (Datum, Uhrzeit, wörtliche Aussage) als eidesstattliche Erklärung."
+            "issue": "Ausweis war sichtbar ausgelegt, nur verrutscht",
+            "supports_it": "Ihr Foto, unmittelbar nach dem Auffinden des Knöllchens aufgenommen, zeigt den Ausweis auf dem Armaturenbrett.",
+            "needs_verification": "Ob das Foto den Zustand zum Kontrollzeitpunkt widerspiegelt und nicht erst danach verändert wurde.",
+            "evidence_that_would_help": "Das Foto selbst mit Zeitstempel/EXIF-Daten, falls vorhanden."
           }
         ],
-        "evidence_checklist": [
+        "what_to_verify": [
+          "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B — ob Anwohner tatsächlich vollständig von der Höchstparkdauer ausgenommen sind oder nur bestimmte Bedingungen gelten.",
+          "Die formale Widerspruchsfrist und das zuständige Amt, falls von der Stadt Schwäbisch Gmünd nicht bereits auf dem Knöllchen angegeben."
+        ],
+        "evidence_to_get": [
           {
-            "item": "Foto vom Armaturenbrett mit Ausweis sichern und Zeitstempel prüfen",
-            "why": "Belegt, dass der Ausweis unmittelbar nach dem Vorfall sichtbar lag und von außen erkennbar war.",
+            "item": "Foto vom Armaturenbrett mit Ausweis sichern (Original mit Zeitstempel)",
+            "why": "Belegt, dass der Ausweis sichtbar ausgelegt war.",
             "urgency": "today"
           },
           {
             "item": "Anwohnerparkausweis fotografieren oder einscannen (Vorder- und Rückseite)",
-            "why": "Beweist Gültigkeit, Zonenzuordnung B und Kennzeichenübereinstimmung zum Tatzeitpunkt.",
+            "why": "Beweist Gültigkeit, Zone und Kennzeichenübereinstimmung.",
             "urgency": "today"
           },
           {
-            "item": "Gesprächsnotiz zum Kontrolleur anfertigen",
-            "why": "Sichert die mündliche Aussage 'Ausweis nicht lesbar' als Beweis, dass der Kontrolleur den Ausweis wahrgenommen hat.",
+            "item": "Originales Knöllchen aufbewahren",
+            "why": "Enthält Aktenzeichen und Tatvorwurf für die Eingabe bei der Bußgeldstelle.",
             "urgency": "today"
-          },
-          {
-            "item": "Originales Knöllchen (Verwarnung) aufbewahren",
-            "why": "Enthält Tatzeit, Tatort, Aktenzeichen und Verwarnungsgeldnummer, die für jede Eingabe bei der Bußgeldstelle benötigt werden.",
-            "urgency": "today"
-          },
-          {
-            "item": "Fahrzeugschein bereithalten (Übereinstimmung Kennzeichen)",
-            "why": "Bestätigt, dass das beanstandete Fahrzeug tatsächlich Ihres ist und der Ausweis dazu passt.",
-            "urgency": "before_filing"
           }
+        ],
+        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nStadt Schwäbisch Gmünd\nRechts- und Ordnungsamt / Bußgeldstelle\nWaisenhausgasse 1–3\n73525 Schwäbisch Gmünd\n\nBetreff: Widerspruch zur Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der oben genannten Verwarnung vom [DATUM DES KNÖLLCHENS] über 25,00 EUR wegen angeblicher Überschreitung der Höchstparkdauer in der Ledergasse, Bewohnerparkzone B.\n\nIch bin Inhaber eines Anwohnerparkausweises für Zone B, der zum fraglichen Zeitpunkt gültig war. Mein Parkausweis lag sichtbar auf dem Armaturenbrett; er hatte sich beim Schließen der Tür leicht verschoben, war jedoch weiterhin erkennbar. Ein unmittelbar nach Vorfinden des Verwarnungszettels aufgenommenes Foto belege ich als Anlage.\n\nIch bitte um Prüfung und Einstellung des Verfahrens.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
+        "how_to_file": {
+          "where": "Schriftlich einreichen bei: Stadt Schwäbisch Gmünd, Rechts- und Ordnungsamt / Bußgeldstelle, Waisenhausgasse 1–3, 73525 Schwäbisch Gmünd — bestätigen Sie diese Adresse anhand des Knöllchens selbst.",
+          "method_tips": "Per Einschreiben mit Rückschein senden, um den Eingang nachweisen zu können; Foto und Ausweiskopie beilegen.",
+          "deadline_note": "Das Verwarnungsgeld ist laut Ticket binnen einer Woche fällig — prüfen Sie das genaue Ausstellungsdatum auf dem Knöllchen, um die Frist korrekt zu berechnen."
+        },
+        "pay_or_contest": {
+          "recommendation": "WORTH_CONTESTING",
+          "reasoning": "Die Ausnahme für Anwohner mit gültigem Ausweis ist ein konkreter sachlicher Punkt, kein vager Einwand, und ein Foto stützt ihn bereits. Der Betrag ist gering, aber der Widerspruch beruht auf einer einzigen, klaren Tatsache statt auf einer rechtlichen Interpretation."
+        },
+        "dont_say": [
+          "Vermeiden Sie die Aussage 'Der Kontrolleur war unfreundlich' — persönliche Kritik lenkt vom sachlichen Punkt ab und wirkt nicht zu Ihren Gunsten."
         ]
       }
     },
     {
-      "name": "weak-case-must-say-justpay-en",
+      "name": "weak-case-must-say-probably-pay-en",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "parking",
@@ -202,46 +159,39 @@
         "userRegion": "US"
       },
       "output": {
-        "appeal_letter": "DRAFT ONLY — read 'Decision Math' before deciding whether to send this.\n\n[DATE]\n\nMultnomah County Circuit Court Parking Citation Office\nP.O. Box 78\nPortland, OR 97207\n\nRe: No Contest — Request for Fine Reduction\nCitation No.: [CITATION #]\n\nTo the Reviewing Judge:\n\nI am submitting a No Contest response to citation [CITATION #] issued on SE Division Street and respectfully requesting consideration of a fine reduction.\n\nI do not contest that I parked in a posted no-parking zone. The signage was visible and unambiguous, and I accept responsibility for the violation. My stop was brief — approximately five minutes — and I have no prior parking citations on record in Portland. I am not disputing the officer's observation or the validity of the sign.\n\nGiven my acknowledgment of the violation and clean record, I respectfully ask the court to consider a reduced fine. I am happy to pay promptly upon determination.\n\nThank you for your time.\n\nRespectfully,\n[YOUR NAME]\n[Phone / Email]",
-        "how_to_file": {
-          "where": "Submit online via the Multnomah County Circuit Court parking page at courts.oregon.gov/courts/multnomah/go/Pages/parking.aspx, or mail to Multnomah County Circuit Court Parking Citation Office, P.O. Box 78, Portland, OR 97207.",
-          "method_tips": "A No Contest written reduction request is the lowest-effort path — no hearing required, a judge reviews your written statement alone; if mailing, use the yellow citation envelope that came with the ticket and keep a copy of everything you send.",
-          "deadline_note": "Your No Contest reduction request must reach the court within 60 days of the citation date; a general written contest or hearing request must be filed within 30 days to avoid the citation becoming delinquent — check the citation date printed on your ticket immediately."
+        "assessment": {
+          "verdict": "PROBABLY_PAY",
+          "reason": "By your own account the sign was clear, unobstructed, and unambiguous, you had no permit, and you confirmed this with your own photo — there is no factual inconsistency to raise, and a sympathetic explanation ('just 5 minutes') is not a defense."
         },
-        "decision_math": {
-          "cost_of_paying": "Paying now costs exactly $40 with no further time or risk.",
-          "cost_of_fighting": "A No Contest reduction letter takes 20–30 minutes to write and mail or submit online, with no hearing fee, but there is no procedural basis for dismissal here — the best realistic outcome is a partial reduction, not a zero balance.",
-          "bottom_line": "By your own account — clear sign, no permit, no procedural error — there is no recognized legal defense, so a full dismissal is not a realistic outcome; the only honest reason to file is to ask for leniency on the fine amount, which some judges grant for a first-time, self-acknowledged violation, but if your time is worth more than a potential $10–20 reduction, paying the $40 now is the cleaner call."
-        },
-        "dont_say": [
-          "'I was only there for five minutes' — brevity of the stop is not a legal defense to a no-parking violation and stating it as if it should excuse the ticket may undermine your credibility with the judge.",
-          "'The officer should have given me a warning' — officer discretion is unreviewable and citing it signals you believe the rules don't apply to you, which works against any leniency request.",
-          "'I pay taxes / support local businesses' — civic or economic arguments have no bearing on parking adjudication and consume credibility you need for the actual request."
-        ],
-        "case_assessment": {
-          "verdict": "JUST PAY",
-          "fight_worthiness": 1,
-          "summary": "By your own account, the sign was large, red, unobstructed, and unambiguous — you even photographed it confirming the violation was clear-cut. There is no procedural error, no permit, no payment dispute, and no factual basis to contest the charge. At $40, the time and effort of filing a written contest or requesting a hearing outweighs any realistic benefit, and a hearing officer has no grounds to dismiss what you have already documented as a valid ticket."
-        },
-        "defense_angles": [
+        "what_may_matter": [],
+        "what_to_verify": [],
+        "evidence_to_get": [
           {
-            "angle": "No-contest fine reduction request",
-            "strength": "weak",
-            "how_to_argue": "Rather than contesting guilt, you could submit a written No Contest plea via the Multnomah County Circuit Court online form or by mail within 60 days and briefly explain it was a first offense, a brief stop, and ask the judge to reduce the $40 fine as a matter of discretion — this is not a defense, but a mercy request.",
-            "evidence_needed": "A clean driving/parking record showing no prior violations would support a reduction request, though the judge is under no obligation to grant it."
-          }
-        ],
-        "evidence_checklist": [
-          {
-            "item": "The citation itself — note the exact issue date to calculate your deadlines",
-            "why": "You have 30 days to respond before the ticket becomes delinquent, and 60 days to submit a No Contest reduction request — missing these turns a $40 ticket into a larger delinquent balance.",
+            "item": "The citation itself, noting the exact issue date",
+            "why": "Confirms the exact deadline for any response, in case you want to pay online before it becomes delinquent.",
             "urgency": "today"
           }
+        ],
+        "appeal_letter": null,
+        "how_to_file": {
+          "where": "Check the citation for the payment address or online portal, or the Multnomah County Circuit Court's parking page for Portland citations.",
+          "method_tips": "If paying online, keep the payment confirmation; if by mail, keep a copy of what you sent.",
+          "deadline_note": "The citation should state a specific response window — verify the exact date printed on it rather than assuming a standard number of days."
+        },
+        "pay_or_contest": {
+          "recommendation": "PROBABLY_PAY",
+          "reasoning": "You've confirmed the sign was clear and unobstructed and that no permit or loading exception applied — there's no factual dispute with the citation and nothing supplied that would support contesting it. Paying resolves it without the risk of a missed deadline or additional fees."
+        },
+        "dont_say": [
+          "Avoid saying 'I was only there five minutes' — duration isn't a defense to this kind of violation and only draws attention to the fact that you deliberately risked it."
         ]
-      }
+      },
+      "optionalSections": [
+        "evidence_to_get"
+      ]
     },
     {
-      "name": "camera-chicago-consistency",
+      "name": "camera-chicago-verify-first",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "camera",
@@ -255,51 +205,39 @@
         "userRegion": "US"
       },
       "output": {
-        "appeal_letter": "Date: [DATE]\n\nCity of Chicago – Department of Finance\nCitation Administration\nRe: Contest of Automated Red Light Camera Violation\nCitation No.: [CITATION #]\nLocation: Western Ave & Peterson Ave\nViolation Date: 07/18/2026 at 9:42 PM\n\nTo the Administrative Law Officer:\n\nI am contesting the above citation and respectfully requesting a hearing. The two photographs available online show my vehicle in the middle of the intersection — not crossing the stop line on red. I entered the intersection while the signal displayed yellow and was already past the stop line when the light changed to red. I am requesting review of the camera footage, which I believe will confirm my vehicle entered on yellow. I have not been issued a separate uniform traffic citation for this incident by any officer. I respectfully ask that this citation be dismissed based on the evidence. Thank you for your consideration.\n\nSincerely,\n[YOUR NAME]",
-        "how_to_file": {
-          "where": "Contest online via the city's eContest portal at parkingtickets.chicago.gov or erequest.cityofchicago.org, or by mail or in person at a City of Chicago hearing facility.",
-          "method_tips": "The online eContest system lets you request a virtual, correspondence, or in-person hearing — select the option that lets you review and reference the camera footage; keep a confirmation number or screenshot of your submission.",
-          "deadline_note": "You have 21 days from the Notice of Violation date (07/18/2026) to file your contest — do not miss this window, as a default determination is harder and more limited to contest afterward."
+        "assessment": {
+          "verdict": "VERIFY_FIRST",
+          "reason": "Entering on yellow and being mid-intersection when the light turned red does not, by itself, contest what the camera measures — but it's worth checking whether an officer separately issued a paper citation for the same incident, which some cities treat as grounds for dismissal, before deciding to pay."
         },
-        "decision_math": {
-          "cost_of_paying": "Paying now costs $100 with no further action required.",
-          "cost_of_fighting": "Filing is free and takes roughly 15–30 minutes online, but you should budget time to review the video, attend or respond to a hearing, and understand that a loss leaves the $100 (or more if late fees accrue) still due.",
-          "bottom_line": "Chicago's recognized defenses for red-light camera violations are narrow — the only two are (1) a separate officer-issued traffic citation for the same incident, or (2) a stolen vehicle/plate — and your situation fits neither, so a hearing officer is very unlikely to dismiss on the 'entered on yellow' argument alone, no matter how credible it is; the honest recommendation here is to pay the $100."
-        },
-        "dont_say": [
-          "Do not say 'the yellow light was too short' or cite yellow-light timing as a defense — Chicago's camera program does not adjudicate signal timing at the hearing level, and raising it without an engineer's certified timing report will not help your case.",
-          "Do not say 'the photos show I was already in the intersection' as if that proves innocence — the violation is triggered by crossing the stop line after the signal turns red, and the city will argue the camera recorded exactly that moment.",
-          "Do not say 'this fine seems steep' or express that $100 is unfair — it is the standard penalty and hearing officers have no discretion to reduce it; saying so signals you are negotiating rather than contesting on legal grounds."
+        "what_may_matter": [],
+        "what_to_verify": [
+          "Whether a Chicago Police officer issued a separate, hand-written traffic citation for this same incident — if one exists, it may be grounds for dismissal under the city's own camera-violation rules.",
+          "What the two photographs and video actually show — specifically whether your vehicle had already crossed the stop line before or after the signal turned red, which is the fact the citation turns on."
         ],
-        "case_assessment": {
-          "verdict": "JUST PAY",
-          "fight_worthiness": 2,
-          "summary": "Your strongest factual point — that you entered on yellow and were mid-intersection when the light turned red — is legally irrelevant under Chicago's camera enforcement scheme, which triggers on the position of your vehicle at the moment of red, not your intent or entry timing. Chicago's own published defenses for red-light camera violations are narrowly limited to two grounds (duplicate traffic citation or stolen vehicle/plate), neither of which applies to your situation. Because your argument, while understandable, falls entirely outside the allowed defense framework, a hearing is very unlikely to succeed and you would be spending time to almost certainly lose."
-        },
-        "defense_angles": [
+        "evidence_to_get": [
           {
-            "angle": "Procedural: duplicate uniform traffic citation",
-            "strength": "weak",
-            "how_to_argue": "Chicago's rules allow dismissal if you were separately issued a hand-written uniform traffic citation by a live officer for this same incident at Western and Peterson on 07/18/2026 — check whether any officer was present and issued paper that night.",
-            "evidence_needed": "A copy of a uniform traffic citation issued by a CPD officer for the same incident at the same location and time."
-          }
-        ],
-        "evidence_checklist": [
-          {
-            "item": "Review the two photos and video available at parkingtickets.chicago.gov using the ticket number",
-            "why": "Confirm whether the camera actually captured your vehicle crossing the stop line after the light was already red, or only mid-intersection — this tells you honestly how strong Chicago's evidence against you is before you decide to spend time on a hearing.",
+            "item": "Review the two photos and video available online using the citation number",
+            "why": "Establishes, from the city's own evidence, whether your vehicle crossed the stop line before or after the light turned red — the fact the case turns on.",
             "urgency": "today"
           },
           {
             "item": "Check your records for any hand-written police citation from the night of 07/18/2026",
-            "why": "A duplicate uniform traffic citation is the only defense channel available to you under Chicago's red-light camera rules.",
-            "urgency": "today"
-          },
-          {
-            "item": "Note your 21-day contest deadline from the Notice of Violation date (ticket dated 07/18/2026, so deadline is approximately 08/08/2026)",
-            "why": "Missing this window causes a default determination, after which your only remedy is a narrow in-person petition to set aside with even more limited grounds.",
+            "why": "A duplicate citation for the same incident is a distinct, checkable fact that could change the answer entirely.",
             "urgency": "today"
           }
+        ],
+        "appeal_letter": null,
+        "how_to_file": {
+          "where": "Contest online via the city's eContest portal at parkingtickets.chicago.gov, or by mail or in person at a City of Chicago hearing facility.",
+          "method_tips": "The online system lets you request a virtual, correspondence, or in-person hearing.",
+          "deadline_note": "Citations of this kind typically state a response window from the Notice of Violation date — confirm the exact deadline printed on your notice before doing anything else."
+        },
+        "pay_or_contest": {
+          "recommendation": "VERIFY_FIRST",
+          "reasoning": "The argument you have — that you entered on yellow — addresses your own intent, not the fact the camera measures (where your vehicle was when the light turned red), so it's unlikely to change the outcome on its own. The one thing worth confirming before paying is whether a duplicate paper citation exists, since that's a distinct, checkable fact rather than an interpretation."
+        },
+        "dont_say": [
+          "Avoid leading with 'the yellow felt too short' — this describes your reaction to the signal timing, not a fact the citation or a hearing officer can act on."
         ]
       }
     },
@@ -310,16 +248,16 @@
         "question": "What if I just don't pay it?",
         "city": "Portland, Oregon",
         "ticketType": "parking",
-        "analysisContext": "Verdict: JUST PAY (fight_worthiness 1). User admittedly parked in a clearly-marked, unobstructed no-parking zone on SE Division for 5 minutes; $40 fine; own photo confirms the sign. Advice was to pay or send a no-contest fine-reduction letter.",
+        "analysisContext": "PROBABLY_PAY: User admittedly parked in a clearly-marked, unobstructed no-parking zone on SE Division for 5 minutes; $40 fine; own photo confirms the sign. No basis for an appeal was found.",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
         "userRegion": "US"
       },
       "output": {
-        "answer": "Not paying will not make the ticket go away. Portland sends unpaid parking tickets to collections, adds late fees that can double or triple the original amount, and can place a hold on your vehicle registration renewal with the Oregon DMV. For a $40 ticket you clearly owe, non-payment is the most expensive option available to you.",
-        "watch_out": "Oregon DMV registration holds are a real enforcement mechanism — you will not be able to renew your plates until the debt is resolved, and by then you may owe significantly more than the original $40 due to late penalties and collection fees.",
-        "next_step": "Pay the $40 now through the payment method listed on the ticket itself, or send the no-contest fine-reduction letter before the deadline printed on the ticket if you want to try trimming the amount first."
+        "answer": "Not paying will not make the ticket go away. Portland sends unpaid parking tickets to collections, adds late fees, and can place a hold on your vehicle registration renewal with the Oregon DMV. For a $40 ticket you've confirmed you owe, non-payment is the most expensive option available to you.",
+        "watch_out": "Oregon DMV registration holds are a real enforcement mechanism — you won't be able to renew your plates until the debt is resolved.",
+        "next_step": "Pay the $40 through the method listed on the ticket itself before the deadline printed on it."
       }
     }
   ]
