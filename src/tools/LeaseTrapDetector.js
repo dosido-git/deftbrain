@@ -624,7 +624,10 @@ const LeaseTrapDetector = ({ tool }) => {
               crawler versions identical. Native <details> keeps a long example
               out of the way without hiding it from users who want to inspect it.
               Sibling of the card above, still inside the outer space-y-5 wrapper
-              (closed below) — not after it, or the JSX has two root children. */}
+              (closed below) — not after it, or the JSX has two root children.
+              Deliberately styled OFF the tool's own card language (dashed
+              accent border + tinted fill, not c.card/c.border) so it never
+              reads as another interactive step in the form above it. */}
           {tool?.exampleOutput && (() => {
             const x = tool.exampleOutput;
             const toneClass = {
@@ -634,15 +637,15 @@ const LeaseTrapDetector = ({ tool }) => {
               neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
             };
             return (
-              <details className={`${c.card} border ${c.border} rounded-2xl shadow-sm overflow-hidden`}>
-                <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-zinc-700/40' : 'hover:bg-zinc-50'}`}>
+              <details className={`${isDark ? 'bg-cyan-950/20 border-cyan-800/50' : 'bg-cyan-50/60 border-cyan-200'} border-2 border-dashed rounded-2xl overflow-hidden`}>
+                <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-cyan-900/20' : 'hover:bg-cyan-100/40'}`}>
                   <div>
                     <p className={`text-base font-black ${c.text}`}>{x.title}</p>
                     <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
                   </div>
                   <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>
                 </summary>
-                <div className={`border-t ${c.border} p-5 space-y-4`}>
+                <div className={`border-t border-dashed ${isDark ? 'border-cyan-800/50' : 'border-cyan-200'} p-5 space-y-4`}>
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{x.sampleLabel}</p>
                     <blockquote className={`p-4 rounded-xl border-s-4 ${isDark ? 'bg-zinc-900/60 border-zinc-500 text-zinc-200' : 'bg-zinc-50 border-zinc-400 text-gray-800'} text-sm leading-relaxed`}>

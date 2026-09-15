@@ -1,3 +1,17 @@
+## 2026-09-16 — SEO example-output panel: moved to the bottom + distinct styling
+
+One of 3 tools (with LeaseTrapDetector, FakeReviewDetective) in a static-output
+SEO experiment (see `tools.js`'s `exampleOutput` field, `scripts/prerender.js`).
+The "See what Doctor Visit Prep gives you" `<details>` panel had been placed
+between the header card and the input form — ahead of everything interactive,
+interrupting the flow of actually using the tool. Moved to the bottom of the
+form (after the pre-result cross-ref, before the results block) and restyled
+off the app's card language to a dashed cyan border + tinted fill, matching
+the treatment applied to the other two tools. Position/logic of the form
+itself is unchanged — the demo panel doesn't hide once real results exist,
+same as before (this tool's form stays visible regardless of results, unlike
+LeaseTrapDetector's mode-swap layout).
+
 # DoctorVisitPrep — architecture & lock notes (`doctorvisitprep-v1`)
 
 Pre-visit complement to DoctorVisitTranslator (DVT decodes what the doctor said; this shapes what

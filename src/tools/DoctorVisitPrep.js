@@ -435,46 +435,6 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
       </div>
 
-      {/* Public product demonstration. Content is shared with the prerenderer via tools.js. */}
-      {tool?.exampleOutput && (() => {
-        const x = tool.exampleOutput;
-        const toneClass = {
-          red: isDark ? 'border-red-800/60 bg-red-900/15' : 'border-red-200 bg-red-50',
-          yellow: isDark ? 'border-amber-800/60 bg-amber-900/15' : 'border-amber-200 bg-amber-50',
-          green: isDark ? 'border-emerald-800/60 bg-emerald-900/15' : 'border-emerald-200 bg-emerald-50',
-          neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
-        };
-        return (
-          <details className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-            <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-zinc-700/40' : 'hover:bg-zinc-50'}`}>
-              <div>
-                <p className={`text-base font-black ${c.text}`}>{x.title}</p>
-                <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
-              </div>
-              <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>
-            </summary>
-            <div className={`border-t ${c.border} p-5 space-y-4`}>
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{x.sampleLabel}</p>
-                <blockquote className={`p-4 rounded-xl border-s-4 ${isDark ? 'bg-zinc-900/60 border-zinc-500 text-zinc-200' : 'bg-zinc-50 border-zinc-400 text-gray-800'} text-sm leading-relaxed`}>
-                  {x.sampleText}
-                </blockquote>
-                {x.context && <p className={`text-xs mt-2 ${c.textMuted}`}>{x.context}</p>}
-              </div>
-              {x.sections?.map((section, i) => (
-                <div key={i} className={`p-4 rounded-xl border ${toneClass[section.tone] || toneClass.neutral}`}>
-                  <p className={`text-sm font-black mb-1 ${c.text}`}>{section.label}</p>
-                  {section.text && <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{section.text}</p>}
-                  {section.items?.length > 0 && <ul className={`list-disc ps-5 space-y-1.5 text-sm ${c.textSecondary}`}>{section.items.map((item, j) => <li key={j}>{item}</li>)}</ul>}
-                </div>
-              ))}
-              {x.nextStep && <div><p className={`text-sm font-black mb-1 ${c.text}`}>{x.nextStepLabel}</p><p className={`text-sm leading-relaxed ${c.textSecondary}`}>{x.nextStep}</p></div>}
-              {x.disclaimer && <p className={`text-xs leading-relaxed ${c.textMuted}`}>{x.disclaimer}</p>}
-            </div>
-          </details>
-        );
-      })()}
-
       {/* INPUT CARD */}
       <div className={`${c.card} rounded-xl shadow-sm border ${c.border} p-6 space-y-5`}>
         {/* Disclaimer */}
@@ -692,6 +652,51 @@ const DoctorVisitPrep = ({ tool }) => {
           {t('dvp_xref_pre_suffix')}
         </p>
       </div>
+
+      {/* Public product demonstration. Content is shared with the prerenderer
+          via tools.js. Placed at the bottom of the form (after everything
+          interactive) so it never interrupts the flow of actually using the
+          tool, and styled OFF the tool's own card language (dashed accent
+          border + tinted fill, not c.card/c.border) so it never reads as
+          another interactive step. */}
+      {tool?.exampleOutput && (() => {
+        const x = tool.exampleOutput;
+        const toneClass = {
+          red: isDark ? 'border-red-800/60 bg-red-900/15' : 'border-red-200 bg-red-50',
+          yellow: isDark ? 'border-amber-800/60 bg-amber-900/15' : 'border-amber-200 bg-amber-50',
+          green: isDark ? 'border-emerald-800/60 bg-emerald-900/15' : 'border-emerald-200 bg-emerald-50',
+          neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
+        };
+        return (
+          <details className={`${isDark ? 'bg-cyan-950/20 border-cyan-800/50' : 'bg-cyan-50/60 border-cyan-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
+            <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-cyan-900/20' : 'hover:bg-cyan-100/40'}`}>
+              <div>
+                <p className={`text-base font-black ${c.text}`}>{x.title}</p>
+                <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
+              </div>
+              <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>
+            </summary>
+            <div className={`border-t border-dashed ${isDark ? 'border-cyan-800/50' : 'border-cyan-200'} p-5 space-y-4`}>
+              <div>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{x.sampleLabel}</p>
+                <blockquote className={`p-4 rounded-xl border-s-4 ${isDark ? 'bg-zinc-900/60 border-zinc-500 text-zinc-200' : 'bg-zinc-50 border-zinc-400 text-gray-800'} text-sm leading-relaxed`}>
+                  {x.sampleText}
+                </blockquote>
+                {x.context && <p className={`text-xs mt-2 ${c.textMuted}`}>{x.context}</p>}
+              </div>
+              {x.sections?.map((section, i) => (
+                <div key={i} className={`p-4 rounded-xl border ${toneClass[section.tone] || toneClass.neutral}`}>
+                  <p className={`text-sm font-black mb-1 ${c.text}`}>{section.label}</p>
+                  {section.text && <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{section.text}</p>}
+                  {section.items?.length > 0 && <ul className={`list-disc ps-5 space-y-1.5 text-sm ${c.textSecondary}`}>{section.items.map((item, j) => <li key={j}>{item}</li>)}</ul>}
+                </div>
+              ))}
+              {x.nextStep && <div><p className={`text-sm font-black mb-1 ${c.text}`}>{x.nextStepLabel}</p><p className={`text-sm leading-relaxed ${c.textSecondary}`}>{x.nextStep}</p></div>}
+              {x.disclaimer && <p className={`text-xs leading-relaxed ${c.textMuted}`}>{x.disclaimer}</p>}
+            </div>
+          </details>
+        );
+      })()}
 
       {/* ══════════ RESULTS ══════════ */}
       {results && (

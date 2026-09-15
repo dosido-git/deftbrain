@@ -1,3 +1,14 @@
+## 2026-09-16 — SEO example-output panel: moved to the bottom + distinct styling
+
+One of 3 tools (with LeaseTrapDetector, DoctorVisitPrep) in a static-output SEO
+experiment (see `tools.js`'s `exampleOutput` field, `scripts/prerender.js`).
+The "See what Fake Review Detective gives you" `<details>` panel sat right
+after the input form, ahead of the URL-import section and the error/confidence
+banners — interrupting the flow of actually using the tool. Moved to sit after
+URL extraction (the last interactive element) and before Instant Stats
+(results), and restyled off the app's card language to a dashed cyan border +
+tinted fill, matching the treatment applied to the other two tools.
+
 # FakeReviewDetective — architecture & lock notes (`fakereviewdetective-v1`)
 
 Paste (or URL-extract) product reviews → per-review authenticity scoring, cross-review pattern

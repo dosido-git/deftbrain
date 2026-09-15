@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "f60e9c4db0f9c3b8b623b0125acaa1cb2565d73a",
+  "hash": "6a11f74979ae5b679de3e45db7c0c69499a9b888",
   "lastmod": "2026-09-15"
  },
  "static:about": {
@@ -56,7 +56,7 @@
   "lastmod": "2026-08-23"
  },
  "tool:DoctorVisitPrep": {
-  "hash": "723e9691aac156f2bdfc01ebc2d658bbcd07a004",
+  "hash": "d054a73ceb4acdfd9858cc34e122e138cfca4d93",
   "lastmod": "2026-09-15"
  },
  "tool:DoctorVisitTranslator": {
@@ -64,7 +64,7 @@
   "lastmod": "2026-08-23"
  },
  "tool:FakeReviewDetective": {
-  "hash": "e3648a6f4cfb9d7825f7b201671fda6ad3d0aefc",
+  "hash": "843bcd6e3cb74faa1cddbd72c62f00e8cd2103ae",
   "lastmod": "2026-09-15"
  },
  "tool:FinalWish": {
@@ -84,7 +84,7 @@
   "lastmod": "2026-08-23"
  },
  "tool:LeaseTrapDetector": {
-  "hash": "5e94f8355693c84cc8a08d504219eb657a99b0c0",
+  "hash": "43c6cc8ea26071f839d00e1be00dfc151969773a",
   "lastmod": "2026-09-15"
  },
  "tool:MarkupDetective": {

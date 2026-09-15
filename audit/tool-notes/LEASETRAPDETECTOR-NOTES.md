@@ -1,3 +1,16 @@
+## 2026-09-16 — SEO example-output panel: distinct styling, no position change needed
+
+One of 3 tools (with DoctorVisitPrep, FakeReviewDetective) in a static-output SEO
+experiment (see `tools.js`'s `exampleOutput` field, `scripts/prerender.js`). The
+"See what X gives you" `<details>` panel was already at the bottom of the
+pre-results form here, but shared the same `c.card`/`c.border` styling as every
+other card — indistinguishable from a real interactive step. Owner feedback:
+needed clear visual separation, since it's public demo content, not part of the
+tool's own flow. Restyled to a dashed cyan border + tinted fill
+(`bg-cyan-950/20 border-cyan-800/50` dark / `bg-cyan-50/60 border-cyan-200`
+light) instead of the app's card language — same treatment applied to
+DoctorVisitPrep and FakeReviewDetective for consistency across the experiment.
+
 # LeaseTrapDetector — architecture & lock notes (v1, 2026-07-01)
 
 Lease analysis: flags illegal/exploitative clauses, hidden fees, missing protections; money + legal-adjacent. In `LOCALIZED_TOOLS`.
