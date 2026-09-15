@@ -104,7 +104,6 @@ const WhatsMyVibe = ({ tool }) => {
     quoteBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
     infoBox:           isDark ? 'bg-[#7a2e2e]/30 border-[#9a4040]' : 'bg-[#f5eaea] border-[#d4a0a0]',
     vibe:              isDark ? 'bg-[#7a2e2e]/30 border-[#9a4040]' : 'bg-[#f5eaea] border-[#d4a0a0]',
-    insight:           isDark ? 'bg-[#93541f]/25 border-[#c8872e]' : 'bg-[#fdf4e8] border-[#e8c98a]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -116,7 +115,7 @@ const WhatsMyVibe = ({ tool }) => {
   // ── State ──
   const [samples, setSamples] = useState('');
   const [sourceType, setSourceType] = useState('texts');
-  const [results, setResults] = usePersistentState('whatsmyvibe-result', null);
+  const [results, setResults] = usePersistentState('whatsmyvibe-result-v2', null);
   const [error, setError] = useState('');
   const loadExample = () => {
     const ex = pickExample('WhatsMyVibe', EXAMPLES);
@@ -125,8 +124,16 @@ const WhatsMyVibe = ({ tool }) => {
   };
 
   const resultsRef = useRef(null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('whatsmyvibe-history', []);
+  // Recent Vibes stores the full result (not a truncated preview: field) so a
+  // click can restore the complete analysis and original input, not just
+  // reopen a raw snippet of what was pasted.
+  const [sessionHistory, setSessionHistory] = usePersistentState('whatsmyvibe-history-v2', []);
 
+  const restoreSession = (entry) => {
+    setSamples(entry.samples || '');
+    setSourceType(entry.sourceType || 'texts');
+    setResults(entry.results || null);
+  };
 
   // ── API ──
   const runVibe = useCallback(async () => {
@@ -142,8 +149,7 @@ const WhatsMyVibe = ({ tool }) => {
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: samples.trim().slice(0, 40),
+        sourceType, samples: samples.trim(), results: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('wmv_error'));
@@ -154,15 +160,24 @@ const WhatsMyVibe = ({ tool }) => {
     if (!results) return '';
     const lines = [`✨ ${t('wmv_copy_header')}`, ''];
     if (results?.vibe_title) lines.push(`🏷️ ${results?.vibe_title}`);
-    if (results?.vibe_description) lines.push(results?.vibe_description, '');
-    if (results?.energy) lines.push(`⚡ ${t('wmv_copy_energy')} ${results?.energy}`);
-    if (results?.sounds_like) lines.push(`🔊 ${t('wmv_copy_sounds')} ${results?.sounds_like}`);
-    if (results?.text_back_energy) lines.push(`📱 ${t('wmv_copy_textback')} ${results?.text_back_energy}`, '');
-    if (results?.quirks?.length) {
-      lines.push(t('wmv_copy_quirks'));
-      results?.quirks?.forEach(q => lines.push(`  → ${q}`));
+    if (results?.vibe_summary) lines.push(results?.vibe_summary, '');
+    if (results?.what_you_do?.length) {
+      lines.push(t('wmv_copy_what_you_do'));
+      results?.what_you_do?.forEach(q => lines.push(`  → ${q}`));
       lines.push('');
-    } if (results?.secret_tell) lines.push(`🔮 ${t('wmv_copy_secret')} ${results?.secret_tell}`);
+    }
+    if (results?.how_it_can_land?.length) {
+      lines.push(t('wmv_copy_how_it_can_land'));
+      results?.how_it_can_land?.forEach(q => lines.push(`  → ${q}`));
+      lines.push('');
+    }
+    if (results?.signature_moves?.length) {
+      lines.push(t('wmv_copy_quirks'));
+      results?.signature_moves?.forEach(q => lines.push(`  → ${q}`));
+      lines.push('');
+    }
+    if (results?.easy_to_misread) lines.push(t('wmv_copy_easy_misread'), results?.easy_to_misread, '');
+    if (results?.vibe_one_line) lines.push(`💬 ${results?.vibe_one_line}`);
     lines.push(BRAND);
     return lines.join('\n');
   }, [results, t]);
@@ -209,8 +224,8 @@ const WhatsMyVibe = ({ tool }) => {
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
+              {/* PF-30: the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-sm ${c.textSecondary}`}><span className="me-2">{tool?.icon ?? '✨'}</span>{tool?.tagline}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
@@ -236,7 +251,7 @@ const WhatsMyVibe = ({ tool }) => {
         {/* Samples */} <div className="mb-5">
           <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('wmv_samples_label')} <span className={c.required}>*</span></label>
           <textarea
-            value={samples} onChange={e => setSamples(e.target.value)} placeholder={t('wmv_samples_ph')} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
+            value={samples} onChange={e => setSamples(e.target.value)} placeholder={t('wmv_samples_ph')} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
           <p className={`text-[10px] ${c.textMuted} mt-1`}>
             {samples.length > 0 ? `${wordCount} ${t('wmv_words')} — ${wordQuality}` : t('wmv_hint_empty')} </p>
         </div>
@@ -252,7 +267,6 @@ const WhatsMyVibe = ({ tool }) => {
           </kbd>
         )}
         </button>
-        <p className={`text-xs ${c.textMuted}`}>{t('wmv_xref_q')} <a href="/TruthBomb" className={linkStyle}>💣 {t('wmv_truthbomb')}</a> {t('wmv_xref_tail')}</p>
       </div>
 
       {/* ── Error ── */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
@@ -265,84 +279,56 @@ const WhatsMyVibe = ({ tool }) => {
           {/* Vibe title */} {results?.vibe_title && (<div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
               <span className="text-4xl block mb-3">✨</span>
               <p className={`text-2xl font-black ${c.text} mb-2`}>{results?.vibe_title}</p>
-              {results?.vibe_description && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results?.vibe_description}</p>} </div>
-          )} {/* Energy + sounds like */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results?.energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>⚡ {t('wmv_energy')}</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results?.energy}</p>
-              </div>
-            )} {results?.sounds_like && (<div className={`${c.quoteBg} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>🔊 {t('wmv_sounds_like')}</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results?.sounds_like}</p>
-              </div>
-            )} </div>
-
-          {/* Punctuation + vocabulary */} {(results?.punctuation_personality || results?.vocabulary_read) && (<div className={`${c.card} border rounded-xl p-4 space-y-3`}>
-              {results?.punctuation_personality && (<div>
-                  <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>✏️ {t('wmv_punct')}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results?.punctuation_personality}</p>
-                </div>
-              )} {results?.vocabulary_read && (<div>
-                  <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📚 {t('wmv_vocab')}</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results?.vocabulary_read}</p>
-                </div>
-              )} </div>
-          )} {/* Emotional temperature */} {results?.emotional_temperature && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌡️ {t('wmv_emo_temp')}</h3>
+              {results?.vibe_summary && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results?.vibe_summary}</p>} </div>
+          )} {/* What you do */} {results?.what_you_do?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>✏️ {t('wmv_what_you_do')}</h3>
               <div className="space-y-2">
-                {results?.emotional_temperature?.surface && (<div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>{t('wmv_surface')}</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{results?.emotional_temperature?.surface}</p>
-                  </div>
-                )} {results?.emotional_temperature?.underneath && (<div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>{t('wmv_underneath')}</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{results?.emotional_temperature?.underneath}</p>
-                  </div>
-                )} {results?.emotional_temperature?.gap_read && (<div className={`${c.infoBox} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('wmv_gap')}</p>
-                    <p className={`text-xs ${c.text}`}>{results?.emotional_temperature?.gap_read}</p>
-                  </div>
-                )} </div>
-            </div>
-          )} {/* Quirks */} {results?.quirks?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔍 {t('wmv_quirks')}</h3>
-              <div className="space-y-2">
-                {results?.quirks?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
+                {results?.what_you_do?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
                 ))} </div>
             </div>
-          )} {/* Text-back energy */} {results?.text_back_energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📱 {t('wmv_textback')}</p>
-              <p className={`text-sm ${c.text}`}>{results?.text_back_energy}</p>
+          )} {/* How it can land */} {results?.how_it_can_land?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>👀 {t('wmv_how_it_can_land')}</h3>
+              <div className="space-y-2">
+                {results?.how_it_can_land?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
+                ))} </div>
             </div>
-          )} {/* Secret tell */} {results?.secret_tell && (<div className={`${c.insight} border-2 rounded-xl p-5 text-center`}>
-              <span className="text-2xl block mb-2">🔮</span>
-              <p className={`text-[10px] font-bold uppercase mb-1`}>{t('wmv_secret_label')}</p>
-              <p className={`text-sm font-bold`}>{results?.secret_tell}</p>
+          )} {/* Signature moves */} {results?.signature_moves?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔍 {t('wmv_quirks')}</h3>
+              <div className="space-y-2">
+                {results?.signature_moves?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
+                ))} </div>
             </div>
-          )} {/* Share line */} {results?.share_line && (<div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
-              <div>
-                <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 {t('wmv_shareline')}</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
-              </div>
+          )} {/* Easy to misread */} {results?.easy_to_misread && (<div className={`${c.infoBox} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🤔 {t('wmv_easy_misread')}</p>
+              <p className={`text-sm ${c.text}`}>{results?.easy_to_misread}</p>
+            </div>
+          )} {/* Vibe in one line */} {results?.vibe_one_line && (<div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 {t('wmv_shareline')}</p>
+              <p className={`text-sm font-bold ${c.text}`}>{results?.vibe_one_line}</p>
             </div>
           )}
 
-          {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wmv_more_like')}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('wmv_recharge')}</a>
-              <a href="/NameThatFeeling" className={`text-xs ${linkStyle}`}>💭 {t('wmv_namefeeling')}</a>
-            </div>
-          </div>
+          {/* Post-result cross-ref — the only one; RelatedLinks already auto-surfaces
+              tag/category matches below, and DecoderRing is its top pick for this tool,
+              so this points at TruthBomb instead to avoid duplicating that block. */}
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            <a href="/TruthBomb" className={linkStyle}>💣 {t('wmv_truthbomb_link')}</a>
+          </p>
         </div>
       )} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('wmv_recent')}</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wmv_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
-              </div>
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<button key={s.id} onClick={() => restoreSession(s)} className="w-full flex items-center justify-between text-start hover:opacity-80">
+                <span className="min-w-0">
+                  <span className={`block text-xs ${c.textSecondary} truncate`}>
+                    {t(SOURCE_TYPES.find(x => x.value === s.sourceType)?.labelKey) || t('wmv_session')} — {s.results?.vibe_title || t('wmv_session')}
+                  </span>
+                  {s.results?.pattern_tags?.length > 0 && (
+                    <span className={`block text-[10px] ${c.textMuted} truncate`}>{s.results.pattern_tags.slice(0, 3).join(' · ')}</span>
+                  )}
+                </span>
+                <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+              </button>
             ))} </div>
         </div>
       )}

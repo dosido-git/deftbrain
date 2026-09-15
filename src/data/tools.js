@@ -1832,43 +1832,48 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "WhatsMyVibe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Before a job application, a dating profile, or a message that matters.",
     give: "A sample of your real writing — texts, emails, posts. Variety helps.",
-    get: "How you actually land, your verbal habits, and where intent and impression diverge.",
+    get: "The writing patterns actually visible in your sample, and how they might land on a reader.",
     edge: "It reads what you wrote, not what you meant. Nobody can see their own tone.",
   },
-  seoDescription: "Find out what you actually sound like. Paste your texts, emails, or tweets and see your tone, personality, and verbal habits — how you really come across.",
-  seoTitle: "Tone & Writing Vibe Checker",
+  // 2026-09-14: rewrite. The tool analyzes writing, not the writer — removed
+  // Energy, Sounds Like, Emotional Temperature, and the Secret Tell, all of
+  // which turned a small writing sample into unsupported claims about the
+  // writer's inner life. Punctuation Personality and Vocabulary Read (the
+  // strongest existing material) became What You Do and Your Signature Moves.
+  seoDescription: "Paste your texts, emails, or messages and see the patterns in your writing — your tone, habits, and the ways it might land on a reader. Free.",
+  seoTitle: "Tone & Writing Pattern Checker",
   title: "What's My Vibe",
-  tagline: "Find out what you actually sound like.",
+  tagline: "See the patterns hiding in the way you write.",
   tags: ['vibe', 'tone', 'personality', 'writing', 'analysis', 'text', 'fun'],
   icon: "✨",
   categories: ['Me'],
   headerColor: "#e0b8b8",
-  description: "Paste your texts, emails, tweets, or messages. AI analyzes your personality and communication style — how you come across, your default tone, your verbal habits, and what people probably think when they read your messages.",
+  description: "How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.",
   guide: {
-    overview: "What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and tells you what you sound like to other people. Not what you intend, but how you land. It picks up on tone patterns, verbal habits, energy levels, and personality signals you probably don't notice yourself.",
+    overview: "What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and points out the patterns actually visible in it: sentence length, punctuation, hedging, humor, directness, and structure. It's built to stay grounded in what's on the page, not to diagnose why you write that way — a small sample is a sample, not your permanent voice.",
     howToUse: [
       "Paste some of your writing — texts, emails, tweets, DMs, whatever feels like 'you'",
       "The more variety, the better the read (mix of casual and professional helps)",
-      "Read the personality and tone analysis",
+      "Read What You Do, How It Can Land, and Your Signature Moves",
       "Share it with friends and see if they agree",
-      "Try pasting writing from different contexts to see how your vibe shifts"
+      "Try pasting writing from different contexts to see how the patterns shift"
     ],
     example: {
       scenario: "You're curious how you come across in your work Slack messages.",
       action: "Paste a handful of recent Slack messages.",
-      result: "AI reveals your communication vibe: maybe you're 'The Warm Deflector' — friendly and encouraging on the surface but rarely commit to a strong opinion. Your verbal habits include softening every statement with 'I think' and ending with questions."
+      result: "AI names the pattern — maybe 'The Polite Bullet Train' — and grounds it in what's actually there: short asks, frequent qualifiers like 'just wondering', and rapid follow-up messages. How It Can Land notes this can read as considerate, or as unsure of your own ask."
     },
     tips: [
       "Paste at least a few messages for a meaningful read — one text isn't enough",
-      "Mixing casual and professional writing reveals how much your vibe shifts by context",
-      "The verbal habits section is often the most eye-opening part",
+      "Mixing casual and professional writing reveals how much the patterns shift by context",
+      "Your Signature Moves is often the most eye-opening part",
       "This is a fun one to do side-by-side with a friend"
     ]
   }

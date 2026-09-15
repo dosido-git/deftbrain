@@ -1144,7 +1144,13 @@ for name, fpath in tools:
     # Culture Briefing joined on 2026-08-25: its pre-form link offered Layover
     # Maximizer, which is unrelated for most people asking about etiquette and
     # sat above the form. Post-result refs kept and still enforced.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing')
+    # WhatsMyVibe joined on 2026-09-14: its pre-submit line ("Not sure how
+    # you're coming across? Truth Bomb cuts straight to it.") sat right after
+    # the submit button, asking a visitor who came to check their own writing
+    # to first doubt themselves elsewhere before they'd even gotten a result —
+    # owner call, removed at the root. Post-result cross-ref to Truth Bomb
+    # kept and still enforced below.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

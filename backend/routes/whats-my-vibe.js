@@ -4,81 +4,109 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Brutally perceptive communication analyst — linguist's eye, sharp friend's delivery. Read between every line, notice every verbal tic.
+const PERSONALITY = `You are What's My Vibe. Analyze patterns that are actually visible in the user's writing samples and help the user see how their writing may come across to a reader.
 
-RULES: Be specific — reference actual patterns, not generic observations. Entertaining but honest. "Sounds like" comparisons should be vivid archetypes, not celebrities. Quirks = things they don't realize they do. The secret tell must be genuinely insightful. Adjust for source type (texts = casual, emails = performed).`;
+You are analyzing writing, not diagnosing the writer.
+
+Distinguish carefully between:
+- OBSERVATION — directly visible in the samples: sentence length, punctuation, capitalization, vocabulary, repetition, hedging, intensifiers, humor, questions, apologies, qualifiers, directness, formality, structure, emojis, etc.
+- PLAUSIBLE IMPRESSION — how those observable choices might make the writing feel to a reader.
+- INNER STATE OR PERSONALITY — motives, anxiety, insecurity, attachment, hidden feelings, psychological needs, character traits, coping mechanisms, or what the writer "really" feels. Do not infer these.
+
+Never turn a writing pattern into a psychological explanation.
+- "Uses humor when delivering bad news" is supported if visible.
+- "Uses humor to manage anxiety and keep people from feeling burdened" is not.
+- "Frequently apologizes before inconveniencing someone" may be supported.
+- "Constantly manages everyone else's feelings" is not.
+
+SAMPLE LIMIT: Treat the supplied writing as a sample, not the user's permanent voice. Do not convert repeated behavior in a small sample into "always," "constantly," "your default," or a stable personality trait.
+
+CONTEXT MATTERS: Text messages, work chat, dating profiles, email, and social posts may reflect different voices. Use the selected source when interpreting patterns. Do not generalize from one context to the user's communication everywhere.
+
+NO MIND READING: Never state what readers actually think or feel. Say what wording may, can, or is likely to convey when the evidence is strong enough.
+
+NO PRAISE GENERATOR: Do not automatically turn every pattern into a flattering character portrait. Interesting, awkward, contradictory, neutral, and potentially misread patterns are all valid findings.
+
+GROUND EVERY FINDING: Every substantive observation must be traceable to something present in the supplied samples. Use very short examples when useful.
+
+Be perceptive and playful, but epistemically modest. The pleasure of the tool should come from the user thinking "I really do write like that," not "Wow, AI knows my secret personality."
+
+Do not include hidden psychology, personality diagnosis, emotional subtext, or unsupported explanations of why the writer communicates this way.
+
+When a finding quotes exact wording from the sample, wrap the quoted phrase in single quotes ('like this'), never a double-quote character — a double-quote inside a JSON string value breaks the response.`;
 
 router.post('/whats-my-vibe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { samples, sourceType, userLanguage } = req.body;
 
     if (!samples?.trim()) {
-      return res.status(400).json({ error: 'Paste some text so I can read your vibe!' });
+      return res.status(400).json({ error: 'Paste some writing so I can find the patterns.' });
     }
 
     const sourceMap = {
-      texts: 'casual text messages — their most unfiltered voice',
-      emails: 'emails — slightly more performed but still revealing',
-      social: 'social media posts — their public persona',
-      dating: 'dating profile — their aspirational self-presentation',
-      'work-slack': 'work chat / Slack — their professional persona',
-      other: 'other writing — analyze the voice as-is',
+      texts: 'casual text messages',
+      emails: 'emails',
+      social: 'social media posts',
+      dating: 'a dating profile',
+      'work-slack': 'work chat / Slack',
+      other: 'other writing',
     };
 
-    const userPrompt = `WHAT'S MY VIBE — COMMUNICATION ANALYSIS
+    const userPrompt = `FIND THE PATTERNS IN THIS WRITING
 
-SOURCE TYPE: ${sourceMap[sourceType] || sourceMap.other}
+SOURCE: ${sourceMap[sourceType] || sourceMap.other}
 
-THEIR WRITING:
+THE WRITING:
 """
 ${samples.trim()}
 """
 
-Analyze this person's communication style, personality, and vibe based on their actual writing. Be specific, entertaining, and honest.
+Find the writing patterns actually visible in this sample and how they might land on a reader. Ground every claim in something present in the text above. Do not explain why the writer communicates this way.
 
 Return ONLY valid JSON:
-
 {
-  "vibe_title": "A punchy 2-5 word vibe title (like a character archetype: 'The Warm Deflector', 'Chaotic Good Encourager', 'Professional With a Side of Unhinged')",
-  "vibe_description": "2-3 sentence description of their overall communication personality. Reference specific patterns you noticed.",
-  "energy": "One vivid sentence describing their energy level and type (e.g., 'Golden retriever energy but make it intellectual')",
-  "sounds_like": "Who/what they sound like — a vivid comparison. Not a celebrity, more of an archetype or scenario (e.g., 'The friend who gives advice while also spiraling')",
-  "punctuation_personality": "What their punctuation habits reveal. Be specific — do they overuse ellipses? Never use periods? Exclamation marks on everything? What does it mean?",
-  "vocabulary_read": "What their word choices reveal about them. Formal vs casual, filler words, pet phrases, emotional vocabulary range.",
-  "emotional_temperature": {
-    "surface": "How they come across on first read — the vibe they're projecting",
-    "underneath": "What's actually going on beneath the surface — the emotion they're managing",
-    "gap_read": "The gap between surface and underneath — what this tells you about them"
-  },
-  "quirks": [
-    "Specific verbal habit or pattern #1 — something they probably don't realize they do",
-    "Specific verbal habit or pattern #2",
-    "Specific verbal habit or pattern #3"
+  "vibe_title": "A memorable, playful 2-5 word name for the WRITING STYLE, not the person — describes the writing, e.g. 'The Deadpan Side-Quest'",
+  "vibe_summary": "1-2 sentences summarizing the strongest observable pattern in this sample",
+  "what_you_do": [
+    "3-5 specific writing habits actually visible in the sample. Each should reference or quote something in the text. Quoted phrases use single quotes, never a double-quote character."
   ],
-  "text_back_energy": "What it feels like to receive a message from this person — the experience of being on the other end",
-  "secret_tell": "The one thing their writing reveals that they probably don't know they're broadcasting. The insight that makes someone go 'wait, how did you know that?'",
-  "share_line": "A single punchy sentence that captures their entire vibe — something they'd screenshot and send to friends"
+  "how_it_can_land": [
+    "2-4 plausible reader impressions created by those writing choices. Phrase these as possibilities ('can come across as', 'may read as'), never as fact about what a reader actually thinks."
+  ],
+  "signature_moves": [
+    "2-4 distinctive verbal, punctuation, structural, or humor patterns visible in the sample. Short phrases or exact quoted wording work well. Quoted phrases use single quotes, never a double-quote character."
+  ],
+  "pattern_tags": [
+    "2-4 very short (1-3 word) labels naming the patterns above, for a compact summary line — e.g. 'dry exaggeration', 'topic hopping', 'personification'"
+  ],
+  "easy_to_misread": "One genuine ambiguity where the writer may intend something one way but it could plausibly read another way, grounded in the sample. If nothing in the sample supports a real ambiguity, say that honestly instead of inventing one.",
+  "vibe_one_line": "One concise, playful description of the writing style, grounded in the analysis above"
 }
 
-RULES:
-1. EXACTLY 3 items in quirks.
-2. Keep every field to one tight sentence (vibe_description and quirks may be up to 2-3).
-3. Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly with no inner quote marks, or it breaks the JSON.`;
+FINAL CHECK:
+- Is every claim traceable to something actually in the sample?
+- Did you avoid explaining WHY the person writes this way (anxiety, insecurity, motive, attachment)?
+- Are how_it_can_land impressions phrased as possibilities, not facts about what a reader thinks?
+- Did you avoid turning this one sample into "always" or "your default"?
+- Is vibe_title a name for the WRITING, not a verdict on the writer's personality?
+- Did you check easy_to_misread honestly rather than inventing an ambiguity that isn't there?
+- Did every quoted phrase use single quotes instead of double quotes, so the JSON stays valid?`;
 
     const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'whats-my-vibe' });
-    if (!parsed.vibe_description) {
-      return res.status(500).json({ error: 'Could not read your vibe. Please try again.' });
-    }
-    res.json(parsed);
 
+    if (!parsed.vibe_title || !Array.isArray(parsed.what_you_do) || !parsed.what_you_do.length || !parsed.vibe_one_line) {
+      return res.status(500).json({ error: 'Could not read the patterns in your writing. Please try again.' });
+    }
+
+    res.json(parsed);
   } catch (error) {
     console.error('WhatsMyVibe error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
