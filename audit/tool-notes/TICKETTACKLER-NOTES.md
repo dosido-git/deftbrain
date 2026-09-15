@@ -1,4 +1,103 @@
-# TicketTackler — lock notes (ticket-tackler-v3, 2026-09-15 second rewrite)
+# TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
+
+## 2026-09-16 — real web_search on the main call, and a bug fix: appeals were being written before the defense was established
+
+Two owner-supplied prompt blocks (WEB RESEARCH, APPEAL GATE) plus an explicit
+"add web search" ask. Prompted by a real observed bug: the model correctly
+said in `assessment.reason` that it hadn't established whether the facts
+constituted a recognized defense, then wrote a **complete appeal letter
+anyway** — including an invented "administrative review" and an invented
+alternative "hearing" the citation never mentioned. That's the exact failure
+APPEAL GATE exists to close.
+
+**Architecture change — not just a prompt addition.** Retired the separate
+`groundAppealFacts()` pre-pass entirely (a `lib/groundedFacts.js`-based,
+city+type-cached call that fed a canned "VERIFIED RULES" block — deadline/
+filing/stages/grounds/fee/enforcement_hours — into an otherwise-ungrounded
+main call). Replaced it with native `web_search` tool access directly on the
+**main** call: `tools: [{ type: 'web_search_20250305', name: 'web_search' }]`,
+`max_tokens` raised 4000→6000. This is not a new pattern for this codebase —
+`backend/routes/safe-walk.js` already does exactly this (search + one JSON
+schema, one call, model self-reports `source`/`source_url` as plain fields) —
+but it IS a reversal of the reasoning I wrote into `groundAppealFacts()`'s own
+comment during the v3 round, which cited `lib/groundedFacts.js`'s documented
+history of avoiding search-in-a-long-generation because "a single
+search+long generation held the connection open past the API limit." SafeWalk
+proves that constraint isn't universal — it's specific to `groundedFacts.js`'s
+own tuning (uncapped `max_uses`, large `max_tokens`, and a shared cache layer
+that made a bounded await pointless once measured). Ticket Tackler's schema is
+comparable in size to SafeWalk's; measured across three live calls this
+session: 40s, 60s, 89s, all HTTP 200, none truncated. The real win: a fixed
+6-topic query structurally cannot find "is this specific camera a park-zone
+or school-zone camera" or "does this exact StVO sub-clause require the permit
+to be readable through the windshield without aids" — both of which the live
+per-citation search found this session (see golden cases below) and neither
+of which a city+type cache could ever have served.
+
+**No more cache — this is a deliberate, permanent tradeoff.** The old
+pre-pass was cacheable (city+type) because it asked a generic question good
+for 14 days. The new research is citation-specific (a specific address, a
+specific described sign, a specific described interaction) and therefore
+NOT cacheable the same way — every request researches fresh. This means
+latency is now consistently 40-90s instead of near-instant-on-cache-hit, and
+it means **golden-case output will never reproduce verbatim on re-run** —
+real city pages, portals, and even underlying enforcement facts drift over
+time. `check:golden` only asserts structural shape for exactly this reason;
+this was always true in principle but is now the tool's normal operating
+mode rather than an edge case.
+
+**Schema change: `what_to_verify` went from an array of strings to an array
+of objects** `{item, status, detail, source}`, where `status` is
+`VERIFIED | NOT_VERIFIED | USER_MUST_CHECK` (new 3-way code enum) and `source`
+is non-null only when `status` is `VERIFIED`. The frontend's section title
+now switches dynamically — `❓ What to verify` when nothing has been verified
+yet, `✓ What I verified` the moment any item reaches `VERIFIED` — computed
+client-side from the array contents, no new boolean field needed. New
+`statusMeta()` helper mirrors the existing `verdictMeta`/`sourceMeta`/
+`urgencyMeta` pattern.
+
+**APPEAL GATE — the actual bug fix.** `appeal_conditional_on` (v3's
+"draft it anyway but mark what's unverified" field) is **gone**, replaced by
+a strict either/or: `appeal_letter` (a clean, ready draft) XOR `before_appeal`
+(a new nullable field explaining what fact/rule must be established first).
+The old design let a letter exist in a hedge state; the new design forces the
+model to a binary choice — write a defensible letter, or don't write one yet
+and say why. Verified live, both branches, same session:
+- **Gate opens**: the Seattle case found SMC 11.16.280 (posted-sign-hours
+  control enforcement) — `appeal_letter` populated, `before_appeal: null`.
+- **Gate blocks**: the Chicago case found real park-zone-camera facts that
+  *undermined* the user's own theory, leaving one specific fact
+  (McKinley Park's exact Sunday opening time) unresolved — `appeal_letter:
+  null`, `before_appeal` names exactly that fact.
+- **Both null together** is correct only for a genuinely hopeless case with
+  no plausible story at all (fire-hydrant case) — not a "maybe, but weakly"
+  middle state; that middle state is what `before_appeal` is for.
+
+The prompt also explicitly bans inventing "the name of a review process,
+hearing type, requested remedy, agency, filing channel, or procedural step"
+— directly targeting the observed bug's invented "administrative review"/
+"hearing" — and `appeal_letter`'s own schema description repeats the ban with
+a fallback: generic neutral relief language ("respectfully request that this
+citation be dismissed or reviewed") when the specific process isn't
+established, rather than inventing one.
+
+**Frontend**: `🧩 Before we write the appeal` section renders in the exact
+slot the appeal letter would have occupied (mutually exclusive render, not a
+banner on top of a letter as v3's `appeal_conditional_on` was). Caught by
+`diff-audit.py` before shipping: ⏳ is a banned hardcoded-icon pattern
+(reserved for animate-spin loading states) — swapped for 🧩.
+
+**i18n**: 13 languages, scripted patch (5 new keys, 1 removed
+`tt_appeal_conditional`) — verified no duplicate-key collisions across all 13
+blocks this time (the ES/PT `tt_letter_copy` anchor collision from the v3
+round was a lesson learned, checked for explicitly this round and found
+clean).
+
+**Golden sample fully re-captured live**, not adapted — given the new
+per-citation research, adapting old fixture text would have been guessing at
+what real search would find. All 4 main-endpoint cases are verbatim
+responses from this session's own verification calls, including one case per
+APPEAL GATE branch.
 
 ## 2026-09-15 (round 2) — owner-supplied full prompt replacement: 5-way verdict, structured pay/contest
 

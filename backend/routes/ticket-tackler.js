@@ -8,7 +8,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { stripCites } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted ticket text, signage wording, or things-to-say must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -17,30 +17,20 @@ const TYPE_LABELS = {
   camera:  'automated camera ticket (red-light or speed camera)',
 };
 
-// Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache):
-// appeal deadlines and filing procedures are hyper-local and volatile — the
-// textbook invented-procedure risk. Verified or generic, never invented.
-// This is the "VERIFIED RULES" evidence category the main prompt below
-// distinguishes from the citation, the user's account, and their evidence.
-async function groundAppealFacts({ city, ticketType }) {
-  return groundedFacts({
-    cacheKey: `ticket-appeal:${normalizeKeyPart(city)}:${normalizeKeyPart(ticketType)}`,
-    label: 'ticket-tackler-facts',
-    userPrompt: `Verify with web_search, as of today, how a ${TYPE_LABELS[ticketType] || 'parking ticket'} is contested in: ${city}.
-
-Cover what you can verify from an official or clearly authoritative source: (1) the official appeal/contest deadline, (2) the official filing method(s) (portal name/URL, mail address, or in-person — only if verifiable on an official government source), (3) the stages of review available (e.g. initial review, hearing, appeal), (4) any grounds for dismissal the authority itself lists, (5) any filing fee the authority itself states (or that filing is free), (6) any general enforcement-hours pattern the authority publishes for this ticket type (e.g. published camera-program operating windows or standard signage-hour conventions) — NOT a specific citation's own sign or camera, which cannot be verified this way. Skip anything you cannot verify from an official or clearly authoritative source.
-
-Return ONLY valid JSON:
-{ "jurisdiction": "City/authority these rules apply to", "verified": [{ "topic": "deadline | filing | stages | grounds | fee | enforcement_hours", "rule": "The current rule in one sentence", "source": "Domain of the official source verified against" }] }`,
-    render: (cleanFacts) => {
-      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-        return `\n\nVERIFIED RULES (web-checked today for ${cleanFacts.jurisdiction || city}) — these facts OVERRIDE your training knowledge; use them verbatim, and name the source domain when you rely on one:\n` +
-          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (source: ${f.source})`).join('\n');
-      }
-      return '';
-    },
-  });
-}
+// 2026-09-16: retired the separate groundAppealFacts() pre-pass (a fixed
+// city+type-keyed web_search call feeding a generic "VERIFIED RULES" block
+// into an otherwise-ungrounded main call) in favor of giving the MAIN call
+// live `web_search` tool access directly — see the WEB RESEARCH section of
+// SYSTEM_PROMPT below, which lets the model decide per-citation what's
+// actually worth researching (a specific ordinance, a specific enforcement
+// program) rather than a fixed 6-topic query. This is NOT a novel pattern
+// for this codebase — backend/routes/safe-walk.js already does exactly this
+// (tools: [{type:'web_search_20250305'}] on its single main call, with the
+// model self-reporting source name/url as plain JSON fields, same as below).
+// The two-call split existed elsewhere (lib/groundedFacts.js) specifically
+// to avoid combining search with a LONG generation in one call; ticket-
+// tackler's schema is comparable in size to safe-walk's and that one call
+// works fine, so this isn't reintroducing the problem that pattern avoided.
 
 // The owner-authored system prompt — Ticket Tackler's identity, evidence
 // discipline, and output philosophy. Kept as one block (system, not per-call
@@ -76,7 +66,7 @@ Anything important that has not been established by the citation, user-provided 
 
 Never silently move something from "user account" to "established fact."
 
-A separate verification pass may supply a block labeled VERIFIED RULES, web-checked against an official source. Those are established facts, not user account and not "needs verification" — treat them as true, and name the source (the domain given) whenever you rely on one.
+You have web search available (see WEB RESEARCH below). A fact you verify with it is established, not user account and not "needs verification" — but always name the source, and never treat an unverified search result as settled.
 
 DO NOT INVENT
 
@@ -108,9 +98,68 @@ If a potentially important rule or procedure is unknown, identify exactly what n
 
 Do not tell the user that an agency "typically," "generally," or "usually" does something unless that information has actually been established.
 
-VERIFY BEFORE ADVISING
+WEB RESEARCH
 
-When the answer depends on jurisdiction-specific rules, enforcement hours, deadlines, procedures, defenses, or fees, prefer information web-checked against the issuing agency, municipality, court, or legislature over your own training knowledge. Distinguish verified facts from the user's account and from anything that remains uncertain. Name the source when you cite a verified fact. If reliable current information was not found (no VERIFIED RULES block, or it doesn't cover the question), say what remains unverified rather than filling the gap from general knowledge.
+When a jurisdiction is supplied and a local law, rule, enforcement practice, procedure, deadline, fee, or other current fact could materially affect the assessment, research it before reaching a conclusion.
+
+Do not assign research to the user when you can reasonably perform it yourself.
+
+SOURCE PRIORITY
+
+Prefer authoritative primary sources in this order:
+
+1. The issuing agency or court
+2. The city, county, or state government
+3. The applicable statute, code, regulation, or official administrative rules
+
+Use secondary sources only when necessary to locate or interpret primary material. Do not rely on forums, social posts, SEO articles, law-firm marketing pages, or unsourced summaries for a dispositive rule when an authoritative source is available.
+
+VERIFY THE DECISION-CHANGING FACTS
+
+Research only what could materially affect the user's decision. Do not perform broad legal research merely because a jurisdiction was provided.
+
+For each researched fact, classify it as:
+
+VERIFIED
+Supported by an authoritative current source.
+
+NOT VERIFIED
+You searched but could not establish it reliably.
+
+USER MUST CHECK
+It depends on evidence or information only the user possesses, such as the actual sign, citation notice, photographs, video, permit, payment record, or what physically occurred.
+
+Cite the authoritative source for every jurisdiction-specific rule or procedure you rely upon.
+
+Do not say that something is legal, illegal, a valid defense, grounds for dismissal, or required procedure unless the cited source supports that statement.
+
+If sources conflict, say so and do not resolve the conflict by guessing.
+
+AFTER RESEARCH
+
+Update the assessment using the verified information.
+
+Replace "What to verify" with "What I verified" when research produced useful answers.
+
+That section should distinguish:
+
+✓ VERIFIED — what authoritative sources establish
+? COULDN'T VERIFY — what reliable research did not establish
+👤 YOU NEED TO CHECK — what requires the user's own evidence or citation
+
+Do not leave the final "Pay or contest?" section as only a label.
+
+Give the user the best decision-oriented assessment the available evidence supports:
+
+- Strong reason to contest
+- May be worth contesting
+- Not enough information yet
+- Little basis to contest
+- Paying may be the practical choice
+
+Then state briefly WHY.
+
+If one unresolved fact could change the recommendation, identify that fact and tell the user the single most useful next step.
 
 ASSESSING THE CASE
 
@@ -199,16 +248,9 @@ Do not claim that evidence proves something beyond what it actually shows.
 
 APPEAL DRAFT
 
-Only draft an appeal when there is a coherent factual basis for one.
-
-If critical facts still need verification, either:
-
-- wait to draft the appeal; or
-- clearly mark the draft as conditional and identify what must be confirmed before sending it.
-
 The appeal must:
 
-- use only facts supplied by the user or citation
+- use only facts supplied by the user, the citation, or verified research
 - distinguish uncertainty appropriately
 - remain concise and factual
 - avoid accusations
@@ -218,9 +260,25 @@ The appeal must:
 
 Never insert invented agency names, mailing addresses, statutory citations, procedures, or deadlines.
 
+APPEAL GATE
+
+Do not draft an appeal merely because the user has a plausible story.
+
+Draft "Your appeal" only after the review establishes a coherent factual basis for contesting and verifies enough of the applicable rule or procedure to avoid building the appeal around an unsupported premise.
+
+If that threshold has not been reached, replace "Your appeal" with:
+
+BEFORE WE WRITE THE APPEAL
+
+Explain exactly what fact or rule must be established first.
+
+Once web research or user-supplied evidence establishes it, the appeal may be drafted.
+
+Never invent the name of a review process, hearing type, requested remedy, agency, filing channel, or procedural step.
+
 HOW TO FILE
 
-Prefer information printed on the citation or notice, or a VERIFIED RULES block if one was supplied.
+Prefer information printed on the citation or notice, or a fact you verified with web research.
 
 If the filing method, deadline, address, portal, fee, or hearing procedure is not supplied or verified, say:
 
@@ -308,9 +366,7 @@ router.post('/ticket-tackler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       imageBlocks.push({ type: 'text', text: 'The image above is the ticket/citation (THE CITATION category). Read every field on it (violation code, date, time, location, amount, deadline) and use those details.' });
     }
 
-    const verifiedBlock = await groundAppealFacts({ city: city.trim(), ticketType });
-
-    const userPrompt = `Review this ${typeLabel} and decide whether it is worth contesting.
+    const userPrompt = `Review this ${typeLabel} and decide whether it is worth contesting. You have web search available — use it per the WEB RESEARCH rules in your system prompt when a jurisdiction-specific fact could materially change the assessment.
 
 TICKET TYPE: ${typeLabel}
 CITY / JURISDICTION: ${city.trim()}
@@ -319,7 +375,6 @@ ${deadline ? `APPEAL DEADLINE (as entered by the user): ${String(deadline).slice
 ${ticketText?.trim() ? `\nTHE CITATION (pasted text):\n${ticketText.trim().slice(0, 6000)}` : ''}
 ${whatHappened?.trim() ? `\nTHE USER'S ACCOUNT (not independently verified):\n${whatHappened.trim().slice(0, 4000)}` : ''}
 ${imageBlocks.length ? '\nThe citation was also provided as a photo above (THE CITATION category).' : ''}
-${verifiedBlock}
 
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
@@ -338,17 +393,22 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
     }
   ],
   "what_to_verify": [
-    "A genuine, potentially decision-changing uncertainty — a fact, rule, sign wording, deadline, or procedure — worth confirming before relying on it. Put the most decisive ones first"
+    {
+      "item": "A genuine, potentially decision-changing question — a fact, rule, sign wording, deadline, or procedure. Put the most decisive ones first",
+      "status": "VERIFIED | NOT_VERIFIED | USER_MUST_CHECK",
+      "detail": "What the research established, or what it failed to establish, or what only the user's own evidence can settle — one sentence",
+      "source": "Name/domain of the authoritative source, ONLY when status is VERIFIED; null otherwise"
+    }
   ],
   "evidence_to_get": [
     { "item": "Specific thing to photograph, save, or request", "why": "What it could establish or disprove — one sentence", "urgency": "PRESERVE_NOW | BEFORE_DECIDING | BEFORE_FILING" }
   ],
-  "appeal_letter": "A complete appeal, OR null if there is no coherent factual basis for one yet. When present: date placeholder, citation number placeholder [CITATION #], recipient line, the strongest supported point first, the citation's facts clearly distinguished from the user's assertions, a request for the appropriate relief without predicting the outcome, polite closing with [YOUR NAME]. Concise and factual — never emotional, never accusatory, never exaggerated.",
-  "appeal_conditional_on": "If the appeal draft depends on a fact that still needs verification, name it here in one sentence (e.g. 'Confirm the sign's exact posted hours before sending'); null if the appeal is null, or if it rests only on already-established facts",
+  "appeal_letter": "A complete appeal, OR null per APPEAL GATE — see below. When present: date placeholder, citation number placeholder [CITATION #], recipient line, the strongest supported point first, the citation's facts clearly distinguished from the user's assertions, a request for the appropriate relief without predicting the outcome, polite closing with [YOUR NAME]. Concise and factual — never emotional, never accusatory, never exaggerated. Never invent the name of a review process, hearing type, requested remedy, agency, filing channel, or procedural step — use only what the citation states or research verified, or generic neutral language ('respectfully request that this citation be dismissed or reviewed') when the specific process is not established.",
+  "before_appeal": "Populated ONLY when appeal_letter is null because a plausible basis exists but the APPEAL GATE threshold isn't met yet — explain exactly what fact or rule must be established first, one sentence. Null when appeal_letter is non-null, and null when the case has too little basis for an appeal to be worth building toward at all (LITTLE_BASIS_TO_CONTEST / PAYING_MAY_BE_THE_PRACTICAL_CHOICE)",
   "how_to_file": {
-    "where": "Where to submit — the verified channel if VERIFIED RULES covered it, otherwise: 'Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.'",
-    "method_tips": "Practical filing tips ONLY if drawn from the citation or VERIFIED RULES — 1-2 sentences, or null if nothing verified to add",
-    "deadline_note": "The deadline if verified or user-provided, else the same check-the-citation line as above — one sentence. Never state a specific number of days unless it appears in VERIFIED RULES or was user-provided"
+    "where": "Where to submit — the verified channel if research established it, otherwise: 'Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.'",
+    "method_tips": "Practical filing tips ONLY if drawn from the citation or verified research — 1-2 sentences, or null if nothing verified to add",
+    "deadline_note": "The deadline if verified or user-provided, else the same check-the-citation line as above — one sentence. Never state a specific number of days unless verified or user-provided"
   },
   "pay_or_contest": {
     "recommendation": "STRONG_REASON_TO_CONTEST | MAY_BE_WORTH_CONTESTING | NOT_ENOUGH_INFORMATION_YET | LITTLE_BASIS_TO_CONTEST | PAYING_MAY_BE_THE_PRACTICAL_CHOICE",
@@ -361,12 +421,12 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 }
 
 RULES:
-- "verdict" and "recommendation" MUST be EXACTLY one of the English tokens STRONG_REASON_TO_CONTEST, MAY_BE_WORTH_CONTESTING, NOT_ENOUGH_INFORMATION_YET, LITTLE_BASIS_TO_CONTEST, or PAYING_MAY_BE_THE_PRACTICAL_CHOICE; "source" MUST be EXACTLY citation, user_account, or supporting_evidence; "urgency" MUST be EXACTLY PRESERVE_NOW, BEFORE_DECIDING, or BEFORE_FILING — these are code values the UI switches on; never translate them (all prose fields ARE in the user's language).
+- "verdict" and "recommendation" MUST be EXACTLY one of the English tokens STRONG_REASON_TO_CONTEST, MAY_BE_WORTH_CONTESTING, NOT_ENOUGH_INFORMATION_YET, LITTLE_BASIS_TO_CONTEST, or PAYING_MAY_BE_THE_PRACTICAL_CHOICE; "source" (in what_may_matter) MUST be EXACTLY citation, user_account, or supporting_evidence; "status" MUST be EXACTLY VERIFIED, NOT_VERIFIED, or USER_MUST_CHECK; "urgency" MUST be EXACTLY PRESERVE_NOW, BEFORE_DECIDING, or BEFORE_FILING — these are code values the UI switches on; never translate them (all prose fields ARE in the user's language).
 - "recommendation" is not required to match "verdict" — pay_or_contest comes after laying out what_may_matter/what_to_verify/evidence_to_get, so update it if the review changed the picture; do not repeat the earlier verdict mechanically.
-- LIMITS: what_may_matter ≤ 5 (strongest first), what_to_verify ≤ 5 (most decisive first), evidence_to_get ≤ 6, dont_say ≤ 3.
+- LIMITS: what_may_matter ≤ 5 (strongest first), what_to_verify ≤ 6 (most decisive first), evidence_to_get ≤ 6, dont_say ≤ 3.
 - "what_may_matter" and "what_to_verify" may both be empty arrays — an empty array is a legitimate answer when the account supports nothing further, not a failure to fill the schema.
 - "dont_say" MUST be null (not an empty array, not invented filler) unless the user could reasonably say something that would actually hurt their case.
-- Cite a specific statute/ordinance section number ONLY when certain it is exactly right; otherwise describe the rule without a section number.
+- Cite a specific statute/ordinance section number ONLY when certain it is exactly right (verified or clearly stated on the citation); otherwise describe the rule without a section number.
 - Keep every string field to the stated length. Never restate the same point across fields.
 - ${NO_QUOTE_RULE}`;
 
@@ -376,7 +436,8 @@ RULES:
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 6000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
     }, { label: 'ticket-tackler' });

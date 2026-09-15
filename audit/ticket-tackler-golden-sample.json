@@ -2,13 +2,13 @@
   "_meta": {
     "tool": "TicketTackler",
     "generated": "2026-07-26",
-    "baseline_commit": "tickettackler-v3",
-    "model": "MODELS.SMART; single call + groundedFacts pre-pass (ticket-appeal:{city}:{type}, 14d cache); followup 2000",
-    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) assessment.verdict and pay_or_contest.recommendation MUST be an exact English token STRONG_REASON_TO_CONTEST|MAY_BE_WORTH_CONTESTING|NOT_ENOUGH_INFORMATION_YET|LITTLE_BASIS_TO_CONTEST|PAYING_MAY_BE_THE_PRACTICAL_CHOICE (5-way, replaced the v2 3-way WORTH_CONTESTING/VERIFY_FIRST/PROBABLY_PAY on 2026-09-15); what_may_matter[].source MUST be exactly citation|user_account|supporting_evidence; evidence_to_get[].urgency MUST be exactly PRESERVE_NOW|BEFORE_DECIDING|BEFORE_FILING (3-tier, replaced the v2 2-tier today/before_filing) — the frontend switches badge colors/labels on all of these; withLanguage would otherwise translate them in 12 langs. (2) NO numeric case-strength score and NO strength enum anywhere (v2 already removed fight_worthiness/strong-moderate-weak; v3 keeps that ban explicit in the prompt itself, not just as an omission). (3) pay_or_contest is now a STRUCTURED decision summary — supports_contesting, supports_paying, key_unresolved_fact (any of the three may be null), and next_step (never null) — replacing v2's single freeform `reasoning` string. recommendation is NOT required to equal the top assessment.verdict (the prompt explicitly says not to repeat it mechanically — pay_or_contest comes after laying out what_may_matter/evidence, so it can reach a more specific conclusion, e.g. top verdict MAY_BE_WORTH_CONTESTING while pay_or_contest still leans PAYING_MAY_BE_THE_PRACTICAL_CHOICE if the review surfaced nothing new). (4) appeal_letter MUST be null when there is no coherent factual basis for one — see weak-case. NEW field appeal_conditional_on: when the letter depends on an unverified fact, names it in one sentence; MUST be null when appeal_letter is null OR when the letter rests only on already-established facts — do not populate it 'just in case'. (5) what_may_matter[].evidence_that_would_help and how_to_file.method_tips are BOTH independently nullable now (v2 had them always-populated) — null is correct when nothing applies or nothing was verified to add; do not backfill either with generic filler to avoid a blank line in the UI (the frontend conditionally hides the line instead). (6) dont_say MUST be null (not an empty array) unless the user's own account/wording could actually hurt their case. (7) how_to_file.where must literally be the fallback sentence ('Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.') when nothing was verified — this exact sentence is prescribed in the system prompt, not paraphrased. (8) The groundedFacts pre-pass query was broadened 2026-09-15 from 4 topics (deadline/filing/stages/grounds) to 6 (+ fee, + enforcement_hours) per the owner's 'verify before advising' directive — still city+type cached, still never blocks the main call (stale-while-revalidate; a cold cache returns unverified, refreshes for the next request). (9) Quote-heavy German input → NO_QUOTE_RULE. (10) Statute sections cited only when certain. DO NOT reverse: the 5-way verdict enum; the 3-tier urgency enum; the structured (non-freeform) pay_or_contest; appeal_letter/appeal_conditional_on nullability; evidence_that_would_help/method_tips nullability; single-call architecture (unchanged from v2 — letter drafting stays coupled to the assessment)."
+    "baseline_commit": "tickettackler-v4",
+    "model": "MODELS.SMART; single call with native web_search tool (tools:[{type:'web_search_20250305'}]), max_tokens 6000; followup 2000, no search",
+    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case, it can take 60-90s (live search). Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) assessment.verdict and pay_or_contest.recommendation MUST be an exact English token STRONG_REASON_TO_CONTEST|MAY_BE_WORTH_CONTESTING|NOT_ENOUGH_INFORMATION_YET|LITTLE_BASIS_TO_CONTEST|PAYING_MAY_BE_THE_PRACTICAL_CHOICE; what_may_matter[].source MUST be exactly citation|user_account|supporting_evidence; what_to_verify[].status MUST be exactly VERIFIED|NOT_VERIFIED|USER_MUST_CHECK (NEW 2026-09-16 — was a flat array of strings in v3); evidence_to_get[].urgency MUST be exactly PRESERVE_NOW|BEFORE_DECIDING|BEFORE_FILING — code values the UI switches on, never translate them. (2) NEW 2026-09-16: what_to_verify items are OBJECTS {item, status, detail, source}, not bare strings — a v3-shaped string array is now a structural regression. source is non-null ONLY when status is VERIFIED. (3) NEW: APPEAL GATE — appeal_letter and before_appeal are a strict either/or: exactly one is non-null whenever the case has ANY plausible basis (verified live both ways in the same session: the Seattle case found SMC 11.16.280 confirmed posted-sign-hours control enforcement → appeal_letter populated, before_appeal null; the Chicago case found the opposite — real park-zone-camera facts that UNDERMINED the user's theory — and left one fact genuinely unresolved → appeal_letter null, before_appeal explains exactly what park-hours fact would need to flip the recommendation). Both null together is correct ONLY for LITTLE_BASIS_TO_CONTEST/PAYING_MAY_BE_THE_PRACTICAL_CHOICE cases with no plausible story at all (see weak-case). Never write an appeal 'anyway' with a hedge — that was the exact bug this round fixes: the model previously drafted a full appeal_letter (complete with an invented 'administrative review'/'hearing' request) while its own reason field admitted the defense wasn't established. If appeal_letter is non-null, it must never invent the name of a review process, hearing type, requested remedy, agency, filing channel, or procedural step — every one of those must come from the citation or verified research. (4) Architecture change: the old two-call design (a separate groundAppealFacts() pre-pass, city+type cached, feeding a canned 'VERIFIED RULES' block into an otherwise-ungrounded main call) is GONE. The main call now carries native web_search directly (tools:[{type:'web_search_20250305'}]) — same established pattern as backend/routes/safe-walk.js. This means: (a) research is now per-citation and dynamic, not a fixed topic list — it found things the old pre-pass structurally could not (a specific court case, a specific park-camera classification, a specific StVO sub-clause); (b) there is NO cache — every request researches fresh, so DO NOT expect golden-case verdicts to reproduce verbatim on re-run; content WILL drift as real city pages, portals, and even the underlying facts change over time (a jurisdiction can change its enforcement hours or portal URL) — that drift is the tool being honest, not a bug; check:golden only asserts structural shape for exactly this reason. (c) latency is now 40-90s per call (search + one long generation in the same request) — this was previously avoided elsewhere in the codebase (see lib/groundedFacts.js's own header) specifically to keep search out of a long-generation call, but ticket-tackler's schema size is comparable to safe-walk's working precedent, so the single-call design holds up in practice (verified: 40s, 60s, 89s across three live calls this session, all HTTP 200, none truncated). (5) NO numeric case-strength score, NO strength enum anywhere — unchanged from v3. (6) pay_or_contest stays the v3 structured shape (supports_contesting/supports_paying/key_unresolved_fact/next_step, recommendation independently settable, not required to equal assessment.verdict). (7) dont_say MUST be null (not []) unless genuinely warranted. (8) evidence_that_would_help and how_to_file.method_tips stay independently nullable (v3 behavior, unchanged). DO NOT reverse: the 5-way verdict enum; the what_to_verify object shape with per-item status+source; the appeal_letter/before_appeal strict-either-or gate; single-call web_search architecture (reintroducing a separate cached pre-pass would defeat the whole point — per-citation facts like 'is this specific camera a park-zone or school-zone camera' are not cacheable by city+type)."
   },
   "cases": [
     {
-      "name": "main-en-seattle-sign-hours-conditional",
+      "name": "main-en-seattle-appeal-gate-passes",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "parking",
@@ -24,63 +24,70 @@
       },
       "output": {
         "assessment": {
-          "verdict": "MAY_BE_WORTH_CONTESTING",
-          "reason": "According to your account, the sign restricts parking only through 6 PM, and you parked at 6:40 PM — after that posted end time; if the sign actually reads that way, the citation may have been issued outside the restriction's effective hours. The sign wording has not been independently verified, so confirming what it actually says is the essential next step."
+          "verdict": "STRONG_REASON_TO_CONTEST",
+          "reason": "According to your account, the sign posted at the location restricts parking only between 7 AM and 6 PM, and you parked at 6:40 PM — 40 minutes after the restriction ended. Seattle Municipal Code establishes that passenger load zone restrictions are governed by the hours displayed on the sign; if the sign says what you describe, the zone was not in effect at the time of the citation. The sign's exact wording and legibility are the key facts that still need to be confirmed with your own photographs."
         },
         "what_may_matter": [
           {
-            "fact": "Citation time is 6:40 PM; user says the sign reads 'Passenger Load Zone 7AM–6PM'",
+            "fact": "The posted sign reads 'Passenger Load Zone 7AM–6PM' and the citation was issued at 6:40 PM — 40 minutes after the restriction ended.",
             "source": "user_account",
-            "why_it_matters": "If the restriction ended at 6 PM, a 6:40 PM citation would fall outside the posted enforcement window and could be a basis for dismissal.",
-            "needs_verification": "The exact wording on the sign has not been independently confirmed — only the user's reading of it is on record.",
-            "evidence_that_would_help": "A clear photograph of the sign showing the full posted hours, taken while legible and before the sign is repaired or replaced."
+            "why_it_matters": "If the restriction ended at 6 PM, the zone was not in effect at 6:40 PM and the citation would have been issued outside the enforceable hours shown on the controlling sign.",
+            "needs_verification": "The exact wording on the sign has not been independently confirmed; only the user states it ends at 6 PM.",
+            "evidence_that_would_help": "A clear photograph of the full sign face, legible from the street side, taken as soon as possible."
           },
           {
-            "fact": "User says the sign is partially bent and obscured by a tree branch, making it barely readable from the street",
-            "source": "user_account",
-            "why_it_matters": "If the sign's hours are difficult to read from the street, this may be relevant to whether the restriction was adequately posted.",
-            "needs_verification": "Whether Seattle's municipal code or enforcement rules require that a load zone sign be clearly legible from the street in order to be enforceable.",
-            "evidence_that_would_help": "Photographs from the driver's street-level viewpoint showing the obstruction, and a check of Seattle's sign visibility or posting requirements."
-          },
-          {
-            "fact": "Citation cites SMC 11.23.180 — Parking in passenger load zone",
+            "fact": "The citation cites SMC 11.23.180 — Parking in passenger load zone.",
             "source": "citation",
-            "why_it_matters": "The specific code section would govern what hours and conditions make parking a violation.",
-            "needs_verification": "The actual text of SMC 11.23.180, including whether it sets any time-of-day conditions independent of posted signage.",
-            "evidence_that_would_help": "The text of SMC 11.23.180 from the Seattle Municipal Code, available at the City of Seattle's official code website."
+            "why_it_matters": "Seattle code establishes that passenger load zone restrictions are in effect only during the hours fixed and displayed on the sign; the sign's hours are therefore the legal boundary of the enforceable restriction.",
+            "needs_verification": "The full operative text of SMC 11.23.180 itself was not retrieved in research, though the broader framework in SMC 11.16.280 and related sections confirms that posted hours define when load zone restrictions apply.",
+            "evidence_that_would_help": "The text of SMC 11.23.180 directly, which can be read at the Seattle Municipal Code online (library.municode.com or seattle.gov)."
           }
         ],
         "what_to_verify": [
-          "The exact hours posted on the sign at 1400 block E Pine St — confirm whether it reads '7AM–6PM' or something different.",
-          "The text of SMC 11.23.180 — specifically whether the violation depends on posted sign hours or has a fixed statutory schedule.",
-          "The official contest procedure and deadline from the citation or Seattle Municipal Court's parking infraction instructions."
+          {
+            "item": "The exact hours shown on the sign at the 1400 block of E Pine St",
+            "status": "USER_MUST_CHECK",
+            "detail": "Only a photograph of the actual sign can confirm what hours it displays; this is the single most decisive fact in the case.",
+            "source": null
+          },
+          {
+            "item": "Whether Seattle's passenger load zone rules make the posted sign hours the enforceable limit",
+            "status": "VERIFIED",
+            "detail": "SMC 11.16.280 confirms the Traffic Engineer establishes passenger load zones and fixes the hours 'during which such zones shall be maintained open,' and the broader SMC framework ties enforcement to posted hours — meaning the sign controls when the restriction is active.",
+            "source": "Seattle Municipal Code SMC 11.16.280, via municode.com/wa/seattle"
+          },
+          {
+            "item": "How to request a contested hearing at Seattle Municipal Court",
+            "status": "VERIFIED",
+            "detail": "Check the 'Contested' box on the citation and mail or submit it online via Seattle Municipal Court; a pre-hearing settlement conference is scheduled first, with the option to proceed to a contested hearing.",
+            "source": "seattle.gov/courts/tickets-and-payments/dispute-my-ticket"
+          }
         ],
         "evidence_to_get": [
-          { "item": "Clear photograph of the full sign at 1400 block E Pine St showing posted hours", "why": "Establishes what the sign actually says, which is the central fact in dispute.", "urgency": "PRESERVE_NOW" },
-          { "item": "Photograph from the driver's street-level viewpoint showing the branch obscuring the sign", "why": "Documents the visibility condition at the time of the citation.", "urgency": "PRESERVE_NOW" },
-          { "item": "Photograph of the citation notice itself, front and back", "why": "Preserves all citation details needed for any filing.", "urgency": "BEFORE_DECIDING" }
+          { "item": "Photograph the sign face clearly showing the posted hours, from the street-side driving approach", "why": "This is the primary evidence that the restriction ended at 6 PM — without it, the appeal rests solely on your account.", "urgency": "PRESERVE_NOW" },
+          { "item": "Photograph the sign's physical condition — the bend and the tree branch obscuring it — from a driver's eye-level perspective", "why": "Documents that adequate notice of the restriction was not visible from the roadway at the time of the citation.", "urgency": "PRESERVE_NOW" }
         ],
-        "appeal_letter": "[DATE]\n\nRe: Request for Dismissal — Parking Infraction Notice [CITATION #]\nLocation: 1400 block, E Pine St, Seattle, WA\nDate/Time of Citation: 07/22/2026 at 6:40 PM\n\nTo Whom It May Concern:\n\nI am writing to contest the above infraction, issued for an alleged violation of SMC 11.23.180, Parking in a Passenger Load Zone.\n\nThe sign posted at the cited location, as I read it, states 'Passenger Load Zone 7AM–6PM.' My vehicle was cited at 6:40 PM — after the posted end time of the restriction.\n\nI respectfully request that this infraction be dismissed on the grounds that my vehicle was parked outside the posted restriction hours.\n\nThank you for your consideration.\n\n[YOUR NAME]",
-        "appeal_conditional_on": "Confirm the sign's exact posted hours from your photograph before sending — the appeal rests entirely on the sign reading '7AM–6PM.'",
+        "appeal_letter": "[DATE]\n\nCitation Number: [CITATION #]\nSeattle Municipal Court\nParking Violations\n\nRe: Request for Contested Hearing — Infraction Notice, SMC 11.23.180, 07/22/2026, 6:40 PM, 1400 Block E Pine St\n\nI am writing to contest the above-referenced parking citation and respectfully request that it be dismissed.\n\nThe citation alleges a violation of SMC 11.23.180, parking in a passenger load zone, at 6:40 PM on July 22, 2026. The sign posted at the cited location reads 'Passenger Load Zone 7AM–6PM.' The restriction therefore ended at 6:00 PM. My vehicle was present at 6:40 PM, forty minutes after the posted hours expired.\n\nI respectfully request that this citation be dismissed. Please notify me of the scheduled pre-hearing conference date and any further steps required.\n\nSincerely,\n[YOUR NAME]",
+        "before_appeal": null,
         "how_to_file": {
-          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
-          "method_tips": null,
-          "deadline_note": "Per the citation as you reported it, the deadline to respond is 15 days from the issue date of 07/22/2026 — verify this against the citation itself before filing."
+          "where": "Check the 'Contested' box on your citation and submit it to Seattle Municipal Court — by mail or online via the Seattle Municipal Court dispute portal at seattle.gov/courts/tickets-and-payments/dispute-my-ticket.",
+          "method_tips": "After you request a contested hearing, the court will schedule a pre-hearing settlement conference first; you may waive that and proceed directly to a contested hearing.",
+          "deadline_note": "You must respond within 15 days of the issue date as stated on the citation — do not miss this window."
         },
         "pay_or_contest": {
-          "recommendation": "MAY_BE_WORTH_CONTESTING",
-          "supports_contesting": "Your account places the citation 40 minutes after what you say is the sign's posted end time, which — if the sign confirms this — is a concrete factual basis for dismissal.",
-          "supports_paying": "The sign wording has not yet been confirmed independently, so the central premise of the defense is still your account rather than established fact.",
-          "key_unresolved_fact": "What the sign at the location actually says — specifically whether the restriction ends at 6 PM.",
-          "next_step": "Photograph the sign clearly as soon as possible to confirm the posted hours, then decide whether to file."
+          "recommendation": "STRONG_REASON_TO_CONTEST",
+          "supports_contesting": "Your account states the sign limits the restriction to 7 AM–6 PM, and the citation was issued at 6:40 PM — if the sign says what you describe, the restriction was not in effect and the citation was issued in error.",
+          "supports_paying": "The sign's exact wording has not yet been confirmed by a photograph, so there is a small residual risk that the sign reads differently than recalled.",
+          "key_unresolved_fact": "The exact hours shown on the sign at the 1400 block of E Pine St — confirmed by a clear photograph.",
+          "next_step": "Go to the location today or tomorrow, photograph the sign face clearly showing the posted hours and its obstructed condition from street level, then file a contested hearing request before the 15-day deadline."
         },
         "dont_say": [
-          "Don't say 'the sign was impossible to read' — your own account says you were able to read the hours; the accurate point is that it's partially obscured, which is a separate and weaker claim than full illegibility."
+          "Do not say 'the sign is illegible so the ticket is automatically void' — the sign obstruction supports your case but the stronger argument is that the posted hours had expired; frame the obstruction as additional context, not as the sole basis for dismissal."
         ]
       }
     },
     {
-      "name": "main-de-quote-heavy",
+      "name": "main-de-appeal-gate-passes-quote-heavy",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "parking",
@@ -96,48 +103,70 @@
       "output": {
         "assessment": {
           "verdict": "MAY_BE_WORTH_CONTESTING",
-          "reason": "Als Inhaber eines Anwohnerparkausweises für Zone B gilt die Höchstparkdauer laut Ihrer Schilderung nicht für Sie, und Sie haben ein Foto, das den Ausweis auf dem Armaturenbrett zeigt — dies wurde jedoch nicht unabhängig bestätigt."
+          "reason": "Als Bewohner mit gültigem Parkausweis für Zone B sind Sie grundsätzlich von der Höchstparkdauer befreit – der Tatvorwurf greift deshalb ins Leere, wenn der Ausweis gültig war und der Zone B zugeordnet ist. Allerdings hängt alles davon ab, ob der Ausweis zum Kontrollzeitpunkt als 'gut lesbar' im Sinne der StVO galt – das ist der strittige Kern, den Ihr Foto direkt belegen oder widerlegen kann."
         },
         "what_may_matter": [
           {
-            "fact": "Nutzer besitzt einen Anwohnerparkausweis für Zone B",
-            "source": "user_account",
-            "why_it_matters": "Wenn Anwohner mit gültigem Ausweis von der Höchstparkdauer ausgenommen sind, träfe der Tatvorwurf nicht zu.",
-            "needs_verification": "Ob die Zonenregelung für Bewohnerparkzone B Anwohner tatsächlich vollständig von der Höchstparkdauer ausnimmt.",
-            "evidence_that_would_help": "Der Wortlaut der Zonenregelung, sowie eine Kopie des Ausweises mit Gültigkeitsdauer und Kennzeichen."
+            "fact": "Ein gültiger Bewohnerparkausweis für Zone B befreit den Inhaber von der Höchstparkdauer in dieser Zone.",
+            "source": "citation",
+            "why_it_matters": "Der gesamte Tatvorwurf (Überschreitung der Höchstparkdauer) entfällt, wenn ein gültiger Ausweis für genau diese Zone bestand und ordnungsgemäß ausgelegt war.",
+            "needs_verification": "Ob Ihr Ausweis zum Tatzeitpunkt noch gültig war und auf Zone B sowie das richtige Kennzeichen lautete – das kann nur Ihr eigener Ausweis belegen.",
+            "evidence_that_would_help": "Der Ausweis selbst, mit sichtbarem Kennzeichen, Zoneneintrag 'B' und Gültigkeitsdatum."
           },
           {
-            "fact": "Foto zeigt den Ausweis sichtbar auf dem Armaturenbrett, unmittelbar nach dem Knöllchen aufgenommen",
-            "source": "supporting_evidence",
-            "why_it_matters": "Belegt, dass der Ausweis ausgelegt war, auch wenn er verrutscht war.",
-            "needs_verification": "Ob das Foto den Zustand zum Kontrollzeitpunkt widerspiegelt.",
-            "evidence_that_would_help": null
+            "fact": "Der Ausweis lag nach Ihrer Schilderung auf dem Armaturenbrett, war aber beim Türzuschlagen etwas verrutscht und nur noch schräg von oben lesbar.",
+            "source": "user_account",
+            "why_it_matters": "Die StVO (Anlage 2, lfd. Nr. 63.4) verlangt, dass der Bewohnerparkausweis 'gut lesbar ausgelegt oder angebracht' ist; ein verrutschter Ausweis kann diese Anforderung verfehlen.",
+            "needs_verification": "Ob das Foto, das Sie direkt nach dem Knöllchen gemacht haben, den Ausweis so zeigt, dass Kennzeichen, Zoneneintrag und Gültigkeitsdatum von außen durch die Scheibe klar erkennbar sind.",
+            "evidence_that_would_help": "Das unmittelbar nach der Verwarnung aufgenommene Foto — idealerweise von außen durch die Windschutzscheibe fotografiert, um die tatsächliche Lesbarkeit zu dokumentieren."
           }
         ],
         "what_to_verify": [
-          "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B.",
-          "Die formale Widerspruchsfrist und das zuständige Amt."
+          {
+            "item": "Ist auf Ihrem Foto der Ausweis von außen durch die Scheibe gut lesbar — insbesondere Kennzeichen, Zoneneintrag 'B' und Gültigkeitsdatum?",
+            "status": "USER_MUST_CHECK",
+            "detail": "Die StVO-Anforderung lautet 'gut lesbar'; Gerichte haben entschieden, dass der Ausweis ohne Hilfsmittel und mühelos durch die Scheibe lesbar sein muss — das kann nur Ihr eigenes Foto belegen.",
+            "source": null
+          },
+          {
+            "item": "Befreiung von der Höchstparkdauer durch gültigen Bewohnerparkausweis (bundesweit geltende Regelung nach StVO)",
+            "status": "VERIFIED",
+            "detail": "Mit einem gültigen Bewohnerparkausweis für die jeweilige Zone ist das Fahrzeug von der Höchstparkdauer und der Parkgebühr in diesem Gebiet befreit.",
+            "source": "adac.de (Dezember 2025), hamburg.de (Bewohnerparkausweis-Seite)"
+          },
+          {
+            "item": "Pflicht zur gut lesbaren Auslage des Bewohnerparkausweises (StVO Anlage 2, lfd. Nr. 63.4)",
+            "status": "VERIFIED",
+            "detail": "Bewohner dürfen Parkvorrechte nur in Anspruch nehmen, wenn der Ausweis gut lesbar ausgelegt oder angebracht ist; 'gut' bedeutet laut Amtsgericht Schwerin mühelos durch die Scheibe lesbar, ohne Hilfsmittel.",
+            "source": "stvo2go.de (StVO Anlage 2 Nr. 63.4), AG Schwerin 35 OWi 83/23"
+          },
+          {
+            "item": "Einspruchsverfahren bei der Bußgeldstelle Schwäbisch Gmünd — Möglichkeit der Online-Stellungnahme mit Foto-Upload",
+            "status": "VERIFIED",
+            "detail": "Die Bußgeldstelle des Ordnungsamts Schwäbisch Gmünd bietet eine Online-Anhörung an, über die Betroffene Sachverhaltsangaben machen und Nachweise hochladen können.",
+            "source": "schwaebisch-gmuend.de (Pressemitteilung Online-Anhörung)"
+          }
         ],
         "evidence_to_get": [
-          { "item": "Foto vom Armaturenbrett mit Ausweis sichern (Original mit Zeitstempel)", "why": "Belegt, dass der Ausweis sichtbar ausgelegt war.", "urgency": "PRESERVE_NOW" },
-          { "item": "Anwohnerparkausweis fotografieren oder einscannen", "why": "Beweist Gültigkeit, Zone und Kennzeichenübereinstimmung.", "urgency": "BEFORE_DECIDING" }
+          { "item": "Das bereits gemachte Foto vom Armaturenbrett prüfen: Kennzeichen, Zoneneintrag 'B' und Gültigkeitsdatum klar erkennbar? Zusätzlich ein Foto von außen durch die Windschutzscheibe aus Kontrolleurshöhe machen.", "why": "Belegt, dass der Ausweis zum Zeitpunkt kurz nach der Kontrolle vorhanden und — falls von außen erkennbar — auch lesbar war.", "urgency": "PRESERVE_NOW" },
+          { "item": "Den Bewohnerparkausweis selbst fotografieren: vollständig, gut beleuchtet, alle Angaben sichtbar.", "why": "Weist nach, dass der Ausweis gültig war und auf die richtige Zone und das richtige Fahrzeug lautete.", "urgency": "PRESERVE_NOW" }
         ],
-        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nStadt Schwäbisch Gmünd\nRechts- und Ordnungsamt / Bußgeldstelle\n\nBetreff: Widerspruch zur Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der oben genannten Verwarnung über 25,00 EUR wegen angeblicher Überschreitung der Höchstparkdauer in der Ledergasse, Bewohnerparkzone B.\n\nIch bin Inhaber eines Anwohnerparkausweises für Zone B. Mein Parkausweis lag sichtbar auf dem Armaturenbrett; ein unmittelbar nach Vorfinden des Verwarnungszettels aufgenommenes Foto belege ich als Anlage.\n\nIch bitte um Prüfung und Einstellung des Verfahrens.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
-        "appeal_conditional_on": "Bestätigen Sie den genauen Wortlaut der Zonenregelung für Zone B, bevor Sie den Widerspruch senden.",
+        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nAn die Bußgeldstelle\nOrdnungsamt der Stadt Schwäbisch Gmünd\nWaisenhausgasse 1–3\n73525 Schwäbisch Gmünd\n\nBetreff: Ablehnung der Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit lehne ich das Verwarnungsgeldangebot in der oben genannten Sache ab und bitte um Überprüfung des Vorgangs.\n\nMein Fahrzeug war zum fraglichen Zeitpunkt mit einem gültigen Bewohnerparkausweis für die Zone B ausgestattet. Dieser Ausweis lag auf dem Armaturenbrett aus. Als Inhaber eines gültigen Bewohnerparkausweises für Zone B bin ich von der Höchstparkdauer in diesem Gebiet befreit.\n\nIch bitte daher höflich, das Verfahren einzustellen und die Verwarnung aufzuheben.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
+        "before_appeal": null,
         "how_to_file": {
-          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
-          "method_tips": null,
-          "deadline_note": "Das Verwarnungsgeld ist laut Ticket binnen einer Woche fällig — prüfen Sie das genaue Ausstellungsdatum auf dem Knöllchen."
+          "where": "Bußgeldstelle des Ordnungsamts der Stadt Schwäbisch Gmünd, Waisenhausgasse 1–3, 73525 Schwäbisch Gmünd. Die Stadt bietet zudem eine Online-Anhörung an.",
+          "method_tips": "Über das Online-Anhörungsportal der Stadt Schwäbisch Gmünd können Sachverhaltsangaben gemacht und Belege wie Fotos hochgeladen werden.",
+          "deadline_note": "Auf der Verwarnung ist eine Zahlungsfrist von 1 Woche angegeben; eine Ablehnung sollte vor Ablauf dieser Frist erfolgen."
         },
         "pay_or_contest": {
           "recommendation": "MAY_BE_WORTH_CONTESTING",
-          "supports_contesting": "Ein gültiger Anwohnerparkausweis für dieselbe Zone ist ein konkreter sachlicher Punkt, kein vager Einwand.",
-          "supports_paying": "Ob die Zonenregelung Anwohner tatsächlich vollständig ausnimmt, wurde nicht unabhängig bestätigt.",
-          "key_unresolved_fact": "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B.",
-          "next_step": "Den Wortlaut der Zonenregelung prüfen, dann über den Widerspruch entscheiden."
+          "supports_contesting": "Als Inhaber eines gültigen Bewohnerparkausweises für Zone B wären Sie von der Höchstparkdauer befreit — der Tatvorwurf greift dann nicht, und Sie haben ein zeitnahes Foto als Beleg.",
+          "supports_paying": "Die Sichtbarkeitspflicht ist eine echte rechtliche Hürde: Wenn das Foto zeigt, dass der Ausweis von außen nicht mühelos lesbar war, bleibt die Verwarnung berechtigt.",
+          "key_unresolved_fact": "Ob das vorliegende Foto den Ausweis so zeigt, dass Kennzeichen, Zone B und Gültigkeitsdatum von außen durch die Scheibe klar und mühelos erkennbar waren.",
+          "next_step": "Prüfen Sie das Foto sofort auf diese Lesbarkeit; wenn die Angaben klar erkennbar sind, ist ein Einspruch gut begründet."
         },
         "dont_say": [
-          "Vermeiden Sie die Aussage 'Der Kontrolleur war unfreundlich' — persönliche Kritik lenkt vom sachlichen Punkt ab."
+          "Nicht sagen: 'Als Anwohner gilt die Höchstparkdauer grundsätzlich nicht für mich' — besser: 'Als Inhaber eines gültigen Bewohnerparkausweises für Zone B bin ich von der Höchstparkdauer befreit, sofern der Ausweis gut lesbar ausgelegt war.'"
         ]
       }
     },
@@ -159,58 +188,68 @@
       "output": {
         "assessment": {
           "verdict": "PAYING_MAY_BE_THE_PRACTICAL_CHOICE",
-          "reason": "By your own account, you knowingly parked in front of a fire hydrant; you have identified no factual inaccuracy in the citation and no defense against it, leaving no concrete basis to contest."
+          "reason": "You have confirmed the violation yourself — you parked in front of a fire hydrant and acknowledge it clearly. There is no factual dispute with what the citation charges, so contesting does not have a meaningful basis."
         },
         "what_may_matter": [
           {
-            "fact": "You parked in front of a fire hydrant and acknowledge doing so",
+            "fact": "The user states they knowingly parked in front of a fire hydrant for approximately ten minutes.",
             "source": "user_account",
-            "why_it_matters": "A contest typically requires a factual or procedural error in the citation — your account confirms the underlying violation.",
-            "needs_verification": "Nothing further — this is established by your own account",
+            "why_it_matters": "Self-acknowledged violations leave no factual dispute to raise at a hearing — the core element of the offense is conceded.",
+            "needs_verification": "Nothing further — the user has confirmed this.",
             "evidence_that_would_help": null
           },
           {
-            "fact": "The citation states the violation as being within 15 feet of a fire hydrant",
+            "fact": "The citation states the fine is $150.",
             "source": "citation",
-            "why_it_matters": "If you were actually parked more than 15 feet from the hydrant, that would be a factual discrepancy worth raising — but your account does not suggest this.",
-            "needs_verification": "Whether your vehicle was actually within 15 feet of the hydrant, if you have any reason to believe otherwise.",
-            "evidence_that_would_help": "A photo showing the distance between your vehicle and the hydrant, taken at or near the time of the citation."
+            "why_it_matters": "Austin Municipal Court is verified to be unable to reduce a fine below the early-pay amount, so the amount is fixed if the violation stands.",
+            "needs_verification": "Nothing further — confirmed by Austin Municipal Court official FAQ.",
+            "evidence_that_would_help": null
           }
         ],
         "what_to_verify": [
-          "Confirm that your vehicle's license plate and description on the citation match your actual vehicle — a mismatch would be a factual error worth raising."
+          {
+            "item": "Contest deadline: confirm the appearance date printed on the citation",
+            "status": "USER_MUST_CHECK",
+            "detail": "Austin Municipal Court requires the contest to be filed on or before the appearance date listed on the citation; the user should confirm this matches the 21-day window stated.",
+            "source": null
+          },
+          {
+            "item": "Whether the fine amount has increased due to late payment",
+            "status": "USER_MUST_CHECK",
+            "detail": "Austin Municipal Court warns that failure to resolve a citation by the appearance date results in an automatic liability finding and a fine increase; the user should act before that date.",
+            "source": null
+          }
         ],
-        "evidence_to_get": [
-          { "item": "Full text of the citation, including vehicle description and plate number", "why": "A factual error identifying the wrong vehicle would be a concrete ground to contest.", "urgency": "BEFORE_DECIDING" }
-        ],
+        "evidence_to_get": [],
         "appeal_letter": null,
-        "appeal_conditional_on": null,
+        "before_appeal": null,
         "how_to_file": {
-          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
-          "method_tips": null,
-          "deadline_note": "The citation states you must pay or contest within 21 days of 09/02/2026 — confirm this deadline on the citation itself before relying on it."
+          "where": "If you choose to contest despite the above, you can request a hearing online through the Austin Municipal Court, in person at a hearing office location, or by following the instructions printed on the citation. The official City of Austin page for handling civil parking citations is austintexas.gov.",
+          "method_tips": "You can look up your case, pay, or request a hearing online using your license plate number, VIN, or case number. Online hearing requests must be submitted on or before the appearance date.",
+          "deadline_note": "The citation states 21 days; Austin Municipal Court rules require action on or before the appearance date printed on the citation — do not wait past that date."
         },
         "pay_or_contest": {
           "recommendation": "PAYING_MAY_BE_THE_PRACTICAL_CHOICE",
-          "supports_contesting": "If the citation contains a factual error — wrong vehicle, wrong location, or your vehicle was actually beyond 15 feet of the hydrant — that would provide a concrete basis to contest.",
-          "supports_paying": "You acknowledge knowingly parking in front of a fire hydrant, which is precisely the conduct the citation describes, leaving no factual dispute on the core violation.",
-          "key_unresolved_fact": "Whether the citation correctly identifies your vehicle — a mismatch would be the only factual error your account leaves open.",
-          "next_step": "Read the full citation carefully to confirm it correctly identifies your vehicle and plate number; if everything matches, paying is the straightforward path."
+          "supports_contesting": null,
+          "supports_paying": "You have confirmed you parked in front of a fire hydrant, the exact violation charged — there is no factual dispute to bring to a hearing, and Austin Municipal Court cannot reduce the fine below the assessed amount.",
+          "key_unresolved_fact": null,
+          "next_step": "Pay the $150 fine before the appearance date printed on your citation to avoid an automatic liability finding and a fine increase."
         },
         "dont_say": [
-          "Avoid saying 'I was only there for ten minutes' as a defense — duration of parking is not a factor in a fire hydrant violation."
+          "Do not say 'I was only there for ten minutes' as a defense — brief duration is not an established exemption from the fire hydrant restriction under Austin's rules, and stating it concedes the act while offering no recognized legal basis.",
+          "Do not say 'I didn't think anyone would notice' — this confirms intent and undermines any good-faith argument; simply omit it in any formal communication."
         ]
       }
     },
     {
-      "name": "camera-chicago-verify-first",
+      "name": "camera-chicago-appeal-gate-blocks",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "camera",
         "city": "Chicago, IL",
-        "fineAmount": "100",
-        "ticketText": "CITY OF CHICAGO - DEPARTMENT OF FINANCE\nAUTOMATED RED LIGHT CAMERA VIOLATION\nLocation: Western Ave & Peterson Ave\nDate: 07/18/2026 9:42 PM\nViolation: Disobeying a red light\nPenalty: $100.00\nTwo photographs and video available online",
-        "whatHappened": "I got a red light camera ticket at Western and Peterson. Here's the thing - I entered the intersection on yellow, I was already past the stop line and mid-intersection when it flipped to red. The yellow felt really short at that intersection, like it barely gave me time to react at 35mph. The photos show my car in the middle of the intersection. $100 seems steep for this. Worth fighting?",
+        "fineAmount": "35",
+        "ticketText": "CITY OF CHICAGO - DEPARTMENT OF FINANCE\nAUTOMATED SPEED ENFORCEMENT VIOLATION\nRecorded speed: 36 MPH in a posted 30 MPH safety zone\nDate: 08/03/2026 Time: 07:12 AM\nLocation: 4400 S Western Ave\nFine: $35.00",
+        "whatHappened": "The safety-zone limit only applies when the park is open or a school is in session, and 7:12am on a Sunday in August is neither. I have looked at the photos on the city site and they show the car and the plate clearly, but nothing in them establishes what time the zone became active.",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
@@ -218,34 +257,79 @@
       },
       "output": {
         "assessment": {
-          "verdict": "NOT_ENOUGH_INFORMATION_YET",
-          "reason": "Entering on yellow and being mid-intersection when the light turned red does not, by itself, contest what the camera measures — but it's worth checking whether an officer separately issued a paper citation for the same incident, which some cities treat as grounds for dismissal, before deciding to pay."
+          "verdict": "LITTLE_BASIS_TO_CONTEST",
+          "reason": "The user's core belief — that a park-zone camera is inactive on Sunday mornings — is directly contradicted by verified City of Chicago policy: park-zone cameras enforce seven days a week, and 7:12 AM falls squarely within the standard 6 AM–11 PM enforcement window. The citation location on S. Western Ave. is near McKinley Park, a confirmed park-zone camera site, making the school-day exemption the user had in mind inapplicable here."
         },
-        "what_may_matter": [],
+        "what_may_matter": [
+          {
+            "fact": "The camera at or near 4400 S. Western Ave. is a park-zone camera (McKinley Park), not a school-zone camera.",
+            "source": "citation",
+            "why_it_matters": "Park-zone and school-zone cameras operate under entirely different schedules; the school-day-only restriction the user relied upon applies only to school-zone cameras.",
+            "needs_verification": "The citation does not name the zone type, but the camera on S. Western Ave. is publicly documented as a McKinley Park (park-zone) camera.",
+            "evidence_that_would_help": "Check the City of Chicago Data Portal speed-camera list or the citation notice itself for the designated safety zone (park vs. school)."
+          },
+          {
+            "fact": "Park-zone camera enforcement hours are 6 AM to 11 PM, seven days a week — not limited to school days or park-event days.",
+            "source": "citation",
+            "why_it_matters": "7:12 AM on a Sunday falls within the verified 6 AM–11 PM enforcement window, so the citation was issued during an active enforcement period.",
+            "needs_verification": "Nothing further — this is established by multiple official CDOT sources.",
+            "evidence_that_would_help": "The specific operating hours for McKinley Park on the Chicago Park District website — if McKinley Park were closed before 7:12 AM on Sundays, that could change the analysis."
+          },
+          {
+            "fact": "The user says the citation photos show the car and plate clearly but nothing that establishes what time the zone became active.",
+            "source": "user_account",
+            "why_it_matters": "The photos would need to show a factual error — wrong plate, wrong vehicle, or a timestamp outside enforcement hours — to support a contest; the user reports no such discrepancy.",
+            "needs_verification": "The user must confirm: is the timestamp on the photos consistent with 7:12 AM? Is the plate definitely theirs?",
+            "evidence_that_would_help": "A screenshot of the violation photos and video from the city portal, saved before they expire."
+          }
+        ],
         "what_to_verify": [
-          "Whether a Chicago Police officer issued a separate, hand-written traffic citation for this same incident — if one exists, it may be grounds for dismissal under the city's own camera-violation rules.",
-          "What the two photographs and video actually show — specifically whether your vehicle had already crossed the stop line before or after the signal turned red."
+          {
+            "item": "Whether the camera at 4400 S. Western Ave. is classified as a park-zone or school-zone camera",
+            "status": "VERIFIED",
+            "detail": "CDOT documentation and neighborhood news confirm that the S. Western Ave. camera near this location is within the McKinley Park safety zone — a park-zone camera, not a school-zone camera.",
+            "source": "chicago.gov/city/en/depts/cdot; mckinleypark.news citing 12th Ward Alderwoman update"
+          },
+          {
+            "item": "Whether park-zone cameras enforce on Sundays and at 7:12 AM",
+            "status": "VERIFIED",
+            "detail": "City of Chicago official sources confirm park-zone enforcement runs 6 AM to 11 PM, seven days a week; 7:12 AM Sunday is within that window.",
+            "source": "chicago.gov/city/en/depts/cdot (Children's Safety Zone FAQ)"
+          },
+          {
+            "item": "Whether McKinley Park's specific operating hours on the citation date could affect the enforcement window",
+            "status": "NOT_VERIFIED",
+            "detail": "The city notes individual park hours may vary; this review did not confirm McKinley Park's exact Sunday opening time, though the default is 6 AM.",
+            "source": null
+          },
+          {
+            "item": "Whether any factual error appears in the citation (wrong plate, wrong vehicle, wrong location)",
+            "status": "USER_MUST_CHECK",
+            "detail": "Only the user can compare the citation's vehicle description and plate against their own vehicle and confirm accuracy.",
+            "source": null
+          }
         ],
         "evidence_to_get": [
-          { "item": "Review the two photos and video available online using the citation number", "why": "Establishes, from the city's own evidence, whether your vehicle crossed the stop line before or after the light turned red.", "urgency": "BEFORE_DECIDING" },
-          { "item": "Check your records for any hand-written police citation from the night of 07/18/2026", "why": "A duplicate citation for the same incident is a distinct, checkable fact that could change the answer entirely.", "urgency": "BEFORE_DECIDING" }
+          { "item": "Screenshot or download of the violation photos and video from the city portal", "why": "Preserves the only direct evidence of the recorded event before it ages off the portal; allows a final check for any factual error.", "urgency": "PRESERVE_NOW" },
+          { "item": "McKinley Park's official operating hours for Sundays from the Chicago Park District website", "why": "If the park officially opens after 7:12 AM on Sundays, that could support an argument that the zone was not active at the time of the citation.", "urgency": "BEFORE_DECIDING" }
         ],
         "appeal_letter": null,
-        "appeal_conditional_on": null,
+        "before_appeal": "Before an appeal could be drafted, you would need to confirm that McKinley Park's official opening time on Sundays is later than 7:12 AM — if the park opens at 6 AM as is typical, no factual basis for contesting on hours grounds would remain, and an appeal would not be supported by the available facts.",
         "how_to_file": {
-          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
-          "method_tips": null,
-          "deadline_note": "Citations of this kind typically state a response window from the Notice of Violation date — confirm the exact deadline printed on your notice before doing anything else."
+          "where": "Contest online at the City of Chicago eHearing portal (erequest.cityofchicago.org), by mail, or in person at a City of Chicago Department of Administrative Hearings location — per verified city sources.",
+          "method_tips": "The online eContest system allows you to submit a written statement and attach up to 5 files (up to 1 MB each) per ticket; an Administrative Law Judge reviews the submission and issues a ruling.",
+          "deadline_note": "You have 21 days from the date the citation was issued to request a hearing — confirmed by the City of Chicago's official Automated Speed Enforcement FAQ and eHearing portal."
         },
         "pay_or_contest": {
-          "recommendation": "NOT_ENOUGH_INFORMATION_YET",
-          "supports_contesting": null,
-          "supports_paying": "The argument you have — that you entered on yellow — addresses your own intent, not the fact the camera measures, so it's unlikely to change the outcome on its own.",
-          "key_unresolved_fact": "Whether a duplicate paper citation exists for the same incident, since that's a distinct, checkable fact rather than an interpretation.",
-          "next_step": "Check for a duplicate paper citation before deciding whether to pay or contest."
+          "recommendation": "LITTLE_BASIS_TO_CONTEST",
+          "supports_contesting": "If McKinley Park's official Sunday opening time is later than 7:12 AM, there could be a narrow factual argument that the zone was not yet active — but this has not been established.",
+          "supports_paying": "The camera is a verified park-zone camera enforcing 6 AM–11 PM seven days a week; 7:12 AM on Sunday falls within that window, the speed is clearly over the limit, and the user reports no factual errors in the photos.",
+          "key_unresolved_fact": "McKinley Park's exact Sunday opening time — if it opens after 7:12 AM, a narrow hours-based argument may exist; if it opens at or before 6 AM as is typical, no meaningful basis to contest remains.",
+          "next_step": "Check McKinley Park's official hours at chicagoparkdistrict.com/parks-facilities before the 21-day contest deadline; otherwise paying is the practical choice."
         },
         "dont_say": [
-          "Avoid leading with 'the yellow felt too short' — this describes your reaction to the signal timing, not a fact the citation or a hearing officer can act on."
+          "Do not say 'the zone was not active because it was a Sunday' — the park-zone schedule is seven days a week; that statement is directly contradicted by verified city policy.",
+          "Do not say 'the photos don't prove I was speeding' — the camera records radar-measured speed independently of the photos; disputing the photographic evidence alone does not challenge the radar reading."
         ]
       }
     },

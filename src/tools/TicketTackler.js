@@ -235,6 +235,17 @@ const TicketTackler = ({ tool }) => {
     }
   };
 
+  // Web-research verification status per what_to_verify item — see the
+  // backend's WEB RESEARCH / AFTER RESEARCH prompt sections.
+  const statusMeta = (s) => {
+    switch (s) {
+      case 'VERIFIED':      return { icon: '✓', cls: c.successTxt, label: t('tt_status_verified') };
+      case 'USER_MUST_CHECK': return { icon: '👤', cls: c.textMuted, label: t('tt_status_user_check') };
+      case 'NOT_VERIFIED':
+      default:               return { icon: '?', cls: c.warningTxt, label: t('tt_status_not_verified') };
+    }
+  };
+
   const buildFullText = () => {
     if (!results) return '';
     const parts = [];
@@ -244,14 +255,17 @@ const TicketTackler = ({ tool }) => {
       parts.push(t('tt_matter_title') + ':\n' + results.what_may_matter.map(a => `• ${a?.fact} [${sourceMeta(a?.source).label}] — ${a?.why_it_matters} (${t('tt_matter_verify')}: ${a?.needs_verification}${a?.evidence_that_would_help ? `; ${t('tt_matter_helps')}: ${a.evidence_that_would_help}` : ''})`).join('\n'));
     }
     if (results?.what_to_verify?.length) {
-      parts.push(t('tt_verify_title') + ':\n' + results.what_to_verify.map(v => `• ${v}`).join('\n'));
+      const anyVerified = results.what_to_verify.some(v => v?.status === 'VERIFIED');
+      const title = anyVerified ? t('tt_verified_title') : t('tt_verify_title');
+      parts.push(title + ':\n' + results.what_to_verify.map(v => `• [${statusMeta(v?.status).label}] ${v?.item} — ${v?.detail}${v?.source ? ` (${v.source})` : ''}`).join('\n'));
     }
     if (results?.evidence_to_get?.length) {
       parts.push(t('tt_evidence_title') + ':\n' + results.evidence_to_get.map(ev => `• (${urgencyMeta(ev?.urgency).label}) ${ev?.item} — ${ev?.why}`).join('\n'));
     }
     if (results?.appeal_letter) {
       parts.push(t('tt_letter_title') + ':\n' + results.appeal_letter);
-      if (results?.appeal_conditional_on) parts.push(`${t('tt_appeal_conditional')}: ${results.appeal_conditional_on}`);
+    } else if (results?.before_appeal) {
+      parts.push(`${t('tt_before_appeal_title')}:\n${results.before_appeal}`);
     }
     if (results?.how_to_file) {
       const file = [`${t('tt_file_where')}: ${results.how_to_file?.where}`];
@@ -432,13 +446,19 @@ const TicketTackler = ({ tool }) => {
             </div>
           ) : null}
 
-          {/* What to verify */}
+          {/* What to verify / What I verified — title switches once research has an answer */}
           {results?.what_to_verify?.length ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-              <h3 className={`font-bold ${c.text}`}>❓ {t('tt_verify_title')}</h3>
-              <ul className="mt-2 space-y-1.5 list-disc ps-5">
+              <h3 className={`font-bold ${c.text}`}>
+                {results.what_to_verify.some(v => v?.status === 'VERIFIED') ? `✓ ${t('tt_verified_title')}` : `❓ ${t('tt_verify_title')}`}
+              </h3>
+              <ul className="mt-2 space-y-2">
                 {results.what_to_verify.map((v, i) => (
-                  <li key={i} className={`text-sm ${c.textSecondary}`}>{v}</li>
+                  <li key={i} className={`text-sm ${c.textSecondary}`}>
+                    <span className={`me-2 text-xs font-bold ${statusMeta(v?.status).cls}`}>{statusMeta(v?.status).icon} {statusMeta(v?.status).label}</span>
+                    <span className={`font-medium ${c.text}`}>{v?.item}</span> — {v?.detail}
+                    {v?.source ? <span className={`${c.textMuted}`}> ({v.source})</span> : null}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -461,19 +481,22 @@ const TicketTackler = ({ tool }) => {
             </div>
           ) : null}
 
-          {/* Appeal letter — only rendered when the model concluded there's a basis for one */}
+          {/* Appeal letter — only rendered when the model concluded there's a coherent,
+              verified-enough basis for one (APPEAL GATE). Otherwise, if there's a
+              plausible-but-not-yet-verified story, before_appeal explains what's
+              missing instead of a premature draft. */}
           {results?.appeal_letter ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className={`font-bold ${c.text}`}>✉️ {t('tt_letter_title')}</h3>
                 <CopyBtn content={results.appeal_letter + BRAND} label={t('tt_letter_copy')} />
               </div>
-              {results?.appeal_conditional_on ? (
-                <div className={`${c.warning} border rounded-lg px-3 py-2 mt-2 text-xs`}>
-                  ⚠️ <span className="font-semibold">{t('tt_appeal_conditional')}:</span> {results.appeal_conditional_on}
-                </div>
-              ) : null}
               <p className={`text-sm mt-2 whitespace-pre-wrap leading-relaxed ${c.textSecondary}`}>{results.appeal_letter}</p>
+            </div>
+          ) : results?.before_appeal ? (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+              <h3 className={`font-bold ${c.text}`}>🧩 {t('tt_before_appeal_title')}</h3>
+              <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.before_appeal}</p>
             </div>
           ) : null}
 
