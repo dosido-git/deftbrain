@@ -3853,4 +3853,322 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user's concentration problem is specifically connected to background sound, environmental noise, voices, sudden sounds, or finding a tolerable auditory backdrop for work or study.",
     whenNotToRecommend: "Do not recommend when the user wants diagnosis, proven neurological treatment, guaranteed brainwave effects, live audio generation, or help whose main problem is task planning rather than sound.",
   },
+
+  FocusPocus: {
+    problems: [
+      "I need to start a task but I also need a clear stopping point",
+      "I lose track of time once I get focused and have trouble stopping",
+      "I want a bounded work session without turning the whole project into today's goal",
+      "I want to stop for now without losing my place",
+    ],
+    capabilities: [
+      "turns an open-ended task into a bounded focus session with a user-chosen duration",
+      "helps define one concrete result that would make the session enough for now",
+      "offers one small next move when the user gets stuck during the session",
+      "supports finishing early instead of filling the allotted time unnecessarily",
+      "creates a restart breadcrumb when the session ends before the task is complete",
+      "limits extensions so the session retains a real stopping point",
+    ],
+    accepts: [
+      "the task the user is working on",
+      "how long the user wants to focus",
+      "what would make this session enough for now",
+    ],
+    notFor: [
+      "building a full-day schedule or prioritizing a backlog of tasks",
+      "breaking a large overwhelming project into a complete step-by-step plan",
+      "creating a background soundscape for concentration",
+      "diagnosing ADHD, hyperfocus, or another attention condition",
+    ],
+    handoffs: [
+      { when: "the user has many known tasks and wants them grouped into a lower-switching schedule", toolId: "BatchFlow" },
+      { when: "one large task feels too overwhelming to begin and needs to be broken into small startable steps", toolId: "TaskAvalancheBreaker" },
+      { when: "the concentration problem is specifically the auditory environment and the user wants a soundscape", toolId: "FocusSoundArchitect" },
+    ],
+    primaryIntent: "run a bounded focus session that defines enough for now, helps the user stop, and preserves where to restart",
+    whenToRecommend: "Recommend when the user needs a focus timer or work session but especially struggles with stopping, overextending, or losing their place when time is up.",
+    whenNotToRecommend: "Do not recommend for backlog prioritization, full-day planning, project decomposition, soundscape design, or attention diagnosis.",
+  },
+
+  FriendshipFadeAlerter: {
+    problems: [
+      "I keep meaning to reach out to people I care about and months go by",
+      "I lose track of how long it has been since I talked to friends or family",
+      "I want a gentle reminder when a relationship has gone longer than I intended without contact",
+      "I want help figuring out what to say when reconnecting after a long gap",
+    ],
+    capabilities: [
+      "tracks user-added relationships against the contact rhythm the user chooses for each person",
+      "shows which relationships are approaching or past the user's chosen contact interval",
+      "generates a low-pressure conversation starter using context the user has saved about the person",
+      "supports snoozing a relationship during periods when the user does not want reminders",
+      "records reconnections so the contact timeline can restart from the latest interaction",
+    ],
+    accepts: [
+      "people the user wants to stay in touch with",
+      "relationship type and preferred contact frequency",
+      "last contact date",
+      "optional notes about shared interests, ongoing topics, or useful context",
+    ],
+    notFor: [
+      "judging the health, closeness, or quality of a friendship from contact frequency",
+      "deciding whether someone is intentionally avoiding the user",
+      "analyzing another person's motives or feelings",
+      "managing a conflict, breakup, or difficult conversation that needs substantive communication help",
+    ],
+    handoffs: [
+      { when: "the user needs to prepare for a difficult conversation rather than simply reconnect", toolId: "DifficultTalkCoach" },
+      { when: "the user is unsure what another person's message or phrase means", toolId: "WhatsThatMean" },
+    ],
+    primaryIntent: "help the user notice when contact with people they care about has drifted beyond their own preferred rhythm and make reconnecting easier",
+    whenToRecommend: "Recommend when the user wants help remembering to stay in touch, tracking time since contact, or finding a low-pressure way to reconnect after a gap.",
+    whenNotToRecommend: "Do not recommend for diagnosing friendship problems, inferring another person's intentions, or resolving substantive interpersonal conflict.",
+  },
+
+  FutureProof: {
+    problems: [
+      "I am considering committing years to a career, skill, technology, investment, or other long-term bet",
+      "I want to know what could strengthen or weaken this path over time",
+      "I am worried about automation, AI, industry change, or another force affecting my future",
+      "I want to make a move that still makes sense across several plausible futures",
+    ],
+    capabilities: [
+      "stress-tests a career, skill, technology, investment, or long-term commitment over a chosen horizon",
+      "separates currently observable conditions from projections and assumptions",
+      "identifies forces working for and against the bet",
+      "builds multiple conditional scenarios rather than presenting one forecast as the future",
+      "maps adjacent moves and exits that preserve flexibility",
+      "suggests one low-regret action that can hold up across more than one scenario",
+    ],
+    accepts: [
+      "the career, skill, technology, investment, or long-term bet to stress-test",
+      "the subject type",
+      "a 1, 3, 5, or 10 year horizon",
+      "optional industry, experience, goals, or other relevant context",
+    ],
+    notFor: [
+      "predicting the future with certainty",
+      "providing a guaranteed investment outcome or personalized investment recommendation",
+      "choosing between two immediate personal options when the user mainly needs a decision process",
+      "giving a single deterministic forecast without showing uncertainty",
+    ],
+    handoffs: [
+      { when: "the user is choosing between concrete alternatives now and wants one decision rather than a long-horizon stress test", toolId: "DecisionCoach" },
+      { when: "the user wants to compare how two personal life paths might feel rather than stress-test external forces", toolId: "WhichLife" },
+    ],
+    primaryIntent: "stress-test a long-term bet against observable forces, uncertainty, and multiple plausible futures before the user commits heavily",
+    whenToRecommend: "Recommend when the user is considering a career, skill, technology, investment thesis, or other multi-year commitment and wants to understand what could change and what move preserves options.",
+    whenNotToRecommend: "Do not recommend when the user wants certainty, a guaranteed forecast, a direct investment recommendation, or help choosing between immediate alternatives.",
+  },
+
+  GentlePushGenerator: {
+    problems: [
+      "I want to stretch beyond my comfort zone without overwhelming myself",
+      "I want one small challenge that is a little uncomfortable but still doable",
+      "I want to practice something I avoid without turning it into a huge goal",
+      "I want a low-pressure way to try something new",
+    ],
+    capabilities: [
+      "turns a user-chosen growth area into one small voluntary challenge",
+      "sizes the challenge to the capacity level the user reports for today",
+      "provides an easier alternative when the proposed challenge feels too large",
+      "provides a harder alternative when the proposed challenge feels too easy",
+      "treats attempting the challenge as the success condition rather than requiring a particular outcome",
+    ],
+    accepts: [
+      "what currently feels comfortable or familiar",
+      "where the user wants to stretch or grow",
+      "the user's self-reported current capacity",
+    ],
+    notFor: [
+      "required tasks the user simply needs to complete",
+      "crisis situations or circumstances where exposure to discomfort could be unsafe",
+      "clinical exposure therapy or treatment for anxiety, phobias, trauma, or another condition",
+      "motivational pressure, accountability, or a large behavior-change program",
+    ],
+    handoffs: [
+      { when: "the problem is a required task that feels too large to start rather than voluntary growth", toolId: "TaskAvalancheBreaker" },
+      { when: "the user needs live task presence or accountability rather than a challenge idea", toolId: "VirtualBodyDouble" },
+    ],
+    primaryIntent: "create one small voluntary challenge just beyond the user's current comfort zone and sized to today's capacity",
+    whenToRecommend: "Recommend when the user explicitly wants to stretch, practice, or try something slightly uncomfortable and wants a small low-pressure challenge.",
+    whenNotToRecommend: "Do not recommend for required tasks, crisis situations, clinical exposure therapy, or when the user primarily needs accountability rather than a challenge.",
+  },
+
+  Giftology: {
+    problems: [
+      "I need a gift for someone who is hard to shop for",
+      "I know a lot about the person but cannot turn those details into a good gift idea",
+      "I want a thoughtful gift that feels specific to the recipient rather than generic",
+      "I need a gift within a particular budget or deadline",
+    ],
+    capabilities: [
+      "connects specific details about the recipient to personalized gift ideas",
+      "explains the reasoning from something the user knows about the person to each suggested gift",
+      "works within a supplied occasion, budget, deadline, past-gift history, and avoid list",
+      "includes wording for a card or note that connects the gift to the recipient",
+      "can provide an unexpected wildcard idea and a last-minute option when useful",
+    ],
+    accepts: [
+      "relationship to the recipient",
+      "interests, personality, quirks, offhand remarks, or other details the user knows",
+      "occasion",
+      "optional budget and deadline",
+      "optional past gifts and things to avoid",
+    ],
+    notFor: [
+      "shopping for a product when the user already knows exactly what category or item they want",
+      "claiming to know what the recipient will definitely like",
+      "inventing personal facts about the recipient that the user did not provide",
+      "general shopping comparison unrelated to choosing a gift for a specific person",
+    ],
+    handoffs: [
+      { when: "the user already has a specific purchase in mind and wants help deciding whether it is worth buying", toolId: "BuyWise" },
+    ],
+    primaryIntent: "turn what the user already knows about a particular person into thoughtful, specific gift ideas with a clear reason each one fits",
+    whenToRecommend: "Recommend when the user is choosing a gift for a specific person and can provide at least a few details about that person, the occasion, or the constraints.",
+    whenNotToRecommend: "Do not recommend for generic product shopping, product comparison, or when there is no recipient-specific context to personalize the ideas.",
+  },
+
+  PaperworkPath: {
+    problems: [
+      "A major life event has left me with a pile of forms and I do not know what to do first",
+      "I need to know what documents to gather for a move, new baby, new job, marriage, divorce, death, home purchase, or retirement",
+      "I am worried that doing paperwork in the wrong order will block a later step",
+      "I want a life-admin checklist organized by dependency rather than a generic list",
+    ],
+    capabilities: [
+      "builds a document and paperwork checklist for a supported life event",
+      "orders tasks by dependency so prerequisites appear before the steps they can block",
+      "explains why each document matters and where it is typically obtained",
+      "uses location and situation details to sharpen the path when those details are supplied",
+      "flags jurisdiction-specific requirements or figures that should be confirmed rather than presenting uncertain local rules as universal",
+    ],
+    accepts: [
+      "the life event the user is handling",
+      "location",
+      "optional complicating details such as children, an out-of-state move, or simultaneous changes",
+    ],
+    notFor: [
+      "giving definitive legal advice about divorce, estates, immigration, taxes, or other regulated matters",
+      "filling out or filing forms on the user's behalf",
+      "tracking an arbitrary project that is not primarily a life-event paperwork workflow",
+      "guaranteeing that a generated checklist contains every jurisdiction-specific requirement",
+    ],
+    handoffs: [
+      { when: "the user is specifically reviewing a residential lease rather than navigating a broader life-event paperwork sequence", toolId: "LeaseTrapDetector" },
+      { when: "the user is preparing end-of-life wishes rather than handling the administrative sequence after a life event", toolId: "FinalWish" },
+    ],
+    primaryIntent: "show the user which paperwork a major life event is likely to require and the dependency order in which to handle it",
+    whenToRecommend: "Recommend when the user is facing a move, new baby, new job, marriage, divorce, death, home purchase, retirement, or similar life event and wants the paperwork sequence.",
+    whenNotToRecommend: "Do not recommend for definitive legal advice, form filing, unrelated project management, or guarantees about local requirements that still need official confirmation.",
+  },
+
+  SomeoneSaidItBetter: {
+    problems: [
+      "I am facing something and my own words for it feel inadequate",
+      "I want a real quotation that fits a specific situation",
+      "I want words of perspective, comfort, courage, humor, or hard-earned truth without fake quote attribution",
+      "I need a quotation I can verify before using or sharing it",
+    ],
+    capabilities: [
+      "searches for candidate quotations that fit the user's stated situation and desired kind of help",
+      "verifies quotation wording and attribution against sources before presenting it",
+      "returns a small set of genuinely different quotations rather than padding the result",
+      "explains how each verified quotation connects to details the user actually supplied",
+      "provides source information so the user can check the quotation themselves",
+      "says when enough suitable quotations cannot be verified instead of inventing one",
+    ],
+    accepts: [
+      "the situation in the user's own words",
+      "what would help, such as perspective, courage, comfort, motivation, reality check, or humor",
+      "optional preferred voice such as wise, reassuring, bracing, witty, unexpected, or any",
+    ],
+    notFor: [
+      "generating an original quotation and presenting it as something a real person said",
+      "finding a quote based on feelings or circumstances the user did not actually provide",
+      "writing a toast, speech, or message when the user needs original prose rather than a documented quotation",
+      "providing quotations without verifying wording and attribution",
+    ],
+    handoffs: [
+      { when: "the user wants an original toast rather than a real quotation", toolId: "ToastWriter" },
+      { when: "the user wants original writing in their own voice rather than someone else's documented words", toolId: "GhostWriter" },
+    ],
+    primaryIntent: "find a small number of real, verified quotations that genuinely fit the user's stated situation and desired kind of perspective",
+    whenToRecommend: "Recommend when the user wants a real quotation for a particular situation and values accurate wording, attribution, and a verifiable source.",
+    whenNotToRecommend: "Do not recommend when the user wants invented inspirational copy, original speechwriting, or unverified quotation lists.",
+  },
+
+  TicketTackler: {
+    problems: [
+      "I got a parking or automated camera ticket and want to know whether it is worth contesting",
+      "I want to understand my strongest factual defense angles before the appeal deadline",
+      "I need to know what evidence to photograph or collect before it disappears",
+      "I want help drafting a factual appeal for a parking or camera citation",
+    ],
+    capabilities: [
+      "reviews the ticket details and the user's account before assessing whether contesting appears worthwhile",
+      "identifies and ranks defense angles grounded in the supplied facts and applicable local process when available",
+      "creates an evidence checklist focused on what the user can document now",
+      "drafts a factual appeal letter based on the strongest supported points",
+      "uses the fine, deadline, and process information to help the user weigh contesting against paying",
+      "can recommend paying rather than appealing when the supplied case appears weak or the effort is not justified",
+    ],
+    accepts: [
+      "parking or automated camera ticket type",
+      "city or jurisdiction",
+      "ticket text or image",
+      "the user's description of what happened",
+      "optional fine amount and appeal deadline",
+    ],
+    notFor: [
+      "criminal charges, DUI, reckless driving, license suspension, or other serious traffic matters",
+      "guaranteeing dismissal or predicting what a hearing officer or court will decide",
+      "fabricating evidence, excuses, signage, circumstances, or defenses",
+      "providing definitive legal advice",
+    ],
+    handoffs: [
+      { when: "the issue is a general contract or legal document that needs plain-English explanation rather than a parking or camera citation", toolId: "ContractDecoder" },
+    ],
+    primaryIntent: "help the user decide whether a parking or automated camera ticket is worth contesting and, when it is, build a grounded evidence-and-appeal package",
+    whenToRecommend: "Recommend when the user has a parking ticket or automated red-light/speed-camera citation and wants an honest contest-or-pay assessment plus appeal help.",
+    whenNotToRecommend: "Do not recommend for serious traffic offenses, criminal matters, guaranteed dismissal claims, fabricated defenses, or definitive legal advice.",
+  },
+
+  WhatsThatMean: {
+    problems: [
+      "Someone used a phrase and I do not know what it means",
+      "I am confused by an idiom, slang term, jargon, metaphor, euphemism, proverb, or cultural reference",
+      "I understand the words literally but not what the expression means in context",
+      "A phrase could mean more than one thing and I want the ambiguity explained",
+    ],
+    capabilities: [
+      "classifies a phrase as idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or literal language when supported",
+      "explains the plain meaning in straightforward language",
+      "uses supplied sentence or conversation context to explain what the expression means there",
+      "preserves genuine ambiguity instead of forcing one interpretation",
+      "re-evaluates when the user supplies more context rather than treating an earlier interpretation as fact",
+      "can explain functional equivalents across languages while acknowledging when no neat equivalent exists",
+    ],
+    accepts: [
+      "a word, phrase, or expression",
+      "optional sentence or conversation context",
+      "optional request for a functional equivalent in another language",
+    ],
+    notFor: [
+      "mind-reading what the speaker was secretly thinking or feeling",
+      "analyzing a whole relationship or conversation when the problem is broader than the meaning of an expression",
+      "rewriting the user's own message",
+      "translating or simplifying a long document",
+    ],
+    handoffs: [
+      { when: "the user has a longer confusing message or conversation and needs help understanding the communication rather than one expression", toolId: "DecoderRing" },
+      { when: "the user has a longer difficult document that needs plain-English explanation", toolId: "PlainTalk" },
+      { when: "the user wants patterns in their own writing rather than the meaning of someone else's phrase", toolId: "WhatsMyVibe" },
+    ],
+    primaryIntent: "explain what a confusing word or expression means in plain language and, when context is supplied, what it means in that specific use",
+    whenToRecommend: "Recommend when the user's core question is 'what does this phrase mean?' and the answer depends on idiom, slang, jargon, figurative language, cultural reference, or context.",
+    whenNotToRecommend: "Do not recommend for mind-reading, broad relationship analysis, message rewriting, or long-document simplification.",
+  },
+
 };
