@@ -86,7 +86,6 @@ const LOCALIZED_TOOLS = [
   'src/tools/BragSheetBuilder.js',
   'src/tools/ComplaintEscalationWriter.js',
   'src/tools/NameStorm.js',
-  'src/tools/WardrobeChaosHelper.js',
   'src/tools/DifficultTalkCoach.js',
   'src/tools/DoctorVisitTranslator.js',
   'src/tools/NerveCheck.js',

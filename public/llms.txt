@@ -1,6 +1,6 @@
 # DeftBrain
 
-> DeftBrain (https://deftbrain.com) is a free collection of 127 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 124 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 ## Start here
 
@@ -30,7 +30,6 @@
 - [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day
 - [Roommate Court](https://deftbrain.com/RoommateCourt): Work it out without making it worse.
 - [Safe Walk](https://deftbrain.com/SafeWalk): A little preparation before you head out.
-- [Wardrobe Chaos Helper](https://deftbrain.com/WardrobeChaosHelper): AI picks your outfit. No more decision fatigue.
 
 ## Out & About
 
@@ -57,8 +56,8 @@
 - [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
 - [Read the Room](https://deftbrain.com/ReadTheRoom): Know what to say when you're not sure what to do.
 - [Social Battery Advisor](https://deftbrain.com/SocialBatteryAdvisor): ⚡ Learn which interactions affect your energy — and what makes the difference.
-- [Toast Writer](https://deftbrain.com/ToastWriter): Toasts, speeches, and tributes that land.
-- [Velvet Hammer](https://deftbrain.com/VelvetHammer): Transform furious drafts into professional messages
+- [Toast Writer](https://deftbrain.com/ToastWriter): Toasts, speeches, and tributes that sound like you.
+- [Velvet Hammer](https://deftbrain.com/VelvetHammer): Say the hard thing without losing the point.
 
 ## Loot
 
@@ -70,9 +69,8 @@
 - [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
 - [Quote Check](https://deftbrain.com/QuoteCheck): Know what you're paying for before you approve the repair.
 - [Scam Radar](https://deftbrain.com/ScamRadar): 🎣 Spot the warning signs before you click, pay, or reply.
-- [Subscription Tamer](https://deftbrain.com/SubscriptionTamer): ⚔ Find the subscriptions that aren't earning their place.
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? Build your appeal — or find out it's not worth fighting.
-- [Upsell Shield](https://deftbrain.com/UpsellShield): Walk into high-pressure sales prepared.
+- [Upsell Shield](https://deftbrain.com/UpsellShield): Walk in knowing what matters—and what you'll say.
 
 ## Pursuits
 
@@ -116,8 +114,7 @@
 - [Nerve Check](https://deftbrain.com/NerveCheck): Real confidence for scary moments.
 - [PEP — Personal Energy Planner](https://deftbrain.com/PEP): Work with the energy you have.
 - [Sleep Architect](https://deftbrain.com/SleepArchitect): 😴 Better sleep, one useful experiment at a time.
-- [Spiral Stopper](https://deftbrain.com/SpiralStopper): 🌀 When your mind won't let something go, find the way out.
-- [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Turn that overwhelming mountain into micro-steps
+- [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Find one foothold in a project that feels too big to start
 - [Virtual Body Double](https://deftbrain.com/VirtualBodyDouble): Work together. Even when you're working alone.
 - [Waiting Mode Liberator](https://deftbrain.com/WaitingModeLiberator): Break free when upcoming events freeze your day
 
@@ -133,13 +130,13 @@
 ## Go Deep!
 
 - [Belief Stress Test](https://deftbrain.com/BeliefStressTest): Your guiding beliefs, pressure-tested. Where they hold. Where they break.
+- [Heart of the Matter](https://deftbrain.com/HeartOfTheMatter): 🎯 Find what matters in something long.
 - [History Today](https://deftbrain.com/HistoryToday): Find the structural historical parallel — not the obvious one
 - [Missing Link](https://deftbrain.com/MissingLink): Stuck on a concept? We'll find where your understanding broke.
 - [Plain Talk](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
 - [Research Decoder](https://deftbrain.com/ResearchDecoder): Understand the research without becoming a researcher.
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): 📡 Find what holds up — and what doesn't.
 - [Someone Said It Better](https://deftbrain.com/SomeoneSaidItBetter): The words you needed, already said.
-- [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
 
 ## Diversions
 
@@ -149,14 +146,14 @@
 - [Plot Hole Finder](https://deftbrain.com/PlotHoleFinder): Find where the story stops adding up
 - [Roast Me](https://deftbrain.com/RoastMe): Find the clichés, buzzwords, humblebrags, and cringeworthy phrases you stopped noticing long ago.
 - [Six Degrees of Me](https://deftbrain.com/SixDegreesOfMe): Discover the surprising threads that connect your experiences
-- [Time Warp](https://deftbrain.com/TimeWarp): Collide anything modern with any historical period
+- [Time Warp](https://deftbrain.com/TimeWarp): Collide anything modern with any historical period.
 - [Tip of Tongue](https://deftbrain.com/TipOfTongue): Describe it from memory — DeftBrain will figure out what it is.
 
 ## Me
 
 - [Brain Dump Buddy](https://deftbrain.com/BrainDumpBuddy): Everything in your head → one clear next step
 - [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): One small change that could make the rest easier.
-- [Truth Bomb](https://deftbrain.com/TruthBomb): The thing about yourself you don't reveal.
+- [Truth Bomb](https://deftbrain.com/TruthBomb): Get clear on the thing you haven't said.
 - [What's My Vibe](https://deftbrain.com/WhatsMyVibe): Find out what you actually sound like.
 - [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): See the gap between where you think time went and where it actually went.
 

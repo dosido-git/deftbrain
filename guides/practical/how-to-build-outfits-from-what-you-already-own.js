@@ -20,17 +20,17 @@ module.exports = {
     { name: 'Question the items that haven\'t moved in a year', body: 'If something has been in the closet for twelve months untouched, ask why. If the answer is \'it does not fit anymore\' or \'I never figured out what to wear it with,\' it can leave. The closet is not a museum. Items earn their hangers by being worn. The space they free up makes the rest of the closet easier to see, and easier to actually use.' }
   ],
   cta: {
-    glyph:    '👗',
-    headline: "Stop standing in front of the closet.",
-    body:     "Wardrobe Chaos Helper learns the clothes you actually own — including comfort ratings and sensory notes — and gives you 3 to 5 complete outfit suggestions based on the day's weather, activities, and mood. The decision is made before you walk to the closet.",
+    glyph:    '🧺',
+    headline: "When the outfit problem is actually a laundry problem",
+    body:     "Sometimes what's standing between you and getting dressed isn't indecision — it's a stain, a shrunk sweater, or a care label you can't read. LaundroMat gives you a wash plan for any load, fast stain treatment, honest rescue advice for something already damaged, and a plain-English translation of care symbols.",
     features: [
-      "One-time wardrobe setup with photos and comfort ratings",
-      "Weather-, activity-, and mood-aware outfit suggestions",
-      "Sensory-friendly filters (soft fabrics, loose fit, no tags)",
-      "Backup outfit always available for overwhelmed mornings"
+      "AI load advisor: what to separate and which cycle settings",
+      "Stain SOS: fast treatment steps using what you already have",
+      "Garment Rescue: honest odds for something shrunk, faded, or bled",
+      "Care Symbols: any label translated into plain English"
     ],
-    toolId:   'WardrobeChaosHelper',
-    toolName: 'Wardrobe Chaos Helper',
+    toolId:   'LaundroMat',
+    toolName: 'LaundroMat',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

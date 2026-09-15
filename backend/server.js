@@ -269,7 +269,7 @@ const TOOL_IDS = [
   'TaskAvalancheBreaker','TheWholeStory','TheDebrief',
   'TheFinalWord','MissingLink','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
-  'WaitingModeLiberator','WardrobeChaosHelper','WhichLife','WhatsMyVibe',
+  'WaitingModeLiberator','WhichLife','WhatsMyVibe',
   'WhereDidTheTimeGo','WrongAnswersOnly','TicketTackler',
 ];
 const toolIdMap = {};
@@ -397,6 +397,18 @@ const LEGACY_REDIRECTS = {
   '/SpiralStopper':              '/PEP',
   '/spiralstopper':              '/PEP',
   '/spiral-stopper':             '/PEP',
+
+  // WardrobeChaosHelper retired 2026-09-14 (see audit/RENAMES.md) — hard
+  // delete, not a redesign call. The rewrite itself shipped clean, but the
+  // five guides built around it (how-to-dress-for-unpredictable-weather,
+  // how-to-get-dressed-when-you-cant-decide, etc.) have no true substitute
+  // in the catalog — outfit-picking isn't a job any other live tool does.
+  // Redirects to LaundroMat, the only tool with meaningful tag/category
+  // overlap (per the RelatedLinks algorithm) and the closest live
+  // "your clothes" tool, rather than 404ing bookmarks and backlinks.
+  '/WardrobeChaosHelper':        '/LaundroMat',
+  '/wardrobechaoshelper':        '/LaundroMat',
+  '/wardrobe-chaos-helper':      '/LaundroMat',
 
   // Merged tools — Recharge Radar folded into Social Battery Advisor (its
   // superset: SEA has an Energy Forecast mode that IS Recharge Radar's whole

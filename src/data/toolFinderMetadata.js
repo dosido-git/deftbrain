@@ -2216,7 +2216,6 @@ export const toolFinderMetadata = {
       "wardrobe organization, outfit planning, or deciding what clothing to keep",
     ],
     handoffs: [
-      { when: "the user's problem is organizing, reducing, or making decisions about a wardrobe rather than washing or caring for garments", toolId: "WardrobeChaosHelper" },
       { when: "the garment appears beyond practical rescue and the user wants help evaluating whether a replacement is worth its price", toolId: "BuyWise" },
     ],
     primaryIntent: "solve an immediate laundry problem involving washing, stains, garment damage, care labels, or cycle timing",

@@ -1,6 +1,6 @@
 # DeftBrain — full content
 
-> DeftBrain (https://deftbrain.com) is a free collection of 127 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 124 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 This file carries the substance behind https://deftbrain.com/llms.txt: what each tool does, and the full text of the guides. Tool pages are interactive forms, so their value is described rather than transcribed; the guides are reproduced in full.
 
@@ -679,41 +679,6 @@ Input: Walking home from a yoga class at night. You know the main road is better
 
 Output: What Matters restates the two things you already know — the lighting difference and the dark stretches — and says plainly that Safe Walk has no live information about the route beyond that. The before-you-go list and route guidance both point to the main road, grounded in what you said, not an invented safety score. A check-in message is suggested since it's an evening walk; you copy it and send it before heading out, then start a check-in reminder on the Walking tab.
 
-### Wardrobe Chaos Helper
-
-URL: https://deftbrain.com/WardrobeChaosHelper
-Tagline: AI picks your outfit. No more decision fatigue.
-Categories: The Grind
-
-AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.
-
-**What it does.** Decision fatigue is real, especially when it comes to picking outfits. This tool learns your wardrobe and suggests complete outfit combinations based on your day's needs. It considers weather, activities, your mood, comfort preferences, and sensory requirements. Particularly helpful for anyone who finds daily outfit decisions overwhelming.
-
-**How to use it.**
-
-1. STEP 1: Build your wardrobe inventory (one-time setup, then just maintain)
-2. Add items to each category (tops, bottoms, dresses, outerwear, shoes)
-3. Include comfort ratings and sensory notes (soft fabric, no tags, etc.)
-4. Upload photos to help remember what items look like
-5. STEP 2: Describe today's needs - weather, activities, mood
-6. STEP 3: Get 3-5 complete outfit suggestions with comfort/style ratings
-
-**Tips.**
-
-- Do the wardrobe setup once when you have energy - then it's just maintenance
-- Add sensory notes to items: 'scratchy wool', 'tags removed', 'loose fit'
-- Higher comfort numbers (comfort level 7+) will be suggested more on low-energy days
-- The 'backup option' is always the simplest possible outfit - use it when overwhelmed
-- Save favorite combinations (star icon) to repeat them without thinking
-- Update weather/activities daily but wardrobe stays constant
-- Photos help A LOT if you have trouble visualizing items from text
-
-**Example.**
-
-Input: It's a rainy Tuesday. You have a work meeting and need to feel confident, but you're low energy and need sensory-friendly clothes (soft fabrics, loose fit). Comfort priority is 8/10.
-
-Output: Outfit #1: Navy cotton t-shirt (comfort 9/10) + Black jogger pants (comfort 10/10) + White sneakers + Gray hoodie (for rain). Comfort: 9/10, Style: 6/10, Sensory-friendly ✓. Why: The cotton and joggers are your softest items. The dark colors look pulled-together for video calls while feeling like pajamas. Hoodie keeps you dry without a jacket. Confidence boost: You'll look professional from the waist up on camera and feel maximum comfort all day. Outfit #2: Green sweater (soft merino, comfort 8/10) + Black leggings + Canvas slip-ons. Plus 2-3 more options. Tips: Lay out clothes tonight so morning is easier. If stuck choosing, pick the softest option - you can't think clearly if uncomfortable. Backup: If overwhelmed, just wear the black joggers + any soft t-shirt + hoodie. Done.
-
 ## Out & About
 
 ### Culture Briefing
@@ -1375,12 +1340,12 @@ Output: Social Battery Advisor shows the plain counts — one interaction ended 
 ### Toast Writer
 
 URL: https://deftbrain.com/ToastWriter
-Tagline: Toasts, speeches, and tributes that land.
+Tagline: Toasts, speeches, and tributes that sound like you.
 Categories: Humans, Discourse
 
-Need to give a toast, speech, or tribute? Describe the person, the occasion, and any stories you want to include. ToastWriter generates 3 versions at different styles — warm, funny, elegant — each with delivery cues, the opening hook, the closing line, and an emergency closer if you freeze. Because nobody should have to wing it.
+You know the stories. You know what the person means to you. Toast Writer helps you turn that into something worth saying out loud.
 
-**What it does.** ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 complete speeches at different warmth/humor levels, each with inline delivery cues like [PAUSE] and [LOOK AT THEM]. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.
+**What it does.** ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 takes on your requested tone, each with inline delivery cues like [PAUSE] and [LOOK AT THEM], built only from what you actually supplied. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.
 
 **How to use it.**
 
@@ -1407,34 +1372,34 @@ Output: Three versions: 'The Storyteller' (warm, built around the Tokyo story), 
 ### Velvet Hammer
 
 URL: https://deftbrain.com/VelvetHammer
-Tagline: Transform furious drafts into professional messages
+Tagline: Say the hard thing without losing the point.
 Categories: Humans, Discourse
 
-Transform angry draft messages into professional communication. Type what you really want to say, then get three polished versions that preserve your point while removing the fire.
+Sometimes the message you need to send starts out angrier than you want it to land. Velvet Hammer helps you keep what matters, lose what doesn't, and say it in a way the other person can actually hear.
 
-**What it does.** Velvet Hammer helps you communicate assertively without burning bridges. When you're furious and need to send a professional message, type your raw, unfiltered thoughts—insults, sarcasm, and all. The tool analyzes your legitimate concerns and rewrites them into three professional variants: Collaborative (assumes good faith), Balanced (clear boundaries), and Firm (direct but professional). Your anger gets validated, your point gets preserved, but the inflammatory language disappears.
+**What it does.** Velvet Hammer removes the heat without rewriting the history. Type your raw, unfiltered draft — insults, sarcasm, and all. The tool separates what you actually reported (facts, effects, what you want) from language that doesn't need to survive into the final message, then gives you The Point (what's left once the heat is gone) and three versions of it: Clear (the cleanest statement), Tactful (softer delivery, same substance), and Firm (unmistakable emphasis, never a threat). Nothing is added that you didn't already say.
 
 **How to use it.**
 
-1. Type or paste your angry draft message in the 'What I want to say' box—don't hold back
+1. Type or paste your angry draft message — don't hold back
 2. Optionally add context: your relationship to the recipient (boss, colleague, landlord, etc.)
-3. Optionally specify what you're trying to achieve (apology, compensation, behavior change, etc.)
-4. Optionally indicate the power dynamic (you have leverage, you're equals, they have power over you)
-5. Click 'Transform Message' and review three professionally reworded versions
+3. Optionally specify your goal (apology, compensation, behavior change, etc.)
+4. Optionally indicate the power dynamic — it only calibrates directness, never invents leverage
+5. Read The Point first, then pick the version you'd actually send
 
 **Tips.**
 
-- The angrier your draft, the better—the tool is designed for maximum rage translation
-- Add context fields for better calibration: 'boss' relationships get more diplomatic, 'you have leverage' makes messages firmer
-- The 'Collaborative' version assumes good intentions—use when you want to preserve relationships
-- The 'Firm' version is direct and sets clear boundaries—use when previous attempts have failed
+- The angrier your draft, the better — the tool is designed to find the point underneath it
+- Context fields calibrate directness only — they never invent leverage or soften a boundary you stated plainly
+- Firm is direct, not a threat — it should never contain a consequence you didn't actually state
+- Read The Point before the three versions — it's the plain fact of what survived
 - Your original angry draft stays completely private and is never stored anywhere
 
 **Example.**
 
 Input: Your colleague took credit for your work in a meeting. You want to type: 'You're a backstabbing liar who steals other people's work. This is the third time you've done this and I'm sick of it.'
 
-Output: You get three options: Collaborative ('I wanted to address some concerns about project attribution...'), Balanced ('I need to discuss instances where my work was presented without acknowledgment...'), and Firm ('There have been multiple occasions where you've presented my work as your own. This pattern is unacceptable...'). Each preserves your factual claim while removing personal attacks.
+Output: The Point: this is the third time your work was presented as someone else's, and you want it to stop. Clear: a direct, factual statement of the pattern and the ask. Tactful: the same substance, delivered to lower defensiveness. Firm: unmistakable emphasis on the pattern and the ask — with no invented consequence attached.
 
 ## Loot
 
@@ -1711,38 +1676,6 @@ Input: You receive an email saying your account will be suspended unless you con
 
 Output: Scam Radar would put the immediate action first: don't use the message's link. It would identify the sensitive request, urgency, and sender details as reasons for caution without claiming the sender has been independently verified as fraudulent. It would then tell you to open the company's known app or type its known website yourself, and explain which facts remain unresolved until you check through that independent channel.
 
-### Subscription Tamer
-
-URL: https://deftbrain.com/SubscriptionTamer
-Tagline: ⚔ Find the subscriptions that aren't earning their place.
-Categories: Loot
-
-See what your subscriptions are really costing you and which ones deserve another look. Add your recurring charges, tell us how you actually use them, and Subscription Tamer helps you find the easiest places to reconsider.
-
-**What it does.** Subscription Tamer turns a list of recurring charges into a short, thoughtful review — not a verdict. Add each subscription's real price, billing period, and a rough sense of how you use it (a lot, sometimes, barely, forgot about it, not sure), plus anything that makes it hard to judge. The tool groups everything into Start Here, Take Another Look, and Probably Leave Alone For Now, and for anything non-obvious it asks one question that could change your mind. A pure-arithmetic What If calculator shows the monthly and annual total for any subscriptions you select — never a recommendation to cancel them, just the math. Your list persists so you can build it up over time.
-
-**How to use it.**
-
-1. Add each subscription: name, the price you actually pay, billing period, and how you'd describe using it
-2. Optionally add context that makes one hard to judge — family uses it, you need it occasionally for work, it's bundled with something else
-3. Or paste a bank/card statement — the tool flags possible recurring charges for you to confirm and add
-4. Submit to get three groups: Start Here (the clearest mismatches), Take Another Look (mixed or uncertain), and Probably Leave Alone For Now
-5. Read the one question attached to anything non-obvious — it's designed to be the question that could actually change your mind
-6. Check any subscriptions to see the exact monthly/annual total if you stopped them — pure arithmetic, not a suggestion
-
-**Tips.**
-
-- Use the price you're actually paying now, not the introductory rate — that's what the math needs
-- A rough usage description is enough — don't try to calculate an exact frequency
-- The context field is for whatever makes a subscription hard to judge on price and usage alone — it changes how the review reads it
-- Statement scanning only flags possible matches — you decide what each one actually is before it's added
-
-**Example.**
-
-Input: You have a video streaming service you barely open, a music service you use daily, design software for occasional client work, and a gym membership you forgot you were paying for.
-
-Output: Start Here: the video service and the forgotten gym membership, each with a question about whether there's a reason you're still holding onto it. Take Another Look: the design software, since occasional paid work makes its value genuinely unclear. Probably Leave Alone For Now: the music service, which matches your stated daily use.
-
 ### Ticket Tackler
 
 URL: https://deftbrain.com/TicketTackler
@@ -1779,33 +1712,33 @@ Output: Verdict: FIGHT (7/10). Strongest angle: the restriction had ended at the
 ### Upsell Shield
 
 URL: https://deftbrain.com/UpsellShield
-Tagline: Walk into high-pressure sales prepared.
+Tagline: Walk in knowing what matters—and what you'll say.
 Categories: Loot
 
-About to visit a car dealership, phone store, furniture showroom, or contractor? Describe what you want and UpsellShield preps you with the exact sales tactics they'll use, the phrases that deflect each one, your walk-away line, and the questions that shift power back to you. Enter prepared, leave with what you actually wanted.
+Sometimes it's hard to keep track of what you wanted in the first place once you're in the room. Upsell Shield helps you go in with your priorities clear, recognize the moments that tend to pull people off course, and know what to say when the conversation starts drifting from your plan.
 
-**What it does.** UpsellShield is pre-game preparation for high-pressure sales situations. Tell it where you're going and what you want, and it maps out the specific tactics that industry uses — anchoring, artificial urgency, the good-cop/bad-cop manager routine, add-on bundling — with the exact counter-phrases for each. Includes your walk-away script and the questions that make salespeople respect you.
+**What it does.** Upsell Shield is preparation, not a script for outplaying anyone. Tell it where you're going, what you want, and your budget, and it restates your own priorities back to you first, then walks through the pressure or decision moments plausibly relevant to this kind of conversation — described as things you may encounter, not predictions — with a grounded response for each. Includes questions worth asking, what to verify before you commit, and a plain exit line for if you need one.
 
 **How to use it.**
 
 1. Describe where you're going and what you plan to buy or negotiate
 2. Add your budget and any constraints
-3. Review the tactics they'll use and the counter-phrases
-4. Memorize your walk-away line before you go in
-5. Reference the power questions during the conversation
+3. Start with Your Plan — it's your own priorities, restated
+4. Read Watch For and keep your exit line ready
+5. Check Questions Worth Asking and Before You Commit before you agree to anything
 
 **Tips.**
 
-- Read through the entire prep before you walk in — not during
-- The walk-away line is your most powerful tool — practice saying it out loud
-- Power questions work because they signal you know the game
+- Read through Your Plan before you walk in — it's your own priorities, not the seller's
+- Your exit line requires no excuse — practice saying it once out loud
+- Questions Worth Asking are for getting real information, not for sounding sophisticated
 - Works for any high-pressure situation, not just cars
 
 **Example.**
 
-Input: Buying a used car at a dealership. Budget: $18,000.
+Input: Buying a used car at a dealership. Budget: $18,000, no extended warranty.
 
-Output: Maps out: they'll anchor high ($22k), use 'monthly payment' framing to hide total cost, push extended warranty, create urgency ('someone else is looking at this'), and try to sell you on financing. Counter-phrases for each, walk-away line, and the question that forces transparency: 'What's the out-the-door price with zero add-ons?'
+Output: Your Plan restates the $18,000 ceiling and no-warranty limit as decided. Watch For names moments like payment framed monthly instead of total, or an add-on offered late in the visit — each with a grounded response, not a bluff. Before You Commit flags the out-the-door price as something to verify in writing. Your exit line: a plain, polite way to leave and think it over.
 
 ## Pursuits
 
@@ -2180,7 +2113,7 @@ URL: https://deftbrain.com/TheRunthrough
 Tagline: Presentation coach in your pocket.
 Categories: Pursuits, The Office
 
-Paste your presentation and pick a mode: Cut trims it to fit your time limit, Anticipate predicts the toughest Q&A and drafts answers, and Hook rewrites your opening, closing, and transitions to land harder.
+A presentation can look ready on the page and still stumble in the room. The Run-Through helps you find what to cut, what to prepare for, and what needs a stronger landing — before you're standing in front of an audience.
 
 **What it does.** The Runthrough is a 3-mode presentation coaching tool. Cut mode trims your content to fit a time limit while preserving the core message. Anticipate mode predicts the hardest questions your audience will ask and drafts strong answers with traps to avoid. Hook mode rewrites your opening, closing, and key transitions to grab attention and stick in memory.
 
@@ -2939,80 +2872,37 @@ Input: You fall asleep easily but wake most nights between 1 and 3 AM, sometimes
 
 Output: Sleep Architect summarizes the reported waking pattern, keeps the relationship between pain, temperature, and other awakenings unresolved unless you established it, and selects one variable to test first — for example, a single positional-support change. It tells you what to observe while keeping everything else as stable as practical. Temperature or another plausible factor stays under What to Try Next rather than becoming a second simultaneous experiment.
 
-### Spiral Stopper
-
-URL: https://deftbrain.com/SpiralStopper
-Tagline: 🌀 When your mind won't let something go, find the way out.
-Categories: Energy, Me
-
-Stuck replaying something, imagining what might happen, or thinking the same thought over and over? Tell Spiral Stopper what's looping. It helps you figure out whether there's something to solve, something to learn, or nothing more you can usefully do right now — then gives you a concrete way out of the loop.
-
-**What it does.** Spiral Stopper is a single-purpose tool for one thought loop at a time — not a diagnostic, not a crisis-severity scorer, and not a place that tracks your history for you. Tell it what's looping, and optionally the one plain fact you're sure of. It separates what's actually real from what's still unknown, then makes the key judgment: is there a genuine, actionable problem here right now, or not? Based on that, you get exactly one exit — act on the one useful thing, take the lesson and stop replaying it, wait for the specific information that would actually change things, or deliberately leave the loop because another pass won't add anything new — plus a short stopping rule you can reuse if the same loop starts again. If you need a moment before writing it all out, 'Get me out of my head' walks through a brief, no-input attention shift.
-
-**How to use it.**
-
-1. Type out the loop exactly as it's running, unfiltered — the messier and more repetitive, the more useful the result
-2. Optionally add the one factual anchor you're sure of, stated plainly (what you'd put on a timeline, not what it means)
-3. If you're too keyed up to write clearly, tap 'Get me out of my head' for a short attention shift, then come back
-4. Submit and read the breakdown: the loop restated plainly, what's real, what's still unknown, and the judgment on whether there's really something to solve right now
-5. Read your one exit and what it means to be done with it, plus the stopping rule to reuse if the loop restarts
-6. If this keeps happening with the same trigger, that's a different question — Spiral Stopper hands off to Before the Crash for that
-
-**Tips.**
-
-- Don't clean up what you type — the whole point is to hand over the story exactly as your mind is telling it, worst parts included
-- The factual-anchor field is optional but sharpens the split — one plain sentence, not your interpretation of what it means
-- The exit won't always be an action — sometimes the honest answer is that there's nothing to do until something changes, or nothing to do at all
-- This tool doesn't keep a log of your spirals on purpose — it's built to help with the one in front of you, not to track you over time
-
-**Example.**
-
-Input: You're waiting on biopsy results and your mind keeps jumping straight to the worst case, running the whole story before there's anything to run it on.
-
-Output: What's real: you're waiting for results, you don't have them yet. What's unknown: what the results will show. The judgment: NOT YET — there's nothing to solve until the results arrive, because the story your mind is running can't be verified either way. Your exit: WAIT — stop at the edge of what's established, and let the actual result be the thing that makes this actionable. A stopping rule to reuse: 'I don't have the result yet — there's nothing established here to solve.'
-
 ### Task Avalanche Breaker
 
 URL: https://deftbrain.com/TaskAvalancheBreaker
-Tagline: Turn that overwhelming mountain into micro-steps
+Tagline: Find one foothold in a project that feels too big to start
 Categories: Energy, Do It!
 
-Turn overwhelming projects into 5-minute micro-tasks. Built for that 'too big to start' paralysis. No decisions required.
+Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list.
 
-**What it does.** The Task Avalanche Breaker converts overwhelming projects into ultra-specific micro-tasks that require ZERO decision-making. Built specifically for  anyone experiencing 'too big to start' paralysis. Each task is broken down to 2-5 minute chunks with clear completion criteria and momentum-building sequencing.
+**What it does.** Task Avalanche Breaker exists for the moment a project already feels too big to look at, not the moment you want it broken into a full plan. Describe what's looming and optionally say what makes starting hard. You get back one first move — grounded only in facts, constraints, and relationships you actually described, never a plausible-sounding project theory invented to make the move look smarter than it is — why it's the useful place to start, a visible done condition, and a genuinely smaller fallback if even that is too much. When an important dependency isn't clear from what you said, the first move may simply be finding it out, rather than the tool guessing. Up to two later footholds are there as a preview of what comes after, not a project plan to work through. The tool never diagnoses why something is hard and never invents facts, deadlines, stakeholders, or structure your project doesn't have — it just gives you one grounded thing to actually do.
 
 **How to use it.**
 
-1. Describe your overwhelming project (garage cleanup, thesis writing, etc.)
-2. Check why it feels overwhelming (too many steps, don't know where to start, etc.)
-3. Set your available time (5-30 minutes)
-4. Adjust energy level slider to current state (exhausted to energized)
-5. Click 'Break This Down for Me' to get micro-tasks
-6. See total tasks, estimated time, and project complexity
-7. Focus on highlighted 'Next Task' - just this one thing
-8. Start the timer for the task (optional but helpful)
-9. Complete task and click 'I Did It!' to celebrate and move on
-10. Click 'This Is Too Hard' button to break task down further
-11. Stop at any time - progress is progress, no failure here
+1. Describe what feels too big to start right now
+2. Optionally note what's making it hard — too many moving parts, not knowing where to start, it being emotionally difficult, having put it off, or it being unfamiliar
+3. Get one first move grounded in what you actually described, with why it's useful and a visible done condition
+4. If even that feels like too much, open 'Still too much?' for a genuinely smaller version of the same move
+5. Do the move, then click 'I did it — what's next?' to move to the next foothold, or stop — either is a complete use of the tool
+6. Optionally expand 'See the path ahead' for up to two later footholds — a preview, not a plan to finish in one sitting
 
 **Tips.**
 
-- Do ONLY task 1 if that's all you can manage - that's real progress
-- Use the timer - it makes tasks feel finite and manageable
-- If a task feels too hard, click 'This Is Too Hard' for breakdown
-- You're allowed to stop after ANY task - there's no failure
-- First 5 tasks are momentum builders - absurdly simple on purpose
-- Tasks are ordered to avoid decision-making when energy is low
-- Completion criteria tells you EXACTLY when you're done
-- Check off tasks to see visual progress - it's motivating!
-- Celebrate at checkpoints - you're making real progress
-- Don't have to finish the whole project - any progress counts
+- The reasons you check aren't diagnosed or explained back to you — they just help size the first move to what's actually in the way
+- 'Still too much?' gives a smaller version of the SAME move, not a different, easier task
+- If the right first move depends on something you haven't said, the tool will often make finding that out the move itself, rather than guess
+- The later footholds are a preview, not a commitment — nothing requires you to do more than the one you're on
 
 **Example.**
 
-Input: You need to clean your garage but it's been years and you're completely overwhelmed. You don't know where to start, it's emotionally difficult (sentimental items), and there are too many steps.
+Input: You need to clean out your late father's garage. There are decades of tools, boxes, and paperwork, it's emotionally difficult, and you don't know where to start.
 
-Output: Get 25 micro-tasks starting with: Task 1: 'Stand in garage doorway (don't go in, just stand there)' - 30 seconds. Task 2: 'Get three trash bags from kitchen' - 1 minute. Each task ultra-specific, no decisions needed, builds momentum. After 5 tasks, get celebration checkpoint with permission to stop.
+Output: One first move grounded in what you actually described — something concrete you can do, not 'start sorting the garage' and not an invented claim about which part of the garage matters most. A visible done condition, a smaller fallback if it's still too much, and up to two later footholds you can look at or ignore.
 
 ### Virtual Body Double
 
@@ -3220,7 +3110,7 @@ URL: https://deftbrain.com/TheFinalWord
 Tagline: Arguments settled. Facts checked. No appeals.
 Categories: Discourse, Go Deep!
 
-The argument-settling, fact-checking, trivia-hosting authority. Four modes in one tool: Quick Answer delivers bold, confident responses to any factual question with confidence ratings. Settle It acts as an impartial referee when two people disagree — enter both sides, get a verdict with accuracy scores, a breakdown of who got what right, and a settlement suggestion. Fact Check gives clear TRUE/FALSE/MISLEADING rulings on any claim with explanations and myth origins. Trivia Night generates quick-fire multiple-choice rounds with team scoring, streak tracking, difficulty settings, and 10 categories — plus an 'Actually...' challenge button if you think the answer is wrong. Voice input supported on all modes.
+Some questions have an answer. Some arguments have two. The Final Word sorts out what’s true, what’s uncertain, and what’s just opinion — clearly, fairly, and without pretending to know more than it does.
 
 **What it does.** The Final Word is four tools in one, built for settling debates, answering disputed questions, checking facts, and hosting trivia nights. Quick Answer mode takes any factual question and delivers a bold, confident response with a confidence level (certain → uncertain), supporting facts, and a bonus fun fact. Settle It mode takes two opposing claims (with optional names and context), scores each side's accuracy 0–100, declares a winner, and suggests a fun way to move on. Fact Check mode rates any claim as TRUE, FALSE, MOSTLY TRUE, MOSTLY FALSE, MISLEADING, or IT'S COMPLICATED with an explanation and myth origin. Trivia Night generates multiple-choice questions across 10 categories at 3 difficulty levels, with full team management (1–6 teams), score and streak tracking, and an 'Actually...' challenge system for disputed answers. Voice input works on all text modes.
 
@@ -3311,6 +3201,38 @@ Pressure-tests the guiding beliefs you live by across multiple dimensions: histo
 Input: 'Everything in moderation'
 
 Output: Where it holds: prevents extremes, reduces anxiety. Fatal stress test: doesn't apply to genuinely harmful things — moderate heroin use isn't wisdom. Significant: some goods require full commitment, not moderation. Hidden structure: it's really a rule against anxiety, not a guide to quantity. Upgrade: 'Moderation is a useful default for diminishing-return activities. For things requiring mastery or commitment, replace moderation with intentionality.'
+
+### Heart of the Matter
+
+URL: https://deftbrain.com/HeartOfTheMatter
+Tagline: 🎯 Find what matters in something long.
+Categories: Go Deep!
+
+Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.
+
+**What it does.** Heart of the Matter solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. Heart of the Matter detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long article. Everything content-specific stays grounded in what you actually supplied: it reorganizes, compares, and generates practice from the material, but it does not silently add outside facts, predict what will be on an exam, guess a professor's intent, or invent common mistakes. When the source doesn't establish something, that stays a gap rather than getting filled in. Three modes cover different needs, from quick-reference bullets to a fuller breakdown to cross-source themes — and the material itself can be pasted, or uploaded as a text file, PDF, or audio recording.
+
+**How to use it.**
+
+1. Pick a mode: Distill (ranked bullet points), Understand (a plainer breakdown of what to understand), or Connect (cross-source themes)
+2. Paste your material, or upload it — a .txt/.md file, a PDF, or an audio recording (lecture, talk, podcast) — and it's read in for you
+3. Optionally add the subject and topic for sharper context
+4. Set mode-specific options: point count and priority type for Distill
+5. Review results — each mode produces output optimized for its use case, grounded only in what you supplied
+
+**Tips.**
+
+- Auto-captions are fine — Heart of the Matter handles imperfect transcription (typos, missed words) well
+- The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times — only when the material actually says them
+- Distill's point types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point
+- Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them
+- An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode
+
+**Example.**
+
+Input: You just watched a 20-minute TED talk on behavioral economics and want the core ideas without rewatching it.
+
+Output: Distill produces 8 ranked points — #1 is the talk's central claim, flagging the line the speaker repeated three times and the story used to anchor it. Each point notes what role it plays in the material, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that are actually supported across them.
 
 ### History Today
 
@@ -3514,39 +3436,6 @@ Input: You've worked on something for two years and are starting to wonder wheth
 
 Output: Two or three verified quotes about persistence, timing, or knowing when to stop — each with a real author, source, and a one-line explanation of why it connects to two years of doubt, not just to 'giving up' in general.
 
-### The Crux
-
-URL: https://deftbrain.com/TheCrux
-Tagline: Paste any talk or long read — get the signal without the noise
-Categories: Go Deep!
-
-Paste any talk or long read — a TED talk, lecture, keynote, sermon, podcast, or article — and get the 20% that matters. Four modes: Distill, Study Guide, Test Prep and Connect.
-
-**What it does.** The Crux solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. The Crux detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long read. Four modes cover different needs, from quick-reference bullets to full practice exams.
-
-**How to use it.**
-
-1. Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (practice questions), or Connect (cross-source themes)
-2. Paste your content — a talk or podcast transcript, a YouTube caption dump, lecture notes, or the text of a long article
-3. Optionally add the subject and topic for sharper context
-4. Set mode-specific options: bullet count, priority type, exam format, question types, difficulty
-5. Review results — each mode produces output optimized for its use case
-
-**Tips.**
-
-- Auto-captions are fine — The Crux handles imperfect transcription (typos, missed words) well
-- The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times
-- Distill bullet types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point
-- Test Prep's 'why wrong' explanations for multiple choice are often more educational than the right answer
-- Connect mode shines across sources — paste 3-5 transcripts (talks, lectures, or articles) and it finds the themes that span all of them
-- Study Guide mnemonics won't always be clever, but they're personalized to the actual content
-
-**Example.**
-
-Input: You just watched a 20-minute TED talk on behavioral economics and want the core ideas without rewatching it.
-
-Output: Distill produces 8 ranked points — #1 is the talk's central claim (tagged 'framework, memorable'), flagging the line the speaker repeated three times and the story used to anchor it. Each point notes how to remember it, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that span them.
-
 ## Diversions
 
 ### Bookmark
@@ -3743,31 +3632,31 @@ Output: 4-degree chain: Philosophy degree -> trained you to decompose arguments 
 ### Time Warp
 
 URL: https://deftbrain.com/TimeWarp
-Tagline: Collide anything modern with any historical period
+Tagline: Collide anything modern with any historical period.
 Categories: Diversions, What If?
 
-Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.
+What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.
 
-**What it does.** Time Warp creates collisions between the modern and historical that are both genuinely funny and surprisingly educational. The AI knows enough real history to make the comedy specific.
+**What it does.** Time Warp creates collisions between the modern and historical that are genuinely funny first. History is the playground, not the point — the model picks whatever form (a scene, a listing, a letter, an ad, and more) makes each specific collision funniest, then names the surprising thing the collision reveals about the familiar modern thing.
 
 **How to use it.**
 
 1. Pick a modern thing and a historical period, or use a Quick Combo
-2. Choose your format: Explain It, Review, News Report, Letter, Debate, or Ad
-3. Hit 'Warp It' and travel through time
-4. Check the 'Actually True' footnotes — you'll learn real history
+2. Hit 'Warp It' and let the collision find its own form
+3. Read 'The Warp' — the short reflection on what the collision reveals
+4. Try 'One More?' for an irresistible adjacent collision
 
 **Tips.**
 
 - The more specific your modern thing, the funnier the result
-- Try the same combo in different formats
-- The 'Flip It' suggestion teases the reverse collision
+- 'Same Combo, Different Warp' reruns the pairing for a fresh take
+- 'One More?' teases the next collision worth trying
 
 **Example.**
 
-Input: Modern thing: Uber. Historical period: 1920s New York. Format: News Report.
+Input: Modern thing: Uber. Historical period: 1920s New York.
 
-Output: A period-authentic 1920s newspaper article about mysterious horseless carriages summoned by pocket devices, with quotes from concerned taxi medallion holders and footnotes explaining real 1930s taxi regulation history.
+Output: A fictional 1920s newspaper notice about mysterious horseless carriages summoned by pocket devices, followed by a short reflection on what the panic over 'letting a stranger's car pick you up' still says about trust and convenience today.
 
 ### Tip of Tongue
 
@@ -3871,12 +3760,12 @@ Output: What I notice: mornings start with 20 minutes of phone-in-bed scrolling 
 ### Truth Bomb
 
 URL: https://deftbrain.com/TruthBomb
-Tagline: The thing about yourself you don't reveal.
+Tagline: Get clear on the thing you haven't said.
 Categories: Me
 
-We all have things about ourselves we don't reveal to others. Truth Bomb examines what it's about, identifies what it costs you to hide it; explores what would actually happen if you said it, and scripts it three ways: gentle opening, direct statement, and full truth. Ends with permission to not say it — and the honest cost of that choice.
+Some things get harder the longer they go unsaid. Truth Bomb helps you separate what you know from what you're assuming, understand what speaking — or staying silent — would actually change, and decide what you want to do next.
 
-**What it does.** TruthBomb handles the unsaid thing — not with therapy, but with clarity. It examines what's really driving the silence, what it's costing you to maintain it, and what would realistically happen if you said it. Then it scripts three versions: a gentle opening, a direct statement, and the full unfiltered truth.
+**What it does.** TruthBomb handles the unsaid thing — not with therapy, but with clarity. It isn't about finding the courage to speak; it's about getting clear enough to choose. It examines what's really driving the silence and what staying silent actually does — what it preserves as well as what it leaves unresolved — then gives an honest reality check: what you actually know versus what you're only assuming, rather than a prediction of how anyone will react. Then it scripts three versions: a gentle opening, a clear statement, and the full unfiltered truth.
 
 **How to use it.**
 
@@ -3897,7 +3786,7 @@ We all have things about ourselves we don't reveal to others. Truth Bomb examine
 
 Input: I don't love my job anymore and I've been hiding it from my partner because they sacrificed for me to get it
 
-Output: What it's really about: afraid their sacrifice feels wasted — and afraid they'll tell you to stay. What hiding it costs: distance already building as they sense your disengagement. What would happen: probably relief — they've noticed something is off. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job because of everything you gave up, and that's not fair to either of us.'
+Output: What it's really about: not wanting their sacrifice to feel wasted. What staying silent does: it avoids a conversation you're not ready for — and leaves you the only one who knows how you actually feel about the job. Reality check: you know you've been hiding it; you don't know how they'd actually respond — that's a fear, not a fact. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job, and I'm not anymore.'
 
 ### What's My Vibe
 
