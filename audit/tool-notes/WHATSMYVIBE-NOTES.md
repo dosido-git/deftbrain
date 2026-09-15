@@ -1,4 +1,41 @@
-# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2.1`, 2026-09-14)
+# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2.2`, 2026-09-14)
+
+## 2026-09-14 v2.2 correction round
+
+v2.1 still overreached in three ways:
+- **Named emotions the text never stated:** called a 💀 emoji reaction "this
+  was mortifying" and a cancellation-plans line "self-aware embarrassment" —
+  the sample only supports comic framing of a mishap, not a specific hidden
+  feeling.
+- **Invented a social purpose:** "invites solidarity rather than judgment,"
+  "assumes the reader gets the vibe," "makes a reader feel included" — none
+  demonstrated by the text.
+- **Enlarged easy_to_misread past what the wording supports:** proposed a
+  cancellation line might be "gentle mockery of the feeling" with nothing in
+  the sample supporting mockery.
+
+Added three rules: **DO NOT NAME AN EMOTION UNLESS THE WRITING NAMES OR
+UNAMBIGUOUSLY EXPRESSES IT** (describe the device — exaggeration, an emoji
+standing in for reaction — and its effect, not a named feeling), **DO NOT
+INVENT A SOCIAL PURPOSE** (no "invites solidarity"/"makes a reader feel
+included" unless demonstrated), **KEEP INTERPRETATION CLOSE TO THE WORDS**
+(smallest explanation that fits, don't enlarge into a bigger story).
+
+**Behavior change to `easy_to_misread`:** previously "say honestly when none
+applies" (always a string); now the model outputs JSON `null` and the
+section is omitted when the wording doesn't support two genuinely plausible
+readings — same not-guard-required, null-allowed pattern as
+WhereDidTheTimeGo's `try_this_next_time`. The frontend's
+`{results?.easy_to_misread && (...)}` truthy check already hides `null`
+correctly; no frontend change was needed.
+
+Verified live on a case built from the exact reported sample (💀 dentist
+mishap, cancellation-plans PSA, ALL-CAPS oat-milk line): no named emotions,
+no invented social purpose, `easy_to_misread` correctly returned `null`
+(golden sample case 2). One soft residual: `how_it_can_land` still said the
+writer "is inviting you to notice it too," which echoes the banned "invites
+solidarity" shape lightly — noted, not chased into a third round since every
+originally-reported phrase is gone.
 
 ## 2026-09-14 v2.1 correction round
 

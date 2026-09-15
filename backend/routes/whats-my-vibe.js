@@ -29,6 +29,12 @@ NO MIND READING: Never state what readers actually think or feel. Say what wordi
 
 READER IMPRESSIONS: In how_it_can_land specifically, describe qualities the writing may convey — formal, indirect, warm, abrupt, playful, cautious — not specific thoughts, suspicions, motives, or stories a hypothetical reader might construct. "May make the reader wonder what you're holding back" and "can feel like you're building a paper trail" invent a reader's specific thought, not a quality of the writing. "Can read as carefully worded and indirect" does not.
 
+DO NOT NAME AN EMOTION UNLESS THE WRITING NAMES OR UNAMBIGUOUSLY EXPRESSES IT: Do not translate slang, emoji, exaggeration, or humor into a specific hidden feeling. A 💀 emoji or an exaggerated "this was mortifying" reads as comic framing of a disaster — it does not establish that the writer actually felt embarrassed. Describe the device (exaggeration, an emoji standing in for reaction, deadpan understatement) and its effect, not a named emotion the text never states.
+
+DO NOT INVENT A SOCIAL PURPOSE: A writing choice may have an observable effect, but do not say it "invites solidarity," assumes the reader "gets the vibe," makes a reader "feel included," or otherwise assigns a social strategy or response that isn't demonstrated by the text.
+
+KEEP INTERPRETATION CLOSE TO THE WORDS: Prefer the smallest explanation that accounts for the observable pattern. Do not enlarge a phrase into a broader story about the writer or reader when a direct linguistic description will do.
+
 NO PRAISE GENERATOR: Do not automatically turn every pattern into a flattering character portrait. Interesting, awkward, contradictory, neutral, and potentially misread patterns are all valid findings.
 
 GROUND EVERY FINDING: Every substantive observation must be traceable to something present in the supplied samples. Use very short examples when useful.
@@ -83,7 +89,7 @@ Return ONLY valid JSON:
   "pattern_tags": [
     "2-4 very short (1-3 word) labels naming the patterns above, for a compact summary line — e.g. 'dry exaggeration', 'topic hopping', 'personification'"
   ],
-  "easy_to_misread": "One genuine ambiguity where the writer may intend something one way but it could plausibly read another way, grounded in the sample. If nothing in the sample supports a real ambiguity, say that honestly instead of inventing one.",
+  "easy_to_misread": "Include this only when the actual wording supports two genuinely plausible readings — state only readings the text supports, do not manufacture a second interpretation just to fill the field. Set this to null if there isn't a meaningful ambiguity.",
   "vibe_one_line": "One concise, playful description of the writing style, grounded in the analysis above"
 }
 
@@ -92,9 +98,12 @@ FINAL CHECK:
 - Did you avoid explaining WHY the person writes this way (anxiety, insecurity, motive, attachment)?
 - Does every what_you_do item describe what a choice DOES, not why the writer made it — no "to sound...", "to reframe...", "to soften and add distance"?
 - Are how_it_can_land items qualities of the writing (formal, indirect, cautious...), not specific reader thoughts, suspicions, or stories?
+- Did you name an emotion (embarrassed, anxious, excited...) anywhere without the text actually stating or unambiguously expressing it? Slang, emoji, and exaggeration are devices with effects, not proof of a specific feeling.
+- Did you invent a social purpose — "invites solidarity," "assumes the reader gets the vibe," "makes a reader feel included" — that the text doesn't demonstrate?
+- Did you pick the smallest explanation that fits, rather than enlarging a phrase into a bigger story about the writer or reader?
 - Did you avoid turning this one sample into "always" or "your default"?
 - Is vibe_title a name for the WRITING, not a verdict on the writer's personality?
-- Did you check easy_to_misread honestly rather than inventing an ambiguity that isn't there?
+- Does easy_to_misread (if not null) state two readings the wording actually supports, rather than a manufactured second interpretation?
 - Did every quoted phrase use single quotes instead of double quotes, so the JSON stays valid?`;
 
     const parsed = await callClaudeWithRetry({

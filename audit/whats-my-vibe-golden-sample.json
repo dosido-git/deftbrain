@@ -3,9 +3,9 @@
   "tool": "WhatsMyVibe",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "whatsmyvibe-v2.1",
-  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing; German/quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills, no AI-output enum is frontend-switched. NO format-strict fields. (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array.",
-  "known_issues": "2026-09-14 v2.1 correction round: v2 still crossed from describing writing into inventing INTENT ('you use X to sound collaborative', 'to reframe', 'softens the request and adds distance') and still occasionally invented specific reader thoughts in how_it_can_land ('may make the reader wonder what you're holding back', 'can feel like you're building a paper trail'). Added DESCRIBE EFFECT, NOT INTENT rule (replace 'you use X to...' with 'X creates...'/'X has the effect of...') and a READER IMPRESSIONS rule restricting how_it_can_land to qualities (formal, indirect, warm, cautious...) rather than specific reader thoughts/stories. Verified live on the exact reported case (English corporate email with a formal register + sports metaphor + 'Please advise') — clean. A DE re-test still produced one soft borderline phrase in how_it_can_land ('bracing yourself for rejection') that leans toward a reader-story rather than a bare quality — noted as a residual, not fully closed, since it's far softer than the reported failures and wasn't worth forcing a third round on before further live testing surfaces a clearer pattern. Also: removed the sole post-result cross-ref ('Truth Bomb sees what's underneath the words') at owner request — WhatsMyVibe now carries zero manual cross-refs (added to audit_v2-3-2.py's NO_CROSSREF set alongside its existing S5.5 pre-result exemption), relying entirely on the site's own RelatedLinks algorithm (auto-surfaces DecoderRing). linkStyle removed from the tool file as dead code."
+  "baseline_commit": "whatsmyvibe-v2.2",
+  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing; German/quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills, no AI-output enum is frontend-switched. NO format-strict fields. (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. easy_to_misread can be JSON `null` by design (case 2 below) — the frontend's truthy check already hides it, this is NOT a bug. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array; the null-allowed contract on easy_to_misread.",
+  "known_issues": "2026-09-14 v2.1 round: v2 crossed from describing writing into inventing INTENT and specific reader thoughts — fixed with DESCRIBE EFFECT, NOT INTENT and READER IMPRESSIONS rules (see git history for detail). 2026-09-14 v2.2 round: v2.1 still (a) named specific hidden emotions the text never stated — called a 💀 emoji reaction 'this was mortifying' and a cancellation line 'self-aware embarrassment,' when the sample only supports comic framing of a mishap; (b) invented social purposes not demonstrated by the text — 'invites solidarity rather than judgment,' 'assumes the reader gets the vibe,' 'makes a reader feel included'; (c) enlarged easy_to_misread into a manufactured second reading ('gentle mockery of the feeling') when nothing in the sample supported real ambiguity. Added DO NOT NAME AN EMOTION UNLESS THE WRITING NAMES OR UNAMBIGUOUSLY EXPRESSES IT, DO NOT INVENT A SOCIAL PURPOSE, and KEEP INTERPRETATION CLOSE TO THE WORDS. Changed easy_to_misread from 'say honestly when none applies' (always a string) to null + omit when the wording doesn't support two genuinely plausible readings — same not-guard-required, null-allowed pattern as WhereDidTheTimeGo's try_this_next_time. Verified live on a case built from the exact reported sample (💀 dentist mishap, cancellation-plans PSA, ALL-CAPS oat-milk line): no named emotions, no invented social purpose, easy_to_misread correctly returned null. One soft residual: how_it_can_land still said the writer 'is inviting you to notice it too,' which echoes the banned 'invites solidarity' shape lightly — noted, not chased into a third round since every originally-reported phrase is gone."
  },
  "cases": [
   {
@@ -40,6 +40,39 @@
     "pattern_tags": ["corporate abstraction", "softened requests", "formal hedging", "tonal mismatch"],
     "easy_to_misread": "The opening 'Per my earlier communication' assumes the recipient remembers what was discussed without restating it. If the earlier conversation was vague, forgotten, or involved multiple people, this reference could land as passive-aggressive or make the reader unsure exactly what deliverable is being referenced. The writer may intend simple reference-building; a reader may interpret it as a subtle reproach for not following up sooner.",
     "vibe_one_line": "Formal and hedged — every direct thought gets wrapped in business jargon and politeness, with a casual metaphor breaking through the surface."
+   }
+  },
+  {
+   "name": "casual social posts, no genuine ambiguity (EN) — easy_to_misread is null by design",
+   "endpoint": "/api/whats-my-vibe",
+   "input": {
+    "samples": "just a girl who forgot she had a dentist appointment and found out the hard way 💀\n\nliving for this random Tuesday sunset though, no context needed\n\nreminder that you're allowed to cancel plans and it doesn't make you a bad person, it makes you tired\n\nokay but why did nobody tell me oat milk in coffee changes EVERYTHING",
+    "sourceType": "social",
+    "userLanguage": "en"
+   },
+   "output": {
+    "vibe_title": "The Casual Confessor",
+    "vibe_summary": "This writing treats small life mishaps and observations as shareable moments, using exaggeration and deadpan framing to turn the mundane into something wry and relatable. The voice feels conversational and self-aware without apology.",
+    "what_you_do": [
+     "Opens with physical comedy and emoji reaction ('forgot she had a dentist appointment and found out the hard way 💀') — the skull emoji stands in for a nonverbal reaction, creating a sense that the writer is laughing at themselves rather than dwelling on inconvenience.",
+     "Juxtaposes trivial and meaningful in the same sentence ('living for this random Tuesday sunset though, no context needed') — treats a sunset with the same energy as a major life event, which flattens the hierarchy and makes both feel equally worth noticing.",
+     "Delivers soft advice as a casual PSA ('reminder that you're allowed to cancel plans...') — the framing as a 'reminder' to others creates distance from the statement while still asserting it, so the writer positions themselves as peer-observer rather than authority.",
+     "Uses ALL CAPS for emphasis on a small discovery ('oat milk in coffee changes EVERYTHING') — escalates the intensity of language for something objectively minor, creating a humorous mismatch between the language scale and the actual stakes."
+    ],
+    "how_it_can_land": [
+     "Can read as playful and self-aware — the writer notices their own absurdity and is inviting you to notice it too.",
+     "May come across as warm and unguarded — treats readers as people who also forget appointments and get excited about coffee.",
+     "Can feel conversational rather than performed — short, punchy sentences with natural rhythm, as if speaking aloud to friends."
+    ],
+    "signature_moves": [
+     "Exaggeration paired with emoji: 'found out the hard way 💀'",
+     "Absurd intensity for small moments: 'oat milk in coffee changes EVERYTHING'",
+     "Topic-hopping without transition (dentist → sunset → life advice → coffee discovery)",
+     "Self-aware framing: 'just a girl who forgot...', 'reminder that you're allowed...'"
+    ],
+    "pattern_tags": ["deadpan escalation", "topic hopping", "self-deprecating comedy", "casual philosophy"],
+    "easy_to_misread": null,
+    "vibe_one_line": "Unfiltered, funny-because-it's-true observations delivered with exaggerated stakes and zero pretense."
    }
   }
  ]
