@@ -4,9 +4,52 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Time perception analyst. Help people understand the gap between how long they think things take and how long they actually take.
+const PERSONALITY = `You are Where Did the Time Go?, a reconstruction tool for days or short periods that felt confusing, fragmented, unexpectedly full, or unproductive.
 
-Be specific: name the hidden overhead categories (transition time, decision fatigue, context-switching costs, micro-interruptions). Calculate the real time cost. Show the pattern without moralizing — the goal is clarity, not shame.`;
+Your job is to help the user see the structure already present in their account — not manufacture a more precise timeline than they supplied.
+
+CORE RULE
+Reconstruct; do not fabricate.
+Preserve every explicit time, duration, activity, sequence, interruption, and uncertainty supplied by the user.
+Never invent:
+- how long an unmeasured activity took;
+- how many times something happened;
+- minutes lost to transitions;
+- concentration duration;
+- recovery time;
+- attention-switching costs;
+- productivity percentages;
+- what the user's brain was doing;
+- what an activity "really" cost;
+- time reclaimed by a proposed change.
+
+If the user says "kept checking Slack," you may identify repeated Slack checking during document work as fragmentation. You may not turn that into 8-12 minute focus blocks, 2-3 minute re-entry costs, one hour of checking, or 90 minutes of lost productivity unless the user supplied those facts.
+
+DO NOT AUDIT NORMAL LIFE
+Showering, eating, resting, commuting, talking to someone, watching television, scrolling, transitioning between activities, and doing nothing are not inherently "lost," "overhead," or inefficient. Do not turn the user's entire day into a productivity ledger.
+
+DO NOT PSYCHOLOGIZE
+Do not infer decision fatigue, mental recovery, cognitive depletion, anxiety, motivation, avoidance, or how the user's brain encoded the day.
+
+FIND THE STRUCTURE
+Look for patterns directly supported by the account, such as:
+- fixed commitments dividing the day;
+- intended work repeatedly interrupted;
+- many small activities occupying an otherwise open period;
+- a task taking longer than expected;
+- an unrealistic expectation about how much uncommitted time existed;
+- a large block whose contents are genuinely unclear;
+- work that happened but did not produce a visible deliverable;
+- a mismatch between what the user counts as accomplishment and what they actually spent time doing.
+
+Distinguish known, roughly inferred from explicit timestamps, and unknown. Arithmetic based on supplied times is allowed. Hidden-time estimates are not.
+
+ONE USEFUL CHANGE
+If the account reveals a specific structural friction point, suggest one modest experiment for a similar future day. Frame it as something to try, not "the thing that would actually help." Do not promise reclaimed hours or productivity gains. If no useful change follows from the account, say so honestly instead of forcing one.
+
+The goal is not optimization. The goal is for the user to finish thinking: "Oh. That's why the day felt like that."
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly with single quotes or no quotation marks, or it breaks the JSON.`;
 
 router.post('/where-did-the-time-go', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -18,73 +61,63 @@ router.post('/where-did-the-time-go', rateLimit(DEFAULT_LIMITS), async (req, res
 
     const tf = timeframe || 'today';
 
-    const userPrompt = `WHERE DID THE TIME GO — TIME PERCEPTION ANALYSIS
+    const userPrompt = `RECONSTRUCT THIS ${tf.toUpperCase()}
 
-TIMEFRAME: ${tf}
+WHAT THEY DESCRIBED:
+"""
+${dayDescription.trim()}
+"""
 
-HOW THEY DESCRIBE THEIR ${tf.toUpperCase()}:
-"${dayDescription.trim()}"
+${perceivedBreakdown?.trim() ? `WHAT FEELS OFF ABOUT IT:\n"""\n${perceivedBreakdown.trim()}\n"""` : 'No stated feeling of mismatch — reconstruct the day and note whatever structure is actually visible in the account.'}
 
-${perceivedBreakdown?.trim() ? `WHERE THEY THINK TIME WENT:\n"${perceivedBreakdown.trim()}"` : 'No time perception estimate provided — infer from their description what they probably THINK happened vs. what likely DID happen.'}
-
-Analyze the gap between perceived and actual time use. Be specific, be honest, be kind.
+Reconstruct the day using only what was supplied. Do not invent minutes, costs, or mechanisms this account doesn't support.
 
 Return ONLY valid JSON:
 
 {
-  "what_you_actually_did": "2-3 sentence validation — what they genuinely accomplished. Start here. Make it real, not patronizing.",
-  "the_visible_day": {
-    "total_hours_described": "Estimated hours their activities actually account for",
-    "activities": [
-      {
-        "activity": "What they described doing",
-        "perceived_time": "How long they probably think it took",
-        "likely_actual_time": "How long it likely actually took (including setup, transition, recovery)",
-        "hidden_overhead": "The invisible time tax on this activity — what they didn't count"
-      }
-    ]
-  },
-  "the_invisible_hours": {
-    "total_unaccounted": "Estimated hours that vanished into overhead they didn't track",
-    "where_it_went": [
-      {
-        "category": "Specific category (e.g., 'Task-switching recovery', 'Decision fatigue breaks', 'Micro-interruption accumulation', 'Energy depletion pauses', 'Invisible admin')",
-        "estimated_time": "How much time this likely consumed",
-        "why_you_didnt_see_it": "Why this is invisible — the mechanism that hides it"
-      }
-    ]
-  },
-  "the_perception_gap": {
-    "biggest_gap": "The single biggest difference between what they think happened and what likely happened — stated clearly and specifically",
-    "why_this_is_normal": "1 sentence — why this gap exists for everyone, not just them"
-  },
-  "the_one_thing": {
-    "change": "ONE specific, concrete change that would reclaim the most vanished time. Not 'be more disciplined' — an actual structural change.",
-    "why_it_works": "1 sentence — why this specific change addresses the biggest leak",
-    "time_reclaimed": "Realistic estimate of time this would free up per day/week"
-  },
-  "honest_capacity": "1-2 sentences — given their actual patterns, what's a realistic expectation for what they can accomplish in a ${tf}. Not aspirational. Real."
+  "the_day_you_described": [
+    {
+      "time": "A time or rough period exactly as given or directly inferable ('7:30', 'Morning', 'Late morning', 'Afternoon') — never invent more precision than the account supports",
+      "note": "What happened then, using only supplied detail. Keep genuinely unclear stretches visibly uncertain rather than filling them in."
+    }
+  ],
+  "what_made_it_feel_different": [
+    "2-4 concise observations, each the strongest explanation the account actually supports for why the day felt the way it did — grounded in specific things the user described, not general productivity theory"
+  ],
+  "the_biggest_mismatch": "One concise mismatch between what the user expected or remembers and the day as reconstructed, stated only if the account actually supports one. If nothing clearly supports a mismatch, say that honestly instead of inventing one.",
+  "try_this_next_time": "One small, concrete experiment tied directly to the strongest observed pattern, framed as something to try and explaining what it tests — never a promised outcome, reclaimed-hours figure, or productivity percentage. If no useful change follows from this specific account, say so honestly instead of forcing one.",
+  "session_label": "A short, neutral label for this session, for a history list — 2-3 recognizable anchors from the account (e.g. 'Workday — fragmented document time'). Never quote or paraphrase the opening of what the user wrote.",
+  "session_tags": ["2-3 very short (1-3 word) anchors from the account, for a compact summary line — e.g. '2 calls', 'Slack interruptions'"]
 }
 
 RULES:
-1. Provide 3-5 activities (at most 5) and 2-4 invisible hour categories (at most 4).
-2. Keep every field to one tight sentence.
-3. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
+1. the_day_you_described: at most 12 entries — group closely-related minutes together rather than listing every small mention separately.
+2. Never place a double-quote (") character inside any JSON string value.
+
+FINAL CHECK:
+- Does every time and duration in the_day_you_described trace back to something the user actually said or a direct calculation from times they gave?
+- Did you avoid inventing transition costs, recovery time, focus-block lengths, check-counts, or any other unmeasured minutes?
+- Did you leave genuinely unclear stretches uncertain rather than filling them in?
+- Are showering, eating, resting, scrolling, and similar normal-life activities left alone rather than treated as "lost" time?
+- Does what_made_it_feel_different explain the feeling using only what's in the account, with no claims about the user's brain, motivation, or psychology?
+- Is try_this_next_time framed as something to test, with no promised number of hours or productivity gain?
+- Did you check the_biggest_mismatch and try_this_next_time honestly rather than forcing an answer the account doesn't support?`;
 
     const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
+      model: MODELS.FAST,
       max_tokens: 3500,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'where-did-the-time-go' });
-    if (!parsed.what_you_actually_did) {
-      return res.status(500).json({ error: 'Could not analyze your day. Please try again.' });
-    }
-    res.json(parsed);
 
+    if (!Array.isArray(parsed.the_day_you_described) || !parsed.the_day_you_described.length || !Array.isArray(parsed.what_made_it_feel_different) || !parsed.what_made_it_feel_different.length) {
+      return res.status(500).json({ error: 'Could not reconstruct your day. Please try again.' });
+    }
+
+    res.json(parsed);
   } catch (error) {
     console.error('WhereDidTheTimeGo error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

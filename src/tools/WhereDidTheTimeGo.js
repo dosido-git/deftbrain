@@ -91,14 +91,11 @@ const WhereDidTheTimeGo = ({ tool }) => {
     // Category panel tints — Crimson family (Me)
     panelTint:         isDark ? 'bg-[#7a2e2e]/30' : 'bg-[#f5eaea]',
     panelTintBorder:   isDark ? 'border-[#9a4040]' : 'border-[#d4a0a0]',
-    panelStrong:       isDark ? 'bg-[#7a2e2e]/60' : 'bg-[#e0b8b8]',
-    panelStrongBorder: isDark ? 'border-[#b87070]' : 'border-[#b87070]',
     // Gold AI insight — all tools
     panelInsight:       isDark ? 'bg-[#93541f]/25' : 'bg-[#fdf4e8]',
     panelInsightBorder: isDark ? 'border-[#c8872e]' : 'border-[#e8c98a]',
     // Tool-specific
     goldText:          isDark ? 'text-amber-300' : 'text-amber-700',
-    goldBg:            isDark ? 'bg-amber-900/20' : 'bg-amber-100',
     labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
@@ -118,17 +115,19 @@ const WhereDidTheTimeGo = ({ tool }) => {
   const [dayDescription, setDayDescription] = useState('');
   const [perceivedBreakdown, setPerceivedBreakdown] = useState('');
   const [timeframe, setTimeframe] = useState('today');
-  const [results, setResults] = usePersistentState('wheredidthetimego-result', null);
+  const [results, setResults] = usePersistentState('wheredidthetimego-result-v2', null);
   const [error, setError] = useState('');
-  const [sessionHistory, setSessionHistory] = usePersistentState('wheredidthetimego-history', []);
-  const [showInvisible, setShowInvisible] = useState(false);
+  // Recent Sessions stores the full result (not a truncated preview: field) so
+  // a click can restore the complete reconstruction and original input, and
+  // so the label shown is the model's neutral session_label, never a raw
+  // fragment of what the user typed.
+  const [sessionHistory, setSessionHistory] = usePersistentState('wheredidthetimego-history-v2', []);
 
   // ─── Handlers ───
   const handleSubmit = useCallback(async () => {
     if (!dayDescription.trim()) return;
     setError('');
     setResults(null);
-    setShowInvisible(false);
 
     try {
       const res = await callToolEndpoint('where-did-the-time-go', {
@@ -140,8 +139,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
       setResults(res);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        preview: dayDescription.trim().slice(0, 40),
+        timeframe, dayDescription: dayDescription.trim(), perceivedBreakdown: perceivedBreakdown.trim(), results: res,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('wdttg_error'));
@@ -152,7 +150,13 @@ const WhereDidTheTimeGo = ({ tool }) => {
     setPerceivedBreakdown('');
     setResults(null);
     setError('');
-    setShowInvisible(false);
+  };
+
+  const restoreSession = (entry) => {
+    setDayDescription(entry.dayDescription || '');
+    setPerceivedBreakdown(entry.perceivedBreakdown || '');
+    setTimeframe(entry.timeframe || 'today');
+    setResults(entry.results || null);
   };
 
   // ─── Keyboard: SELECT-only guard, ref pattern ───
@@ -187,29 +191,21 @@ const WhereDidTheTimeGo = ({ tool }) => {
     const r = results;
     let txt = `${t('wdttg_copy_header')}\n${t('wdttg_copy_timeframe')} ${timeframeLabel(timeframe)}\n\n`;
 
-    if (r.what_you_actually_did) txt += `${t('wdttg_copy_actually_did')}\n${r.what_you_actually_did}\n\n`;
-
-    if (r.the_visible_day?.activities?.length) {
-      txt += `━━ ${t('wdttg_copy_visible_day')} (${r.the_visible_day.total_hours_described}) ━━\n\n`;
-      r.the_visible_day.activities.forEach(a => {
-        txt += `${a.activity}\n`;
-        txt += `  ${t('wdttg_copy_you_think')} ${a.perceived_time} → ${t('wdttg_copy_likely')} ${a.likely_actual_time}\n`;
-        txt += `  ${t('wdttg_copy_hidden')} ${a.hidden_overhead}\n\n`;
+    if (r.the_day_you_described?.length) {
+      txt += `━━ ${t('wdttg_copy_the_day')} ━━\n\n`;
+      r.the_day_you_described.forEach(b => {
+        txt += `${b.time} — ${b.note}\n`;
       });
-    } if (r.the_invisible_hours?.where_it_went?.length) {
-      txt += `━━ ${t('wdttg_copy_invisible')} (~${r.the_invisible_hours.total_unaccounted}) ━━\n\n`;
-      r.the_invisible_hours.where_it_went.forEach(h => {
-        txt += `${h.category} (~${h.estimated_time})\n`;
-        txt += `  ${h.why_you_didnt_see_it}\n\n`;
-      });
-    } if (r.the_perception_gap) {
-      txt += `━━ ${t('wdttg_copy_biggest_gap')} ━━\n${r.the_perception_gap.biggest_gap}\n`;
-      txt += `${r.the_perception_gap.why_this_is_normal}\n\n`;
-    } if (r.the_one_thing) {
-      txt += `━━ ${t('wdttg_copy_one_thing')} ━━\n${r.the_one_thing.change}\n`;
-      txt += `${r.the_one_thing.why_it_works}\n`;
-      txt += `${t('wdttg_copy_time_reclaimed')} ${r.the_one_thing.time_reclaimed}\n\n`;
-    } if (r.honest_capacity) txt += `━━ ${t('wdttg_copy_honest_capacity')} ━━\n${r.honest_capacity}\n\n`;
+      txt += '\n';
+    } if (r.what_made_it_feel_different?.length) {
+      txt += `━━ ${t('wdttg_copy_feel_different')} ━━\n\n`;
+      r.what_made_it_feel_different.forEach(o => { txt += `${o}\n`; });
+      txt += '\n';
+    } if (r.the_biggest_mismatch) {
+      txt += `━━ ${t('wdttg_copy_biggest_mismatch')} ━━\n${r.the_biggest_mismatch}\n\n`;
+    } if (r.try_this_next_time) {
+      txt += `━━ ${t('wdttg_copy_try_this')} ━━\n${r.try_this_next_time}\n\n`;
+    }
 
     txt += BRAND;
     return txt;
@@ -223,26 +219,30 @@ const WhereDidTheTimeGo = ({ tool }) => {
   // ─── Render ───
   return (<div className={`space-y-4 ${c.text}`}>
 
-        {/* Input */} {!results && (<div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm space-y-5`}>
-
-            {/* Header */} <div className={`mb-4 pb-3 border-b ${c.border}`}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                  <p className={`text-base ${c.textSecondary}`}>
-                    <span className="me-2 text-lg">{tool?.icon}</span>{tool?.tagline ?? t('wdttg_tagline')}
-                  </p>
+        {/* Header — always rendered so the one reset button survives into the
+            results phase (PF-16: exactly one reset, never two). */}
+        <div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm ${!results ? 'space-y-5' : ''}`}>
+          <div className={`${!results ? 'mb-4 pb-3 border-b' : 'pb-3 border-b'} ${c.border}`}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+                <p className={`text-base ${c.textSecondary}`}>
+                  <span className="me-2 text-lg">{tool?.icon}</span>{tool?.tagline ?? t('wdttg_tagline')}
+                </p>
+                {!results && (
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-                </div>
-                {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-                {(results || dayDescription.trim() || perceivedBreakdown.trim()) ? (
-                  <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                    ↺ {t('start_over')}
-                  </button>
-                ) : null}
+                )}
               </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(results || dayDescription.trim() || perceivedBreakdown.trim()) ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('start_over')}
+                </button>
+              ) : null}
             </div>
+          </div>
 
+          {/* Form */} {!results && (<div className="space-y-5">
             {/* Timeframe */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>{t('wdttg_timeframe')}</label>
               <div className="flex gap-2">
@@ -260,7 +260,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={t('wdttg_day_ph')} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
             </div>
 
-            {/* Perceived breakdown */} <div className="space-y-2">
+            {/* Felt discrepancy */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
                 <span className="me-1.5">🤔</span> {t('wdttg_perceived_q')} <span className={`font-normal ${c.textMuted}`}>{t('wdttg_perceived_hint')}</span>
               </label>
@@ -286,144 +286,70 @@ const WhereDidTheTimeGo = ({ tool }) => {
                              </kbd>
                            )}
                            </button>
-
-            <p className={`text-xs ${c.textMuted}`}>{t('wdttg_xref_pre')} <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('wdttg_xref_task')}</a> {t('wdttg_xref_post')}</p>
           </div>
-        )} {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
+          )}
+        </div>
+        {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>
             <span>⚠️</span> {error} </div>
         )}
 
-        {/* Results-phase header card with reset (ternary, PF-3 replace-mode) */}
-        {results ? (
-          <div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm`}>
-            <div className={`pb-3 border-b ${c.border}`}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                  <p className={`text-base ${c.textSecondary}`}>
-                    <span className="me-2 text-lg">{tool?.icon}</span>{tool?.tagline ?? t('wdttg_tagline')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         {/* Results */} {results && (<div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24 space-y-5">
 
-            {/* Validation first */} {results?.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-s-4 rounded-2xl p-5`}>
-                <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
-                  <span>✅</span> {t('wdttg_actually_did')}
-                </p>
-                <p className={`text-sm ${c.text} leading-relaxed`}>
-                  {results?.what_you_actually_did} </p>
-              </div>
-            )} {/* The visible day */} {results?.the_visible_day?.activities?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
-                    <span>📊</span> {t('wdttg_visible_day')}
-                  </h3>
-                  {results?.the_visible_day?.total_hours_described && (<span className={`text-xs font-bold ${c.goldText} px-2 py-1 rounded-lg ${c.goldBg}`}>
-                      ~{results?.the_visible_day?.total_hours_described} </span>
-                  )} </div>
-                <div className="space-y-3">
-                  {results?.the_visible_day?.activities.map((a, i) => (<div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
-                      <p className={`text-sm font-semibold ${c.text} mb-2`}>{a.activity}</p>
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs ${c.textMuted}`}>{t('wdttg_you_think')}</span>
-                          <span className={`text-xs font-bold ${c.textSecondary}`}>{a.perceived_time}</span>
-                        </div>
-                        <span className={`text-xs ${c.textMuted}`}>→</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs ${c.textMuted}`}>{t('wdttg_likely')}</span>
-                          <span className={`text-xs font-bold ${c.goldText}`}>{a.likely_actual_time}</span>
-                        </div>
-                      </div>
-                      <p className={`text-xs ${c.textMuted} italic`}>
-                        <span className="me-1">👻</span> {a.hidden_overhead} </p>
+            {/* The day you described */} {results?.the_day_you_described?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                <h3 className={`font-bold ${c.text} flex items-center gap-2 mb-4`}>
+                  <span>📊</span> {t('wdttg_the_day')}
+                </h3>
+                <div className="space-y-2">
+                  {results?.the_day_you_described.map((b, i) => (<div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-3 flex items-baseline gap-3`}>
+                      <span className={`text-xs font-bold ${c.goldText} flex-shrink-0 whitespace-nowrap`}>{b.time}</span>
+                      <span className={`text-sm ${c.text}`}>{b.note}</span>
                     </div>
                   ))} </div>
               </div>
-            )} {/* The invisible hours */} {results?.the_invisible_hours?.where_it_went?.length > 0 && (<div>
-                {!showInvisible ? (<button
-                    onClick={() => setShowInvisible(true)} className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2`} >
-                    <span>👻</span> {t('wdttg_show_invisible')}
-                    {results?.the_invisible_hours?.total_unaccounted && (<span className={`text-xs ${c.textMuted}`}>(~{results?.the_invisible_hours?.total_unaccounted})</span>
-                    )} </button>
-                ) : (<div className={`${c.panelStrong} border ${c.panelStrongBorder} rounded-2xl p-5`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <p className={`text-xs font-semibold uppercase tracking-wider ${c.textSecondary} flex items-center gap-1.5`}>
-                        <span>👻</span> {t('wdttg_invisible_hours')}
-                      </p>
-                      {results?.the_invisible_hours?.total_unaccounted && (<span className={`text-xs font-bold ${c.textSecondary}`}>
-                          ~{results?.the_invisible_hours?.total_unaccounted} </span>
-                      )} </div>
-                    <div className="space-y-3">
-                      {results?.the_invisible_hours?.where_it_went.map((h, i) => (<div key={i} className={`${c.card} rounded-xl p-4`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <p className={`text-sm font-semibold ${c.text}`}>{h.category}</p>
-                            <span className={`text-xs font-bold ${c.goldText}`}>~{h.estimated_time}</span>
-                          </div>
-                          <p className={`text-xs ${c.textMuted} leading-relaxed`}>{h.why_you_didnt_see_it}</p>
-                        </div>
-                      ))} </div>
-                  </div>
-                )} </div>
-            )} {/* The perception gap */} {results?.the_perception_gap && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
-                <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-2 flex items-center gap-1.5`}>
-                  <span>🔍</span> {t('wdttg_biggest_gap')}
+            )} {/* What made it feel different */} {results?.what_made_it_feel_different?.length > 0 && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-3 flex items-center gap-1.5`}>
+                  <span>🔍</span> {t('wdttg_feel_different')}
                 </p>
-                <p className={`text-sm font-medium ${c.text} leading-relaxed mb-2`}>
-                  {results?.the_perception_gap?.biggest_gap} </p>
-                <p className={`text-xs ${c.textMuted} italic`}>
-                  {results?.the_perception_gap?.why_this_is_normal} </p>
+                <div className="space-y-2">
+                  {results?.what_made_it_feel_different.map((o, i) => (<p key={i} className={`text-sm ${c.text} leading-relaxed`}>→ {o}</p>
+                  ))} </div>
               </div>
-            )} {/* The one thing — Gold AI insight panel */} {results?.the_one_thing && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
+            )} {/* The biggest mismatch */} {results?.the_biggest_mismatch && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('wdttg_biggest_mismatch')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>
+                  {results?.the_biggest_mismatch} </p>
+              </div>
+            )} {/* Try this next time — Gold AI insight panel */} {results?.try_this_next_time && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-3 text-center`}>
-                  {t('wdttg_one_thing_title')}
+                  {t('wdttg_try_this')}
                 </p>
-                <p className={`text-base font-bold ${c.text} text-center leading-relaxed mb-3`}>
-                  {results?.the_one_thing?.change} </p>
-                <p className={`text-sm ${c.textSecondary} text-center mb-2`}>
-                  {results?.the_one_thing?.why_it_works} </p>
-                {results?.the_one_thing?.time_reclaimed && (<p className={`text-xs font-semibold ${c.goldText} text-center`}>
-                    ⏱️ {t('wdttg_time_reclaimed')} {results?.the_one_thing?.time_reclaimed} </p>
-                )} </div>
-            )} {/* Honest capacity */} {results?.honest_capacity && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 text-center`}>
-                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('wdttg_honest_capacity')}</p>
-                <p className={`text-sm ${c.text} leading-relaxed italic max-w-md mx-auto`}>
-                  {results?.honest_capacity} </p>
+                <p className={`text-sm ${c.text} text-center leading-relaxed`}>
+                  {results?.try_this_next_time} </p>
               </div>
             )}
 
-            {/* Cross-references — results */} <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
-                {t('wdttg_related')}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'BeforeTheCrash',   icon: '📉', label: t('wdttg_xref_crash') },
-                  { id: 'WhichLife',           icon: '🔮', label: t('wdttg_xref_contrast') },
-                  { id: 'BeliefStressTest', icon: '🧠', label: t('wdttg_xref_belief') },
-                ].map(ref => (<a
-                    key={ref.id} href={`/${ref.id}`} target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5`} >
-                    <span>{ref.icon}</span> {ref.label} </a>
-                ))} </div>
-            </div>
+            {/* Post-result cross-ref — the only one; RelatedLinks already auto-surfaces
+                tag/category matches below, and BatchFlow is its top pick for this tool,
+                so this points at Before the Crash instead to avoid duplicating that block. */}
+            <p className={`text-xs ${c.textMuted} text-center`}>
+              <a href="/BeforeTheCrash" className={linkStyle}>📉 {t('wdttg_xref_crash')}</a>
+            </p>
           </div>
         )} {/* History */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('wdttg_recent_sessions')}</p>
             <div className="space-y-1">
-              {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
-                  <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wdttg_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
-                </div>
+              {sessionHistory.map(s => (<button key={s.id} onClick={() => restoreSession(s)} className="w-full flex items-center justify-between text-start hover:opacity-80">
+                  <span className="min-w-0">
+                    <span className={`block text-xs ${c.textSecondary} truncate`}>{s.results?.session_label || t('wdttg_session')}</span>
+                    {s.results?.session_tags?.length > 0 && (
+                      <span className={`block text-[10px] ${c.textMuted} truncate`}>{s.results.session_tags.slice(0, 3).join(' · ')}</span>
+                    )}
+                  </span>
+                  <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                </button>
               ))} </div>
           </div>
-        )} 
+        )}
     </div>
   );
 };

@@ -1150,7 +1150,13 @@ for name, fpath in tools:
     # to first doubt themselves elsewhere before they'd even gotten a result —
     # owner call, removed at the root. Post-result cross-ref to Truth Bomb
     # kept and still enforced below.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe')
+    # WhereDidTheTimeGo joined the same day: its pre-submit line ("Feeling
+    # overwhelmed? Task Avalanche Breaker helps you triage...") sat right
+    # after the submit button, offering to reroute a visitor who came to
+    # reconstruct their day before they'd gotten a result — same problem,
+    # same owner call. Post-result cross-ref to Before the Crash kept and
+    # still enforced below.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe', 'WhereDidTheTimeGo')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

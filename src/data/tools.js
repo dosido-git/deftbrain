@@ -1500,44 +1500,47 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-09-14",
   id: "WhereDidTheTimeGo",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The day is over and you can't account for it.",
-    give: "A timeframe and a stream-of-consciousness account of what you did.",
-    get: "Where the time actually went versus where you thought, and the invisible overhead you're not counting.",
-    edge: "The gap between the two is the point. You almost certainly overestimate your focused hours.",
+    give: "A timeframe and your account of what you did, as you remember it.",
+    get: "The day reconstructed from what you actually described, and why it may have felt the way it did.",
+    edge: "It reconstructs your account — it doesn't invent minutes you never gave it.",
   },
-  seoDescription: "Where did your day really go? Trace the invisible overhead — transitions, recovery, context switches — and get one structural change to win time back. Free.",
-  seoTitle: "Where Did My Time Go? Daily Time Tracker",
+  // 2026-09-14: rewrite. Reconstruct; do not fabricate. Removed the invented
+  // arithmetic (you-think/likely time pairs, invisible-hours categories,
+  // honest_capacity) — none of it was grounded in what the user supplied.
+  seoDescription: "Ever reach the end of a day wondering where the time went? Reconstruct it as you remember it and see what filled the hours. Free, no invented numbers.",
+  seoTitle: "Where Did My Time Go? Reconstruct Your Day",
   title: "Where Did the Time Go?",
-  tagline: "See the gap between where you think time went and where it actually went.",
+  tagline: "Make sense of the day that disappeared.",
   tags: ['time', 'where did time go', 'schedule', 'time audit', 'lost time', 'hours'],
   icon: "⏳",
   categories: ['Me', 'Do It!'],
   headerColor: "#e0b8b8",
-  description: "Describe your day. Optionally guess where the hours went. AI traces the invisible overhead — transitions, recovery, context switches — and shows you the gap between what you think happened and what actually happened. One structural change to get time back. No judgment.",
+  description: "Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.",
   guide: {
-    overview: "Where Did It Go? is built on a simple truth: you almost certainly overestimate how much focused time you had and underestimate how much time vanished into invisible overhead. Describe your day and optionally estimate where time went, and AI traces the gap — the transitions you didn't count, the recovery time after meetings, the context switches that ate 20 minutes each. Ends with one concrete, structural change (not 'be more disciplined') and an honest read on your actual capacity.",
+    overview: "Where Did the Time Go? reconstructs a confusing or fragmented day from what you actually describe — not from invented minutes. Walk through it in whatever order it comes to mind, and optionally say what feels off about it (busy but unfinished, an afternoon that vanished, expecting more time than you had). AI lays out the day in order, points out what's genuinely supported about why it felt that way, and — when the account supports one — suggests a single small experiment to try next time.",
     howToUse: [
       "Pick a timeframe: today, yesterday, this week, or the weekend",
-      "Describe what you did — stream of consciousness is fine",
-      "Optionally estimate where you think time went (this makes the gap analysis much sharper)",
-      "Read the results: validation first, then the visible day with perception gaps, then the invisible hours",
-      "Pay attention to 'the one thing' — it's the single structural change that would reclaim the most time"
+      "Walk through it as you remember it — times help if you have them, but rough is fine",
+      "Optionally describe what feels off about the day (this sharpens the reconstruction, but isn't required)",
+      "Read The Day You Described first, then What Made It Feel Different",
+      "The Biggest Mismatch and Try This Next Time only appear when your account actually supports one — the tool won't force either"
     ],
     example: {
       scenario: "You worked all day but feel like you got nothing done. You had a standup, worked on a presentation, answered emails, had a 1-on-1, and tried to write a report.",
-      action: "Describe the day, estimate 'maybe 4 hours of real work, 2 hours of meetings, 1 hour of email.'",
-      result: "AI shows you likely had ~2 hours of deep work (not 4), with 90+ minutes vanishing into post-meeting recovery, Slack interruptions, and task-switching overhead. The one change: batch all communication into two 30-minute windows instead of responding in real time."
+      action: "Walk through the day in order. Optionally add: 'I was busy all day but got nothing finished.'",
+      result: "AI reconstructs the day in a timeline using only what you described, points out that two meetings occupied over two hours and that document work kept getting interrupted by Slack, and suggests trying one protected block with Slack closed next time — framed as something to test, not a promised fix."
     },
     tips: [
-      "The perception estimate is optional but transforms the results — the gap is the whole point",
-      "Be honest about your day, including the parts that feel unproductive — that's where the insights are",
-      "The 'invisible hours' section reveals time sinks you genuinely can't see without someone pointing them out",
-      "'The one thing' is deliberately singular — one change beats ten aspirational habits"
+      "The 'what feels off' field is optional but sharpens the reconstruction — it's what you're actually confused about, not another number to estimate",
+      "Times you're unsure of are fine left rough — the tool won't invent false precision",
+      "Not every day has a clean 'biggest mismatch' or a useful next-time change, and the tool will say so rather than force one",
+      "Recent Days lets you reopen a past reconstruction with one click"
     ]
   }
 },
