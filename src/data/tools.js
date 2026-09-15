@@ -412,7 +412,7 @@ export const tools = [
   // Public, reviewed demonstration used by both the React page and prerenderer.
   exampleOutput: {
     title: "See what Doctor Visit Prep gives you",
-    expandLabel: "See example output ↓",
+    expandLabel: "See example results ↓",
     nextStepLabel: "What happens with your visit",
     intro: "Not ready to build your own prep sheet? Here is a shortened fictional example showing the kind of help you can expect.",
     sampleLabel: "Sample situation",
@@ -4566,7 +4566,7 @@ tagline: "Work with the energy you have.",
   // Public, reviewed demonstration used by both the React page and prerenderer.
   exampleOutput: {
     title: "See what Fake Review Detective gives you",
-    expandLabel: "See example output ↓",
+    expandLabel: "See example results ↓",
     nextStepLabel: "What happens with your reviews",
     intro: "Here is a shortened fictional example showing how the tool separates measurable review patterns from judgments that need caution.",
     sampleLabel: "Sample review set",
@@ -4957,7 +4957,7 @@ tagline: "Work with the energy you have.",
   // jurisdiction-specific legal conclusion.
   exampleOutput: {
     title: "See what Lease Trap Detector gives you",
-    expandLabel: "See example output ↓",
+    expandLabel: "See example results ↓",
     nextStepLabel: "What happens with your lease",
     intro: "Not ready to upload a lease? Here is a shortened fictional example showing the kind of analysis you can expect.",
     sampleLabel: "Sample lease language",
