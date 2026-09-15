@@ -8,18 +8,20 @@ A focus-soundscape designer. **As of 2026-09-14, rain/ocean/wind/forest/fire/caf
 recorded ambience from `public/sounds/*.m4a`** (see dated entry below) — white/pink/brown noise
 and binaural beats remain **Web Audio synthesis** (generated from Float32 noise buffers /
 detuned oscillators; no recording exists for those). Frontend `src/tools/FocusSoundArchitect.js`
-(~2150 lines). Backend `backend/routes/focus-sound-architect.js` — **3 endpoints**, all
+(~2130 lines). Backend `backend/routes/focus-sound-architect.js` — **3 endpoints**, all
 `claude-haiku-4-5-20251001`:
 
 | Endpoint | max_tokens | Returns |
 |---|---|---|
-| `/focus-sound-architect` (main) | 2000 | `{soundscape_name, description, layers[], usage_tips[], adjustment_guide}` |
+| `/focus-sound-architect` (main) | 2000 | `{soundscape_name, layers[] (1-3), start_here}` |
 | `/focus-sound-architect/scene` | 4000 | evolving `{scene_name, description, phases[], arc_explanation, transition_notes[]}` |
 | `/focus-sound-architect/adjust` | 4000 | `{adjustments[], add_layer, remove_index, explanation}` |
 
 Backend uses `callClaudeWithRetry` → a parse failure throws to the route's top-level catch → a
-500. No per-endpoint success guard needed. Each endpoint validates `layer.type` against the
-10-type whitelist and **silently drops** unknown types (see fix #2 below).
+500. No per-endpoint success guard needed. **As of 2026-09-15, the main endpoint's `type`
+whitelist is 9 values (no `binaural`)** — see dated entry below; scene/adjust also exclude it from
+their AI-facing vocabulary. Each endpoint validates `layer.type` against its whitelist and
+**silently drops** unknown types (see fix #2 below).
 
 ## DO NOT silently reverse
 1. **All 3 endpoints on `claude-haiku-4-5-20251001`.** Cheap, fast; synthesis is client-side.
@@ -55,6 +57,84 @@ Backend uses `callClaudeWithRetry` → a parse failure throws to the route's top
 - Cross-tool: `focusCorrelation` reads FocusPocus history from `localStorage['fp-history']` to
   correlate soundscapes with focus scores — keep that key in sync if FocusPocus changes.
 - Fully localized (in `LOCALIZED_TOOLS`); `fsa_*` keys in `src/i18n/locales/tools/focus-sound-architect.js`.
+
+## 2026-09-15 — owner rewrite: no neuroscience claims, live feedback is the product philosophy
+
+Owner-authored spec covering description/tagline, input, LLM prompt, output tone, interface, and
+ready-made soundscapes. Full replacement, not a patch — see `audit/REWRITE-INSTALL-KIT.md`
+pattern (structural change over iterative prose patching).
+
+**Copy.** Catalog `description`/`tagline`/`seoDescription`/`guide` in `src/data/tools.js` replaced
+— dropped the "enhance your concentration" claim and the feature-list phrasing entirely. New
+tagline: "Build a background your attention can live with."
+
+**Input.** `SOUND_PREFS` (the intake checklist) no longer offers Binaural Beats.
+`SENSITIVITIES`' `needLowBass` relabeled "Need deep/low bass" → "Prefer deeper/lower sounds" (the
+label is also what's sent to the backend prompt as the sensitivity string, so this one edit
+changes both the button text and what the model reads).
+
+**Main-endpoint prompt (`backend/routes/focus-sound-architect.js`), full rewrite.** New governing
+rules, verbatim from the owner: USER EVIDENCE FIRST, NO NEUROSCIENCE CLAIMS, NO GUARANTEES,
+MASKING (describe as making distractions less distinct, never as eliminating them), SENSORY
+CONSTRAINTS ARE HARD CONSTRAINTS, KEEP IT SIMPLE ("earn every layer" — no padding to look
+thorough), EXPLAIN THE CHOICE NOT THE USER (no inferring ADHD/anxiety/arousal state), VOLUME
+(starting position, not a precise prescription), DURATION (no habituation/fatigue claims).
+**Schema simplified**: `{soundscape_name, layers[] (type/volume/label/why), start_here}` —
+`description`, `usage_tips[]`, and `adjustment_guide{}` are gone. The static `adjustment_guide`
+(if_too_distracting/if_not_enough/after_30_minutes) duplicated what the live "How does it sound?"
+feedback buttons already do better (see Interface below); dropping it isn't a capability loss.
+`start_here` is new — one concrete instruction for trying the mix, e.g. "Start with brown noise
+around 60... give it a minute... if you notice the sound itself, lower it."
+
+**Binaural — scope decision.** The frontend has no `BINAURAL_PROGRAMS` cognitive-claim preset
+array (an earlier note describing one was inaccurate — checked, doesn't exist); the manual
+"+ Add Layer" binaural option is a plain type + a numeric Hz/base_hz display, no claim attached.
+Decision: remove binaural from the **AI's own vocabulary** in all three endpoints (main `layers`,
+scene `layers`, adjust `add_layer`) — the AI never recommends it, matching "there's no need for a
+scientifically loaded option when ordinary layers can do the job" — while leaving the **manual**
+add-layer capability (`createBinauralLayer`, `LAYER_TYPES.binaural`, `ADDABLE_LAYERS`) intact for
+anyone who wants to add it themselves; that's an explicit, self-directed action, not an AI claim.
+Code-level: `validTypes` in all 3 endpoints dropped `'binaural'`; main endpoint's layer filter also
+gained `.slice(0, 3)` (belt-and-braces with the prompt's 1-3 cap). `hasSuddenSensitivity`/
+`SHARP_TRANSIENT_TYPES` (the code-level rain/fire filter for sudden-sound sensitivity) untouched.
+
+**`guardProse()`'s field list** updated to match the new schema: was
+`description, usage_tips[], layers[].why, adjustment_guide` → now `layers[].why, start_here`.
+
+**Interface.** Removed the "Related Tools" box (Focus Pocus, Task Avalanche Breaker) and the
+post-result "Focus Pocus structures the actual session around it" line entirely — **both ends**,
+unlike WhatsMyVibe/WhereDidTheTimeGo which each kept one post-result link. Added
+`FocusSoundArchitect` to `audit/audit_v2-3-2.py`'s `NO_CROSSREF` set **and** its `_pre_exempt`
+tuple (the latter is the one that actually silences "no cross-tool links at all" for a tool with
+zero links at either end — WhatsMyVibe/WhereDidTheTimeGo only needed `_pre_exempt` for their
+pre-result half, since they kept a post-result link; a tool with none at either end needs both).
+Removed the now-unused `linkStyle` const. Added a one-line product-philosophy subtitle under "How
+does it sound?": "Don't try to predict the perfect sound. Start sensibly, listen, and adapt."
+(new key `fsa_feedback_philosophy`). "Adaptive Volume" checked and kept as-is — it's a real mic
+analyser (`getUserMedia` → `AnalyserNode` reading ambient amplitude in the speech band) driving
+`masterGain.gain.setTargetAtTime` live, not a cosmetic label; renaming wasn't warranted.
+`recipe.start_here` now drives the transport-bar subtitle (`recipe.start_here || recipe.description
+|| t('fsa_tap_play')`) and `buildFullText`'s copy output — kept `|| recipe.description` for
+backwards-compat with the share-link import path and cached recipes from before this rewrite.
+
+**Ready-made soundscapes.** All 6 `QUICK_PRESETS` descriptions shortened to the owner's exact
+one-liners (e.g. "Steady brown + pink noise", "Rain + café murmur") — both the object's `description`
+fallback and every language's `fsa_qs_*_d` i18n key.
+
+**Localization.** All 13 languages patched in the same pass (script-based exact-line replace,
+verified every anchor line existed before writing — see the Python file-I/O truncation gotcha in
+CLAUDE.md): 6 preset descriptions × 13, `needLowBass` × 13, new `fsa_feedback_philosophy` × 13
+(translated per-language, not copy-pasted English), and 8 dead keys removed × 13
+(`fsa_pref_binauralBeats`, `fsa_related_tools`, `fsa_xref_focus_pocus`, `fsa_xref_task_avalanche`,
+`fsa_xref_post_result`, `fsa_too_distracting`, `fsa_not_enough`, `fsa_after_30_min`). Verified
+Spanish live end-to-end (setup form + a generated preset) — clean render, no `{{var}}` leaks.
+
+**Golden sample updated** (`audit/focus-sound-architect-golden-sample.json`): main case's `output`
+rewritten to the new schema (no `description`/`usage_tips`/`adjustment_guide`, no binaural layer);
+scene case's input swapped "Binaural Beats" → "Forest" (the frontend can no longer send the former
+since it's off the intake checklist). `check:golden` was genuinely red before this — the checker
+derives required sections from the fixture's own keys, so an unmigrated fixture fails against a
+migrated schema, not a false alarm.
 
 ## 2026-09-14 — synthesis rewrite: layers were too static and too similar
 

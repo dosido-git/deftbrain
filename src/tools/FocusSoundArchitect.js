@@ -493,27 +493,27 @@ const LAYER_TYPES = {
 // ════════════════════════════════════════════════════════════
 
 const QUICK_PRESETS = [
-  { id: 'deep_focus', nameKey: 'fsa_qs_deep_focus', descKey: 'fsa_qs_deep_focus_d', name: '🧠 Deep Focus', description: 'Steady brown + pink noise for a simple, low-distraction background', layers: [
+  { id: 'deep_focus', nameKey: 'fsa_qs_deep_focus', descKey: 'fsa_qs_deep_focus_d', name: '🧠 Deep Focus', description: 'Steady brown + pink noise', layers: [
     { type: 'brown_noise', volume: 55, whyKey: 'fsa_why_warm_steady', why: 'A warm, steady foundation that can help cover irregular background sound.' },
     { type: 'pink_noise', volume: 22, whyKey: 'fsa_why_brightness', why: 'Adds a little brightness without making the mix busy.' },
   ]},
-  { id: 'creative_flow', nameKey: 'fsa_qs_creative', descKey: 'fsa_qs_creative_d', name: '🎨 Creative Flow', description: 'Rain + café murmur for a gently varied atmosphere', layers: [
+  { id: 'creative_flow', nameKey: 'fsa_qs_creative', descKey: 'fsa_qs_creative_d', name: '🎨 Creative Flow', description: 'Rain + café murmur', layers: [
     { type: 'rain', volume: 35, whyKey: 'fsa_why_natural_var', why: 'Adds natural variation without requiring attention.' },
     { type: 'cafe', volume: 22, whyKey: 'fsa_why_soft_activity', why: 'Provides a soft sense of activity for people who prefer some background life.' },
   ]},
-  { id: 'calm_study', nameKey: 'fsa_qs_study', descKey: 'fsa_qs_study_d', name: '📚 Calm Study', description: 'Ocean + soft brown noise for a quieter study backdrop', layers: [
+  { id: 'calm_study', nameKey: 'fsa_qs_study', descKey: 'fsa_qs_study_d', name: '📚 Calm Study', description: 'Ocean + soft brown noise', layers: [
     { type: 'ocean', volume: 38, whyKey: 'fsa_why_slow_gentle', why: 'Creates slow, gentle variation.' },
     { type: 'brown_noise', volume: 25, whyKey: 'fsa_why_steady_less_bright', why: 'Keeps the background steady and less bright.' },
   ]},
-  { id: 'sleep', nameKey: 'fsa_qs_settle', descKey: 'fsa_qs_settle_d', name: '😴 Settle Down', description: 'Deep brown noise + soft ocean for a low-stimulation backdrop', layers: [
+  { id: 'sleep', nameKey: 'fsa_qs_settle', descKey: 'fsa_qs_settle_d', name: '😴 Settle Down', description: 'Deep brown + soft ocean', layers: [
     { type: 'brown_noise', volume: 45, whyKey: 'fsa_why_low_freq', why: 'Provides a steady, low-frequency texture.' },
     { type: 'ocean', volume: 20, whyKey: 'fsa_why_no_transients', why: 'Adds slow variation without sharp transients.' },
   ]},
-  { id: 'energize', nameKey: 'fsa_qs_brighter', descKey: 'fsa_qs_brighter_d', name: '⚡ Brighter Background', description: 'Pink noise + light café ambience for a more active-feeling mix', layers: [
+  { id: 'energize', nameKey: 'fsa_qs_brighter', descKey: 'fsa_qs_brighter_d', name: '⚡ Brighter Background', description: 'Pink noise + light café ambience', layers: [
     { type: 'pink_noise', volume: 35, whyKey: 'fsa_why_brighter_than_brown', why: 'A brighter steady texture than brown noise.' },
     { type: 'cafe', volume: 20, whyKey: 'fsa_why_modest_var', why: 'Adds modest variation and background activity.' },
   ]},
-  { id: 'speech_mask', nameKey: 'fsa_qs_speech', descKey: 'fsa_qs_speech_d', name: '🔇 Speech Masker', description: 'Steady noise + soft murmur designed to make nearby conversation less distinct', layers: [
+  { id: 'speech_mask', nameKey: 'fsa_qs_speech', descKey: 'fsa_qs_speech_d', name: '🔇 Speech Masker', description: 'Steady noise intended to make nearby speech less distinct', layers: [
     { type: 'pink_noise', volume: 50, whyKey: 'fsa_why_broad_masking', why: 'Provides broad, steady masking around much of the speech range.' },
     { type: 'cafe', volume: 25, whyKey: 'fsa_why_voice_texture', why: 'Adds non-distinct voice-like texture that can make separate words less salient.' },
   ]},
@@ -566,7 +566,7 @@ const SOUND_PREFS = [
   { id: 'brownNoise', label: 'Brown Noise', labelKey: 'fsa_pref_brownNoise' }, { id: 'rain', label: 'Rain', labelKey: 'fsa_pref_rain' },
   { id: 'ocean', label: 'Ocean', labelKey: 'fsa_pref_ocean' }, { id: 'forest', label: 'Nature / Forest', labelKey: 'fsa_pref_forest' },
   { id: 'fire', label: 'Crackling Fire', labelKey: 'fsa_pref_fire' }, { id: 'cafe', label: 'Café Ambience', labelKey: 'fsa_pref_cafe' },
-  { id: 'binauralBeats', label: 'Binaural Beats', labelKey: 'fsa_pref_binauralBeats' }, { id: 'wind', label: 'Wind', labelKey: 'fsa_pref_wind' },
+  { id: 'wind', label: 'Wind', labelKey: 'fsa_pref_wind' },
 ];
 
 const SENSITIVITIES = [
@@ -574,7 +574,7 @@ const SENSITIVITIES = [
   { id: 'highFrequencySensitive', label: 'Sensitive to high frequencies', labelKey: 'fsa_sens_highFrequencySensitive' },
   { id: 'preferConsistency', label: 'Prefer consistent texture', labelKey: 'fsa_sens_preferConsistency' },
   { id: 'needVariety', label: 'Need some variation to stay engaged', labelKey: 'fsa_sens_needVariety' },
-  { id: 'needLowBass', label: 'Need deep/low bass', labelKey: 'fsa_sens_needLowBass' },
+  { id: 'needLowBass', label: 'Prefer deeper/lower sounds', labelKey: 'fsa_sens_needLowBass' },
 ];
 
 const SMART_FEEDBACK_OPTIONS = [
@@ -632,7 +632,7 @@ const EXAMPLES = [
   {
     task: 'studying',
     environments: ['library', 'quietHome'],
-    soundPrefs: ['whiteNoise', 'binauralBeats'],
+    soundPrefs: ['whiteNoise', 'brownNoise'],
     sensitivities: ['highFrequencySensitive', 'preferConsistency'],
     energyGoal: 60,
   },
@@ -696,10 +696,6 @@ const FocusSoundArchitect = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const [task, setTask] = useState('deep_work');
   const [environments, setEnvironments] = useState([]);
@@ -1376,7 +1372,7 @@ const FocusSoundArchitect = ({ tool }) => {
     if (!recipe) return '';
     return [
       recipe.soundscape_name || t('fsa_fallback_soundscape'),
-      recipe.description || '',
+      recipe.start_here || recipe.description || '',
       '', t('fsa_copy_layers'),
       ...(recipe.layers || []).map(l => t('fsa_copy_layer_line', {
         label: layerLabel(l),
@@ -1411,7 +1407,6 @@ const FocusSoundArchitect = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  const results = recipe;  // alias for audit cross-ref detection
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -1590,11 +1585,9 @@ const FocusSoundArchitect = ({ tool }) => {
               <div className="flex-1">
                 <h3 className={`text-lg font-bold ${c.text}`}>{recipe.soundscape_name || t('fsa_your_soundscape')}</h3>
                 <p className={`text-xs ${c.textSecondary}`}>
-                  {isPlaying
-                    ? timerRemainingSec !== null
-                      ? t('fsa_playing_remaining', { time: fmt(timerRemainingSec) })
-                      : recipe.description
-                    : t('fsa_tap_play')}
+                  {isPlaying && timerRemainingSec !== null
+                    ? t('fsa_playing_remaining', { time: fmt(timerRemainingSec) })
+                    : recipe.start_here || recipe.description || t('fsa_tap_play')}
                 </p>
               </div>
               {isPlaying && (
@@ -1845,7 +1838,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Smart Feedback */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('fsa_how_does_it_sound')}</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('fsa_how_does_it_sound')}</p>
+            <p className={`text-xs ${c.textMuted} mb-2`}>{t('fsa_feedback_philosophy')}</p>
             <div className="flex flex-wrap gap-1.5">
               {SMART_FEEDBACK_OPTIONS.map(f => (
                 <button key={f.id}
@@ -1883,8 +1877,8 @@ const FocusSoundArchitect = ({ tool }) => {
             </div>
           </div>
 
-          {/* Tips & Adjustments */}
-          {(recipe.usage_tips || recipe.adjustment_guide) && (
+          {/* Tips */}
+          {recipe.usage_tips && (
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
               <button onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
@@ -1899,28 +1893,6 @@ const FocusSoundArchitect = ({ tool }) => {
                       <span>{tip}</span>
                     </div>
                   ))}
-                  {recipe.adjustment_guide && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
-                      {recipe.adjustment_guide.if_too_distracting && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{t('fsa_too_distracting')}</span>
-                          <span className={c.textSecondary}>{recipe.adjustment_guide.if_too_distracting}</span>
-                        </div>
-                      )}
-                      {recipe.adjustment_guide.if_not_enough && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('fsa_not_enough')}</span>
-                          <span className={c.textSecondary}>{recipe.adjustment_guide.if_not_enough}</span>
-                        </div>
-                      )}
-                      {recipe.adjustment_guide.after_30_minutes && (
-                        <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('fsa_after_30_min')}</span>
-                          <span className={c.textSecondary}>{recipe.adjustment_guide.after_30_minutes}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
@@ -1933,26 +1905,7 @@ const FocusSoundArchitect = ({ tool }) => {
             </div>
           )}
 
-          {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fsa_related_tools')}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>{t('fsa_xref_focus_pocus')}</a>
-              <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>{t('fsa_xref_task_avalanche')}</a>
-            </div>
-          </div>
         </div>
-      )}
-
-      {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          {t('fsa_xref_post_result').split('{{link}}').map((part, i, arr) => (
-            <React.Fragment key={i}>
-              {part}
-              {i < arr.length - 1 && <a href="/FocusPocus" className={linkStyle}>{t('fsa_xref_focus_pocus')}</a>}
-            </React.Fragment>
-          ))}
-        </p>
       )}
 
     </div>

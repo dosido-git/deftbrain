@@ -580,7 +580,11 @@ for name, fpath in tools:
     # WhereDidTheTimeGo joined the same day: its one remaining cross-ref
     # ("Check your burnout risk" → Before the Crash) was removed at the
     # owner's request — same reasoning, same day, same pattern.
-    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe', 'WhereDidTheTimeGo'}
+    # FocusSoundArchitect joined 2026-09-15: the "Related Tools" box (Focus
+    # Pocus, Task Avalanche Breaker) and the "Focus Pocus structures the
+    # actual session around it" post-result line were removed at the
+    # owner's request as part of the tool's rewrite.
+    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect'}
 
     # S1.1: linkStyle standalone
     if name in NO_CROSSREF:
@@ -1164,7 +1168,12 @@ for name, fpath in tools:
     # reconstruct their day before they'd gotten a result — same problem,
     # same owner call. Post-result cross-ref to Before the Crash kept and
     # still enforced below.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe', 'WhereDidTheTimeGo')
+    # FocusSoundArchitect joined 2026-09-15: unlike the three above, BOTH its
+    # cross-refs (the "Related Tools" box and the "Focus Pocus structures the
+    # actual session around it" post-result line) were removed at the
+    # owner's request as part of the tool's rewrite — zero links at either
+    # end, by decision. Also in NO_CROSSREF below for the same reason.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'FocusSoundArchitect')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

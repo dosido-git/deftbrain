@@ -9,7 +9,7 @@
       "/api/focus-sound-architect/scene",
       "/api/focus-sound-architect/adjust"
     ],
-    "note": "Regression reference for FocusSoundArchitect. Re-run each case's input against the live backend (npm run check:golden focus-sound-architect) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The MAIN case GUARDS the schema-annotation fix: every layer.type MUST be an exact enum from [white_noise,pink_noise,brown_noise,rain,ocean,wind,forest,fire,cafe,binaural] — if the model echoes a '— one sentence' suffix the backend silently FILTERS the layer out (empty/short soundscape). The SCENE case GUARDS the duration invariant: phase durationMin values MUST sum to totalMinutes (here 90). DO NOT silently reverse: (1) all 3 endpoints on haiku-4-5; (2) keep enum 'type' + display 'label' example fields free of length annotations; (3) callClaudeWithRetry path = parse failure throws to top-level 500 (no per-endpoint success guard). Frontend-only fixes not covered by golden: layer-card 2-row header (mobile label crush), handleSmartFeedback single-pass newLayers (add/remove index desync). See audit/tool-notes/FOCUSSOUNDARCHITECT-NOTES.md.",
+    "note": "Regression reference for FocusSoundArchitect. Re-run each case's input against the live backend (npm run check:golden focus-sound-architect) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. 2026-09-15 rewrite: the MAIN endpoint's schema was simplified to soundscape_name + layers[] (type/volume/label/why) + start_here — description, usage_tips and adjustment_guide were dropped (the live 'How does it sound?' feedback loop replaces the static adjustment_guide). The MAIN case GUARDS the schema-annotation fix: every layer.type MUST be an exact enum from [white_noise,pink_noise,brown_noise,rain,ocean,wind,forest,fire,cafe] — binaural is deliberately EXCLUDED from this enum (the AI no longer recommends it, per NO NEUROSCIENCE CLAIMS; it remains available only as a manual, user-initiated add on the frontend) — if the model echoes a '— one sentence' suffix the backend silently FILTERS the layer out (empty/short soundscape). Layers are also capped to 1-3 (code-level .slice(0,3), belt-and-braces with the prompt's KEEP IT SIMPLE rule). The SCENE case GUARDS the duration invariant: phase durationMin values MUST sum to totalMinutes (here 90); its validTypes also excludes binaural now, though its own schema (scene_name/phases/arc_explanation/transition_notes) is unchanged. DO NOT silently reverse: (1) all 3 endpoints on haiku-4-5; (2) keep enum 'type' + display 'label' example fields free of length annotations; (3) callClaudeWithRetry path = parse failure throws to top-level 500 (no per-endpoint success guard). Frontend-only fixes not covered by golden: layer-card 2-row header (mobile label crush), handleSmartFeedback single-pass newLayers (add/remove index desync). See audit/tool-notes/FOCUSSOUNDARCHITECT-NOTES.md.",
     "rate_limit_note": "Backend limits 4 req/min; the scene case can take ~60-110s. check:golden runs the 3 cases sequentially and fits."
   },
   "cases": [
@@ -32,41 +32,22 @@
         "energyGoal": 30
       },
       "output": {
-        "soundscape_name": "Deep Focus in the Storm",
-        "description": "A grounding soundscape combining brown noise's warm masking power with gentle rain patterns and subtle alpha-wave binaural support. This design prioritizes speech masking in your noisy open office while keeping you calm and focused without jarring transients that trigger sound sensitivity.",
+        "soundscape_name": "Office Steady Ground",
         "layers": [
           {
             "type": "brown_noise",
             "volume": 60,
-            "label": "Warm Foundation Layer",
-            "why": "Brown noise's deep, rumbling character directly matches your preference and provides excellent masking of office chatter and sudden noises while naturally calming your nervous system for deep work."
+            "label": "Warm Foundation",
+            "why": "Brown noise's deep, low-frequency character is a reasonable starting layer for masking office chatter and keyboard clicks, and matches your stated preference."
           },
           {
-            "type": "rain",
-            "volume": 35,
-            "label": "Natural Rhythm Overlay",
-            "why": "Rain adds organic rhythm and further masks abrupt office sounds; its gentle, rolling pattern avoids sharp transients that trigger your sound sensitivity while reinforcing your stated preference."
-          },
-          {
-            "type": "binaural",
-            "volume": 20,
-            "hz": 10,
-            "base_hz": 200,
-            "label": "Alpha Calm-Focus Carrier",
-            "why": "10 Hz alpha waves support relaxed yet focused attention, perfect for deep work at your 30/100 energy goal, without over-stimulation that would conflict with your need for calm."
+            "type": "pink_noise",
+            "volume": 22,
+            "label": "Subtle Lift",
+            "why": "A light layer of pink noise adds some texture on top of the brown noise without introducing the sharp transients your sudden-sound sensitivity calls for avoiding."
           }
         ],
-        "usage_tips": [
-          "Start at these volumes and adjust brown noise up to 70 if office noise spikes; rain can stay steady as it provides natural variation.",
-          "Use closed-back headphones or earbuds to maximize isolation in open plan; the binaural layer requires headphones to be effective.",
-          "If sudden noises still startle you, slightly increase brown noise volume first before adding any new layers—it's your best defense against unpredictability.",
-          "Take a 5-minute silence break every 60 minutes to prevent listener fatigue and reset your acoustic baseline."
-        ],
-        "adjustment_guide": {
-          "if_too_distracting": "Lower the rain volume to 20 and reduce binaural to 15; brown noise alone is sufficient for masking and won't overstimulate.",
-          "if_not_enough": "Increase brown noise to 70 and rain to 40; if still insufficient, add a white_noise layer at 15 volume for additional high-frequency speech masking.",
-          "after_30_minutes": "Gradually decrease binaural volume by 5 points every 30 minutes as your focus deepens; most users need less active support after the first hour."
-        }
+        "start_here": "Start with brown noise around 60 and the pink noise low. Give it a minute — if the office still feels present, raise the brown noise; if you notice the sound itself, lower it."
       }
     },
     {
@@ -79,7 +60,7 @@
         ],
         "soundPreferences": [
           "Brown noise",
-          "Binaural Beats"
+          "Forest"
         ],
         "sensitivities": [],
         "energyGoal": 50,

@@ -3934,35 +3934,33 @@ tagline: "Work with the energy you have.",
     get: "A soundscape recipe you can build, tuned to that combination.",
     edge: "It accounts for auditory sensitivities, so the recommendation isn't 'lo-fi beats' for everyone.",
   },
-  seoDescription: "Build a personalized focus soundscape tuned to your task and sensory needs — white noise, nature sounds, binaural beats, and ambient music. Free, no signup.",
+  seoDescription: "Build an adjustable background sound mix tuned to what's actually getting in your way — white noise, nature sounds, and ambient layers you can adjust as you listen. Free, no signup.",
   seoTitle: "Focus Soundscape & Concentration Noise Maker",
   title: "Focus Sound Architect",
-  tagline: "Create personalized soundscapes to enhance your concentration.",
+  tagline: "Build a background your attention can live with.",
   tags: ["focus sounds", "concentration sounds", "background noise", "soundscape", "white noise", "pink noise", "brown noise", "ambient sound", "mask distractions", "noisy workspace", "voices distracting", "auditory sensitivity", "sensory needs", "study sounds", "work sounds"],
   icon: " 🎧",
   categories: ['Energy'],
   headerColor: "#b8dcd8",
-  description: "Generate personalized soundscapes for concentration based on your task, environment, and sensory needs. Creates custom mixes of white/pink/brown noise, nature sounds, binaural beats, and ambient music. Get sound layering recipes with individual volume controls and specific personalized tips.",
+  description: "Sometimes the problem isn't your focus. It's what your ears have to deal with. Focus Sound Architect builds an adjustable background that can mask distractions, soften an uncomfortable space, or simply give you something better to work alongside.",
   guide: {
-      overview: "The Focus Sound Architect generates custom soundscape recipes calibrated to your neurotype, task, environment, and auditory sensitivities. Instead of generic focus music, you get a personalized mix of sound elements with scientific explanations for why each helps your specific situation. Built with neurodivergent brains in mind - honors sensory sensitivities, provides consistency when needed, variety when needed, and always explains WHY.",
+      overview: "Focus Sound Architect doesn't know in advance what sound will make you focus — nobody's tool does. What it can do is build a sensible starting mix from your task, environment, and what's actually interfering, then adjust that mix as you tell it what isn't working. It starts with 1-3 layers, never more than the situation calls for, and every layer comes with a plain-language reason for being there.",
       howToUse: [
-        "Select your current task (Deep work, Creative, Reading, Studying, Tedious tasks, Relaxing)",
-        "Choose your environment (Noisy office, Coffee shop, Quiet home, etc.) - helps calibrate masking level",
-        "Select sound preferences you like: White/Pink/Brown noise, Nature sounds (rain, ocean, forest), Ambient music, Binaural beats, ASMR triggers",
-        "Indicate sensory sensitivities: Sudden sounds startle you? Need variety? Prefer consistency? Sensitive to high frequencies? Need low bass?",
-        "Set energy goal with slider from Calm to Energized",
-        "Generate your custom soundscape recipe with 2-4 layered elements, volume recommendations, binaural beat frequencies, usage instructions, variations to try, neurodivergent-specific tips, and troubleshooting guidance"
+        "Pick a ready-made soundscape if a generic mix is enough, or answer four short questions: what you're trying to do, what's getting in the way, where you are, and any sounds you like or can't tolerate",
+        "Get a starting mix of 1-3 layers, each with a one-sentence reason it was picked",
+        "Play it, and use 'How does it sound?' — Too distracting, Too sleepy, Too harsh, Too monotonous, Still hearing voices, Not enough — to adjust the mix instead of starting over",
+        "Fine-tune manually any time: per-layer volume, mute/solo, a 3-band EQ, and optional layers you add yourself"
       ],
       example: {
-        scenario: "You need to do deep work in a noisy open-plan office. Sudden sounds startle you, and you prefer consistency. You like brown noise and want to feel calm.",
-        action: "Select: Task = Deep work, Environment = Noisy office + Open plan, Sounds = Brown noise, Sensitivities = Sudden sounds startle me + Prefer consistency, Energy = 25/100 (Calm)",
-        result: "You receive 'Deep Focus Shield' soundscape with: (1) Brown noise at 70% volume (low frequency masking without distraction), (2) Steady rain at 20% volume (gentle variety without surprises), (3) 14Hz binaural beats (beta waves for sustained concentration). Usage: Start 5 min before work at 40% system volume. Variations: 'Energy Boost' version with 40Hz beats if feeling sluggish. Neurodivergent tips: Use this soundscape as your 'focus trigger' - Pavlovian conditioning will help you drop into flow faster over time. Troubleshooting: If still too distracting, remove rain and use just brown noise at 60%."
+        scenario: "You need to do deep work in a noisy open-plan office, sudden sounds startle you, and you like brown noise.",
+        action: "Task = Deep work, What's getting in the way = General background noise, Environment = Noisy office + Open plan, Sounds = Brown noise, Sensitivities = Sensitive to sudden sounds",
+        result: "A two-layer starting mix — brown noise as a steady base, plus a second layer chosen to add gentle variation without sharp transients — each with a one-sentence reason tied to what you described. If it's not working, 'How does it sound?' adjusts the mix instead of asking you to start over."
       },
       tips: [
-        "Start soundscapes 5 minutes before you need to focus - gives your brain time to settle into the auditory environment",
-        "Use the SAME soundscape each time you do a specific task type - creates a Pavlovian 'focus trigger' that helps you drop into flow faster",
-        "If you have auditory processing differences, start with JUST one element (brown noise) and add complexity slowly only if needed",
-        "Binaural beats require headphones to work - the left and right ears need slightly different frequencies to create the brain wave entrainment effect"
+        "Start with fewer layers than feels thorough — one steady layer you can actually ignore usually beats three that compete for attention",
+        "Use 'How does it sound?' rather than regenerating from scratch — it changes the smallest number of layers needed and leaves the rest alone",
+        "If you're sensitive to sudden sounds, say so — rain and fire are filtered out automatically",
+        "Binaural beats are available as a manual add-on for anyone who wants them, but the generated mix won't suggest them — there's no need for a scientifically loaded option when ordinary layers can do the job"
       ]
     }
 },

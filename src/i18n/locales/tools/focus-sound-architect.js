@@ -25,17 +25,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Not enough",
     fsa_need_now: "Need sound now?",
     fsa_qs_deep_focus: "🧠 Deep Focus",
-    fsa_qs_deep_focus_d: "Steady brown + pink noise for a simple, low-distraction background",
+    fsa_qs_deep_focus_d: "Steady brown + pink noise",
     fsa_qs_creative: "🎨 Creative Flow",
-    fsa_qs_creative_d: "Rain + café murmur for a gently varied atmosphere",
+    fsa_qs_creative_d: "Rain + café murmur",
     fsa_qs_study: "📚 Calm Study",
-    fsa_qs_study_d: "Ocean + soft brown noise for a quieter study backdrop",
+    fsa_qs_study_d: "Ocean + soft brown noise",
     fsa_qs_settle: "😴 Settle Down",
-    fsa_qs_settle_d: "Deep brown noise + soft ocean for a low-stimulation backdrop",
+    fsa_qs_settle_d: "Deep brown + soft ocean",
     fsa_qs_brighter: "⚡ Brighter Background",
-    fsa_qs_brighter_d: "Pink noise + light café ambience for a more active-feeling mix",
+    fsa_qs_brighter_d: "Pink noise + light café ambience",
     fsa_qs_speech: "🔇 Speech Masker",
-    fsa_qs_speech_d: "Steady noise + soft murmur designed to make nearby conversation less distinct",
+    fsa_qs_speech_d: "Steady noise intended to make nearby speech less distinct",
     fsa_why_warm_steady: "A warm, steady foundation that can help cover irregular background sound.",
     fsa_why_brightness: "Adds a little brightness without making the mix busy.",
     fsa_why_natural_var: "Adds natural variation without requiring attention.",
@@ -216,7 +216,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Nature / Forest",
     fsa_pref_fire: "Crackling Fire",
     fsa_pref_cafe: "Café Ambience",
-    fsa_pref_binauralBeats: "Binaural Beats",
     fsa_pref_wind: "Wind",
 
     // ── Sensitivities (label; id stays English) ──
@@ -224,7 +223,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Sensitive to high frequencies",
     fsa_sens_preferConsistency: "Prefer consistent texture",
     fsa_sens_needVariety: "Need some variation to stay engaged",
-    fsa_sens_needLowBass: "Need deep/low bass",
+    fsa_sens_needLowBass: "Prefer deeper/lower sounds",
 
     // ── Smart feedback options (label; id stays English) ──
     fsa_fb_too_busy: "Too busy",
@@ -350,6 +349,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ How does it sound? (adjusts as you listen)",
+    fsa_feedback_philosophy: "Don't try to predict the perfect sound. Start sensibly, listen, and adapt.",
     fsa_ai_adjusting: "🎚️ Adjusting the levels…",
     fsa_full_regenerate: "Full Regenerate",
     fsa_starts_over_note: "Starts over with a fresh mix",
@@ -360,15 +360,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Tips & Adjustments",
-    fsa_too_distracting: "Too distracting?",
-    fsa_not_enough: "Not enough?",
-    fsa_after_30_min: "After 30 min",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Related tools",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Sound recipe ready? {{link}} structures the actual session around it.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Unnamed",
@@ -417,17 +410,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "No es suficiente",
     fsa_need_now: "¿Necesitas sonido ya?",
     fsa_qs_deep_focus: "🧠 Concentración profunda",
-    fsa_qs_deep_focus_d: "Ruido marrón + rosa constante para un fondo sencillo y poco distractor",
+    fsa_qs_deep_focus_d: "Ruido marrón + rosa constante",
     fsa_qs_creative: "🎨 Flujo creativo",
-    fsa_qs_creative_d: "Lluvia + murmullo de cafetería para un ambiente con variación suave",
+    fsa_qs_creative_d: "Lluvia + murmullo de cafetería",
     fsa_qs_study: "📚 Estudio tranquilo",
-    fsa_qs_study_d: "Océano + ruido marrón suave para un fondo de estudio más silencioso",
+    fsa_qs_study_d: "Océano + ruido marrón suave",
     fsa_qs_settle: "😴 Bajar revoluciones",
-    fsa_qs_settle_d: "Ruido marrón profundo + océano suave para un fondo de baja estimulación",
+    fsa_qs_settle_d: "Ruido marrón profundo + océano suave",
     fsa_qs_brighter: "⚡ Fondo más luminoso",
-    fsa_qs_brighter_d: "Ruido rosa + ambiente ligero de cafetería para una mezcla más activa",
+    fsa_qs_brighter_d: "Ruido rosa + ambiente ligero de cafetería",
     fsa_qs_speech: "🔇 Enmascarador de voces",
-    fsa_qs_speech_d: "Ruido constante + murmullo suave para que la conversación cercana se distinga menos",
+    fsa_qs_speech_d: "Ruido constante pensado para que la conversación cercana se distinga menos",
     fsa_why_warm_steady: "Una base cálida y constante que puede ayudar a cubrir el sonido de fondo irregular.",
     fsa_why_brightness: "Añade algo de brillo sin recargar la mezcla.",
     fsa_why_natural_var: "Añade variación natural sin exigir atención.",
@@ -608,7 +601,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Naturaleza / Bosque",
     fsa_pref_fire: "Fuego crepitante",
     fsa_pref_cafe: "Ambiente de café",
-    fsa_pref_binauralBeats: "Ritmos binaurales",
     fsa_pref_wind: "Viento",
 
     // ── Sensitivities ──
@@ -616,7 +608,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Sensible a las altas frecuencias",
     fsa_sens_preferConsistency: "Prefiero una textura constante",
     fsa_sens_needVariety: "Necesito algo de variación para mantener el interés",
-    fsa_sens_needLowBass: "Necesito graves profundos/bajos",
+    fsa_sens_needLowBass: "Prefiero sonidos más graves o bajos",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Demasiado recargado",
@@ -742,6 +734,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ ¿Cómo suena? (se ajusta mientras escuchas)",
+    fsa_feedback_philosophy: "El sonido perfecto no se puede predecir de antemano. Lo mejor es empezar con algo razonable, escuchar y ajustar.",
     fsa_ai_adjusting: "🎚️ Ajustando los niveles…",
     fsa_full_regenerate: "Regenerar todo",
     fsa_starts_over_note: "Empieza de nuevo con una mezcla nueva",
@@ -752,15 +745,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Consejos y ajustes",
-    fsa_too_distracting: "¿Demasiado distractor?",
-    fsa_not_enough: "¿No es suficiente?",
-    fsa_after_30_min: "Después de 30 min",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Herramientas relacionadas",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "¿Lista la receta de sonido? {{link}} organiza la sesión real en torno a ella.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Sin nombre",
@@ -809,17 +795,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "还不够",
     fsa_need_now: "现在就要声音？",
     fsa_qs_deep_focus: "🧠 深度专注",
-    fsa_qs_deep_focus_d: "稳定的棕噪音＋粉红噪音，简单且干扰少的背景",
+    fsa_qs_deep_focus_d: "稳定的棕噪音＋粉红噪音",
     fsa_qs_creative: "🎨 创意流动",
-    fsa_qs_creative_d: "雨声＋咖啡馆低语，营造轻微变化的氛围",
+    fsa_qs_creative_d: "雨声＋咖啡馆低语",
     fsa_qs_study: "📚 安静学习",
-    fsa_qs_study_d: "海浪＋柔和棕噪音，更安静的学习背景",
+    fsa_qs_study_d: "海浪＋柔和棕噪音",
     fsa_qs_settle: "😴 慢慢平静",
-    fsa_qs_settle_d: "深棕噪音＋轻柔海浪，低刺激的背景",
+    fsa_qs_settle_d: "深棕噪音＋轻柔海浪",
     fsa_qs_brighter: "⚡ 更明亮的背景",
-    fsa_qs_brighter_d: "粉红噪音＋轻度咖啡馆环境音，感觉更活跃的混音",
+    fsa_qs_brighter_d: "粉红噪音＋轻度咖啡馆环境音",
     fsa_qs_speech: "🔇 人声遮蔽",
-    fsa_qs_speech_d: "稳定噪音＋轻柔低语，让附近的谈话不那么清晰",
+    fsa_qs_speech_d: "旨在让附近的谈话不那么清晰的稳定噪音",
     fsa_why_warm_steady: "温暖而稳定的基底，有助于盖过不规则的背景声。",
     fsa_why_brightness: "增添一点明亮感，又不会让混音变得杂乱。",
     fsa_why_natural_var: "带来自然的变化，又不需要你分神。",
@@ -1000,7 +986,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "自然 / 森林",
     fsa_pref_fire: "噼啪火声",
     fsa_pref_cafe: "咖啡馆氛围",
-    fsa_pref_binauralBeats: "双耳节拍",
     fsa_pref_wind: "风声",
 
     // ── Sensitivities ──
@@ -1008,7 +993,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "对高频敏感",
     fsa_sens_preferConsistency: "偏好稳定一致的质感",
     fsa_sens_needVariety: "需要一些变化以保持专注",
-    fsa_sens_needLowBass: "需要深沉的低音",
+    fsa_sens_needLowBass: "偏好更深沉/更低的声音",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "太杂乱",
@@ -1134,6 +1119,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ 听起来如何？（会随你聆听实时调整）",
+    fsa_feedback_philosophy: "不必去预测完美的声音。先从合理的组合开始，边听边调整。",
     fsa_ai_adjusting: "🎚️ 正在调整音量…",
     fsa_full_regenerate: "完全重新生成",
     fsa_starts_over_note: "用一套全新的混音重新开始",
@@ -1144,15 +1130,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "提示与调整",
-    fsa_too_distracting: "太容易分心？",
-    fsa_not_enough: "还不够？",
-    fsa_after_30_min: "30 分钟后",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 相关工具",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "声音配方准备好了？{{link}} 会据此安排实际的专注时段。",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "未命名",
@@ -1201,17 +1180,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "काफी नहीं है",
     fsa_need_now: "अभी आवाज़ चाहिए?",
     fsa_qs_deep_focus: "🧠 गहरा फ़ोकस",
-    fsa_qs_deep_focus_d: "स्थिर ब्राउन + पिंक नॉइज़, सरल और कम ध्यान भटकाने वाली पृष्ठभूमि",
+    fsa_qs_deep_focus_d: "स्थिर ब्राउन + पिंक नॉइज़",
     fsa_qs_creative: "🎨 रचनात्मक प्रवाह",
-    fsa_qs_creative_d: "बारिश + कैफ़े की गुनगुनाहट, हल्की विविधता वाला माहौल",
+    fsa_qs_creative_d: "बारिश + कैफ़े की गुनगुनाहट",
     fsa_qs_study: "📚 शांत अध्ययन",
-    fsa_qs_study_d: "समुद्र + हल्का ब्राउन नॉइज़, पढ़ाई के लिए शांत पृष्ठभूमि",
+    fsa_qs_study_d: "समुद्र + हल्का ब्राउन नॉइज़",
     fsa_qs_settle: "😴 शांत होना",
-    fsa_qs_settle_d: "गहरा ब्राउन नॉइज़ + हल्का समुद्र, कम उत्तेजना वाली पृष्ठभूमि",
+    fsa_qs_settle_d: "गहरा ब्राउन नॉइज़ + हल्का समुद्र",
     fsa_qs_brighter: "⚡ अधिक चमकीली पृष्ठभूमि",
-    fsa_qs_brighter_d: "पिंक नॉइज़ + हल्का कैफ़े माहौल, अधिक सक्रिय लगने वाला मिश्रण",
+    fsa_qs_brighter_d: "पिंक नॉइज़ + हल्का कैफ़े माहौल",
     fsa_qs_speech: "🔇 आवाज़ ढकने वाला",
-    fsa_qs_speech_d: "स्थिर नॉइज़ + हल्की गुनगुनाहट, ताकि पास की बातचीत कम साफ़ सुनाई दे",
+    fsa_qs_speech_d: "पास की बातचीत को कम स्पष्ट बनाने के लिए स्थिर नॉइज़",
     fsa_why_warm_steady: "एक गर्म, स्थिर आधार जो अनियमित पृष्ठभूमि ध्वनि को ढकने में मदद कर सकता है।",
     fsa_why_brightness: "मिश्रण को व्यस्त बनाए बिना थोड़ी चमक जोड़ता है।",
     fsa_why_natural_var: "ध्यान माँगे बिना प्राकृतिक विविधता जोड़ता है।",
@@ -1392,7 +1371,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "प्रकृति / जंगल",
     fsa_pref_fire: "चटकती आग",
     fsa_pref_cafe: "कैफ़े का माहौल",
-    fsa_pref_binauralBeats: "बाइनॉरल बीट्स",
     fsa_pref_wind: "हवा",
 
     // ── Sensitivities ──
@@ -1400,7 +1378,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "उच्च आवृत्तियों के प्रति संवेदनशील",
     fsa_sens_preferConsistency: "एक समान टेक्सचर पसंद है",
     fsa_sens_needVariety: "ध्यान बनाए रखने के लिए कुछ विविधता चाहिए",
-    fsa_sens_needLowBass: "गहरा/निम्न बेस चाहिए",
+    fsa_sens_needLowBass: "गहरी/धीमी ध्वनियाँ पसंद हैं",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "बहुत भरा-भरा",
@@ -1526,6 +1504,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ कैसा लग रहा है? (सुनते-सुनते समायोजित होता है)",
+    fsa_feedback_philosophy: "सही आवाज़ का अनुमान लगाने की कोशिश मत कीजिए। समझदारी से शुरू करें, सुनें, और समायोजित करें।",
     fsa_ai_adjusting: "🎚️ स्तर समायोजित हो रहे हैं…",
     fsa_full_regenerate: "पूरा फिर से बनाएँ",
     fsa_starts_over_note: "एक नए मिश्रण के साथ फिर से शुरू करता है",
@@ -1536,15 +1515,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "सुझाव और समायोजन",
-    fsa_too_distracting: "बहुत ज़्यादा ध्यान भटका रहा है?",
-    fsa_not_enough: "पर्याप्त नहीं?",
-    fsa_after_30_min: "30 मिनट के बाद",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 संबंधित टूल",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "ध्वनि रेसिपी तैयार है? {{link}} असली सत्र को इसके चारों ओर व्यवस्थित करता है।",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "बिना नाम",
@@ -1593,17 +1565,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "غير كافٍ",
     fsa_need_now: "تحتاج صوتًا الآن؟",
     fsa_qs_deep_focus: "🧠 تركيز عميق",
-    fsa_qs_deep_focus_d: "ضجيج بني ووردي ثابت لخلفية بسيطة قليلة التشتيت",
+    fsa_qs_deep_focus_d: "ضجيج بني ووردي ثابت",
     fsa_qs_creative: "🎨 تدفّق إبداعي",
-    fsa_qs_creative_d: "مطر مع همهمة مقهى لأجواء متنوّعة بلطف",
+    fsa_qs_creative_d: "مطر مع همهمة مقهى",
     fsa_qs_study: "📚 دراسة هادئة",
-    fsa_qs_study_d: "محيط مع ضجيج بني ناعم لخلفية دراسة أهدأ",
+    fsa_qs_study_d: "محيط مع ضجيج بني ناعم",
     fsa_qs_settle: "😴 تهدئة",
-    fsa_qs_settle_d: "ضجيج بني عميق مع محيط ناعم لخلفية منخفضة التحفيز",
+    fsa_qs_settle_d: "ضجيج بني عميق مع محيط ناعم",
     fsa_qs_brighter: "⚡ خلفية أكثر إشراقًا",
-    fsa_qs_brighter_d: "ضجيج وردي مع أجواء مقهى خفيفة لمزيج يبدو أكثر نشاطًا",
+    fsa_qs_brighter_d: "ضجيج وردي مع أجواء مقهى خفيفة",
     fsa_qs_speech: "🔇 حجب الكلام",
-    fsa_qs_speech_d: "ضجيج ثابت مع همهمة ناعمة لجعل الحديث القريب أقل وضوحًا",
+    fsa_qs_speech_d: "ضجيج ثابت يهدف إلى جعل الحديث القريب أقل وضوحًا",
     fsa_why_warm_steady: "أساس دافئ وثابت قد يساعد على تغطية الصوت الخلفي غير المنتظم.",
     fsa_why_brightness: "يضيف قليلًا من السطوع دون أن يجعل المزيج مزدحمًا.",
     fsa_why_natural_var: "يضيف تنوّعًا طبيعيًا دون أن يتطلب انتباهك.",
@@ -1784,7 +1756,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "طبيعة / غابة",
     fsa_pref_fire: "نار متطايرة الشرر",
     fsa_pref_cafe: "أجواء مقهى",
-    fsa_pref_binauralBeats: "نبضات ثنائية الأذن",
     fsa_pref_wind: "رياح",
 
     // ── Sensitivities ──
@@ -1792,7 +1763,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "حسّاس للترددات العالية",
     fsa_sens_preferConsistency: "أفضّل نسيجاً ثابتاً",
     fsa_sens_needVariety: "أحتاج بعض التنوّع للبقاء منخرطاً",
-    fsa_sens_needLowBass: "أحتاج جهيراً عميقاً/منخفضاً",
+    fsa_sens_needLowBass: "أفضّل أصواتاً أعمق/أقل حدة",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "مزدحم جداً",
@@ -1918,6 +1889,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ كيف يبدو الصوت؟ (يُضبط أثناء استماعك)",
+    fsa_feedback_philosophy: "لا تحاول توقّع الصوت المثالي. ابدأ بشيء معقول، استمع، ثم عدّل.",
     fsa_ai_adjusting: "🎚️ جارٍ ضبط المستويات…",
     fsa_full_regenerate: "إعادة إنشاء كاملة",
     fsa_starts_over_note: "يبدأ من جديد بمزيج جديد",
@@ -1928,15 +1900,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "نصائح وتعديلات",
-    fsa_too_distracting: "مشتِّت أكثر من اللازم؟",
-    fsa_not_enough: "ليس كافياً؟",
-    fsa_after_30_min: "بعد 30 دقيقة",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 أدوات ذات صلة",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "وصفة الصوت جاهزة؟ تنظّم {{link}} الجلسة الفعلية حولها.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "بلا اسم",
@@ -1985,17 +1950,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Não é suficiente",
     fsa_need_now: "Precisa de som agora?",
     fsa_qs_deep_focus: "🧠 Foco profundo",
-    fsa_qs_deep_focus_d: "Ruído marrom + rosa estável para um fundo simples e pouco distrativo",
+    fsa_qs_deep_focus_d: "Ruído marrom + rosa estável",
     fsa_qs_creative: "🎨 Fluxo criativo",
-    fsa_qs_creative_d: "Chuva + murmúrio de café para uma atmosfera com variação suave",
+    fsa_qs_creative_d: "Chuva + murmúrio de café",
     fsa_qs_study: "📚 Estudo calmo",
-    fsa_qs_study_d: "Oceano + ruído marrom suave para um fundo de estudo mais silencioso",
+    fsa_qs_study_d: "Oceano + ruído marrom suave",
     fsa_qs_settle: "😴 Desacelerar",
-    fsa_qs_settle_d: "Ruído marrom profundo + oceano suave para um fundo de baixa estimulação",
+    fsa_qs_settle_d: "Ruído marrom profundo + oceano suave",
     fsa_qs_brighter: "⚡ Fundo mais brilhante",
-    fsa_qs_brighter_d: "Ruído rosa + ambiente leve de café para uma mistura de sensação mais ativa",
+    fsa_qs_brighter_d: "Ruído rosa + ambiente leve de café",
     fsa_qs_speech: "🔇 Mascarador de fala",
-    fsa_qs_speech_d: "Ruído estável + murmúrio suave para deixar a conversa próxima menos nítida",
+    fsa_qs_speech_d: "Ruído estável pensado para deixar a conversa próxima menos nítida",
     fsa_why_warm_steady: "Uma base morna e estável que pode ajudar a cobrir o som de fundo irregular.",
     fsa_why_brightness: "Acrescenta um pouco de brilho sem deixar a mistura carregada.",
     fsa_why_natural_var: "Acrescenta variação natural sem exigir atenção.",
@@ -2176,7 +2141,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Natureza / Floresta",
     fsa_pref_fire: "Fogo crepitante",
     fsa_pref_cafe: "Ambiente de café",
-    fsa_pref_binauralBeats: "Batidas binaurais",
     fsa_pref_wind: "Vento",
 
     // ── Sensitivities ──
@@ -2184,7 +2148,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Sensível a frequências altas",
     fsa_sens_preferConsistency: "Prefiro uma textura constante",
     fsa_sens_needVariety: "Preciso de alguma variação para manter o interesse",
-    fsa_sens_needLowBass: "Preciso de graves profundos/baixos",
+    fsa_sens_needLowBass: "Prefiro sons mais graves/baixos",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Carregado demais",
@@ -2310,6 +2274,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ Como está soando? (ajusta enquanto você ouve)",
+    fsa_feedback_philosophy: "Não dá para prever o som perfeito. O melhor é começar com algo sensato, ouvir e ajustar.",
     fsa_ai_adjusting: "🎚️ Ajustando os níveis…",
     fsa_full_regenerate: "Regenerar tudo",
     fsa_starts_over_note: "Recomeça com uma mistura nova",
@@ -2320,15 +2285,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Dicas e ajustes",
-    fsa_too_distracting: "Distrai demais?",
-    fsa_not_enough: "Não é suficiente?",
-    fsa_after_30_min: "Após 30 min",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Ferramentas relacionadas",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Receita de som pronta? {{link}} organiza a sessão real em torno dela.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Sem nome",
@@ -2377,17 +2335,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Pas assez",
     fsa_need_now: "Besoin de son tout de suite ?",
     fsa_qs_deep_focus: "🧠 Concentration profonde",
-    fsa_qs_deep_focus_d: "Bruit brun + rose stable pour un fond simple et peu distrayant",
+    fsa_qs_deep_focus_d: "Bruit brun + rose stable",
     fsa_qs_creative: "🎨 Élan créatif",
-    fsa_qs_creative_d: "Pluie + murmure de café pour une ambiance légèrement variée",
+    fsa_qs_creative_d: "Pluie + murmure de café",
     fsa_qs_study: "📚 Étude calme",
-    fsa_qs_study_d: "Océan + bruit brun doux pour un fond d'étude plus silencieux",
+    fsa_qs_study_d: "Océan + bruit brun doux",
     fsa_qs_settle: "😴 Redescendre",
-    fsa_qs_settle_d: "Bruit brun profond + océan doux pour un fond peu stimulant",
+    fsa_qs_settle_d: "Bruit brun profond + océan doux",
     fsa_qs_brighter: "⚡ Fond plus lumineux",
-    fsa_qs_brighter_d: "Bruit rose + ambiance légère de café pour un mélange plus vivant",
+    fsa_qs_brighter_d: "Bruit rose + ambiance légère de café",
     fsa_qs_speech: "🔇 Masque de paroles",
-    fsa_qs_speech_d: "Bruit stable + murmure doux pour rendre les conversations proches moins distinctes",
+    fsa_qs_speech_d: "Bruit stable destiné à rendre les conversations proches moins distinctes",
     fsa_why_warm_steady: "Une base chaude et stable qui peut aider à couvrir un fond sonore irrégulier.",
     fsa_why_brightness: "Ajoute un peu de brillance sans charger le mélange.",
     fsa_why_natural_var: "Ajoute une variation naturelle sans demander d'attention.",
@@ -2568,7 +2526,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Nature / Forêt",
     fsa_pref_fire: "Feu crépitant",
     fsa_pref_cafe: "Ambiance de café",
-    fsa_pref_binauralBeats: "Battements binauraux",
     fsa_pref_wind: "Vent",
 
     // ── Sensitivities ──
@@ -2576,7 +2533,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Sensible aux hautes fréquences",
     fsa_sens_preferConsistency: "Je préfère une texture constante",
     fsa_sens_needVariety: "J'ai besoin d'un peu de variété pour rester engagé",
-    fsa_sens_needLowBass: "J'ai besoin de basses profondes",
+    fsa_sens_needLowBass: "Je préfère des sons plus graves/plus bas",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Trop chargé",
@@ -2702,6 +2659,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ Comment ça sonne ? (s'ajuste pendant que vous écoutez)",
+    fsa_feedback_philosophy: "Le son parfait ne se devine pas à l'avance. Mieux vaut commencer simplement, écouter, puis ajuster.",
     fsa_ai_adjusting: "🎚️ Ajustement des niveaux…",
     fsa_full_regenerate: "Tout régénérer",
     fsa_starts_over_note: "Repart avec un nouveau mélange",
@@ -2712,15 +2670,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Conseils et ajustements",
-    fsa_too_distracting: "Trop distrayant ?",
-    fsa_not_enough: "Pas assez ?",
-    fsa_after_30_min: "Après 30 min",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Outils associés",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Recette sonore prête ? {{link}} structure la session réelle autour d'elle.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Sans nom",
@@ -2769,17 +2720,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Nicht genug",
     fsa_need_now: "Sofort Klang gebraucht?",
     fsa_qs_deep_focus: "🧠 Tiefer Fokus",
-    fsa_qs_deep_focus_d: "Gleichmäßiges braunes + rosa Rauschen für einen schlichten, wenig ablenkenden Hintergrund",
+    fsa_qs_deep_focus_d: "Gleichmäßiges braunes + rosa Rauschen",
     fsa_qs_creative: "🎨 Kreativer Fluss",
-    fsa_qs_creative_d: "Regen + Café-Gemurmel für eine sanft abwechslungsreiche Atmosphäre",
+    fsa_qs_creative_d: "Regen + Café-Gemurmel",
     fsa_qs_study: "📚 Ruhiges Lernen",
-    fsa_qs_study_d: "Meer + weiches braunes Rauschen für einen ruhigeren Lernhintergrund",
+    fsa_qs_study_d: "Meer + weiches braunes Rauschen",
     fsa_qs_settle: "😴 Herunterkommen",
-    fsa_qs_settle_d: "Tiefes braunes Rauschen + sanftes Meer für einen reizarmen Hintergrund",
+    fsa_qs_settle_d: "Tiefes braunes Rauschen + sanftes Meer",
     fsa_qs_brighter: "⚡ Hellerer Hintergrund",
-    fsa_qs_brighter_d: "Rosa Rauschen + leichte Café-Atmosphäre für eine lebendiger wirkende Mischung",
+    fsa_qs_brighter_d: "Rosa Rauschen + leichte Café-Atmosphäre",
     fsa_qs_speech: "🔇 Sprach-Überdeckung",
-    fsa_qs_speech_d: "Gleichmäßiges Rauschen + leises Gemurmel, damit Gespräche in der Nähe weniger deutlich werden",
+    fsa_qs_speech_d: "Gleichmäßiges Rauschen, das Gespräche in der Nähe weniger deutlich machen soll",
     fsa_why_warm_steady: "Eine warme, gleichmäßige Grundlage, die unregelmäßige Hintergrundgeräusche überdecken kann.",
     fsa_why_brightness: "Bringt etwas Helligkeit, ohne die Mischung unruhig zu machen.",
     fsa_why_natural_var: "Bringt natürliche Abwechslung, ohne Aufmerksamkeit zu verlangen.",
@@ -2960,7 +2911,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Natur / Wald",
     fsa_pref_fire: "Knisterndes Feuer",
     fsa_pref_cafe: "Café-Atmosphäre",
-    fsa_pref_binauralBeats: "Binaurale Beats",
     fsa_pref_wind: "Wind",
 
     // ── Sensitivities ──
@@ -2968,7 +2918,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Empfindlich gegenüber hohen Frequenzen",
     fsa_sens_preferConsistency: "Bevorzuge eine gleichmäßige Textur",
     fsa_sens_needVariety: "Brauche etwas Abwechslung, um dabeizubleiben",
-    fsa_sens_needLowBass: "Brauche tiefe/niedrige Bässe",
+    fsa_sens_needLowBass: "Bevorzuge tiefere/niedrigere Klänge",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Zu überladen",
@@ -3094,6 +3044,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ Wie klingt es? (passt sich beim Hören an)",
+    fsa_feedback_philosophy: "Der perfekte Klang lässt sich nicht vorhersagen. Einfach sinnvoll anfangen, hinhören und anpassen.",
     fsa_ai_adjusting: "🎚️ Pegel werden angepasst…",
     fsa_full_regenerate: "Komplett neu erzeugen",
     fsa_starts_over_note: "Beginnt neu mit einer frischen Mischung",
@@ -3104,15 +3055,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Tipps & Anpassungen",
-    fsa_too_distracting: "Zu ablenkend?",
-    fsa_not_enough: "Nicht genug?",
-    fsa_after_30_min: "Nach 30 Min.",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Verwandte Tools",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Klangrezept fertig? {{link}} strukturiert die eigentliche Sitzung darum herum.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Unbenannt",
@@ -3161,17 +3105,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "足りない",
     fsa_need_now: "すぐに音が必要？",
     fsa_qs_deep_focus: "🧠 ディープフォーカス",
-    fsa_qs_deep_focus_d: "安定したブラウン＋ピンクノイズで、シンプルで気の散りにくい背景",
+    fsa_qs_deep_focus_d: "安定したブラウン＋ピンクノイズ",
     fsa_qs_creative: "🎨 クリエイティブフロー",
-    fsa_qs_creative_d: "雨＋カフェのざわめきで、ゆるやかに変化する雰囲気",
+    fsa_qs_creative_d: "雨＋カフェのざわめき",
     fsa_qs_study: "📚 静かな学習",
-    fsa_qs_study_d: "波＋やわらかなブラウンノイズで、より静かな学習の背景",
+    fsa_qs_study_d: "波＋やわらかなブラウンノイズ",
     fsa_qs_settle: "😴 落ち着く",
-    fsa_qs_settle_d: "深いブラウンノイズ＋やわらかな波で、刺激の少ない背景",
+    fsa_qs_settle_d: "深いブラウンノイズ＋やわらかな波",
     fsa_qs_brighter: "⚡ 明るめの背景",
-    fsa_qs_brighter_d: "ピンクノイズ＋軽いカフェの空気感で、より活動的に感じるミックス",
+    fsa_qs_brighter_d: "ピンクノイズ＋軽いカフェの空気感",
     fsa_qs_speech: "🔇 話し声のマスキング",
-    fsa_qs_speech_d: "安定したノイズ＋やわらかなざわめきで、近くの会話を聞き取りにくくします",
+    fsa_qs_speech_d: "近くの会話を聞き取りにくくすることを目的とした安定したノイズ",
     fsa_why_warm_steady: "温かく安定した土台で、不規則な背景音を覆うのに役立ちます。",
     fsa_why_brightness: "ミックスをうるさくせずに、少しだけ明るさを加えます。",
     fsa_why_natural_var: "注意を向けなくても、自然な変化が加わります。",
@@ -3352,7 +3296,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "自然 / 森",
     fsa_pref_fire: "パチパチと燃える焚き火",
     fsa_pref_cafe: "カフェの雰囲気",
-    fsa_pref_binauralBeats: "バイノーラルビート",
     fsa_pref_wind: "風",
 
     // ── Sensitivities ──
@@ -3360,7 +3303,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "高い周波数に敏感",
     fsa_sens_preferConsistency: "一定のテクスチャを好む",
     fsa_sens_needVariety: "集中を保つために多少の変化が必要",
-    fsa_sens_needLowBass: "深い低音が必要",
+    fsa_sens_needLowBass: "より低く深い音を好む",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "情報が多すぎる",
@@ -3486,6 +3429,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ 聞こえ方はどうですか？（聴きながら調整されます）",
+    fsa_feedback_philosophy: "完璧な音を先に見極める必要はありません。無理のない組み合わせから始め、聴きながら調整してください。",
     fsa_ai_adjusting: "🎚️ 音量を調整しています…",
     fsa_full_regenerate: "完全に再生成",
     fsa_starts_over_note: "新しいミックスでやり直します",
@@ -3496,15 +3440,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "ヒントと調整",
-    fsa_too_distracting: "気が散りすぎますか？",
-    fsa_not_enough: "物足りませんか？",
-    fsa_after_30_min: "30分後",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 関連ツール",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "音のレシピは準備できましたか？{{link}} がそれを軸に実際のセッションを組み立てます。",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "名称未設定",
@@ -3553,17 +3490,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "부족해요",
     fsa_need_now: "지금 바로 소리가 필요한가요?",
     fsa_qs_deep_focus: "🧠 깊은 집중",
-    fsa_qs_deep_focus_d: "일정한 브라운 + 핑크 노이즈로 단순하고 방해가 적은 배경",
+    fsa_qs_deep_focus_d: "일정한 브라운 + 핑크 노이즈",
     fsa_qs_creative: "🎨 창의적 몰입",
-    fsa_qs_creative_d: "빗소리 + 카페 웅성거림으로 은근히 변화하는 분위기",
+    fsa_qs_creative_d: "빗소리 + 카페 웅성거림",
     fsa_qs_study: "📚 조용한 공부",
-    fsa_qs_study_d: "파도 + 부드러운 브라운 노이즈로 더 조용한 공부 배경",
+    fsa_qs_study_d: "파도 + 부드러운 브라운 노이즈",
     fsa_qs_settle: "😴 가라앉히기",
-    fsa_qs_settle_d: "깊은 브라운 노이즈 + 잔잔한 파도로 자극이 적은 배경",
+    fsa_qs_settle_d: "깊은 브라운 노이즈 + 잔잔한 파도",
     fsa_qs_brighter: "⚡ 더 밝은 배경",
-    fsa_qs_brighter_d: "핑크 노이즈 + 가벼운 카페 분위기로 더 활기차게 느껴지는 믹스",
+    fsa_qs_brighter_d: "핑크 노이즈 + 가벼운 카페 분위기",
     fsa_qs_speech: "🔇 말소리 가리기",
-    fsa_qs_speech_d: "일정한 노이즈 + 부드러운 웅성거림으로 가까운 대화를 덜 또렷하게",
+    fsa_qs_speech_d: "가까운 대화를 덜 또렷하게 만들기 위한 일정한 노이즈",
     fsa_why_warm_steady: "따뜻하고 일정한 바탕으로, 불규칙한 배경 소리를 덮는 데 도움이 될 수 있습니다.",
     fsa_why_brightness: "믹스를 복잡하게 만들지 않으면서 약간의 밝기를 더합니다.",
     fsa_why_natural_var: "주의를 요구하지 않으면서 자연스러운 변화를 더합니다.",
@@ -3744,7 +3681,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "자연 / 숲",
     fsa_pref_fire: "타닥거리는 모닥불",
     fsa_pref_cafe: "카페 분위기",
-    fsa_pref_binauralBeats: "바이노럴 비트",
     fsa_pref_wind: "바람",
 
     // ── Sensitivities ──
@@ -3752,7 +3688,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "고주파에 민감함",
     fsa_sens_preferConsistency: "일정한 질감을 선호함",
     fsa_sens_needVariety: "집중을 유지하려면 약간의 변화가 필요함",
-    fsa_sens_needLowBass: "깊은/낮은 베이스가 필요함",
+    fsa_sens_needLowBass: "더 낮고 깊은 소리를 선호함",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "너무 복잡함",
@@ -3878,6 +3814,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ 어떻게 들리나요? (듣는 동안 조정됩니다)",
+    fsa_feedback_philosophy: "완벽한 소리를 미리 예측하려 하지 마세요. 적당한 구성으로 시작해 들으면서 조정하세요.",
     fsa_ai_adjusting: "🎚️ 음량을 조정하는 중…",
     fsa_full_regenerate: "전체 재생성",
     fsa_starts_over_note: "새로운 믹스로 다시 시작합니다",
@@ -3888,15 +3825,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "팁 및 조정",
-    fsa_too_distracting: "너무 산만한가요?",
-    fsa_not_enough: "부족한가요?",
-    fsa_after_30_min: "30분 후",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 관련 도구",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "소리 레시피가 준비됐나요? {{link}}가 이를 중심으로 실제 세션을 구성합니다.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "이름 없음",
@@ -3945,17 +3875,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Недостаточно",
     fsa_need_now: "Нужен звук прямо сейчас?",
     fsa_qs_deep_focus: "🧠 Глубокий фокус",
-    fsa_qs_deep_focus_d: "Ровный коричневый + розовый шум для простого фона, который мало отвлекает",
+    fsa_qs_deep_focus_d: "Ровный коричневый + розовый шум",
     fsa_qs_creative: "🎨 Творческий поток",
-    fsa_qs_creative_d: "Дождь + гул кафе для мягко меняющейся атмосферы",
+    fsa_qs_creative_d: "Дождь + гул кафе",
     fsa_qs_study: "📚 Спокойная учёба",
-    fsa_qs_study_d: "Океан + мягкий коричневый шум для более тихого учебного фона",
+    fsa_qs_study_d: "Океан + мягкий коричневый шум",
     fsa_qs_settle: "😴 Успокоиться",
-    fsa_qs_settle_d: "Глубокий коричневый шум + тихий океан для фона с низкой стимуляцией",
+    fsa_qs_settle_d: "Глубокий коричневый шум + тихий океан",
     fsa_qs_brighter: "⚡ Более светлый фон",
-    fsa_qs_brighter_d: "Розовый шум + лёгкая атмосфера кафе для более живого микса",
+    fsa_qs_brighter_d: "Розовый шум + лёгкая атмосфера кафе",
     fsa_qs_speech: "🔇 Маскировка речи",
-    fsa_qs_speech_d: "Ровный шум + тихий гул, чтобы разговор рядом звучал менее разборчиво",
+    fsa_qs_speech_d: "Ровный шум, призванный сделать разговор рядом менее разборчивым",
     fsa_why_warm_steady: "Тёплая, ровная основа, которая помогает перекрыть неровный фоновый звук.",
     fsa_why_brightness: "Добавляет немного яркости, не перегружая микс.",
     fsa_why_natural_var: "Добавляет естественное разнообразие, не требуя внимания.",
@@ -4136,7 +4066,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Природа / Лес",
     fsa_pref_fire: "Потрескивающий огонь",
     fsa_pref_cafe: "Атмосфера кафе",
-    fsa_pref_binauralBeats: "Бинауральные ритмы",
     fsa_pref_wind: "Ветер",
 
     // ── Sensitivities ──
@@ -4144,7 +4073,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Чувствителен к высоким частотам",
     fsa_sens_preferConsistency: "Предпочитаю ровную текстуру",
     fsa_sens_needVariety: "Нужно немного разнообразия, чтобы не терять вовлечённость",
-    fsa_sens_needLowBass: "Нужны глубокие/низкие басы",
+    fsa_sens_needLowBass: "Предпочитаю более глубокие/низкие звуки",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Слишком насыщенно",
@@ -4270,6 +4199,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ Как звучит? (настраивается по ходу прослушивания)",
+    fsa_feedback_philosophy: "Не пытайтесь заранее угадать идеальный звук. Начните с разумного варианта, слушайте и корректируйте.",
     fsa_ai_adjusting: "🎚️ Настраиваем уровни…",
     fsa_full_regenerate: "Создать заново полностью",
     fsa_starts_over_note: "Начинает заново с нового микса",
@@ -4280,15 +4210,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Советы и настройки",
-    fsa_too_distracting: "Слишком отвлекает?",
-    fsa_not_enough: "Недостаточно?",
-    fsa_after_30_min: "Через 30 мин",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Связанные инструменты",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Рецепт звука готов? {{link}} выстроит вокруг него реальную сессию.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Без названия",
@@ -4336,17 +4259,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "ยังไม่พอ",
     fsa_need_now: "อยากได้เสียงเลยไหม",
     fsa_qs_deep_focus: "🧠 โฟกัสลึก",
-    fsa_qs_deep_focus_d: "บราวน์ + พิงก์นอยส์คงที่ สำหรับพื้นหลังเรียบง่ายและรบกวนน้อย",
+    fsa_qs_deep_focus_d: "บราวน์ + พิงก์นอยส์คงที่",
     fsa_qs_creative: "🎨 ลื่นไหลสร้างสรรค์",
-    fsa_qs_creative_d: "เสียงฝน + เสียงพึมพำในคาเฟ่ ให้บรรยากาศที่เปลี่ยนไปอย่างนุ่มนวล",
+    fsa_qs_creative_d: "เสียงฝน + เสียงพึมพำในคาเฟ่",
     fsa_qs_study: "📚 อ่านหนังสือเงียบ ๆ",
-    fsa_qs_study_d: "คลื่นทะเล + บราวน์นอยส์นุ่ม ๆ สำหรับพื้นหลังอ่านหนังสือที่เงียบกว่า",
+    fsa_qs_study_d: "คลื่นทะเล + บราวน์นอยส์นุ่ม ๆ",
     fsa_qs_settle: "😴 ค่อย ๆ สงบลง",
-    fsa_qs_settle_d: "บราวน์นอยส์ลึก + คลื่นเบา ๆ พื้นหลังที่กระตุ้นน้อย",
+    fsa_qs_settle_d: "บราวน์นอยส์ลึก + คลื่นเบา ๆ",
     fsa_qs_brighter: "⚡ พื้นหลังสว่างขึ้น",
-    fsa_qs_brighter_d: "พิงก์นอยส์ + บรรยากาศคาเฟ่เบา ๆ ให้มิกซ์ที่รู้สึกกระฉับกระเฉงขึ้น",
+    fsa_qs_brighter_d: "พิงก์นอยส์ + บรรยากาศคาเฟ่เบา ๆ",
     fsa_qs_speech: "🔇 กลบเสียงพูด",
-    fsa_qs_speech_d: "เสียงคงที่ + เสียงพึมพำเบา ๆ ให้บทสนทนาใกล้ ๆ ชัดน้อยลง",
+    fsa_qs_speech_d: "เสียงคงที่ที่ตั้งใจให้บทสนทนาใกล้ ๆ ชัดน้อยลง",
     fsa_why_warm_steady: "ฐานเสียงอุ่นและคงที่ ซึ่งช่วยกลบเสียงพื้นหลังที่ไม่สม่ำเสมอได้",
     fsa_why_brightness: "เพิ่มความสว่างเล็กน้อยโดยไม่ทำให้มิกซ์รก",
     fsa_why_natural_var: "เพิ่มความหลากหลายตามธรรมชาติโดยไม่ต้องใช้ความสนใจ",
@@ -4527,7 +4450,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "ธรรมชาติ / ป่า",
     fsa_pref_fire: "เสียงไฟแตกประทุ",
     fsa_pref_cafe: "บรรยากาศคาเฟ่",
-    fsa_pref_binauralBeats: "บีตไบนอรัล",
     fsa_pref_wind: "ลม",
 
     // ── Sensitivities ──
@@ -4535,7 +4457,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "ไวต่อความถี่สูง",
     fsa_sens_preferConsistency: "ชอบพื้นผิวเสียงที่สม่ำเสมอ",
     fsa_sens_needVariety: "ต้องการความหลากหลายบ้างเพื่อคงความสนใจ",
-    fsa_sens_needLowBass: "ต้องการเบสที่ลึก/ต่ำ",
+    fsa_sens_needLowBass: "ชอบเสียงที่ทุ้มลึกกว่า",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "แน่นเกินไป",
@@ -4661,6 +4583,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ ฟังดูเป็นอย่างไร? (ปรับให้ขณะที่คุณฟัง)",
+    fsa_feedback_philosophy: "ไม่ต้องพยายามคาดเดาเสียงที่สมบูรณ์แบบล่วงหน้า เริ่มจากส่วนผสมที่สมเหตุสมผล ฟัง แล้วค่อยปรับ",
     fsa_ai_adjusting: "🎚️ กำลังปรับระดับเสียง…",
     fsa_full_regenerate: "สร้างใหม่ทั้งหมด",
     fsa_starts_over_note: "เริ่มใหม่ด้วยส่วนผสมชุดใหม่",
@@ -4671,15 +4594,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "เคล็ดลับและการปรับแต่ง",
-    fsa_too_distracting: "รบกวนสมาธิเกินไป?",
-    fsa_not_enough: "ยังไม่พอ?",
-    fsa_after_30_min: "หลังผ่านไป 30 นาที",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 เครื่องมือที่เกี่ยวข้อง",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "สูตรเสียงพร้อมแล้ว? {{link}} จะจัดโครงสร้างเซสชันจริงรอบๆ สูตรนั้น",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "ไม่มีชื่อ",
@@ -4727,17 +4643,17 @@ export const focusSoundArchitect = {
     fsa_fb_notenough: "Chưa đủ",
     fsa_need_now: "Cần âm thanh ngay?",
     fsa_qs_deep_focus: "🧠 Tập trung sâu",
-    fsa_qs_deep_focus_d: "Tiếng ồn nâu + hồng ổn định cho nền đơn giản, ít gây xao nhãng",
+    fsa_qs_deep_focus_d: "Tiếng ồn nâu + hồng ổn định",
     fsa_qs_creative: "🎨 Dòng chảy sáng tạo",
-    fsa_qs_creative_d: "Mưa + tiếng rì rầm quán cà phê cho bầu không khí thay đổi nhẹ nhàng",
+    fsa_qs_creative_d: "Mưa + tiếng rì rầm quán cà phê",
     fsa_qs_study: "📚 Học yên tĩnh",
-    fsa_qs_study_d: "Sóng biển + tiếng ồn nâu dịu cho nền học yên tĩnh hơn",
+    fsa_qs_study_d: "Sóng biển + tiếng ồn nâu dịu",
     fsa_qs_settle: "😴 Lắng xuống",
-    fsa_qs_settle_d: "Tiếng ồn nâu trầm + sóng biển dịu cho nền ít kích thích",
+    fsa_qs_settle_d: "Tiếng ồn nâu trầm + sóng biển dịu",
     fsa_qs_brighter: "⚡ Nền sáng hơn",
-    fsa_qs_brighter_d: "Tiếng ồn hồng + không khí quán cà phê nhẹ cho bản phối có cảm giác năng động hơn",
+    fsa_qs_brighter_d: "Tiếng ồn hồng + không khí quán cà phê nhẹ",
     fsa_qs_speech: "🔇 Che tiếng nói",
-    fsa_qs_speech_d: "Tiếng ồn ổn định + rì rầm nhẹ để cuộc trò chuyện gần đó bớt rõ",
+    fsa_qs_speech_d: "Tiếng ồn ổn định nhằm giúp cuộc trò chuyện gần đó bớt rõ",
     fsa_why_warm_steady: "Một nền ấm và ổn định, có thể giúp che đi âm thanh nền không đều.",
     fsa_why_brightness: "Thêm một chút độ sáng mà không làm bản phối rối.",
     fsa_why_natural_var: "Thêm sự thay đổi tự nhiên mà không đòi hỏi bạn chú ý.",
@@ -4918,7 +4834,6 @@ export const focusSoundArchitect = {
     fsa_pref_forest: "Thiên nhiên / Rừng",
     fsa_pref_fire: "Tiếng lửa tí tách",
     fsa_pref_cafe: "Không gian quán cà phê",
-    fsa_pref_binauralBeats: "Nhịp binaural",
     fsa_pref_wind: "Gió",
 
     // ── Sensitivities ──
@@ -4926,7 +4841,7 @@ export const focusSoundArchitect = {
     fsa_sens_highFrequencySensitive: "Nhạy cảm với tần số cao",
     fsa_sens_preferConsistency: "Thích kết cấu âm ổn định",
     fsa_sens_needVariety: "Cần đôi chút biến đổi để duy trì sự gắn kết",
-    fsa_sens_needLowBass: "Cần âm trầm sâu/thấp",
+    fsa_sens_needLowBass: "Thích âm thanh trầm/thấp hơn",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Quá rậm rạp",
@@ -5052,6 +4967,7 @@ export const focusSoundArchitect = {
 
     // ── Smart feedback ──
     fsa_how_does_it_sound: "🎛️ Nghe thế nào? (điều chỉnh trong khi bạn nghe)",
+    fsa_feedback_philosophy: "Đừng cố đoán trước âm thanh hoàn hảo. Hãy bắt đầu với một tổ hợp hợp lý, lắng nghe rồi điều chỉnh.",
     fsa_ai_adjusting: "🎚️ Đang điều chỉnh mức âm…",
     fsa_full_regenerate: "Tạo lại toàn bộ",
     fsa_starts_over_note: "Bắt đầu lại với một bản phối mới",
@@ -5062,15 +4978,8 @@ export const focusSoundArchitect = {
 
     // ── Tips & adjustments ──
     fsa_tips_adjustments: "Mẹo và điều chỉnh",
-    fsa_too_distracting: "Quá gây xao nhãng?",
-    fsa_not_enough: "Chưa đủ?",
-    fsa_after_30_min: "Sau 30 phút",
 
     // ── Related tools cross-refs ──
-    fsa_related_tools: "🔗 Công cụ liên quan",
-    fsa_xref_focus_pocus: "🎩 Focus Pocus",
-    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
-    fsa_xref_post_result: "Công thức âm thanh đã sẵn sàng? {{link}} sẽ cấu trúc phiên làm việc thực tế xoay quanh nó.",
 
     // ── Fallback display values ──
     fsa_fallback_unnamed: "Chưa đặt tên",

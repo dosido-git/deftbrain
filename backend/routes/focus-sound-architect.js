@@ -17,10 +17,8 @@ async function guardProse(parsed, body, startedAt) {
   }
   const fields = [];
   const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
-  push('description', parsed.description);
-  (parsed.usage_tips || []).forEach((x, i) => push(`usage_tips[${i}]`, x));
   (parsed.layers || []).forEach((l, i) => push(`layers[${i}].why`, l && l.why));
-  push('adjustment_guide', parsed.adjustment_guide);
+  push('start_here', parsed.start_here);
   if (!fields.length) return;
 
   await runOutputGuard(parsed, {
@@ -74,7 +72,9 @@ router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res
     const prefList = Array.isArray(soundPreferences) ? soundPreferences : (soundPreferences ? [soundPreferences] : []);
     const sensList = Array.isArray(sensitivities) ? sensitivities : (sensitivities ? [sensitivities] : []);
 
-    const prompt = withLanguage(`You are an expert in psychoacoustics and focus optimization. Design a personalized soundscape for someone who needs to focus.
+    const prompt = withLanguage(`You are Focus Sound Architect. Build an adjustable soundscape from the user's stated task, environment, distractions, sound preferences, and sensory needs.
+
+Your job is to create a practical starting point, not to prescribe an objectively optimal soundscape.
 
 USER PROFILE:
 - Task: ${task}
@@ -86,72 +86,63 @@ USER PROFILE:
 - Energy goal: ${energyGoal || 50}/100 (0=very calm, 100=energized)
 ${feedback ? `- Previous feedback: ${feedback}` : ''}
 
+USER EVIDENCE FIRST: Base every choice on information the user supplied above. If they did not specify a sound preference, you may pick a reasonable starting layer, but the "why" must describe it as something to try, not something known to work for them.
+
+NO NEUROSCIENCE CLAIMS: Do not claim that a sound, frequency, noise color, or layer improves cognition, changes brainwaves, increases dopamine, regulates the nervous system, induces a mental state, or has another physiological effect.
+
+NO GUARANTEES: Never say a sound will improve focus, prevent distraction, calm the user, energize them, or produce another outcome. Describe the intended function of the mix and let the user's own listening feedback determine whether it works.
+
+MASKING: You may describe steady sound as intended to make environmental sounds less distinct. Do not claim it will eliminate speech or other distractions.
+
+SENSORY CONSTRAINTS ARE HARD CONSTRAINTS: If the user reports sensitivity to sudden sounds, high frequencies, excessive variation, bass, or another auditory characteristic, avoid conflicting layers unless the user explicitly asked for them.
+
+KEEP IT SIMPLE: Return 1-3 layers. Every layer must have a distinct reason for being there — reference the user's actual task, environment, or stated preference. Do not add a layer merely to make the mix look more complete or sophisticated; two well-chosen layers beat three padded ones. Earn every layer.
+
+EXPLAIN THE CHOICE, NOT THE USER: Explain why a layer was selected from the information supplied. Do not infer ADHD, anxiety, sensory-processing differences, arousal state, nervous-system needs, or other conditions.
+
+VOLUME: Treat volume levels as starting positions, not precise prescriptions. Do not imply that a numerical setting is scientifically optimized.
+
+DURATION: Duration may justify keeping the mix simpler. Do not claim the user's brain will habituate, fatigue, adapt, or require stimulation changes over time.
+
 AVAILABLE SOUND LAYER TYPES (you MUST only use these exact type strings):
-- "white_noise" — Equal energy across all frequencies. Good for masking speech.
-- "pink_noise" — Lower frequencies louder. Warmer, less harsh. Good default.
-- "brown_noise" — Deep, rumbling and warm. Useful when the listener prefers a low-frequency, less bright texture.
-- "rain" — Rhythmic rain pattern. Masks distractions naturally.
-- "ocean" — Slow wave patterns. Calming, good for creative work.
+- "white_noise" — Equal energy across all frequencies. Can mask speech.
+- "pink_noise" — Lower frequencies louder. Warmer, less harsh. A common default.
+- "brown_noise" — Deep, rumbling and warm. A low-frequency, less bright texture.
+- "rain" — Rhythmic rain pattern.
+- "ocean" — Slow wave patterns.
 - "wind" — Gentle wind texture. Subtle, organic.
 - "forest" — Layered nature sounds with gentle high-frequency texture.
-- "fire" — Crackling fireplace. Warm, cozy, slightly stimulating.
-- "cafe" — Coffee shop murmur. Low-level social noise for those who focus better with it.
-- "binaural" — Binaural beats (requires headphones). Must include "hz" field (frequency difference):
-    * Beat frequency may change the perceived rhythmic quality, but do NOT claim a specific mental-state, focus, learning, creativity, or sleep effect.
-    * Treat binaural beats as an optional preference, not an evidence-backed performance enhancer.
-    * "base_hz" should be between 150-300 Hz
+- "fire" — Crackling fireplace. Warm, cozy.
+- "cafe" — Coffee shop murmur. Low-level social noise for those who like some background life.
 
-Design a soundscape with 2-5 layers. Consider:
-- The user's task (deep work needs fewer layers, creative work can handle more variety)
-- What is interfering is more important than location: voices may call for stronger steady masking; too-quiet environments may need gentle atmosphere; restlessness may benefit from modest variation; sleepiness may call for a lighter, less soporific texture.
-- Their environment (noisy office may need stronger masking, quiet home usually needs less)
-- Sensitivities (sudden sound sensitivity = avoid fire/rain with sharp transients, high frequency sensitivity = prefer brown/pink over white)
-- Energy goal (use texture, brightness, density and variation; do not claim binaural frequencies reliably create particular mental states)
-- Prefer 2-3 layers unless there is a clear reason for more. Simpler mixes are easier to ignore while working.
-- If soundPreferences is empty, choose appropriate layers yourself.
-- If the planned session is 60+ minutes, include a practical after_30_minutes adjustment rather than making the user choose a separate evolving-scene mode.
+Consider:
+- The user's task (deep work usually wants fewer layers; creative work can handle more variety).
+- What is interfering is more important than location: voices may call for steadier masking; a too-quiet environment may want gentle atmosphere; restlessness may fit modest variation; sleepiness may fit a lighter texture.
+- Their environment.
+- Sensitivities (sudden-sound sensitivity → avoid fire/rain's sharp transients; high-frequency sensitivity → prefer brown/pink over white).
+- If soundPreferences is empty, pick a reasonable starting layer and say so plainly in "why".
 
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
-  "soundscape_name": "A short evocative name for this soundscape — 3-6 words",
-  "description": "1-2 sentences describing the overall feel and why it works for this person",
+  "soundscape_name": "A short name for this soundscape — 3-6 words",
   "layers": [
     {
       "type": "brown_noise",
       "volume": 65,
       "label": "Deep Foundation",
-      "why": "Why this layer was chosen for this specific user/task — one sentence"
-    },
-    {
-      "type": "binaural",
-      "volume": 25,
-      "hz": 10,
-      "base_hz": 200,
-      "label": "Alpha Focus",
-      "why": "Why this optional binaural texture may suit the user preference — do not claim proven cognitive effects"
+      "why": "One sentence: why this layer fits what the user supplied — described as a starting point, not a known-good fix"
     }
   ],
-  "usage_tips": [
-    "Specific, actionable tip about using this soundscape",
-    "Another tip"
-  ],
-  "adjustment_guide": {
-    "if_too_distracting": "What to adjust if it's too much — one sentence",
-    "if_not_enough": "What to adjust if it's not enough stimulation — one sentence",
-    "after_30_minutes": "How to adjust after the initial focus period — one sentence"
-  }
+  "start_here": "One short, concrete instruction for trying the mix — e.g. what to press first and what to notice"
 }
 
 CRITICAL:
-- Each layer's "type" MUST be one of the exact strings listed above
-- Volume is 0-100 (suggest realistic values, not all at 100)
-- The total shouldn't be overwhelming — if using 4+ layers, keep individual volumes lower
-- For binaural type, ALWAYS include "hz" (beat frequency 1-30) and "base_hz" (carrier 150-300)
-- Be specific in "why" — reference the user's actual task and preferences
-- Keep it practical — this will be synthesized and played immediately
-- Never make medical, therapeutic, neurological, sleep-treatment, or guaranteed performance claims
-- When binaural beats are included, say evidence for specific cognitive effects is mixed and headphones are required
+- 1-3 layers only. Each layer's "type" MUST be one of the exact strings listed above.
+- Volume is 0-100 (suggest realistic values, not all at 100).
+- Be specific in "why" — reference the user's actual task and preferences, phrased as a starting point ("intended to...", "a reasonable start for...") rather than a settled fact.
+- Keep it practical — this will be synthesized and played immediately.
+- Never make medical, therapeutic, neurological, sleep-treatment, or guaranteed performance claims.
 - ${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -160,10 +151,12 @@ CRITICAL:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect' });
 
-    // Validate layer types
-    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
+    // Validate layer types. Binaural is deliberately absent — the AI no longer
+    // recommends it (see NO NEUROSCIENCE CLAIMS above); it's still available
+    // as a manual, user-initiated add on the frontend.
+    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe'];
     if (parsed.layers) {
-      parsed.layers = parsed.layers.filter(l => validTypes.includes(l.type));
+      parsed.layers = parsed.layers.filter(l => validTypes.includes(l.type)).slice(0, 3);
       if (hasSuddenSensitivity(sensitivities)) {
         parsed.layers = parsed.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
       }
@@ -207,26 +200,20 @@ USER PROFILE:
 - Total session: ${minutes} minutes
 
 AVAILABLE SOUND LAYER TYPES (use ONLY these exact type strings):
-"white_noise", "pink_noise", "brown_noise", "rain", "ocean", "wind", "forest", "fire", "cafe", "binaural"
+"white_noise", "pink_noise", "brown_noise", "rain", "ocean", "wind", "forest", "fire", "cafe"
 
-For binaural type, ALWAYS include "hz" (beat frequency 1-50) and "base_hz" (carrier 150-300).
-The bands are named, and that is all they are — a name for a frequency range:
-  * 1-4 Hz (delta), 4-8 Hz (theta), 8-14 Hz (alpha), 14-30 Hz (beta), 30-50 Hz (gamma)
-
-Slower beats are experienced by many people as calmer and faster ones as more
-stimulating, and that is the whole basis for choosing one. Do NOT tell the user
-a frequency produces meditation, creativity, learning, alertness, peak
-concentration or any other cognitive state — the evidence does not support it,
-and a soundscape that promises a mental state it cannot deliver is worse than
-one that just sounds right. Describe how it is likely to SOUND and let them
-judge. If the visitor did not ask for binaural, you do not have to include it.
+NO NEUROSCIENCE CLAIMS: Do not tell the user a sound or texture produces meditation,
+creativity, learning, alertness, peak concentration, or any other cognitive state —
+the evidence does not support it, and a soundscape that promises a mental state it
+cannot deliver is worse than one that just sounds right. Describe how it is likely
+to SOUND and let them judge.
 
 Two ways this goes wrong even when you are trying to be careful:
 - Smuggling the claim into the purpose. "Designed to mask conversation while
   maintaining alertness" still promises a mental state; it has only moved the
   promise into the word "designed". Say what the sound DOES — masks speech
   frequencies, stays steady, has no sudden events — and stop there.
-- Narrating the disclaimer. "This beat provides texture without claiming
+- Narrating the disclaimer. "This layer provides texture without claiming
   guaranteed cognitive effects" tells the reader about a rule you were given.
   They did not ask about your constraints. Just describe the texture.
 
@@ -248,8 +235,7 @@ Return ONLY valid JSON:
       "durationMin": 15,
       "purpose": "Why this phase exists in the arc — one sentence",
       "layers": [
-        { "type": "brown_noise", "volume": 50, "label": "Deep Foundation", "why": "Reason — one sentence" },
-        { "type": "binaural", "volume": 20, "hz": 18, "base_hz": 250, "label": "Beta Boost", "why": "Reason — one sentence" }
+        { "type": "brown_noise", "volume": 50, "label": "Deep Foundation", "why": "Reason — one sentence" }
       ]
     }
   ],
@@ -261,7 +247,6 @@ CRITICAL:
 - Phase durations MUST sum to exactly ${minutes} minutes
 - Each layer "type" MUST be one of the valid types listed
 - Volumes 0-100 (realistic, not all at 100)
-- For binaural, ALWAYS include "hz" and "base_hz"
 - 2-4 phases, each with 2-5 layers
 - Be specific in "why" — reference the user's actual task and preferences
 - ${NO_QUOTE_RULE}`, userLanguage);
@@ -272,8 +257,9 @@ CRITICAL:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect-2' });
 
-    // Validate layer types in all phases
-    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
+    // Validate layer types in all phases. Binaural deliberately excluded (see
+    // NO NEUROSCIENCE CLAIMS above) — still available as a manual add on the frontend.
+    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe'];
     if (parsed.phases) {
       parsed.phases.forEach(phase => {
         if (phase.layers) {
@@ -335,8 +321,7 @@ Return ONLY valid JSON:
 }
 
 For "add_layer", use null OR: { "type": "rain", "volume": 25, "label": "Gentle Rain", "why": "Reason — one sentence" }
-For binaural add, include "hz" and "base_hz".
-Valid layer types: white_noise, pink_noise, brown_noise, rain, ocean, wind, forest, fire, cafe, binaural.
+Valid layer types: white_noise, pink_noise, brown_noise, rain, ocean, wind, forest, fire, cafe.
 For "remove_index", use null or the index number to remove.
 
 CRITICAL:
@@ -354,8 +339,9 @@ CRITICAL:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect-3' });
 
-    // Validate add_layer type
-    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
+    // Validate add_layer type. Binaural deliberately excluded — still
+    // available as a manual add on the frontend, just not an AI suggestion.
+    const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe'];
     if (parsed.add_layer && !validTypes.includes(parsed.add_layer.type)) {
       parsed.add_layer = null;
     }
