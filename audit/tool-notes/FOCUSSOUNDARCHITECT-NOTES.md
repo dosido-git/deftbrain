@@ -4,11 +4,12 @@
 **Verify:** `npm run check:golden focus-sound-architect` (backend up: `npm run dev:backend`)
 
 ## What it is
-A focus-soundscape designer with a full in-browser **Web Audio synthesis engine** (no audio
-files — white/pink/brown noise are generated from Float32 buffers; rain/ocean/wind/forest/fire/
-café are layered filtered-noise + LFO; binaural beats are two detuned panned oscillators).
-Frontend `src/tools/FocusSoundArchitect.js` (~2150 lines). Backend
-`backend/routes/focus-sound-architect.js` — **3 endpoints**, all `claude-haiku-4-5-20251001`:
+A focus-soundscape designer. **As of 2026-09-14, rain/ocean/wind/forest/fire/café play real
+recorded ambience from `public/sounds/*.m4a`** (see dated entry below) — white/pink/brown noise
+and binaural beats remain **Web Audio synthesis** (generated from Float32 noise buffers /
+detuned oscillators; no recording exists for those). Frontend `src/tools/FocusSoundArchitect.js`
+(~2150 lines). Backend `backend/routes/focus-sound-architect.js` — **3 endpoints**, all
+`claude-haiku-4-5-20251001`:
 
 | Endpoint | max_tokens | Returns |
 |---|---|---|
@@ -111,3 +112,55 @@ separate, larger project (asset hosting/compression — raw `.wav` is not web-de
 count/size without conversion, `decodeAudioData` loading, looping via real buffers instead of
 generated noise, deciding whether real audio replaces or supplements synthesis per layer type)
 that hasn't been scoped or started.
+
+## 2026-09-14 — real recordings replace synthesis for rain/ocean/wind/forest/fire/cafe
+
+Same day as the synthesis rewrite above, the owner's 21 collected `.wav` recordings (24-bit/
+48kHz stereo, ~1.4GB total — confirmed via `afinfo`, already prepared as clean loops with
+adjusted volume) became real assets. Owner decision: real recordings **replace** synthesis
+entirely for the 6 categories with a recording (not a toggle) — white/pink/brown noise and
+binaural beats keep synthesis, no recording exists for those.
+
+**Format/hosting:** raw WAV is not web-deployable at this size — converted 6 representative
+files (one per category) with macOS's built-in `afconvert` to AAC/M4A at 96kbps:
+`steady rain→rain.m4a` (2.0MB), `gentle shore→ocean.m4a` (1.2MB), `soft wind→wind.m4a` (2.6MB),
+`Forest without birds→forest.m4a` (2.7MB), `medium fireplace→fire.m4a` (0.4MB, source is mono/
+34s — a property of the recording, not the conversion), `moderate cafe→cafe.m4a` (6.2MB, source
+is 44.1kHz/~8.3min — also a recording property). **17MB total** in `public/sounds/`, served
+statically (not bundled into the JS build) and fetched lazily only when a layer actually plays.
+
+**The other 15 collected files are not wired up.** They're variants within the same 6 categories
+(e.g. rain also has gentle/on-window/on-roof/storm versions) that the current architecture has
+no slot for — `LAYER_TYPES` is one entry per category, not per variant. A "pick a variant"
+selector is a real, scoped follow-up feature, not started.
+
+**Architecture:** `REAL_AUDIO_URLS` maps type→URL for the 6 categories. `loadRealAudioBuffer`
+fetches + `decodeAudioData`s + caches by URL (in-flight promises cached too, so two layers
+needing the same file share one fetch). `createLayerAsync(ctx, layerDef)` is the new unified
+entry point — real recording when a URL exists for the type, falling back to
+`LAYER_TYPES[type].create()` synthesis **on any load failure** (offline, 404, decode error) so a
+network hiccup degrades to the old synthesized sound instead of a silent/broken layer. Both real
+call sites (`startAudio`'s per-layer build, `addLayerToRecipe`'s live-add-while-playing path) now
+go through this instead of calling `typeDef.create()` directly — `startAudio` builds all layers
+concurrently via `Promise.all` (preserving recipe order, since `eqNodes[idx]`/`vols[idx]` are
+keyed by original array position) rather than sequentially, so N files fetch in parallel.
+
+**Gapless looping applies to real files too.** A lossy encode adds a few thousand samples of
+encoder priming at the boundaries — even a source recording prepared as a clean loop can pick up
+a click at the seam after AAC encoding. `applyLoopCrossfade()` (same technique as
+`createNoiseLayer`'s own seam fix) blends the decoded buffer's tail into its head in place before
+it's ever played.
+
+**Verification note — dev-only gotcha, not a bug:** this repo's `package.json` has
+`"proxy": "http://localhost:3001"` for CRA's dev server. A plain `fetch()` (no `Accept:
+text/html`) for `/sounds/*.m4a` gets forwarded to the *backend* in dev instead of served from
+`public/`, 404ing even though the file exists on disk — confirmed this happens for `/favicon.ico`
+too, so it's a CRA dev-proxy heuristic, not specific to this feature. **Does not affect
+production**, where Express serves `build/` (which includes everything copied from `public/`)
+directly with no such proxy layer. Verified the real pipeline properly by standing up a throwaway
+local static server (`python3 -m http.server` + a CORS header) and running the actual fetch →
+decodeAudioData → crossfade → loop code against it — confirmed a real decoded buffer (159.37s,
+48000Hz, stereo, matching the source exactly) plays with genuine signal. Separately confirmed the
+**fallback** path in the live app (where the dev-proxy 404 is real): no crash, no uncaught
+rejection past `createLayerAsync`'s catch, and a live audio-graph tap showed real synthesized
+signal — the graceful-degradation path works as designed.

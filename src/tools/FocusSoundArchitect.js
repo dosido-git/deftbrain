@@ -379,6 +379,102 @@ function createBinauralLayer(ctx, hz = 10, baseHz = 200) {
   };
 }
 
+// ════════════════════════════════════════════════════════════
+// REAL RECORDED AMBIENCE — replaces synthesis for the 6 types below when
+// a recording is available. Falls back to synthesis if the fetch/decode
+// fails (offline, 404), so a network hiccup degrades gracefully instead
+// of producing a silent layer.
+// ════════════════════════════════════════════════════════════
+
+const REAL_AUDIO_URLS = {
+  rain: '/sounds/rain.m4a',
+  ocean: '/sounds/ocean.m4a',
+  wind: '/sounds/wind.m4a',
+  forest: '/sounds/forest.m4a',
+  fire: '/sounds/fire.m4a',
+  cafe: '/sounds/cafe.m4a',
+};
+
+// Decoded buffers are cached by URL (not by AudioContext) since a page
+// session typically reuses one context; a repeat play doesn't re-fetch.
+// In-flight promises are cached too so overlapping calls (e.g. two layers
+// both needing the same file) share one fetch instead of racing.
+const realAudioBufferCache = new Map();
+
+// A lossy encode (AAC here) adds a few thousand samples of encoder
+// "priming" silence/artifact at the boundaries. Even though the source
+// recordings were already prepared as clean loops, that priming can
+// reintroduce exactly the click-at-the-seam problem the synthesized
+// layers already guard against (see createNoiseLayer's own crossfade).
+// Apply the same fix here: blend the tail into the head in place.
+function applyLoopCrossfade(buffer, fadeSeconds = 0.15) {
+  const len = buffer.length;
+  const fade = Math.min(Math.floor(buffer.sampleRate * fadeSeconds), len >> 2);
+  for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+    const data = buffer.getChannelData(ch);
+    for (let i = 0; i < fade; i++) {
+      const w = i / fade;
+      data[len - fade + i] = data[len - fade + i] * (1 - w) + data[i] * w;
+    }
+  }
+}
+
+async function loadRealAudioBuffer(ctx, url) {
+  if (realAudioBufferCache.has(url)) return realAudioBufferCache.get(url);
+  const promise = (async () => {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Failed to fetch ${url}: ${resp.status}`);
+    const arrayBuf = await resp.arrayBuffer();
+    const audioBuf = await ctx.decodeAudioData(arrayBuf);
+    applyLoopCrossfade(audioBuf);
+    return audioBuf;
+  })();
+  realAudioBufferCache.set(url, promise);
+  try {
+    return await promise;
+  } catch (e) {
+    realAudioBufferCache.delete(url); // don't cache a failure — allow retry next time
+    throw e;
+  }
+}
+
+function createRealAudioLayer(ctx, buffer) {
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.loop = true;
+  const gain = ctx.createGain();
+  gain.gain.value = 0;
+  source.connect(gain);
+  source.start(0);
+  return {
+    connect: (dest) => gain.connect(dest),
+    setVolume: (v) => { gain.gain.value = v; },
+    setVolumeSmooth: (v) => {
+      gain.gain.cancelScheduledValues(ctx.currentTime);
+      gain.gain.setTargetAtTime(v, ctx.currentTime, 0.08);
+    },
+    stop: () => { try { source.stop(); source.disconnect(); gain.disconnect(); } catch (e) { } },
+  };
+}
+
+// Unified async layer factory: real recording when one exists for this
+// type (falling back to synthesis on any load failure), synthesis
+// otherwise. Always returns a Promise so callers can treat every layer
+// type uniformly regardless of which path it actually takes.
+async function createLayerAsync(ctx, layerDef) {
+  const url = REAL_AUDIO_URLS[layerDef.type];
+  if (url) {
+    try {
+      const buffer = await loadRealAudioBuffer(ctx, url);
+      return createRealAudioLayer(ctx, buffer);
+    } catch (e) {
+      console.error(`FocusSoundArchitect: real audio failed for "${layerDef.type}", falling back to synthesis`, e);
+    }
+  }
+  const typeDef = LAYER_TYPES[layerDef.type];
+  return typeDef ? typeDef.create(ctx, layerDef) : null;
+}
+
 const LAYER_TYPES = {
   white_noise: { label: 'White Noise', labelKey: 'fsa_layer_white_noise', emoji: '📻', create: (ctx) => createNoiseLayer(ctx, generateWhiteNoise) },
   pink_noise: { label: 'Pink Noise', labelKey: 'fsa_layer_pink_noise', emoji: '🌸', create: (ctx) => createNoiseLayer(ctx, generatePinkNoise) },
@@ -778,11 +874,15 @@ const FocusSoundArchitect = ({ tool }) => {
     const layers = [];
     const vols = {};
     const eqNodes = {};
-    (recipeData.layers || []).forEach((layerDef, idx) => {
-      const typeDef = LAYER_TYPES[layerDef.type];
-      if (!typeDef) return;
-      const layer = typeDef.create(ctx, layerDef);
-
+    // Build every layer concurrently (real-audio ones fetch+decode; synthesis
+    // ones resolve immediately) but wire them up in the original recipe
+    // order — Promise.all preserves order regardless of resolution timing,
+    // which existing index-keyed state (eqNodes[idx], vols[idx]) depends on.
+    const built = await Promise.all((recipeData.layers || []).map(async (layerDef, idx) => {
+      const layer = await createLayerAsync(ctx, layerDef);
+      return layer ? { idx, layerDef, layer } : null;
+    }));
+    built.filter(Boolean).forEach(({ idx, layerDef, layer }) => {
       // Create 3-band EQ chain: layer → bass → mid → treble → master
       const eqs = EQ_BANDS.map(band => {
         const filter = ctx.createBiquadFilter();
@@ -844,7 +944,7 @@ const FocusSoundArchitect = ({ tool }) => {
   // MANUAL LAYER ADD / REMOVE
   // ═══════════════════════════════════════
 
-  const addLayerToRecipe = useCallback((layerDef) => {
+  const addLayerToRecipe = useCallback(async (layerDef) => {
     if (!recipe) return;
     const newLayer = {
       type: layerDef.type,
@@ -854,12 +954,15 @@ const FocusSoundArchitect = ({ tool }) => {
       ...(layerDef.type === 'binaural' ? { hz: layerDef.hz || 10, base_hz: layerDef.base_hz || 200 } : {}),
     };
     const updated = { ...recipe, layers: [...(recipe.layers || []), newLayer] };
-    // If playing, add to live audio with EQ chain
+    setRecipe(updated);
+    setShowAddLayer(false);
+    // If playing, add to live audio with EQ chain (may fetch+decode a real
+    // recording, so this branch is async — the recipe/UI update above
+    // doesn't wait on it).
     if (isPlaying && ctxRef.current && masterGainRef.current) {
       const ctx = ctxRef.current;
-      const typeDef = LAYER_TYPES[newLayer.type];
-      if (typeDef) {
-        const layer = typeDef.create(ctx, newLayer);
+      const layer = await createLayerAsync(ctx, newLayer);
+      if (layer) {
         const newIdx = layersRef.current.length;
         // Create EQ chain
         const eqs = EQ_BANDS.map(band => {
@@ -876,8 +979,6 @@ const FocusSoundArchitect = ({ tool }) => {
         setLayerVolumes(prev => ({ ...prev, [newIdx]: newLayer.volume }));
       }
     }
-    setRecipe(updated);
-    setShowAddLayer(false);
   }, [recipe, isPlaying]);
 
   const removeLayerFromRecipe = useCallback((idx) => {
