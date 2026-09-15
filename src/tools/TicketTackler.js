@@ -163,7 +163,16 @@ const TicketTackler = ({ tool }) => {
       });
       setResults(data);
       setSessionHistory(prev => [
-        { id: Date.now(), preview: `${city.trim()} · ${(whatHappened || ticketText).trim().slice(0, 40)}`, verdict: data?.assessment?.verdict, city, ticketType },
+        {
+          id: Date.now(),
+          preview: `${city.trim()} · ${(whatHappened || ticketText).trim().slice(0, 40)}`,
+          verdict: data?.assessment?.verdict,
+          city, ticketType, ticketText, whatHappened, fineAmount, deadline,
+          // Not persisted: ticketImage (base64 photo — too large for localStorage
+          // across 6 saved entries). Restoring a past item resurfaces the text
+          // inputs and the prior result; a photo-based submission needs re-upload.
+          results: data,
+        },
         ...prev,
       ].slice(0, 6));
     } catch (_) { /* error state handled by hook */ }
@@ -327,7 +336,18 @@ const TicketTackler = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('tt_recent')}</p>
               {sessionHistory.map(h => (
                 <button key={h.id}
-                  onClick={() => { setCity(h.city || ''); setTicketType(h.ticketType || 'parking'); setShowHistory(false); }}
+                  onClick={() => {
+                    setCity(h.city || '');
+                    setTicketType(h.ticketType || 'parking');
+                    setTicketText(h.ticketText || '');
+                    setWhatHappened(h.whatHappened || '');
+                    setFineAmount(h.fineAmount || '');
+                    setDeadline(h.deadline || '');
+                    setTicketImage(null);
+                    setFollowup(null); setFollowupQ('');
+                    setResults(h.results || null);
+                    setShowHistory(false);
+                  }}
                   className={`w-full text-start flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
                   <span className={`text-sm ${c.textSecondary} truncate`}>{h.preview}</span>
                   {h.verdict && <span className={`text-xs font-bold ms-2 shrink-0 ${verdictMeta(h.verdict).txtCls}`}>{verdictMeta(h.verdict).icon} {verdictMeta(h.verdict).label}</span>}

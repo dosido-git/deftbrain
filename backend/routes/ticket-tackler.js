@@ -342,6 +342,22 @@ The goal is to help the user make a better-informed decision and, when the facts
 You will return your answer as JSON (schema given in the next message), not as prose sections — this system prompt describes how to reason, the next message describes the exact fields to fill.`;
 
 router.post('/ticket-tackler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  // Keep-alive heartbeat. Adding native web_search to this call (2026-09-16)
+  // made it a non-streaming request that legitimately runs 40-100s+ (measured
+  // live: 24s-100s across a dozen calls that same day) with ZERO response
+  // bytes sent until the very end — exactly the shape backend/routes/
+  // party-architect.js already documented tripping a browser/proxy idle-
+  // connection timeout around 55-60s ("a live report of 'NetworkError' at
+  // 43s — succeeding on retry — matches that failure mode exactly, not a
+  // code crash"). A user report of a ~58s spin ending in a generic error is
+  // the same failure mode, not a new bug in the prompt or the schema.
+  // Writing a single whitespace byte periodically keeps the connection
+  // visibly active; JSON.parse ignores leading/trailing whitespace, so the
+  // frontend's plain `await response.json()` needs no change for the
+  // SUCCESS path. useClaudeAPI.js already handles the error path generically
+  // (a 200 response whose body is a bare {error} object) — that plumbing was
+  // added for party-architect and needs no change here either.
+  let keepAlive = null;
   try {
     const {
       ticketType, ticketText, ticketImageBase64, imageMediaType,
@@ -434,6 +450,12 @@ RULES:
       ? [...imageBlocks, { type: 'text', text: userPrompt }]
       : userPrompt;
 
+    res.setHeader('Content-Type', 'application/json');
+    res.flushHeaders();
+    keepAlive = setInterval(() => {
+      try { res.write(' '); } catch { /* connection already gone */ }
+    }, 10000);
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
@@ -442,13 +464,23 @@ RULES:
       messages: [{ role: 'user', content }],
     }, { label: 'ticket-tackler' });
 
+    clearInterval(keepAlive);
+
     if (!parsed.assessment) {
-      return res.status(500).json({ error: 'Could not analyze your ticket. Please try again.' });
+      return res.end(JSON.stringify({ error: 'Could not analyze your ticket. Please try again.' }));
     }
-    res.json(stripCites(parsed));
+    // headers are already sent (the heartbeat flushed them before the call) —
+    // res.end, not res.json, since Express's res.json() would try to set
+    // headers again and throw ERR_HTTP_HEADERS_SENT.
+    res.end(JSON.stringify(stripCites(parsed)));
   } catch (error) {
+    if (keepAlive) clearInterval(keepAlive);
     console.error('[TicketTackler]', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    } else {
+      res.end(JSON.stringify({ error: 'Something went wrong. Please try again.' }));
+    }
   }
 });
 

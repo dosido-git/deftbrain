@@ -1,5 +1,34 @@
 # TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
 
+## 2026-09-16 (later same day) — two follow-up bugs from the web_search rewrite above
+
+**Recent-history click did almost nothing.** `sessionHistory` entries only ever
+stored `{id, preview, verdict, city, ticketType}` — clicking a numbered recent
+item restored just the city and ticket type, silently dropping ticketText/
+whatHappened/fineAmount/deadline and the prior result. Now stores the full
+input (minus the uploaded photo — too large for localStorage across 6 saved
+entries) plus the generated `results` object, and clicking an item restores
+all of it, including the past analysis itself (no re-run, no new 40-100s wait)
+— matching the "Recent = pick up where you left off" pattern already
+established elsewhere (see TripRecon). Old-format entries saved before this
+fix degrade gracefully (missing fields just restore empty).
+
+**58s failure on a real submission.** Directly caused by the same-day
+web_search rewrite above: the main call is now a non-streaming request that
+legitimately runs 40-100s+ with ZERO response bytes sent until the very end —
+exactly the shape `backend/routes/party-architect.js` already hit and
+documented ("a live report of 'NetworkError' at 43s — succeeding on retry —
+matches that failure mode exactly, not a code crash": a browser/proxy
+idle-connection timeout around 55-60s, not a real server error). Applied the
+identical fix already proven there: `res.flushHeaders()` + a 10s heartbeat
+(`res.write(' ')`) before the long call, `res.end(JSON.stringify(...))`
+instead of `res.json(...)` once headers are already committed to 200. No
+frontend change needed — `useClaudeAPI.js`'s generic handling of a 200
+response whose body is a bare `{error}` object was already added for
+party-architect and covers this route too. Verified live (10s+ wait, real
+200 response with heartbeat whitespace bytes present, `JSON.parse` unaffected)
+and via `check:golden` (5/5, unaffected by the res.json→res.end change).
+
 ## 2026-09-16 — real web_search on the main call, and a bug fix: appeals were being written before the defense was established
 
 Two owner-supplied prompt blocks (WEB RESEARCH, APPEAL GATE) plus an explicit
