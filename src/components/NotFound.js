@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
@@ -25,6 +25,30 @@ const NotFound = ({
       ? 'bg-zinc-900 text-zinc-200 border-zinc-700 hover:border-orange-400 hover:text-orange-400'
       : 'bg-white text-[#1a2e44] border-[#e8e1d5] hover:border-[#c8872e] hover:text-[#c8872e]',
   };
+
+  const [reportState, setReportState] = useState('idle'); // 'idle' | 'sent'
+
+  // Reuses the same /api/idea capture pipe as IdeaPrompt (logged to the
+  // metrics sink, emailed to hello@ when configured) under a distinct
+  // `source` so it's tellable apart from tool-idea submissions. One click,
+  // no typing required — path + referrer are already the useful signal.
+  const reportBrokenLink = useCallback(() => {
+    if (reportState === 'sent') return;
+    try {
+      fetch('/api/idea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          problem: 'Broken link reported from the 404 page',
+          source: '404-broken-link',
+          query: typeof document !== 'undefined' ? (document.referrer || '(no referrer)') : '',
+          path: typeof window !== 'undefined' ? window.location.pathname : '',
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch (_) { /* never surface */ }
+    setReportState('sent');
+  }, [reportState]);
 
   return (
     <div className={`min-h-screen ${c.bg} flex items-center justify-center p-6`}>
@@ -80,6 +104,20 @@ const NotFound = ({
           {/* Demand capture — they expected something at this URL; full card (not
               compact) so the ask is prominent */}
           <IdeaPrompt source="404" accent className="mt-4 border-2" />
+
+          {/* Low-emphasis — this is a bug report, not the primary ask on the page */}
+          <p className="text-center text-xs pt-1">
+            {reportState === 'sent' ? (
+              <span className={c.body}>✅ Thanks — we'll take a look.</span>
+            ) : (
+              <button
+                onClick={reportBrokenLink}
+                className={`underline underline-offset-2 ${isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                🔗 Report this broken link
+              </button>
+            )}
+          </p>
         </div>
       </div>
     </div>

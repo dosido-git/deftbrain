@@ -205,14 +205,22 @@ router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
   // Best-effort email — never blocks or fails the request.
   const key = process.env.RESEND_API_KEY;
   if (key) {
+    // Same capture pipe, but a broken-link report (404 page) reads very
+    // differently from a tool-idea submission — label the subject so it's
+    // scannable in the inbox instead of looking like an unlabeled idea.
+    const isBrokenLink = (source || '').toString().startsWith('404-broken-link');
     fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: process.env.IDEA_EMAIL_FROM || 'DeftBrain Ideas <ideas@deftbrain.com>',
         to: ['hello@deftbrain.com'],
-        subject: `💡 Tool idea (${(source || 'site').toString().slice(0, 40)})`,
-        text: `Problem described:\n${text}\n\nSearch query: ${query || '—'}\nSource: ${source || '—'}\nPath: ${path || '—'}`,
+        subject: isBrokenLink
+          ? `🔗 Broken link reported: ${(path || 'unknown path').toString().slice(0, 60)}`
+          : `💡 Tool idea (${(source || 'site').toString().slice(0, 40)})`,
+        text: isBrokenLink
+          ? `A visitor hit a 404 and reported it as a broken link.\n\nBroken path: ${path || '—'}\nReferrer: ${query || '—'}`
+          : `Problem described:\n${text}\n\nSearch query: ${query || '—'}\nSource: ${source || '—'}\nPath: ${path || '—'}`,
       }),
     }).catch(err => console.error('[idea-email] send failed:', err.message));
   }
