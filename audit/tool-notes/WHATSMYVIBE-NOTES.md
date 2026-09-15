@@ -1,4 +1,35 @@
-# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2`, 2026-09-14)
+# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2.1`, 2026-09-14)
+
+## 2026-09-14 v2.1 correction round
+
+The v2 rewrite still crossed from describing writing into inventing intent
+and specific reader thoughts:
+- `what_you_do` said things like "you use formal phrases *to* sound
+  collaborative and cautious" and "*to* reframe the request" — stating WHY
+  the writer chose a phrase, which the text can't actually establish.
+- `how_it_can_land` invented specific reader thoughts: "may make the reader
+  wonder what you're holding back," "can feel like you're building a paper
+  trail rather than solving something together" — a scene in a hypothetical
+  reader's head, not a quality of the writing.
+
+Added two rules: **DESCRIBE EFFECT, NOT INTENT** (replace "you use X to..."
+with "X creates...," "X has the effect of...") and **READER IMPRESSIONS**
+(how_it_can_land describes qualities — formal, indirect, warm, cautious —
+never a reader's specific thought or story). Verified live on the exact
+reported case (English corporate email, formal register + sports metaphor +
+"Please advise") — clean, every `what_you_do` item now reads "has the effect
+of..." and every `how_it_can_land` item is a bare quality. A DE re-test still
+produced one soft borderline phrase ("bracing yourself for rejection") that
+leans toward a reader-story rather than a bare quality — noted as a residual,
+not fully closed, but far softer than the reported failures.
+
+Also removed the sole post-result cross-ref ("Truth Bomb sees what's
+underneath the words," which sat directly above Recent Vibes) at owner
+request. WhatsMyVibe now carries **zero** manual cross-refs — added to
+`audit_v2-3-2.py`'s `NO_CROSSREF` set (alongside its existing S5.5
+pre-result exemption from the v2 round), relying entirely on the site's own
+RelatedLinks algorithm (auto-surfaces DecoderRing for this tool). `linkStyle`
+removed from the tool file as dead code once its only use disappeared.
 
 Backend `whats-my-vibe.js` — 1 endpoint `POST /whats-my-vibe`, `MODELS.FAST`, max_tokens 4000. Analyzes writing patterns visible in pasted text and how they might land on a reader.
 

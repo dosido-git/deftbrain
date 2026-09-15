@@ -108,10 +108,6 @@ const WhatsMyVibe = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
-
   // ── State ──
   const [samples, setSamples] = useState('');
   const [sourceType, setSourceType] = useState('texts');
@@ -183,7 +179,7 @@ const WhatsMyVibe = ({ tool }) => {
   }, [results, t]);
 
   // Register export content with wrapper ActionBar
-  useRegisterActions(buildFullText(), tool?.title || "What's My Vibe");
+  useRegisterActions(buildFullText(), tool?.title || "What's My Vibe?");
 
   // ── Global keyboard handler ──
   // ── Keyboard: SELECT-only guard, ref pattern ──
@@ -307,13 +303,6 @@ const WhatsMyVibe = ({ tool }) => {
               <p className={`text-sm font-bold ${c.text}`}>{results?.vibe_one_line}</p>
             </div>
           )}
-
-          {/* Post-result cross-ref — the only one; RelatedLinks already auto-surfaces
-              tag/category matches below, and DecoderRing is its top pick for this tool,
-              so this points at TruthBomb instead to avoid duplicating that block. */}
-          <p className={`text-xs ${c.textMuted} text-center`}>
-            <a href="/TruthBomb" className={linkStyle}>💣 {t('wmv_truthbomb_link')}</a>
-          </p>
         </div>
       )} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('wmv_recent')}</p>

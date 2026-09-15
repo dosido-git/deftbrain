@@ -572,7 +572,12 @@ for name, fpath in tools:
     # writes one message and a follow-up; the owner removed its two tool
     # promotions on 2026-08-23 with the reasoning that it should finish its own
     # job. Named rather than inferred, so the next one is a decision.
-    NO_CROSSREF = {'ColdOpenCraft'}
+    # WhatsMyVibe joined on 2026-09-14: its one remaining cross-ref ("Truth
+    # Bomb sees what's underneath the words," sitting right above Recent
+    # Vibes) was removed at the owner's request — the site's own RelatedLinks
+    # algorithm already surfaces DecoderRing for this tool, and a second
+    # manual link wasn't adding anything the visitor needed.
+    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe'}
 
     # S1.1: linkStyle standalone
     if name in NO_CROSSREF:

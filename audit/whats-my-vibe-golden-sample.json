@@ -3,48 +3,43 @@
   "tool": "WhatsMyVibe",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "whatsmyvibe-v2",
-  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing in what_you_do/signature_moves; German quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills (language-independent values), no AI-output enum is frontend-switched. NO format-strict fields (all prose/arrays). (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array. Frontend: whatsmyvibe-result and whatsmyvibe-history bumped to -v2 (schema changed completely, v1 shape had energy/sounds_like/emotional_temperature/secret_tell/share_line, none of which exist any more).",
-  "known_issues": "2026-09-14 owner rewrite: removed Energy, Sounds Like, Emotional Temperature (surface/underneath/gap), and Secret Tell — all of which turned a small writing sample into unsupported claims about the writer's inner life (the old golden sample's DE case literally said 'this person probably learned that asking is punished' from one text message). Punctuation Personality and Vocabulary Read folded into What You Do. New fields: what_you_do, how_it_can_land, signature_moves, pattern_tags (compact tags for the Recent Vibes history card), easy_to_misread (honest 'no ambiguity' allowed, not forced), vibe_one_line. easy_to_misread is deliberately not guard-required — the prompt instructs the model to say so honestly rather than invent one, so an empty-feeling answer there is correct behavior, not a bug."
+  "baseline_commit": "whatsmyvibe-v2.1",
+  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing; German/quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills, no AI-output enum is frontend-switched. NO format-strict fields. (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array.",
+  "known_issues": "2026-09-14 v2.1 correction round: v2 still crossed from describing writing into inventing INTENT ('you use X to sound collaborative', 'to reframe', 'softens the request and adds distance') and still occasionally invented specific reader thoughts in how_it_can_land ('may make the reader wonder what you're holding back', 'can feel like you're building a paper trail'). Added DESCRIBE EFFECT, NOT INTENT rule (replace 'you use X to...' with 'X creates...'/'X has the effect of...') and a READER IMPRESSIONS rule restricting how_it_can_land to qualities (formal, indirect, warm, cautious...) rather than specific reader thoughts/stories. Verified live on the exact reported case (English corporate email with a formal register + sports metaphor + 'Please advise') — clean. A DE re-test still produced one soft borderline phrase in how_it_can_land ('bracing yourself for rejection') that leans toward a reader-story rather than a bare quality — noted as a residual, not fully closed, since it's far softer than the reported failures and wasn't worth forcing a third round on before further live testing surfaces a clearer pattern. Also: removed the sole post-result cross-ref ('Truth Bomb sees what's underneath the words') at owner request — WhatsMyVibe now carries zero manual cross-refs (added to audit_v2-3-2.py's NO_CROSSREF set alongside its existing S5.5 pre-result exemption), relying entirely on the site's own RelatedLinks algorithm (auto-surfaces DecoderRing). linkStyle removed from the tool file as dead code."
  },
  "cases": [
   {
-   "name": "anxious over-apologizer texts (DE)",
+   "name": "corporate-formal email with sports metaphor (EN)",
    "endpoint": "/api/whats-my-vibe",
    "input": {
-    "samples": "hey!! also ich weiß nicht ob das ne blöde frage ist aber... könntest du mir vielleicht kurz helfen? nur wenn du zeit hast natürlich!! ist überhaupt nicht dringend haha. sorry dass ich schon wieder frage 🙈 du bist der/die beste!!!",
-    "sourceType": "texts",
-    "userLanguage": "de"
+    "samples": "Per my earlier communication, I wanted to follow up on the outstanding deliverable we discussed. Moving forward, I think it would be beneficial to align on expectations to ensure we're all rowing in the same direction. Please advise at your earliest convenience.",
+    "sourceType": "emails",
+    "userLanguage": "en"
    },
    "output": {
-    "vibe_title": "Die höfliche Sturmflut",
-    "vibe_summary": "Die Nachricht balanciert zwischen enthusiastischen Doppelpunkten und wiederholten Entschuldigungen — jede Bitte wird mit Abschwächungen, Qualifizierungen und Bestätigungen umgeben, dass es wirklich keine Unannehmlichkeit ist.",
+    "vibe_title": "The Corporate Formality Sprint",
+    "vibe_summary": "This sample is densely packed with formal business language and hedging phrases that create distance between the writer and the reader. Every sentence reaches for official-sounding terminology ('Per my earlier communication,' 'align on expectations,' 'rowing in the same direction') rather than stating something directly.",
     "what_you_do": [
-     "Startet mit doppeltem Ausrufezeichen ('hey!!'), dann sofort ein 'auch' und gleich die erste Unsicherheit: 'ich weiß nicht ob das ne blöde frage ist aber...'",
-     "Nutzt Konjunktiv und Diminutive für jede Anfrage: 'könntest du mir vielleicht kurz helfen? nur wenn du zeit hast natürlich!!'. Das Wort 'vielleicht' ist die Kernstrategie.",
-     "Wiederholt Entschuldigungen und Versicherungen in derselben Nachricht: 'ist überhaupt nicht dringend haha' und dann 'sorry dass ich schon wieder frage' mit Emoji",
-     "Endet mit massivem Lob ('du bist der/die beste!!!') — drei Ausrufezeichen als Verstärker nach dem ganzen Abbau"
+     "'Per my earlier communication' opens by referencing a prior conversation without naming what was actually discussed, creating a sense of 'you should already know this' while remaining vague — the phrase has the effect of sounding formal and official while deflecting specificity.",
+     "The phrase 'outstanding deliverable' uses corporate jargon where 'thing you owe me' or 'project' might be clearer. This choice creates distance through abstraction and formality.",
+     "'I think it would be beneficial to align on expectations' uses softening language ('I think,' 'would be') combined with a business-speak verb ('align') instead of a direct request like 'let's agree on what's needed.' The softening has the effect of making a request feel more like a suggestion.",
+     "'Please advise at your earliest convenience' is a closing that invokes formality and politeness while making a demand — 'advise' is formal enough to feel slightly distant, and 'at your earliest convenience' adds a courteous buffer that can make an urgent request feel less pressuring on the surface.",
+     "The metaphor 'rowing in the same direction' introduces a casual phrase into otherwise stiff language, creating a jarring tonal shift — it stands out against the surrounding corporate vocabulary."
     ],
     "how_it_can_land": [
-     "Kann als sehr höflich und rücksichtsvoll wirken, möglicherweise übervorsichtig für eine casual Textnachricht",
-     "Kann den Eindruck erwecken, dass die Bitte größer ist als sie tatsächlich ist — die vielen Qualifizierungen könnten eine kleine Frage in eine wichtige Angelegenheit verwandeln",
-     "Kann lesen wie jemand, der ernsthaft unsicher ist, ob die Frage angemessen ist, statt wie lockere Freundlichkeit",
-     "Das Schlusslob mit drei Ausrufezeichen kann aufrichtig wirken oder auch als überkompensierende Dankbarkeit für das bloße Lesen der Nachricht"
+     "May come across as carefully professional and formal, with multiple layers of politeness buffering what sounds like it should be a straightforward ask.",
+     "Can read as indirect — the actual problem or request is wrapped in business terminology rather than stated plainly.",
+     "May feel cautious or hedged, with softening language ('I think,' 'would be beneficial') that keeps the writer at arm's length from making a direct request."
     ],
     "signature_moves": [
-     "Das 'vielleicht' im Konjunktiv — 'könntest du mir vielleicht' statt direkter Bitte",
-     "Parenthetische Versicherer in Klammern oder mit 'natürlich!!': 'nur wenn du zeit hast natürlich!!'",
-     "Entschuldigungen mit Emoji statt Interpunktion: 'sorry dass ich schon wieder frage 🙈'",
-     "Enthusiastische Doppel- und Dreifachzeichen ('hey!!', 'natürlich!!', 'beste!!!') gemischt mit deflating Qualifizierern"
+     "'Per my earlier communication' — opening by referencing a prior exchange without restating it",
+     "'rowing in the same direction' — a sudden colloquial metaphor interrupting formal language",
+     "'Please advise at your earliest convenience' — politeness and urgency wrapped together in formal phrasing",
+     "Stacked jargon phrases ('align on expectations,' 'outstanding deliverable') rather than plain language"
     ],
-    "pattern_tags": [
-     "höfliche Abschwächung",
-     "wiederholte Entschuldigungen",
-     "doppelte Intensifier",
-     "Konjunktiv-Puffer"
-    ],
-    "easy_to_misread": "Das 'haha' nach 'ist überhaupt nicht dringend' könnte humorvoll gemeint sein — oder es könnte nervös wirken, als würde die Person versuchen, die eigene Unsicherheit damit zu überdecken. Aus einer einzigen Nachricht lässt sich nicht eindeutig sagen, welche Tonalität beabsichtigt ist.",
-    "vibe_one_line": "Enthusiastisch und höflich, aber so sehr darauf bedacht, niemandem zur Last zu fallen, dass die Bitte unter Schichten von Versicherungen fast verschwindet."
+    "pattern_tags": ["corporate abstraction", "softened requests", "formal hedging", "tonal mismatch"],
+    "easy_to_misread": "The opening 'Per my earlier communication' assumes the recipient remembers what was discussed without restating it. If the earlier conversation was vague, forgotten, or involved multiple people, this reference could land as passive-aggressive or make the reader unsure exactly what deliverable is being referenced. The writer may intend simple reference-building; a reader may interpret it as a subtle reproach for not following up sooner.",
+    "vibe_one_line": "Formal and hedged — every direct thought gets wrapped in business jargon and politeness, with a casual metaphor breaking through the surface."
    }
   }
  ]

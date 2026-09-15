@@ -1852,7 +1852,7 @@ export const tools = [
   // strongest existing material) became What You Do and Your Signature Moves.
   seoDescription: "Paste your texts, emails, or messages and see the patterns in your writing — your tone, habits, and the ways it might land on a reader. Free.",
   seoTitle: "Tone & Writing Pattern Checker",
-  title: "What's My Vibe",
+  title: "What's My Vibe?",
   tagline: "See the patterns hiding in the way you write.",
   tags: ['vibe', 'tone', 'personality', 'writing', 'analysis', 'text', 'fun'],
   icon: "✨",
@@ -1860,7 +1860,7 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.",
   guide: {
-    overview: "What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and points out the patterns actually visible in it: sentence length, punctuation, hedging, humor, directness, and structure. It's built to stay grounded in what's on the page, not to diagnose why you write that way — a small sample is a sample, not your permanent voice.",
+    overview: "What's My Vibe? reads your actual writing — texts, emails, social posts, Slack messages — and points out the patterns actually visible in it: sentence length, punctuation, hedging, humor, directness, and structure. It's built to stay grounded in what's on the page, not to diagnose why you write that way — a small sample is a sample, not your permanent voice.",
     howToUse: [
       "Paste some of your writing — texts, emails, tweets, DMs, whatever feels like 'you'",
       "The more variety, the better the read (mix of casual and professional helps)",
