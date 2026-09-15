@@ -193,12 +193,14 @@ const WhereDidTheTimeGo = ({ tool }) => {
         txt += `${b.time} — ${b.note}\n`;
       });
       txt += '\n';
-    } if (r.what_made_it_feel_different?.length) {
-      txt += `━━ ${t('wdttg_copy_feel_different')} ━━\n\n`;
-      r.what_made_it_feel_different.forEach(o => { txt += `${o}\n`; });
+    } if (r.what_stands_out?.length) {
+      txt += `━━ ${t('wdttg_copy_stands_out')} ━━\n\n`;
+      r.what_stands_out.forEach(o => { txt += `${o}\n`; });
       txt += '\n';
     } if (r.the_biggest_mismatch) {
       txt += `━━ ${t('wdttg_copy_biggest_mismatch')} ━━\n${r.the_biggest_mismatch}\n\n`;
+    } if (r.whats_still_unclear) {
+      txt += `━━ ${t('wdttg_copy_still_unclear')} ━━\n${r.whats_still_unclear}\n\n`;
     } if (r.try_this_next_time) {
       txt += `━━ ${t('wdttg_copy_try_this')} ━━\n${r.try_this_next_time}\n\n`;
     }
@@ -266,11 +268,11 @@ const WhereDidTheTimeGo = ({ tool }) => {
             </div>
 
             {/* Submit */} <button title={t('cmd_enter')}
-              onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`relative w-full ${(!dayDescription.trim()) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+              onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`relative w-full ${loading || dayDescription.trim() ? c.btnPrimary : c.btnIdle} py-3 rounded-xl font-semibold text-sm shadow-md
                 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`} >
               {loading ? (<>
-                  <span className="inline-block animate-spin">{tool?.icon ?? ICON_FALLBACK}</span>
-                  {t('wdttg_tracing')}
+                  <span className="inline-block animate-spin !text-white">{tool?.icon ?? ICON_FALLBACK}</span>
+                  <span className="!text-white">{t('wdttg_tracing')}</span>
                 </>
               ) : (<>
                   <span>{tool?.icon ?? ICON_FALLBACK}</span> {t('wdttg_submit')}
@@ -302,18 +304,25 @@ const WhereDidTheTimeGo = ({ tool }) => {
                     </div>
                   ))} </div>
               </div>
-            )} {/* What made it feel different */} {results?.what_made_it_feel_different?.length > 0 && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
+            )} {/* What stands out */} {results?.what_stands_out?.length > 0 && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-3 flex items-center gap-1.5`}>
-                  <span>🔍</span> {t('wdttg_feel_different')}
+                  <span>🔍</span> {t('wdttg_stands_out')}
                 </p>
                 <div className="space-y-2">
-                  {results?.what_made_it_feel_different.map((o, i) => (<p key={i} className={`text-sm ${c.text} leading-relaxed`}>→ {o}</p>
+                  {results?.what_stands_out.map((o, i) => (<p key={i} className={`text-sm ${c.text} leading-relaxed`}>→ {o}</p>
                   ))} </div>
               </div>
             )} {/* The biggest mismatch */} {results?.the_biggest_mismatch && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('wdttg_biggest_mismatch')}</p>
                 <p className={`text-sm ${c.text} leading-relaxed`}>
                   {results?.the_biggest_mismatch} </p>
+              </div>
+            )} {/* What's still unclear */} {results?.whats_still_unclear && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
+                  <span>🌫️</span> {t('wdttg_still_unclear')}
+                </p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>
+                  {results?.whats_still_unclear} </p>
               </div>
             )} {/* Try this next time — Gold AI insight panel */} {results?.try_this_next_time && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-3 text-center`}>

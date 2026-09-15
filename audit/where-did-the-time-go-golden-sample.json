@@ -3,9 +3,9 @@
   "tool": "WhereDidTheTimeGo",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "wheredidthetimego-v2.2",
-  "how_to_regression_diff": "Re-run (npm run check:golden where-did-the-time-go) with dev backend up. Diff for QUALITY not exact match: HTTP 200, the_day_you_described non-empty array, what_made_it_feel_different non-empty array (guard keys). GUARDS: (1) the_day_you_described capped at 12 entries (soft prompt cap, not a hard array-length guard — this schema is much smaller than v1's, so max_tokens 3500 has real headroom; watch for truncation on 'this week' timeframe inputs with very long accounts). (2) no-inner-double-quote rule (prose quotes the user's own words). (3) NOT format-strict — every field is prose/arrays of prose, no numeric badges. (4) guard keys top-level the_day_you_described (array+length) and what_made_it_feel_different (array+length); the_biggest_mismatch and try_this_next_time are deliberately NOT guard-required. try_this_next_time can be JSON `null` by design (case 2 below) — the frontend's truthy check already hides the section, so this is NOT a bug if you see it. DO NOT reverse: the no-inner-quote rule; the non-required guard on the_biggest_mismatch/try_this_next_time; the null-allowed contract on try_this_next_time.",
-  "known_issues": "2026-09-14 v2 owner rewrite removed The Visible Day's you-think/likely-actual time pairs, The Invisible Hours, and honest_capacity entirely (v1 invented unmeasured minutes with no basis in the account). v2.1 added PRESERVE NUMERICAL RELATIONSHIPS, DON'T INFER ATTENTION OR CONTROL, DON'T CLAIM COMPLETE ACCOUNTING, EXPLAIN ONLY WHAT THE ACCOUNT SUPPORTS, and the try_this_next_time null contract. v2.2 (this round) added NO UNSUPPORTED DURATIONS (never estimate a vague period like 'two afternoons' into hours), NO VALUE JUDGMENTS (don't equate activity with productivity, don't adopt the user's own word 'wasted' as fact), DON'T INVENT THE YARDSTICK (never infer what would have made the period worthwhile), ALLOW UNEXPLAINED GAPS (say plainly when the account doesn't explain where time went), and NEUTRAL OBSERVATION (try_this_next_time describes what to notice without priming speculative possibilities) — also made session_label/session_tags facts-only. Removed the sole remaining post-result cross-ref ('Check your burnout risk' → Before the Crash); the tool now carries zero manual cross-refs by design (added to audit_v2-3-2.py's NO_CROSSREF set, same pattern as WhatsMyVibe). Verified live on case 3 below (a 'wasted afternoon'/'week disappeared' account, the closest real-world trigger for value-judgment and yardstick-invention failures): no invented hour estimates for the vague 'two afternoons,' the word 'wasted' is attributed to the user rather than adopted as the tool's own conclusion, and try_this_next_time stays neutral ('not to judge it, just to see what those afternoons actually contained'). Two soft residuals disclosed, not chased further: session_label used the word 'disengaged' (echoes the DON'T INFER ATTENTION OR CONTROL banned-state list, even though the user didn't use that word), and the_biggest_mismatch's closing line introduced 'personal projects' as something the user 'normally measures against' — a yardstick the user never actually stated."
+  "baseline_commit": "wheredidthetimego-v3",
+  "how_to_regression_diff": "Re-run (npm run check:golden where-did-the-time-go) with dev backend up. Diff for QUALITY not exact match: HTTP 200, the_day_you_described non-empty array, what_stands_out non-empty array (guard keys). GUARDS: (1) the_day_you_described capped at 12 entries (soft prompt cap, not a hard array-length guard). (2) no-inner-double-quote rule (prose quotes the user's own words). (3) NOT format-strict — every field is prose/arrays of prose, no numeric badges. (4) guard keys top-level the_day_you_described (array+length) and what_stands_out (array+length); the_biggest_mismatch, whats_still_unclear, and try_this_next_time are ALL deliberately NOT guard-required and can each independently be JSON `null` — see case 2 (mismatch and try-this both null) and every case (whats_still_unclear is populated even on a fairly complete day, since genuine small gaps remain — that's correct behavior, not a bug). DO NOT reverse: the no-inner-quote rule; the non-required guards; the null-allowed contract on all three optional fields.",
+  "known_issues": "2026-09-14 v3: full ground-up prompt replacement (owner-authored, not an incremental correction of v2.x). Three prior correction rounds (v2, v2.1, v2.2) iteratively patched specific failure modes with added rules; this round replaces the entire prompt with a single consolidated spec built around CORE EVIDENCE RULE / TIME DISCIPLINE / INFERENCE DISCIPLINE / PATTERN DISCIPLINE sections and a two-question FINAL CHECK. Renamed 'What Made It Feel Different' to 'What Stands Out' (the old name subtly invited the model to explain WHY the period felt a certain way, which is exactly the failure mode being fixed). Added a new 'What's Still Unclear' section — genuinely optional (null when the account is complete enough that nothing meaningful is left uncertain) — giving the model a legitimate place to put uncertainty instead of manufacturing a psychological or productivity explanation to fill the gap. session_label/session_tags (needed for the Recent Days history feature, not part of the owner's supplied text) were added back to the JSON schema after an initial omission caused the very first live test to show a bare 'Session' placeholder in the history list — caught and fixed in the same round before commit. Verified live across 3 cases (a chaotic DE workday, a mostly-complete unstructured EN day, and the 'wasted afternoon' EN case that triggered value-judgment/yardstick-invention failures in v2.2): output was cleaner across the board than any prior round — 'wasted' is consistently attributed to the user's own words rather than adopted as fact, vague periods ('two afternoons') are never converted to hours, and What's Still Unclear correctly captures genuine open questions (e.g. 'whether the absence of accomplishment reflects unfinished projects, low energy, competing demands, or something else is not clear from what you've described') instead of inventing an answer."
  },
  "cases": [
   {
@@ -19,29 +19,29 @@
    },
    "output": {
     "the_day_you_described": [
-     { "time": "8:00", "note": "Kaffee und E-Mails" },
-     { "time": "9:00", "note": "Standup" },
-     { "time": "Nach 9:00 (etwa eine Stunde)", "note": "Slack-Thread über Kundeneskalation – wollte am Quartalsbericht arbeiten, wurde aber hineingezogen" },
-     { "time": "12:30", "note": "Mittagessen" },
-     { "time": "Nachmittags", "note": "1:1 mit Chefin, das überzogen hat" },
-     { "time": "Bis etwa 16:00", "note": "Calls (nach eigenem Eindruck durchgehend oder mit wenig Lücke nach dem 1:1)" },
-     { "time": "Nach 16:00 (etwa eine Stunde)", "note": "Folien für morgiges Review" },
-     { "time": "17:30", "note": "Feierabend" }
+     { "time": "8:00 Uhr", "note": "Kaffee und E-Mails" },
+     { "time": "9:00 Uhr", "note": "Standup" },
+     { "time": "Nach dem Standup", "note": "Slack-Thread über Kundeneskalation - etwa eine Stunde" },
+     { "time": "12:30 Uhr", "note": "Mittagessen" },
+     { "time": "Nachmittags", "note": "1:1 mit der Chefin, das überzogen hat" },
+     { "time": "Bis etwa 16:00 Uhr", "note": "Calls (genaue Anzahl und Dauer unklar)" },
+     { "time": "Nach den Calls", "note": "Eine Stunde an Folien für das morgige Review gearbeitet" },
+     { "time": "17:30 Uhr", "note": "Arbeitstag beendet" }
     ],
-    "what_made_it_feel_different": [
-     "Der Quartalsbericht – die Aufgabe, die du dir vorgenommen hattest – wurde durch die Kundeneskalation komplett ersetzt, nicht unterbrochen. Das war eine große, geplante Arbeit, die nicht stattgefunden hat.",
-     "Der Nachmittag war vollständig durch Meetings geblockt: das 1:1 lief über, dann direkt Calls bis 16:00. Es gab keinen zusammenhängenden Block, um an etwas Größerem zu arbeiten.",
-     "Die Folien für das morgige Review sind echte Arbeit und erscheinen oft klein in der Rückschau, weil sie dokumentieren statt zu schaffen – aber sie nahmen trotzdem eine Stunde ein und waren notwendig.",
-     "Zwischen dem 1:1 und den Calls liegt ein verschwommener Übergang – unklar, wann das eine endete und die anderen begannen, was das Gefühl von Zersplitterung verstärkt."
+    "what_stands_out": [
+     "Der geplante Quartalsbericht wurde nicht geschrieben - stattdessen wurde du in die Kundeneskalation hineingezogen.",
+     "Die meiste Zeit des Nachmittags (ab ~13:00 oder später bis 16:00 Uhr) war mit Calls und einem überziehenden 1:1 belegt - das ist mindestens 3 Stunden, deren genaue Struktur unklar bleibt.",
+     "Du hast an den Folien gearbeitet, was konkrete Arbeit am geplanten Ziel ist, aber dieses Stück scheint in der Wahrnehmung untergenommen zu sein."
     ],
-    "the_biggest_mismatch": "Du beschreibst einen Tag voller Aktivität von 8:00 bis 17:30, aber das einzige Großprojekt, das du dir vorgenommen hattest – der Quartalsbericht – fand nicht statt. Stattdessen waren es Meetings, Kundeneskalation und Folien. Der Tag war voll, aber nicht mit dem, das du zählen würdest.",
-    "try_this_next_time": "Notiere morgen kurz, wenn ein geplanter Block (wie dein Quartalsbericht) durch etwas Dringendes ersetzt wird – schreib nur das Wort und die ungefähre Zeit auf. Nach einer Woche kannst du sehen, wie oft das passiert und zu welchen Tageszeiten. Das zeigt, ob es ein Muster gibt oder eher zufällig ist.",
-    "session_label": "Vollständiger Tag – Quartalsbericht verdrängt",
-    "session_tags": ["Slack-Eskalation", "Meetings blockiert Nachmittag", "Geplantes Projekt nicht umgesetzt"]
+    "the_biggest_mismatch": "Du empfindest die Erfahrung als 'nichts Wichtiges geschafft zu haben', aber konkret hast du: den Quartalsbericht nicht begonnen (das war deine ursprüngliche Absicht), aber eine Stunde an den Review-Folien für morgen gearbeitet. Die Diskrepanz liegt darin, dass du durchgehend mit Aufgaben beschäftigt warst (E-Mails, Standup, Eskalation, Calls, Folien), aber die Arbeit, die du geplant hattest - der Quartalsbericht - nicht stattgefunden hat.",
+    "whats_still_unclear": "Die genaue Dauer und Reihenfolge des Nachmittags bleibt unklar: Wann genau hat das 1:1 stattgefunden, wie lange hat es gedauert, und wie viele Calls waren es nach dem 1:1, wie lange insgesamt? Die Zeit zwischen Mittagessen (12:30) und dem Ende der Calls (etwa 16:00) ist nicht vollständig aufgeschlüsselt.",
+    "try_this_next_time": "Notiere beim nächsten überziehenden 1:1 oder überraschenden Slack-Thread die Uhrzeit, wenn er anfängt - nur das. Das hilft dir später zu sehen, welche geplante Aktivität dadurch verdrängt wurde, statt dass die Zeit nur 'irgendwie weg' wirkt.",
+    "session_label": "Quartalsbericht geplant, Kundeneskalation stattdessen",
+    "session_tags": ["Slack-Eskalation", "Calls und Meetings", "Folien fertiggestellt"]
    }
   },
   {
-   "name": "unstructured day, no useful next-time change (EN) — try_this_next_time is null by design",
+   "name": "mostly-complete unstructured day (EN) — the_biggest_mismatch and try_this_next_time both null",
    "endpoint": "/api/where-did-the-time-go",
    "input": {
     "dayDescription": "Slept in until 10. Made breakfast. Read a book for a couple hours. Went for a walk in the afternoon. Cooked dinner and watched a movie. Went to bed around 11.",
@@ -50,21 +50,21 @@
    },
    "output": {
     "the_day_you_described": [
-     { "time": "10:00", "note": "Woke up; made breakfast" },
-     { "time": "Late morning through early afternoon", "note": "Read a book for a couple hours" },
-     { "time": "Afternoon", "note": "Went for a walk" },
-     { "time": "Evening", "note": "Cooked dinner" },
-     { "time": "Evening", "note": "Watched a movie" },
-     { "time": "Around 11:00", "note": "Went to bed" }
+     { "time": "10:00 AM", "note": "Woke up. Made breakfast." },
+     { "time": "After breakfast, couple of hours", "note": "Read a book." },
+     { "time": "Afternoon", "note": "Went for a walk." },
+     { "time": "Evening", "note": "Cooked dinner." },
+     { "time": "After dinner", "note": "Watched a movie." },
+     { "time": "Around 11:00 PM", "note": "Went to bed." }
     ],
-    "what_made_it_feel_different": [
-     "No commitments or schedule — the day was shaped entirely by your own choices, each activity flowing into the next without external interruption.",
-     "A clear sequence of distinct activities with visible transitions: reading had a defined block; walking was clearly separate; dinner and a film occupied the evening together."
+    "what_stands_out": [
+     "The day is structured but sparse — you have anchors at the start (10 AM wake, breakfast), middle (afternoon walk), and end (11 PM bed), but the stretches between them lack specific timing, making roughly 8-9 hours of the day only loosely accounted for."
     ],
-    "the_biggest_mismatch": "None apparent. The account describes a coherent day with no stated feeling of fragmentation, lost time, or mismatch between what you intended and what happened.",
+    "the_biggest_mismatch": null,
+    "whats_still_unclear": "How much time elapsed between finishing breakfast and starting the walk — you noted reading for a couple hours, but the exact window and what happened between the book and the walk remains unspecified. Similarly, the time from the walk through cooking and the movie is not broken down, so it is unclear how long each of those occupied or when the transition between them occurred.",
     "try_this_next_time": null,
-    "session_label": "Unstructured Sunday — reading, walk, film",
-    "session_tags": ["open day", "single activities", "no interruptions"]
+    "session_label": "Sunday: slept in, read, walked, cooked, watched",
+    "session_tags": ["read couple hours", "afternoon walk", "cooked and watched movie"]
    }
   },
   {
@@ -78,24 +78,22 @@
    },
    "output": {
     "the_day_you_described": [
-     { "time": "Monday through Friday, 9-6 each day", "note": "Work commitment — 5 days at desk" },
-     { "time": "At least two afternoons during the week (day unspecified)", "note": "Technically at desk but not working — user's own description" },
-     { "time": "Gym visits", "note": "Twice during the week instead of usual four times" },
-     { "time": "Wednesday evening", "note": "Dinner with friend" },
-     { "time": "Thursday", "note": "Planned evening cancelled — user reports being too tired" },
-     { "time": "Weekend", "note": "Errands scheduled" },
-     { "time": "Monday morning", "note": "Weekend errands ran over into this time" },
-     { "time": "Outside of 9-6 work hours", "note": "User cannot point to one substantial accomplishment in this time" }
+     { "time": "Monday–Friday, roughly 9 a.m.–6 p.m.", "note": "Work week. At least two of these afternoons were spent at desk but not actively working." },
+     { "time": "Two days during the week (unspecified which)", "note": "Gym visits. User's usual pattern is four times per week." },
+     { "time": "Wednesday evening", "note": "Dinner with a friend." },
+     { "time": "Thursday", "note": "Cancelled plans due to tiredness." },
+     { "time": "Weekend into Monday morning", "note": "Errands ran over into Monday morning (duration and specific activities not specified)." }
     ],
-    "what_made_it_feel_different": [
-     "Two full afternoons during work hours were spent at your desk without actual work — that's a visible gap between time and output within the structure you normally count as productive.",
-     "Gym dropped from four to two visits; Thursday plans cancelled due to fatigue — the week contained fewer of the things you usually do outside work than you expected.",
-     "The account describes what didn't happen (no substantial non-work accomplishment, cancelled plans, missed gym sessions) more clearly than what did — which may be why the week feels like it disappeared despite being full of scheduled time."
+    "what_stands_out": [
+     "You worked a full five-day week (roughly 45 hours) but identify at least two afternoons where you were present but not actively working — that's at least 4-5 hours of desk time without engagement.",
+     "Gym attendance was half your usual frequency (two visits instead of four).",
+     "Outside of work and the one friend dinner, the account contains no completed personal activities, projects, or errands — only cancelled plans and errands that extended into Monday."
     ],
-    "the_biggest_mismatch": "You have 50+ work hours accounted for (9-6, five days), plus dinner Wednesday and two gym visits, plus weekend errands bleeding into Monday. The mismatch is not missing hours — it's that accomplishment outside of 'actual job' is invisible to you, while the work hours themselves are spent partly disengaged. The week didn't disappear because it was empty; it disappeared because the parts you'd normally measure yourself against (gym consistency, personal projects, evening plans that stick) contracted or stalled.",
-    "try_this_next_time": "When you notice yourself at your desk in one of those disengaged stretches, write down what you were doing instead — not to judge it, just to see what those afternoons actually contained. This tests whether the pattern is truly 'nothing' or whether specific small things are happening but not registering as accomplishment.",
-    "session_label": "Work week — two disengaged afternoons, fewer gym visits, plans cancelled",
-    "session_tags": ["5 days at desk", "2 unmeasured afternoons", "2 of 4 gym visits"]
+    "the_biggest_mismatch": "You expected to go to the gym four times; you went twice. You also expected the weekend to contain errands that would finish by Monday morning, but they ran over into Monday itself.",
+    "whats_still_unclear": "Which two afternoons during the work week had reduced engagement, and for how long each. What the weekend errands were, how long they were meant to take, and why they extended into Monday. Whether the cancelled Thursday plans were something you wanted to do or felt obligated to do. What specifically you hoped to accomplish outside of work, or whether that expectation exists in hindsight only.",
+    "try_this_next_time": "On Thursday when you cancelled plans, note briefly what you were cancelling and why (tired, or something else). That detail might show whether Thursday exhaustion is a pattern or an outlier.",
+    "session_label": "Work week with two gym visits, friend dinner, and weekend errands",
+    "session_tags": ["5-day work week", "2 gym visits", "cancelled Thursday plans"]
    }
   }
  ]
