@@ -257,7 +257,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 <span className="me-1.5">📋</span> {t('wdttg_day_q', { tf: timeframeLabel(timeframe) })} <span className={c.required}>*</span>
               </label>
               <textarea
-                value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={t('wdttg_day_ph')} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
+                value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={t('wdttg_day_ph')} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`} />
             </div>
 
             {/* Felt discrepancy */} <div className="space-y-2">
@@ -266,7 +266,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
               </label>
               <textarea
                 value={perceivedBreakdown} onChange={(e) => setPerceivedBreakdown(e.target.value)} placeholder={t('wdttg_perceived_ph')}
-                rows={2} maxLength={400} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
+                rows={2} maxLength={400} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`} />
             </div>
 
             {/* Submit */} <button title={t('cmd_enter')}
@@ -327,13 +327,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                   {results?.try_this_next_time} </p>
               </div>
             )}
-
-            {/* Post-result cross-ref — the only one; RelatedLinks already auto-surfaces
-                tag/category matches below, and BatchFlow is its top pick for this tool,
-                so this points at Before the Crash instead to avoid duplicating that block. */}
-            <p className={`text-xs ${c.textMuted} text-center`}>
-              <a href="/BeforeTheCrash" className={linkStyle}>📉 {t('wdttg_xref_crash')}</a>
-            </p>
           </div>
         )} {/* History */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('wdttg_recent_sessions')}</p>
@@ -349,6 +342,13 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 </button>
               ))} </div>
           </div>
+        )} {/* Post-result cross-ref — the only one, below Recent Days. RelatedLinks
+            already auto-surfaces tag/category matches below, and BatchFlow is its
+            top pick for this tool, so this points at Before the Crash instead to
+            avoid duplicating that block. */} {results && (
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            <a href="/BeforeTheCrash" className={linkStyle}>📉 {t('wdttg_xref_crash')}</a>
+          </p>
         )}
     </div>
   );

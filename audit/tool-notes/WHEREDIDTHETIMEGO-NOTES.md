@@ -1,4 +1,38 @@
-# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v2`, 2026-09-14)
+# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v2.1`, 2026-09-14)
+
+## 2026-09-14 v2.1 correction round
+
+Four new prompt rules, all reinforcing the existing "reconstruct, don't
+fabricate" governing rule:
+- **PRESERVE NUMERICAL RELATIONSHIPS** — a live v2 result had produced
+  "cutting the intended 3–5pm deep-work window from 2 hours to 3 hours,"
+  a comparison that doesn't parse as a cut. Calculations from the user's own
+  numbers must stay arithmetically correct.
+- **DON'T INFER ATTENTION OR CONTROL** — extends DO NOT PSYCHOLOGIZE with an
+  explicit list: no inferring divided attention, lack of control,
+  disengagement, avoidance, or "forward motion" unless the user said so.
+- **DON'T CLAIM COMPLETE ACCOUNTING** — a reconstructed timeline is only
+  what the user reported; never imply every hour is accounted for or that
+  an undescribed period contained nothing.
+- **EXPLAIN ONLY WHAT THE ACCOUNT SUPPORTS** — don't manufacture a
+  psychological or productivity explanation just to make the day form a
+  satisfying story.
+
+**Behavior change to `try_this_next_time`:** previously "say honestly when
+none applies" (always a string); now the model outputs JSON `null` and the
+section is omitted entirely when no low-effort, directly-supported
+experiment follows. Also tightened: at most one, requires little/no extra
+tracking, never a productivity system or reflection exercise. **This is not
+a schema/guard change** — `try_this_next_time` was already not
+guard-required, and the frontend's `{results?.try_this_next_time && (...)}`
+truthy check already hides `null`/absent values correctly. Verified live:
+a thin, well-structured "nothing to fix" day correctly returned `null`
+rather than forcing a suggestion (golden sample case 2).
+
+**Interface-only:** both textareas (day description, felt discrepancy) are
+now vertically resizable (`resize-y`, was `resize-none`). The sole
+post-result cross-ref ("Check your burnout risk" → Before the Crash) moved
+from directly under the results to below the Recent Days history section.
 
 Backend `where-did-the-time-go.js` — 1 endpoint `POST /where-did-the-time-go`, `MODELS.FAST`, max_tokens 3500. Reconstructs a day from the user's own account.
 
