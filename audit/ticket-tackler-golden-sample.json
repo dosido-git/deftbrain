@@ -2,20 +2,21 @@
   "_meta": {
     "tool": "TicketTackler",
     "generated": "2026-07-26",
-    "baseline_commit": "tickettackler-v2",
-    "model": "MODELS.SMART; single call (was parallel split case+appeal) + groundedFacts pre-pass (ticket-appeal:{city}:{type}, 14d cache); followup 2000",
-    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) assessment.verdict and pay_or_contest.recommendation MUST be an exact English token WORTH_CONTESTING|VERIFY_FIRST|PROBABLY_PAY, and evidence_to_get[].urgency MUST be exactly today|before_filing — the frontend switches badge colors/labels on them; withLanguage would otherwise translate them in 12 langs. (2) NO numeric case-strength score and NO strength enum anywhere (2026-09-15 rewrite deliberately removed fight_worthiness and defense_angles[].strength — a 9/10 score or a strong/moderate/weak label implies predictive precision the tool does not have; do not reintroduce either). (3) pay_or_contest.reasoning must NEVER invent filing fees, hearing costs, preparation time, or a probability of success — the pre-rewrite decision_math routinely fabricated '20-30 minutes', '$10-20 reduction', 'roughly 15-30 minutes online'; the rewrite's reasoning weighs strength/evidence/amount-at-stake/procedural-burden in prose, with no invented numbers except the user-supplied fine amount. (4) appeal_letter MUST be null when there is no plausible supported basis for contesting (see weak-case) — do not always draft one 'to be helpful'; what_may_matter and what_to_verify MAY legitimately be empty arrays for a hopeless case — an empty array is a correct answer, not a broken response, so do not treat case-to-case count as an invariant the way non-empty arrays are. (5) dont_say MUST be null (not an empty array, not filler) unless the user's own account/wording actually contains something that could hurt their case. (6) how_to_file must NEVER invent portals/phones/deadlines: specifics come from the VERIFIED RULES block (grounding) or the response points to the ticket/official channel generically; deadline day-counts only if VERIFIED or user-provided. (7) what_may_matter items must be grounded in the user's account — no hypothetical stolen/leased-vehicle boilerplate, and each item distinguishes THE CITATION / THE USER'S ACCOUNT / SUPPORTING EVIDENCE / VERIFIED RULES rather than silently upgrading one into another (e.g. 'the sign as you describe it', not 'the sign'). (8) Quote-heavy German input → NO_QUOTE_RULE. (9) Statute sections cited only when certain (probe caught § 45 StVO cited slightly wrong in the pre-rewrite version — same caution applies to the rewritten prompt). DO NOT reverse: English enum pins; no numeric/categorical strength scoring anywhere; the grounded-or-generic how_to_file rule; the no-invented-decision-math rule; user-grounded what_may_matter; appeal_letter nullability; single-call architecture (letter drafting is now coupled to the assessment, so splitting it back into an unconditional parallel call would draft appeals for hopeless cases again — the exact bug this rewrite fixed)."
+    "baseline_commit": "tickettackler-v3",
+    "model": "MODELS.SMART; single call + groundedFacts pre-pass (ticket-appeal:{city}:{type}, 14d cache); followup 2000",
+    "how_to_regression_diff": "Re-run (npm run check:golden ticket-tackler) — include the DE case. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) assessment.verdict and pay_or_contest.recommendation MUST be an exact English token STRONG_REASON_TO_CONTEST|MAY_BE_WORTH_CONTESTING|NOT_ENOUGH_INFORMATION_YET|LITTLE_BASIS_TO_CONTEST|PAYING_MAY_BE_THE_PRACTICAL_CHOICE (5-way, replaced the v2 3-way WORTH_CONTESTING/VERIFY_FIRST/PROBABLY_PAY on 2026-09-15); what_may_matter[].source MUST be exactly citation|user_account|supporting_evidence; evidence_to_get[].urgency MUST be exactly PRESERVE_NOW|BEFORE_DECIDING|BEFORE_FILING (3-tier, replaced the v2 2-tier today/before_filing) — the frontend switches badge colors/labels on all of these; withLanguage would otherwise translate them in 12 langs. (2) NO numeric case-strength score and NO strength enum anywhere (v2 already removed fight_worthiness/strong-moderate-weak; v3 keeps that ban explicit in the prompt itself, not just as an omission). (3) pay_or_contest is now a STRUCTURED decision summary — supports_contesting, supports_paying, key_unresolved_fact (any of the three may be null), and next_step (never null) — replacing v2's single freeform `reasoning` string. recommendation is NOT required to equal the top assessment.verdict (the prompt explicitly says not to repeat it mechanically — pay_or_contest comes after laying out what_may_matter/evidence, so it can reach a more specific conclusion, e.g. top verdict MAY_BE_WORTH_CONTESTING while pay_or_contest still leans PAYING_MAY_BE_THE_PRACTICAL_CHOICE if the review surfaced nothing new). (4) appeal_letter MUST be null when there is no coherent factual basis for one — see weak-case. NEW field appeal_conditional_on: when the letter depends on an unverified fact, names it in one sentence; MUST be null when appeal_letter is null OR when the letter rests only on already-established facts — do not populate it 'just in case'. (5) what_may_matter[].evidence_that_would_help and how_to_file.method_tips are BOTH independently nullable now (v2 had them always-populated) — null is correct when nothing applies or nothing was verified to add; do not backfill either with generic filler to avoid a blank line in the UI (the frontend conditionally hides the line instead). (6) dont_say MUST be null (not an empty array) unless the user's own account/wording could actually hurt their case. (7) how_to_file.where must literally be the fallback sentence ('Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.') when nothing was verified — this exact sentence is prescribed in the system prompt, not paraphrased. (8) The groundedFacts pre-pass query was broadened 2026-09-15 from 4 topics (deadline/filing/stages/grounds) to 6 (+ fee, + enforcement_hours) per the owner's 'verify before advising' directive — still city+type cached, still never blocks the main call (stale-while-revalidate; a cold cache returns unverified, refreshes for the next request). (9) Quote-heavy German input → NO_QUOTE_RULE. (10) Statute sections cited only when certain. DO NOT reverse: the 5-way verdict enum; the 3-tier urgency enum; the structured (non-freeform) pay_or_contest; appeal_letter/appeal_conditional_on nullability; evidence_that_would_help/method_tips nullability; single-call architecture (unchanged from v2 — letter drafting stays coupled to the assessment)."
   },
   "cases": [
     {
-      "name": "main-en-smallcity-grounding-empty",
+      "name": "main-en-seattle-sign-hours-conditional",
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "parking",
-        "city": "Pocatello, Idaho",
-        "fineAmount": "$25",
-        "ticketText": "CITY OF POCATELLO PARKING CITATION\nViolation: EXPIRED METER (Code 10-24-2)\nLocation: 300 block N Main St\nDate: 07/21/2026 Time: 2:14 PM\nFine: $25.00 - due within 14 days\nOfficer #217",
-        "whatHappened": "ok so heres the thing. i parked on main st to run into the bank, put in two quarters but the meter screen was totally blank/dead - no time showing, no error, nothing. i figured it was broken so i left a note on my dash saying meter broken. came back like 25 min later and had a $25 expired meter ticket. i took a photo of the blank meter screen on my phone right then. this feels unfair, the meter literally ate my quarters and showed nothing",
+        "city": "Seattle, WA",
+        "fineAmount": "47",
+        "deadline": "15 days from issue",
+        "ticketText": "CITY OF SEATTLE — PARKING INFRACTION NOTICE. Violation: SMC 11.23.180 — Parking in passenger load zone. Date: 07/22/2026 Time: 6:40 PM. Location: 1400 block, E Pine St. Penalty: $47. Respond within 15 days of issue date.",
+        "whatHappened": "The load-zone sign says the restriction runs 'Passenger Load Zone 7AM–6PM'. I parked at 6:40 PM, after the posted end time. The sign is also partially bent behind a tree branch — you can barely read it from the street side.",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
@@ -23,56 +24,58 @@
       },
       "output": {
         "assessment": {
-          "verdict": "WORTH_CONTESTING",
-          "reason": "As you describe it, a timestamped photo of a blank/dead meter screen taken minutes after the citation is contemporaneous evidence that the city's own equipment failed to register your payment — a factual basis distinct from simply disliking the fine."
+          "verdict": "MAY_BE_WORTH_CONTESTING",
+          "reason": "According to your account, the sign restricts parking only through 6 PM, and you parked at 6:40 PM — after that posted end time; if the sign actually reads that way, the citation may have been issued outside the restriction's effective hours. The sign wording has not been independently verified, so confirming what it actually says is the essential next step."
         },
         "what_may_matter": [
           {
-            "issue": "Meter showed no time or error after payment was made",
-            "supports_it": "Your account is that you inserted two quarters and the screen stayed blank, and your photo (taken shortly after finding the citation) shows a blank display.",
-            "needs_verification": "Whether the photo's timestamp is close enough to the citation time to establish the meter was in that state when Officer #217 wrote the ticket, not only 25 minutes later when you returned.",
-            "evidence_that_would_help": "The photo's original file with metadata/timestamp intact, and, if obtainable, any city maintenance or complaint record for that meter around that date."
+            "fact": "Citation time is 6:40 PM; user says the sign reads 'Passenger Load Zone 7AM–6PM'",
+            "source": "user_account",
+            "why_it_matters": "If the restriction ended at 6 PM, a 6:40 PM citation would fall outside the posted enforcement window and could be a basis for dismissal.",
+            "needs_verification": "The exact wording on the sign has not been independently confirmed — only the user's reading of it is on record.",
+            "evidence_that_would_help": "A clear photograph of the sign showing the full posted hours, taken while legible and before the sign is repaired or replaced."
           },
           {
-            "issue": "Note left on dashboard indicating the meter appeared broken",
-            "supports_it": "You report leaving a note before walking away, which is consistent with a good-faith attempt to pay rather than an attempt to avoid payment.",
-            "needs_verification": "Whether a photo or other record of the note exists, since the citation record alone won't show it.",
-            "evidence_that_would_help": "A photo of the note on the dashboard, ideally timestamped the same day."
+            "fact": "User says the sign is partially bent and obscured by a tree branch, making it barely readable from the street",
+            "source": "user_account",
+            "why_it_matters": "If the sign's hours are difficult to read from the street, this may be relevant to whether the restriction was adequately posted.",
+            "needs_verification": "Whether Seattle's municipal code or enforcement rules require that a load zone sign be clearly legible from the street in order to be enforceable.",
+            "evidence_that_would_help": "Photographs from the driver's street-level viewpoint showing the obstruction, and a check of Seattle's sign visibility or posting requirements."
+          },
+          {
+            "fact": "Citation cites SMC 11.23.180 — Parking in passenger load zone",
+            "source": "citation",
+            "why_it_matters": "The specific code section would govern what hours and conditions make parking a violation.",
+            "needs_verification": "The actual text of SMC 11.23.180, including whether it sets any time-of-day conditions independent of posted signage.",
+            "evidence_that_would_help": "The text of SMC 11.23.180 from the Seattle Municipal Code, available at the City of Seattle's official code website."
           }
         ],
         "what_to_verify": [
-          "Whether Pocatello publishes a formal appeal deadline or process for parking citations — none was found in this search, so confirm directly with the issuing office.",
-          "Whether the meter at that location has any prior reported malfunctions on record."
+          "The exact hours posted on the sign at 1400 block E Pine St — confirm whether it reads '7AM–6PM' or something different.",
+          "The text of SMC 11.23.180 — specifically whether the violation depends on posted sign hours or has a fixed statutory schedule.",
+          "The official contest procedure and deadline from the citation or Seattle Municipal Court's parking infraction instructions."
         ],
         "evidence_to_get": [
-          {
-            "item": "The original photo file of the blank meter screen, with its timestamp preserved",
-            "why": "This is the single fact the whole issue rests on — it needs to be clearly dated.",
-            "urgency": "today"
-          },
-          {
-            "item": "A photo of the note left on the dashboard, if one can still be taken or was already taken",
-            "why": "Corroborates that you attempted to comply rather than skip payment.",
-            "urgency": "today"
-          },
-          {
-            "item": "The original citation",
-            "why": "Preserves the exact violation code, officer number, time, and location for reference in the appeal.",
-            "urgency": "today"
-          }
+          { "item": "Clear photograph of the full sign at 1400 block E Pine St showing posted hours", "why": "Establishes what the sign actually says, which is the central fact in dispute.", "urgency": "PRESERVE_NOW" },
+          { "item": "Photograph from the driver's street-level viewpoint showing the branch obscuring the sign", "why": "Documents the visibility condition at the time of the citation.", "urgency": "PRESERVE_NOW" },
+          { "item": "Photograph of the citation notice itself, front and back", "why": "Preserves all citation details needed for any filing.", "urgency": "BEFORE_DECIDING" }
         ],
-        "appeal_letter": "July 25, 2026\n\nCity of Pocatello Parking Violations\n[CITATION #]\n\nTo Whom It May Concern,\n\nI am requesting review and dismissal of Citation [CITATION #], issued July 21, 2026 at approximately 2:14 PM on the 300 block of N Main St for an alleged expired meter violation under Code 10-24-2.\n\nWhen I parked, I inserted two quarters into the meter; the display remained blank, showing no time and no error. I left a note on my dashboard indicating the meter appeared broken, and returned approximately 25 minutes later to find the citation. I photographed the meter shortly afterward, and it still showed a blank screen.\n\nI am enclosing that photograph. I respectfully request that this citation be dismissed on the basis that the meter did not register payment or display any time, which I believe indicates a malfunction rather than an expired term.\n\nThank you for your consideration.\n\n[YOUR NAME]",
+        "appeal_letter": "[DATE]\n\nRe: Request for Dismissal — Parking Infraction Notice [CITATION #]\nLocation: 1400 block, E Pine St, Seattle, WA\nDate/Time of Citation: 07/22/2026 at 6:40 PM\n\nTo Whom It May Concern:\n\nI am writing to contest the above infraction, issued for an alleged violation of SMC 11.23.180, Parking in a Passenger Load Zone.\n\nThe sign posted at the cited location, as I read it, states 'Passenger Load Zone 7AM–6PM.' My vehicle was cited at 6:40 PM — after the posted end time of the restriction.\n\nI respectfully request that this infraction be dismissed on the grounds that my vehicle was parked outside the posted restriction hours.\n\nThank you for your consideration.\n\n[YOUR NAME]",
+        "appeal_conditional_on": "Confirm the sign's exact posted hours from your photograph before sending — the appeal rests entirely on the sign reading '7AM–6PM.'",
         "how_to_file": {
-          "where": "No online contest portal was found for Pocatello parking citations as of this search — check the citation itself for a stated address or phone number, or contact the Pocatello Police Department directly.",
-          "method_tips": "Attach a printed copy of your timestamped meter photo, and ask for a dated receipt or confirmation if submitting in person.",
-          "deadline_note": "No official contest deadline was found for this jurisdiction — the citation states payment is due within 14 days, so contact the issuing office before that date to ask about the contest process and any separate deadline."
+          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
+          "method_tips": null,
+          "deadline_note": "Per the citation as you reported it, the deadline to respond is 15 days from the issue date of 07/22/2026 — verify this against the citation itself before filing."
         },
         "pay_or_contest": {
-          "recommendation": "WORTH_CONTESTING",
-          "reasoning": "The fine is small ($25), but the factual basis is concrete and rests on a single piece of contemporaneous photo evidence you already have — there's little to lose by raising it. The main friction is procedural: no published appeal process was found, so reaching the right office and confirming a deadline takes a direct call or visit rather than an online form."
+          "recommendation": "MAY_BE_WORTH_CONTESTING",
+          "supports_contesting": "Your account places the citation 40 minutes after what you say is the sign's posted end time, which — if the sign confirms this — is a concrete factual basis for dismissal.",
+          "supports_paying": "The sign wording has not yet been confirmed independently, so the central premise of the defense is still your account rather than established fact.",
+          "key_unresolved_fact": "What the sign at the location actually says — specifically whether the restriction ends at 6 PM.",
+          "next_step": "Photograph the sign clearly as soon as possible to confirm the posted hours, then decide whether to file."
         },
         "dont_say": [
-          "Avoid saying 'this feels unfair' — a hearing officer responds to the documented facts (the photo, the note), not to how the situation felt."
+          "Don't say 'the sign was impossible to read' — your own account says you were able to read the hours; the accurate point is that it's partially obscured, which is a separate and weaker claim than full illegibility."
         ]
       }
     },
@@ -92,56 +95,49 @@
       },
       "output": {
         "assessment": {
-          "verdict": "WORTH_CONTESTING",
-          "reason": "Als Inhaber eines gültigen Anwohnerparkausweises für Zone B gilt die Höchstparkdauer laut Ihrer Schilderung nicht für Sie, und Sie haben ein Foto, das den Ausweis sichtbar auf dem Armaturenbrett zeigt — ein klarer sachlicher Ansatzpunkt."
+          "verdict": "MAY_BE_WORTH_CONTESTING",
+          "reason": "Als Inhaber eines Anwohnerparkausweises für Zone B gilt die Höchstparkdauer laut Ihrer Schilderung nicht für Sie, und Sie haben ein Foto, das den Ausweis auf dem Armaturenbrett zeigt — dies wurde jedoch nicht unabhängig bestätigt."
         },
         "what_may_matter": [
           {
-            "issue": "Anwohnerparkausweis befreit von der Höchstparkdauer in Zone B",
-            "supports_it": "Sie berichten, einen gültigen Ausweis für genau diese Zone zu besitzen — die zitierte Regel zur Höchstparkdauer träfe damit nicht zu.",
-            "needs_verification": "Dass der Ausweis zum Tatzeitpunkt tatsächlich gültig war (Datum, Kennzeichen, Zonenzuordnung B) — noch nicht durch etwas anderes als Ihre eigene Aussage belegt.",
-            "evidence_that_would_help": "Eine Kopie des Ausweises mit Gültigkeitsdauer, Kennzeichen und Zone."
+            "fact": "Nutzer besitzt einen Anwohnerparkausweis für Zone B",
+            "source": "user_account",
+            "why_it_matters": "Wenn Anwohner mit gültigem Ausweis von der Höchstparkdauer ausgenommen sind, träfe der Tatvorwurf nicht zu.",
+            "needs_verification": "Ob die Zonenregelung für Bewohnerparkzone B Anwohner tatsächlich vollständig von der Höchstparkdauer ausnimmt.",
+            "evidence_that_would_help": "Der Wortlaut der Zonenregelung, sowie eine Kopie des Ausweises mit Gültigkeitsdauer und Kennzeichen."
           },
           {
-            "issue": "Ausweis war sichtbar ausgelegt, nur verrutscht",
-            "supports_it": "Ihr Foto, unmittelbar nach dem Auffinden des Knöllchens aufgenommen, zeigt den Ausweis auf dem Armaturenbrett.",
-            "needs_verification": "Ob das Foto den Zustand zum Kontrollzeitpunkt widerspiegelt und nicht erst danach verändert wurde.",
-            "evidence_that_would_help": "Das Foto selbst mit Zeitstempel/EXIF-Daten, falls vorhanden."
+            "fact": "Foto zeigt den Ausweis sichtbar auf dem Armaturenbrett, unmittelbar nach dem Knöllchen aufgenommen",
+            "source": "supporting_evidence",
+            "why_it_matters": "Belegt, dass der Ausweis ausgelegt war, auch wenn er verrutscht war.",
+            "needs_verification": "Ob das Foto den Zustand zum Kontrollzeitpunkt widerspiegelt.",
+            "evidence_that_would_help": null
           }
         ],
         "what_to_verify": [
-          "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B — ob Anwohner tatsächlich vollständig von der Höchstparkdauer ausgenommen sind oder nur bestimmte Bedingungen gelten.",
-          "Die formale Widerspruchsfrist und das zuständige Amt, falls von der Stadt Schwäbisch Gmünd nicht bereits auf dem Knöllchen angegeben."
+          "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B.",
+          "Die formale Widerspruchsfrist und das zuständige Amt."
         ],
         "evidence_to_get": [
-          {
-            "item": "Foto vom Armaturenbrett mit Ausweis sichern (Original mit Zeitstempel)",
-            "why": "Belegt, dass der Ausweis sichtbar ausgelegt war.",
-            "urgency": "today"
-          },
-          {
-            "item": "Anwohnerparkausweis fotografieren oder einscannen (Vorder- und Rückseite)",
-            "why": "Beweist Gültigkeit, Zone und Kennzeichenübereinstimmung.",
-            "urgency": "today"
-          },
-          {
-            "item": "Originales Knöllchen aufbewahren",
-            "why": "Enthält Aktenzeichen und Tatvorwurf für die Eingabe bei der Bußgeldstelle.",
-            "urgency": "today"
-          }
+          { "item": "Foto vom Armaturenbrett mit Ausweis sichern (Original mit Zeitstempel)", "why": "Belegt, dass der Ausweis sichtbar ausgelegt war.", "urgency": "PRESERVE_NOW" },
+          { "item": "Anwohnerparkausweis fotografieren oder einscannen", "why": "Beweist Gültigkeit, Zone und Kennzeichenübereinstimmung.", "urgency": "BEFORE_DECIDING" }
         ],
-        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nStadt Schwäbisch Gmünd\nRechts- und Ordnungsamt / Bußgeldstelle\nWaisenhausgasse 1–3\n73525 Schwäbisch Gmünd\n\nBetreff: Widerspruch zur Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der oben genannten Verwarnung vom [DATUM DES KNÖLLCHENS] über 25,00 EUR wegen angeblicher Überschreitung der Höchstparkdauer in der Ledergasse, Bewohnerparkzone B.\n\nIch bin Inhaber eines Anwohnerparkausweises für Zone B, der zum fraglichen Zeitpunkt gültig war. Mein Parkausweis lag sichtbar auf dem Armaturenbrett; er hatte sich beim Schließen der Tür leicht verschoben, war jedoch weiterhin erkennbar. Ein unmittelbar nach Vorfinden des Verwarnungszettels aufgenommenes Foto belege ich als Anlage.\n\nIch bitte um Prüfung und Einstellung des Verfahrens.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
+        "appeal_letter": "Schwäbisch Gmünd, [DATUM]\n\nStadt Schwäbisch Gmünd\nRechts- und Ordnungsamt / Bußgeldstelle\n\nBetreff: Widerspruch zur Verwarnung – Aktenzeichen [CITATION #]\n\nSehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der oben genannten Verwarnung über 25,00 EUR wegen angeblicher Überschreitung der Höchstparkdauer in der Ledergasse, Bewohnerparkzone B.\n\nIch bin Inhaber eines Anwohnerparkausweises für Zone B. Mein Parkausweis lag sichtbar auf dem Armaturenbrett; ein unmittelbar nach Vorfinden des Verwarnungszettels aufgenommenes Foto belege ich als Anlage.\n\nIch bitte um Prüfung und Einstellung des Verfahrens.\n\nMit freundlichen Grüßen\n[YOUR NAME]",
+        "appeal_conditional_on": "Bestätigen Sie den genauen Wortlaut der Zonenregelung für Zone B, bevor Sie den Widerspruch senden.",
         "how_to_file": {
-          "where": "Schriftlich einreichen bei: Stadt Schwäbisch Gmünd, Rechts- und Ordnungsamt / Bußgeldstelle, Waisenhausgasse 1–3, 73525 Schwäbisch Gmünd — bestätigen Sie diese Adresse anhand des Knöllchens selbst.",
-          "method_tips": "Per Einschreiben mit Rückschein senden, um den Eingang nachweisen zu können; Foto und Ausweiskopie beilegen.",
-          "deadline_note": "Das Verwarnungsgeld ist laut Ticket binnen einer Woche fällig — prüfen Sie das genaue Ausstellungsdatum auf dem Knöllchen, um die Frist korrekt zu berechnen."
+          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
+          "method_tips": null,
+          "deadline_note": "Das Verwarnungsgeld ist laut Ticket binnen einer Woche fällig — prüfen Sie das genaue Ausstellungsdatum auf dem Knöllchen."
         },
         "pay_or_contest": {
-          "recommendation": "WORTH_CONTESTING",
-          "reasoning": "Die Ausnahme für Anwohner mit gültigem Ausweis ist ein konkreter sachlicher Punkt, kein vager Einwand, und ein Foto stützt ihn bereits. Der Betrag ist gering, aber der Widerspruch beruht auf einer einzigen, klaren Tatsache statt auf einer rechtlichen Interpretation."
+          "recommendation": "MAY_BE_WORTH_CONTESTING",
+          "supports_contesting": "Ein gültiger Anwohnerparkausweis für dieselbe Zone ist ein konkreter sachlicher Punkt, kein vager Einwand.",
+          "supports_paying": "Ob die Zonenregelung Anwohner tatsächlich vollständig ausnimmt, wurde nicht unabhängig bestätigt.",
+          "key_unresolved_fact": "Der genaue Wortlaut der Zonenregelung für Bewohnerparkzone B.",
+          "next_step": "Den Wortlaut der Zonenregelung prüfen, dann über den Widerspruch entscheiden."
         },
         "dont_say": [
-          "Vermeiden Sie die Aussage 'Der Kontrolleur war unfreundlich' — persönliche Kritik lenkt vom sachlichen Punkt ab und wirkt nicht zu Ihren Gunsten."
+          "Vermeiden Sie die Aussage 'Der Kontrolleur war unfreundlich' — persönliche Kritik lenkt vom sachlichen Punkt ab."
         ]
       }
     },
@@ -150,9 +146,11 @@
       "endpoint": "/api/ticket-tackler",
       "input": {
         "ticketType": "parking",
-        "city": "Portland, Oregon",
-        "fineAmount": "$40",
-        "whatHappened": "Honestly I knew better. I parked directly in a no-parking zone on SE Division - the sign is big, red, totally unobstructed, right next to my car. I was only there like 5 minutes to grab a coffee and came back to a $40 ticket. I even took a photo of the sign and yeah, it's completely clear and unambiguous. No permit, no loading, I just risked it. Is there any angle here or do I just eat it?",
+        "city": "Austin, TX",
+        "fineAmount": "150",
+        "deadline": "21 days",
+        "ticketText": "CITY OF AUSTIN — PARKING CITATION. Violation: Blocking fire hydrant, within 15 feet. Date: 09/02/2026 Time: 2:15 PM. Location: 600 Congress Ave. Fine: $150. Pay or contest within 21 days.",
+        "whatHappened": "I parked in front of a fire hydrant for about ten minutes to grab coffee. I know it's a fire hydrant — there's no ambiguity there. I just didn't think anyone would notice that fast.",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
@@ -160,35 +158,49 @@
       },
       "output": {
         "assessment": {
-          "verdict": "PROBABLY_PAY",
-          "reason": "By your own account the sign was clear, unobstructed, and unambiguous, you had no permit, and you confirmed this with your own photo — there is no factual inconsistency to raise, and a sympathetic explanation ('just 5 minutes') is not a defense."
+          "verdict": "PAYING_MAY_BE_THE_PRACTICAL_CHOICE",
+          "reason": "By your own account, you knowingly parked in front of a fire hydrant; you have identified no factual inaccuracy in the citation and no defense against it, leaving no concrete basis to contest."
         },
-        "what_may_matter": [],
-        "what_to_verify": [],
-        "evidence_to_get": [
+        "what_may_matter": [
           {
-            "item": "The citation itself, noting the exact issue date",
-            "why": "Confirms the exact deadline for any response, in case you want to pay online before it becomes delinquent.",
-            "urgency": "today"
+            "fact": "You parked in front of a fire hydrant and acknowledge doing so",
+            "source": "user_account",
+            "why_it_matters": "A contest typically requires a factual or procedural error in the citation — your account confirms the underlying violation.",
+            "needs_verification": "Nothing further — this is established by your own account",
+            "evidence_that_would_help": null
+          },
+          {
+            "fact": "The citation states the violation as being within 15 feet of a fire hydrant",
+            "source": "citation",
+            "why_it_matters": "If you were actually parked more than 15 feet from the hydrant, that would be a factual discrepancy worth raising — but your account does not suggest this.",
+            "needs_verification": "Whether your vehicle was actually within 15 feet of the hydrant, if you have any reason to believe otherwise.",
+            "evidence_that_would_help": "A photo showing the distance between your vehicle and the hydrant, taken at or near the time of the citation."
           }
         ],
+        "what_to_verify": [
+          "Confirm that your vehicle's license plate and description on the citation match your actual vehicle — a mismatch would be a factual error worth raising."
+        ],
+        "evidence_to_get": [
+          { "item": "Full text of the citation, including vehicle description and plate number", "why": "A factual error identifying the wrong vehicle would be a concrete ground to contest.", "urgency": "BEFORE_DECIDING" }
+        ],
         "appeal_letter": null,
+        "appeal_conditional_on": null,
         "how_to_file": {
-          "where": "Check the citation for the payment address or online portal, or the Multnomah County Circuit Court's parking page for Portland citations.",
-          "method_tips": "If paying online, keep the payment confirmation; if by mail, keep a copy of what you sent.",
-          "deadline_note": "The citation should state a specific response window — verify the exact date printed on it rather than assuming a standard number of days."
+          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
+          "method_tips": null,
+          "deadline_note": "The citation states you must pay or contest within 21 days of 09/02/2026 — confirm this deadline on the citation itself before relying on it."
         },
         "pay_or_contest": {
-          "recommendation": "PROBABLY_PAY",
-          "reasoning": "You've confirmed the sign was clear and unobstructed and that no permit or loading exception applied — there's no factual dispute with the citation and nothing supplied that would support contesting it. Paying resolves it without the risk of a missed deadline or additional fees."
+          "recommendation": "PAYING_MAY_BE_THE_PRACTICAL_CHOICE",
+          "supports_contesting": "If the citation contains a factual error — wrong vehicle, wrong location, or your vehicle was actually beyond 15 feet of the hydrant — that would provide a concrete basis to contest.",
+          "supports_paying": "You acknowledge knowingly parking in front of a fire hydrant, which is precisely the conduct the citation describes, leaving no factual dispute on the core violation.",
+          "key_unresolved_fact": "Whether the citation correctly identifies your vehicle — a mismatch would be the only factual error your account leaves open.",
+          "next_step": "Read the full citation carefully to confirm it correctly identifies your vehicle and plate number; if everything matches, paying is the straightforward path."
         },
         "dont_say": [
-          "Avoid saying 'I was only there five minutes' — duration isn't a defense to this kind of violation and only draws attention to the fact that you deliberately risked it."
+          "Avoid saying 'I was only there for ten minutes' as a defense — duration of parking is not a factor in a fire hydrant violation."
         ]
-      },
-      "optionalSections": [
-        "evidence_to_get"
-      ]
+      }
     },
     {
       "name": "camera-chicago-verify-first",
@@ -196,7 +208,7 @@
       "input": {
         "ticketType": "camera",
         "city": "Chicago, IL",
-        "fineAmount": "$100",
+        "fineAmount": "100",
         "ticketText": "CITY OF CHICAGO - DEPARTMENT OF FINANCE\nAUTOMATED RED LIGHT CAMERA VIOLATION\nLocation: Western Ave & Peterson Ave\nDate: 07/18/2026 9:42 PM\nViolation: Disobeying a red light\nPenalty: $100.00\nTwo photographs and video available online",
         "whatHappened": "I got a red light camera ticket at Western and Peterson. Here's the thing - I entered the intersection on yellow, I was already past the stop line and mid-intersection when it flipped to red. The yellow felt really short at that intersection, like it barely gave me time to react at 35mph. The photos show my car in the middle of the intersection. $100 seems steep for this. Worth fighting?",
         "userLanguage": "en",
@@ -206,35 +218,31 @@
       },
       "output": {
         "assessment": {
-          "verdict": "VERIFY_FIRST",
+          "verdict": "NOT_ENOUGH_INFORMATION_YET",
           "reason": "Entering on yellow and being mid-intersection when the light turned red does not, by itself, contest what the camera measures — but it's worth checking whether an officer separately issued a paper citation for the same incident, which some cities treat as grounds for dismissal, before deciding to pay."
         },
         "what_may_matter": [],
         "what_to_verify": [
           "Whether a Chicago Police officer issued a separate, hand-written traffic citation for this same incident — if one exists, it may be grounds for dismissal under the city's own camera-violation rules.",
-          "What the two photographs and video actually show — specifically whether your vehicle had already crossed the stop line before or after the signal turned red, which is the fact the citation turns on."
+          "What the two photographs and video actually show — specifically whether your vehicle had already crossed the stop line before or after the signal turned red."
         ],
         "evidence_to_get": [
-          {
-            "item": "Review the two photos and video available online using the citation number",
-            "why": "Establishes, from the city's own evidence, whether your vehicle crossed the stop line before or after the light turned red — the fact the case turns on.",
-            "urgency": "today"
-          },
-          {
-            "item": "Check your records for any hand-written police citation from the night of 07/18/2026",
-            "why": "A duplicate citation for the same incident is a distinct, checkable fact that could change the answer entirely.",
-            "urgency": "today"
-          }
+          { "item": "Review the two photos and video available online using the citation number", "why": "Establishes, from the city's own evidence, whether your vehicle crossed the stop line before or after the light turned red.", "urgency": "BEFORE_DECIDING" },
+          { "item": "Check your records for any hand-written police citation from the night of 07/18/2026", "why": "A duplicate citation for the same incident is a distinct, checkable fact that could change the answer entirely.", "urgency": "BEFORE_DECIDING" }
         ],
         "appeal_letter": null,
+        "appeal_conditional_on": null,
         "how_to_file": {
-          "where": "Contest online via the city's eContest portal at parkingtickets.chicago.gov, or by mail or in person at a City of Chicago hearing facility.",
-          "method_tips": "The online system lets you request a virtual, correspondence, or in-person hearing.",
+          "where": "Check the citation or the issuing agency's official instructions for the current contest procedure and deadline.",
+          "method_tips": null,
           "deadline_note": "Citations of this kind typically state a response window from the Notice of Violation date — confirm the exact deadline printed on your notice before doing anything else."
         },
         "pay_or_contest": {
-          "recommendation": "VERIFY_FIRST",
-          "reasoning": "The argument you have — that you entered on yellow — addresses your own intent, not the fact the camera measures (where your vehicle was when the light turned red), so it's unlikely to change the outcome on its own. The one thing worth confirming before paying is whether a duplicate paper citation exists, since that's a distinct, checkable fact rather than an interpretation."
+          "recommendation": "NOT_ENOUGH_INFORMATION_YET",
+          "supports_contesting": null,
+          "supports_paying": "The argument you have — that you entered on yellow — addresses your own intent, not the fact the camera measures, so it's unlikely to change the outcome on its own.",
+          "key_unresolved_fact": "Whether a duplicate paper citation exists for the same incident, since that's a distinct, checkable fact rather than an interpretation.",
+          "next_step": "Check for a duplicate paper citation before deciding whether to pay or contest."
         },
         "dont_say": [
           "Avoid leading with 'the yellow felt too short' — this describes your reaction to the signal timing, not a fact the citation or a hearing officer can act on."
@@ -246,18 +254,18 @@
       "endpoint": "/api/ticket-tackler/followup",
       "input": {
         "question": "What if I just don't pay it?",
-        "city": "Portland, Oregon",
+        "city": "Austin, TX",
         "ticketType": "parking",
-        "analysisContext": "PROBABLY_PAY: User admittedly parked in a clearly-marked, unobstructed no-parking zone on SE Division for 5 minutes; $40 fine; own photo confirms the sign. No basis for an appeal was found.",
+        "analysisContext": "PAYING_MAY_BE_THE_PRACTICAL_CHOICE: user acknowledges knowingly parking in front of a fire hydrant; $150 fine; no factual error identified in the citation.",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
         "userRegion": "US"
       },
       "output": {
-        "answer": "Not paying will not make the ticket go away. Portland sends unpaid parking tickets to collections, adds late fees, and can place a hold on your vehicle registration renewal with the Oregon DMV. For a $40 ticket you've confirmed you owe, non-payment is the most expensive option available to you.",
-        "watch_out": "Oregon DMV registration holds are a real enforcement mechanism — you won't be able to renew your plates until the debt is resolved.",
-        "next_step": "Pay the $40 through the method listed on the ticket itself before the deadline printed on it."
+        "answer": "Not paying will not make the ticket go away. Austin sends unpaid parking tickets to collections, adds late fees, and can place a hold on your vehicle registration renewal. For a $150 ticket you've acknowledged you owe, non-payment is the most expensive option available to you.",
+        "watch_out": "A registration hold is a real enforcement mechanism — you won't be able to renew your plates until the debt is resolved.",
+        "next_step": "Pay the $150 through the method listed on the citation before the deadline printed on it."
       }
     }
   ]

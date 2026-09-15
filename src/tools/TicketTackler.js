@@ -86,8 +86,12 @@ const TicketTackler = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
+    neutral:       isDark ? 'bg-zinc-700/30 border-zinc-600 text-zinc-300'
+                          : 'bg-zinc-100 border-zinc-300 text-zinc-700',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
+    dangerTxt:     isDark ? 'text-red-300' : 'text-red-800',
+    neutralTxt:    isDark ? 'text-zinc-400' : 'text-zinc-600',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
@@ -204,10 +208,30 @@ const TicketTackler = ({ tool }) => {
 
   const verdictMeta = (v) => {
     switch (v) {
-      case 'WORTH_CONTESTING': return { cls: c.success, label: t('tt_verdict_worth_contesting'), icon: '🥊' };
-      case 'PROBABLY_PAY':     return { cls: c.danger, label: t('tt_verdict_probably_pay'), icon: '💸' };
-      case 'VERIFY_FIRST':
-      default:                 return { cls: c.warning, label: t('tt_verdict_verify_first'), icon: '⚖️' };
+      case 'STRONG_REASON_TO_CONTEST':         return { cls: c.success, txtCls: c.successTxt, label: t('tt_verdict_strong'), icon: '🥊' };
+      case 'MAY_BE_WORTH_CONTESTING':           return { cls: c.pillActive, txtCls: c.accentTxt, label: t('tt_verdict_may'), icon: '🔍' };
+      case 'LITTLE_BASIS_TO_CONTEST':           return { cls: c.neutral, txtCls: c.neutralTxt, label: t('tt_verdict_little'), icon: '🤷' };
+      case 'PAYING_MAY_BE_THE_PRACTICAL_CHOICE': return { cls: c.danger, txtCls: c.dangerTxt, label: t('tt_verdict_pay'), icon: '💸' };
+      case 'NOT_ENOUGH_INFORMATION_YET':
+      default:                                  return { cls: c.warning, txtCls: c.warningTxt, label: t('tt_verdict_unclear'), icon: '❓' };
+    }
+  };
+
+  const sourceMeta = (s) => {
+    switch (s) {
+      case 'citation':          return { icon: '📋', label: t('tt_source_citation') };
+      case 'supporting_evidence': return { icon: '📎', label: t('tt_source_evidence') };
+      case 'user_account':
+      default:                   return { icon: '🗣️', label: t('tt_source_account') };
+    }
+  };
+
+  const urgencyMeta = (u) => {
+    switch (u) {
+      case 'PRESERVE_NOW':     return { cls: c.warningTxt, label: t('tt_urgency_preserve') };
+      case 'BEFORE_FILING':    return { cls: c.textMuted, label: t('tt_urgency_filing') };
+      case 'BEFORE_DECIDING':
+      default:                 return { cls: c.textMuted, label: t('tt_urgency_deciding') };
     }
   };
 
@@ -217,20 +241,32 @@ const TicketTackler = ({ tool }) => {
     const asmt = results?.assessment;
     if (asmt) parts.push(`${verdictMeta(asmt.verdict).label}\n${asmt.reason}`);
     if (results?.what_may_matter?.length) {
-      parts.push(t('tt_matter_title') + ':\n' + results.what_may_matter.map(a => `• ${a?.issue} — ${a?.supports_it} (${t('tt_matter_verify')}: ${a?.needs_verification}; ${t('tt_matter_helps')}: ${a?.evidence_that_would_help})`).join('\n'));
+      parts.push(t('tt_matter_title') + ':\n' + results.what_may_matter.map(a => `• ${a?.fact} [${sourceMeta(a?.source).label}] — ${a?.why_it_matters} (${t('tt_matter_verify')}: ${a?.needs_verification}${a?.evidence_that_would_help ? `; ${t('tt_matter_helps')}: ${a.evidence_that_would_help}` : ''})`).join('\n'));
     }
     if (results?.what_to_verify?.length) {
       parts.push(t('tt_verify_title') + ':\n' + results.what_to_verify.map(v => `• ${v}`).join('\n'));
     }
     if (results?.evidence_to_get?.length) {
-      parts.push(t('tt_evidence_title') + ':\n' + results.evidence_to_get.map(ev => `• (${ev?.urgency}) ${ev?.item} — ${ev?.why}`).join('\n'));
+      parts.push(t('tt_evidence_title') + ':\n' + results.evidence_to_get.map(ev => `• (${urgencyMeta(ev?.urgency).label}) ${ev?.item} — ${ev?.why}`).join('\n'));
     }
-    if (results?.appeal_letter) parts.push(t('tt_letter_title') + ':\n' + results.appeal_letter);
+    if (results?.appeal_letter) {
+      parts.push(t('tt_letter_title') + ':\n' + results.appeal_letter);
+      if (results?.appeal_conditional_on) parts.push(`${t('tt_appeal_conditional')}: ${results.appeal_conditional_on}`);
+    }
     if (results?.how_to_file) {
-      parts.push(`${t('tt_file_title')}:\n${t('tt_file_where')}: ${results.how_to_file?.where}\n${t('tt_file_tips')}: ${results.how_to_file?.method_tips}\n${t('tt_file_deadline')}: ${results.how_to_file?.deadline_note}`);
+      const file = [`${t('tt_file_where')}: ${results.how_to_file?.where}`];
+      if (results.how_to_file?.method_tips) file.push(`${t('tt_file_tips')}: ${results.how_to_file.method_tips}`);
+      file.push(`${t('tt_file_deadline')}: ${results.how_to_file?.deadline_note}`);
+      parts.push(`${t('tt_file_title')}:\n${file.join('\n')}`);
     }
     if (results?.pay_or_contest) {
-      parts.push(`${t('tt_pay_or_contest_title')}:\n${verdictMeta(results.pay_or_contest?.recommendation).label} — ${results.pay_or_contest?.reasoning}`);
+      const poc = results.pay_or_contest;
+      const lines = [verdictMeta(poc?.recommendation).label];
+      if (poc?.supports_contesting) lines.push(`${t('tt_poc_contesting')}: ${poc.supports_contesting}`);
+      if (poc?.supports_paying) lines.push(`${t('tt_poc_paying')}: ${poc.supports_paying}`);
+      if (poc?.key_unresolved_fact) lines.push(`${t('tt_poc_unresolved')}: ${poc.key_unresolved_fact}`);
+      lines.push(`${t('tt_poc_next')}: ${poc?.next_step}`);
+      parts.push(`${t('tt_pay_or_contest_title')}:\n${lines.join('\n')}`);
     }
     if (results?.dont_say?.length) parts.push(t('tt_dontsay_title') + ':\n' + results.dont_say.map(d => `• ${d}`).join('\n'));
     return parts.join('\n\n') + BRAND;
@@ -280,7 +316,7 @@ const TicketTackler = ({ tool }) => {
                   onClick={() => { setCity(h.city || ''); setTicketType(h.ticketType || 'parking'); setShowHistory(false); }}
                   className={`w-full text-start flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
                   <span className={`text-sm ${c.textSecondary} truncate`}>{h.preview}</span>
-                  {h.verdict && <span className={`text-xs font-bold ms-2 shrink-0 ${h.verdict === 'WORTH_CONTESTING' ? c.successTxt : h.verdict === 'PROBABLY_PAY' ? c.textMuted : c.warningTxt}`}>{verdictMeta(h.verdict).label}</span>}
+                  {h.verdict && <span className={`text-xs font-bold ms-2 shrink-0 ${verdictMeta(h.verdict).txtCls}`}>{verdictMeta(h.verdict).icon} {verdictMeta(h.verdict).label}</span>}
                 </button>
               ))}
             </div>
@@ -384,10 +420,13 @@ const TicketTackler = ({ tool }) => {
               <h3 className={`font-bold ${c.text}`}>🔍 {t('tt_matter_title')}</h3>
               {results.what_may_matter.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <span className={`font-semibold text-sm ${c.text}`}>{a?.issue}</span>
-                  <p className={`text-sm mt-1 ${c.textSecondary}`}>{a?.supports_it}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`font-semibold text-sm ${c.text}`}>{a?.fact}</span>
+                    <span className={`text-[10px] font-bold uppercase whitespace-nowrap ${c.textMuted}`}>{sourceMeta(a?.source).icon} {sourceMeta(a?.source).label}</span>
+                  </div>
+                  <p className={`text-sm mt-1 ${c.textSecondary}`}>{a?.why_it_matters}</p>
                   <p className={`text-xs mt-1 ${c.warningTxt}`}>❓ {t('tt_matter_verify')}: {a?.needs_verification}</p>
-                  <p className={`text-xs mt-1 ${c.textMuted}`}>📎 {t('tt_matter_helps')}: {a?.evidence_that_would_help}</p>
+                  {a?.evidence_that_would_help ? <p className={`text-xs mt-1 ${c.textMuted}`}>📎 {t('tt_matter_helps')}: {a.evidence_that_would_help}</p> : null}
                 </div>
               ))}
             </div>
@@ -412,8 +451,8 @@ const TicketTackler = ({ tool }) => {
               <ul className="mt-2 space-y-2">
                 {results.evidence_to_get.map((ev, i) => (
                   <li key={i} className={`text-sm ${c.textSecondary}`}>
-                    <span className={`me-2 text-xs font-bold uppercase ${ev?.urgency === 'today' ? c.warningTxt : c.textMuted}`}>
-                      {ev?.urgency === 'today' ? t('tt_urgency_today') : t('tt_urgency_before')}
+                    <span className={`me-2 text-xs font-bold uppercase ${urgencyMeta(ev?.urgency).cls}`}>
+                      {urgencyMeta(ev?.urgency).label}
                     </span>
                     <span className={`font-medium ${c.text}`}>{ev?.item}</span> — {ev?.why}
                   </li>
@@ -429,6 +468,11 @@ const TicketTackler = ({ tool }) => {
                 <h3 className={`font-bold ${c.text}`}>✉️ {t('tt_letter_title')}</h3>
                 <CopyBtn content={results.appeal_letter + BRAND} label={t('tt_letter_copy')} />
               </div>
+              {results?.appeal_conditional_on ? (
+                <div className={`${c.warning} border rounded-lg px-3 py-2 mt-2 text-xs`}>
+                  ⚠️ <span className="font-semibold">{t('tt_appeal_conditional')}:</span> {results.appeal_conditional_on}
+                </div>
+              ) : null}
               <p className={`text-sm mt-2 whitespace-pre-wrap leading-relaxed ${c.textSecondary}`}>{results.appeal_letter}</p>
             </div>
           ) : null}
@@ -439,7 +483,9 @@ const TicketTackler = ({ tool }) => {
               <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
                 <h3 className={`font-bold ${c.text}`}>📮 {t('tt_file_title')}</h3>
                 <p className={`text-sm mt-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_file_where')}:</span> {results.how_to_file?.where}</p>
-                <p className={`text-sm mt-1 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_file_tips')}:</span> {results.how_to_file?.method_tips}</p>
+                {results.how_to_file?.method_tips ? (
+                  <p className={`text-sm mt-1 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_file_tips')}:</span> {results.how_to_file.method_tips}</p>
+                ) : null}
                 <p className={`text-sm mt-1 ${c.warningTxt}`}><span className="font-semibold">⏰ {t('tt_file_deadline')}:</span> {results.how_to_file?.deadline_note}</p>
               </div>
             ) : null}
@@ -450,7 +496,18 @@ const TicketTackler = ({ tool }) => {
                   <span>{verdictMeta(results.pay_or_contest?.recommendation).icon}</span>
                   {verdictMeta(results.pay_or_contest?.recommendation).label}
                 </div>
-                <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.pay_or_contest?.reasoning}</p>
+                <div className="mt-2 space-y-1.5">
+                  {results.pay_or_contest?.supports_contesting ? (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.successTxt}`}>{t('tt_poc_contesting')}:</span> {results.pay_or_contest.supports_contesting}</p>
+                  ) : null}
+                  {results.pay_or_contest?.supports_paying ? (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.dangerTxt}`}>{t('tt_poc_paying')}:</span> {results.pay_or_contest.supports_paying}</p>
+                  ) : null}
+                  {results.pay_or_contest?.key_unresolved_fact ? (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.warningTxt}`}>{t('tt_poc_unresolved')}:</span> {results.pay_or_contest.key_unresolved_fact}</p>
+                  ) : null}
+                  <p className={`text-sm font-medium ${c.accentTxt}`}>{t('tt_poc_next')}: {results.pay_or_contest?.next_step}</p>
+                </div>
               </div>
             ) : null}
           </div>
