@@ -3,9 +3,9 @@
   "tool": "WhereDidTheTimeGo",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "wheredidthetimego-v3",
+  "baseline_commit": "wheredidthetimego-v3.1",
   "how_to_regression_diff": "Re-run (npm run check:golden where-did-the-time-go) with dev backend up. Diff for QUALITY not exact match: HTTP 200, the_day_you_described non-empty array, what_stands_out non-empty array (guard keys). GUARDS: (1) the_day_you_described capped at 12 entries (soft prompt cap, not a hard array-length guard). (2) no-inner-double-quote rule (prose quotes the user's own words). (3) NOT format-strict — every field is prose/arrays of prose, no numeric badges. (4) guard keys top-level the_day_you_described (array+length) and what_stands_out (array+length); the_biggest_mismatch, whats_still_unclear, and try_this_next_time are ALL deliberately NOT guard-required and can each independently be JSON `null` — see case 2 (mismatch and try-this both null) and every case (whats_still_unclear is populated even on a fairly complete day, since genuine small gaps remain — that's correct behavior, not a bug). DO NOT reverse: the no-inner-quote rule; the non-required guards; the null-allowed contract on all three optional fields.",
-  "known_issues": "2026-09-14 v3: full ground-up prompt replacement (owner-authored, not an incremental correction of v2.x). Three prior correction rounds (v2, v2.1, v2.2) iteratively patched specific failure modes with added rules; this round replaces the entire prompt with a single consolidated spec built around CORE EVIDENCE RULE / TIME DISCIPLINE / INFERENCE DISCIPLINE / PATTERN DISCIPLINE sections and a two-question FINAL CHECK. Renamed 'What Made It Feel Different' to 'What Stands Out' (the old name subtly invited the model to explain WHY the period felt a certain way, which is exactly the failure mode being fixed). Added a new 'What's Still Unclear' section — genuinely optional (null when the account is complete enough that nothing meaningful is left uncertain) — giving the model a legitimate place to put uncertainty instead of manufacturing a psychological or productivity explanation to fill the gap. session_label/session_tags (needed for the Recent Days history feature, not part of the owner's supplied text) were added back to the JSON schema after an initial omission caused the very first live test to show a bare 'Session' placeholder in the history list — caught and fixed in the same round before commit. Verified live across 3 cases (a chaotic DE workday, a mostly-complete unstructured EN day, and the 'wasted afternoon' EN case that triggered value-judgment/yardstick-invention failures in v2.2): output was cleaner across the board than any prior round — 'wasted' is consistently attributed to the user's own words rather than adopted as fact, vague periods ('two afternoons') are never converted to hours, and What's Still Unclear correctly captures genuine open questions (e.g. 'whether the absence of accomplishment reflects unfinished projects, low energy, competing demands, or something else is not clear from what you've described') instead of inventing an answer."
+  "known_issues": "2026-09-14 v3: full ground-up prompt replacement (owner-authored, not an incremental correction of v2.x). Three prior correction rounds (v2, v2.1, v2.2) iteratively patched specific failure modes with added rules; this round replaces the entire prompt with a single consolidated spec built around CORE EVIDENCE RULE / TIME DISCIPLINE / INFERENCE DISCIPLINE / PATTERN DISCIPLINE sections and a two-question FINAL CHECK. Renamed 'What Made It Feel Different' to 'What Stands Out' (the old name subtly invited the model to explain WHY the period felt a certain way, which is exactly the failure mode being fixed). Added a new 'What's Still Unclear' section — genuinely optional (null when the account is complete enough that nothing meaningful is left uncertain) — giving the model a legitimate place to put uncertainty instead of manufacturing a psychological or productivity explanation to fill the gap. session_label/session_tags (needed for the Recent Days history feature, not part of the owner's supplied text) were added back to the JSON schema after an initial omission caused the very first live test to show a bare 'Session' placeholder in the history list — caught and fixed in the same round before commit. Verified live across 3 cases (a chaotic DE workday, a mostly-complete unstructured EN day, and the 'wasted afternoon' EN case that triggered value-judgment/yardstick-invention failures in v2.2): output was cleaner across the board than any prior round — 'wasted' is consistently attributed to the user's own words rather than adopted as fact, vague periods ('two afternoons') are never converted to hours, and What's Still Unclear correctly captures genuine open questions (e.g. 'whether the absence of accomplishment reflects unfinished projects, low energy, competing demands, or something else is not clear from what you've described') instead of inventing an answer. 2026-09-14 v3.1: v3 still (a) silently reclassified activities into 'work'/'productive'/category language the user hadn't used; (b) upgraded wording strength ('checked Slack' risked becoming 'interrupted/fractured the work', 'planned deep work' risked becoming 'protected time'); (c) could invent or design a next-time experiment around an unstated cause. Added a top-level GOVERNING RULE ('Reconstruct how the time was spent; do not evaluate how well it was spent or explain why events unfolded as they did.'), DON'T RECLASSIFY TIME, DON'T UPGRADE WORDING, and DON'T INVENT CAUSATION, plus a third FINAL CHECK question naming all three. Verified live (case 3 below): 'checked Slack' stays verbatim in the_day_you_described rather than becoming 'interrupted', 'free afternoon' stays the user's own word throughout (never 'wasted' or 'unproductive' despite the user's own dissatisfied framing), try_this_next_time is framed as an open test ('you'll know whether X or whether Y') rather than assuming which caused the outcome, and whats_still_unclear explicitly declines to guess at causation it can't support."
  },
  "cases": [
   {
@@ -94,6 +94,31 @@
     "try_this_next_time": "On Thursday when you cancelled plans, note briefly what you were cancelling and why (tired, or something else). That detail might show whether Thursday exhaustion is a pattern or an outlier.",
     "session_label": "Work week with two gym visits, friend dinner, and weekend errands",
     "session_tags": ["5-day work week", "2 gym visits", "cancelled Thursday plans"]
+   }
+  },
+  {
+   "name": "free afternoon, reclassification/causation trigger (EN)",
+   "endpoint": "/api/where-did-the-time-go",
+   "input": {
+    "dayDescription": "Had three meetings back to back from 10 to 1. Ate lunch at my desk while answering emails. Then I had the rest of the afternoon free until 5, but I mostly just answered more emails and did small tasks.",
+    "perceivedBreakdown": "I feel like I had a free afternoon but somehow got nothing done with it",
+    "timeframe": "today",
+    "userLanguage": "en"
+   },
+   "output": {
+    "the_day_you_described": [
+     { "time": "10 a.m. to 1 p.m.", "note": "Three back-to-back meetings." },
+     { "time": "Around 1 p.m.", "note": "Lunch at desk while answering emails." },
+     { "time": "1 p.m. to 5 p.m.", "note": "Afternoon described as free. Spent answering emails and doing small tasks." }
+    ],
+    "what_stands_out": [
+     "You had a three-hour block of meetings, then a four-hour stretch you described as free — but during that free stretch, you were answering emails and doing small tasks rather than something else."
+    ],
+    "the_biggest_mismatch": "You described having the rest of the afternoon free, but the account shows you spent that free time answering emails and small tasks rather than on a different kind of work or activity.",
+    "whats_still_unclear": "What you expected or hoped to do during that afternoon block. Without knowing what you intended for that time, it's unclear whether the emails and small tasks were a displacement of something planned, or simply what filled the space.",
+    "try_this_next_time": "Before an afternoon you expect to have free, note one thing you actually want to do with it. Then you'll know whether the emails pulled you away from something, or whether nothing specific was waiting.",
+    "session_label": "Three meetings, free afternoon filled with email",
+    "session_tags": ["3 meetings", "email-heavy afternoon"]
    }
   }
  ]

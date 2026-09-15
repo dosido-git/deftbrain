@@ -1,6 +1,33 @@
-# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v3`, 2026-09-14)
+# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v3.1`, 2026-09-14)
 
 Backend `where-did-the-time-go.js` — 1 endpoint `POST /where-did-the-time-go`, `MODELS.FAST`, max_tokens 3500. Reconstructs a day or short period from the user's own account.
+
+## 2026-09-14 v3.1 correction round
+
+v3 (the ground-up rewrite) still let three subtler distortions through: it silently
+**reclassified** activities into categories the user never used (deciding what counts as
+"work," "productive," or "remaining time"); it **upgraded wording** into something stronger
+than the user actually said ("checked Slack" risked becoming "interrupted/fractured the work,"
+"planned deep work" risked becoming "protected time"); and it could **invent causation** —
+explaining or designing a next-time experiment around a cause the user never supplied.
+
+Added a top-level **GOVERNING RULE** right after YOUR JOB: "Reconstruct how the time was spent;
+do not evaluate how well it was spent or explain why events unfolded as they did." Added three
+named rules in INFERENCE DISCIPLINE: **DON'T RECLASSIFY TIME**, **DON'T UPGRADE WORDING**, and
+**DON'T INVENT CAUSATION**. Added a third FINAL CHECK question naming all three so the model
+audits for them explicitly before answering. Also reinforced this directly on the schema fields
+most likely to drift: `the_day_you_described`'s `note` (use the user's own words for each
+activity and category), `what_stands_out` (no stronger synonyms, no unstated categories), and
+`try_this_next_time` (tie the suggestion to what happened, not an assumed why).
+
+Verified live on a case built specifically to trigger these (three meetings, then a "free"
+afternoon spent on email, user's own framing: "I feel like I had a free afternoon but somehow
+got nothing done" — golden sample case 4): "free" stays the user's own word throughout, never
+upgraded to "wasted" or "unproductive" despite the user's own dissatisfied framing; "checked
+Slack" and "planned deep work" stayed verbatim in a separate test case; `try_this_next_time` was
+framed as an open test ("you'll know whether X or whether Y") rather than assuming which one
+caused the outcome; and `whats_still_unclear` explicitly declined to guess at causation it
+couldn't support rather than inventing an answer.
 
 ## 2026-09-14 v3 — full ground-up prompt replacement (owner-authored)
 
