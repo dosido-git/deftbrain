@@ -3,9 +3,9 @@
   "tool": "WhatsMyVibe",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "whatsmyvibe-v2.2",
-  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing; German/quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills, no AI-output enum is frontend-switched. NO format-strict fields. (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. easy_to_misread can be JSON `null` by design (case 2 below) — the frontend's truthy check already hides it, this is NOT a bug. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array; the null-allowed contract on easy_to_misread.",
-  "known_issues": "2026-09-14 v2.1 round: v2 crossed from describing writing into inventing INTENT and specific reader thoughts — fixed with DESCRIBE EFFECT, NOT INTENT and READER IMPRESSIONS rules (see git history for detail). 2026-09-14 v2.2 round: v2.1 still (a) named specific hidden emotions the text never stated — called a 💀 emoji reaction 'this was mortifying' and a cancellation line 'self-aware embarrassment,' when the sample only supports comic framing of a mishap; (b) invented social purposes not demonstrated by the text — 'invites solidarity rather than judgment,' 'assumes the reader gets the vibe,' 'makes a reader feel included'; (c) enlarged easy_to_misread into a manufactured second reading ('gentle mockery of the feeling') when nothing in the sample supported real ambiguity. Added DO NOT NAME AN EMOTION UNLESS THE WRITING NAMES OR UNAMBIGUOUSLY EXPRESSES IT, DO NOT INVENT A SOCIAL PURPOSE, and KEEP INTERPRETATION CLOSE TO THE WORDS. Changed easy_to_misread from 'say honestly when none applies' (always a string) to null + omit when the wording doesn't support two genuinely plausible readings — same not-guard-required, null-allowed pattern as WhereDidTheTimeGo's try_this_next_time. Verified live on a case built from the exact reported sample (💀 dentist mishap, cancellation-plans PSA, ALL-CAPS oat-milk line): no named emotions, no invented social purpose, easy_to_misread correctly returned null. One soft residual: how_it_can_land still said the writer 'is inviting you to notice it too,' which echoes the banned 'invites solidarity' shape lightly — noted, not chased into a third round since every originally-reported phrase is gone."
+  "baseline_commit": "whatsmyvibe-v2.3",
+  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, vibe_title/what_you_do/vibe_one_line present (guard keys). GUARDS: (1) no-inner-double-quote rule — the tool quotes the user's own writing; German/quoted phrases would 500 without single-quote substitution. (2) NO i18n-enum — SOURCE_TYPES are input pills, no AI-output enum is frontend-switched. NO format-strict fields. (3) guard keys top-level vibe_title, what_you_do (array + length), vibe_one_line. easy_to_misread can be JSON `null` by design (case 2) — the frontend's truthy check already hides it. signature_moves has NO minimum-length guard by design (case 3) — 2 items is correct when the sample only supports 2 genuinely distinct patterns; do not 'fix' a short signature_moves array. DO NOT reverse: the no-inner-quote rule; the guard on what_you_do being a non-empty array; the null-allowed contract on easy_to_misread; the no-minimum contract on signature_moves.",
+  "known_issues": "2026-09-14 v2.1 round: v2 crossed from describing writing into inventing INTENT and specific reader thoughts — fixed with DESCRIBE EFFECT, NOT INTENT and READER IMPRESSIONS rules. 2026-09-14 v2.2 round: named specific hidden emotions the text never stated, invented social purposes not demonstrated by the text, and enlarged easy_to_misread into a manufactured second reading — fixed with DO NOT NAME AN EMOTION UNLESS..., DO NOT INVENT A SOCIAL PURPOSE, KEEP INTERPRETATION CLOSE TO THE WORDS, and the easy_to_misread null contract. 2026-09-14 v2.3 round: vibe_one_line said a writer is 'always checking whether the other person actually wants to answer' from a single 47-word sample with exactly one permission-giving instance ('No pressure to answer both'), and signature_moves padded 3-4 observations out of essentially that one sentence viewed from different angles. Added DON'T TURN A SINGLE INSTANCE INTO A HABIT (an explicit callout that 'keeps checking'/'keeps softening' claims repetition just as much as 'always'/'constantly', and that describing one sentence from three angles is one signature move, not three), loosened signature_moves from a fixed 2-4 to 'return fewer rather than padding to a quota', and added a targeted note directly on vibe_one_line's own field description (the field where the habit-from-one-instance and invented-motive mistakes kept recurring even after the general rule existed elsewhere) — this last, field-level addition is what actually closed a first re-test that still said 'constantly handing the other person an exit... maybe a little afraid of taking up space' after the general rule alone. Verified live across 3 repeated runs of a short single-instance dating-profile message: vibe_one_line and signature_moves both stayed grounded, with signature_moves correctly varying between 2-3 items depending on what the sample actually supported rather than a fixed count."
  },
  "cases": [
   {
@@ -73,6 +73,37 @@
     "pattern_tags": ["deadpan escalation", "topic hopping", "self-deprecating comedy", "casual philosophy"],
     "easy_to_misread": null,
     "vibe_one_line": "Unfiltered, funny-because-it's-true observations delivered with exaggerated stakes and zero pretense."
+   }
+  },
+  {
+   "name": "short dating message, single-instance trigger (EN) — signature_moves has no minimum count",
+   "endpoint": "/api/whats-my-vibe",
+   "input": {
+    "samples": "Hey! I saw you like hiking, do you have a favorite trail around here?\n\nAlso I have to ask about the photo with the golden retriever, is that yours or a very lucky encounter\n\nNo pressure to answer both, just genuinely curious about the trail one lol",
+    "sourceType": "dating",
+    "userLanguage": "en"
+   },
+   "output": {
+    "vibe_title": "The Curious and Casual",
+    "vibe_summary": "This writing opens with genuine questions about shared interests, then softens potential intensity with humor and explicit permission to ignore parts of the message. The overall effect is approachable and low-stakes.",
+    "what_you_do": [
+     "Opens with a question tied directly to something visible in the recipient's profile ('I saw you like hiking'), which creates an impression of actually reading their information rather than sending a template.",
+     "Splits the message into two distinct questions, with the second one introduced by 'Also' — this has the effect of treating each topic separately and giving the recipient multiple threads to respond to.",
+     "Uses 'a very lucky encounter' as a playful reframe of the alternative possibility, which adds lightness without undermining the genuine curiosity about the photo.",
+     "Adds 'No pressure to answer both, just genuinely curious about the trail one lol' at the end — this softens the ask by explicitly releasing the recipient from obligation and clarifies which question matters more, while 'lol' signals the tone is casual rather than demanding."
+    ],
+    "how_it_can_land": [
+     "Can come across as warm and attentive — the specific reference to their profile feels personalized.",
+     "May read as low-pressure and easygoing — the writer explicitly removes stakes and uses humor rather than intensity.",
+     "Can feel conversational and natural — the structure and punctuation flow like spoken dialogue."
+    ],
+    "signature_moves": [
+     "'do you have a favorite trail around here?' — anchoring the question in their specific location",
+     "'No pressure to answer both, just genuinely curious about the trail one lol' — releasing pressure while clarifying priority"
+    ],
+    "pattern_tags": ["specific over generic", "permission-giving", "tonal lightness"],
+    "easy_to_misread": null,
+    "vibe_one_line": "Attentive and genuinely curious, with a gift for making asks feel optional."
    }
   }
  ]

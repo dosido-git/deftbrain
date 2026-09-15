@@ -1,4 +1,31 @@
-# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2.2`, 2026-09-14)
+# WhatsMyVibe — audit lock notes (`whatsmyvibe-v2.3`, 2026-09-14)
+
+## 2026-09-14 v2.3 correction round
+
+v2.2 still turned a single instance into a habit: `vibe_one_line` said a
+writer is "always checking whether the other person actually wants to
+answer" from a 47-word sample containing exactly one permission-giving
+sentence ("No pressure to answer both..."), and `signature_moves` padded
+3-4 observations out of essentially that one sentence viewed from
+different angles.
+
+Added **DON'T TURN A SINGLE INSTANCE INTO A HABIT**, explicitly calling out
+that "keeps checking"/"keeps softening" claims repetition just as much as
+"always"/"constantly" does, and that describing one sentence from three
+angles is one signature move, not three. Loosened `signature_moves` from a
+fixed "2-4" to "return fewer rather than padding to a quota" — **no
+minimum-length guard, by design**.
+
+**Notable while fixing this:** the general rule alone did not close
+`vibe_one_line` on the first re-test — it still said "constantly handing
+the other person an exit... maybe a little afraid of taking up space,"
+reintroducing both habitual language AND invented psychology in the same
+field. What actually closed it was adding a **field-level note directly on
+`vibe_one_line`'s own schema description**, naming it as the specific spot
+where these two mistakes keep recurring. This matches the session-wide
+pattern: a general prose rule doesn't reliably reach every field a model
+independently writes; the fields that keep slipping usually need their own
+targeted instruction. Verified clean across 3 repeated runs afterward.
 
 ## 2026-09-14 v2.2 correction round
 
