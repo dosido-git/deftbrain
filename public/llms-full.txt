@@ -3788,67 +3788,67 @@ Input: I don't love my job anymore and I've been hiding it from my partner becau
 
 Output: What it's really about: not wanting their sacrifice to feel wasted. What staying silent does: it avoids a conversation you're not ready for — and leaves you the only one who knows how you actually feel about the job. Reality check: you know you've been hiding it; you don't know how they'd actually respond — that's a fear, not a fact. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job, and I'm not anymore.'
 
-### What's My Vibe
+### What's My Vibe?
 
 URL: https://deftbrain.com/WhatsMyVibe
-Tagline: Find out what you actually sound like.
+Tagline: See the patterns hiding in the way you write.
 Categories: Me
 
-Paste your texts, emails, tweets, or messages. AI analyzes your personality and communication style — how you come across, your default tone, your verbal habits, and what people probably think when they read your messages.
+How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.
 
-**What it does.** What's My Vibe reads your actual writing — texts, emails, social posts, Slack messages — and tells you what you sound like to other people. Not what you intend, but how you land. It picks up on tone patterns, verbal habits, energy levels, and personality signals you probably don't notice yourself.
+**What it does.** What's My Vibe? reads your actual writing — texts, emails, social posts, Slack messages — and points out the patterns actually visible in it: sentence length, punctuation, hedging, humor, directness, and structure. It's built to stay grounded in what's on the page, not to diagnose why you write that way — a small sample is a sample, not your permanent voice.
 
 **How to use it.**
 
 1. Paste some of your writing — texts, emails, tweets, DMs, whatever feels like 'you'
 2. The more variety, the better the read (mix of casual and professional helps)
-3. Read the personality and tone analysis
+3. Read What You Do, How It Can Land, and Your Signature Moves
 4. Share it with friends and see if they agree
-5. Try pasting writing from different contexts to see how your vibe shifts
+5. Try pasting writing from different contexts to see how the patterns shift
 
 **Tips.**
 
 - Paste at least a few messages for a meaningful read — one text isn't enough
-- Mixing casual and professional writing reveals how much your vibe shifts by context
-- The verbal habits section is often the most eye-opening part
+- Mixing casual and professional writing reveals how much the patterns shift by context
+- Your Signature Moves is often the most eye-opening part
 - This is a fun one to do side-by-side with a friend
 
 **Example.**
 
 Input: You're curious how you come across in your work Slack messages.
 
-Output: AI reveals your communication vibe: maybe you're 'The Warm Deflector' — friendly and encouraging on the surface but rarely commit to a strong opinion. Your verbal habits include softening every statement with 'I think' and ending with questions.
+Output: AI names the pattern — maybe 'The Polite Bullet Train' — and grounds it in what's actually there: short asks, frequent qualifiers like 'just wondering', and rapid follow-up messages. How It Can Land notes this can read as considerate, or as unsure of your own ask.
 
 ### Where Did the Time Go?
 
 URL: https://deftbrain.com/WhereDidTheTimeGo
-Tagline: See the gap between where you think time went and where it actually went.
+Tagline: Make sense of the day that disappeared.
 Categories: Me, Do It!
 
-Describe your day. Optionally guess where the hours went. AI traces the invisible overhead — transitions, recovery, context switches — and shows you the gap between what you think happened and what actually happened. One structural change to get time back. No judgment.
+Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.
 
-**What it does.** Where Did It Go? is built on a simple truth: you almost certainly overestimate how much focused time you had and underestimate how much time vanished into invisible overhead. Describe your day and optionally estimate where time went, and AI traces the gap — the transitions you didn't count, the recovery time after meetings, the context switches that ate 20 minutes each. Ends with one concrete, structural change (not 'be more disciplined') and an honest read on your actual capacity.
+**What it does.** Where Did the Time Go? reconstructs a confusing or fragmented day from what you actually describe — not from invented minutes. Walk through it in whatever order it comes to mind, and optionally say what feels off about it (busy but unfinished, an afternoon that vanished, expecting more time than you had). AI lays out the day in order, points out what's genuinely supported about why it felt that way, and — when the account supports one — suggests a single small experiment to try next time.
 
 **How to use it.**
 
 1. Pick a timeframe: today, yesterday, this week, or the weekend
-2. Describe what you did — stream of consciousness is fine
-3. Optionally estimate where you think time went (this makes the gap analysis much sharper)
-4. Read the results: validation first, then the visible day with perception gaps, then the invisible hours
-5. Pay attention to 'the one thing' — it's the single structural change that would reclaim the most time
+2. Walk through it as you remember it — times help if you have them, but rough is fine
+3. Optionally describe what feels off about the day (this sharpens the reconstruction, but isn't required)
+4. Read The Day You Described first, then What Made It Feel Different
+5. The Biggest Mismatch and Try This Next Time only appear when your account actually supports one — the tool won't force either
 
 **Tips.**
 
-- The perception estimate is optional but transforms the results — the gap is the whole point
-- Be honest about your day, including the parts that feel unproductive — that's where the insights are
-- The 'invisible hours' section reveals time sinks you genuinely can't see without someone pointing them out
-- 'The one thing' is deliberately singular — one change beats ten aspirational habits
+- The 'what feels off' field is optional but sharpens the reconstruction — it's what you're actually confused about, not another number to estimate
+- Times you're unsure of are fine left rough — the tool won't invent false precision
+- Not every day has a clean 'biggest mismatch' or a useful next-time change, and the tool will say so rather than force one
+- Recent Days lets you reopen a past reconstruction with one click
 
 **Example.**
 
 Input: You worked all day but feel like you got nothing done. You had a standup, worked on a presentation, answered emails, had a 1-on-1, and tried to write a report.
 
-Output: AI shows you likely had ~2 hours of deep work (not 4), with 90+ minutes vanishing into post-meeting recovery, Slack interruptions, and task-switching overhead. The one change: batch all communication into two 30-minute windows instead of responding in real time.
+Output: AI reconstructs the day in a timeline using only what you described, points out that two meetings occupied over two hours and that document work kept getting interrupted by Slack, and suggests trying one protected block with Slack closed next time — framed as something to test, not a promised fix.
 
 ## What If?
 

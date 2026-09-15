@@ -154,8 +154,8 @@
 - [Brain Dump Buddy](https://deftbrain.com/BrainDumpBuddy): Everything in your head → one clear next step
 - [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): One small change that could make the rest easier.
 - [Truth Bomb](https://deftbrain.com/TruthBomb): Get clear on the thing you haven't said.
-- [What's My Vibe](https://deftbrain.com/WhatsMyVibe): Find out what you actually sound like.
-- [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): See the gap between where you think time went and where it actually went.
+- [What's My Vibe?](https://deftbrain.com/WhatsMyVibe): See the patterns hiding in the way you write.
+- [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): Make sense of the day that disappeared.
 
 ## What If?
 
