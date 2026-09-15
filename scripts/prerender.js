@@ -517,7 +517,7 @@ function buildBodyContent({ title, tagline, description, guide, faq, exampleOutp
         : `<p style="line-height:1.6;margin:.25rem 0 0">${e(String(section.text || ''))}</p>`;
       return `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .2rem;color:#0f172a">${e(String(section.label || ''))}</h3>${body}`;
     }).join('') : '';
-    out.push(`<section aria-label="Example Lease Trap Detector analysis">`
+    out.push(`<section aria-label="Example tool analysis">`
       + `<h2 style="${H2}">${e(String(x.title || 'Example analysis'))}</h2>`
       + (x.intro ? `<p style="line-height:1.6;margin:0 0 .8rem">${e(x.intro)}</p>` : '')
       + (x.sampleText ? `<p style="font-size:.9rem;font-weight:600;margin:.8rem 0 .2rem">${e(x.sampleLabel || 'Sample input')}</p><blockquote style="line-height:1.6;margin:.2rem 0 1rem;padding:.75rem 1rem;border-left:3px solid #94a3b8;background:#f8fafc">${e(x.sampleText)}</blockquote>` : '')

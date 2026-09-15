@@ -408,6 +408,49 @@ export const tools = [
   categories: ['The Grind'],
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
+
+  // Public, reviewed demonstration used by both the React page and prerenderer.
+  exampleOutput: {
+    title: "See what Doctor Visit Prep gives you",
+    expandLabel: "See example ↓",
+    nextStepLabel: "What happens with your visit",
+    intro: "Not ready to build your own prep sheet? Here is a shortened fictional example showing the kind of help you can expect.",
+    sampleLabel: "Sample situation",
+    sampleText: "I've had right-sided lower back pain for about three weeks. Sitting makes it worse and walking helps. I've been taking ibuprofen. My mother had kidney stones, and I'm worried this could be kidney-related.",
+    context: "Fictional scheduled doctor visit · not a diagnosis",
+    sections: [
+      {
+        label: "A clear opener",
+        tone: "green",
+        text: "I've had right-sided lower back pain for about three weeks. It's worse when I sit for a long time and improves when I walk. I'm worried about whether it could be kidney-related because of my family history."
+      },
+      {
+        label: "Questions to ask first",
+        tone: "neutral",
+        items: [
+          "What possibilities fit this pattern, and what would help distinguish among them?",
+          "Does my family history of kidney stones change what you would want to check?",
+          "What changes or symptoms should make me contact you sooner?"
+        ]
+      },
+      {
+        label: "Mention even if you aren't asked",
+        tone: "yellow",
+        text: "How often you take ibuprofen and the dose, when the pain first started, whether you have noticed urinary symptoms or fever, and how much the pain is affecting sitting, sleep, work, or normal activity."
+      },
+      {
+        label: "Bring with you",
+        tone: "neutral",
+        items: [
+          "Your current medication and supplement list",
+          "A short timeline of when the pain started and how it has changed",
+          "Any relevant prior test results or records you already have"
+        ]
+      }
+    ],
+    nextStep: "With your own concern, timeline, medications, and worries, Doctor Visit Prep turns what you already know into a short, prioritized visit sheet so the important part does not get buried at the end of the appointment.",
+    disclaimer: "This example helps prepare for a scheduled medical conversation. It does not diagnose symptoms, recommend treatment, or replace urgent medical care when needed."
+  },
   guide: {
     overview: "The Doctor Visit Prep tool shapes what you say to your doctor, the same way the Doctor Visit Translator decodes what the doctor said afterward. Tell it your chief concern, how long it's been going on, what you've tried, and what you're most worried about — and get back a one-sentence opener for the first minute of the visit, three prioritized questions, things to mention proactively (medications, family history, functional impact), a pre-visit checklist, and conversation tips. Useful when you know you'll forget half of what you meant to say the moment you're sitting on the exam table.",
     howToUse: [
@@ -4519,6 +4562,45 @@ tagline: "Work with the energy you have.",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
   description: "Five stars doesn't always mean five-star quality. Paste reviews or import them from a product page, and DeftBrain will help you separate genuine experiences from marketing disguised as customer feedback.",
+
+  // Public, reviewed demonstration used by both the React page and prerenderer.
+  exampleOutput: {
+    title: "See what Fake Review Detective gives you",
+    expandLabel: "See example ↓",
+    nextStepLabel: "What happens with your reviews",
+    intro: "Here is a shortened fictional example showing how the tool separates measurable review patterns from judgments that need caution.",
+    sampleLabel: "Sample review set",
+    sampleText: "Eight headphone reviews: five 5-star reviews posted within two days using broad phrases such as ‘amazing quality’ and ‘highly recommend’; two longer verified-purchase reviews mention comfortable fit but weak bass; one 2-star review describes a charging problem.",
+    context: "Fictional review set · shortened for demonstration",
+    sections: [
+      {
+        label: "What the data shows",
+        tone: "neutral",
+        text: "Five of the eight reviews are tightly clustered in time. Several of those reviews use similar, nonspecific praise. The smaller detailed group describes concrete product characteristics, including fit, bass, and charging."
+      },
+      {
+        label: "What looks suspicious",
+        tone: "red",
+        text: "The timing cluster and repeated generic language are reasons to treat the five-star burst cautiously. Those patterns can occur in manipulated review sets, but they do not prove that any individual reviewer is fake."
+      },
+      {
+        label: "What seems more useful",
+        tone: "green",
+        text: "The detailed reviews provide specific claims that can be compared across reviewers: comfort appears more than once, while weak bass and a charging problem deserve further checking."
+      },
+      {
+        label: "Before buying",
+        tone: "yellow",
+        items: [
+          "Read more reviews outside the clustered dates",
+          "Look for repeated comments about bass, charging, comfort, and durability",
+          "Check independent sources rather than relying on the displayed star average alone"
+        ]
+      }
+    ],
+    nextStep: "With a larger review sample, Fake Review Detective can compute the patterns present in the material you provide, flag reviews that deserve scrutiny, and summarize what the more informative reviews consistently say.",
+    disclaimer: "Review-pattern analysis can identify reasons for caution, not prove who wrote a review or whether a particular review is fraudulent."
+  },
   guide: {
     overview: "Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.",
     
