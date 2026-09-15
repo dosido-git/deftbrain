@@ -3,9 +3,9 @@
   "tool": "WhereDidTheTimeGo",
   "generated": "2026-09-14",
   "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-  "baseline_commit": "wheredidthetimego-v2.1",
+  "baseline_commit": "wheredidthetimego-v2.2",
   "how_to_regression_diff": "Re-run (npm run check:golden where-did-the-time-go) with dev backend up. Diff for QUALITY not exact match: HTTP 200, the_day_you_described non-empty array, what_made_it_feel_different non-empty array (guard keys). GUARDS: (1) the_day_you_described capped at 12 entries (soft prompt cap, not a hard array-length guard — this schema is much smaller than v1's, so max_tokens 3500 has real headroom; watch for truncation on 'this week' timeframe inputs with very long accounts). (2) no-inner-double-quote rule (prose quotes the user's own words). (3) NOT format-strict — every field is prose/arrays of prose, no numeric badges. (4) guard keys top-level the_day_you_described (array+length) and what_made_it_feel_different (array+length); the_biggest_mismatch and try_this_next_time are deliberately NOT guard-required. try_this_next_time can be JSON `null` by design (case 2 below) — the frontend's truthy check already hides the section, so this is NOT a bug if you see it. DO NOT reverse: the no-inner-quote rule; the non-required guard on the_biggest_mismatch/try_this_next_time; the null-allowed contract on try_this_next_time.",
-  "known_issues": "2026-09-14 v2 owner rewrite removed The Visible Day's you-think/likely-actual time pairs, The Invisible Hours, and honest_capacity entirely (v1 invented unmeasured minutes with no basis in the account). 2026-09-14 v2.1 correction round added PRESERVE NUMERICAL RELATIONSHIPS (a live v2 case had produced 'cutting the intended window from 2 hours to 3 hours' — a comparison that doesn't parse as a cut), DON'T INFER ATTENTION OR CONTROL, DON'T CLAIM COMPLETE ACCOUNTING, and EXPLAIN ONLY WHAT THE ACCOUNT SUPPORTS, and changed try_this_next_time from 'say honestly when none applies' to 'output null and omit the section entirely' — verified live with a thin, well-structured day (case 2) that correctly returned null rather than forcing a suggestion. session_label/session_tags drive the Recent Days history card — never the raw pasted text."
+  "known_issues": "2026-09-14 v2 owner rewrite removed The Visible Day's you-think/likely-actual time pairs, The Invisible Hours, and honest_capacity entirely (v1 invented unmeasured minutes with no basis in the account). v2.1 added PRESERVE NUMERICAL RELATIONSHIPS, DON'T INFER ATTENTION OR CONTROL, DON'T CLAIM COMPLETE ACCOUNTING, EXPLAIN ONLY WHAT THE ACCOUNT SUPPORTS, and the try_this_next_time null contract. v2.2 (this round) added NO UNSUPPORTED DURATIONS (never estimate a vague period like 'two afternoons' into hours), NO VALUE JUDGMENTS (don't equate activity with productivity, don't adopt the user's own word 'wasted' as fact), DON'T INVENT THE YARDSTICK (never infer what would have made the period worthwhile), ALLOW UNEXPLAINED GAPS (say plainly when the account doesn't explain where time went), and NEUTRAL OBSERVATION (try_this_next_time describes what to notice without priming speculative possibilities) — also made session_label/session_tags facts-only. Removed the sole remaining post-result cross-ref ('Check your burnout risk' → Before the Crash); the tool now carries zero manual cross-refs by design (added to audit_v2-3-2.py's NO_CROSSREF set, same pattern as WhatsMyVibe). Verified live on case 3 below (a 'wasted afternoon'/'week disappeared' account, the closest real-world trigger for value-judgment and yardstick-invention failures): no invented hour estimates for the vague 'two afternoons,' the word 'wasted' is attributed to the user rather than adopted as the tool's own conclusion, and try_this_next_time stays neutral ('not to judge it, just to see what those afternoons actually contained'). Two soft residuals disclosed, not chased further: session_label used the word 'disengaged' (echoes the DON'T INFER ATTENTION OR CONTROL banned-state list, even though the user didn't use that word), and the_biggest_mismatch's closing line introduced 'personal projects' as something the user 'normally measures against' — a yardstick the user never actually stated."
  },
  "cases": [
   {
@@ -65,6 +65,37 @@
     "try_this_next_time": null,
     "session_label": "Unstructured Sunday — reading, walk, film",
     "session_tags": ["open day", "single activities", "no interruptions"]
+   }
+  },
+  {
+   "name": "wasted-afternoon week, value-judgment trigger (EN)",
+   "endpoint": "/api/where-did-the-time-go",
+   "input": {
+    "dayDescription": "Worked Monday through Friday, roughly 9-6 each day, but at least two of those days had a wasted afternoon where I was technically at my desk but not really working. Went to the gym twice instead of my usual four times. Had dinner with a friend Wednesday, cancelled plans Thursday because I was too tired. Weekend errands somehow ran over into Monday morning. Cant point to one big thing I accomplished outside of my actual job.",
+    "perceivedBreakdown": "I feel like the whole week disappeared and I have nothing to show for the parts that werent work",
+    "timeframe": "this week",
+    "userLanguage": "en"
+   },
+   "output": {
+    "the_day_you_described": [
+     { "time": "Monday through Friday, 9-6 each day", "note": "Work commitment — 5 days at desk" },
+     { "time": "At least two afternoons during the week (day unspecified)", "note": "Technically at desk but not working — user's own description" },
+     { "time": "Gym visits", "note": "Twice during the week instead of usual four times" },
+     { "time": "Wednesday evening", "note": "Dinner with friend" },
+     { "time": "Thursday", "note": "Planned evening cancelled — user reports being too tired" },
+     { "time": "Weekend", "note": "Errands scheduled" },
+     { "time": "Monday morning", "note": "Weekend errands ran over into this time" },
+     { "time": "Outside of 9-6 work hours", "note": "User cannot point to one substantial accomplishment in this time" }
+    ],
+    "what_made_it_feel_different": [
+     "Two full afternoons during work hours were spent at your desk without actual work — that's a visible gap between time and output within the structure you normally count as productive.",
+     "Gym dropped from four to two visits; Thursday plans cancelled due to fatigue — the week contained fewer of the things you usually do outside work than you expected.",
+     "The account describes what didn't happen (no substantial non-work accomplishment, cancelled plans, missed gym sessions) more clearly than what did — which may be why the week feels like it disappeared despite being full of scheduled time."
+    ],
+    "the_biggest_mismatch": "You have 50+ work hours accounted for (9-6, five days), plus dinner Wednesday and two gym visits, plus weekend errands bleeding into Monday. The mismatch is not missing hours — it's that accomplishment outside of 'actual job' is invisible to you, while the work hours themselves are spent partly disengaged. The week didn't disappear because it was empty; it disappeared because the parts you'd normally measure yourself against (gym consistency, personal projects, evening plans that stick) contracted or stalled.",
+    "try_this_next_time": "When you notice yourself at your desk in one of those disengaged stretches, write down what you were doing instead — not to judge it, just to see what those afternoons actually contained. This tests whether the pattern is truly 'nothing' or whether specific small things are happening but not registering as accomplishment.",
+    "session_label": "Work week — two disengaged afternoons, fewer gym visits, plans cancelled",
+    "session_tags": ["5 days at desk", "2 unmeasured afternoons", "2 of 4 gym visits"]
    }
   }
  ]

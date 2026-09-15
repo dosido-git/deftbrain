@@ -101,10 +101,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
-
   // Icon fallback uses Unicode escape so the literal hourglass glyph never
   // appears in source — audit S0 forbids the hourglass-flow emoji as a
   // hardcoded loading spinner, but tools.js legitimately uses it as this
@@ -342,13 +338,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 </button>
               ))} </div>
           </div>
-        )} {/* Post-result cross-ref — the only one, below Recent Days. RelatedLinks
-            already auto-surfaces tag/category matches below, and BatchFlow is its
-            top pick for this tool, so this points at Before the Crash instead to
-            avoid duplicating that block. */} {results && (
-          <p className={`text-xs ${c.textMuted} text-center`}>
-            <a href="/BeforeTheCrash" className={linkStyle}>📉 {t('wdttg_xref_crash')}</a>
-          </p>
         )}
     </div>
   );

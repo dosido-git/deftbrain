@@ -1,13 +1,14 @@
 // WhereDidTheTimeGo — wdttg_* keys for all 13 languages. Self-contained data.
 // This tool has no currency values, so there is no {{sym}} interpolation.
 // {{tf}} is the selected timeframe label (interpolated at render time).
-// Brand/tool names (Where Did the Time Go?, Before the Crash, Slack) stay
-// as-is across languages.
+// Brand/tool names (Where Did the Time Go?, Slack) stay as-is across
+// languages.
 // 2026-09-14: rewrite. Removed the invented-arithmetic fields (The Visible
 // Day's you-think/likely pairs, The Invisible Hours, honest_capacity) — none
-// of it was reconstructed from what the user actually supplied. Replaced
-// the pre-submit Task Avalanche Breaker line and the boxed Related Tools
-// section with one minimal post-result cross-ref line.
+// of it was reconstructed from what the user actually supplied. Removed the
+// pre-submit Task Avalanche Breaker line, the boxed Related Tools section,
+// and (in a later round) the sole remaining post-result cross-ref — the
+// tool now carries zero manual cross-refs by design.
 export const whereDidTheTimeGo = {
   en: {
     wdttg_title: "Where Did the Time Go?",
@@ -25,7 +26,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Tracing the hours...",
     wdttg_submit: "Where did the time go?",
     wdttg_error: "Failed to analyze time.",
-    wdttg_xref_crash: "Check your burnout risk",
     wdttg_the_day: "The Day You Described",
     wdttg_feel_different: "What Made It Feel Different",
     wdttg_biggest_mismatch: "The Biggest Mismatch",
@@ -55,7 +55,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Rastreando las horas...",
     wdttg_submit: "¿Adónde se fue el tiempo?",
     wdttg_error: "No se pudo analizar el tiempo.",
-    wdttg_xref_crash: "Revisa tu riesgo de agotamiento",
     wdttg_the_day: "El día que describiste",
     wdttg_feel_different: "Qué lo hizo sentir diferente",
     wdttg_biggest_mismatch: "El mayor desajuste",
@@ -85,7 +84,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "正在追踪时间……",
     wdttg_submit: "时间都去哪儿了？",
     wdttg_error: "时间分析失败。",
-    wdttg_xref_crash: "检查你的倦怠风险",
     wdttg_the_day: "你描述的这一天",
     wdttg_feel_different: "是什么让这一天感觉不一样",
     wdttg_biggest_mismatch: "最大的落差",
@@ -115,7 +113,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "घंटों का पता लगाया जा रहा है...",
     wdttg_submit: "समय कहां चला गया?",
     wdttg_error: "समय का विश्लेषण नहीं हो सका।",
-    wdttg_xref_crash: "अपना बर्नआउट जोखिम जांचें",
     wdttg_the_day: "आपने जो दिन बताया",
     wdttg_feel_different: "किस वजह से यह दिन अलग महसूस हुआ",
     wdttg_biggest_mismatch: "सबसे बड़ा फ़र्क",
@@ -145,7 +142,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "جارٍ تتبّع الساعات...",
     wdttg_submit: "إلى أين ذهب الوقت؟",
     wdttg_error: "تعذّر تحليل الوقت.",
-    wdttg_xref_crash: "تحقّق من خطر الإرهاق لديك",
     wdttg_the_day: "اليوم الذي وصفته",
     wdttg_feel_different: "ما الذي جعله يبدو مختلفاً",
     wdttg_biggest_mismatch: "أكبر تناقض",
@@ -175,7 +171,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Rastreando as horas...",
     wdttg_submit: "Para onde foi o tempo?",
     wdttg_error: "Falha ao analisar o tempo.",
-    wdttg_xref_crash: "Verifique seu risco de burnout",
     wdttg_the_day: "O dia que você descreveu",
     wdttg_feel_different: "O que fez o dia parecer diferente",
     wdttg_biggest_mismatch: "A maior discrepância",
@@ -205,7 +200,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Traçage des heures...",
     wdttg_submit: "Où est passé le temps ?",
     wdttg_error: "Échec de l'analyse du temps.",
-    wdttg_xref_crash: "Vérifiez votre risque de burn-out",
     wdttg_the_day: "La journée que vous avez décrite",
     wdttg_feel_different: "Ce qui a rendu la journée différente",
     wdttg_biggest_mismatch: "Le plus grand décalage",
@@ -235,7 +229,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Stunden werden nachverfolgt...",
     wdttg_submit: "Wo ist die Zeit geblieben?",
     wdttg_error: "Zeitanalyse fehlgeschlagen.",
-    wdttg_xref_crash: "Prüfe dein Burnout-Risiko",
     wdttg_the_day: "Der Tag, den du beschrieben hast",
     wdttg_feel_different: "Was den Tag anders erscheinen ließ",
     wdttg_biggest_mismatch: "Die größte Diskrepanz",
@@ -265,7 +258,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "時間をたどっています...",
     wdttg_submit: "時間はどこへ消えた？",
     wdttg_error: "時間を分析できませんでした。",
-    wdttg_xref_crash: "燃え尽きリスクをチェック",
     wdttg_the_day: "話してもらった一日",
     wdttg_feel_different: "何がその日を違って感じさせたか",
     wdttg_biggest_mismatch: "最大のズレ",
@@ -295,7 +287,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "시간을 추적하는 중...",
     wdttg_submit: "시간은 어디로 갔을까?",
     wdttg_error: "시간을 분석하지 못했습니다.",
-    wdttg_xref_crash: "번아웃 위험 확인하기",
     wdttg_the_day: "설명한 하루",
     wdttg_feel_different: "무엇이 그날을 다르게 느끼게 했는지",
     wdttg_biggest_mismatch: "가장 큰 차이",
@@ -325,7 +316,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Отслеживаем часы...",
     wdttg_submit: "Куда ушло время?",
     wdttg_error: "Не удалось проанализировать время.",
-    wdttg_xref_crash: "Проверьте риск выгорания",
     wdttg_the_day: "День, который вы описали",
     wdttg_feel_different: "Что сделало день таким",
     wdttg_biggest_mismatch: "Самое большое несоответствие",
@@ -355,7 +345,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "กำลังตามรอยชั่วโมง...",
     wdttg_submit: "เวลาไปไหนหมด?",
     wdttg_error: "วิเคราะห์เวลาไม่สำเร็จ",
-    wdttg_xref_crash: "ตรวจสอบความเสี่ยงหมดไฟ",
     wdttg_the_day: "วันที่คุณอธิบาย",
     wdttg_feel_different: "อะไรที่ทำให้วันนั้นรู้สึกต่างออกไป",
     wdttg_biggest_mismatch: "ความคลาดเคลื่อนที่ใหญ่ที่สุด",
@@ -385,7 +374,6 @@ export const whereDidTheTimeGo = {
     wdttg_tracing: "Đang lần theo từng giờ...",
     wdttg_submit: "Thời gian đã đi đâu?",
     wdttg_error: "Không phân tích được thời gian.",
-    wdttg_xref_crash: "Kiểm tra nguy cơ kiệt sức",
     wdttg_the_day: "Ngày bạn đã mô tả",
     wdttg_feel_different: "Điều gì khiến ngày đó cảm thấy khác biệt",
     wdttg_biggest_mismatch: "Sự chênh lệch lớn nhất",

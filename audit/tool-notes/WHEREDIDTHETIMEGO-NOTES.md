@@ -1,4 +1,39 @@
-# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v2.1`, 2026-09-14)
+# WhereDidTheTimeGo — audit lock notes (`wheredidthetimego-v2.2`, 2026-09-14)
+
+## 2026-09-14 v2.2 correction round
+
+Five more prompt rules: **NO UNSUPPORTED DURATIONS** (never estimate a vague
+period like "two afternoons" into a specific number of hours), **NO VALUE
+JUDGMENTS** (don't equate activity with productivity/output, don't adopt the
+user's own word like "wasted" as the tool's fact rather than their framing),
+**DON'T INVENT THE YARDSTICK** (never infer what the user thinks they should
+have accomplished or what would have made the period worthwhile), **ALLOW
+UNEXPLAINED GAPS** (say plainly when the account doesn't explain where time
+went — a truthful gap beats an invented explanation), and **NEUTRAL
+OBSERVATION** (try_this_next_time describes what to notice without priming
+the user with speculative possibilities about what they might find).
+
+Also made `session_label`/`session_tags` explicitly facts-only — factual
+anchors in the user's own language, never a value judgment like
+"unproductive" unless the user used that exact word.
+
+**Interface-only:** removed the sole remaining post-result cross-ref
+("Check your burnout risk" → Before the Crash). The tool now carries zero
+manual cross-refs by design — added to `audit_v2-3-2.py`'s `NO_CROSSREF` set
+(same pattern as WhatsMyVibe the same day). `linkStyle` removed as dead code.
+
+Verified live on a "wasted afternoon" / "week disappeared" account — the
+closest real-world trigger for value-judgment and yardstick-invention
+failures (golden sample case 3): no invented hour estimate for the vague
+"two afternoons," the word "wasted" is attributed to the user rather than
+adopted as the tool's own conclusion, and try_this_next_time stays neutral.
+**Two soft residuals disclosed, not chased further:** `session_label` used
+the word "disengaged" (echoes the DON'T INFER ATTENTION OR CONTROL banned-
+state list from v2.1, even though the user never used that word), and
+`the_biggest_mismatch`'s closing line introduced "personal projects" as
+something the user "normally measures against" — a yardstick the user never
+actually stated. Both are subtle enough that a fourth round wasn't obviously
+warranted before further live testing surfaces a clearer pattern.
 
 ## 2026-09-14 v2.1 correction round
 

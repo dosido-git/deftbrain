@@ -577,7 +577,10 @@ for name, fpath in tools:
     # Vibes) was removed at the owner's request — the site's own RelatedLinks
     # algorithm already surfaces DecoderRing for this tool, and a second
     # manual link wasn't adding anything the visitor needed.
-    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe'}
+    # WhereDidTheTimeGo joined the same day: its one remaining cross-ref
+    # ("Check your burnout risk" → Before the Crash) was removed at the
+    # owner's request — same reasoning, same day, same pattern.
+    NO_CROSSREF = {'ColdOpenCraft', 'WhatsMyVibe', 'WhereDidTheTimeGo'}
 
     # S1.1: linkStyle standalone
     if name in NO_CROSSREF:
