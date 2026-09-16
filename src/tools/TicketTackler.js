@@ -308,7 +308,7 @@ const TicketTackler = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🎫'}</span>{t('tt_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '🚦'}</span>{t('tt_tagline')}
             </p>
             <button
               onClick={loadExample}
@@ -421,7 +421,7 @@ const TicketTackler = ({ tool }) => {
             disabled={loading || !city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())}
             className={`relative w-full py-3 ${(!city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())) ? c.btnIdle : c.btnPrimary} rounded-xl font-semibold`}>
             {loading && phase === 'main'
-              ? <span><span className="inline-block animate-spin me-2">{tool?.icon ?? '🎫'}</span>{t('tt_building')}</span>
+              ? <span><span className="inline-block animate-spin me-2">{tool?.icon ?? '🚦'}</span>{t('tt_building')}</span>
               : t('tt_submit')}
           {!loading && (
             <kbd aria-hidden="true"
@@ -580,7 +580,7 @@ const TicketTackler = ({ tool }) => {
               <button onClick={handleFollowup} disabled={loading || !followupQ.trim()}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40`}>
                 {loading && phase === 'followup'
-                  ? <span className="inline-block animate-spin">{tool?.icon ?? '🎫'}</span>
+                  ? <span className="inline-block animate-spin">{tool?.icon ?? '🚦'}</span>
                   : t('tt_followup_send')}
               </button>
             </div>

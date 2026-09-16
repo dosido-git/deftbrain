@@ -1,6 +1,58 @@
 # TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
 
-## 2026-09-16 (round 4) — PROVENANCE LABELS + RIGHT-SIZE THE RESPONSE; found and fixed the real reason round 3's labeling still failed
+## 2026-09-16 (round 5) — icon swap + CONTRADICTORY RESEARCH + LEGAL DEFENSES
+
+**Icon:** 🎫 (admission/concert ticket) → 🚦 (traffic light) — a concert ticket
+was never the right image for a parking/camera citation tool. Changed
+`icon:` in `src/data/tools.js` and grepped for the old emoji per the
+"changing an icon leaves fallbacks behind" gotcha — found and fixed 3
+hardcoded `tool?.icon ?? '🎫'` fallbacks in `src/tools/TicketTackler.js`
+(tagline icon, and 2 in-progress spinner icons). Also ran
+`python3 scripts/generate-og.py` to refresh the stale OG social-preview card
+— it's incremental by tools.js mtime, so it regenerated all 122 tool PNGs;
+78 came out byte-different from non-deterministic font rendering, so those
+were reverted with `git checkout` and only `ticket-tackler.png` was kept.
+Incidentally: this run also filled in 2 tools that had never had an OG image
+generated (`someone-said-it-better.png`, `whats-that-mean.png`) and rebuilt
+`public/og/slug-map.json`, which turned out to have been stale for a long
+time — the committed version had exactly one entry (`ConflictCoach`) where
+it should have had 122. Kept both as a legitimate incidental fix, not part of
+the ask.
+
+**Live example (Los Angeles red-light case) surfaced a real reasoning bug,
+not a wording one:** the citation read "CITY OF LOS ANGELES — RED LIGHT PHOTO
+ENFORCEMENT VIOLATION," but research found LA ended its red-light camera
+program in 2011 with no reinstatement. The tool used that conflict to justify
+STRONG_REASON_TO_CONTEST, while separately (correctly) flagging "who issued
+this citation" as the single most important unresolved fact — two conclusions
+that don't sit together: a threshold fact still open cannot simultaneously
+support a strong verdict.
+
+Added **CONTRADICTORY RESEARCH** (after PROVENANCE LABELS, before ASSESSING
+THE CASE): when the citation's own claim conflicts with authoritative
+research, treat the conflict itself as an unresolved material fact — flag it,
+investigate, say what needs confirming, but do not treat the discrepancy
+itself as a defense or a strong reason to contest. Explicitly routes this
+case to NOT_ENOUGH_INFORMATION_YET (an enum value that already existed —
+the model just wasn't reliably reaching for it here) rather than inventing a
+new verdict state.
+
+Added **LEGAL DEFENSES** (after CALIBRATED LANGUAGE, before STYLE): the same
+LA case also called the driver's yellow-light/stopped-car account "a
+possible defense in California traffic courts" — a specific legal
+proposition asserted without real grounding. Never characterize something as
+a recognized/legal defense, exception, exemption, or basis for dismissal
+unless authoritative legal sources establish it; when unsupported, describe
+only the underlying fact and stop there.
+
+Live-verified on the exact LA case from the reported PDF: verdict is now
+"Not enough information yet," reasoning explicitly says the citation's
+legitimacy must be confirmed before anything else is evaluated, the
+yellow-light account is described as a plain fact rather than a legal
+doctrine, the appeal gate still correctly blocks drafting pending that
+confirmation, and all three provenance labels (✓ VERIFIED / 📋 FROM THE
+CITATION / 🗣️ YOUR ACCOUNT) render correctly and distinctly in the same
+response — confirming rounds 4 and 5 compose correctly together.
 
 Round 3's SOURCE ATTRIBUTION section (prompt-only) did NOT fix the mislabeling
 in practice — live-tested immediately after shipping it (Chicago red-light
