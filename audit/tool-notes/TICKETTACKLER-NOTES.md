@@ -1,5 +1,44 @@
 # TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
 
+## 2026-09-15 (round 3) — owner correction: research completeness, source labeling, calibrated language
+
+Three targeted additions to SYSTEM_PROMPT, all owner-supplied verbatim:
+
+1. **RESEARCH COMPLETENESS** (inserted after VERIFY THE DECISION-CHANGING
+   FACTS, before AFTER RESEARCH) — stops the model from reflexively assigning
+   a publicly-researchable decisive fact to USER_MUST_CHECK when it could
+   just search the authoritative source itself (e.g. "check the city's data
+   portal" when that portal is searchable). USER_MUST_CHECK is now reserved
+   for: source inaccessible, source insufficient, historical data for the
+   date unavailable, or genuinely requires the user's own evidence.
+2. **SOURCE ATTRIBUTION** (inserted after AFTER RESEARCH, before ASSESSING
+   THE CASE) — the fix for a real failure mode: researched facts getting
+   labeled as if printed on the citation. Five-way labeling convention
+   (📋 FROM THE CITATION / 👤 USER'S ACCOUNT / 📎 USER'S EVIDENCE / ✓ VERIFIED
+   / ? UNVERIFIED), with an explicit "never label researched information as
+   FROM THE CITATION" rule.
+3. **CALIBRATED LANGUAGE** (inserted after DON'T SAY THESE, before STYLE) —
+   bans case-strength overclaiming words (almost certainly / clearly /
+   definitely / obviously / unlikely to succeed) unless the evidence actually
+   establishes the conclusion; conclusions stay conditional when a decisive
+   fact is still unknown.
+
+Live-verified (LA street-sweeping case, Black Friday holiday-suspension
+policy): the model researched and resolved the holiday-suspension policy
+itself (3 independent sources, all citing LADOT) rather than punting it to
+the user, correctly narrowed USER_MUST_CHECK down to the one fact only the
+user can supply (whether the posted sign says "Holidays Enforced"), and
+labeled the researched policy fact "✓ Verified" — never "FROM THE CITATION" —
+while the LAMC code number stayed correctly labeled "FROM THE CITATION."
+Verdict flipped from a would-be-weak account to STRONG_REASON_TO_CONTEST on
+real grounding. One incidental "almost certainly" appeared in a date-math
+sentence (deadline has passed), not a case-strength claim — outside what the
+rule targets, not treated as a regression.
+
+No schema change — all three blocks are reasoning/labeling discipline for
+existing fields (`what_may_matter[].source`, `what_to_verify[].status`), not
+new JSON keys.
+
 ## 2026-09-16 (later same day) — two follow-up bugs from the web_search rewrite above
 
 **Recent-history click did almost nothing.** `sessionHistory` entries only ever
