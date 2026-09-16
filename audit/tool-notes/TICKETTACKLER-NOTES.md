@@ -1,5 +1,21 @@
 # TicketTackler — lock notes (ticket-tackler-v5, 2026-09-16: two-stage investigator/reviewer)
 
+## 2026-09-16 (round 9) — ROUTINE DETAILS
+
+Added after RESEARCH PRIORITY, before RIGHT-SIZE THE RESPONSE (reviewer
+stage): don't turn an unverified routine detail (fine amount, deadline, or
+other ordinary citation field) into a potential defect without evidence
+suggesting a discrepancy. A verification limitation — "the fine wasn't
+independently confirmed against the fee schedule" — gets reported honestly
+but must not become a contest basis or the user's primary next step when
+nothing actually points to it being wrong. Companion to RESEARCH PRIORITY:
+that one stops secondary defenses from crowding out an unresolved threshold
+fact; this one stops "I couldn't verify X" from manufacturing a defect out
+of thin air when X was never actually in question.
+
+Live-verified: `check:golden ticket-tackler` 5/5. Statically clean
+(syntax, diff-audit).
+
 ## 2026-09-16 (round 8) — APPEAL PROVENANCE + RESEARCH PRIORITY
 
 Two more owner-supplied reviewer-stage sections, added after EVIDENCE AND
