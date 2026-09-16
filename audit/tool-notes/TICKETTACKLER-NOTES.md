@@ -1,5 +1,31 @@
 # TicketTackler — lock notes (ticket-tackler-v5, 2026-09-16: two-stage investigator/reviewer)
 
+## 2026-09-16 (round 8) — APPEAL PROVENANCE + RESEARCH PRIORITY
+
+Two more owner-supplied reviewer-stage sections, added after EVIDENCE AND
+CLAIM DISCIPLINE, before RIGHT-SIZE THE RESPONSE:
+
+**APPEAL PROVENANCE** — a sharper, appeal-specific restatement of EVIDENCE
+AND CLAIM DISCIPLINE: a factual claim may enter the appeal only if it's
+from the citation, a VERIFIED investigator finding, or explicitly
+attributed to the user — never an inference, theory, or unverified
+explanation promoted into fact.
+
+**RESEARCH PRIORITY** — when a threshold fact remains unresolved and could
+determine the outcome, don't surface secondary defenses or ask the user to
+gather evidence for them unless those would still matter once the
+threshold fact resolves. Reviewer-only (not added to the investigator's
+prompt): the investigator should keep gathering whatever it can regardless
+of priority, since a secondary fact might resolve quickly and become
+relevant either way — it's the REVIEWER's job to decide what to feature
+in `what_may_matter`/`evidence_to_get` once all findings are in, which
+matches the instruction's own wording ("ask the user to gather evidence" =
+the `evidence_to_get` array, a reviewer output).
+
+Installed and statically verified (syntax, diff-audit) — **not yet live-
+verified**, same API-quota block as round 7 (resets 2026-10-01). Not
+pushed.
+
 ## 2026-09-16 (round 7) — owner-supplied rewrite: back to two calls, deliberately
 
 Installed from `TicketTackler-two-stage-redesign.zip` per
