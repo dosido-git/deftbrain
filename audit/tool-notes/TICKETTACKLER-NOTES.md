@@ -1,6 +1,40 @@
 # TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
 
-## 2026-09-16 (round 5) — icon swap + CONTRADICTORY RESEARCH + LEGAL DEFENSES
+## 2026-09-16 (round 6) — DEADLINE CONFLICTS + EVIDENCE CLAIMS
+
+Two more owner-supplied sections, same "don't silently resolve a conflict /
+don't over-infer from evidence" family as rounds 4-5.
+
+**DEADLINE CONFLICTS** (after CONTRADICTORY RESEARCH, before ASSESSING THE
+CASE) — a specific instance of the round-5 CONTRADICTORY RESEARCH principle:
+when a citation's own stated deadline conflicts with a general deadline
+found through research, treat the citation's deadline as the safer one to
+act on unless research specifically confirms a different deadline applies
+to *this* citation, and never label a general researched deadline VERIFIED
+for the user's particular case.
+
+**EVIDENCE CLAIMS + FINAL CLAIM CHECK** (after LEGAL DEFENSES, before STYLE)
+— don't let evidence prove more than it actually shows. Named example:
+proof of payment establishes a payment occurred, not that it covered the
+right vehicle/zone/time or that the citation was erroneous — those need
+independent confirmation before the stronger conclusion. FINAL CLAIM CHECK
+adds a per-conclusion audit question ("what evidence establishes this exact
+claim?") before answering, narrowing rather than filling gaps with
+inference.
+
+Live-verified both in one pass with two cases:
+- SF street-cleaning citation (Tue/Fri restriction, citation states 7-day
+  deadline; general CA protest window is 21 days) — response explicitly
+  flagged the deadline conflict and said to "treat the citation's 7-day
+  figure as the safer deadline until you can confirm whether the 21-day
+  statutory window supersedes it," both in what_to_verify and how_to_file.
+- Boston ParkBoston-app payment case (citation states 14-day deadline vs.
+  general 21-day) — same deadline-conflict handling held. On EVIDENCE
+  CLAIMS: every mention of the payment screenshot was conditioned ("if that
+  screenshot shows a valid, active session for the correct zone and plate
+  at that time") rather than treating "I have a payment confirmation" as
+  itself proof the citation was wrong — needs_verification explicitly named
+  the zone/plate/session-active details still required.
 
 **Icon:** 🎫 (admission/concert ticket) → 🚦 (traffic light) — a concert ticket
 was never the right image for a parking/camera citation tool. Changed
