@@ -1,4 +1,63 @@
-# TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
+# TicketTackler — lock notes (ticket-tackler-v5, 2026-09-16: two-stage investigator/reviewer)
+
+## 2026-09-16 (round 7) — owner-supplied rewrite: back to two calls, deliberately
+
+Installed from `TicketTackler-two-stage-redesign.zip` per
+`audit/REWRITE-INSTALL-KIT.md`. Two files supplied: `TicketTackler.js`
+(frontend) arrived **byte-identical** to what's committed — nothing to
+install there, confirmed with `diff -q`. `ticket-tackler.js` (backend) is a
+genuine rewrite: 691 → 323 lines.
+
+**What changed:** the single ~350-line SYSTEM_PROMPT (accumulated across
+rounds 1-6 tonight: CORE RULE, WEB RESEARCH, RESEARCH COMPLETENESS, SOURCE
+ATTRIBUTION, PROVENANCE LABELS, CONTRADICTORY RESEARCH, DEADLINE CONFLICTS,
+ASSESSING THE CASE, RIGHT-SIZE, LEGAL DEFENSES, EVIDENCE CLAIMS, CALIBRATED
+LANGUAGE, STYLE...) is split into two calls:
+1. **Investigator** — web_search tool, its own compact schema
+   (`{decision_questions, findings, research_summary}`, internal only,
+   never reaches the frontend), condensed versions of the research-
+   discipline rules (source priority, don't stop at "check the portal" if
+   it's searchable, report conflicts rather than resolve them, deadline
+   conflicts, don't manufacture legal defenses).
+2. **Reviewer** — no web_search, receives the investigator's findings as an
+   embedded JSON dossier, condensed CORE RULE + 8-step DECISION PROCESS +
+   EVIDENCE AND CLAIM DISCIPLINE + RIGHT-SIZE THE RESPONSE, produces the
+   existing frontend-facing schema.
+
+Why: round 4 (source-attribution `researched` enum + PROVENANCE LABELS)
+did not hold up on its own first live retest despite unambiguous wording —
+the real cause was research, judgment, and JSON formatting all competing
+for attention in one long call. Splitting them removes that competition
+structurally rather than patching it with yet more prompt text — same
+"prefer architecture over patching" principle as several other rewrites
+this session.
+
+**Frontend-facing schema is 100% unchanged** — every field name, enum, and
+description in the final JSON matches what was already there (including
+the `researched` source value and the `EVIDENCE CLAIMS`/`DEADLINE
+CONFLICTS` behavior, both folded into the reviewer's condensed rules).
+`usePersistentState('ticket-tackler-results', ...)` key did NOT need a
+version bump — no schema shape change reached the frontend.
+
+**One deliberate, correct semantic change**: `recommendation` MUST now
+equal `verdict` — previously (single-call design) it explicitly was NOT
+required to match, because research could surface new facts mid-review in
+one continuous pass. In the two-stage design all research completes in
+stage 1 before the reviewer forms any verdict, so that divergence case no
+longer exists; a mismatch is now a bug, not a legitimate update.
+
+**Installed and statically verified** (syntax, eslint --max-warnings=0,
+diff-audit, guard-key sweep — both `!parsed.assessment` and `!parsed.answer`
+guards key valid top-level fields in their respective schemas,
+three-way-sync, localization-audit, primer-audit, sitemap-state — all
+clean). **NOT YET LIVE-VERIFIED**: the Anthropic API key hit its usage cap
+mid-session tonight (resets 2026-10-01 per the account's own error), so
+`check:golden ticket-tackler` cannot run against a live model right now.
+Run it as the very first thing once API access returns — this is a real
+architecture change and deserves a genuine live pass, not just static
+checks, before being trusted. Golden sample `_meta` rewritten to document
+the new architecture and correct now-stale "DO NOT reverse single-call"
+guidance from the previous round.
 
 ## 2026-09-16 (round 6) — DEADLINE CONFLICTS + EVIDENCE CLAIMS
 
