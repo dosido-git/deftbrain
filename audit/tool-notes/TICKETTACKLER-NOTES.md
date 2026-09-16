@@ -1,5 +1,46 @@
 # TicketTackler — lock notes (ticket-tackler-v4, 2026-09-16: live web search + APPEAL GATE)
 
+## 2026-09-16 (round 4) — PROVENANCE LABELS + RIGHT-SIZE THE RESPONSE; found and fixed the real reason round 3's labeling still failed
+
+Round 3's SOURCE ATTRIBUTION section (prompt-only) did NOT fix the mislabeling
+in practice — live-tested immediately after shipping it (Chicago red-light
+camera, "does this affect my license/insurance" case): three purely-researched
+facts (no license points, fine-doubling rule, boot-eligibility threshold) all
+still rendered "📋 FROM THE CITATION". Root cause was structural, not just weak
+wording: the `what_may_matter[].source` JSON schema enum only had 3 values
+(`citation | user_account | supporting_evidence`) — **there was no code value
+for "learned through research"**, so the model had nowhere correct to put a
+researched fact no matter how strongly the prompt said not to call it
+"citation". Fixed by adding a 4th enum value, `researched`, wired to the
+existing SOURCE ATTRIBUTION taxonomy's "✓ VERIFIED" icon. Frontend
+`sourceMeta()` in `src/tools/TicketTackler.js` reuses `t('tt_status_verified')`
+for its label — no new i18n key, since it's the same concept/word `statusMeta`
+already uses for the `what_to_verify[].status` VERIFIED case.
+
+Added **PROVENANCE LABELS — STRICT** (owner-supplied) right after SOURCE
+ATTRIBUTION — an explicit audit step ("before producing the final answer,
+audit every FROM THE CITATION label") plus a worked example matching the exact
+live failure just observed (red-light-camera license-points fact → label
+`researched`, not `citation`). Live-retested the identical case after the
+schema fix + worked example: all three researched facts now correctly render
+"✓ VERIFIED". **Lesson reinforced**: when a prompt-only fix for a labeling/
+classification instruction doesn't hold up live, check whether the schema
+even has a slot for the correct answer before assuming the wording just needs
+to be stronger — this is the same "prefer a structural fix over prompt
+patching" pattern as the groundAppealFacts→live-web_search retirement earlier
+in this file.
+
+Added **RIGHT-SIZE THE RESPONSE** (owner-supplied) after ASSESSING THE CASE —
+for a clear-cut pay case (conduct acknowledged, no discrepancy, no defense
+found), produce a short result: assessment + verified consequence + payment
+info + one next step, skipping evidence-gathering/appeal/dont-say sections
+that would otherwise populate "because the template has them." No schema or
+frontend change needed — `what_may_matter`, `what_to_verify`, `evidence_to_get`
+were already independently emptyable/omittable and every section in
+`src/tools/TicketTackler.js` already gates render on `.length`/non-null.
+Live-verified on the same Chicago case: response omitted evidence_to_get,
+appeal_letter/before_appeal, and dont_say entirely — no template padding.
+
 ## 2026-09-15 (round 3) — owner correction: research completeness, source labeling, calibrated language
 
 Three targeted additions to SYSTEM_PROMPT, all owner-supplied verbatim:

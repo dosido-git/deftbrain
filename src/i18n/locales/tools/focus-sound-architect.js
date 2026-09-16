@@ -57,7 +57,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Optional, but useful for setting the amount of masking.",
     fsa_q4: "4. Anything you especially like or do not want to hear?",
     fsa_q4_hint: "Optional. Leave this blank and the architect will choose for you.",
-    fsa_avoid: "Avoid",
+    fsa_avoid: "Sound needs",
     fsa_energy: "Energy:",
     fsa_duration_hint: "For longer sessions, the architect can keep the mix simple and suggest gentle changes over time.",
     fsa_built_for_you: "Want one built for you?",
@@ -219,11 +219,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Wind",
 
     // ── Sensitivities (label; id stays English) ──
-    fsa_sens_suddenSounds: "Sensitive to sudden sounds",
-    fsa_sens_highFrequencySensitive: "Sensitive to high frequencies",
-    fsa_sens_preferConsistency: "Prefer consistent texture",
-    fsa_sens_needVariety: "Need some variation to stay engaged",
-    fsa_sens_needLowBass: "Prefer deeper/lower sounds",
+    fsa_sens_suddenSounds: "Avoid sudden sounds",
+    fsa_sens_highFrequencySensitive: "Avoid high frequencies",
+    fsa_sens_preferConsistency: "Keep it consistent",
+    fsa_sens_needVariety: "Give me some variation",
+    fsa_sens_needLowBass: "I like deep/low bass",
 
     // ── Smart feedback options (label; id stays English) ──
     fsa_fb_too_busy: "Too busy",
@@ -442,7 +442,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Opcional, pero útil para ajustar la cantidad de enmascaramiento.",
     fsa_q4: "4. ¿Algo que te guste especialmente o que no quieras oír?",
     fsa_q4_hint: "Opcional. Déjalo en blanco y el arquitecto elegirá por ti.",
-    fsa_avoid: "Evitar",
+    fsa_avoid: "Necesidades de sonido",
     fsa_energy: "Energía:",
     fsa_duration_hint: "En sesiones largas, el arquitecto puede mantener la mezcla sencilla y sugerir cambios suaves con el tiempo.",
     fsa_built_for_you: "¿Prefieres uno hecho a tu medida?",
@@ -604,11 +604,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Viento",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Sensible a los sonidos repentinos",
-    fsa_sens_highFrequencySensitive: "Sensible a las altas frecuencias",
-    fsa_sens_preferConsistency: "Prefiero una textura constante",
-    fsa_sens_needVariety: "Necesito algo de variación para mantener el interés",
-    fsa_sens_needLowBass: "Prefiero sonidos más graves o bajos",
+    fsa_sens_suddenSounds: "Evitar sonidos repentinos",
+    fsa_sens_highFrequencySensitive: "Evitar frecuencias altas",
+    fsa_sens_preferConsistency: "Mantenerlo constante",
+    fsa_sens_needVariety: "Dame algo de variación",
+    fsa_sens_needLowBass: "Me gustan los graves o sonidos bajos",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Demasiado recargado",
@@ -827,7 +827,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "可选，但有助于设定遮蔽的强度。",
     fsa_q4: "4. 有什么你特别喜欢或不想听到的吗？",
     fsa_q4_hint: "可选。留空的话，架构师会为你选择。",
-    fsa_avoid: "避免",
+    fsa_avoid: "声音需求",
     fsa_energy: "能量：",
     fsa_duration_hint: "对于较长的时段，架构师可以让混音保持简单，并随时间建议温和的变化。",
     fsa_built_for_you: "想要为你定制一个吗？",
@@ -989,11 +989,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "风声",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "对突然的声音敏感",
-    fsa_sens_highFrequencySensitive: "对高频敏感",
-    fsa_sens_preferConsistency: "偏好稳定一致的质感",
-    fsa_sens_needVariety: "需要一些变化以保持专注",
-    fsa_sens_needLowBass: "偏好更深沉/更低的声音",
+    fsa_sens_suddenSounds: "避免突然的声音",
+    fsa_sens_highFrequencySensitive: "避免高频声音",
+    fsa_sens_preferConsistency: "保持声音稳定",
+    fsa_sens_needVariety: "给我一些变化",
+    fsa_sens_needLowBass: "我喜欢低沉深厚的声音",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "太杂乱",
@@ -1212,7 +1212,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "वैकल्पिक, पर ढकने की मात्रा तय करने में उपयोगी।",
     fsa_q4: "4. कुछ ऐसा जो आपको ख़ास पसंद हो या जो आप सुनना न चाहें?",
     fsa_q4_hint: "वैकल्पिक। इसे खाली छोड़ दें और आर्किटेक्ट आपके लिए चुन लेगा।",
-    fsa_avoid: "इनसे बचें",
+    fsa_avoid: "ध्वनि संबंधी ज़रूरतें",
     fsa_energy: "ऊर्जा:",
     fsa_duration_hint: "लंबे सत्रों के लिए आर्किटेक्ट मिश्रण को सरल रख सकता है और समय के साथ हल्के बदलाव सुझा सकता है।",
     fsa_built_for_you: "अपने लिए बनवाना चाहेंगे?",
@@ -1374,11 +1374,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "हवा",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "अचानक आवाज़ों के प्रति संवेदनशील",
-    fsa_sens_highFrequencySensitive: "उच्च आवृत्तियों के प्रति संवेदनशील",
-    fsa_sens_preferConsistency: "एक समान टेक्सचर पसंद है",
-    fsa_sens_needVariety: "ध्यान बनाए रखने के लिए कुछ विविधता चाहिए",
-    fsa_sens_needLowBass: "गहरी/धीमी ध्वनियाँ पसंद हैं",
+    fsa_sens_suddenSounds: "अचानक आवाज़ों से बचें",
+    fsa_sens_highFrequencySensitive: "उच्च आवृत्तियों से बचें",
+    fsa_sens_preferConsistency: "एक जैसा बनाए रखें",
+    fsa_sens_needVariety: "थोड़ी विविधता दें",
+    fsa_sens_needLowBass: "मुझे गहरी/धीमी ध्वनियाँ पसंद हैं",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "बहुत भरा-भरा",
@@ -1597,7 +1597,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "اختياري، لكنه مفيد لضبط مقدار الحجب.",
     fsa_q4: "٤. هل هناك ما تحبه بشكل خاص أو لا ترغب في سماعه؟",
     fsa_q4_hint: "اختياري. اتركه فارغًا وسيختار المهندس نيابةً عنك.",
-    fsa_avoid: "تجنّب",
+    fsa_avoid: "احتياجات الصوت",
     fsa_energy: "الطاقة:",
     fsa_duration_hint: "في الجلسات الطويلة، يمكن للمهندس أن يبقي المزيج بسيطًا ويقترح تغييرات لطيفة مع مرور الوقت.",
     fsa_built_for_you: "تريد واحدًا مصممًا لك؟",
@@ -1759,11 +1759,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "رياح",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "حسّاس للأصوات المفاجئة",
-    fsa_sens_highFrequencySensitive: "حسّاس للترددات العالية",
-    fsa_sens_preferConsistency: "أفضّل نسيجاً ثابتاً",
-    fsa_sens_needVariety: "أحتاج بعض التنوّع للبقاء منخرطاً",
-    fsa_sens_needLowBass: "أفضّل أصواتاً أعمق/أقل حدة",
+    fsa_sens_suddenSounds: "تجنّب الأصوات المفاجئة",
+    fsa_sens_highFrequencySensitive: "تجنّب الترددات العالية",
+    fsa_sens_preferConsistency: "حافظ على الثبات",
+    fsa_sens_needVariety: "أعطني بعض التنوّع",
+    fsa_sens_needLowBass: "أحب الأصوات العميقة والمنخفضة",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "مزدحم جداً",
@@ -1982,7 +1982,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Opcional, mas útil para definir a quantidade de mascaramento.",
     fsa_q4: "4. Algo de que você goste especialmente ou que não queira ouvir?",
     fsa_q4_hint: "Opcional. Deixe em branco e o arquiteto escolherá por você.",
-    fsa_avoid: "Evitar",
+    fsa_avoid: "Necessidades de som",
     fsa_energy: "Energia:",
     fsa_duration_hint: "Em sessões longas, o arquiteto pode manter a mistura simples e sugerir mudanças suaves ao longo do tempo.",
     fsa_built_for_you: "Quer um feito para você?",
@@ -2144,11 +2144,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Vento",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Sensível a sons repentinos",
-    fsa_sens_highFrequencySensitive: "Sensível a frequências altas",
-    fsa_sens_preferConsistency: "Prefiro uma textura constante",
-    fsa_sens_needVariety: "Preciso de alguma variação para manter o interesse",
-    fsa_sens_needLowBass: "Prefiro sons mais graves/baixos",
+    fsa_sens_suddenSounds: "Evitar sons repentinos",
+    fsa_sens_highFrequencySensitive: "Evitar frequências altas",
+    fsa_sens_preferConsistency: "Manter constante",
+    fsa_sens_needVariety: "Me dê alguma variação",
+    fsa_sens_needLowBass: "Gosto de sons graves ou baixos",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Carregado demais",
@@ -2367,7 +2367,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Facultatif, mais utile pour régler le niveau de masquage.",
     fsa_q4: "4. Y a-t-il des sons que vous aimez particulièrement ou que vous ne voulez pas entendre ?",
     fsa_q4_hint: "Facultatif. Laissez vide et l'architecte choisira pour vous.",
-    fsa_avoid: "À éviter",
+    fsa_avoid: "Besoins sonores",
     fsa_energy: "Énergie :",
     fsa_duration_hint: "Pour les séances longues, l'architecte peut garder le mélange simple et suggérer de légers changements au fil du temps.",
     fsa_built_for_you: "Vous en voulez un fait pour vous ?",
@@ -2529,11 +2529,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Vent",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Sensible aux sons soudains",
-    fsa_sens_highFrequencySensitive: "Sensible aux hautes fréquences",
-    fsa_sens_preferConsistency: "Je préfère une texture constante",
-    fsa_sens_needVariety: "J'ai besoin d'un peu de variété pour rester engagé",
-    fsa_sens_needLowBass: "Je préfère des sons plus graves/plus bas",
+    fsa_sens_suddenSounds: "Éviter les sons soudains",
+    fsa_sens_highFrequencySensitive: "Éviter les hautes fréquences",
+    fsa_sens_preferConsistency: "Garder une texture constante",
+    fsa_sens_needVariety: "Donnez-moi un peu de variété",
+    fsa_sens_needLowBass: "J'aime les sons graves et profonds",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Trop chargé",
@@ -2752,7 +2752,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Optional, aber hilfreich, um das Maß der Überdeckung festzulegen.",
     fsa_q4: "4. Gibt es etwas, das du besonders magst oder nicht hören möchtest?",
     fsa_q4_hint: "Optional. Lass das Feld leer, dann wählt der Architekt für dich.",
-    fsa_avoid: "Vermeiden",
+    fsa_avoid: "Klangbedürfnisse",
     fsa_energy: "Energie:",
     fsa_duration_hint: "Bei längeren Sitzungen kann der Architekt die Mischung einfach halten und mit der Zeit sanfte Änderungen vorschlagen.",
     fsa_built_for_you: "Lieber einen, der für dich gebaut wird?",
@@ -2914,11 +2914,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Wind",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Empfindlich gegenüber plötzlichen Geräuschen",
-    fsa_sens_highFrequencySensitive: "Empfindlich gegenüber hohen Frequenzen",
-    fsa_sens_preferConsistency: "Bevorzuge eine gleichmäßige Textur",
-    fsa_sens_needVariety: "Brauche etwas Abwechslung, um dabeizubleiben",
-    fsa_sens_needLowBass: "Bevorzuge tiefere/niedrigere Klänge",
+    fsa_sens_suddenSounds: "Plötzliche Geräusche vermeiden",
+    fsa_sens_highFrequencySensitive: "Hohe Frequenzen vermeiden",
+    fsa_sens_preferConsistency: "Gleichmäßig halten",
+    fsa_sens_needVariety: "Etwas Abwechslung geben",
+    fsa_sens_needLowBass: "Ich mag tiefe, niedrige Klänge",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Zu überladen",
@@ -3137,7 +3137,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "任意ですが、覆い隠す量を決めるのに役立ちます。",
     fsa_q4: "4. 特に好きな音、聞きたくない音はありますか？",
     fsa_q4_hint: "任意です。空欄のままにすれば、アーキテクトが選びます。",
-    fsa_avoid: "避けたい音",
+    fsa_avoid: "音の好み",
     fsa_energy: "エネルギー：",
     fsa_duration_hint: "長めのセッションでは、アーキテクトはミックスをシンプルに保ち、時間とともに穏やかな変化を提案できます。",
     fsa_built_for_you: "自分用に作りますか？",
@@ -3299,11 +3299,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "風",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "突然の音に敏感",
-    fsa_sens_highFrequencySensitive: "高い周波数に敏感",
-    fsa_sens_preferConsistency: "一定のテクスチャを好む",
-    fsa_sens_needVariety: "集中を保つために多少の変化が必要",
-    fsa_sens_needLowBass: "より低く深い音を好む",
+    fsa_sens_suddenSounds: "突然の音を避ける",
+    fsa_sens_highFrequencySensitive: "高い周波数を避ける",
+    fsa_sens_preferConsistency: "一定に保つ",
+    fsa_sens_needVariety: "少し変化がほしい",
+    fsa_sens_needLowBass: "低く深い音が好き",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "情報が多すぎる",
@@ -3522,7 +3522,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "선택 사항이지만, 덮는 정도를 정하는 데 유용합니다.",
     fsa_q4: "4. 특별히 좋아하거나 듣고 싶지 않은 소리가 있나요?",
     fsa_q4_hint: "선택 사항입니다. 비워 두면 아키텍트가 대신 고릅니다.",
-    fsa_avoid: "피할 소리",
+    fsa_avoid: "소리 요구 사항",
     fsa_energy: "에너지:",
     fsa_duration_hint: "긴 세션에서는 아키텍트가 믹스를 단순하게 유지하고 시간에 따라 부드러운 변화를 제안할 수 있습니다.",
     fsa_built_for_you: "맞춤으로 만들어 드릴까요?",
@@ -3684,11 +3684,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "바람",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "갑작스러운 소리에 민감함",
-    fsa_sens_highFrequencySensitive: "고주파에 민감함",
-    fsa_sens_preferConsistency: "일정한 질감을 선호함",
-    fsa_sens_needVariety: "집중을 유지하려면 약간의 변화가 필요함",
-    fsa_sens_needLowBass: "더 낮고 깊은 소리를 선호함",
+    fsa_sens_suddenSounds: "갑작스러운 소리 피하기",
+    fsa_sens_highFrequencySensitive: "고주파 피하기",
+    fsa_sens_preferConsistency: "일정하게 유지하기",
+    fsa_sens_needVariety: "약간의 변화 주기",
+    fsa_sens_needLowBass: "낮고 깊은 소리가 좋음",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "너무 복잡함",
@@ -3907,7 +3907,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Необязательно, но помогает выбрать степень заглушения.",
     fsa_q4: "4. Есть ли звуки, которые вам особенно нравятся или которые вы не хотите слышать?",
     fsa_q4_hint: "Необязательно. Оставьте пустым, и архитектор выберет за вас.",
-    fsa_avoid: "Избегать",
+    fsa_avoid: "Звуковые предпочтения",
     fsa_energy: "Энергия:",
     fsa_duration_hint: "Для длинных сессий архитектор может сохранить микс простым и предлагать мягкие изменения со временем.",
     fsa_built_for_you: "Хотите собранный под вас?",
@@ -4069,11 +4069,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Ветер",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Чувствителен к резким звукам",
-    fsa_sens_highFrequencySensitive: "Чувствителен к высоким частотам",
-    fsa_sens_preferConsistency: "Предпочитаю ровную текстуру",
-    fsa_sens_needVariety: "Нужно немного разнообразия, чтобы не терять вовлечённость",
-    fsa_sens_needLowBass: "Предпочитаю более глубокие/низкие звуки",
+    fsa_sens_suddenSounds: "Избегать резких звуков",
+    fsa_sens_highFrequencySensitive: "Избегать высоких частот",
+    fsa_sens_preferConsistency: "Сохранять ровность",
+    fsa_sens_needVariety: "Дайте немного разнообразия",
+    fsa_sens_needLowBass: "Мне нравятся глубокие, низкие звуки",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Слишком насыщенно",
@@ -4291,7 +4291,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "ไม่บังคับ แต่ช่วยกำหนดระดับการกลบเสียงได้",
     fsa_q4: "4. มีเสียงที่คุณชอบเป็นพิเศษหรือไม่อยากได้ยินไหม?",
     fsa_q4_hint: "ไม่บังคับ เว้นว่างไว้แล้วสถาปนิกจะเลือกให้คุณ",
-    fsa_avoid: "หลีกเลี่ยง",
+    fsa_avoid: "ความต้องการด้านเสียง",
     fsa_energy: "พลังงาน:",
     fsa_duration_hint: "สำหรับช่วงที่ยาวขึ้น สถาปนิกสามารถคงส่วนผสมให้เรียบง่ายและเสนอการเปลี่ยนแปลงเบา ๆ ไปตามเวลา",
     fsa_built_for_you: "อยากได้แบบที่ออกแบบให้คุณไหม",
@@ -4453,11 +4453,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "ลม",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "ไวต่อเสียงที่ดังขึ้นกะทันหัน",
-    fsa_sens_highFrequencySensitive: "ไวต่อความถี่สูง",
-    fsa_sens_preferConsistency: "ชอบพื้นผิวเสียงที่สม่ำเสมอ",
-    fsa_sens_needVariety: "ต้องการความหลากหลายบ้างเพื่อคงความสนใจ",
-    fsa_sens_needLowBass: "ชอบเสียงที่ทุ้มลึกกว่า",
+    fsa_sens_suddenSounds: "หลีกเลี่ยงเสียงที่ดังกะทันหัน",
+    fsa_sens_highFrequencySensitive: "หลีกเลี่ยงความถี่สูง",
+    fsa_sens_preferConsistency: "รักษาความสม่ำเสมอ",
+    fsa_sens_needVariety: "ขอความหลากหลายบ้าง",
+    fsa_sens_needLowBass: "ฉันชอบเสียงทุ้มลึก",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "แน่นเกินไป",
@@ -4675,7 +4675,7 @@ export const focusSoundArchitect = {
     fsa_q3_hint: "Không bắt buộc, nhưng hữu ích để đặt mức độ che lấp.",
     fsa_q4: "4. Có âm thanh nào bạn đặc biệt thích hoặc không muốn nghe không?",
     fsa_q4_hint: "Không bắt buộc. Để trống và kiến trúc sư sẽ chọn giúp bạn.",
-    fsa_avoid: "Tránh",
+    fsa_avoid: "Nhu cầu âm thanh",
     fsa_energy: "Năng lượng:",
     fsa_duration_hint: "Với các phiên dài hơn, kiến trúc sư có thể giữ bản phối đơn giản và đề xuất những thay đổi nhẹ nhàng theo thời gian.",
     fsa_built_for_you: "Muốn một bản riêng cho bạn?",
@@ -4837,11 +4837,11 @@ export const focusSoundArchitect = {
     fsa_pref_wind: "Gió",
 
     // ── Sensitivities ──
-    fsa_sens_suddenSounds: "Nhạy cảm với âm thanh đột ngột",
-    fsa_sens_highFrequencySensitive: "Nhạy cảm với tần số cao",
-    fsa_sens_preferConsistency: "Thích kết cấu âm ổn định",
-    fsa_sens_needVariety: "Cần đôi chút biến đổi để duy trì sự gắn kết",
-    fsa_sens_needLowBass: "Thích âm thanh trầm/thấp hơn",
+    fsa_sens_suddenSounds: "Tránh âm thanh đột ngột",
+    fsa_sens_highFrequencySensitive: "Tránh tần số cao",
+    fsa_sens_preferConsistency: "Giữ ổn định",
+    fsa_sens_needVariety: "Cho tôi chút biến đổi",
+    fsa_sens_needLowBass: "Tôi thích âm trầm, thấp",
 
     // ── Smart feedback options ──
     fsa_fb_too_busy: "Quá rậm rạp",

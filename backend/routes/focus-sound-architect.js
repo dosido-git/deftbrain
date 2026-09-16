@@ -29,7 +29,7 @@ Task: ${body.task || '(not given)'}
 What is interfering: ${body.interference || '(not given)'}
 Where they are: ${body.environment || '(not given)'}
 Sounds they asked for: ${(body.soundPreferences || []).join(', ') || 'NONE — they left it to you'}
-Sounds they cannot stand: ${(body.sensitivities || []).join(', ') || 'none given'}
+Sound needs (each read literally — some ask to avoid something, some ask to include something): ${(body.sensitivities || []).join(', ') || 'none given'}
 How energised they want to feel: ${body.energyGoal ?? '(not given)'}/100
 How long they will listen: ${body.sessionMinutes || body.minutes || '(not given)'} minutes
 
@@ -58,6 +58,18 @@ const hasSuddenSensitivity = (sensitivities) => {
 };
 const SHARP_TRANSIENT_TYPES = ['rain', 'fire'];
 
+// High-frequency sensitivity: white_noise is the brightest layer type — same
+// belt-and-suspenders reasoning as sudden-sound above, and the same fix for
+// the "chose brown_noise while describing it as unwanted bass" class of bug:
+// the prompt can say the right thing and still not do it, so a real
+// contradiction (like the AVOID one this constant helps enforce) needs a
+// deterministic backstop, not just a stronger instruction.
+const hasHighFreqSensitivity = (sensitivities) => {
+  const text = Array.isArray(sensitivities) ? sensitivities.join(' ') : String(sensitivities || '');
+  return /high frequenc/i.test(text);
+};
+const BRIGHT_TYPES = ['white_noise'];
+
 router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const startedAt = Date.now();
   try {
@@ -82,7 +94,7 @@ USER PROFILE:
 - What is interfering: ${interference || 'not specified'}
 - Planned listening time: ${sessionMinutes ? `${sessionMinutes} minutes` : 'open-ended'}
 - Sound preferences: ${prefList.join(', ') || 'not specified'}
-- Sensitivities: ${sensList.join(', ') || 'none specified'}
+- Sound needs (selections may mean avoid, or may mean include — read each literally): ${sensList.join(', ') || 'none specified'}
 - Energy goal: ${energyGoal || 50}/100 (0=very calm, 100=energized)
 ${feedback ? `- Previous feedback: ${feedback}` : ''}
 
@@ -94,7 +106,22 @@ NO GUARANTEES: Never say a sound will improve focus, prevent distraction, calm t
 
 MASKING: You may describe steady sound as intended to make environmental sounds less distinct. Do not claim it will eliminate speech or other distractions.
 
-SENSORY CONSTRAINTS ARE HARD CONSTRAINTS: If the user reports sensitivity to sudden sounds, high frequencies, excessive variation, bass, or another auditory characteristic, avoid conflicting layers unless the user explicitly asked for them.
+HARD CONSTRAINTS
+
+Treat every selection under "sound needs" as a hard requirement, not a soft preference — whether it asks you to avoid something or to include something.
+
+Before returning a soundscape, compare every proposed layer against every sound-needs selection.
+
+If the user selects:
+- Avoid sudden sounds → do not use rain, fire, or any other layer with abrupt, irregular, or startling events.
+- Avoid high frequencies → do not use bright, hiss-heavy, sharp, or high-frequency-forward layers; prefer brown or pink noise over white.
+- Keep it consistent → do not use strongly variable or eventful layers.
+- Give me some variation → do not build the mix from a single unchanging steady-state layer alone.
+- I like deep/low bass → include a brown-noise or other bass-forward layer, and do not describe the mix as light, bright, or thin.
+
+Never explain that a layer conflicting with the user's stated needs is appropriate anyway, and never write a "why" that describes the opposite of what the user actually selected.
+
+FINAL CONSTRAINT CHECK: Before returning the mix, ask yourself "Does any layer, or any 'why' text, contradict something the user said they want or do not want?" If yes, fix it before responding.
 
 KEEP IT SIMPLE: Return 1-3 layers. Every layer must have a distinct reason for being there — reference the user's actual task, environment, or stated preference. Do not add a layer merely to make the mix look more complete or sophisticated; two well-chosen layers beat three padded ones. Earn every layer.
 
@@ -119,7 +146,7 @@ Consider:
 - The user's task (deep work usually wants fewer layers; creative work can handle more variety).
 - What is interfering is more important than location: voices may call for steadier masking; a too-quiet environment may want gentle atmosphere; restlessness may fit modest variation; sleepiness may fit a lighter texture.
 - Their environment.
-- Sensitivities (sudden-sound sensitivity → avoid fire/rain's sharp transients; high-frequency sensitivity → prefer brown/pink over white).
+- Sound needs (see HARD CONSTRAINTS above — apply them exactly, in whichever direction each one states).
 - If soundPreferences is empty, pick a reasonable starting layer and say so plainly in "why".
 
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
@@ -160,6 +187,9 @@ CRITICAL:
       if (hasSuddenSensitivity(sensitivities)) {
         parsed.layers = parsed.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
       }
+      if (hasHighFreqSensitivity(sensitivities)) {
+        parsed.layers = parsed.layers.filter(l => !BRIGHT_TYPES.includes(l.type));
+      }
     }
 
     // Fail-open: it wraps a working answer.
@@ -195,7 +225,7 @@ USER PROFILE:
 - Task: ${task}
 - Environment: ${envList.join(', ') || 'not specified'}
 - Sound preferences: ${prefList.join(', ') || 'not specified'}
-- Sensitivities: ${sensList.join(', ') || 'none specified'}
+- Sound needs (selections may mean avoid, or may mean include — read each literally): ${sensList.join(', ') || 'none specified'}
 - Energy goal: ${energyGoal || 50}/100 (0=very calm, 100=energized)
 - Total session: ${minutes} minutes
 
@@ -266,6 +296,9 @@ CRITICAL:
           phase.layers = phase.layers.filter(l => validTypes.includes(l.type));
           if (hasSuddenSensitivity(sensitivities)) {
             phase.layers = phase.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
+          }
+          if (hasHighFreqSensitivity(sensitivities)) {
+            phase.layers = phase.layers.filter(l => !BRIGHT_TYPES.includes(l.type));
           }
         }
       });

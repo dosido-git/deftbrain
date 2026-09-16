@@ -570,11 +570,11 @@ const SOUND_PREFS = [
 ];
 
 const SENSITIVITIES = [
-  { id: 'suddenSounds', label: 'Sensitive to sudden sounds', labelKey: 'fsa_sens_suddenSounds' },
-  { id: 'highFrequencySensitive', label: 'Sensitive to high frequencies', labelKey: 'fsa_sens_highFrequencySensitive' },
-  { id: 'preferConsistency', label: 'Prefer consistent texture', labelKey: 'fsa_sens_preferConsistency' },
-  { id: 'needVariety', label: 'Need some variation to stay engaged', labelKey: 'fsa_sens_needVariety' },
-  { id: 'needLowBass', label: 'Prefer deeper/lower sounds', labelKey: 'fsa_sens_needLowBass' },
+  { id: 'suddenSounds', label: 'Avoid sudden sounds', labelKey: 'fsa_sens_suddenSounds' },
+  { id: 'highFrequencySensitive', label: 'Avoid high frequencies', labelKey: 'fsa_sens_highFrequencySensitive' },
+  { id: 'preferConsistency', label: 'Keep it consistent', labelKey: 'fsa_sens_preferConsistency' },
+  { id: 'needVariety', label: 'Give me some variation', labelKey: 'fsa_sens_needVariety' },
+  { id: 'needLowBass', label: 'I like deep/low bass', labelKey: 'fsa_sens_needLowBass' },
 ];
 
 const SMART_FEEDBACK_OPTIONS = [

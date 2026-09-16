@@ -3,6 +3,58 @@
 **Known-good:** tag `focussoundarchitect-v1` · golden `audit/focus-sound-architect-golden-sample.json`
 **Verify:** `npm run check:golden focus-sound-architect` (backend up: `npm run dev:backend`)
 
+## 2026-09-16 — real bug, not just wording: bass constraint contradicted itself
+
+Live example (Deep Work, "I like deep/low bass" selected) produced a brown-noise
+"Deep Bass Foundation" layer whose own `why` text said "You specified you cannot
+stand deep/low bass" — recommending exactly what it claimed to be avoiding. Root
+cause: the old prompt paragraph ("SENSORY CONSTRAINTS ARE HARD CONSTRAINTS...
+sensitivity to sudden sounds, high frequencies, excessive variation, **bass**...")
+listed bass in the same breath as the aversions, priming the model to treat ANY
+bass-related selection as something to avoid — even though `needLowBass`'s label
+(then "Prefer deeper/lower sounds") is a positive preference, confirmed by the
+"relaxing bedroom" ready-made example that pairs it with calm/low-energy inputs.
+
+Fix — replaced that paragraph with **HARD CONSTRAINTS**: an explicit per-item list
+covering both directions ("Avoid sudden sounds → ...", "I like deep/low bass →
+include a brown-noise layer, do not describe the mix as light/bright/thin"), plus
+a FINAL CONSTRAINT CHECK line asking the model to compare every layer and every
+`why` against every selection before returning. Also added `hasHighFreqSensitivity`
++ `BRIGHT_TYPES = ['white_noise']` as a deterministic code-level filter (mirroring
+the pre-existing `hasSuddenSensitivity`/`SHARP_TRANSIENT_TYPES` pattern for
+rain/fire) in both `/focus-sound-architect` and `/focus-sound-architect/scene` —
+the same "prompt says the right thing, code enforces it too" reasoning, since a
+prompt-only fix had already once proven insufficient for exactly this class of bug.
+No code-level enforcement added for the bass *inclusion* case (a "must add"
+constraint is riskier to enforce by blind injection than a "must remove" filter
+is) — relying on HARD CONSTRAINTS + the audit-style final check for that direction.
+
+**UI root cause, fixed alongside:** the "Avoid" heading sat over 5 chips that were
+actually a mix of aversions and preferences (`needLowBass` and `needVariety` are
+positive wants, not aversions) — "Avoid: Prefer deeper/lower sounds" was
+genuinely contradictory framing, not just awkward. Renamed the heading `fsa_avoid`
+"Avoid" → "Sound needs" and every chip to a self-contained directive that doesn't
+depend on the heading for its polarity: "Avoid sudden sounds", "Avoid high
+frequencies", "Keep it consistent", "Give me some variation", "I like deep/low
+bass" — across all 13 locales (`src/i18n/locales/tools/focus-sound-architect.js`),
+plus the matching hardcoded English fallback `label` in `SENSITIVITIES` (the
+string actually sent to the backend — the frontend sends `.label`, not the
+translated `t()` string, so this fallback is what the model sees regardless of
+UI language). Ran `npm run build:locales` after — the per-tool i18n source file
+isn't what the dev server reads; the generated bundle under
+`src/i18n/locales/generated/` is, and it needs a rebuild after every i18n source
+edit, per CLAUDE.md.
+
+Verified live: same Deep Work + "I like deep/low bass" input now produces
+"Brown noise emphasizes deep, lower frequencies as you stated you prefer..." —
+no contradiction, correct layer, correct framing.
+
+**Description/tagline:** already fixed in commit `7fabdb51` earlier the same day
+(catalog `description`/`tagline` in `src/data/tools.js` already match the
+requested text exactly, already on `origin/main`) — a re-check of a report that
+was very likely a stale cached page load, not an unfixed regression. No change
+needed.
+
 ## What it is
 A focus-soundscape designer. **As of 2026-09-14, rain/ocean/wind/forest/fire/café play real
 recorded ambience from `public/sounds/*.m4a`** (see dated entry below) — white/pink/brown noise

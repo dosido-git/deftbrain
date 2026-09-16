@@ -230,6 +230,10 @@ const TicketTackler = ({ tool }) => {
     switch (s) {
       case 'citation':          return { icon: '📋', label: t('tt_source_citation') };
       case 'supporting_evidence': return { icon: '📎', label: t('tt_source_evidence') };
+      // Reuses the same "Verified" string as statusMeta's VERIFIED case below —
+      // same concept (established through research), same word, one less
+      // i18n key to keep in sync across 13 languages.
+      case 'researched':         return { icon: '✓', label: t('tt_status_verified') };
       case 'user_account':
       default:                   return { icon: '🗣️', label: t('tt_source_account') };
     }
