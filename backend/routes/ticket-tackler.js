@@ -189,7 +189,12 @@ RULES:
 
     const investigation = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2600,
+      // 2026-09-16: bumped 2600 -> 4000 after a live golden-check truncation
+      // on the German quote-heavy case (stop_reason max_tokens, all 3 retries
+      // truncated identically — deterministic, not a flake). The schema is
+      // small (<=4 decision_questions, <=6 findings) but German text plus
+      // named authoritative sources/URLs pushed a real case over 2600.
+      max_tokens: 4000,
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
       system: withLanguage(INVESTIGATOR_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: investigatorContent }],

@@ -22,9 +22,35 @@ in `what_may_matter`/`evidence_to_get` once all findings are in, which
 matches the instruction's own wording ("ask the user to gather evidence" =
 the `evidence_to_get` array, a reviewer output).
 
-Installed and statically verified (syntax, diff-audit) — **not yet live-
-verified**, same API-quota block as round 7 (resets 2026-10-01). Not
-pushed.
+**Live-verified** (API access returned): `check:golden ticket-tackler`
+first run was 4/5 — caught a real pre-existing bug in the round-7 rewrite,
+not a round-8 regression: the investigator's `max_tokens: 2600` truncated
+on the German quote-heavy case (`stop_reason: 'max_tokens'`, deterministic,
+not a flake). Bumped to 4000 with a dated comment explaining why; re-run
+5/5 clean.
+
+Live qualitative check (LA red-light case, threshold camera-legitimacy
+fact unresolved + a hearsay signal-timing theory added to the account):
+- RESEARCH PRIORITY held — the hearsay theory was sequenced behind the
+  threshold fact (pushed to BEFORE_FILING urgency, lowest, vs.
+  BEFORE_DECIDING for the threshold), and the necessity defense was
+  explicitly framed as "becomes the primary fallback... if the video does
+  not clearly show yellow entry" rather than competing on equal footing.
+- APPEAL PROVENANCE's spirit held even with no appeal drafted (correctly
+  gated — verdict was NOT_ENOUGH_INFORMATION_YET): dont_say explicitly
+  caught the hearsay claim — "Do not claim the signal timing 'is too
+  short' based on what other drivers said online — that is not verified."
+  Direct in-appeal-letter confirmation (a case with a real appeal_letter
+  containing a similar temptation) is still open for a future check.
+- Also genuinely strong on its own terms: real, specific, correctly-cited
+  law (CVC 21453 stop-line-crossing rule, California MUTCD Table
+  4D-102(CA) minimum yellow interval, CVC 21455.5 camera certification,
+  the necessity defense correctly hedged as "recognized but narrow" with a
+  cited source) — well beyond anything produced earlier this session on
+  the same fact pattern.
+
+Pushed as three commits: `9d2103bd` (two-stage rewrite), `c5b2f88b`
+(APPEAL PROVENANCE + RESEARCH PRIORITY), and the max_tokens fix above.
 
 ## 2026-09-16 (round 7) — owner-supplied rewrite: back to two calls, deliberately
 
