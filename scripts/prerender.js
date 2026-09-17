@@ -239,12 +239,14 @@ function getHubsHTML() {
   const links = cats.sort((a, b) => HUB_NAMES[a].localeCompare(HUB_NAMES[b]))
     .map(c => `<a href="/guides/${c}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(HUB_NAMES[c])}</a>`)
     .join('\n        ');
-  return `<nav class="db-hubs" aria-label="Guide categories" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Browse guides by topic</h2>
-      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
-        ${links}
-      </div>
-    </nav>`;
+  return `<details class="db-hubs" style="margin:0 0 12px">
+      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Browse guides by topic</summary>
+      <nav aria-label="Guide categories" style="padding:.25rem 0 0 1rem">
+        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+          ${links}
+        </div>
+      </nav>
+    </details>`;
 }
 
 // Tool page → the hub(s) its own guides live in. Derived from the guides
@@ -301,12 +303,14 @@ function getFeaturedToolsHTML(tools) {
     const blurb = t.tagline || t.seoTitle || '';
     return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
   }).join('\n        ');
-  return `<nav class="db-featured-tools" aria-label="Featured tools" style="max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 0">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Some of our most popular tools</h2>
-      <ul style="list-style:none;padding:0;margin:0">
-        ${items}
-      </ul>
-    </nav>`;
+  return `<details class="db-featured-tools" style="max-width:760px;margin:0 auto;padding:1rem 1.25rem 0">
+      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Some of our most popular tools</summary>
+      <nav aria-label="Featured tools">
+        <ul style="list-style:none;padding:0;margin:.5rem 0 0">
+          ${items}
+        </ul>
+      </nav>
+    </details>`;
 }
 
 // Homepage guides block — the homepage is the highest-authority page and linked to
@@ -323,12 +327,15 @@ function getHomepageGuidesHTML(guidesByTool, n = 10) {
   const links = picks
     .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
     .join('\n        ');
-  return `<nav class="db-home-guides" aria-label="Guides" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Guides — <a href="/guides" style="color:#2c4a6e">browse all ${total} &rarr;</a></h2>
-      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
-        ${links}
-      </div>
-    </nav>`;
+  return `<details class="db-home-guides" style="margin:0 0 12px">
+      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Guides — browse all ${total}</summary>
+      <nav aria-label="Guides" style="padding:.25rem 0 0 1rem">
+        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+          ${links}
+          <a href="/guides" style="color:#2c4a6e;font-weight:600">Browse all guides &rarr;</a>
+        </div>
+      </nav>
+    </details>`;
 }
 
 // ─── HTML injection ───────────────────────────────────────────────────────────

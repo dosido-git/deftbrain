@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import toolsKeepList from '../data/tools-keep-list.json';
+import Caret from './Caret';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -151,11 +152,32 @@ export default function RelatedLinks() {
     // 2026-08-08, had one inbound internal link each — none of them from here,
     // the highest-authority page. Mirrors getHubsHTML in prerender.js.
     const allHubs = hubLinks([...new Set(guides.map(g => g.category))].sort());
+    // Collapsed by default on the homepage: unlike a tool page's own Related
+    // Guides/Related Tools (still the always-visible Block below, unchanged),
+    // these three blocks are catalog-wide SEO surface area a first-time
+    // visitor did not come for. PF-34: the disclosure triangle is Caret, not
+    // a hand-rolled glyph — <details className="group"> is what groupOpen
+    // rotates against.
+    const DisclosureBlock = ({ label, links, hub }) => (links.length === 0 ? null : (
+      <details className={`group mb-3 border-b ${c.border} pb-3`}>
+        <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden text-[11px] uppercase tracking-[0.1em] font-bold ${c.head} py-2 flex items-center gap-2`}>
+          <Caret groupOpen />
+          <span>{label}{hub}</span>
+        </summary>
+        <nav aria-label={label} className="pt-1 pl-5">
+          <div className="flex flex-wrap gap-x-4 gap-y-0 text-sm leading-relaxed">
+            {links.map(l => (
+              <a key={l.href} href={l.href} className={`${c.link} no-underline transition-colors inline-block py-1.5`}>{l.text}</a>
+            ))}
+          </div>
+        </nav>
+      </details>
+    ));
     body = (
       <>
-        <Block label="Some of our most popular tools" links={featured} />
-        <Block label="Guides" links={links} hub={hub} />
-        <Block label="Browse guides by topic" links={allHubs} />
+        <DisclosureBlock label="Some of our most popular tools" links={featured} />
+        <DisclosureBlock label="Guides" links={links} hub={hub} />
+        <DisclosureBlock label="Browse guides by topic" links={allHubs} />
       </>
     );
   } else {
