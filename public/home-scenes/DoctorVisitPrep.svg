@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 150">
-<defs><filter id="s"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity=".18"/></filter><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dbe6e2"/><stop offset="1" stop-color="#f5f0e8"/></linearGradient></defs>
-<rect width="320" height="150" fill="url(#g)"/>
-<ellipse cx="222" cy="138" rx="105" ry="24" fill="#6f8e86" opacity=".14"/>
-<g filter="url(#s)" transform="translate(45 25) rotate(-3 85 48)"><rect width="170" height="96" rx="4" fill="#fffdf9" stroke="#ded6ca"/><text x="14" y="22" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.4" fill="#65717b">APPOINTMENT</text><rect x="14" y="38" width="125" height="5" rx="2" fill="#d8dde0"/><rect x="14" y="50" width="104" height="5" rx="2" fill="#d4a35b" opacity=".65"/><rect x="14" y="62" width="138" height="5" rx="2" fill="#d8dde0"/><rect x="14" y="74" width="88" height="5" rx="2" fill="#d8dde0"/></g>
-<g transform="translate(247 88)"><ellipse cx="0" cy="30" rx="38" ry="8" fill="#000" opacity=".08"/><rect x="-25" y="0" width="50" height="35" rx="5" fill="#fff"/><path d="M25 8q25 0 18 18q-4 10-18 7" fill="none" stroke="#6f8e86" stroke-width="5"/><ellipse cy="3" rx="25" ry="6" fill="#6d4a35"/></g></svg>

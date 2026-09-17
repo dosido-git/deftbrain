@@ -49,7 +49,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
     const tool = item && toolFor(item.toolId);
     if (!item || !tool) return null;
     return <Link to={`/${tool.id}`} className="absolute inset-0 rounded-xl overflow-hidden bg-white border shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2" style={{borderColor:BORDER,backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
-      <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/${item.toolId}.svg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
+      <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
       <div className="px-3.5 py-3">
         <div className="text-[8px] uppercase tracking-[.13em] font-bold text-slate-500 truncate">{tool.title}</div>
         <h3 className="mt-1.5 text-[13px] font-extrabold leading-[1.18]" style={{color:NAVY}}>{item.problem}</h3>
@@ -110,7 +110,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
         <p className="mt-2 text-[9.5px]" style={{color:MUTED}}>Try: lease agreement · doctor appointment · suspicious charge · difficult conversation</p>
         <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
       </div>
-      <div className="relative min-h-[245px] lg:min-h-[285px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/hero-everyday.svg" alt="A lease, doctor-visit notes, and a difficult text conversation — examples of everyday situations DeftBrain can help with" className="absolute inset-0 w-full h-full object-cover" /></div>
+      <div className="relative min-h-[245px] lg:min-h-[285px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/hero-everyday.jpg" alt="A lease, doctor-visit notes, and a difficult text conversation — examples of everyday situations DeftBrain can help with" className="absolute inset-0 w-full h-full object-cover" /></div>
     </section>
 
     <section className="py-7 sm:py-8" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
