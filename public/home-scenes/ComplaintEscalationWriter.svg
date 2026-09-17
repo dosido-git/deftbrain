@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 150">
+<defs><filter id="s"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity=".18"/></filter><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9ded8"/><stop offset="1" stop-color="#f5f0e8"/></linearGradient></defs>
+<rect width="320" height="150" fill="url(#g)"/>
+<ellipse cx="240" cy="138" rx="105" ry="24" fill="#b85f56" opacity=".14"/>
+<g filter="url(#s)" transform="translate(52 25) rotate(-3 85 48)"><rect width="170" height="96" rx="4" fill="#fffdf9" stroke="#ded6ca"/><text x="14" y="22" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.4" fill="#65717b">FOLLOW-UP</text><rect x="14" y="38" width="125" height="5" rx="2" fill="#d8dde0"/><rect x="14" y="50" width="104" height="5" rx="2" fill="#344c60" opacity=".65"/><rect x="14" y="62" width="138" height="5" rx="2" fill="#d8dde0"/><rect x="14" y="74" width="88" height="5" rx="2" fill="#d8dde0"/></g>
+<g transform="translate(232 45) rotate(7)"><rect width="58" height="92" rx="12" fill="#20262b"/><rect x="5" y="8" width="48" height="70" rx="7" fill="#35414a"/><rect x="13" y="24" width="31" height="18" rx="8" fill="#344c60" opacity=".85"/></g></svg>
