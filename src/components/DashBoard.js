@@ -1,12 +1,10 @@
 // src/components/DashBoard.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import Caret from './Caret';
 import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
 import HomeIntro from './HomeIntro';
-import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import IdeaPrompt from './IdeaPrompt';
@@ -390,16 +388,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
       <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}
-        /* Examples disclosure. list-style:none plus hiding the WebKit marker,
-           NOT display:block - changing display on a summary costs it the
-           native disclosure behaviour in WebKit. The flex row is an inner div.
-           No backticks in here: this is inside a template literal. */
-        .db-ex>summary{list-style:none}
-        .db-ex>summary::-webkit-details-marker{display:none}
-        .db-ex[open] .db-ex-show{display:none}
-        .db-ex:not([open]) .db-ex-hide{display:none}
-        .db-ex-caret{transition:transform .2s}
-        .db-ex[open] .db-ex-caret{transform:rotate(180deg)}
         /* PRINT. Measured three ways before settling here.
 
            1. break-after:avoid on the heading — Chrome ignores it next to the
@@ -454,9 +442,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               allTools={allTools}
               onBrowse={() => catalogRef.current &&
                 catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              categories={CATEGORY_META
-                .map(cm => ({ ...cm, count: categoryCounts[cm.name] || 0, onSelect: selectCategory }))
-                .filter(c => c.count > 0)}
+              setSearchTerm={setSearchTerm}
             />
           </div>
         )}
@@ -470,44 +456,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
         </div>
       </header>
-
-      {/* ═══════════ DEMO CARDS ═══════════ */}
-      {/* Examples sit behind a disclosure. They are worth having — they show
-          what the output actually looks like — but they are not what a
-          returning visitor came for, and on mobile they pushed the catalog
-          two screens down. Closed by default puts the categories nearer the
-          fold; one tap gets the demos back. */}
-      {!isSearching && (
-        <details className="db-ex" style={{ marginTop: 14, marginBottom: 10 }}>
-          {/* The padding goes on the SUMMARY, not the inner span. Vertical
-              padding on an inline-flex element does not grow its line box, so
-              putting it there left the tap row at 25px - barely over WCAG 2.2
-              AA's 24px floor. On the summary (display:list-item, a block box)
-              it works: 25px -> 41px, with -my cancelling the visual shift. */}
-          <summary style={{ cursor: 'pointer', paddingBlock: 8, marginBlock: -8 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              paddingInlineStart: 12,
-            }}>
-              <span className="text-[12px] font-extrabold uppercase tracking-[0.15em]"
-                    style={{ color: CLR.navy500 }}>Examples</span>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                fontSize: 11, fontWeight: 700, color: CLR.gold700,
-                border: `1px solid ${CLR.sand300}`, borderRadius: 999,
-                padding: '2px 8px', background: '#ffffff',
-              }}>
-                <span className="db-ex-show">See what the output looks like</span>
-                <span className="db-ex-hide">Hide</span>
-                <Caret className="db-ex-caret" />
-              </span>
-            </span>
-          </summary>
-          <div style={{ marginTop: 10 }}>
-            <DemoCards isDark={false} />
-          </div>
-        </details>
-      )}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && !TOOL_FINDER_PAUSED && <div className="mt-4"><ToolFinderWizard /></div>}
