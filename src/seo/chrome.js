@@ -92,24 +92,27 @@ function getToolIndexHTML(tools, relatedHTML = '') {
 // Static twin of src/components/EmailCapture.js — same copy, same endpoint,
 // vanilla JS (these pages have no React). Keep the two in sync.
 //
-// Separation, matching the React component: the band is a warm trough a step
-// DARKER than the page, and the form sits in a white card inset within it. The
-// old version was #faf8f5 against a #fafaf9 page — one point apart, so the
-// block read as more page rather than as a distinct offer.
+// 2026-09-16: matches the React component's compact single-row redesign —
+// no more inset white card, band shrunk to a slim strip, copy shortened.
+// flex-wrap (not a media query) does the stacking-on-narrow job here, since
+// this is crawler/no-JS-client chrome, not the interactive React page — a
+// close visual match is the goal, not a pixel-exact breakpoint mirror.
 function getCaptureHTML() {
-  return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#f2ece1">
-    <div style="max-width:1100px;margin:0 auto;padding:44px 20px;font-family:'DM Sans',system-ui,sans-serif">
-      <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e0d7c6;border-radius:16px;padding:26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
-        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">One useful tool a month, in a short email &mdash; the one worth knowing about before life demands it. That is the whole thing. No spam, and unsubscribe in one click.</p>
-        <form id="db-cap-form" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
+  return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;border-bottom:1px solid #e8e1d5;background:#f2ece1">
+    <div style="max-width:1280px;margin:0 auto;padding:18px 20px;font-family:'DM Sans',system-ui,sans-serif">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px">
+        <div style="flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px">
+          <p style="flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
+          <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:0">One useful tool a month &mdash; the one worth knowing about before life demands it.</p>
+        </div>
+        <form id="db-cap-form" style="display:flex;flex-wrap:nowrap;gap:8px;flex:0 1 380px;min-width:280px">
           <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
           <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
-            style="flex:1;min-width:220px;padding:10px 16px;border-radius:12px;border:1px solid #e8e1d5;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;outline:none">
+            style="flex:1;min-width:0;padding:8px 14px;border-radius:8px;border:1px solid #d8d0c2;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;outline:none">
           <button id="db-cap-btn" type="submit"
-            style="padding:10px 24px;border-radius:12px;border:0;background:#1a2e44;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Subscribe</button>
+            style="flex-shrink:0;padding:8px 20px;border-radius:8px;border:0;background:#1a2e44;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Subscribe</button>
         </form>
-        <p id="db-cap-msg" style="font-size:14px;font-weight:500;color:#1a2e44;margin:8px 0 0"></p>
+        <p id="db-cap-msg" style="flex-basis:100%;text-align:right;font-size:14px;font-weight:500;color:#1a2e44;margin:0"></p>
       </div>
     </div>
   </div>

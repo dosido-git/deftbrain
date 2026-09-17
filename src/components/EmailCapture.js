@@ -37,25 +37,14 @@ const EmailCapture = () => {
   const [error, setError] = useState('');
 
   const c = {
-    // The BAND steps away from the page, and the CARD steps away from the band.
-    // Previously `bg` was zinc-900 in dark mode — the exact page background —
-    // so the only separation was a 1px zinc-800 rule that is invisible against
-    // zinc-900. Light mode was #faf8f5 against a #fafaf9 page: one point apart.
-    // In practice the block read as more page, directly under the tool's output.
     bg:     isDark ? 'bg-zinc-950' : 'bg-[#f2ece1]',
-    // zinc-800, not zinc-900: zinc-900 IS the page colour, so the card would
-    // read as a hole rather than an object. Three levels now — page zinc-900,
-    // band zinc-950 (a trough), card zinc-800 (raised) — which is also the
-    // surfaceAlt every other card on a tool page uses.
-    card:   isDark ? 'bg-zinc-800' : 'bg-white',
-    cardBd: isDark ? 'border-zinc-700' : 'border-[#e0d7c6]',
     border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
     head:   isDark ? 'text-zinc-100' : 'text-[#1a2e44]',
     body:   isDark ? 'text-zinc-400' : 'text-[#5a544a]',
     accent: isDark ? 'text-orange-400' : 'text-[#c8872e]',
     input:  isDark
-      ? 'bg-zinc-950 border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:border-orange-400'
-      : 'bg-white border-[#e8e1d5] text-[#1a2e44] placeholder-[#a8a39a] focus:border-[#c8872e]',
+      ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:border-orange-400'
+      : 'bg-white border-[#d8d0c2] text-[#1a2e44] placeholder-[#a8a39a] focus:border-[#c8872e]',
     btn:    isDark
       ? 'bg-orange-500 text-zinc-950 hover:bg-orange-400 disabled:opacity-60'
       : 'bg-[#1a2e44] text-white hover:bg-[#2c4a6e] disabled:opacity-60',
@@ -86,26 +75,26 @@ const EmailCapture = () => {
   };
 
   return (
-    <div className={`${c.bg} border-t ${c.border}`}>
-      <div className="max-w-5xl mx-auto px-5 py-10 sm:py-12">
-        <div className={`max-w-xl mx-auto rounded-2xl border ${c.cardBd} ${c.card} px-6 py-7 shadow-sm`}>
-          <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>
-            <span>📮</span> Before you go
-          </p>
-          <p className={`text-sm mt-2 leading-relaxed ${c.body}`}>
-            One useful tool a month, in a short email — the one worth knowing
-            about before life demands it. That is the whole thing. No spam, and
-            unsubscribe in one click.
-          </p>
+    <div className={`${c.bg} border-y ${c.border}`}>
+      <div className="max-w-7xl mx-auto px-5 py-5 sm:py-4">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+          <div className="lg:flex lg:items-baseline lg:gap-4 lg:flex-1 min-w-0">
+            <p className={`shrink-0 text-[11px] uppercase tracking-[0.16em] font-bold ${c.accent}`}>
+              <span>📮</span> Before you go
+            </p>
+            <p className={`text-sm mt-1.5 lg:mt-0 leading-relaxed ${c.body}`}>
+              One useful tool a month — the one worth knowing about before life demands it.
+            </p>
+          </div>
 
           {(state === 'done' || state === 'already') ? (
-            <p className={`text-sm font-medium mt-4 ${c.head}`}>
+            <p className={`text-sm font-medium lg:text-right ${c.head}`}>
               {state === 'done'
                 ? 'Check your inbox — confirm the email and you’re in.'
                 : 'You’re already on the list. The Operator admires the enthusiasm.'}
             </p>
           ) : (
-            <form onSubmit={submit} className="mt-4 flex flex-col sm:flex-row gap-2">
+            <form onSubmit={submit} className="flex w-full lg:w-auto lg:min-w-[360px] gap-2">
               <label htmlFor="db-capture-email" className="sr-only">Email address</label>
               <input
                 id="db-capture-email"
@@ -115,22 +104,22 @@ const EmailCapture = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@anywhere.com"
                 autoComplete="email"
-                className={`flex-1 min-w-0 px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors ${c.input}`}
+                className={`flex-1 min-w-0 px-3.5 py-2 rounded-lg border text-sm outline-none transition-colors ${c.input}`}
               />
               <button
                 type="submit"
                 disabled={state === 'sending'}
-                className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors ${c.btn}`}
+                className={`shrink-0 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${c.btn}`}
               >
                 {state === 'sending' ? 'Sending…' : 'Subscribe'}
               </button>
             </form>
           )}
-
-          {state === 'error' && (
-            <p className={`text-sm mt-2 ${c.accent}`}>{error}</p>
-          )}
         </div>
+
+        {state === 'error' && (
+          <p className={`text-sm mt-2 lg:text-right ${c.accent}`}>{error}</p>
+        )}
       </div>
     </div>
   );
