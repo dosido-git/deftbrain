@@ -145,6 +145,7 @@ function fuzzyMatch(query, target) {
 // ════════════════════════════════════════════════════════════
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [showCatalog, setShowCatalog] = useState(false);
   // 'category' | 'alpha' | 'recent'. Was a two-state toggle whose second
   // state claimed to be "Most Used" — see recencyRank for why that was never
   // something this app could know.
@@ -155,7 +156,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const resultsRef    = useRef(null);
   const stripScrollRef = useRef(null);
   const pillRefsMap    = useRef({});
-  const catalogRef     = useRef(null); // hero CTA scroll target (category strip)
+  const catalogRef     = useRef(null); // full tool catalog target
+
+  const openCatalog = useCallback(() => {
+    setShowCatalog(true);
+    window.setTimeout(() => catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
+  }, []);
 
   // ⌘K shortcut
   useEffect(() => {
@@ -425,9 +431,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             (measured 51x11px overlap, 2026-08-01). Stack them instead, pills
             right-aligned on their own line — which is what ToolPageWrapper
             already does on mobile. */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
-          <div className="flex justify-end sm:block">
+          <div className="flex items-center justify-end gap-5">
+            <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
+              <button type="button" onClick={openCatalog} className="hover:underline underline-offset-4">Tools</button>
+              <Link to="/guides" className="hover:underline underline-offset-4">Guides</Link>
+              <Link to="/about" className="hover:underline underline-offset-4">About</Link>
+            </nav>
             <LocaleSelectors dark={false} />
           </div>
         </div>
@@ -436,17 +447,18 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             tool. Hidden while searching — someone mid-query wants results,
             not the pitch. Categories and the count come from the live
             catalog, so there is one source of truth. */}
-        {!isSearching && (
+        {!isSearching && !showCatalog && (
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
-              onBrowse={() => catalogRef.current &&
-                catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onBrowse={openCatalog}
               setSearchTerm={setSearchTerm}
             />
           </div>
         )}
+      </header>
 
+      {(showCatalog || isSearching) && <>
         {/* Search + sort. NOT inside the !isSearching guard — the box must stay
             mounted or it vanishes mid-query, which is why it sits here rather
             than in HomeIntro. Right-aligned on its own row now that the intro
@@ -455,7 +467,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
         </div>
-      </header>
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && !TOOL_FINDER_PAUSED && <div className="mt-4"><ToolFinderWizard /></div>}
@@ -763,6 +774,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <IdeaPrompt source="catalog-end" compact />
         </div>
       )}
+      </>}
     </div>
   );
 }
