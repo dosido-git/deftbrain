@@ -13,6 +13,58 @@ Meta-tool: recommends other DeftBrain tools for a described problem. In `LOCALIZ
 4. Guard `!parsed.recommendations` (top-level; empty array is truthy and handled).
 5. No currency.
 
+## 2026-09-16 — re-enabled (was paused 2026-08-22 in commit b640b175)
+
+Owner asked to turn Tool Finder back on. `src/data/toolFinderPaused.js`'s
+`TOOL_FINDER_PAUSED` flipped `true` -> `false`, gating six entry points at
+once: the tool page itself, the homepage hero's ask box + invitation +
+closing band (all three in HomeIntro.js), the dashboard wizard
+(DashBoard.js), the footer's "Find a Tool" (Footer.js), and the 404 page's
+first button (NotFound.js) — all live-checked individually after the flip,
+all back.
+
+**Before flipping, verified the reason for the pause was actually fixed**:
+the pause commit's own stated cause was "only 42 of 124 entries said what
+their tool is NOT for." Counted `notFor:` occurrences in
+`src/data/toolFinderMetadata.js` directly: 124/124, all non-empty. Several
+"fill remaining gaps" commits landed between the pause and today closing it.
+
+**Then re-tested the pause's own named failure case**, not just the
+aggregate stat — the commit's exact example: "a bill from the hospital I
+don't understand," which went to a document translator 3/3 times instead of
+BillRescue. Same query today: still 0/3 BillRescue — the aggregate "every
+tool has SOME notFor" stat didn't mean this SPECIFIC pairwise ambiguity got
+resolved. Root cause: JargonAssassin's metadata had explicit `handoffs` for
+contract-review, lease, medical-visit-notes, and general-rewriting overlaps
+— but none for billing, even though its own `whenToRecommend` broadly
+claims "medical or insurance document" territory that overlaps BillRescue's.
+BillRescue's own metadata was already excellent and on-point (problems[]
+includes "I received a hospital, clinic, or other medical bill whose
+charges I do not understand" — near-verbatim match) but had no mechanism to
+win a head-to-head the way a `handoffs` entry on the COMPETING tool
+provides.
+
+**Fix**: added a `handoffs` entry to JargonAssassin pointing billing queries
+to BillRescue, and strengthened its `notFor`/`whenNotToRecommend` to name
+the exclusion explicitly ("even a confusing medical or hospital bill is a
+billing problem first"). Re-tested the same query 3x after: 2/3 BillRescue
+(up from 0/3) — a real improvement, not a guaranteed one; some variance is
+inherent to an LLM-judged boundary case at `MODELS.FAST`, and the query
+genuinely sits between two tools' legitimate scope. Do not chase 3/3 by
+over-tuning this one canary at the expense of genuinely dual-relevant
+queries — the fix here was closing a missing signal (JargonAssassin had
+zero awareness that billing was out of scope), not forcing a deterministic
+outcome.
+
+**Note for next time a "some field exists everywhere" audit closes a pause
+reason**: check the ORIGINAL named failure example specifically, not just
+the aggregate coverage number the pause cited. The two can diverge, as they
+did here.
+
+`check:golden tool-finder` 5/5 both before and after the metadata fix — the
+matcher's structural behavior is unaffected; this was a content/grounding
+fix, not a schema or code change.
+
 ## 2026-08-21 — the page that removes taxonomy was asking for taxonomy
 
 - **"Start Here" -> "Tool Finder"** (display only; id and route have always been

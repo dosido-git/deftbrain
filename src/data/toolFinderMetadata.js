@@ -2176,16 +2176,18 @@ export const toolFinderMetadata = {
       "rewriting ordinary prose solely to make the writing clearer when no consequential document analysis is needed",
       "a contract-specific review when the user primarily wants clause-by-clause contract implications and negotiation points",
       "a residential lease-specific workflow or a medical-visit debrief when a dedicated DeftBrain tool fits better",
+      "a bill the user is trying to resolve, dispute, or afford — even a confusing medical or hospital bill is a billing problem first, and BillRescue is the dedicated tool for it",
     ],
     handoffs: [
       { when: "the user wants a contract-specific review of clauses, practical effects, ambiguities, and negotiation points", toolId: "ContractDecoder" },
       { when: "the document is a residential lease and the user wants lease-specific traps, questions, and protections", toolId: "LeaseTrapDetector" },
       { when: "the user wants to understand notes, instructions, or information from a medical visit rather than a general document", toolId: "DoctorVisitTranslator" },
       { when: "the user simply wants supplied writing made clearer or easier to read rather than analyzed for consequences", toolId: "PlainTalk" },
+      { when: "the document is a bill — including a confusing hospital, medical, or insurance bill — and the user wants to understand it, dispute it, or decide what to do about it", toolId: "BillRescue" },
     ],
     primaryIntent: "understand a consequential or confusing document in plain language, identify what matters, and see what to check or do next",
     whenToRecommend: "Recommend when the user is staring at a notice, policy, form, statement, agreement, letter, medical or insurance document, government communication, or other dense document and wants both comprehension and practical significance.",
-    whenNotToRecommend: "Do not recommend when the task is only general rewriting, when the user wants a definitive professional judgment, or when a dedicated contract, lease, or medical-visit workflow is clearly the better fit.",
+    whenNotToRecommend: "Do not recommend when the task is only general rewriting, when the user wants a definitive professional judgment, when the document is a bill (even a confusing medical one — that is BillRescue), or when a dedicated contract, lease, or medical-visit workflow is clearly the better fit.",
   },
 
   LaundroMat: {
