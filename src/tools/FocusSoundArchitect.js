@@ -1428,7 +1428,6 @@ const FocusSoundArchitect = ({ tool }) => {
             <p className={`text-base ${c.textSecondary}`}>
               <span className="me-2 text-lg">{tool?.icon ?? ' 🎧'}</span>{tool?.tagline ?? t('fsa_tagline')}
             </p>
-            <p className={`text-xs ${c.textMuted} mt-1 max-w-3xl`}>{t('fsa_intro')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {recipe && (
@@ -1438,6 +1437,8 @@ const FocusSoundArchitect = ({ tool }) => {
           )}
         </div>
       </div>
+
+      <p className={`text-xs ${c.textMuted} max-w-3xl`}>{t('fsa_intro')}</p>
 
       {/* ═══════════════════════════════════════════════════ */}
       {/* SETUP (no recipe yet)                               */}

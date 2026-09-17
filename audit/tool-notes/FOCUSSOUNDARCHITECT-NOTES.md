@@ -3,6 +3,26 @@
 **Known-good:** tag `focussoundarchitect-v1` · golden `audit/focus-sound-architect-golden-sample.json`
 **Verify:** `npm run check:golden focus-sound-architect` (backend up: `npm run dev:backend`)
 
+## 2026-09-16 (later) — layout move + NO PREDICTED OUTCOMES
+
+**Layout:** `fsa_intro` (the "Tell me what you are doing..." line) moved
+from inside the persistent header card to its own `<p>` immediately below
+it — still unconditional (renders whether or not `recipe` exists), just
+visually separated from the header box rather than nested in it.
+
+**NO PREDICTED OUTCOMES** added to both the main endpoint (after DURATION)
+and the scene endpoint (after the NO NEUROSCIENCE CLAIMS "two ways this
+goes wrong" examples, since a multi-phase design over real minutes is the
+most tempting place to narrate a promised arc): don't predict how a sound
+or mix will affect the user over time — describe why a layer/phase fits
+the stated preferences or situation, then let listening and feedback
+decide. Consolidates and sharpens the same territory NO GUARANTEES and
+DURATION already covered (immediate-effect promises and habituation
+claims, respectively) into one explicit "no forecasting" rule, with the
+scene version calling out `arc_explanation` and per-phase `purpose` by
+name as the fields most at risk. Live-verified: check:golden
+focus-sound-architect 3/3.
+
 ## 2026-09-16 — real bug, not just wording: bass constraint contradicted itself
 
 Live example (Deep Work, "I like deep/low bass" selected) produced a brown-noise
