@@ -199,7 +199,7 @@ export const tools = [
   seoDescription: "Build a personalized sleep experiment from your actual schedule and disruptions. Try one practical change, track what happens, and decide what to test next. No diagnosis or sleep score.",
   seoTitle: "Personalized Sleep Improvement Plan for Better Rest",
   title: "Sleep Architect",
-  tagline: "😴 Better sleep, one useful experiment at a time.",
+  tagline: "Better sleep, one useful experiment at a time.",
   tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'stress', 'anxiety', 'night', 'sleep hygiene'],
   icon: "😴",
   categories: ['Energy'],
@@ -342,7 +342,7 @@ export const tools = [
   seoDescription: "Paste a suspicious email, text, DM, phone script, or invoice. See what's concerning, what to do now, and how to verify it safely — without false certainty. Free, no signup.",
   seoTitle: "Scam & Phishing Checker: Is This a Scam?",
   title: "Scam Radar",
-  tagline: "🎣 Spot the warning signs before you click, pay, or reply.",
+  tagline: "Spot the warning signs before you click, pay, or reply.",
   tags: ['scam', 'phishing', 'fraud', 'email', 'sms', 'smishing', 'suspicious', 'fake', 'security', 'safety', 'identity theft', 'spam', 'social engineering', 'consumer', 'protect', 'scammer', 'verify'],
   icon: "🎣",
   categories: ['Loot'],
@@ -409,48 +409,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
 
-  // Public, reviewed demonstration used by both the React page and prerenderer.
-  exampleOutput: {
-    title: "See what Doctor Visit Prep gives you",
-    expandLabel: "See example results ↓",
-    nextStepLabel: "What happens with your visit",
-    intro: "Not ready to build your own prep sheet? Here is a shortened fictional example showing the kind of help you can expect.",
-    sampleLabel: "Sample situation",
-    sampleText: "I've had right-sided lower back pain for about three weeks. Sitting makes it worse and walking helps. I've been taking ibuprofen. My mother had kidney stones, and I'm worried this could be kidney-related.",
-    context: "Fictional scheduled doctor visit · not a diagnosis",
-    sections: [
-      {
-        label: "A clear opener",
-        tone: "green",
-        text: "I've had right-sided lower back pain for about three weeks. It's worse when I sit for a long time and improves when I walk. I'm worried about whether it could be kidney-related because of my family history."
-      },
-      {
-        label: "Questions to ask first",
-        tone: "neutral",
-        items: [
-          "What possibilities fit this pattern, and what would help distinguish among them?",
-          "Does my family history of kidney stones change what you would want to check?",
-          "What changes or symptoms should make me contact you sooner?"
-        ]
-      },
-      {
-        label: "Mention even if you aren't asked",
-        tone: "yellow",
-        text: "How often you take ibuprofen and the dose, when the pain first started, whether you have noticed urinary symptoms or fever, and how much the pain is affecting sitting, sleep, work, or normal activity."
-      },
-      {
-        label: "Bring with you",
-        tone: "neutral",
-        items: [
-          "Your current medication and supplement list",
-          "A short timeline of when the pain started and how it has changed",
-          "Any relevant prior test results or records you already have"
-        ]
-      }
-    ],
-    nextStep: "With your own concern, timeline, medications, and worries, Doctor Visit Prep turns what you already know into a short, prioritized visit sheet so the important part does not get buried at the end of the appointment.",
-    disclaimer: "This example helps prepare for a scheduled medical conversation. It does not diagnose symptoms, recommend treatment, or replace urgent medical care when needed."
-  },
   guide: {
     overview: "The Doctor Visit Prep tool shapes what you say to your doctor, the same way the Doctor Visit Translator decodes what the doctor said afterward. Tell it your chief concern, how long it's been going on, what you've tried, and what you're most worried about — and get back a one-sentence opener for the first minute of the visit, three prioritized questions, things to mention proactively (medications, family history, functional impact), a pre-visit checklist, and conversation tips. Useful when you know you'll forget half of what you meant to say the moment you're sitting on the exam table.",
     howToUse: [
@@ -735,7 +693,7 @@ export const tools = [
   seoDescription: "Research a contested health, finance, science, productivity, or lifestyle claim. See what checked sources support, what's overstated, and what remains unresolved — with sources. Free, no signup.",
   seoTitle: "Evidence Checker: Signal vs. Noise",
   title: "Signal vs. Noise",
-  tagline: "📡 Find what holds up — and what doesn't.",
+  tagline: "Find what holds up — and what doesn't.",
   tags: ['research', 'health', 'science', 'evidence', 'fact check', 'contradictory', 'study', 'debunked', 'diet', 'finance', 'productivity', 'truth'],
   icon: "📡",
   categories: ['Go Deep!'],
@@ -2327,7 +2285,7 @@ export const tools = [
   seoDescription: "Notice what leaves you with more energy — and what leaves you with less. Log an interaction before and after; over time, spot patterns in your own experience and decide what might be worth changing. Free, no signup.",
   seoTitle: "Track Which Interactions Drain or Recharge Your Energy",
   title: "Social Battery Advisor",
-  tagline: "⚡ Learn which interactions affect your energy — and what makes the difference.",
+  tagline: "Learn which interactions affect your energy — and what makes the difference.",
   tags: ['social battery', 'social energy', 'interactions', 'drained', 'energized', 'recharge', 'socializing', 'being on', 'energy patterns', 'after socializing', 'track energy'],
   icon: "⚡",
   categories: ['Humans', 'Energy'],
@@ -2459,7 +2417,7 @@ export const tools = [
   seoDescription: "Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes (text, PDF, or audio) and find the ideas doing the most work — the signal without the noise. Distill, Understand, and Connect modes. Free.",
   seoTitle: "Find What Matters in a Long Talk, Lecture, or Article",
   title: "Heart of the Matter",
-  tagline: "🎯 Find what matters in something long.",
+  tagline: "Find what matters in something long.",
   tags: ['summarize', 'distill', 'understand', 'connect ideas', 'throughline', 'themes', 'key points', 'lecture', 'podcast', 'sermon', 'article', 'transcript', 'notes', 'long text', 'multiple sources'],
   icon: "🎯",
   categories: ['Go Deep!'],
@@ -3338,7 +3296,7 @@ tagline: "Work with the energy you have.",
   seoDescription: "Map what your experience already demonstrates, identify possible skill gaps to verify for a target role, and choose a practical next move. Free, no signup.",
   seoTitle: "Career Change Skill Gap Analyzer",
   title: "Skill Gap Map",
-  tagline: "🗺 See what carries over. Find what to build next.",
+  tagline: "See what carries over. Find what to build next.",
   tags: ['career', 'skills', 'job', 'transition', 'learning', 'gap', 'resume'],
   icon: "🗺️",
   categories: ['Pursuits', 'Veer'],
@@ -4750,7 +4708,7 @@ tagline: "Work with the energy you have.",
   seoDescription: "Build a meeting agenda around what actually has to happen, with the words to say when it drifts and a checklist for before people leave. Free, no signup.",
   seoTitle: "Meeting Agenda Builder & Facilitation Scripts",
   title: "Meeting Hijack Stopper",
-  tagline: "🛡️ A plan for the meeting—and the moments that could derail it.",
+  tagline: "A plan for the meeting—and the moments that could derail it.",
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
   categories: ['The Office'],
@@ -5118,7 +5076,7 @@ tagline: "Work with the energy you have.",
   seoDescription: "Going somewhere that might be noisy, crowded, bright, smelly, or otherwise hard to handle? Build a practical preparation and backup plan without fake predictions. Free, no signup.",
   seoTitle: "Prepare for a Sensory-Demanding Place or Route",
   title: "Trip Recon",
-  tagline: "🗺️ Prepare for the sensory parts of going somewhere.",
+  tagline: "Prepare for the sensory parts of going somewhere.",
   tags: [
     'sensory', 'noise', 'crowds', 'lighting', 'smells',
     'environment', 'planning', 'location', 'scouting', 'map', 'visit',
@@ -5214,7 +5172,7 @@ tagline: "Work with the energy you have.",
   seoDescription: "Should this meeting happen? Get a verdict — keep it, shorten it, fix it, or make it async — with the reasoning, the time it costs, and the message to send. Free.",
   seoTitle: "Should This Meeting Be a Meeting? Checker",
   title: "Justify My Meeting",
-  tagline: "🕵️ Is a meeting justified?",
+  tagline: "Is a meeting justified?",
   tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
   icon: "🕵️",
   categories: ['The Office'],
@@ -5463,7 +5421,7 @@ tagline: "Work with the energy you have.",
   seoDescription: "Got a free hour? Get a small local outing built around your time, budget, transport and interests — with what to check before you go. Free, no signup.",
   seoTitle: "Cheap Micro-Adventure Planner Near You",
   title: "Micro-Adventure Mapper",
-  tagline: "🗺️ Turn a free hour into a small adventure",
+  tagline: "Turn a free hour into a small adventure",
   tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
   categories: ['Out & About'],
