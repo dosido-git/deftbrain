@@ -537,6 +537,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       prevRuns: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'tool_run'),
       hours: Math.max(1, Math.round(elapsedMs / 3600000)),
     };
+    // The Daily ledger's own "so far" row (today, in the table below) hit the
+    // exact mistake the comment above says todaySoFar avoids: its delta used
+    // to compare today's partial hours against ALL of yesterday, so it read
+    // as a ~100% crash every single morning regardless of actual traffic.
+    // Reuses todaySoFar's already-computed same-elapsed-hours counts; only
+    // 'interactive' needs its own count since todaySoFar doesn't track it.
+    const todaySoFarPrevBucket = {
+      views: todaySoFar.prevViews,
+      sessions: todaySoFar.prevSessions,
+      interactive: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'interact'),
+      runs: todaySoFar.prevRuns,
+    };
 
     // ── previous equal-length window (for Δ). Only defined for a bounded range;
     // 'all time' has no prior window, so deltas are suppressed there. ──
@@ -1126,7 +1138,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const dayRows = ledgerDayList.map(d => {
       const db = ledgerByDay[d];
       const isToday = d === todayDay;
-      const prevDayBucket = ledgerByDay[addDaysStr(d, -1)] || null;
+      // Today is still in progress — compare against yesterday's same
+      // elapsed hours, not yesterday's full day (see todaySoFarPrevBucket).
+      const prevDayBucket = isToday ? todaySoFarPrevBucket : (ledgerByDay[addDaysStr(d, -1)] || null);
       const dayLabel = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(d + 'T00:00:00Z'));
       const isMonday = new Date(d + 'T00:00:00Z').getUTCDay() === 1;
       return ledgerTr(dayLabel, db, prevDayBucket, {
