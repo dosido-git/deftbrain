@@ -409,6 +409,49 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
 
+  // Public, reviewed demonstration used by both the React page and prerenderer.
+  exampleOutput: {
+    title: "See what Doctor Visit Prep gives you",
+    expandLabel: "See example results ↓",
+    nextStepLabel: "What happens with your visit",
+    intro: "Not ready to build your own prep sheet? Here is a shortened fictional example showing the kind of help you can expect.",
+    sampleLabel: "Sample situation",
+    sampleText: "I've had right-sided lower back pain for about three weeks. Sitting makes it worse and walking helps. I've been taking ibuprofen. My mother had kidney stones, and I'm worried this could be kidney-related.",
+    context: "Fictional scheduled doctor visit · not a diagnosis",
+    sections: [
+      {
+        label: "A clear opener",
+        tone: "green",
+        text: "I've had right-sided lower back pain for about three weeks. It's worse when I sit for a long time and improves when I walk. I'm worried about whether it could be kidney-related because of my family history."
+      },
+      {
+        label: "Questions to ask first",
+        tone: "neutral",
+        items: [
+          "What possibilities fit this pattern, and what would help distinguish among them?",
+          "Does my family history of kidney stones change what you would want to check?",
+          "What changes or symptoms should make me contact you sooner?"
+        ]
+      },
+      {
+        label: "Mention even if you aren't asked",
+        tone: "yellow",
+        text: "How often you take ibuprofen and the dose, when the pain first started, whether you have noticed urinary symptoms or fever, and how much the pain is affecting sitting, sleep, work, or normal activity."
+      },
+      {
+        label: "Bring with you",
+        tone: "neutral",
+        items: [
+          "Your current medication and supplement list",
+          "A short timeline of when the pain started and how it has changed",
+          "Any relevant prior test results or records you already have"
+        ]
+      }
+    ],
+    nextStep: "With your own concern, timeline, medications, and worries, Doctor Visit Prep turns what you already know into a short, prioritized visit sheet so the important part does not get buried at the end of the appointment.",
+    disclaimer: "This example helps prepare for a scheduled medical conversation. It does not diagnose symptoms, recommend treatment, or replace urgent medical care when needed."
+  },
+
   guide: {
     overview: "The Doctor Visit Prep tool shapes what you say to your doctor, the same way the Doctor Visit Translator decodes what the doctor said afterward. Tell it your chief concern, how long it's been going on, what you've tried, and what you're most worried about — and get back a one-sentence opener for the first minute of the visit, three prioritized questions, things to mention proactively (medications, family history, functional impact), a pre-visit checklist, and conversation tips. Useful when you know you'll forget half of what you meant to say the moment you're sitting on the exam table.",
     howToUse: [

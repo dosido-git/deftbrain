@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "6cde0be19311534de8d05c63bc524f5c29e93611",
+  "hash": "30fc5d298e2f6830e3440dcde5fa9f271a08cefb",
   "lastmod": "2026-09-18"
  },
  "static:about": {
@@ -56,7 +56,7 @@
   "lastmod": "2026-08-23"
  },
  "tool:DoctorVisitPrep": {
-  "hash": "2662a07a78e5c8ffa999021b8c81c6a1dd41c062",
+  "hash": "6c74ea4b3fb2d54b2457ccf3a15279fd2a7832f3",
   "lastmod": "2026-09-18"
  },
  "tool:DoctorVisitTranslator": {
