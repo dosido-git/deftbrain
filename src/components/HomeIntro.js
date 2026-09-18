@@ -192,17 +192,14 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
       {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
     </section>
 
-    <section className="my-8 relative rounded-2xl border overflow-hidden lg:min-h-[260px]" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
-      <img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="hidden lg:block absolute inset-0 w-full h-full object-cover" loading="lazy" style={{WebkitMaskImage:'linear-gradient(to right, transparent 0%, transparent 42%, black 78%, black 100%)', maskImage:'linear-gradient(to right, transparent 0%, transparent 42%, black 78%, black 100%)', WebkitMaskRepeat:'no-repeat', maskRepeat:'no-repeat', WebkitMaskSize:'100% 100%', maskSize:'100% 100%'}} />
-      <div className="relative grid lg:grid-cols-[.78fr_1.22fr]">
+    <section className="my-8 rounded-2xl border overflow-hidden grid lg:grid-cols-[.78fr_1.22fr]" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
         <div className="p-6 sm:p-8 flex flex-col justify-center">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
           <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>You tell DeftBrain what’s happening. You get something useful.</p>
           <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
           <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try a tool →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
         </div>
-        <div className="lg:hidden overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="w-full h-auto" loading="lazy" /></div>
-      </div>
+        <div className="relative min-h-[260px] lg:min-h-[300px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="absolute inset-0 w-full h-full object-cover" loading="lazy" /></div>
     </section>
 
     <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}><div className="p-5 sm:p-6"><div className="flex items-end justify-between gap-4 mb-4"><div><h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Some of our most popular tools</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Real situations. Real guidance. A better next step.</p></div><button onClick={onBrowse} className="text-[10px] font-semibold underline underline-offset-4 whitespace-nowrap" style={{color:NAVY}}>Browse all tools →</button></div><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{POPULAR.map(id=><PopularCard key={id} tool={byId.get(id)}/>)}</div></div></section>
