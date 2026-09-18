@@ -30,6 +30,23 @@ const ROTATION = [
 
 const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
 
+const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
+const SCRAMBLE_ROTATE = [-6,-3,-1.5,1.5,3,6];
+const SCRAMBLE_SCALE = [.94,.98,1.02,1.06];
+
+// Deterministic shuffle so the same seed always renders the same order
+// (no layout flash from two different randoms racing on mount).
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let x = ((seed + 1) * 2654435761) >>> 0;
+  for (let i = a.length - 1; i > 0; i--) {
+    x = (x * 1664525 + 1013904223) >>> 0;
+    const j = x % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   const [faces, setFaces] = useState([initial, incoming || initial]);
   const [side, setSide] = useState(0);
@@ -69,6 +86,41 @@ function PopularCard({ tool }) {
       <p className="mt-1 text-[9.5px] leading-snug line-clamp-2" style={{color:MUTED}}>{tool.tagline || tool.description}</p>
     </div>
   </Link>;
+}
+
+function ToolScramble({ allTools, onBrowse }) {
+  const eligible = useMemo(() => allTools.filter(t => t?.id && t?.title && t?.tagline), [allTools]);
+  const [seed, setSeed] = useState(0);
+  const shown = useMemo(() => seededShuffle(eligible, seed).slice(0, 42), [eligible, seed]);
+
+  if (eligible.length === 0) return null;
+
+  return (
+    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#dff4ff 0%,#eee9ff 35%,#fff2df 68%,#ffe5ee 100%)'}}>
+      <div className="p-5 sm:p-6">
+        <div className="flex items-end justify-between gap-4 mb-4">
+          <div>
+            <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore without an agenda</div>
+            <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>The Tool Scramble</h2>
+            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Icons and taglines from real DeftBrain tools. Hover to see the name — click to give it a try.</p>
+          </div>
+          <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble again</button>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 py-5">
+          {shown.map((t,i) => (
+            <Link key={t.id} to={`/${t.id}`} className="group flex items-center gap-2 max-w-[210px]" style={{transform:`rotate(${SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length]}deg) scale(${SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length]})`}}>
+              <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
+              <span>
+                <b className="block text-[11px] leading-tight" style={{color:SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length]}}>{t.tagline}</b>
+                <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
+              </span>
+            </Link>
+          ))}
+        </div>
+        <button type="button" onClick={onBrowse} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
+      </div>
+    </section>
+  );
 }
 
 export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
@@ -154,6 +206,8 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     </section>
 
     <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}><div className="p-5 sm:p-6"><div className="flex items-end justify-between gap-4 mb-4"><div><h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Some of our most popular tools</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Real situations. Real guidance. A better next step.</p></div><button onClick={onBrowse} className="text-[10px] font-semibold underline underline-offset-4 whitespace-nowrap" style={{color:NAVY}}>Browse all tools →</button></div><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{POPULAR.map(id=><PopularCard key={id} tool={byId.get(id)}/>)}</div></div></section>
+
+    <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
     <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{['weird lease','doctor visit','bad bill','awkward talk','forgotten word','suspicious review','security deposit','presentation','paperwork','focus','layover','apology','big decision','purchase','meeting','travel','name something','say it better','roommate trouble','scam?','hard email','career change','what did they mean?','prep for a procedure','fake reviews','make a toast','lost the day','need a gift','explain this','plan went sideways','what should I ask?','before I sign','too much to do','find the right words','price feels wrong','difficult customer','can’t get started','remember this','prepare for move-out','stress-test an idea','understand research','what happens next?','need a comeback','before the meeting','something feels off'].map((x,i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <span key={x} className="inline-block font-bold whitespace-nowrap" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</span>})}</div></div></div></section>
 
