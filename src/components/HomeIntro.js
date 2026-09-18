@@ -192,12 +192,21 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
       {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
     </section>
 
-    <section className="my-8 rounded-2xl border overflow-hidden grid lg:grid-cols-[.78fr_1.22fr]" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
-        <div className="p-6 sm:p-8 flex flex-col justify-center">
-          <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
-          <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>You tell DeftBrain what’s happening. You get something useful.</p>
-          <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
-          <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try a tool →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
+    <section className="my-8 rounded-2xl border overflow-hidden grid lg:grid-cols-[.78fr_1.22fr]" style={{borderColor:'#dce7ee'}}>
+        <div className="relative p-6 sm:p-8 flex flex-col justify-center overflow-hidden" style={{background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
+          {/* A soft, blurred, low-opacity crop of the SAME photo's empty
+              left/background area sits behind the copy — continuous with
+              the crisp tablet photo in the other column, so the text reads
+              as overlaid on one scene rather than boxed separately next to
+              it. Kept well under the tablet's own opacity/sharpness so it
+              never competes with the copy or looks like a masked-out UI. */}
+          <img src="/home-scenes/see-it-in-action.jpg" alt="" aria-hidden="true" className="hidden lg:block absolute inset-0 w-full h-full object-cover" style={{objectPosition:'left center',opacity:.16,filter:'blur(20px) saturate(1.2)',transform:'scale(1.2)'}} />
+          <div className="relative">
+            <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
+            <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>You tell DeftBrain what’s happening. You get something useful.</p>
+            <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
+            <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try a tool →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
+          </div>
         </div>
         <div className="relative min-h-[260px] lg:min-h-[300px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="absolute inset-0 w-full h-full object-cover" loading="lazy" /></div>
     </section>
