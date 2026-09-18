@@ -203,7 +203,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           the panel's own corner rather than the panel just sitting next
           to a separate box. */}
       <img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%'}} loading="lazy" />
-      <div className="hidden lg:block absolute inset-y-0 left-0" style={{width:'44.85%', background:'linear-gradient(to bottom right, #eef7fb 0%, #eef7fb 25%, rgba(238,247,251,0) 100%)'}} />
+      <div className="hidden lg:block absolute inset-y-0 left-0" style={{width:'44.85%', background:'linear-gradient(to bottom right, #eef7fb 0%, #eef7fb 8%, rgba(238,247,251,0) 100%)'}} />
       <div className="relative grid lg:grid-cols-[.78fr_1.22fr]">
         <div className="p-6 sm:p-8 flex flex-col justify-center">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
