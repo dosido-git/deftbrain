@@ -197,12 +197,20 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           right edge stays put, same crop logic as before, so the tablet
           itself still renders exactly as it did) so there's real photo
           under the panel below. The panel is ALSO widened 15% beyond the
-          original .78fr text column and painted on top of that image with
-          a true corner-to-corner diagonal fade — solid at the top-left,
-          0% opacity at the bottom-right — so the image "bleeds" up into
-          the panel's own corner rather than the panel just sitting next
-          to a separate box. */}
-      <img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%'}} loading="lazy" />
+          original .78fr text column and painted on top with a true
+          corner-to-corner diagonal fade — solid at the top-left, 0%
+          opacity at the bottom-right.
+
+          A pure alpha fade over a CRISP photo still read as a hard line:
+          the reveal zone happens to land on bright, textured window light,
+          and eyes register the texture snapping into focus far more
+          readily than the gradual alpha change underneath it. Fix: a
+          blurred copy of the same photo sits behind the crisp one; the
+          crisp copy fades itself in (its own left-to-right mask, ending
+          past where the panel finishes) so texture arrives gradually
+          instead of all at once under the panel's fade. */}
+      <img src="/home-scenes/see-it-in-action.jpg" alt="" aria-hidden="true" className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%',filter:'blur(16px)',transform:'scale(1.04)'}} loading="lazy" />
+      <img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%',WebkitMaskImage:'linear-gradient(to right, transparent 0%, black 32%)',maskImage:'linear-gradient(to right, transparent 0%, black 32%)',WebkitMaskRepeat:'no-repeat',maskRepeat:'no-repeat',WebkitMaskSize:'100% 100%',maskSize:'100% 100%'}} loading="lazy" />
       <div className="hidden lg:block absolute inset-y-0 left-0" style={{width:'44.85%', background:'linear-gradient(to bottom right, #eef7fb 0%, #eef7fb 8%, rgba(238,247,251,0) 100%)'}} />
       <div className="relative grid lg:grid-cols-[.78fr_1.22fr]">
         <div className="p-6 sm:p-8 flex flex-col justify-center">
