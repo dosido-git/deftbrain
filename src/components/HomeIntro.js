@@ -259,7 +259,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
       <div className="relative grid lg:grid-cols-[.78fr_1.22fr]">
         <div className="p-6 sm:p-8 flex flex-col justify-center">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
-          <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>You tell DeftBrain what’s happening. You get something useful.</p>
+          <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
           <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
           <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try a tool →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
         </div>

@@ -443,8 +443,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                   and 404s via NotFound — full page nav is required, matching the
                   same convention Footer.js and RelatedLinks.js already use for
                   these exact pages. */}
-              <a href="/guides" className="hover:underline underline-offset-4">Guides</a>
-              <a href="/about" className="hover:underline underline-offset-4">About</a>
+              <a href="/guides" className="no-underline hover:underline underline-offset-4">Guides</a>
+              <a href="/about" className="no-underline hover:underline underline-offset-4">About</a>
             </nav>
             <LocaleSelectors dark={false} />
           </div>
