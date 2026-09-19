@@ -183,7 +183,7 @@ function ToolScramble({ allTools, onBrowse }) {
                 >
                   <div className="rounded-2xl bg-white p-2.5 pb-3.5" style={{border:`2px solid ${accent}`,boxShadow:'0 20px 45px -12px rgba(20,42,67,.4)'}}>
                     <img
-                      src={`/flip-cards/${t.id}.webp`}
+                      src={`/scramble/${t.id}.webp`}
                       alt=""
                       loading="lazy"
                       onError={e => { e.currentTarget.closest('div.pointer-events-none').style.display = 'none'; }}
