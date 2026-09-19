@@ -44,14 +44,11 @@ const Footer = () => {
   // submissions from audit/DIRECTORY-SUBMISSIONS.md go live, e.g. Product
   // Hunt, G2). Sitewide placement so the dofollow link fires on every page,
   // not just one.
-  const badges = [
-    {
-      key: 'saashub',
-      href: 'https://www.saashub.com/deftbrain?utm_source=badge&utm_campaign=badge&utm_content=deftbrain&badge_variant=color&badge_kind=approved',
-      src: 'https://cdn-b.saashub.com/img/badges/approved-color.png?v=1',
-      alt: 'DeftBrain badge',
-    },
-  ];
+  //
+  // The SaaSHub "Approved" badge was removed site-wide (2026-09-19) at the
+  // user's request — array left empty rather than deleting the rendering
+  // block below, so a future badge just slots back in here.
+  const badges = [];
 
   // Prints. This used to carry `print:hidden`, so a printed page ended with
   // the last tool row and no site name, URL, or legal links — exactly what a
