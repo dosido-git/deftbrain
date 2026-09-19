@@ -30,6 +30,24 @@ const ROTATION = [
 
 const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
 
+// Hero banner rotation — one photoreal "everyday life" scene at a time, each
+// staged around a different slice of what DeftBrain covers. Alt text names
+// what's actually in the frame (the photo is the only place that content
+// lives — nothing else on the page repeats it), matching the original
+// hero-everyday.jpg's alt convention.
+const HERO_IMAGES = [
+  { src:'/home-scenes/hero-everyday.jpg', alt:'A lease, doctor-visit notes, and a difficult text conversation — examples of everyday situations DeftBrain can help with' },
+  { src:'/home-scenes/hero-everyday-choices.jpg', alt:'A signpost, two small doors with keys, and a checklist of options — examples of the decisions DeftBrain can help you think through' },
+  { src:'/home-scenes/hero-everyday-growth.jpg', alt:'A trophy, a set of wooden steps, and a notebook labeled Skills, Ideas, Projects — examples of the growth and next-step questions DeftBrain can help with' },
+  { src:'/home-scenes/hero-everyday-household.jpg', alt:'A utility bill, a stack of subscription envelopes, a parking ticket, and a maze of government forms — examples of household paperwork DeftBrain can help untangle' },
+  { src:'/home-scenes/hero-everyday-occasion.jpg', alt:'A wedding toast card, a table seating chart, and a bowl of conversation prompts — examples of occasions and speeches DeftBrain can help you prepare for' },
+  { src:'/home-scenes/hero-everyday-overload.jpg', alt:'A tangle of cords, an overflowing laundry basket, and a to-do list — examples of the overwhelm DeftBrain can help you sort through' },
+  { src:'/home-scenes/hero-everyday-consumer.jpg', alt:'A repair estimate, a part with retail and wholesale price tags, and a suspicious payment request — examples of purchase decisions DeftBrain can help you make' },
+  { src:'/home-scenes/hero-everyday-kitchen.jpg', alt:'Kitchen vegetables, a drooping houseplant, and a sleep mask beside a nightstand clock — examples of everyday home questions DeftBrain can help with' },
+  { src:'/home-scenes/hero-everyday-relationships.jpg', alt:'An unsent text message, a framed photo of two friends, and a party invitation — examples of relationship questions DeftBrain can help you navigate' },
+  { src:'/home-scenes/hero-everyday-travel.jpg', alt:'A passport, a boarding pass, and a phrasebook note in Spanish — examples of travel questions DeftBrain can help you prepare for' },
+];
+
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
 const SCRAMBLE_ROTATE = [-12,-7,-3,3,7,12];
 const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
@@ -167,6 +185,42 @@ function ToolScramble({ allTools, onBrowse }) {
   );
 }
 
+// Crossfades through HERO_IMAGES on a slow interval. Only ever mounts one
+// <img> at a time — swapping `src` mid-fade rather than stacking all ten
+// full-size photos — so the other nine never load until their turn comes.
+// The 400ms fade-out-then-swap-then-fade-in mirrors the door-card carousel's
+// own pause-on-hidden-tab and prefers-reduced-motion handling above, reusing
+// the same two flags instead of re-deriving them.
+function HeroImage({ paused, reducedMotion }) {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (paused || HERO_IMAGES.length <= 1) return;
+    const timer = window.setInterval(() => {
+      if (reducedMotion) { setIndex(i => (i + 1) % HERO_IMAGES.length); return; }
+      setVisible(false);
+      window.setTimeout(() => {
+        setIndex(i => (i + 1) % HERO_IMAGES.length);
+        setVisible(true);
+      }, 400);
+    }, 7000);
+    return () => window.clearInterval(timer);
+  }, [paused, reducedMotion]);
+
+  const img = HERO_IMAGES[index];
+  return (
+    <div className="relative min-h-[245px] lg:min-h-[285px] overflow-hidden bg-[#eee8df]">
+      <img
+        src={img.src}
+        alt={img.alt}
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+        style={{ opacity: reducedMotion ? 1 : (visible ? 1 : 0) }}
+      />
+    </div>
+  );
+}
+
 export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
   const byId = useMemo(() => new Map(allTools.map(t => [t.id,t])), [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
@@ -223,7 +277,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
         <p className="mt-2 text-[9.5px]" style={{color:MUTED}}>Try: lease agreement · doctor appointment · suspicious charge · difficult conversation</p>
         <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
       </div>
-      <div className="relative min-h-[245px] lg:min-h-[285px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/hero-everyday.jpg" alt="A lease, doctor-visit notes, and a difficult text conversation — examples of everyday situations DeftBrain can help with" className="absolute inset-0 w-full h-full object-cover" /></div>
+      <HeroImage paused={paused} reducedMotion={reducedMotion} />
     </section>
 
     <section className="py-7 sm:py-8" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
