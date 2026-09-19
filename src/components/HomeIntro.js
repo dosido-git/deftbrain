@@ -96,26 +96,53 @@ function ToolScramble({ allTools, onBrowse }) {
   if (eligible.length === 0) return null;
 
   return (
-    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#dff4ff 0%,#eee9ff 35%,#fff2df 68%,#ffe5ee 100%)'}}>
-      <div className="p-5 sm:p-6">
+    <section className="my-7 relative rounded-2xl border" style={{borderColor:BORDER}}>
+      {/* Background is its own absolutely-positioned, overflow-hidden layer
+          (not on the section itself) so a hover-preview image popping above
+          or below a tile near the top/bottom edge isn't clipped by the
+          card's rounded corners. */}
+      <div className="absolute inset-0 rounded-2xl overflow-hidden" style={{background:'linear-gradient(120deg,#dff4ff 0%,#eee9ff 35%,#fff2df 68%,#ffe5ee 100%)'}} />
+      <div className="relative p-5 sm:p-6">
         <div className="flex items-end justify-between gap-4 mb-4">
           <div>
             <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore without an agenda</div>
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>The Tool Scramble</h2>
-            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Icons and taglines from real DeftBrain tools. Hover to see the name — click to give it a try.</p>
+            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Icons and taglines from real DeftBrain tools. Hover to see a preview — click to give it a try.</p>
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble again</button>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 py-5">
-          {shown.map((t,i) => (
-            <Link key={t.id} to={`/${t.id}`} className="group flex items-center gap-2 max-w-[210px]" style={{transform:`rotate(${SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length]}deg) scale(${SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length]})`}}>
-              <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
-              <span>
-                <b className="block text-[11px] leading-tight" style={{color:SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length]}}>{t.tagline}</b>
-                <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
-              </span>
-            </Link>
-          ))}
+          {shown.map((t,i) => {
+            const rot = SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length];
+            const scale = SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length];
+            return (
+              <Link key={t.id} to={`/${t.id}`} className="group relative flex items-center gap-2 max-w-[210px]" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
+                <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
+                <span>
+                  <b className="block text-[11px] leading-tight" style={{color:SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length]}}>{t.tagline}</b>
+                  <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
+                </span>
+                {/* Preview image — counter-rotated so it reads upright despite
+                    sitting inside a rotated tile. Rotate happens BEFORE the
+                    centering translate so the shift moves along the true
+                    horizontal axis, not the tile's tilted one. Silently
+                    disappears (onError) for the ~35 tools with no art yet —
+                    the em title reveal above still works either way. */}
+                <div
+                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-[150px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
+                  style={{transform:`rotate(${-rot}deg) translateX(-50%)`}}
+                >
+                  <img
+                    src={`/flip-cards/${t.id}.webp`}
+                    alt=""
+                    loading="lazy"
+                    onError={e => { e.currentTarget.parentElement.style.display = 'none'; }}
+                    className="w-full aspect-[640/566] object-cover rounded-lg border-2 border-white shadow-lg bg-white"
+                  />
+                </div>
+              </Link>
+            );
+          })}
         </div>
         <button type="button" onClick={onBrowse} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
       </div>
