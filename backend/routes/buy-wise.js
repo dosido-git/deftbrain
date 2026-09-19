@@ -196,8 +196,8 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "noticed": [
     {
       "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder",
-      "why": "One short sentence on what that tool would do about it"
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated — each is followed by what it actually does, since guessing from the name alone produces wrong descriptions (e.g. QuoteCheck checks a REPAIR quote, not a purchase price): FakeReviewDetective (spots fake or manipulated product reviews) or MarkupDetective (checks whether a price is marked up over what the item actually costs) or UpsellShield (preps you to decline in-store upsells and add-ons) or BillRescue (finds errors or overcharges on a bill) or QuoteCheck (checks what a REPAIR quote for an appliance or vehicle actually includes and whether it's fair — not for a purchase price) or MoneyDiplomat (helps navigate a money conversation with another person) or Giftology (helps pick a gift for someone hard to shop for) or ContractDecoder (explains a contract or terms you're about to sign)",
+      "why": "One short sentence on what that tool would do about it, grounded only in the actual function named above — never guess a tool's job from its name"
     }
   ],
   "total_cost": {
@@ -463,8 +463,8 @@ ${schema}`;
   "noticed": [
     {
       "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder",
-      "why": "One short sentence on what that tool would do about it"
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated — each is followed by what it actually does, since guessing from the name alone produces wrong descriptions (e.g. QuoteCheck checks a REPAIR quote, not a purchase price): FakeReviewDetective (spots fake or manipulated product reviews) or MarkupDetective (checks whether a price is marked up over what the item actually costs) or UpsellShield (preps you to decline in-store upsells and add-ons) or BillRescue (finds errors or overcharges on a bill) or QuoteCheck (checks what a REPAIR quote for an appliance or vehicle actually includes and whether it's fair — not for a purchase price) or MoneyDiplomat (helps navigate a money conversation with another person) or Giftology (helps pick a gift for someone hard to shop for) or ContractDecoder (explains a contract or terms you're about to sign)",
+      "why": "One short sentence on what that tool would do about it, grounded only in the actual function named above — never guess a tool's job from its name"
     }
   ],
   "total_cost": {

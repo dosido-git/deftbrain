@@ -82,7 +82,7 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
   "what_you_described": <1-2 sentence warm, non-clinical reflection of what they've shared — help them feel heard>,
   "deftbrain_next": [
     {
-      "tool": "One id copied exactly from this list and NOTHING else — no description, no brackets, no spaces: ChaosPilot | GriefGuide | SleepArchitect | BrainStateDeejay | BeforeTheCrash | SocialBatteryAdvisor | NerveCheck. The value builds a link, so anything extra makes it dead.",
+      "tool": "One id copied exactly from this list and NOTHING else — no description, no brackets, no spaces. What each is actually for is in the guideline below; don't guess from the name. Options: ChaosPilot | GriefGuide | SleepArchitect | BrainStateDeejay | BeforeTheCrash | SocialBatteryAdvisor | NerveCheck. The value builds a link, so anything extra makes it dead.",
       "why": "What it would help with while they arrange the real support — one sentence, addressed to them."
     }
   ],

@@ -273,8 +273,8 @@ RESOURCES FOR ${location}:
   "noticed": [
     {
       "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant real money or strips a protection they would otherwise have. A term that is standard, or that already favours the tenant, is NEVER worth raising however true it is — normal venue, an ordinary late fee, a refundable pet deposit, a routine notice period are all fine and must be left alone. Do not reach: if you are describing an omission rather than a harm, leave it out. Two entries is a lot; zero is the expected answer for an unremarkable lease and an empty array is the correct response, not a failure.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: BillRescue or RentersDepositSaver or ComplaintEscalationWriter or MoneyDiplomat or JargonAssassin or VelvetHammer or DifficultTalkCoach",
-      "why": "One short sentence on what that tool would do about it"
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated — each is followed by what it actually does, since guessing from the name alone produces wrong descriptions: BillRescue (finds errors or overcharges on a bill) or RentersDepositSaver (protects your security deposit at move-in) or ComplaintEscalationWriter (writes an escalation plan when a company stops responding) or MoneyDiplomat (helps navigate a money conversation with another person) or JargonAssassin (turns a confusing document into plain language) or VelvetHammer (helps you say something hard without losing the point) or DifficultTalkCoach (scripts a hard conversation before you have it)",
+      "why": "One short sentence on what that tool would do about it, grounded only in the actual function named above — never guess a tool's job from its name"
     }
   ],
   "unenforceable_clauses": [
