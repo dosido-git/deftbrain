@@ -26,6 +26,24 @@ const ROTATION = [
   { toolId:'ChaosPilot', problem:'Everything feels urgent at once.', body:'Sort the pile and find the next move.' },
   { toolId:'FinalWish', problem:'I need to say something that matters.', body:'Find the words without making them sound borrowed.' },
   { toolId:'FocusSoundArchitect', problem:'My surroundings are making it hard to work.', body:'Build a background your attention can live with.' },
+  { toolId:'AlternatePath', problem:'What if I’d made a different choice?', body:'See where the other path would have led.' },
+  { toolId:'AnalogyEngine', problem:'I need to explain something complicated.', body:'Get an analogy built for exactly who’s listening.' },
+  { toolId:'ArgueSmarter', problem:'I think I’m right, but I want to be sure.', body:'Pressure-test your case against the strongest pushback.' },
+  { toolId:'AwkwardSilenceFiller', problem:'The conversation just stalled.', body:'Get something to say that actually fits the moment.' },
+  { toolId:'BatchFlow', problem:'My to-do list is a mess of unrelated tasks.', body:'Group them so your day stops fighting you.' },
+  { toolId:'BeforeHello', problem:'I have a first date, interview, or intro coming up.', body:'Get ready before you say hello.' },
+  { toolId:'BeforeTheCrash', problem:'I keep running myself into the ground.', body:'Learn the pattern before it happens again.' },
+  { toolId:'BeliefStressTest', problem:'I’ve held this belief for years.', body:'See where it holds — and where it breaks.' },
+  { toolId:'BikeMedic', problem:'Something’s wrong with my bike.', body:'Figure out what it is and what to do next.' },
+  { toolId:'Bookmark', problem:'I stopped reading and can’t remember where I was.', body:'Pick up again — without the spoilers.' },
+  { toolId:'BragSheetBuilder', problem:'I need to talk about my own work.', body:'Remember it clearly and say it with confidence.' },
+  { toolId:'BrainDumpBuddy', problem:'Everything is stuck in my head at once.', body:'Get it out and find the one next step.' },
+  { toolId:'BrainRoulette', problem:'I want to think about something new.', body:'Follow your curiosity somewhere unexpected.' },
+  { toolId:'BrainStateDeejay', problem:'I need to feel different than I do right now.', body:'Get music that moves you there.' },
+  { toolId:'BreakMyPlan', problem:'I think my plan is solid, but I’m not sure.', body:'Find its weak spots before they find you.' },
+  { toolId:'BuyWise', problem:'I’m about to buy something big.', body:'Go in with your eyes open.' },
+  { toolId:'CaptionMagic', problem:'I have the photo. I don’t have the words.', body:'Find the caption that actually fits.' },
+  { toolId:'ColdOpenCraft', problem:'I don’t know how to start the message.', body:'Make the first line easier to send — and answer.' },
 ];
 
 const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
@@ -89,7 +107,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
     const tool = item && toolFor(item.toolId);
     if (!item || !tool) return null;
     return <Link to={`/${tool.id}`} className="absolute inset-0 rounded-xl overflow-hidden bg-white border shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2" style={{borderColor:BORDER,backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
-      <div className="aspect-[9/8] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
+      <div className="aspect-[9/8] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
       <div className="px-3.5 py-3">
         <h3 className="text-[13px] font-extrabold leading-[1.18]" style={{color:NAVY}}>{item.problem}</h3>
         <p className="mt-1.5 text-[10.5px] leading-[1.4]" style={{color:MUTED}}>{item.body}</p>
@@ -103,7 +121,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
 function PopularCard({ tool }) {
   if (!tool) return null;
   return <Link to={`/${tool.id}`} className="rounded-xl overflow-hidden bg-white border shadow-sm hover:shadow-md transition-shadow" style={{borderColor:BORDER}}>
-    <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/${tool.id}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
+    <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${tool.id}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
     <div className="px-3.5 py-3">
       <div className="font-extrabold text-[12px]" style={{color:NAVY}}>{tool.title}</div>
       <p className="mt-1 text-[9.5px] leading-snug line-clamp-2" style={{color:MUTED}}>{tool.tagline || tool.description}</p>
