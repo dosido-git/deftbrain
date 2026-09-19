@@ -436,8 +436,15 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <button type="button" onClick={openCatalog} className="hover:underline underline-offset-4">Tools</button>
-              <Link to="/guides" className="hover:underline underline-offset-4">Guides</Link>
-              <Link to="/about" className="hover:underline underline-offset-4">About</Link>
+              {/* Plain <a>, not <Link>: /guides and /about are static prerendered
+                  pages (public/about.html; guides built by scripts/prerender.js),
+                  not React Router routes. A <Link> here does a client-side SPA
+                  transition, which falls through to the catch-all /:toolId route
+                  and 404s via NotFound — full page nav is required, matching the
+                  same convention Footer.js and RelatedLinks.js already use for
+                  these exact pages. */}
+              <a href="/guides" className="hover:underline underline-offset-4">Guides</a>
+              <a href="/about" className="hover:underline underline-offset-4">About</a>
             </nav>
             <LocaleSelectors dark={false} />
           </div>
