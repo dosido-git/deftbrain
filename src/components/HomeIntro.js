@@ -31,8 +31,13 @@ const ROTATION = [
 const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
 
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
-const SCRAMBLE_ROTATE = [-6,-3,-1.5,1.5,3,6];
-const SCRAMBLE_SCALE = [.94,.98,1.02,1.06];
+const SCRAMBLE_ROTATE = [-12,-7,-3,3,7,12];
+const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
+// Independent "just landed" tilt for the hover-preview polaroid — deliberately
+// NOT the same set/index math as SCRAMBLE_ROTATE, so a card's photo doesn't
+// mirror its own tile's tilt (that would read as one rigid rotated unit
+// instead of a separate snapshot tossed on top of it).
+const SCRAMBLE_TILT = [-5,4,-3,6,-6,3,5,-4];
 
 // Deterministic shuffle so the same seed always renders the same order
 // (no layout flash from two different randoms racing on mount).
@@ -111,34 +116,46 @@ function ToolScramble({ allTools, onBrowse }) {
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble again</button>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 py-5">
+        <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-7 py-6">
           {shown.map((t,i) => {
             const rot = SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length];
             const scale = SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length];
+            const tilt = SCRAMBLE_TILT[i%SCRAMBLE_TILT.length];
+            const accent = SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length];
             return (
               <Link key={t.id} to={`/${t.id}`} className="group relative flex items-center gap-2 max-w-[210px] hover:z-30 focus:z-30" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
                 <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
                 <span>
-                  <b className="block text-[11px] leading-tight" style={{color:SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length]}}>{t.tagline}</b>
+                  <b className="block text-[11px] leading-tight" style={{color:accent}}>{t.tagline}</b>
                   <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
                 </span>
-                {/* Preview image — counter-rotated so it reads upright despite
-                    sitting inside a rotated tile. Rotate happens BEFORE the
-                    centering translate so the shift moves along the true
-                    horizontal axis, not the tile's tilted one. Silently
-                    disappears (onError) for the ~35 tools with no art yet —
-                    the em title reveal above still works either way. */}
+                {/* Preview polaroid — counter-rotates the tile's own scatter
+                    angle, then adds its own independent "just landed" tilt
+                    (rotate happens BEFORE the centering translate so the
+                    shift moves along the true horizontal axis, not the
+                    tile's). Accent border/caption match this tile's own
+                    tagline color — ties the photo back to its tile instead
+                    of reading as an unrelated insert. Desaturated slightly
+                    so it sits closer to the section's pastel palette.
+                    Silently disappears (onError) for the ~35 tools with no
+                    art yet — the em title reveal above still works either
+                    way, and popups are EXPECTED to sit over neighbors while
+                    open, same as any hover card. */}
                 <div
-                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-[150px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
-                  style={{transform:`rotate(${-rot}deg) translateX(-50%)`}}
+                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-[300px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
+                  style={{transform:`rotate(${-rot+tilt}deg) translateX(-50%)`}}
                 >
-                  <img
-                    src={`/flip-cards/${t.id}.webp`}
-                    alt=""
-                    loading="lazy"
-                    onError={e => { e.currentTarget.parentElement.style.display = 'none'; }}
-                    className="w-full aspect-[640/566] object-cover rounded-lg border-2 border-white shadow-lg bg-white"
-                  />
+                  <div className="rounded-2xl bg-white p-2.5 pb-3.5" style={{border:`2px solid ${accent}`,boxShadow:'0 20px 45px -12px rgba(20,42,67,.4)'}}>
+                    <img
+                      src={`/flip-cards/${t.id}.webp`}
+                      alt=""
+                      loading="lazy"
+                      onError={e => { e.currentTarget.closest('div.pointer-events-none').style.display = 'none'; }}
+                      className="w-full aspect-[640/566] object-cover rounded-lg"
+                      style={{filter:'saturate(.8) contrast(.97)'}}
+                    />
+                    <div className="mt-2 text-center text-[11px] font-extrabold" style={{color:accent}}>{t.title}</div>
+                  </div>
                 </div>
               </Link>
             );
