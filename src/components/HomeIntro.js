@@ -116,7 +116,7 @@ function ToolScramble({ allTools, onBrowse }) {
             const rot = SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length];
             const scale = SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length];
             return (
-              <Link key={t.id} to={`/${t.id}`} className="group relative flex items-center gap-2 max-w-[210px]" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
+              <Link key={t.id} to={`/${t.id}`} className="group relative flex items-center gap-2 max-w-[210px] hover:z-30 focus:z-30" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
                 <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
                 <span>
                   <b className="block text-[11px] leading-tight" style={{color:SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length]}}>{t.tagline}</b>
