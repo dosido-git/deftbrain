@@ -188,7 +188,7 @@ function ToolScramble({ allTools, onBrowse }) {
 // Crossfades through HERO_IMAGES on a slow interval. Only ever mounts one
 // <img> at a time — swapping `src` mid-fade rather than stacking all ten
 // full-size photos — so the other nine never load until their turn comes.
-// The 400ms fade-out-then-swap-then-fade-in mirrors the door-card carousel's
+// The 600ms fade-out-then-swap-then-fade-in mirrors the door-card carousel's
 // own pause-on-hidden-tab and prefers-reduced-motion handling above, reusing
 // the same two flags instead of re-deriving them.
 function HeroImage({ paused, reducedMotion }) {
@@ -203,8 +203,8 @@ function HeroImage({ paused, reducedMotion }) {
       window.setTimeout(() => {
         setIndex(i => (i + 1) % HERO_IMAGES.length);
         setVisible(true);
-      }, 400);
-    }, 7000);
+      }, 600);
+    }, 14000);
     return () => window.clearInterval(timer);
   }, [paused, reducedMotion]);
 
@@ -214,7 +214,7 @@ function HeroImage({ paused, reducedMotion }) {
       <img
         src={img.src}
         alt={img.alt}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[750ms]"
         style={{ opacity: reducedMotion ? 1 : (visible ? 1 : 0) }}
       />
     </div>
