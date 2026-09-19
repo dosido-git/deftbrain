@@ -15,6 +15,7 @@
   "SignalVsNoise": "signal-vs-noise",
   "BreakMyPlan": "pre-mortem",
   "ChaosPilot": "chaos-pilot",
+  "RutBuster": "chaos-pilot",
   "SmallChangeBigDifference": "one-percenter",
   "BeliefStressTest": "belief-stress-test",
   "GetNoticed": "luck-surface",

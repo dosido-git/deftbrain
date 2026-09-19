@@ -30,7 +30,7 @@ module.exports = {
       "Stale-item flagging",
       "Context grouping"
     ],
-    toolId:   'CrisisPrioritizer',
+    toolId:   'ChaosPilot',
     toolName: 'Crisis Prioritizer',
   },
   published: '2026-04-29',

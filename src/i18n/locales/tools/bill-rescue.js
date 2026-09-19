@@ -1,7 +1,7 @@
 // BillRescue — br_* keys for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
 // {{count}} is a numeric count. Brand/tool names (Bill Rescue, Markup Detective,
-// MoneyDiplomat, CrisisPrioritizer) stay as-is across languages.
+// MoneyDiplomat, Chaos Pilot) stay as-is across languages.
 export const billRescue = {
   "en": {
     "br_example2_details": "Electricity bill came in at nearly four times normal for a month we were away for two weeks. The meter reading on the bill says 'estimated'. I called and was told to submit a reading, which I did, and the next bill still used the estimate.",

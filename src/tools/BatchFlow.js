@@ -978,7 +978,7 @@ const BatchFlow = ({ tool }) => {
           {batchProgress.pct === 100 && (
             <p className={`text-xs text-center ${c.textMuteded}`}>
               {t('bf_xref_crisis_pre')}{' '}
-              <a href="/CrisisPrioritizer" className={linkStyle}>{t('bf_xref_crisis_name')}</a>{' '}
+              <a href="/ChaosPilot" className={linkStyle}>{t('bf_xref_crisis_name')}</a>{' '}
               {t('bf_xref_crisis_post')}
             </p>
           )}

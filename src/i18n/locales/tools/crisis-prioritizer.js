@@ -1,4 +1,6 @@
-// Crisis Prioritizer — cp2_* keys, V2 schema (2026-08-24).
+// Chaos Pilot (renamed 2026-09-19, was Crisis Prioritizer; see
+// audit/RENAMES.md) — cp2_* keys, V2 schema (2026-08-24), deliberately
+// unchanged since the underlying tool didn't move.
 // The v1 cp_* catalog described anxiety-vs-reality, urgency-accuracy scores
 // and psychological profiling — all deleted from the product, so its 3,446
 // key lines described a UI that no longer exists.

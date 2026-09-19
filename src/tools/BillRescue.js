@@ -93,7 +93,7 @@ function saveStore(key, items, max) {
 
 const CROSS_REFS = [
   { id: 'MoneyDiplomat', icon: '💰', tkey: 'br_xref_money_diplomat' },
-  { id: 'CrisisPrioritizer', icon: '🚨', tkey: 'br_xref_crisis_prioritizer' },
+  { id: 'ChaosPilot', icon: '🚨', tkey: 'br_xref_crisis_prioritizer' },
 ];
 
 const billTypeLabel = (val, t) => {

@@ -30,7 +30,7 @@ module.exports = {
       "Body-signal check",
       "Replaceability score"
     ],
-    toolId:   'CrisisPrioritizer',
+    toolId:   'ChaosPilot',
     toolName: 'Crisis Prioritizer',
   },
   published: '2026-04-29',

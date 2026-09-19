@@ -30,7 +30,7 @@ module.exports = {
       "Twenty-minute timer",
       "Tie-breaking"
     ],
-    toolId:   'CrisisPrioritizer',
+    toolId:   'ChaosPilot',
     toolName: 'Crisis Prioritizer',
   },
   published: '2026-04-29',

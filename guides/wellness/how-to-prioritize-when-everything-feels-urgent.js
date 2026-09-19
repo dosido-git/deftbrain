@@ -30,7 +30,7 @@ module.exports = {
       "Sort by impact",
       "Five-minute output"
     ],
-    toolId:   'CrisisPrioritizer',
+    toolId:   'ChaosPilot',
     toolName: 'Crisis Prioritizer',
   },
   published: '2026-04-29',

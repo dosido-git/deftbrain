@@ -812,7 +812,7 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "ChaosPilot",
+  id: "RutBuster",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -823,7 +823,7 @@ export const tools = [
   },
   seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
   seoTitle: "Break Out of a Rut: Routine Disruptor",
-  title: "Chaos Pilot",
+  title: "Rut Buster",
   tagline: "One calculated disruption. Small change. Big ripple.",
   tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern', 'disruption', 'intervention', 'novelty', 'life change', 'burnout', 'monotony'],
   icon: "🎰",
@@ -831,7 +831,7 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.",
   guide: {
-      overview: "ChaosPilot diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.",
+      overview: "Rut Buster diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.",
       howToUse: [
         "Describe your typical week in as much detail as possible",
         "Add context about what's feeling stale, stuck, or repetitive",
@@ -3930,7 +3930,7 @@ tagline: "Work with the energy you have.",
   ],
   seoDescription: "Paste any contract, medical form, or dense document and get a plain-English translation plus a structural breakdown in seconds. Free, no signup.",
   seoTitle: "Plain English Translator for Contracts & Docs",
-  title: 'Plain Talk',
+  title: "Plain Talk",
   tagline: 'See through any text — plain language plus structural X-ray',
   tags: ['document', 'plain english', 'translate', 'confusing', 'contract', 'legal', 'medical', 'simplify'],
   icon: '🔍',
@@ -4180,7 +4180,7 @@ tagline: "Work with the energy you have.",
   },
   seoDescription: "Spin up surprising rabbit holes at the intersection of your interests, with claims checked and follow-up paths to explore. Free, no signup.",
   seoTitle: "Random Rabbit Hole & Curiosity Generator",
-  title: 'Brain Roulette',
+  title: "Brain Roulette",
   tagline: "Follow your curiosity somewhere unexpected.",
   tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
@@ -4327,7 +4327,7 @@ tagline: "Work with the energy you have.",
   },
   seoDescription: "Upload a photo or describe what you're seeing and get plausible explanations, the one thing worth checking first, and a practical next step for your plant. Free, no signup.",
   seoTitle: "Plant Rescue: What's Wrong, What to Check, What to Do",
-  title: 'Plant Rescue',
+  title: "Plant Rescue",
   tagline: "Figure out what's wrong—and what to do next",
   tags: ['plant rescue', 'plant care', 'plant identification', 'identify plant', 'dying plant', 'houseplant', 'houseplant care', 'plant problems', 'yellow leaves', 'brown leaves', 'drooping plant', 'watering', 'what is wrong with my plant', 'plant health', 'gardening', 'save plant'],
   icon: '🪴',
@@ -5379,7 +5379,7 @@ tagline: "Work with the energy you have.",
       "Making a partial payment on old debt can restart the statute of limitations — the tool warns about this"
     ]
   },
-  crossRefs: ['MoneyDiplomat', 'CrisisPrioritizer'],
+  crossRefs: ['MoneyDiplomat', 'ChaosPilot'],
 },
 
 {
@@ -5554,7 +5554,7 @@ tagline: "Work with the energy you have.",
 },
 {
   modified: "2026-03-10",
-  id: "CrisisPrioritizer",
+  id: "ChaosPilot",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5565,13 +5565,13 @@ tagline: "Work with the energy you have.",
   },
   seoDescription: "Put a crowded task list in a defensible order using the deadlines, consequences and dependencies you actually have — and see the one missing fact that would change it. Free.",
   seoTitle: "Task Triage Tool: What's Actually Urgent",
-  title: "Crisis Prioritizer",
+  title: "Chaos Pilot",
   tagline: "Figure out what matters now — and what can wait",
   tags: ['crisis', 'prioritize', 'task triage', 'urgent tasks', 'what to do first', 'overwhelmed', 'too much to do', 'tasks', 'deadlines', 'consequences', 'dependencies', 'people waiting', 'limited time', 'low energy', 'brain dump', 'just one thing', 'task breakdown', 'time blocking', 'delegation', 're-prioritize'],
   icon: "🚨",
   categories: ['Energy', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "When several things are competing for your attention, work out a defensible order. Crisis Prioritizer uses the deadlines, consequences and dependencies you actually supply — plus the time and energy you have — and where a missing detail would change the order, it asks for that one fact instead of guessing.",
+  description: "When several things are competing for your attention, work out a defensible order. Chaos Pilot uses the deadlines, consequences and dependencies you actually supply — plus the time and energy you have — and where a missing detail would change the order, it asks for that one fact instead of guessing.",
   guide: {
     overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
     howToUse: [
@@ -5786,11 +5786,17 @@ tagline: "Work with the energy you have.",
       "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
     ]
   },
+  // ChaosPilot appeared twice here before the 2026-09-19 rename (see
+  // audit/RENAMES.md) — once correctly, as the old CrisisPrioritizer, and
+  // once under its own old (mislabeled) name with near-identical reasoning
+  // ("For urgent situations where you need to decide what to do right now").
+  // Both pointed at the same real tool once the rename landed; merged into
+  // the one entry below rather than listing ChaosPilot as its own related
+  // tool twice.
   crossRefs: [
-    { id: 'CrisisPrioritizer', reason: 'When you\'re completely overwhelmed — cuts to the 3 things that matter most right now' },
+    { id: 'ChaosPilot', reason: 'When you\'re completely overwhelmed — cuts to the 3 things that matter most right now' },
     { id: 'VirtualBodyDouble', reason: 'Once you know what to do, need someone to work beside you and keep you on track' },
     { id: 'WaitingModeLiberator', reason: 'When many worries are about things blocked waiting on others' },
-    { id: 'ChaosPilot', reason: 'For urgent situations where you need to decide what to do right now' },
   ]
 },
 

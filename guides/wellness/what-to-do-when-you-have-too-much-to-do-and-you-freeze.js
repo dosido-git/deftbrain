@@ -30,7 +30,7 @@ module.exports = {
       "Lowered-bar tasks",
       "No-planning-required flow"
     ],
-    toolId:   'CrisisPrioritizer',
+    toolId:   'ChaosPilot',
     toolName: 'Crisis Prioritizer',
   },
   published: '2026-04-29',

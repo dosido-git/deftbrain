@@ -362,7 +362,7 @@ export const toolFinderMetadata = {
       "freezing because of a later appointment or event",
     ],
     handoffs: [
-      { when: "the user needs immediate triage of what matters most right now rather than a full brain-dump sort", toolId: "CrisisPrioritizer" },
+      { when: "the user needs immediate triage of what matters most right now rather than a full brain-dump sort", toolId: "ChaosPilot" },
       { when: "the problem is one overwhelming project that needs to be broken into tiny concrete steps", toolId: "TaskAvalancheBreaker" },
       { when: "the user already knows the task and wants an AI companion while doing it", toolId: "VirtualBodyDouble" },
       { when: "a later appointment or event is what is making the rest of the day feel unusable", toolId: "WaitingModeLiberator" },
@@ -499,7 +499,7 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user has a photo or image in mind and wants several caption ideas, especially when they can add context the image alone cannot show.",
     whenNotToRecommend: "Do not recommend for image editing, general social-media planning, or fabricating real-world backstory about the people or event in a photo.",
   },
-  ChaosPilot: {
+  RutBuster: {
     problems: [
       "My life feels stale even though nothing is obviously wrong",
       "I am stuck in a rut and want one deliberate change",
@@ -1808,7 +1808,7 @@ export const toolFinderMetadata = {
     whenNotToRecommend: "Do not recommend for medical diagnosis, a burnout verdict, crash prediction, biometric interpretation, causal certainty, or a one-time request for more energy today.",
   },
 
-  CrisisPrioritizer: {
+  ChaosPilot: {
     problems: [
       "Everything feels urgent and I do not know what to do first",
       "I have more tasks than time and need a defensible order of attack",
@@ -3453,7 +3453,7 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user's problem is a mixed mental pile rather than one project", toolId: "BrainDumpBuddy" },
-      { when: "several tasks are competing and the main question is what deserves attention first", toolId: "CrisisPrioritizer" },
+      { when: "several tasks are competing and the main question is what deserves attention first", toolId: "ChaosPilot" },
       { when: "the user already knows the tasks and wants them grouped into a lower-switching day plan", toolId: "BatchFlow" },
     ],
     primaryIntent: "find one grounded, startable foothold in a project that feels too big or tangled to begin",
@@ -3810,7 +3810,7 @@ export const toolFinderMetadata = {
       "building a detailed productivity system, schedule, or time-management program",
     ],
     handoffs: [
-      { when: "the user has a pile of tasks and needs them prioritized rather than reconstructing past time", toolId: "CrisisPrioritizer" },
+      { when: "the user has a pile of tasks and needs them prioritized rather than reconstructing past time", toolId: "ChaosPilot" },
       { when: "the user wants known tasks grouped into a lower-switching schedule", toolId: "BatchFlow" },
       { when: "one large task feels too overwhelming to start and the user needs small startable steps", toolId: "TaskAvalancheBreaker" },
     ],

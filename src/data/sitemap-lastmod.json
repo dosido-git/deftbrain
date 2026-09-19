@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "30fc5d298e2f6830e3440dcde5fa9f271a08cefb",
-  "lastmod": "2026-09-18"
+  "hash": "0fa5f4c45c26eebac9034bf73c3f841846af1a29",
+  "lastmod": "2026-09-19"
  },
  "static:about": {
   "hash": "3baf1608421fe457b235127c416795d8537ac0c7",
@@ -28,16 +28,16 @@
   "lastmod": "2026-08-23"
  },
  "tool:BillRescue": {
-  "hash": "c3275d73c0f023963bf6b0a8d16a97c24c5c6396",
-  "lastmod": "2026-08-26"
+  "hash": "c6f80c34066a56d0c1be8c402621dc3bb5dd4765",
+  "lastmod": "2026-09-19"
  },
  "tool:BragSheetBuilder": {
   "hash": "74d601a90d73ca47dc8aa886b2dde5da8a11ff59",
   "lastmod": "2026-08-23"
  },
  "tool:ChaosPilot": {
-  "hash": "2c27afdf520951ffd9260de2e3dd94b838f67df5",
-  "lastmod": "2026-08-23"
+  "hash": "d8d6a16e8ad34b755fb06692b758ea066bced305",
+  "lastmod": "2026-09-19"
  },
  "tool:ComplaintEscalationWriter": {
   "hash": "f06aba70fcba180edff5e04a59eb59974f35dd4e",

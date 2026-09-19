@@ -249,9 +249,9 @@ const TOOL_IDS = [
   'AlternatePath','AnalogyEngine','ArgumentSimulator',
   'AwkwardSilenceFiller','BatchFlow','BeliefStressTest','BikeMedic',
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
-  'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
+  'BrainStateDeejay','BuyWise','CaptionMagic','RutBuster','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
-  'BeforeTheCrash','ContractDecoder','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
+  'BeforeTheCrash','ContractDecoder','ChaosPilot','CrowdWisdom','CultureBriefing','DateNight',
   'ArgueSmarter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
@@ -292,6 +292,15 @@ RETIRED_SLUGS.forEach(slug => {
 
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
+  // Crisis Prioritizer -> Chaos Pilot, renamed 2026-09-19: the OLD Chaos
+  // Pilot (routine-disruption tool, unrelated function) is renamed to Rut
+  // Buster IN THE SAME COMMIT, but /ChaosPilot deliberately gets NO redirect
+  // here — that URL is being reused live by this tool, not vacated. See
+  // audit/RENAMES.md for the full reasoning (owner call: keep the indexed
+  // /ChaosPilot URL rather than 404/redirect it away).
+  '/CrisisPrioritizer':        '/ChaosPilot',  // renamed 2026-09-19
+  '/crisisprioritizer':        '/ChaosPilot',
+  '/crisis-prioritizer':       '/ChaosPilot',
   '/PlotHole':                 '/PlotHoleFinder',  // renamed 2026-09-06
   '/plothole':                 '/PlotHoleFinder',
   '/plot-hole':                '/PlotHoleFinder',

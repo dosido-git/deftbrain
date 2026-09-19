@@ -921,7 +921,7 @@ const BrainDumpBuddy = ({ tool }) => {
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>{t('bdb_related_tools')}</p>
             <p className={`text-xs ${c.textSecondary}`}>
               {t('bdb_xref_setup_pre')}{' '}
-              <a href="/CrisisPrioritizer" className={linkStyle}>🚨 {t('bdb_xref_crisis')}</a>{' '}
+              <a href="/ChaosPilot" className={linkStyle}>🚨 {t('bdb_xref_crisis')}</a>{' '}
               {t('bdb_xref_setup_mid')}{' '}
               <a href="/VirtualBodyDouble" className={linkStyle}>👥 {t('bdb_xref_body_double')}</a>{' '}
               {t('bdb_xref_setup_post')}

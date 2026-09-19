@@ -14,6 +14,10 @@ const TOOL_ALIASES = {
   Recall: 'HeartOfTheMatter', // renamed 2026-07-22 (broadened beyond lectures), then 2026-09-13 (rebrand) — chain collapsed
   // TheCrux deliberately has NO alias here (owner decision, 2026-09-13):
   // unlike Recall, visiting /TheCrux now 404s rather than forwarding.
+  CrisisPrioritizer: 'ChaosPilot', // renamed 2026-09-19
+  // ChaosPilot (the old routine-disruption tool, now Rut Buster) deliberately
+  // has NO alias here: /ChaosPilot is reused live by this tool, not vacated —
+  // see audit/RENAMES.md.
   IdeaAutopsy: 'ConceptCoach', // renamed 2026-08-31
   LuckSurface: 'GetNoticed',   // renamed 2026-09-02
   MeetingBSDetector: 'JustifyMyMeeting', // renamed 2026-09-02

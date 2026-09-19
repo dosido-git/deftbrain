@@ -351,7 +351,7 @@ const GetNoticed = ({ tool }) => {
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'BeforeHello', icon: '🌀', label: t('lks_xref_gravitywell') },
-                  { id: 'ChaosPilot', icon: '🎰', label: t('lks_xref_chaospilot') },
+                  { id: 'RutBuster', icon: '🎰', label: t('lks_xref_chaospilot') },
                   { id: 'NotSoFast', icon: '🚪', label: t('lks_xref_rulebookbreaker') },
                 ].map(r => (
                   <a key={r.id} href={`/${r.id}`}

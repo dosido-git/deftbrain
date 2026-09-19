@@ -551,7 +551,7 @@ const SmallChangeBigDifference = ({ tool }) => {
               <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('op_related')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: 'ChaosPilot', icon: '🎰', label: t('op_xref_chaospilot') },
+                  { id: 'RutBuster', icon: '🎰', label: t('op_xref_chaospilot') },
                   { id: 'BreakMyPlan', icon: '💀', label: t('op_xref_premortem') },
                   { id: 'FutureProof', icon: '🔮', label: t('op_xref_futureproof') },
                 ].map(r => (

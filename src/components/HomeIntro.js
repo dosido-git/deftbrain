@@ -23,7 +23,12 @@ const ROTATION = [
   { toolId:'GhostWriter', problem:'I know what I mean. I can’t get the words right.', body:'Turn the thought into something you can send.' },
   { toolId:'WaitingModeLiberator', problem:'I’m stuck waiting and can’t start anything.', body:'Get some of your day back.' },
   { toolId:'NameStorm', problem:'I need a name that doesn’t sound generic.', body:'Generate directions worth reacting to.' },
-  { toolId:'ChaosPilot', problem:'Everything feels urgent at once.', body:'Sort the pile and find the next move.' },
+  // ChaosPilot (id, renamed 2026-09-19 — was Crisis Prioritizer, see
+  // audit/RENAMES.md) has no home-scene photo of its own yet, so it's out of
+  // this carousel for now rather than shipping a broken image. The old
+  // ChaosPilot photo (plane doing loops) moved with the routine-disruption
+  // tool to RutBuster below, where it actually belongs.
+  { toolId:'RutBuster', problem:'Every week looks exactly like the last one.', body:'Get one deliberate disruption designed to shake something loose.' },
   { toolId:'FinalWish', problem:'I need to say something that matters.', body:'Find the words without making them sound borrowed.' },
   { toolId:'FocusSoundArchitect', problem:'My surroundings are making it hard to work.', body:'Build a background your attention can live with.' },
   { toolId:'AlternatePath', problem:'What if I’d made a different choice?', body:'See where the other path would have led.' },
