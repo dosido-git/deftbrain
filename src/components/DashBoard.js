@@ -442,9 +442,15 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                   transition, which falls through to the catch-all /:toolId route
                   and 404s via NotFound — full page nav is required, matching the
                   same convention Footer.js and RelatedLinks.js already use for
-                  these exact pages. */}
-              <a href="/guides" className="no-underline hover:underline underline-offset-4">Guides</a>
-              <a href="/about" className="no-underline hover:underline underline-offset-4">About</a>
+                  these exact pages.
+                  !no-underline (not plain no-underline): Firefox was still
+                  showing its default <a> underline at rest here (confirmed
+                  live, 2026-09-19) while Chrome/Safari correctly showed none
+                  — a plain class and the UA default apparently don't resolve
+                  the same way across engines. !important on both states
+                  removes the ambiguity instead of relying on cascade order. */}
+              <a href="/guides" className="!no-underline hover:!underline underline-offset-4">Guides</a>
+              <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
             </nav>
             <LocaleSelectors dark={false} />
           </div>
