@@ -131,7 +131,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   const face = (item, index) => {
     const tool = item && toolFor(item.toolId);
     if (!item || !tool) return null;
-    return <Link to={`/${tool.id}`} className="absolute inset-0 rounded-xl overflow-hidden bg-white border shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2" style={{borderColor:BORDER,backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
+    return <Link to={`/${tool.id}`} className="absolute inset-0 rounded-xl overflow-hidden bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
       <div className="aspect-[9/8] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
       <div className="px-3.5 py-3">
         <h3 className="text-[13px] font-extrabold leading-[1.18]" style={{color:NAVY}}>{item.problem}</h3>
@@ -145,7 +145,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
 
 function PopularCard({ tool }) {
   if (!tool) return null;
-  return <Link to={`/${tool.id}`} className="rounded-xl overflow-hidden bg-white border shadow-sm hover:shadow-md transition-shadow" style={{borderColor:BORDER}}>
+  return <Link to={`/${tool.id}`} className="rounded-xl overflow-hidden bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition">
     <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${tool.id}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
     <div className="px-3.5 py-3">
       <div className="font-extrabold text-[12px]" style={{color:NAVY}}>{tool.title}</div>
