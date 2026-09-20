@@ -144,7 +144,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
             image keeps its own top corners via rounded-t-xl + overflow-
             hidden right on its own wrapper instead. */}
         <div className="hidden lg:flex justify-center pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150">
-          <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-[130%] max-w-none aspect-[4/3] object-cover rounded-xl" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
+          <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-[240%] max-w-none aspect-[8/5] object-cover rounded-xl" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
         </div>
       </div>
       <div className="px-3.5 py-3">
