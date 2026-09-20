@@ -23,12 +23,13 @@ const ROTATION = [
   { toolId:'GhostWriter', problem:'I know what I mean. I can’t get the words right.', body:'Turn the thought into something you can send.' },
   { toolId:'WaitingModeLiberator', problem:'I’m stuck waiting and can’t start anything.', body:'Get some of your day back.' },
   { toolId:'NameStorm', problem:'I need a name that doesn’t sound generic.', body:'Generate directions worth reacting to.' },
-  // ChaosPilot (id, renamed 2026-09-19 — was Crisis Prioritizer, see
-  // audit/RENAMES.md) has no home-scene photo of its own yet, so it's out of
-  // this carousel for now rather than shipping a broken image. The old
-  // ChaosPilot photo (plane doing loops) moved with the routine-disruption
-  // tool to RutBuster below, where it actually belongs.
-  { toolId:'RutBuster', problem:'Every week looks exactly like the last one.', body:'Get one deliberate disruption designed to shake something loose.' },
+  // 2026-09-20: the plane-doing-loops photo moved (Finder rename, not a code
+  // change) from RutBuster.jpg back to ChaosPilot.jpg — owner call. ChaosPilot
+  // (id, renamed 2026-09-19 — was Crisis Prioritizer, see audit/RENAMES.md)
+  // gets its tile back with copy that's actually accurate for it now. RutBuster
+  // has no photo of its own at the moment, so it's out of this carousel until
+  // one exists, same as any other tool without a home-scene image.
+  { toolId:'ChaosPilot', problem:'Everything feels urgent at once.', body:'Sort the pile and find the next move.' },
   { toolId:'FinalWish', problem:'I need to say something that matters.', body:'Find the words without making them sound borrowed.' },
   { toolId:'FocusSoundArchitect', problem:'My surroundings are making it hard to work.', body:'Build a background your attention can live with.' },
   { toolId:'AlternatePath', problem:'What if I’d made a different choice?', body:'See where the other path would have led.' },
