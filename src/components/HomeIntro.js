@@ -73,6 +73,61 @@ const ROTATION = [
 
 const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
 
+// "There's probably a DeftBrain for that" word cloud — each phrase links to
+// the tool it actually describes (checked against real tags/taglines, not
+// guessed from the words alone — see the ChaosPilot/CrisisPrioritizer
+// mislabeling this session already found and fixed for exactly that kind of
+// mistake). A few phrases share a tool on purpose (e.g. two doctor-visit
+// phrases both point at DoctorVisitPrep) — the cloud is about breadth of
+// situations, not a 1:1 map to the catalog.
+const PROBLEM_CLOUD = [
+  ['weird lease','LeaseTrapDetector'],
+  ['doctor visit','DoctorVisitPrep'],
+  ['bad bill','BillRescue'],
+  ['awkward talk','ReadTheRoom'],
+  ['forgotten word','TipOfTongue'],
+  ['suspicious review','FakeReviewDetective'],
+  ['security deposit','RentersDepositSaver'],
+  ['presentation','NerveCheck'],
+  ['paperwork','PaperworkPath'],
+  ['focus','FocusPocus'],
+  ['layover','LayoverMaximizer'],
+  ['apology','Mend'],
+  ['big decision','DecisionCoach'],
+  ['purchase','BuyWise'],
+  ['meeting','JustifyMyMeeting'],
+  ['travel','TripRecon'],
+  ['name something','NameStorm'],
+  ['say it better','SomeoneSaidItBetter'],
+  ['roommate trouble','RoommateCourt'],
+  ['scam?','ScamRadar'],
+  ['hard email','VelvetHammer'],
+  ['career change','SkillGapMap'],
+  ['what did they mean?','WhatsThatMean'],
+  ['prep for a procedure','ProcedureProbe'],
+  ['fake reviews','FakeReviewDetective'],
+  ['make a toast','ToastWriter'],
+  ['lost the day','WhereDidTheTimeGo'],
+  ['need a gift','Giftology'],
+  ['explain this','AnalogyEngine'],
+  ['plan went sideways','BreakMyPlan'],
+  ['what should I ask?','DoctorVisitPrep'],
+  ['before I sign','ContractDecoder'],
+  ['too much to do','ChaosPilot'],
+  ['find the right words','SomeoneSaidItBetter'],
+  ['price feels wrong','MarkupDetective'],
+  ['difficult customer','DifficultTalkCoach'],
+  ['can’t get started','TaskAvalancheBreaker'],
+  ['remember this','Bookmark'],
+  ['prepare for move-out','RentersDepositSaver'],
+  ['stress-test an idea','ConceptCoach'],
+  ['understand research','ResearchDecoder'],
+  ['what happens next?','BeforeTheCrash'],
+  ['need a comeback','ComebackCooker'],
+  ['before the meeting','MeetingHijackStopper'],
+  ['something feels off','DecoderRing'],
+];
+
 // Hero banner rotation — one photoreal "everyday life" scene at a time, each
 // staged around a different slice of what DeftBrain covers. Alt text names
 // what's actually in the frame (the photo is the only place that content
@@ -382,7 +437,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
 
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
-    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{['weird lease','doctor visit','bad bill','awkward talk','forgotten word','suspicious review','security deposit','presentation','paperwork','focus','layover','apology','big decision','purchase','meeting','travel','name something','say it better','roommate trouble','scam?','hard email','career change','what did they mean?','prep for a procedure','fake reviews','make a toast','lost the day','need a gift','explain this','plan went sideways','what should I ask?','before I sign','too much to do','find the right words','price feels wrong','difficult customer','can’t get started','remember this','prepare for move-out','stress-test an idea','understand research','what happens next?','need a comeback','before the meeting','something feels off'].map((x,i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <span key={x} className="inline-block font-bold whitespace-nowrap" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</span>})}</div></div></div></section>
+    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
 
     <section className="py-8 text-center"><h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2><p className="mt-1.5 text-[10.5px]" style={{color:MUTED}}>Practical guidance. Thoughtful questions. Better decisions.</p></section>
   </div>;
