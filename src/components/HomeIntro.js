@@ -131,8 +131,22 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   const face = (item, index) => {
     const tool = item && toolFor(item.toolId);
     if (!item || !tool) return null;
-    return <Link to={`/${tool.id}`} className="absolute inset-0 rounded-xl overflow-hidden bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
-      <div className="aspect-[9/8] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
+    return <Link to={`/${tool.id}`} className="group absolute inset-0 rounded-xl bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
+      <div className="relative">
+        <div className="aspect-[9/8] overflow-hidden rounded-t-xl bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
+        {/* Hover preview — a larger, less-cropped version of the same photo,
+            bottom-anchored to the image's own box so it only ever grows
+            upward and outward, never over the problem/body text below.
+            Desktop only (lg:); a hover reveal serves no touch device, and
+            the fixed 6-column grid there means each tile has room on
+            either side. The Link above deliberately has no overflow-hidden
+            of its own (this needs to escape the card's box) — the normal
+            image keeps its own top corners via rounded-t-xl + overflow-
+            hidden right on its own wrapper instead. */}
+        <div className="hidden lg:flex justify-center pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150">
+          <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-[130%] max-w-none aspect-[4/3] object-cover rounded-xl" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
+        </div>
+      </div>
       <div className="px-3.5 py-3">
         <h3 className="text-[13px] font-extrabold leading-[1.18]" style={{color:NAVY}}>{item.problem}</h3>
         <p className="mt-1.5 text-[10.5px] leading-[1.4]" style={{color:MUTED}}>{item.body}</p>
@@ -140,7 +154,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
     </Link>;
   };
 
-  return <div className="relative h-[295px] md:h-[332px] lg:h-[253px]" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
+  return <div className="relative h-[295px] md:h-[332px] lg:h-[253px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
 }
 
 function PopularCard({ tool }) {
