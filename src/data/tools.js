@@ -405,7 +405,7 @@ export const tools = [
   tagline: "Walk in prepared — because fifteen minutes goes by quickly.",
   tags: ['doctor', 'appointment', 'prep', 'questions', 'symptoms', 'health', 'medical', 'visit', 'preparation'],
   icon: "📝",
-  categories: ['The Grind'],
+  categories: ['Energy', 'The Grind'],
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
 
@@ -1367,7 +1367,7 @@ export const tools = [
   tagline: "Be an informed patient before you say yes.",
   tags: ['doctor', 'dentist', 'procedure', 'medical', 'appointment', 'health', 'informed patient', 'surgery', 'root canal', 'insurance', 'second opinion', 'cost', 'questions to ask'],
   icon: "🔬",
-  categories: ['The Grind', 'Loot'],
+  categories: ['Energy', 'The Grind', 'Loot'],
   headerColor: "#ccdfc4",
   description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
   guide: {
@@ -4816,7 +4816,7 @@ tagline: "Work with the energy you have.",
   tagline: "Turn medical jargon into plain English",
   tags: ['doctor', 'medical', 'jargon', 'health', 'appointment', 'diagnosis', 'plain language', 'prescription', 'lab results'],
   icon: "👩‍⚕️",
-  categories: ['The Grind'],
+  categories: ['Energy', 'The Grind'],
   headerColor: "#ccdfc4",
   description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.",
   guide: {
