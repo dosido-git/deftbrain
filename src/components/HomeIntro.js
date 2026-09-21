@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Caret from './Caret';
 
 const NAVY = '#142a43';
 const INK = '#202326';
@@ -465,6 +466,51 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
     <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
+
+    {/* Objection-handling — collapsed by default, after the tools content
+        and before the closing send-off, so lingering doubts get answered
+        right before someone leaves rather than sitting mid-scroll. Answers
+        reuse language that already exists and was already vetted elsewhere
+        on the site (about.html's "preparation tools, not professionals"
+        disclaimer; the hero's own free/no-account/privacy line) rather than
+        inventing new claims — the one exception is "what's the catch",
+        which has no prior answer anywhere on the site. */}
+    <section className="py-7">
+      <h2 className="text-[22px] sm:text-[25px] font-bold text-center" style={{fontFamily:SERIF,color:NAVY}}>Before you dig in</h2>
+      <div className="mt-5 max-w-xl mx-auto divide-y" style={{borderColor:BORDER}}>
+        <details className="group py-3">
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 text-[13px] font-semibold" style={{color:NAVY}}>
+            Is this just ChatGPT?
+            <Caret groupOpen className="ms-auto" />
+          </summary>
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>No. DeftBrain isn’t a chat window. Each tool asks the specific questions your situation needs, then organizes the result — a lease review, a question list, a decision breakdown — instead of leaving you to figure out what to ask.</p>
+        </details>
+        <details className="group py-3">
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 text-[13px] font-semibold" style={{color:NAVY}}>
+            Can I trust this for something serious — a lease, a diagnosis, money?
+            <Caret groupOpen className="ms-auto" />
+          </summary>
+          {/* Plain <a>, not <Link>: /about is a static prerendered page, not
+              a React Router route — same convention as /privacy and
+              /guides above. */}
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>These are preparation tools, not professionals. Lease Trap Detector helps you walk into a lawyer’s office with better questions — it isn’t a lawyer. AI can be wrong, confidently. Treat the output as a well-organized starting point, and verify anything that’s load-bearing. <a href="/about" className="!no-underline hover:!underline underline-offset-2 font-semibold" style={{color:NAVY}}>More on how we think about this →</a></p>
+        </details>
+        <details className="group py-3">
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 text-[13px] font-semibold" style={{color:NAVY}}>
+            Is my information safe?
+            <Caret groupOpen className="ms-auto" />
+          </summary>
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>Nothing you type into a tool is stored on our servers. No accounts, no cookies. <a href="/privacy" className="!no-underline hover:!underline underline-offset-2 font-semibold" style={{color:NAVY}}>Read the privacy policy →</a></p>
+        </details>
+        <details className="group py-3">
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 text-[13px] font-semibold" style={{color:NAVY}}>
+            What’s the catch — how is it free?
+            <Caret groupOpen className="ms-auto" />
+          </summary>
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>There isn’t one. DeftBrain is free to use — no ads, no account, nothing to buy.</p>
+        </details>
+      </div>
+    </section>
 
     <section className="py-8 text-center">
       <h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2>
