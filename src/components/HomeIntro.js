@@ -186,7 +186,13 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   const face = (item, index) => {
     const tool = item && toolFor(item.toolId);
     if (!item || !tool) return null;
-    return <Link to={`/${tool.id}`} className="group absolute inset-0 rounded-xl bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
+    // !no-underline (not plain no-underline): same Firefox quirk already
+    // found and fixed in DashBoard.js's nav — a plain class doesn't
+    // reliably beat the browser's default <a> underline in Firefox/Opera
+    // even though Chrome/Safari resolve it fine. This card's h3/p never
+    // had ANY underline reset before, relying entirely on that unreliable
+    // inherited default.
+    return <Link to={`/${tool.id}`} className="group absolute inset-0 rounded-xl bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2 !no-underline" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
       <div className="relative">
         <div className="aspect-[9/8] overflow-hidden rounded-t-xl bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
         {/* Hover preview — a larger, less-cropped version of the same photo,
@@ -455,12 +461,12 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           /:toolId route and 404, same convention as the privacy link above
           and Footer.js/RelatedLinks.js. */}
       <nav aria-label="Guides" className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-semibold">
-        <a href="/guides/conversations" className="hover:underline underline-offset-4" style={{color:NAVY}}>Conversations</a>
-        <a href="/guides/money" className="hover:underline underline-offset-4" style={{color:NAVY}}>Money</a>
-        <a href="/guides/workplace" className="hover:underline underline-offset-4" style={{color:NAVY}}>Workplace</a>
-        <a href="/guides/home" className="hover:underline underline-offset-4" style={{color:NAVY}}>Home</a>
-        <a href="/guides/wellness" className="hover:underline underline-offset-4" style={{color:NAVY}}>Wellness</a>
-        <a href="/guides/health" className="hover:underline underline-offset-4" style={{color:NAVY}}>Health</a>
+        <a href="/guides/conversations" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Conversations</a>
+        <a href="/guides/money" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Money</a>
+        <a href="/guides/workplace" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Workplace</a>
+        <a href="/guides/home" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Home</a>
+        <a href="/guides/wellness" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Wellness</a>
+        <a href="/guides/health" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Health</a>
         <a href="/guides" className="font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all guides →</a>
       </nav>
     </section>
