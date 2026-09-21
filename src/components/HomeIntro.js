@@ -129,6 +129,33 @@ const PROBLEM_CLOUD = [
   ['something feels off','DecoderRing'],
 ];
 
+// One real, sharp example per category — not new copy: every line here is
+// pulled from ROTATION (already vetted, already shipped) and paired with a
+// tool actually IN that category, so the tile is never showing an example
+// that would mislead about what's inside. Chosen for "oh, that might be
+// useful" recognition, not coverage — one line per category is a claim,
+// not a catalog. bg/accent tint the word cloud's own 7-color accent set
+// (HomeIntro's PROBLEM_CLOUD above) so the two sections read as the same
+// palette, not two different homepages. The tile links the whole category,
+// not just this one tool — the example is a hook, not a shortcut around
+// the category it's illustrating.
+const CATEGORY_EXAMPLES = {
+  'Home & Daily Life':   { example:'Something in my lease looks wrong.', accent:'#d28a2e', bg:'#f8eddf' },
+  'Travel & Events':     { example:'I have hours between flights.', accent:'#1f6f78', bg:'#dde9ea' },
+  'Relationships':       { example:'I need to say something that matters.', accent:'#b14f78', bg:'#f3e4ea' },
+  'Money':               { example:'This bill doesn’t look right.', accent:'#3f7b4d', bg:'#e2ebe4' },
+  'Career':              { example:'I need to talk about my own work.', accent:'#2e5f9e', bg:'#dfe7f0' },
+  'Work & Meetings':     { example:'The meeting ended and I’m still not sure what was decided.', accent:'#c94f45', bg:'#f6e4e3' },
+  'Health & Wellness':   { example:'I have a doctor appointment coming up.', accent:'#6c5aa8', bg:'#e8e6f1' },
+  'Conversations':       { example:'I need to have a difficult conversation.', accent:'#d28a2e', bg:'#f8eddf' },
+  'Learning':            { example:'I’m stuck on a concept and don’t know why.', accent:'#1f6f78', bg:'#dde9ea' },
+  'Just for Fun':        { example:'I know it. I just can’t remember it.', accent:'#b14f78', bg:'#f3e4ea' },
+  'Self & Reflection':   { example:'Everything is stuck in my head at once.', accent:'#3f7b4d', bg:'#e2ebe4' },
+  'Ideas & Imagination': { example:'I can only see the road not taken in hindsight.', accent:'#2e5f9e', bg:'#dfe7f0' },
+  'Decisions':           { example:'I’m about to buy something big.', accent:'#c94f45', bg:'#f6e4e3' },
+  'Tasks':               { example:'Everything feels urgent at once.', accent:'#6c5aa8', bg:'#e8e6f1' },
+};
+
 // Hero banner rotation — one photoreal "everyday life" scene at a time, each
 // staged around a different slice of what DeftBrain covers. Alt text names
 // what's actually in the frame (the photo is the only place that content
@@ -508,15 +535,19 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     <section className="py-7">
       <h2 className="text-[22px] sm:text-[25px] font-bold text-center" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2>
       <p className="mt-1.5 text-[10.5px] text-center" style={{color:MUTED}}>Every tool, sorted by what it's actually for.</p>
-      <div className="mt-5 flex flex-wrap justify-center gap-2.5">
+      <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {CATEGORY_META.map(cat => {
           const count = categoryCounts[cat.name] || 0;
-          if (!count) return null;
+          const ex = CATEGORY_EXAMPLES[cat.name];
+          if (!count || !ex) return null;
           return (
-            <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} className="flex items-center gap-2 rounded-full border bg-white px-4 py-2 hover:border-[#142a43] hover:shadow-sm transition" style={{borderColor:BORDER}}>
-              <span className="text-[15px]" aria-hidden="true">{cat.emoji}</span>
-              <span className="text-[12px] font-bold" style={{color:NAVY}}>{cat.name}</span>
-              <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
+            <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} className="text-left rounded-xl border p-3.5 transition hover:shadow-md hover:-translate-y-0.5" style={{borderColor:BORDER,background:ex.bg}}>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[14px]" aria-hidden="true">{cat.emoji}</span>
+                <span className="text-[12px] font-extrabold" style={{color:NAVY}}>{cat.name}</span>
+                <span className="ms-auto text-[9px] font-bold" style={{color:MUTED}}>{count}</span>
+              </div>
+              <p className="mt-1.5 text-[11px] leading-snug italic" style={{color:ex.accent}}>“{ex.example}”</p>
             </button>
           );
         })}
