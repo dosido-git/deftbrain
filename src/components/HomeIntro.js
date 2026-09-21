@@ -203,9 +203,23 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
             either side. The Link above deliberately has no overflow-hidden
             of its own (this needs to escape the card's box) — the normal
             image keeps its own top corners via rounded-t-xl + overflow-
-            hidden right on its own wrapper instead. */}
+            hidden right on its own wrapper instead.
+
+            Sized via transform: scale(1.7) + origin-bottom, NOT a
+            percentage width (w-[170%]). A percentage width on this img
+            resolves against this flex child's own containing block, which
+            is itself an auto-sized position:absolute box (inset-x-0, no
+            explicit width) — Chrome/Safari and Firefox/Opera don't agree
+            on that resolution (confirmed live 2026-09-21: Chrome/Safari
+            rendered ~2x the base image, Firefox/Opera rendered close to
+            1x, leaving the base thumbnail peeking out above the
+            undersized preview). transform:scale() operates on the box's
+            already-computed size, sidestepping the ambiguity — same final
+            rendered size (base * 1.7 in both dimensions), identical
+            across every engine because transform math isn't part of the
+            percentage-resolution spec area that disagreed. */}
         <div className="hidden lg:flex justify-center pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150">
-          <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-[170%] max-w-none aspect-[8/5] object-cover rounded-xl" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
+          <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-full aspect-[8/5] object-cover rounded-xl origin-bottom scale-[1.7]" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
         </div>
       </div>
       <div className="px-3.5 py-3">
