@@ -137,9 +137,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             className={`flex items-center gap-1.5 ${colors.textMuted} ${colors.hoverAccent} transition-colors group flex-shrink-0`}
           >
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
-            <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
+            <span className="text-xs font-semibold uppercase tracking-wide">Home</span>
           </button>
-          <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
+          <Link to="/" title="Back Home" className="flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="flex flex-col justify-center">
                 <span className="text-xl sm:text-2xl font-extrabold leading-none tracking-tight" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
