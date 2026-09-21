@@ -129,6 +129,24 @@ function saveToStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
 
+// SEARCH_GENERIC_TAGS: same discipline as RelatedLinks.js's GENERIC_TAGS
+// stoplist (06a873c3) — seeded only with tags an actual test confirmed as
+// false-positive triggers, not preemptively. The situation search matches a
+// free-text QUERY against a tool's TAGS via q.includes(tag): a full sentence
+// is checked for whether it CONTAINS a tag as a substring, which works for
+// specific tags ("deposit", "landlord") but false-positives on any tag that
+// is also a common English word. Confirmed live (independent review,
+// 2026-09-21): "My landlord won't return my security deposit" surfaced
+// Bookmark (tag "return" — "won't RETURN my deposit") and ScamRadar (tag
+// "security" — "SECURITY deposit"), neither of which has anything to do
+// with a rental deposit. Extend this list only when a specific query is
+// confirmed to false-positive on a specific tag, not preemptively —
+// removing a tag here also removes it as a genuine match for anyone who
+// actually types that word. Only affects the query-contains-tag direction;
+// tag-contains-query (searching "retur" and matching tag "return") is
+// unaffected, since that direction can't collide with unrelated prose.
+const SEARCH_GENERIC_TAGS = new Set(['return', 'security']);
+
 function fuzzyMatch(query, target) {
   const q = query.toLowerCase();
   const t = target.toLowerCase();
@@ -279,7 +297,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         if ((t.description || '').toLowerCase().includes(q)) return true;
         if ((t.tagline || '').toLowerCase().includes(q)) return true;
         const tags = t.tags || [];
-        if (tags.some(tag => tag.includes(q) || q.includes(tag))) return true;
+        if (tags.some(tag => tag.includes(q) || (!SEARCH_GENERIC_TAGS.has(tag) && q.includes(tag)))) return true;
         if (q.length >= 3 && fuzzyMatch(q, t.title)) return true;
         return false;
       });
