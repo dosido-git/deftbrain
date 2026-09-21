@@ -370,7 +370,7 @@ function HeroImage({ paused, reducedMotion }) {
   );
 }
 
-export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
+export default function HomeIntro({ allTools=[], onBrowse }) {
   const byId = useMemo(() => new Map(allTools.map(t => [t.id,t])), [allTools]);
   // Counts for the category chips below — same source DashBoard's own
   // filter pills use, so the numbers can't drift between the two views.
@@ -380,22 +380,25 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     return counts;
   }, [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
-  const [slots,setSlots] = useState(() => Array.from({length:6},(_,i)=>i));
-  const [incoming,setIncoming] = useState(() => Array(6).fill(null));
-  const [tokens,setTokens] = useState(() => Array(6).fill(0));
-  const [query,setQuery] = useState('');
+  // Reduced from 6 to 4 (2026-09-21) — the carousel now shares the promoted
+  // hero zone with the category grid instead of running full-width, so it
+  // needs half the columns. Still cycles through all of ROTATION via the
+  // same auto-rotate + manual paging, just 4 doors at a time instead of 6.
+  const PAGE_SIZE = 4;
+  const [slots,setSlots] = useState(() => Array.from({length:PAGE_SIZE},(_,i)=>i));
+  const [incoming,setIncoming] = useState(() => Array(PAGE_SIZE).fill(null));
+  const [tokens,setTokens] = useState(() => Array(PAGE_SIZE).fill(0));
   const [paused,setPaused] = useState(false);
   const [reducedMotion,setReducedMotion] = useState(false);
   const [page,setPage] = useState(0);
-  const PAGE_SIZE = 6;
   const totalPages = Math.max(1, Math.ceil(available.length / PAGE_SIZE));
 
   useEffect(()=>{ const mq=window.matchMedia('(prefers-reduced-motion: reduce)'); const sync=()=>setReducedMotion(mq.matches); sync(); mq.addEventListener?.('change',sync); return()=>mq.removeEventListener?.('change',sync); },[]);
   useEffect(()=>{ const vis=()=>setPaused(document.hidden); document.addEventListener('visibilitychange',vis); return()=>document.removeEventListener('visibilitychange',vis); },[]);
   useEffect(()=>{
-    if(paused || available.length<=6) return;
+    if(paused || available.length<=PAGE_SIZE) return;
     const timer=window.setInterval(()=>{
-      const slot=Math.floor(Math.random()*6);
+      const slot=Math.floor(Math.random()*PAGE_SIZE);
       setSlots(current=>{
         const used=new Set(current); const candidates=available.map((_,i)=>i).filter(i=>!used.has(i)); if(!candidates.length)return current;
         const nextIndex=candidates[Math.floor(Math.random()*candidates.length)];
@@ -408,7 +411,6 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     return()=>window.clearInterval(timer);
   },[available,paused,reducedMotion]);
 
-  const submit=e=>{e.preventDefault(); const q=query.trim(); if(q&&setSearchTerm)setSearchTerm(q);};
   const toolFor=id=>byId.get(id);
 
   // Manual carousel paging: turns all 6 doors to the next/previous set of six
@@ -461,25 +463,49 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           popular tools"'s gradient treatment (that section got removed
           outright: its list was the exact same 6 tools as ROTATION[0..5],
           just reordered — a first-time visitor saw the same six twice on
-          first paint). */}
-      <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-        <div className="flex items-end justify-between gap-4 mb-5"><div><h2 className="text-[23px] sm:text-[26px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px] sm:text-[12px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div></div>
-        <div className="relative">
-          {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
-          {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
-        </div>
-        {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
+          first paint).
 
-        {/* Search, demoted: an "or" option, not the headline action —
-            present and fully functional, styled as the fallback (outlined
-            button, not solid) rather than the thing every visitor is
-            asked to do first. */}
-        <div className="mt-6 pt-5 border-t flex flex-wrap items-center gap-x-6 gap-y-3" style={{borderColor:'#e8d9b8'}}>
-          <form onSubmit={submit} className="flex gap-2 flex-1 min-w-[240px] max-w-[480px]">
-            <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Or describe your own situation…" className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2 bg-white" style={{borderColor:BORDER}}/>
-            <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold whitespace-nowrap border-2 bg-white" style={{borderColor:NAVY,color:NAVY}}>Find a tool →</button>
-          </form>
+          Split two ways (2026-09-21), search moved out entirely (now the
+          persistent bar in DashBoard.js's header — see that file):
+          situations on the left answer "recognize yourself in an example";
+          categories on the right answer "I already know the general area."
+          Different jobs, same visitor decision — which is why they sit
+          side by side instead of stacked as two more homepage sections. */}
+      <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
+            <div className="relative">
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
+              <div className="grid grid-cols-2 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
+            </div>
+            {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
+          </div>
+
+          <div>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Every tool, sorted by what it's actually for.</p></div>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORY_META.map(cat => {
+                const count = categoryCounts[cat.name] || 0;
+                if (!count) return null;
+                // title = the researched per-category example (CATEGORY_EXAMPLES)
+                // — the compact chip has no room to show it, but it's not
+                // wasted: a hover reveals the "oh, that might be useful" line
+                // instead of a bare category name.
+                return (
+                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-1.5 rounded-full border bg-white/70 px-3 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
+                    <span className="text-[12px]" aria-hidden="true">{cat.emoji}</span>
+                    <span className="text-[11px] font-bold" style={{color:NAVY}}>{cat.name}</span>
+                    <span className="text-[9px] font-semibold" style={{color:MUTED}}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-5 border-t" style={{borderColor:'#e8d9b8'}}>
           <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
         </div>
       </div>
@@ -520,39 +546,6 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
 
     <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
 
-    {/* PREVIEW / placement draft (2026-09-21) — owner asked to see where this
-        goes before the real build (permanent /category/:slug pages, a
-        "Categories" nav item, prerendering) lands. For now each chip opens
-        the existing catalog view pre-filtered to that category — real,
-        functional, but not yet a durable/shareable URL the way the plan
-        calls for. Placement: right after the word cloud, which frames itself
-        as the "life doesn't sort into categories" answer for someone who
-        doesn't think that way — this is the dependable alternative for
-        someone who does. Worth a look together: does that juxtaposition
-        read as two honest options, or as the page arguing with itself two
-        sections apart? Counts come from the live catalog (categoryCounts
-        above), so they can't drift out of sync with DashBoard's own pills. */}
-    <section className="py-7">
-      <h2 className="text-[22px] sm:text-[25px] font-bold text-center" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2>
-      <p className="mt-1.5 text-[10.5px] text-center" style={{color:MUTED}}>Every tool, sorted by what it's actually for.</p>
-      <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {CATEGORY_META.map(cat => {
-          const count = categoryCounts[cat.name] || 0;
-          const ex = CATEGORY_EXAMPLES[cat.name];
-          if (!count || !ex) return null;
-          return (
-            <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} className="text-left rounded-xl border p-3.5 transition hover:shadow-md hover:-translate-y-0.5" style={{borderColor:BORDER,background:ex.bg}}>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[14px]" aria-hidden="true">{cat.emoji}</span>
-                <span className="text-[12px] font-extrabold" style={{color:NAVY}}>{cat.name}</span>
-                <span className="ms-auto text-[9px] font-bold" style={{color:MUTED}}>{count}</span>
-              </div>
-              <p className="mt-1.5 text-[11px] leading-snug italic" style={{color:ex.accent}}>“{ex.example}”</p>
-            </button>
-          );
-        })}
-      </div>
-    </section>
 
     {/* Objection-handling — collapsed by default, after the tools content
         and before the closing send-off, so lingering doubts get answered

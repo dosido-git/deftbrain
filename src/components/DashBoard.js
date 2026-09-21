@@ -162,6 +162,17 @@ function fuzzyMatch(query, target) {
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
+  // Persistent header search (2026-09-21) — draft text only; nothing filters
+  // until submit, same submit-not-live pattern the old hero search used.
+  // Separate from `searchTerm` (the prop that actually drives filteredTools)
+  // so the header input isn't fighting the in-catalog SearchBox's own value
+  // when both could theoretically be visible.
+  const [navQuery, setNavQuery] = useState('');
+  const submitNavSearch = useCallback((e) => {
+    e.preventDefault();
+    const q = navQuery.trim();
+    if (q) setSearchTerm(q);
+  }, [navQuery, setSearchTerm]);
   // 'category' | 'alpha' | 'recent'. Was a two-state toggle whose second
   // state claimed to be "Most Used" — see recencyRank for why that was never
   // something this app could know.
@@ -300,6 +311,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         if ((t.tagline || '').toLowerCase().includes(q)) return true;
         const tags = t.tags || [];
         if (tags.some(tag => tag.includes(q) || (!SEARCH_GENERIC_TAGS.has(tag) && q.includes(tag)))) return true;
+        // Category names ("Money", "Health & Wellness") aren't generic tags —
+        // they're a deliberate, closed set of 14, so there's no collision risk
+        // the way a free-floating tag word has. Added when the nav-level
+        // persistent search shipped: someone typing "career" should get
+        // every Career tool, not just the ones whose own tagline happens to
+        // contain that word.
+        if (t.resolvedCategories.some(cat => cat.toLowerCase().includes(q) || q.includes(cat.toLowerCase()))) return true;
         if (q.length >= 3 && fuzzyMatch(q, t.title)) return true;
         return false;
       });
@@ -487,6 +505,29 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <LocaleSelectors dark={false} />
           </div>
         </div>
+        {/* Persistent search (2026-09-21) — moved out of the hero entirely.
+            Owner's read: a returning visitor already knows what DeftBrain
+            does and will search first, so search should be a fixture right
+            under the nav, not something to scroll to or discover inside the
+            hero. First-time visitors get the hero's own cards + categories
+            instead (see HomeIntro). Sized like the original hero search
+            (~520px), not full-width — a search bar this wide reads like the
+            page's main event, which it deliberately isn't for a new visitor.
+            Hidden once results are showing: the in-catalog SearchBox below
+            (same searchTerm) takes over from there rather than running two
+            editable copies of the same query at once. */}
+        {!isSearching && !showCatalog && (
+          <form onSubmit={submitNavSearch} className="mt-4 flex gap-2 max-w-[520px]">
+            <input
+              value={navQuery}
+              onChange={e => setNavQuery(e.target.value)}
+              placeholder="Describe what you’re dealing with…"
+              className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
+              style={{ borderColor: CLR.sand300 }}
+            />
+            <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{ background: CLR.navy700 }}>Find a tool →</button>
+          </form>
+        )}
         {/* The rethought intro. Replaces HeroPitch's rotating triplet and the
             two-CTA row: both assumed a visitor already knew they wanted a
             tool. Hidden while searching — someone mid-query wants results,
@@ -497,7 +538,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <HomeIntro
               allTools={allTools}
               onBrowse={openCatalog}
-              setSearchTerm={setSearchTerm}
             />
           </div>
         )}
