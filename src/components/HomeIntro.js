@@ -110,7 +110,7 @@ const PROBLEM_CLOUD = [
   ['lost the day','WhereDidTheTimeGo'],
   ['need a gift','Giftology'],
   ['explain this','AnalogyEngine'],
-  ['plan went sideways','BreakMyPlan'],
+  ['find weaknesses in my plan','BreakMyPlan'],
   ['what should I ask?','DoctorVisitPrep'],
   ['before I sign','ContractDecoder'],
   ['too much to do','ChaosPilot'],
@@ -118,11 +118,11 @@ const PROBLEM_CLOUD = [
   ['price feels wrong','MarkupDetective'],
   ['difficult customer','DifficultTalkCoach'],
   ['can’t get started','TaskAvalancheBreaker'],
-  ['remember this','Bookmark'],
+  ['pick up a book or show again','Bookmark'],
   ['prepare for move-out','RentersDepositSaver'],
   ['stress-test an idea','ConceptCoach'],
   ['understand research','ResearchDecoder'],
-  ['what happens next?','BeforeTheCrash'],
+  ['understand my energy crashes','BeforeTheCrash'],
   ['need a comeback','ComebackCooker'],
   ['before the meeting','MeetingHijackStopper'],
   ['something feels off','DecoderRing'],
@@ -452,7 +452,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
           <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
           <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
-          <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try a tool →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
+          <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try Doctor Visit Prep →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
         </div>
         <div className="relative lg:hidden min-h-[260px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="absolute inset-0 w-full h-full object-cover" loading="lazy" /></div>
       </div>
