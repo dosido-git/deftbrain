@@ -628,7 +628,7 @@ const BrainDumpBuddy = ({ tool }) => {
                       {key === 'worries' && !checked && !excavateData[i] && (
                         <button onClick={() => handleExcavate(text, i)} disabled={excavatingIdx === i}
                           className={`text-[10px] px-2 py-1 rounded-lg ${c.btnSecondary} hover:opacity-80`}>
-                          {excavatingIdx === i ? <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> : '🔍'}
+                          {excavatingIdx === i ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧠'}</span> : '🔍'}
                         </button>
                       )}
                     </div>
@@ -695,7 +695,7 @@ const BrainDumpBuddy = ({ tool }) => {
                 <div>
                   {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                   <p className={`text-base ${c.textSecondary}`}>
-                    <span className="me-2 text-lg">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}
+                    <span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}
                   </p>
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 </div>
@@ -905,7 +905,7 @@ const BrainDumpBuddy = ({ tool }) => {
           {/* Structure button */}
           <button title={t('cmd_enter')} onClick={handleStructure} disabled={loading || !hasDump}
           className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasDump) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
-          {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> {t('bdb_sorting')}</span> : <span><span>🧠</span> {t('bdb_structure_this')}</span>}
+          {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧠'}</span> {t('bdb_sorting')}</span> : <span><span>🧠</span> {t('bdb_structure_this')}</span>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1003,7 +1003,7 @@ const BrainDumpBuddy = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-5`}>
             <div className="pb-3 mb-4 border-b border-zinc-500">
               <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
+                <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
                 <div className="flex items-center gap-2">
                   {contextInfo && (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${c.btnSecondary}`}>

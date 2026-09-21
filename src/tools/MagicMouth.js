@@ -337,7 +337,7 @@ const MagicMouth = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🗣️'}</span>{tool?.tagline ?? t('mm_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🗣️'}</span>{tool?.tagline ?? t('mm_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -401,8 +401,8 @@ const MagicMouth = ({ tool }) => {
             <button title={t('cmd_enter')} onClick={handlePhoneTree} disabled={loading || !phoneCompany.trim() || !phoneIssue.trim()}
               className={`relative w-full py-3 rounded-xl font-semibold ${(!phoneCompany.trim() || !phoneIssue.trim()) ? c.btnIdle : c.btnPrimary}`}>
               {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_getting_script')}</>
-              : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_get_script')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_getting_script')}</>
+              : <><span className="me-1 text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_get_script')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -534,8 +534,8 @@ const MagicMouth = ({ tool }) => {
                 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
             >
               {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_finding_angle')}</>
-                : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_angle')}</>}
+                ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_finding_angle')}</>
+                : <><span className="me-1 text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_find_angle')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -774,8 +774,8 @@ const MagicMouth = ({ tool }) => {
               className={`relative w-full py-3 rounded-xl font-semibold transition-all ${(!nuclearCompany.trim() || !nuclearProblem.trim()) ? c.btnIdle : 'text-white'}`}
               style={{ background: isDark ? 'linear-gradient(135deg, #8a3028, #b54a3f)' : 'linear-gradient(135deg, #b54a3f, #8a3028)' }}>
               {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_mapping')}</>
-              : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_nuclear')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_mapping')}</>
+              : <><span className="me-1 text-xl">{tool?.icon ?? '🗣️'}</span> {t('mm_find_nuclear')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

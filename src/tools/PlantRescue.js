@@ -657,7 +657,7 @@ const PlantRescue = ({ tool }) => {
             <div className="flex items-end justify-between gap-3">
               <div>
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🪴'}</span>{tool?.tagline ?? t('pr_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🪴'}</span>{tool?.tagline ?? t('pr_tagline')}
                 </p>
                 {/* This tool's headerColor is a deliberately dark navy (see
                     src/utils/headerGradient.js) — near-black text/border on
@@ -744,7 +744,7 @@ const PlantRescue = ({ tool }) => {
                 onClick={() => fileInputRef.current?.click()}>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                 {uploading
-                  ? <><span className="inline-block animate-spin">{tool?.icon ?? '🪴'}</span><p className={`text-sm ${c.text}`}>{t('pr_compressing')}</p></>
+                  ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🪴'}</span><p className={`text-sm ${c.text}`}>{t('pr_compressing')}</p></>
                   : <><span className="text-3xl block mb-2">📤</span><p className={`text-sm ${c.text}`}>{t('pr_upload_cta')}</p><p className={`text-xs ${c.textMuted}`}>{t('pr_upload_formats')}</p></>}
               </div>
             ) : (
@@ -968,8 +968,8 @@ const PlantRescue = ({ tool }) => {
           disabled={!canSubmitRef.current}
           className={`relative w-full ${!canSubmitRef.current ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🪴'}</span> {t('pr_analyzing')}</>
-            : <><span>{tool?.icon ?? '🪴'}</span> {mode === 'rescue' ? t('pr_btn_diagnose') : mode === 'identify' ? t('pr_btn_identify') : t('pr_btn_care')}</>}
+            ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🪴'}</span> {t('pr_analyzing')}</>
+            : <><span className="text-xl">{tool?.icon ?? '🪴'}</span> {mode === 'rescue' ? t('pr_btn_diagnose') : mode === 'identify' ? t('pr_btn_identify') : t('pr_btn_care')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -998,7 +998,7 @@ const PlantRescue = ({ tool }) => {
             {plantCollection.length >= 2 && (
               <button onClick={handleGetCompanions} disabled={companionLoading}
                 className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs disabled:opacity-40`}>
-                {companionLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🪴'}</span></> : t('pr_companion_check')}
+                {companionLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🪴'}</span></> : t('pr_companion_check')}
               </button>
             )}
           </div>
@@ -1303,7 +1303,7 @@ const PlantRescue = ({ tool }) => {
                 className={`flex-1 p-3 border rounded-lg ${c.input} outline-none focus:ring-2`} />
               <button onClick={handleFollowUp} disabled={followUpLoading || !followUpQuestion.trim()}
                 className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-40`}>
-                {followUpLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🪴'}</span> : '❓'}
+                {followUpLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🪴'}</span> : '❓'}
               </button>
             </div>
             {followUpAnswer && (

@@ -481,7 +481,7 @@ const NerveCheck = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '💪'}</span>{tool?.tagline ?? t('nck_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '💪'}</span>{tool?.tagline ?? t('nck_tagline')}
               </p>
               {view === 'form' && (
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -556,8 +556,8 @@ const NerveCheck = ({ tool }) => {
             <button title={t('cmd_enter')} onClick={runMain} disabled={!situation.trim() || loading}
               className={`relative w-full ${!situation.trim() ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-40`}>
               {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</>
-                : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
+                ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</>
+                : <><span className="me-1 text-xl">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
               {!loading && (
                 <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
               )}

@@ -184,7 +184,7 @@ const BeliefStressTest = ({ tool }) => {
             {/* PF-30 — the wrapper already prints "Belief Stress Test" as the
                 page <h1>. The tagline says what the title only names. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🔬'}</span>{t('bst_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🔬'}</span>{t('bst_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -235,7 +235,7 @@ const BeliefStressTest = ({ tool }) => {
                 tool shipped; the chip just says so. */}
             <button onClick={handleSubmit} disabled={loading || !belief.trim()} title={t('bst_cmd_enter')}
               className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="me-2">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
+              {loading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="me-2 text-xl">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
               {!loading && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

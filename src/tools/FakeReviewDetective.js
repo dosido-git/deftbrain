@@ -488,7 +488,7 @@ const FakeReviewDetective = ({ tool }) => {
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🔍'}</span>{t('frd_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🔍'}</span>{t('frd_tagline')}
             </p>
             <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -576,7 +576,7 @@ const FakeReviewDetective = ({ tool }) => {
 
           <div className="flex gap-3">
             <button onClick={runAnalysis} disabled={!canAnalyze} title={t('frd_cmd_enter')} className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
-              {isRunning ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || t('frd_processing')}</span></> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_detect')}</>}
+              {isRunning ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || t('frd_processing')}</span></> : <><span className="text-xl">{tool?.icon ?? '🔍'}</span> {t('frd_detect')}</>}
               {!isRunning && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -605,7 +605,7 @@ const FakeReviewDetective = ({ tool }) => {
           <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
             <label htmlFor="frd-url" className="sr-only">{t('frd_url_a11y')}</label>
             <input id="frd-url" type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
-          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> ...</> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
+          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> ...</> : <><span className="text-xl">{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
         </div>
         <p className={`text-[11px] ${c.textMuteded} mt-1.5`}>{t('frd_url_note')}</p>
       </div>
@@ -691,7 +691,7 @@ const FakeReviewDetective = ({ tool }) => {
       )}
 
       {/* PHASE */}
-      {isRunning && <div className={`${c.card} border rounded-xl p-4 flex items-center gap-3`}><span className="animate-spin text-lg">{tool?.icon ?? '🔍'}</span><div><p className={`text-sm font-bold ${c.text}`}>{phase === 'extracting' ? t('frd_phase_extracting') : phase === 'parsing' ? t('frd_phase_parsing') : phase === 'scoring' ? t('frd_phase_scoring') : t('frd_phase_patterns')}</p><p className={`text-xs ${c.textMuteded}`}>{scoreProgress}</p></div></div>}
+      {isRunning && <div className={`${c.card} border rounded-xl p-4 flex items-center gap-3`}><span className="animate-spin text-xl">{tool?.icon ?? '🔍'}</span><div><p className={`text-sm font-bold ${c.text}`}>{phase === 'extracting' ? t('frd_phase_extracting') : phase === 'parsing' ? t('frd_phase_parsing') : phase === 'scoring' ? t('frd_phase_scoring') : t('frd_phase_patterns')}</p><p className={`text-xs ${c.textMuteded}`}>{scoreProgress}</p></div></div>}
 
       {/* QUICK VERDICT */}
       {analysis?.quick_verdict && (
@@ -846,7 +846,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🌐</span> {t('frd_synth_title', { count: sourceAnalyses.length })}</h3>
-            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>{synthesisLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="me-1">{tool?.icon ?? '🔍'}</span>{synthesis ? t('frd_refresh') : t('frd_synthesize')}</>}</button>
+            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>{synthesisLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> : <><span className="me-1 text-xl">{tool?.icon ?? '🔍'}</span>{synthesis ? t('frd_refresh') : t('frd_synthesize')}</>}</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
             {sourceAnalyses.slice(0, 6).map(sa => (

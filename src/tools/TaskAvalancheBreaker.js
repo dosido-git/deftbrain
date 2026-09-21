@@ -162,7 +162,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '⛏️'}</span>{toolTagline(tool?.tagline ?? t('tab_tagline'))}
+              <span className="me-2 text-xl">{tool?.icon ?? '⛏️'}</span>{toolTagline(tool?.tagline ?? t('tab_tagline'))}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -201,8 +201,8 @@ const TaskAvalancheBreaker = ({ tool }) => {
           <button title={t('cmd_enter')} onClick={run} disabled={loading || !project.trim()}
             className={`relative mt-6 w-full py-3 rounded-xl font-black flex items-center justify-center gap-2 ${!project.trim() ? c.btnIdle : c.btnPrimary} disabled:opacity-50`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⛏️'}</span> {t('tab_processing')}</>
-              : <><span>{tool?.icon ?? '⛏️'}</span> {t('tab_submit_btn')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⛏️'}</span> {t('tab_processing')}</>
+              : <><span className="text-xl">{tool?.icon ?? '⛏️'}</span> {t('tab_submit_btn')}</>}
             {!loading && project.trim() && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

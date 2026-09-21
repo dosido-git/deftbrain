@@ -289,7 +289,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 border-b pb-5 mb-5 border-gray-300/40">
           <div>
             <h2 className={`font-semibold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '💝'}</span>
+              <span className="me-2 text-xl">{tool?.icon ?? '💝'}</span>
               {tool?.tagline ?? t('gdc_tagline')}
             </h2>
             <button
@@ -385,8 +385,8 @@ const GratitudeDebtClearer = ({ tool }) => {
             className="relative w-full rounded-xl px-5 py-3 font-bold text-zinc-900 border border-black/20 hover:brightness-105 disabled:opacity-50 flex items-center justify-center"
           >
             {loading
-              ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💝'}</span>{t('gdc_crafting')}</>
-              : <><span className="me-1">{tool?.icon ?? '💝'}</span>{t('gdc_generate_messages')}</>}
+              ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '💝'}</span>{t('gdc_crafting')}</>
+              : <><span className="me-1 text-xl">{tool?.icon ?? '💝'}</span>{t('gdc_generate_messages')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-black/25 bg-black/10 text-[10px] font-bold tracking-wide">

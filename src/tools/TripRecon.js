@@ -440,7 +440,7 @@ function TripRecon({ tool }) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Trip Recon'}
+                <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Trip Recon'}
               </h2>
               {/* i18n key, not tool?.tagline — the catalog tagline keeps its
                   leading emoji (toolTagline() convention), which would
@@ -610,7 +610,7 @@ function TripRecon({ tool }) {
                   </details>
 
                   <button title={t('cmd_enter')} onClick={analyzeLocation} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
-                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
+                    {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
                     {loading ? t('smm_scouting') : t('smm_help_prepare')}
                     {!loading && (
                       <kbd aria-hidden="true"
@@ -728,7 +728,7 @@ function TripRecon({ tool }) {
                     <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                   </div>
                   <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
-                    {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🧭</span>}
+                    {routeLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🧭</span>}
                     {routeLoading ? t('smm_planning') : t('smm_plan_route_btn')}
                     {!routeLoading && (
                       <kbd aria-hidden="true"
@@ -840,7 +840,7 @@ function TripRecon({ tool }) {
                 </div>
                 <textarea value={rescanOtherText} onChange={e => setRescanOtherText(e.target.value)} placeholder={t('smm_chg_other_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
                 <button onClick={fetchRescan} disabled={rescanLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>
-                  {rescanLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : t('smm_update_plan')}
+                  {rescanLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : t('smm_update_plan')}
                 </button>
                 {rescanResult && (
                   <div className="space-y-2">
@@ -904,7 +904,7 @@ function TripRecon({ tool }) {
                 <label htmlFor="smm-ask-need" className="sr-only">{t('smm_ask_need_sr')}</label>
                 <textarea id="smm-ask-need" value={askNeed} onChange={e => setAskNeed(e.target.value)} placeholder={t('smm_ask_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
                 <button onClick={fetchAskScript} disabled={askLoading || !askNeed.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>
-                  {askLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : t('smm_write_script')}
+                  {askLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : t('smm_write_script')}
                 </button>
                 {askResult && (
                   <div className={`${c.cardAlt} border rounded-xl p-3`}>

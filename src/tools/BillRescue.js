@@ -997,7 +997,7 @@ const BillRescue = ({ tool }) => {
           ) : (
             <button onClick={() => billPhotoRef.current?.click()} disabled={compressingImage}
               className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-xs ${c.dropzone}`}>
-              {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : `📷 ${t('br_upload_cta')}`}
+              {compressingImage ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧾'}</span> : `📷 ${t('br_upload_cta')}`}
             </button>
           )}
         </div>
@@ -1018,7 +1018,7 @@ const BillRescue = ({ tool }) => {
         <div className="flex gap-2 flex-wrap">
           <button onClick={analyze} disabled={loading || !billType} title={t('br_cmd_enter')}
             className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> {t('br_working')}</> : <><span>🧾</span> {t('br_get_plan')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧾'}</span> {t('br_working')}</> : <><span>🧾</span> {t('br_get_plan')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1553,7 +1553,7 @@ const BillRescue = ({ tool }) => {
 
         <button onClick={runTriage} disabled={loading || triageBills.filter(b => b.type).length < 2}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> {t('br_analyzing')}</> : <><span>📊</span> {t('br_triage_cta')}</>}
+          {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧾'}</span> {t('br_analyzing')}</> : <><span>📊</span> {t('br_triage_cta')}</>}
         </button>
       </div>
 
@@ -1684,7 +1684,7 @@ const BillRescue = ({ tool }) => {
                       <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
                         plan.status === 'resolved' ? c.success :
                         plan.status === 'in_progress' ? c.warning : c.highlightBg
-                      }`}>{plan.status === 'resolved' ? `✅ ${t('br_status_resolved')}` : plan.status === 'in_progress' ? `🔄 ${t('br_status_in_progress')}` : <><span className="inline-block animate-spin">{tool?.icon ?? '🧾'}</span> {t('br_status_pending')}</>}</span>
+                      }`}>{plan.status === 'resolved' ? `✅ ${t('br_status_resolved')}` : plan.status === 'in_progress' ? `🔄 ${t('br_status_in_progress')}` : <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧾'}</span> {t('br_status_pending')}</>}</span>
                     </div>
                     <p className={`text-[9px] ${c.textMuteded}`}>{new Date(plan.date).toLocaleDateString()}</p>
                     {(plan.results?.todays_job?.action || plan.results?.shame_to_action?.micro_step) && (
@@ -1894,7 +1894,7 @@ const BillRescue = ({ tool }) => {
 
             <button onClick={runQuickCheck} disabled={loading || !qcCharge.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>⚡</span>}
+              {loading ? <span className="animate-spin text-xl">{tool?.icon ?? '🧾'}</span> : <span>⚡</span>}
               {loading ? t('br_checking') : t('br_check_charge')}
             </button>
           </div>
@@ -1988,7 +1988,7 @@ const BillRescue = ({ tool }) => {
               </div>
               <button onClick={startRehearsal} disabled={loading || !rhSituation.trim()}
                 className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>📞</span>}
+                {loading ? <span className="animate-spin text-xl">{tool?.icon ?? '🧾'}</span> : <span>📞</span>}
                 {loading ? t('br_connecting') : t('br_start_practice')}
               </button>
             </div>
@@ -2153,7 +2153,7 @@ const BillRescue = ({ tool }) => {
 
             <button onClick={generateLetter} disabled={loading || !ltType}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <span className="animate-spin">{tool?.icon ?? '🧾'}</span> : <span>✉️</span>}
+              {loading ? <span className="animate-spin text-xl">{tool?.icon ?? '🧾'}</span> : <span>✉️</span>}
               {loading ? t('br_generating') : t('br_generate_letter')}
             </button>
           </div>
@@ -2423,7 +2423,7 @@ const BillRescue = ({ tool }) => {
                 before reaching an input. The icon moves onto the tagline. */}
             <div className="min-w-0">
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
               </p>
               {!results && (
                 /* PF-17c: dark ink in both themes — the pill sits on the tool's

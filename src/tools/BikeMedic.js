@@ -1548,7 +1548,7 @@ const BikeMedic = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -2246,7 +2246,7 @@ const BikeMedic = ({ tool }) => {
             className={`w-full h-28 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
           <button title={t('cmd_enter')} onClick={runCustomCheck} disabled={loading || !customSituation.trim()}
             className={`relative mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${!customSituation.trim() ? c.btnIdle : c.btnPrimary}`}>
-            {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> {t('bmd_generating')}</span> : t('bmd_generate_checklist')}
+            {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🚲'}</span> {t('bmd_generating')}</span> : t('bmd_generate_checklist')}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -2334,7 +2334,7 @@ const BikeMedic = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -2422,7 +2422,7 @@ const BikeMedic = ({ tool }) => {
                   {!aiRoute && (
                   <button onClick={routeSymptom} disabled={loading || symptomText.trim().length < 10}
                     className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
-                    {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> {t('bmd_analyzing')}</span> : t('bmd_analyze_symptom')}
+                    {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🚲'}</span> {t('bmd_analyzing')}</span> : t('bmd_analyze_symptom')}
                   </button>
                   )}
                   {aiRoute && (
@@ -2764,7 +2764,7 @@ const BikeMedic = ({ tool }) => {
                   className={`w-full h-24 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
                 <button onClick={askFollowUp} disabled={loading || !followUpText.trim()}
                   className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || !followUpText.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
-                  {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> {t('bmd_analyzing')}</span> : t('bmd_fix_deeper_diagnosis')}
+                  {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🚲'}</span> {t('bmd_analyzing')}</span> : t('bmd_fix_deeper_diagnosis')}
                 </button>
                 {/* Shop handoff */}
                 <div className={`mt-3 pt-3 border-t ${c.border} flex gap-2`}>

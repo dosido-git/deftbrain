@@ -1035,7 +1035,7 @@ const TheFinalWord = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('tfw_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{t('tfw_tagline')}
                 </p>
                 {mode !== 'trivia' && (
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1236,7 +1236,7 @@ const TheFinalWord = ({ tool }) => {
                   <VoiceButton />
                 </div>
                 <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!question.trim()) ? c.btnIdle : c.btnPrimary}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? t('tfw_q_deliberating') : t('tfw_q_submit')}
+                  {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? t('tfw_q_deliberating') : t('tfw_q_submit')}
                 {!loading && (
                   <kbd aria-hidden="true"
                     className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1276,7 +1276,7 @@ const TheFinalWord = ({ tool }) => {
                       <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder={t('tfw_da_position_ph')} rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>😈</span>} {loading ? t('tfw_da_building') : t('tfw_da_submit')}
+                      {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>😈</span>} {loading ? t('tfw_da_building') : t('tfw_da_submit')}
                     </button>
                   </div>
                 ) : (
@@ -1314,7 +1314,7 @@ const TheFinalWord = ({ tool }) => {
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
-                      {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}
+                      {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}
                     {!loading && (
                       <kbd aria-hidden="true"
                         className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1350,7 +1350,7 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-xs ${c.textMuted}`}>{t('tfw_fc_dissect_hint')}</p>
                 )}
                 <button onClick={() => (dissectMode ? handleDissect() : handleSubmit())} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
+                  {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
                   {loading ? (dissectMode ? t('tfw_fc_dissecting') : t('tfw_fc_factchecking')) : (dissectMode ? t('tfw_fc_dissect_submit') : t('tfw_fc_check_submit'))}
                 </button>
               </div>
@@ -1408,7 +1408,7 @@ const TheFinalWord = ({ tool }) => {
 
                 {/* Start buttons */}
                 <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(team => !team.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚡</span>} {loading ? t('tfw_setup_generating') : t('tfw_setup_start_local')}
+                  {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>⚡</span>} {loading ? t('tfw_setup_generating') : t('tfw_setup_start_local')}
                 </button>
 
                 {/* Multiplayer buttons */}
@@ -1446,7 +1446,7 @@ const TheFinalWord = ({ tool }) => {
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
               <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_create_room')}
+                {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_create_room')}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>{t('tfw_mp_cancel')}</button>
             </div>
@@ -1461,7 +1461,7 @@ const TheFinalWord = ({ tool }) => {
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
               <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_join_room')}
+                {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_join_room')}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>{t('tfw_mp_cancel')}</button>
             </div>
@@ -1498,11 +1498,11 @@ const TheFinalWord = ({ tool }) => {
 
             {isHost ? (
               <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
-                {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_start_game', { count: roomState.players?.length || 0 })}
+                {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_start_game', { count: roomState.players?.length || 0 })}
               </button>
             ) : (
               <div className={`text-center py-4`}>
-                <span className="inline-block animate-spin me-2">{tool?.icon ?? '⚖️'}</span>
+                <span className="inline-block animate-spin me-2 text-xl">{tool?.icon ?? '⚖️'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>{t('tfw_mp_waiting')}</span>
               </div>
             )}
@@ -1576,7 +1576,7 @@ const TheFinalWord = ({ tool }) => {
                     </button>
                   ) : (
                     <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
-                      {mpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? t('tfw_mp_see_results') : t('tfw_mp_next_question')}
+                      {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? t('tfw_mp_see_results') : t('tfw_mp_next_question')}
                     </button>
                   )}
                 </div>
@@ -1901,7 +1901,7 @@ const TheFinalWord = ({ tool }) => {
                 <div className="flex gap-2">
                   <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>💬</span> {t('tfw_actually')}</button>
                   <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
-                    {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>→</span>} {questionCount >= roundLimit ? t('tfw_trivia_see_results') : teams.length > 1 ? t('tfw_trivia_turn', { name: teams[(activeTeamIdx + 1) % teams.length]?.name }) : t('tfw_trivia_next')}
+                    {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>→</span>} {questionCount >= roundLimit ? t('tfw_trivia_see_results') : teams.length > 1 ? t('tfw_trivia_turn', { name: teams[(activeTeamIdx + 1) % teams.length]?.name }) : t('tfw_trivia_next')}
                   </button>
                 </div>
               </div>
@@ -1951,7 +1951,7 @@ const TheFinalWord = ({ tool }) => {
             <h4 className={`text-sm font-bold flex items-center gap-2 ${c.text}`}><span className={c.accentTxt}>💬</span>{t('tfw_challenge_title')}</h4>
             <label className="sr-only" htmlFor="tfw-challenge-text">{t('tfw_challenge_label')}</label>
             <textarea ref={challengeTextRef} id="tfw-challenge-text" value={challengeText} onChange={(e) => setChallengeText(e.target.value)} placeholder={t('tfw_challenge_ph')} rows={2} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_challenge_submit')}</button>
+            <button onClick={handleChallenge} disabled={loading || !challengeText.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_challenge_submit')}</button>
             {challengeResult && (
               <div className={`p-4 rounded-xl border ${challengeResult.challenge_valid === true ? isDark ? 'bg-emerald-900/10 border-green-800/50' : 'bg-green-50 border-green-200' : challengeResult.challenge_valid === 'partially' ? isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200' : isDark ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50 border-red-200'}`}>
                 <p className={`text-sm font-bold mb-1 ${c.text}`}>{challengeResult.ruling}</p>
@@ -1969,7 +1969,7 @@ const TheFinalWord = ({ tool }) => {
             <p className={`text-xs ${c.textSecondary}`}>{t('tfw_appeal_intro')}</p>
             <label className="sr-only" htmlFor="tfw-appeal-evidence">{t('tfw_appeal_label')}</label>
             <textarea id="tfw-appeal-evidence" value={appealEvidence} onChange={(e) => setAppealEvidence(e.target.value)} placeholder={t('tfw_appeal_ph')} rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm resize-none transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : t('tfw_appeal_submit')}</button>
+            <button onClick={handleAppeal} disabled={appealLoading || !appealEvidence.trim()} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{appealLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_appeal_submit')}</button>
 
             {appealResult && (
               <div className={`p-4 rounded-xl border space-y-3 ${
@@ -2020,7 +2020,7 @@ const TheFinalWord = ({ tool }) => {
             <div className="flex gap-2">
               <label className="sr-only" htmlFor="tfw-followup-text">{t('tfw_followup_label')}</label>
               <input id="tfw-followup-text" value={followUpText} onChange={(e) => setFollowUpText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !followUpLoading && handleFollowUp()} placeholder={t('tfw_followup_ph')} className={`flex-1 px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : '→'}</button>
+              <button onClick={handleFollowUp} disabled={followUpLoading || !followUpText.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${c.btnPrimary}`}>{followUpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : '→'}</button>
             </div>
             {followUpResults.map((fu, i) => (
               <div key={i} className={`p-4 rounded-xl border space-y-2 ${c.cardAlt}`}>

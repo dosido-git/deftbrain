@@ -844,13 +844,13 @@ const NameStorm = ({ tool }) => {
           {showDomainFeatures && (
             <button onClick={() => handleCheckAvailability(nameObj.name)} disabled={isChecking || !!avail}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${avail ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
-              {isChecking ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">🌐</span>}
+              {isChecking ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">🌐</span>}
               {avail ? t('ns_checked') : isChecking ? t('ns_checking') : isDomainMode ? t('ns_check_domain') : t('ns_check_availability')}
             </button>
           )}
           <button onClick={() => handleMoreLike(nameObj, categoryName)} disabled={isLoadingMore || !!moreData}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${moreData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary} disabled:opacity-40`}>
-            {isLoadingMore ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">✨</span>}
+            {isLoadingMore ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">✨</span>}
             {moreData ? t('ns_see_below') : isLoadingMore ? t('ns_generating') : t('ns_more_like_this')}
           </button>
           {/* Refine button */}
@@ -867,7 +867,7 @@ const NameStorm = ({ tool }) => {
           {showStoryButton && !compact && (
             <button onClick={() => handleGenerateStory(nameObj)} disabled={isStorying || !!storyData}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${storyData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
-              {isStorying ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">📖</span>}
+              {isStorying ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">📖</span>}
               {storyData ? t('ns_story_below') : isStorying ? t('ns_writing') : t('ns_brand_story')}
             </button>
           )}
@@ -933,7 +933,7 @@ const NameStorm = ({ tool }) => {
               disabled={isRefining} />
             <button onClick={() => handleRefine(nameObj, refineInput)} disabled={isRefining || !refineInput.trim()}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${isRefining ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>
-              {isRefining ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : t('ns_refine')}
+              {isRefining ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚡'}</span> : t('ns_refine')}
             </button>
             {/* Quick refinement chips */}
             <div className="flex flex-wrap gap-1.5">
@@ -1107,7 +1107,7 @@ const NameStorm = ({ tool }) => {
               <div className="flex-1 min-w-0">
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '⚡'}</span>{t('ns_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('ns_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -1186,7 +1186,7 @@ const NameStorm = ({ tool }) => {
               {error && <div className={`p-3 rounded-xl flex items-start gap-2 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
               <button title={t('cmd_enter')} onClick={handleQuick} disabled={loading || !quickWhatIsIt.trim()}
                 className={`relative w-full ${(!quickWhatIsIt.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('ns_naming_it')}</> : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('ns_name_it')}</>}
+                {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚡'}</span> {t('ns_naming_it')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '⚡'}</span> {t('ns_name_it')}</>}
               {!loading && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1431,8 +1431,8 @@ const NameStorm = ({ tool }) => {
             <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
               className={`relative w-full ${((isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
-                : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
+                ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
+                : <><span className="me-1 text-xl">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
               {!loading && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1486,7 +1486,7 @@ const NameStorm = ({ tool }) => {
               <div className="flex items-center gap-2 flex-wrap">
                 <button onClick={handleRegenerate} disabled={loading}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-800/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'} disabled:opacity-40`}>
-                  {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span>⚡</span>} {t('ns_storm_again')}
+                  {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚡'}</span> : <span>⚡</span>} {t('ns_storm_again')}
                 </button>
               </div>
             </div>

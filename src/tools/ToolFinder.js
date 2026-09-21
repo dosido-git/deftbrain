@@ -200,7 +200,7 @@ const ToolFinder = ({ tool }) => {
                   the icon moves onto the tagline. The tagline reads from the
                   locale rather than the catalog, which is English by design. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🧰'}</span>{t('tf_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🧰'}</span>{t('tf_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -233,8 +233,8 @@ const ToolFinder = ({ tool }) => {
           <button title={t('cmd_enter')}
             onClick={() => findTools()} data-print-keep disabled={loading || !problem.trim()} className={`relative flex-1 ${(!problem.trim()) ? c.btnIdle : c.btnPrimary} disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg transition-all`} >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧰'}</span> {t('tf_searching')}</>
-              : <><span>{tool?.icon ?? '🧰'}</span> {t('tf_find_cta')}</>} {!loading && (
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧰'}</span> {t('tf_searching')}</>
+              : <><span className="text-xl">{tool?.icon ?? '🧰'}</span> {t('tf_find_cta')}</>} {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
               ⌘↵

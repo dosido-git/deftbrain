@@ -508,7 +508,7 @@ const PetBehaviorDecoder = ({ tool }) => {
         <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
             <div>
-              <p className={`text-base ${c.textSecondary}`}><span className="me-2 text-lg">{tool?.icon ?? '🐾'}</span>{tool?.tagline ?? t('pwd_tagline')}</p>
+              <p className={`text-base ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🐾'}</span>{tool?.tagline ?? t('pwd_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(results || behavior.trim()) && <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>↺ {t('start_over')}</button>}
@@ -543,7 +543,7 @@ const PetBehaviorDecoder = ({ tool }) => {
             <div className="flex items-center gap-3 flex-wrap">
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
               <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className={`${c.btnSecondary} disabled:opacity-40 px-3 py-2 rounded text-sm border ${isDark ? 'border-zinc-600' : 'border-amber-300'}`}>
-                {uploading ? <span className="animate-spin inline-block">{tool?.icon ?? '🐾'}</span> : '📷'} {imagePreview ? t('pwd_change') : t('pwd_photo')}
+                {uploading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🐾'}</span> : '📷'} {imagePreview ? t('pwd_change') : t('pwd_photo')}
               </button>
               {!isRecording ? (
                 <button onClick={handleStartRecording} className={`${c.btnSecondary} px-3 py-2 rounded text-sm border ${isDark ? 'border-zinc-600' : 'border-amber-300'}`}>🎥 {videoPreview ? t('pwd_rerecord') : t('pwd_record')}</button>
@@ -609,7 +609,7 @@ const PetBehaviorDecoder = ({ tool }) => {
 
           <div className="flex gap-3">
             <button title={t('cmd_enter')} onClick={() => handleAnalyze()} disabled={loading || !canSubmitRef.current} className={`relative flex-1 ${!canSubmitRef.current ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🐾'}</span> {t('pwd_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🐾'}</span> {t('pwd_decode')}</>}
+              {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🐾'}</span> {t('pwd_analyzing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🐾'}</span> {t('pwd_decode')}</>}
               {!loading && <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>}
             </button>
           </div>
@@ -639,7 +639,7 @@ const PetBehaviorDecoder = ({ tool }) => {
                 </div>
                 {(results?.assessment.action_level === 'emergency' || results?.assessment.action_level === 'vet_contact_recommended') && (
                   <button onClick={handleFindEmergencyVet} disabled={locatingVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-40">
-                    {locatingVet ? <span className="animate-spin inline-block">{tool?.icon ?? '🐾'}</span> : <span>📍</span>} {t('pwd_find_vet_near')}
+                    {locatingVet ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🐾'}</span> : <span>📍</span>} {t('pwd_find_vet_near')}
                   </button>
                 )}
               </div>
@@ -745,7 +745,7 @@ const PetBehaviorDecoder = ({ tool }) => {
             <div className="scroll-mt-24 flex gap-2" ref={followupRef}>
               <label htmlFor="pwd-followup-q" className="sr-only">{t('pwd_followup_aria')}</label>
               <input id="pwd-followup-q" type="text" value={followupQuestion} onChange={(e) => setFollowupQuestion(e.target.value)} placeholder={t('pwd_followup_ph')} className={`flex-1 p-3 border rounded-lg ${c.input}`} onKeyDown={(e) => { if (e.key === 'Enter') handleFollowup(); }} />
-              <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()} className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-40`}>{followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🐾'}</span> : '➤'}</button>
+              <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()} className={`${c.btnPrimary} px-4 py-2 rounded disabled:opacity-40`}>{followupLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🐾'}</span> : '➤'}</button>
             </div>
           </div>
 

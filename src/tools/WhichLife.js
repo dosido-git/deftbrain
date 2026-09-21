@@ -318,7 +318,7 @@ const WhichLife = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🔮'}</span>{t('cr_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🔮'}</span>{t('cr_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -408,7 +408,7 @@ const WhichLife = ({ tool }) => {
           {/* Timeframe */}
           <div className="space-y-2">
             <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="me-1.5">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
+              <span className="me-1.5 text-xl">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
             </label>
             {/* The chips carried flex-1 with no flex parent, so they were plain
                 inline-blocks: no gap between them, and butted up against the end
@@ -430,8 +430,8 @@ const WhichLife = ({ tool }) => {
           className={`relative w-full ${(!canSubmit) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-sm
             disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔮'}</span> {t('cr_writing')}</>
-            : <><span>{tool?.icon ?? '🔮'}</span> {t('cr_show_both')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔮'}</span> {t('cr_writing')}</>
+            : <><span className="text-xl">{tool?.icon ?? '🔮'}</span> {t('cr_show_both')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

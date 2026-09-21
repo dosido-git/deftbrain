@@ -428,7 +428,7 @@ const DriveHome = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🚗'}</span>{t('dh_hero')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🚗'}</span>{t('dh_hero')}
             </p>
             {/* PF-17c */}
             <button onClick={loadExample} disabled={loading}
@@ -505,7 +505,7 @@ const DriveHome = ({ tool }) => {
       {!result && <button type="button" onClick={assess} disabled={!canAssess || loading} title={t('dh_cmd_enter')}
         className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition ${canAssess && !loading ? c.btnPrimary : c.btnIdle}`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> {t('dh_checking')}</>
+          ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🚗'}</span> {t('dh_checking')}</>
           : t('dh_submit')}
         {!loading && (
           <kbd aria-hidden="true"

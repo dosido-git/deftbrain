@@ -637,13 +637,13 @@ const DateNight = ({ tool }) => {
           </div>
         )}
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-          {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
+          {checklistLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
         </button>
         <button onClick={() => handleShare(false)} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-          {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>📨 {t('dn_send_plan')}</>}
+          {shareLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> …</> : <>📨 {t('dn_send_plan')}</>}
         </button>
         <button onClick={() => handleShare(true)} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-          {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>🎁 {t('dn_surprise_invite')}</>}
+          {shareLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> …</> : <>🎁 {t('dn_surprise_invite')}</>}
         </button>
       </div>
 
@@ -786,7 +786,7 @@ const DateNight = ({ tool }) => {
                 {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded} disabled:opacity-40`}>
-                    {isSwap ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔄 {t('dn_swap')}</>}
+                    {isSwap ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span></> : <>🔄 {t('dn_swap')}</>}
                   </button>
                   <button onClick={() => toggleFavorite(stop)} className={`text-xs font-bold ${isFav(stop) ? c.roseText : c.textMuteded}`}>{isFav(stop) ? <>❤️ {t('dn_saved')}</> : <>🤍 {t('dn_save')}</>}</button>
                 </div>
@@ -832,7 +832,7 @@ const DateNight = ({ tool }) => {
               <p className={`text-xs {c.textSecondary}`}>{t('dn_dinner_gone')}</p>
               <button onClick={() => handleAdapt('restaurant')} disabled={!!adapting || loading}
                 className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
-                {adapting === 'restaurant' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_another_restaurant')}
+                {adapting === 'restaurant' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_another_restaurant')}
               </button>
             </div>
             { /* indoors */ }
@@ -840,7 +840,7 @@ const DateNight = ({ tool }) => {
               <p className={`text-xs {c.textSecondary}`}>{t('dn_weather_bad')}</p>
               <button onClick={() => handleAdapt('indoors')} disabled={!!adapting || loading}
                 className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
-                {adapting === 'indoors' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_make_indoors')}
+                {adapting === 'indoors' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_make_indoors')}
               </button>
             </div>
             { /* timing */ }
@@ -848,7 +848,7 @@ const DateNight = ({ tool }) => {
               <p className={`text-xs {c.textSecondary}`}>{t('dn_running_late')}</p>
               <button onClick={() => handleAdapt('timing')} disabled={!!adapting || loading}
                 className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
-                {adapting === 'timing' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_rework_timing')}
+                {adapting === 'timing' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_rework_timing')}
               </button>
             </div>
           {results.plan_b && <p className={`text-xs ${c.textSecondary} pt-1 border-t ${c.border}`}>{results.plan_b}</p>}
@@ -893,7 +893,7 @@ const DateNight = ({ tool }) => {
           </div>
           <button onClick={() => regenerate(feel)} disabled={loading || !feel}
             className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnLive} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_reimagine')}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_reimagine')}
           </button>
         </div>
       )}
@@ -919,7 +919,7 @@ const DateNight = ({ tool }) => {
             ))}
           </div>
           <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_saving')}</> : <>⭐ {t('dn_submit_rating')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '💘'}</span>{t('dn_saving')}</> : <>⭐ {t('dn_submit_rating')}</>}
           </button>
           {rateResult && (
             <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
@@ -986,7 +986,7 @@ const DateNight = ({ tool }) => {
                       anchors the Try Example pill, which PF-17 places
                       beneath the tagline. */}
                   <p className={`text-base ${c.textSecondary}`}>
-                    <span className="me-2 text-lg">{tool?.icon ?? '💘'}</span>{tool?.tagline ?? t('dn_tagline')}
+                    <span className="me-2 text-xl">{tool?.icon ?? '💘'}</span>{tool?.tagline ?? t('dn_tagline')}
                   </p>
                   {/* Dark ink in BOTH themes. The old rule flipped to white text
                       in dark mode — the usual instinct — but the background
@@ -1224,12 +1224,12 @@ const DateNight = ({ tool }) => {
           <button onClick={generate} disabled={loading} title={t('dn_cmd_enter')}
           className={`relative w-full px-6 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
           {loading
-            ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
+            ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
             : isAnni
-              ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_anniversary', { years: yearsTogether })}{isFuture ? ` · ${plannedDateLabel}` : ''}</>
+              ? <><span className="me-1 text-xl">{tool?.icon ?? '💘'}</span>{t('dn_plan_anniversary', { years: yearsTogether })}{isFuture ? ` · ${plannedDateLabel}` : ''}</>
               : isFuture
-                ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
-                : <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
+                ? <><span className="me-1 text-xl">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
+                : <><span className="me-1 text-xl">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1258,7 +1258,7 @@ const DateNight = ({ tool }) => {
           now, after the plan. */}
       <div className="flex flex-wrap gap-2">
         {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
-        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
+        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
         <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
         {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {tPlural('dn_prefs_count', prefs.liked.length, { count: prefs.liked.length })}</span>}
       </div>
@@ -1280,7 +1280,7 @@ const DateNight = ({ tool }) => {
         <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
           <div className="flex justify-between items-center">
             <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
-            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
+            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
             <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
           </div>
           {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}

@@ -272,7 +272,7 @@ const WhatsThatMean = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl p-4 sm:p-5`}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-lg font-bold"><span className="me-2">{tool?.icon ?? '💬'}</span>{tr('syw_tagline', 'What did they really mean.')}</div>
+            <div className="text-lg font-bold"><span className="me-2 text-xl">{tool?.icon ?? '💬'}</span>{tr('syw_tagline', 'What did they really mean.')}</div>
             <p className={`mt-1 text-sm ${c.textSecondary}`}>
               {tr('syw_intro', "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? identifies what kind of expression it is and explains what it means in plain language and in your context.")}
             </p>
@@ -323,7 +323,7 @@ const WhatsThatMean = ({ tool }) => {
             className={`relative w-full rounded-xl px-5 py-3 font-bold min-h-[48px] transition disabled:opacity-40 ${phrase.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} cursor-not-allowed`}`}
           >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '💬'}</span> {tr('syw_working', 'Decoding…')}</>
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '💬'}</span> {tr('syw_working', 'Decoding…')}</>
               : <>{tool?.icon ?? '💬'} {tr('syw_submit', 'Decode This Phrase')} →</>}
             {!loading && (
               <kbd aria-hidden="true"

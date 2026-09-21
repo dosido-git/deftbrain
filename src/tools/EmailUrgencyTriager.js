@@ -371,7 +371,7 @@ export default function EmailUrgencyTriager({ tool }) {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📬'}</span>{tx('tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '📬'}</span>{tx('tagline')}
             </p>
             <button
               type="button"
@@ -474,7 +474,7 @@ export default function EmailUrgencyTriager({ tool }) {
             className={`relative mt-4 w-full rounded-xl py-3 px-4 font-bold disabled:opacity-40 ${emailContent.trim() ? c.btnPrimary : c.btnIdle}`}
           >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '📬'}</span> {tx('analyzing')}</>
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📬'}</span> {tx('analyzing')}</>
               : <>{tool?.icon ?? '📬'} {tx('analyze')}</>}
             {!loading && (
               <kbd aria-hidden="true"

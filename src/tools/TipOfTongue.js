@@ -276,8 +276,8 @@ const TipOfTongue = ({ tool }) => {
         className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all '
           + (loading ? c.btnPrimary : !description.trim() ? c.btnIdle : c.btnPrimary)}>
         {loading
-          ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_searching')}</>
-          : <><span>{tool?.icon ?? '💭'}</span> {t('tot_identify')}</>}
+          ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? "💭"}</span> {t('tot_searching')}</>
+          : <><span className="text-xl">{tool?.icon ?? '💭'}</span> {t('tot_identify')}</>}
         {!loading && (
           <kbd aria-hidden="true"
             className={'hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide '
@@ -442,7 +442,7 @@ const TipOfTongue = ({ tool }) => {
             <div className="flex gap-2">
               <button title={t('cmd_enter')} onClick={refine} disabled={loading}
                 className={'relative flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
-                {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
+                {loading ? <><span className="relative animate-spin inline-block text-xl">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
               {!loading && (
                 <kbd aria-hidden="true"
                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -604,7 +604,7 @@ const TipOfTongue = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '💭'}</span>{t('tot_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '💭'}</span>{t('tot_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>

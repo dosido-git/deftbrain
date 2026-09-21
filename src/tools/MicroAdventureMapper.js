@@ -620,8 +620,8 @@ const MicroAdventureMapper = ({ tool }) => {
         disabled={loading || location.trim().length < 2}
         className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm ${(location.trim().length < 2) ? c.btnIdle : c.btnPrimary}`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('mam_planning')}</>
-          : <><span className="me-1">{tool?.icon ?? '🗺️'}</span> {t('mam_map_btn')}</>}
+          ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {t('mam_planning')}</>
+          : <><span className="me-1 text-xl">{tool?.icon ?? '🗺️'}</span> {t('mam_map_btn')}</>}
       {!loading && (
         <kbd aria-hidden="true"
           className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -721,7 +721,7 @@ const MicroAdventureMapper = ({ tool }) => {
                   {/* Swap button */}
                   <button onClick={() => swapStop(stop.number || idx + 1)} disabled={isSwapping || loading}
                     className={`text-xs font-semibold flex items-center gap-1 disabled:opacity-40 ${c.btnGhost}`}>
-                    {isSwapping ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : null}
+                    {isSwapping ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : null}
                     {isSwapping ? t('mam_swapping') : t('mam_swap_stop')}
                   </button>
                 </div>
@@ -808,7 +808,7 @@ const MicroAdventureMapper = ({ tool }) => {
       <div className="flex flex-wrap gap-2">
         <button onClick={regenerate} disabled={loading}
           className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : null}
+          {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : null}
           {t('mam_different_adventure')}
         </button>
 
@@ -1003,7 +1003,7 @@ const MicroAdventureMapper = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('mam_tagline'))}
+                <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('mam_tagline'))}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

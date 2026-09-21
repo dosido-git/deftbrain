@@ -471,7 +471,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   disabled={responseLoading || !responseText.trim()}
                   className={`px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}
                 >
-                  {responseLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span> {t('cew_analyzing')}</> : <><span>🔍</span> {t('cew_analyze_response')}</>}
+                  {responseLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span> {t('cew_analyzing')}</> : <><span>🔍</span> {t('cew_analyze_response')}</>}
                 </button>
                 <button onClick={() => { setShowResponseInput(null); setResponseText(''); setResponseAnalysis(null); }} className={`text-xs font-bold ${c.textMuteded}`}>{t('cew_cancel')}</button>
               </div>
@@ -481,7 +481,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div className={`p-3 rounded-xl border ${recoBg[responseAnalysis.recommendation] || recoDefault}`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${recoBadge[responseAnalysis.recommendation] || recoBadgeDefault}`}>
-                        {responseAnalysis.recommendation === 'accept' ? <>✅ {t('cew_reco_accept')}</> : responseAnalysis.recommendation === 'counter' ? <>🤝 {t('cew_reco_counter')}</> : responseAnalysis.recommendation === 'escalate' ? <>⬆️ {t('cew_reco_escalate')}</> : <><span className="inline-block animate-spin">{tool?.icon ?? '📧'}</span> {t('cew_reco_wait')}</>}
+                        {responseAnalysis.recommendation === 'accept' ? <>✅ {t('cew_reco_accept')}</> : responseAnalysis.recommendation === 'counter' ? <>🤝 {t('cew_reco_counter')}</> : responseAnalysis.recommendation === 'escalate' ? <>⬆️ {t('cew_reco_escalate')}</> : <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📧'}</span> {t('cew_reco_wait')}</>}
                       </span>
                       <span className={`text-xs ${c.textMuteded}`}>{responseAnalysis.response_type_label}</span>
                     </div>
@@ -781,7 +781,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '📧'}</span>{t('cew_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '📧'}</span>{t('cew_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -1007,8 +1007,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
           title={t('cew_cmd_enter')}
           className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 min-h-[48px] shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all ${loading ? c.loadingSubmit : c.btnPrimary}`}>
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span> {t('cew_building')}</>
-            : <><span>{tool?.icon ?? '📧'}</span> {t('cew_build_btn')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span> {t('cew_building')}</>
+            : <><span className="text-xl">{tool?.icon ?? '📧'}</span> {t('cew_build_btn')}</>}
 
           {!loading && (
             <kbd aria-hidden="true"
@@ -1167,7 +1167,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               const isEditing = editingLetter === stageKey;
               if (regenerating === 2) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
-                  <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s2')}</p>
                   <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s2_desc')}</p>
                 </div>
@@ -1221,7 +1221,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               const isEditing = editingLetter === stageKey;
               if (regenerating === 3) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
-                  <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s3')}</p>
                   <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s3_desc')}</p>
                 </div>
@@ -1278,7 +1278,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               const isRegenerated = !!regeneratedStages['stage_4_public'];
               if (regenerating === 4) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
-                  <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s4')}</p>
                   <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s4_desc')}</p>
                 </div>
@@ -1333,7 +1333,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               const isRegenerated = !!regeneratedStages['stage_5_financial_legal'];
               if (regenerating === 5) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
-                  <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
+                  <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s5')}</p>
                   <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s5_desc')}</p>
                 </div>

@@ -913,7 +913,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="mb-4">
             <button onClick={handleStory} disabled={storyLoading}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>
-              {storyLoading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_story_writing')}</span>
+              {storyLoading ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span> {t('sdm_story_writing')}</span>
                 : storyResult ? t('sdm_story_regenerate') : t('sdm_story_write')}
             </button>
             <p className={`text-xs ${c.textMuted} mt-2`}>
@@ -1025,7 +1025,7 @@ const SixDegreesOfMe = ({ tool }) => {
 
         <button onClick={handleChainBetween} disabled={loading || !betweenNameB.trim()}
           className={`w-full py-3 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_between_finding')}</span> : t('sdm_between_find')}
+          {loading ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span> {t('sdm_between_finding')}</span> : t('sdm_between_find')}
         </button>
       </div>
 
@@ -1190,7 +1190,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
+                <span className="me-2 text-xl">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{t('sdm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1325,7 +1325,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <button title={t('cmd_enter')} onClick={handleFindChain}
                 disabled={!thingA.trim() || !thingB.trim() || loading}
                 className={`relative flex-1 sm:flex-none px-6 sm:pe-16 py-2.5 rounded-xl text-sm font-bold ${(!thingA.trim() || !thingB.trim()) ? c.btnIdle : c.btnPrimary}`}>
-                {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_tracing')}</span>
+                {loading && !result ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span> {t('sdm_tracing')}</span>
                   : challengeMode ? t('sdm_challenge_chain') : t('sdm_find_the_chain')}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1382,7 +1382,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Loading */}
           {loading && !result && (
             <div className={`rounded-2xl p-8 mb-5 text-center border ${c.card}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
+              <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm font-semibold ${c.textMuted}`}>{t('sdm_loading_tracing')}</p>
             </div>
           )}
@@ -1398,7 +1398,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Flip loading */}
           {loading && result && !flipResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.card}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
+              <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm ${c.textMuted}`}>{t('sdm_loading_reverse')}</p>
             </div>
           )}
@@ -1406,7 +1406,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* What-If loading */}
           {loading && whatIfStep && !whatIfResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.whatIfBg}`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
+              <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span>
               <p className={`text-sm ${c.errorText}`}>{t('sdm_loading_what_if')}</p>
             </div>
           )}

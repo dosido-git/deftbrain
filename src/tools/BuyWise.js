@@ -1070,9 +1070,9 @@ const BuyWise = ({ tool }) => {
           className={`relative flex-1 ${(!canAnalyze) ? c.btnIdle : c.btnPrimary} disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading ? (
-            <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_researching')}</>
+            <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> {t('bw_researching')}</>
           ) : (
-            <><span>{tool?.icon ?? '💲'}</span> {t('bw_research_btn')}</>
+            <><span className="text-xl">{tool?.icon ?? '💲'}</span> {t('bw_research_btn')}</>
           )}
         {!loading && (
           <kbd aria-hidden="true"
@@ -1582,7 +1582,7 @@ const BuyWise = ({ tool }) => {
                 disabled={!customQuestion.trim() || followupLoading}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
               >
-                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> : t('bw_ask')}
+                {followupLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> : t('bw_ask')}
               </button>
             </div>
 
@@ -1606,7 +1606,7 @@ const BuyWise = ({ tool }) => {
                 {followupLoading && (
                   <div className={`${c.quoteBg} rounded-lg p-3 space-y-2`} aria-live="polite" aria-busy="true">
                     <p className={`text-xs font-bold ${c.textCyan} flex items-center gap-2`}>
-                      <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span>
+                      <span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span>
                       {pendingQuestion}
                     </p>
                     <div className="animate-pulse space-y-2" aria-hidden="true">
@@ -1996,7 +1996,7 @@ const BuyWise = ({ tool }) => {
           disabled={!budgetAmount || !budgetCategory || (budgetCategory === 'Other' && !budgetCategoryOther.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_finding_best')}</> : <><span>{tool?.icon ?? '💲'}</span> {t('bw_find_best_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> {t('bw_finding_best')}</> : <><span className="text-xl">{tool?.icon ?? '💲'}</span> {t('bw_find_best_btn')}</>}
         </button>
       </div>
 
@@ -2112,7 +2112,7 @@ const BuyWise = ({ tool }) => {
               disabled={!calCategory || (calCategory === '__other__' && !calCategoryOther.trim()) || loading}
               className={`${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-bold min-h-[44px] disabled:opacity-40`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> : `📅 ${t('bw_cal_generate')}`}
+              {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> : `📅 ${t('bw_cal_generate')}`}
             </button>
           </div>
         </div>
@@ -2357,7 +2357,7 @@ const BuyWise = ({ tool }) => {
             )}
             {loading && (
               <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span>
+                <span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>{t('bw_photo_identifying')}</span>
               </div>
             )}
@@ -2515,8 +2515,8 @@ const BuyWise = ({ tool }) => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_building_case')}</>
-            : <><span>{tool?.icon ?? '💲'}</span> {t('bw_generate_arg')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> {t('bw_building_case')}</>
+            : <><span className="text-xl">{tool?.icon ?? '💲'}</span> {t('bw_generate_arg')}</>}
         </button>
       </div>
 
@@ -2656,8 +2656,8 @@ const BuyWise = ({ tool }) => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_reviewing_haul')}</>
-            : <><span>{tool?.icon ?? '💲'}</span> {t('bw_review_haul_btn')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> {t('bw_reviewing_haul')}</>
+            : <><span className="text-xl">{tool?.icon ?? '💲'}</span> {t('bw_review_haul_btn')}</>}
         </button>
       </div>
 
@@ -2832,7 +2832,7 @@ const BuyWise = ({ tool }) => {
 
         <button onClick={analyzeQuote} disabled={!quoteService.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 mt-4 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_analyzing_quote')}</> : <><span>{tool?.icon ?? '💲'}</span> {t('bw_check_quote_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💲'}</span> {t('bw_analyzing_quote')}</> : <><span className="text-xl">{tool?.icon ?? '💲'}</span> {t('bw_check_quote_btn')}</>}
         </button>
       </div>
 
@@ -2978,7 +2978,7 @@ const BuyWise = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '💲'}</span>{tool?.tagline ?? t('bw_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '💲'}</span>{tool?.tagline ?? t('bw_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

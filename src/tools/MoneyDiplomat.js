@@ -1078,7 +1078,7 @@ const MoneyDiplomat = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
+                  <span className="me-2 text-xl">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
                 </h2>
                 {/* The title line above already prints the icon; the catalog tagline now
                     opens with one too, so it would stack twice. */}
@@ -1191,7 +1191,7 @@ const MoneyDiplomat = ({ tool }) => {
                   <input type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder={t('md_sim_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
                 <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
-                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>🎭</span>}
+                  {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>🎭</span>}
                   {t('md_sim_start')}
                 </button>
               </>
@@ -1236,7 +1236,7 @@ const MoneyDiplomat = ({ tool }) => {
                   placeholder={t('md_sim_response_ph')} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mt-2 ${c.input}`} />
                 <div className="flex items-center gap-2 mt-2">
                   <button onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} className={`${isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
-                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💬</span>}
+                    {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>💬</span>}
                     {t('md_sim_respond')}
                   </button>
                 </div>
@@ -1250,7 +1250,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textSecondary} underline mt-2`}>{t('md_sim_try_another')}</button>
               </div>
             )}
-            {simLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> {t('md_sim_thinking_char')}</p>}
+            {simLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> {t('md_sim_thinking_char')}</p>}
           </div>
         </div>
       )}
@@ -1295,7 +1295,7 @@ const MoneyDiplomat = ({ tool }) => {
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors disabled:opacity-40`}>
-                    {nudgeLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💵'}</span></> : '📨'} {t('md_tracker_nudge')}
+                    {nudgeLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💵'}</span></> : '📨'} {t('md_tracker_nudge')}
                   </button>
                   <button onClick={() => settleDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>{t('md_tracker_paid')}</button>
                   <button onClick={() => removeDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>
@@ -1717,7 +1717,7 @@ const MoneyDiplomat = ({ tool }) => {
 
               <div className="pt-2 space-y-2">
                 <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`relative w-full ${((!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))) ? c.btnIdle : c.btnPrimary} px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
+                {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
                 {t('md_get_advice')}
                 {!loading && (
                   <kbd aria-hidden="true"

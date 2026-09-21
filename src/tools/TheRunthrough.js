@@ -416,9 +416,9 @@ const TheRunthrough = ({ tool }) => {
 
   // ─── Submit button labels ───
   const submitLabels = {
-    cut: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_cut')}</>,
-    anticipate: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_anticipate')}</>,
-    hook: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_hook')}</>,
+    cut: <><span className="me-1 text-xl">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_cut')}</>,
+    anticipate: <><span className="me-1 text-xl">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_anticipate')}</>,
+    hook: <><span className="me-1 text-xl">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_hook')}</>,
   };
 
   // ─── Render: Cut Results ───
@@ -743,7 +743,7 @@ const TheRunthrough = ({ tool }) => {
                     printing it added height that pushed a printout of this
                     tool into a large blank gap on the page before. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🎙️'}</span>{tool?.tagline ?? t('trt_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🎙️'}</span>{tool?.tagline ?? t('trt_tagline')}
                 </p>
                 <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -925,7 +925,7 @@ const TheRunthrough = ({ tool }) => {
           >
             {loading ? (
               <>
-                <span className="inline-block animate-spin">{tool?.icon ?? '🎙️'}</span>
+                <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎙️'}</span>
                 {loadingMessages[mode]}
               </>
             ) : (

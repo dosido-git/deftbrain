@@ -197,7 +197,7 @@ const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, 
     <button title={t('cmd_enter')} onClick={onSubmit} disabled={loading}
       className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
       {loading
-        ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span>
+        ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎭'}</span>
         : <><span>{btnIcon || ''}</span> {btnLabel}</>}
       {!loading && (
         <kbd aria-hidden="true"
@@ -755,7 +755,7 @@ const ReadTheRoom = ({ tool }) => {
           <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Read the Room'}
+                <span className="me-2 text-xl">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Read the Room'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rr_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -974,7 +974,7 @@ const ReadTheRoom = ({ tool }) => {
                         {tp.notes.length > 0 && (
                           <button onClick={() => handlePersonRefresh(tp)} disabled={loading}
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center gap-1`}>
-                            {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : t('rr_fresh_strategy')}
+                            {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎭'}</span> : t('rr_fresh_strategy')}
                           </button>
                         )}
                       </div>
@@ -1176,7 +1176,7 @@ const ReadTheRoom = ({ tool }) => {
                 {quickResult.if_they_engage && <p className={`text-xs ${c.textSecondary}`}>💬 {quickResult.if_they_engage}</p>}
                 <button title={t('cmd_enter')} onClick={() => handleNowSay(true)} disabled={loading}
                   className={`relative w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px]`}>
-                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : (quickExclude.length ? t('rr_say_different_tried', { tried: quickExclude.length }) : t('rr_say_different'))}
+                  {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎭'}</span> : (quickExclude.length ? t('rr_say_different_tried', { tried: quickExclude.length }) : t('rr_say_different'))}
                 {!loading && (
                   <kbd aria-hidden="true"
                     className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1258,7 +1258,7 @@ const ReadTheRoom = ({ tool }) => {
             </select>
             <button title={t('cmd_enter')} onClick={handleNowAwkward} disabled={loading}
               className="relative w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-2 min-h-[48px]">
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : t('rr_awkward_btn')}
+              {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎭'}</span> : t('rr_awkward_btn')}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

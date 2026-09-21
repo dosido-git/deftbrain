@@ -476,7 +476,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className="text-base">
-              <span className="me-2 text-lg">{tool?.icon ?? '💛'}</span>{tool?.tagline ?? t('ffa_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '💛'}</span>{tool?.tagline ?? t('ffa_tagline')}
             </p>
             {/* The catalog description above the tool now carries this same
                 sentence, but only in English — src/data/tools.js is English by
@@ -571,7 +571,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <button type="button" onClick={askForRhythm} disabled={rhythmHelpLoading}
                   className={`rounded-xl border px-4 py-2 font-semibold disabled:opacity-40 ${c.pillInactive}`}>
                   {rhythmHelpLoading
-                    ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💛'}</span>{t('ffa_thinking')}</>
+                    ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '💛'}</span>{t('ffa_thinking')}</>
                     : `✨ ${t('ffa_help_choose')}`}
                 </button>
               </div>
@@ -724,7 +724,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
               <button onClick={() => generateReachout(selected)} disabled={reachoutLoading}
                 className={`rounded-xl px-5 py-3 font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {reachoutLoading
-                  ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💛'}</span>{t('ffa_writing')}</>
+                  ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '💛'}</span>{t('ffa_writing')}</>
                   : `💬 ${t('ffa_help_reachout')}`}
               </button>
               <button onClick={() => setLoggingKind(v => !v)} aria-expanded={loggingKind}

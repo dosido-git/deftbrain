@@ -257,9 +257,9 @@ const CompleteView = ({ exs, exercisesDone, exercisesSkipped, completeMsg, energ
             </div>
             <button onClick={() => handleComplete()} disabled={loading} className={`disabled:opacity-40 px-6 py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>
               {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_logging')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_logging')}</>
               ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
+                <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
               )}
             </button>
           </>
@@ -805,7 +805,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🧘'}</span>{t('lwa_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🧘'}</span>{t('lwa_tagline')}
               </p>
               {MODE_EXAMPLES[mode] && (
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -947,9 +947,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime}`}
               >
                 {loading ? (
-                  <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_building')}</>
+                  <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_building')}</>
                 ) : (
-                  <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_workout')}</>
+                  <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_build_workout')}</>
                 )}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1082,9 +1082,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
               className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_give_2_min')}</>
+                <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_give_2_min')}</>
               )}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1164,9 +1164,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
               className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_relief')}</>
+                <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_build_relief')}</>
               )}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1234,9 +1234,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
               className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_stack')}</>
+                <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_build_stack')}</>
               )}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1341,9 +1341,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
               className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_recovery')}</>
+                <><span className="me-1 text-xl">{tool?.icon ?? '🧘'}</span> {t('lwa_build_recovery')}</>
               )}
               {!loading && (
                 <kbd aria-hidden="true"

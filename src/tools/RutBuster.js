@@ -205,7 +205,7 @@ const RutBuster = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🎰'}</span>{t('chp_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🎰'}</span>{t('chp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -279,8 +279,8 @@ const RutBuster = ({ tool }) => {
             className={`relative w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
           >
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> {t('chp_designing')}</>
-              : <><span>{tool?.icon ?? '🎰'}</span> {t('chp_give_disruption')}</>}
+              ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎰'}</span> {t('chp_designing')}</>
+              : <><span className="text-xl">{tool?.icon ?? '🎰'}</span> {t('chp_give_disruption')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -329,7 +329,7 @@ const RutBuster = ({ tool }) => {
               disabled={loading || !routine.trim()}
               className={`px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-40 transition-colors ${c.btnPrimary}`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> : <><span>🎲</span> {t('chp_different')}</>}
+              {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎰'}</span> : <><span>🎲</span> {t('chp_different')}</>}
             </button>
           </div>
 

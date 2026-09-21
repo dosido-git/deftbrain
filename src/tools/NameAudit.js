@@ -901,7 +901,7 @@ const NameAudit = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🔍'}</span>{t('nau_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🔍'}</span>{t('nau_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -1025,8 +1025,8 @@ const NameAudit = ({ tool }) => {
           className={`relative w-full px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 min-h-[48px] ${
             (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context)) ? c.btnIdle : c.btnPrimary
           }`}>
-          {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? t('nau_analyzing') : t('nau_comparing')}</>)
-            : (<><span className="me-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? t('nau_btn_analyze') : t('nau_btn_compare')}</>)}
+          {(loading || compareLoading) ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? t('nau_analyzing') : t('nau_comparing')}</>)
+            : (<><span className="me-1 text-xl">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? t('nau_btn_analyze') : t('nau_btn_compare')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1209,7 +1209,7 @@ const NameAudit = ({ tool }) => {
                 className={`flex-1 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               <button onClick={handleQuickAnalyze} disabled={loading || !quickName.trim()}
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${loading || !quickName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>
-                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : t('nau_btn_audit')}
+                {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> : t('nau_btn_audit')}
               </button>
               {/* Compare from Analyze */}
               {!analyzeToCompare ? (
@@ -1228,7 +1228,7 @@ const NameAudit = ({ tool }) => {
                   </label>
                   <button onClick={handleCompareFromAnalyze} disabled={compareLoading || !compareSecondName.trim()}
                     className={`px-3 py-2 rounded-lg text-sm font-medium ${compareLoading || !compareSecondName.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>
-                    {compareLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : t('nau_btn_go')}
+                    {compareLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> : t('nau_btn_go')}
                   </button>
                   <button onClick={() => { setAnalyzeToCompare(false); setCompareSecondName(''); }}
                     className={`text-xs ${c.textMuteded}`}>✕</button>
@@ -1523,7 +1523,7 @@ const NameAudit = ({ tool }) => {
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   deepDiveLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
                 } disabled:opacity-40`}>
-                {deepDiveLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_deepdive_loading')}</>)
+                {deepDiveLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_deepdive_loading')}</>)
                   : (<><span>🔬</span> {t('nau_deepdive_btn')}
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('nau_pro_badge')}</span></>)}
               </button>
@@ -1559,7 +1559,7 @@ const NameAudit = ({ tool }) => {
                 className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   secondOpinionLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
                 } disabled:opacity-40`}>
-                {secondOpinionLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_second_loading')}</>)
+                {secondOpinionLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_second_loading')}</>)
                   : (<><span>🔄</span> {t('nau_second_btn')}
                     <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('nau_pro_badge')}</span></>)}
               </button>
@@ -1637,7 +1637,7 @@ const NameAudit = ({ tool }) => {
                         : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
                     } disabled:opacity-40`}
                   >
-                    {fixLoading ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('nau_fix_loading')}</>)
+                    {fixLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_fix_loading')}</>)
                       : fixResults ? (<><span>✅</span> {t('nau_fix_done')}</>)
                       : (<><span>✨</span> {t('nau_fix_cta')} <PremiumBadge feature="nameAudit.fixThisName" /></>)}
                   </button>

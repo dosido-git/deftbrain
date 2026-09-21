@@ -559,7 +559,7 @@ const DifficultTalkCoach = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🗣️'}</span>{t('dtc_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🗣️'}</span>{t('dtc_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -687,8 +687,8 @@ const DifficultTalkCoach = ({ tool }) => {
           <button onClick={handleGenerate} disabled={loading || !topic.trim() || !relationship || goals.length === 0}
           title={t('dtc_cmd_enter')}
           className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${c.btnPrimary} disabled:opacity-40`}>
-          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('dtc_building')}</>)
-            : (<><span className="text-lg">{tool?.icon ?? '🗣️'}</span> {t('dtc_build_btn')}</>)}
+          {loading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('dtc_building')}</>)
+            : (<><span className="text-xl">{tool?.icon ?? '🗣️'}</span> {t('dtc_build_btn')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1519,7 +1519,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     {simLoading && (
                       <div className="flex justify-start">
                         <div className={`p-3 rounded-xl ${c.simThem} border`}>
-                          <span className={`inline-block animate-spin ${c.textMuted}`}>{tool?.icon ?? '🗣️'}</span>
+                          <span className={`inline-block animate-spin text-xl ${c.textMuted}`}>{tool?.icon ?? '🗣️'}</span>
                         </div>
                       </div>
                     )}
@@ -1555,7 +1555,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     {simMessages.filter(m => m.role === 'them').length >= 2 && !practiceSummary && (
                       <button onClick={handlePracticeSummary} disabled={summaryLoading}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>
-                        {summaryLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('dtc_scoring')}</>) : (<><span>📊</span> {t('dtc_end_practice')}</>)}
+                        {summaryLoading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('dtc_scoring')}</>) : (<><span>📊</span> {t('dtc_end_practice')}</>)}
                       </button>
                     )}
                     {simMessages.filter(m => m.role === 'them').length >= 2 && (
@@ -1846,7 +1846,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     />
                     <button onClick={handleDebrief} disabled={debriefLoading || !howItWent.trim()}
                       className={`mt-3 px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
-                      {debriefLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('dtc_analyzing')}</>) : (<><span className="text-base">✅</span> {t('dtc_get_debrief')}</>)}
+                      {debriefLoading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('dtc_analyzing')}</>) : (<><span className="text-base">✅</span> {t('dtc_get_debrief')}</>)}
                     </button>
                   </>
                 ) : (
@@ -1864,7 +1864,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     </div>
                     <button onClick={handleDebriefPractice} disabled={debriefLoading}
                       className={`px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
-                      {debriefLoading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('dtc_analyzing')}</>) : (<><span className="text-base">✅</span> {t('dtc_debrief_practice_run')}</>)}
+                      {debriefLoading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('dtc_analyzing')}</>) : (<><span className="text-base">✅</span> {t('dtc_debrief_practice_run')}</>)}
                     </button>
                   </>
                 )}

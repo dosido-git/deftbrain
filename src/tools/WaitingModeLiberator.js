@@ -712,7 +712,7 @@ const WaitingModeLiberator = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '⏳'}</span>{t('wml_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '⏳'}</span>{t('wml_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -928,8 +928,8 @@ const WaitingModeLiberator = ({ tool }) => {
           {/* ── SUBMIT ── */} <div className="flex gap-2">
           <button title={t('cmd_enter')} onClick={handleLiberate} data-print-keep disabled={loading || !hasAnyTime} className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasAnyTime) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
             {loading
-              ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_calculating')}</span>
-              : <span>{tool?.icon ?? '⏳'} {t('wml_liberate')}</span>} {!loading && (
+              ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⏳'}</span> {t('wml_calculating')}</span>
+              : <span className="text-xl">{tool?.icon ?? '⏳'} {t('wml_liberate')}</span>} {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
               ⌘↵
@@ -1134,7 +1134,7 @@ const WaitingModeLiberator = ({ tool }) => {
                       {picked && (<div className="mt-3">
                           <p className={`text-xs ${c.textSecondary} mb-1.5`}>{t('wml_want_help')}</p>
                           <button onClick={() => handleStartWithMe(i)} disabled={loading} className={`w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>
-                            {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🚀</span>} {t('wml_start_block')}
+                            {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '⏳'}</span> : <span>🚀</span>} {t('wml_start_block')}
                           </button>
                         </div>
                       )} </div>
@@ -1226,7 +1226,7 @@ const WaitingModeLiberator = ({ tool }) => {
           </div>
 
           {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} data-print-keep disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
-              {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
+              {loading ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
               {/* Headline: how much of the day came back. One line, no card. */}
@@ -1310,7 +1310,7 @@ const WaitingModeLiberator = ({ tool }) => {
                     ))} </div>
                 </div>
               )} {reviewData.encouragement && <div className={`${c.success} border rounded-xl p-4`}><p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p></div>} </>
-          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span><p className={`text-sm ${c.textMuted} mt-2`}>{t('wml_analyzing')}</p></div>
+          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⏳'}</span><p className={`text-sm ${c.textMuted} mt-2`}>{t('wml_analyzing')}</p></div>
           )} </div>
 
       {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>

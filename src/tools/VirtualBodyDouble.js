@@ -672,7 +672,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '👥'}</span>{t('vbd_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '👥'}</span>{t('vbd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -708,7 +708,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 <input type="text" value={task} onChange={e => { setTask(e.target.value); setShowBreakdown(false); setSubTasks([]); }} placeholder={t('vbd_task_placeholder')}
                   className={`flex-1 p-3 rounded-lg border ${c.input} outline-none`} onKeyDown={e => e.key === 'Enter' && handleStart()} />
                 {task.trim().length > 3 && (<button onClick={handleBreakdown} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap disabled:opacity-40 ${subTasks.length > 0 ? c.tagActive : c.tag} transition-all`} title={t('vbd_split_task_title')}>
-                    {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : '✂️'} {t('vbd_split')}
+                    {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '👥'}</span> : '✂️'} {t('vbd_split')}
                   </button>
                 )} </div>
             </div>
@@ -828,7 +828,7 @@ const VirtualBodyDouble = ({ tool }) => {
           </div>
 
           {/* Start button */} <button title={t('cmd_enter')} onClick={handleStart} disabled={loading || !task.trim()} className={`relative w-full py-4 rounded-xl font-bold text-lg ${!task.trim() ? c.btnIdle : `${modeColors.badge} ${c.accentTxt}`} transition-all shadow-lg hover:opacity-90`}>
-            {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> {t('vbd_setting_up')}</span>
+            {loading ? (<span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '👥'}</span> {t('vbd_setting_up')}</span>
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> {t('vbd_start_session', { mode: modeLabel })}</span>
             )} {!loading && (
                                  <kbd aria-hidden="true"
@@ -969,7 +969,7 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
           )} {/* Stuck (primary) + check in now */} {!isOnBreak && !showCheckIn && (<div className="space-y-2">
               <button onClick={handleStuck} disabled={loading} className={`w-full py-3.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.warning} border ${c.warning} transition-all`}>
-                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : <span>🧱</span>} {t('vbd_im_stuck')}
+                {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '👥'}</span> : <span>🧱</span>} {t('vbd_im_stuck')}
               </button>
               <button onClick={() => setShowCheckIn(true)} className={`w-full py-2.5 rounded-xl text-xs font-medium ${c.tag} transition-all`}>
                 <span>👋</span> {t('vbd_check_in_now')}
@@ -1035,7 +1035,7 @@ const VirtualBodyDouble = ({ tool }) => {
               <p className={`text-sm ${c.warning}`}><span>🔥</span> {completionData.streak_message}</p>
             </div>
           )} {/* ═══ ACCOUNTABILITY CARD (v4) ═══ */} {!showCard && completionData && (<button onClick={handleGenerateCard} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 ${modeColors.badge} text-white transition-all hover:opacity-90`}>
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : <span>🏆</span>} {t('vbd_generate_card')}
+              {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '👥'}</span> : <span>🏆</span>} {t('vbd_generate_card')}
             </button>
           )} {showCard && (<div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
               {/* Card visual — designed for screenshots */} <div className={`${modeColors.badge} p-6 text-center text-white`}>
@@ -1157,7 +1157,7 @@ const VirtualBodyDouble = ({ tool }) => {
               </>
           )}
           {!results && (<div className={`${c.card} border rounded-xl p-8 text-center`}>
-              <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span>
+              <span className="inline-block animate-spin text-xl">{tool?.icon ?? '👥'}</span>
               <p className={`text-sm ${c.textMuted} mt-2`}>{t('vbd_analyzing_sessions')}</p>
             </div>
           )} </div>

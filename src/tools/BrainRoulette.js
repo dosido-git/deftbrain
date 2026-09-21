@@ -715,7 +715,7 @@ const BrainRoulette = ({ tool }) => {
         {!debateResult && (
           <button onClick={handleDebate} disabled={loading || !canSpin}
             className={`disabled:opacity-40 px-6 py-3 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('bro_debate_generating')}</span> : t('bro_debate_challenge_me')}
+            {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span> {t('bro_debate_generating')}</span> : t('bro_debate_challenge_me')}
           </button>
         )}
       </div>
@@ -789,7 +789,7 @@ const BrainRoulette = ({ tool }) => {
             className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none mb-3`} />
           <button onClick={handleStartJourney} disabled={!canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('bro_journey_creating')}</span> : t('bro_journey_start')}
+            {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span> {t('bro_journey_creating')}</span> : t('bro_journey_start')}
           </button>
         </div>
       ) : (
@@ -829,7 +829,7 @@ const BrainRoulette = ({ tool }) => {
               <p className={`text-xs ${c.textSecondary} mb-3`}>{journey.steps[journeyCurrentStep].teaser}</p>
               <button onClick={() => handleJourneyStep(journeyCurrentStep)} disabled={!canSpin}
                 className={`px-5 py-2.5 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-                {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span></span> : t('bro_journey_explore')}
+                {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span></span> : t('bro_journey_explore')}
               </button>
             </div>
           )}
@@ -884,7 +884,7 @@ const BrainRoulette = ({ tool }) => {
           <p className={`text-sm ${c.textMuted} mb-4`}>{t('bro_digest_intro')}</p>
           <button onClick={handleDigest} disabled={!canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('bro_digest_brewing')}</span> : t('bro_digest_generate')}
+            {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span> {t('bro_digest_brewing')}</span> : t('bro_digest_generate')}
           </button>
         </div>
       ) : (
@@ -988,7 +988,7 @@ const BrainRoulette = ({ tool }) => {
             {t('bro_spin_from_this_find')}
           </button>
         )}
-        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting_concepts')}</span></div>}
+        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting_concepts')}</span></div>}
         {extractedConcepts?.length > 0 && (
           <div className={`rounded-xl p-4 mb-3 border ${c.conceptsBg}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('bro_spin_from_this')}</p>
@@ -1219,7 +1219,7 @@ const BrainRoulette = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="me-2">{tool?.icon ?? '🎲'}</span>
+              <span className="me-2 text-xl">{tool?.icon ?? '🎲'}</span>
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bro_tagline')}</p>
@@ -1326,7 +1326,7 @@ const BrainRoulette = ({ tool }) => {
               <div className="flex gap-3">
                 <button title={t('cmd_enter')} onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
                   className={`relative w-full font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${(!canSpin || !hasInterests) ? c.btnIdle : c.btnPrimary}`}>
-                  {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('bro_spinning')}</> : cooldownTick > 0 ? <>{t('bro_wait_sec', { sec: cooldownTick })}</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> {t('bro_spin')}</>}
+                  {loading && !result ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span> {t('bro_spinning')}</> : cooldownTick > 0 ? <>{t('bro_wait_sec', { sec: cooldownTick })}</> : <><span className={isSpinning ? 'animate-bounce inline-block text-xl' : 'text-xl'}>{tool?.icon ?? '🎲'}</span> {t('bro_spin')}</>}
                 {!loading && (
                   <kbd aria-hidden="true"
                     className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1405,7 +1405,7 @@ const BrainRoulette = ({ tool }) => {
                     className={`flex items-center gap-2 text-xs font-semibold ${c.textCyan}`}>{t('bro_spin_from_this_extract')}</button>
                 </div>
               )}
-              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting')}</span></div>}
+              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting')}</span></div>}
               {!deeperResults && extractedConcepts?.length > 0 && (
                 <div className={`px-6 py-4 border-t ${c.border}`}>
                   <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('bro_spin_from_this')}</p>

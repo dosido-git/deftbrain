@@ -754,7 +754,7 @@ const RentersDepositSaver = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🏦'}</span>{t('rds_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🏦'}</span>{t('rds_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading || streamLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -1107,9 +1107,9 @@ const RentersDepositSaver = ({ tool }) => {
               className={`relative flex items-center gap-2 px-6 sm:pe-16 py-3 rounded-xl font-bold ${(streamLoading || !step2Valid) ? c.btnIdle : c.btnPrimary} transition-colors min-h-[44px]`}
             >
               {streamLoading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span> {t('rds_generating')}</>
+                <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏦'}</span> {t('rds_generating')}</>
               ) : (
-                <><span>{tool?.icon ?? '🏦'}</span> {t('rds_generate_report')}</>
+                <><span className="text-xl">{tool?.icon ?? '🏦'}</span> {t('rds_generate_report')}</>
               )}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -1214,7 +1214,7 @@ const RentersDepositSaver = ({ tool }) => {
                     : 'bg-cyan-600 hover:bg-cyan-700 text-white'
                 } disabled:opacity-40`}
               >
-                {rightsLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '🏦'}</span> : null}
+                {rightsLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '🏦'}</span> : null}
                 {rightsLoading ? t('rds_looking_up') : t('rds_look_up_rights')}
               </button>
             </div>
@@ -1387,7 +1387,7 @@ const RentersDepositSaver = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-3 flex flex-wrap items-center gap-1.5 print:hidden`}>
             {streamLoading && (
               <span className={`flex items-center gap-1.5 text-xs font-semibold me-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
-                <span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span>
+                <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏦'}</span>
                 {t('rds_generating')}
               </span>
             )}

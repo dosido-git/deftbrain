@@ -682,7 +682,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // Shared UI pieces
   // ════════════════════════════════════════════════════════════
-  const Spinner = () => <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span>;
+  const Spinner = () => <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span>;
 
   const ErrorBanner = () => error ? (
     <div className={`mt-4 p-4 rounded-lg border flex items-start gap-3 ${c.danger}`}>
@@ -2597,7 +2597,7 @@ const Mend = ({ tool }) => {
           {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
           <button onClick={handleFix} disabled={loading || !fixForm.whatYouSaid.trim() || !fixForm.theirReaction.trim()}
             className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
-            {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">🔁</span>}
+            {loading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">🔁</span>}
             {t('apc_fix_btn')}
         {!loading && (
           <kbd aria-hidden="true"
@@ -2876,7 +2876,7 @@ const Mend = ({ tool }) => {
                 headerColor. */}
             <div className="min-w-0">
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
               </p>
               <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

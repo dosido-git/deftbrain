@@ -344,7 +344,7 @@ const LeverageLogic = ({ tool }) => {
         <div className="flex items-center justify-between">
           <div>
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -421,7 +421,7 @@ const LeverageLogic = ({ tool }) => {
                 </div>
               </div>
               <button title={t('cmd_enter')} onClick={analyze} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary}`}>
-              {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
+              {loading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>}
               {loading ? t('llog_building') : t('llog_build_strategy')}
               {!loading && (
                 <kbd aria-hidden="true"
@@ -644,7 +644,7 @@ const LeverageLogic = ({ tool }) => {
               <label htmlFor="ll-they-just-said" className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>{t('llog_counter_q')} <span className={c.required}>*</span></label>
               <textarea id="ll-they-just-said" value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={t('llog_ph_counter')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               <button title={t('cmd_enter')} onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`relative w-full py-3 rounded-xl font-bold ${(counterLoading || !theyJustSaid.trim()) ? c.btnIdle : c.btnPrimary}`}>
-                {counterLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
+                {counterLoading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>}
                 {counterLoading ? t('llog_thinking') : t('llog_what_say')}
               {!counterLoading && (
                 <kbd aria-hidden="true"
@@ -722,7 +722,7 @@ const LeverageLogic = ({ tool }) => {
                 </div>
               </div>
               <button title={t('cmd_enter')} onClick={fetchEmailDraft} disabled={emailLoading} className={`relative w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary}`}>
-                {emailLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
+                {emailLoading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>}
                 {emailLoading ? t('llog_drafting') : t('llog_draft_email_btn')}
               {!emailLoading && (
                 <kbd aria-hidden="true"
@@ -785,7 +785,7 @@ const LeverageLogic = ({ tool }) => {
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>
-                  {prepLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
+                  {prepLoading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>}
                   {prepLoading ? t('llog_assessing') : t('llog_check_readiness')}
                 {!prepLoading && (
                   <kbd aria-hidden="true"

@@ -1313,7 +1313,7 @@ async function decrypt(){
 
   const renderLoading = (msg) => (
     <div className="flex items-center gap-3 py-6 justify-center">
-      <span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span>
+      <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span>
       <span className={`text-sm ${c.textSecondary} animate-pulse`}>{msg || t('fws_thinking')}</span>
     </div>
   );
@@ -1338,7 +1338,7 @@ async function decrypt(){
         <div className="pb-3 border-b border-zinc-500">
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
           <p className={`text-base ${c.textSecondary}`}>
-            <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
+            <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
           </p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
         </div>
@@ -1499,7 +1499,7 @@ async function decrypt(){
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing_ellipsis')}</> : <><span className="me-1">{tool?.icon ?? '📜'}</span>{t('fws_answer_continue')}</> }
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span> {t('fws_processing_ellipsis')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_answer_continue')}</> }
           </button>
           <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
             className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_skip')}</button>
@@ -1547,7 +1547,7 @@ async function decrypt(){
             }
           }} disabled={loading || !emergencyDump.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${emergencyDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing')}</span> : t('fws_extract_accounts')}
+            {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span> {t('fws_processing')}</span> : t('fws_extract_accounts')}
           </button>
           {accounts.length > 0 && (
             <div className="mt-3 space-y-1">
@@ -1616,7 +1616,7 @@ async function decrypt(){
               rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseAccountDump} disabled={loading || !accountDump.trim()}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold ${accountDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_extracting')}</span> : t('fws_extract_accounts')}
+              {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span> {t('fws_extracting')}</span> : t('fws_extract_accounts')}
             </button>
           </div>
         )}
@@ -1734,7 +1734,7 @@ async function decrypt(){
             <textarea id="fw-financial-dump" value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder={t('fws_ph_financial_dump')} rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseFinancialDump} disabled={loading || !financialDump.trim()}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold ${financialDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_organizing')}</span> : t('fws_extract_accounts')}
+              {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span> {t('fws_organizing')}</span> : t('fws_extract_accounts')}
             </button>
           </div>
         )}
@@ -1862,7 +1862,7 @@ async function decrypt(){
             </div>
           )}
           <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_drafting')}</span> : t('fws_draft_my_message')}
+            {loading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span> {t('fws_drafting')}</span> : t('fws_draft_my_message')}
           </button>
           <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_write_myself')}</button>
         </div>
@@ -1907,7 +1907,7 @@ async function decrypt(){
                 <option value="">{t('fws_translate_to')}</option>
                 {LANGUAGES.filter(l => l.code !== 'en').map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
               </select>
-              {translatingIdx === idx && <span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span>}
+              {translatingIdx === idx && <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span>}
             </div>
           )}
           {loading && renderLoading(t('fws_adjusting'))}
@@ -2033,7 +2033,7 @@ async function decrypt(){
           <div className="flex items-center justify-between mb-2">
             <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_gap_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_gap_desc')}</p></div>
             <button onClick={runSmartGaps} disabled={gapsLoading} className={`px-4 py-2 rounded-xl text-xs font-bold ${!gapsLoading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {gapsLoading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span></span> : t('fws_scan_document')}
+              {gapsLoading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span></span> : t('fws_scan_document')}
             </button>
           </div>
           {smartGaps && (
@@ -2235,7 +2235,7 @@ async function decrypt(){
           <div className="min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
             </p>
           </div>
           {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}

@@ -233,7 +233,7 @@ const HobbyMatch = ({ tool }) => {
         <div className="mb-5 pb-4 border-b border-zinc-500">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2 text-xl">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{t('hm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -349,9 +349,9 @@ const HobbyMatch = ({ tool }) => {
             className={`relative w-full ${((!personality.trim() && selectedGoals.length === 0)) ? c.btnIdle : c.btnPrimary} disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '🧭 '}</span> {t('hm_matching')}</>
+              <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧭 '}</span> {t('hm_matching')}</>
             ) : (
-              <><span className="me-1">{tool?.icon ?? '🧭 '}</span> {t('hm_find')}</>
+              <><span className="me-1 text-xl">{tool?.icon ?? '🧭 '}</span> {t('hm_find')}</>
             )}
           {!loading && (
             <kbd aria-hidden="true"

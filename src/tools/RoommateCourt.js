@@ -599,7 +599,7 @@ const RoommateCourt = ({ tool }) => {
       <button title={t('cmd_enter')} onClick={submitDispute} disabled={loading || !dispute.trim()}
         className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 min-h-[48px] ${(!dispute.trim()) ? c.btnIdle : c.btnPrimary}`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {tr('rc_deliberating', 'Working it out…')}</>
+          ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚖️'}</span> {tr('rc_deliberating', 'Working it out…')}</>
           : <><span>⚖️</span> {tr('rc_hear_case', 'Help Us Work It Out')} →</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -695,7 +695,7 @@ const RoommateCourt = ({ tool }) => {
               <button onClick={submitRebalance} disabled={loading || !complaint.trim()}
                 className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                 {loading
-                  ? <span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span>
+                  ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚖️'}</span>
                   : <span>⚖️</span>}
                 {loading ? tr('rc_reviewing', 'Reviewing…') : tr('rc_review_complaint', 'Review the Assignment')} →
               </button>
@@ -878,7 +878,7 @@ const RoommateCourt = ({ tool }) => {
           <button title={t('cmd_enter')} onClick={assignChores} disabled={loading}
             className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {tr('rc_spinning', 'Dividing…')}</>
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚖️'}</span> {tr('rc_spinning', 'Dividing…')}</>
               : <><span>🎰</span> {tr('rc_spin_wheel', 'Divide the Chores')} →</>}
             {!loading && (
               <kbd aria-hidden="true"
@@ -922,7 +922,7 @@ const RoommateCourt = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? tr('rc_tagline', 'Work it out without making it worse.')}
+                <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? tr('rc_tagline', 'Work it out without making it worse.')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

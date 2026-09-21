@@ -345,7 +345,7 @@ const PEP = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '✨'}</span>{tool?.tagline ?? t('pep_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '✨'}</span>{tool?.tagline ?? t('pep_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -390,8 +390,8 @@ const PEP = ({ tool }) => {
         </div>
 
         <div className="grid sm:grid-cols-[1fr_auto] gap-2">
-          <button title={t('cmd_enter')} onClick={() => generate()} disabled={loading} className={`py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-50`}>{activeAction === 'main' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>✨ {t('pep_generate_btn')}</>}</button>
-          <button onClick={() => generate({ oneOnly: true })} disabled={loading} className={`px-5 py-3 rounded-xl font-bold border ${c.border} ${c.btnSecondary} disabled:opacity-50`}>{activeAction === 'oneOnly' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🧊 {t('pep_just_do_btn')}</>}</button>
+          <button title={t('cmd_enter')} onClick={() => generate()} disabled={loading} className={`py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-50`}>{activeAction === 'main' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>✨ {t('pep_generate_btn')}</>}</button>
+          <button onClick={() => generate({ oneOnly: true })} disabled={loading} className={`px-5 py-3 rounded-xl font-bold border ${c.border} ${c.btnSecondary} disabled:opacity-50`}>{activeAction === 'oneOnly' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🧊 {t('pep_just_do_btn')}</>}</button>
         </div>
       </div>
     </div>
@@ -410,7 +410,7 @@ const PEP = ({ tool }) => {
       {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}
       {results.alternatives?.length > 0 && <div><h3 className="font-bold text-base mb-2">{t('pep_other_options')}</h3><div className="space-y-2">{results.alternatives.slice(0, 2).map((x, i) => <Activity key={`${x.activity}-${i}`} item={x} />)}</div></div>}
       {results.history_note && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold uppercase mb-1">{t('pep_from_history')}</p><p className="text-sm">{results.history_note}</p></div>}
-      <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>{activeAction === 'fresh' ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🔄 {t('pep_swap_cta')}</>}</button>
+      <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>{activeAction === 'fresh' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🔄 {t('pep_swap_cta')}</>}</button>
 
       <p className={`text-xs ${c.textMuted} text-center`}>
         {t('pep_xref_intro')}{' '}
@@ -425,7 +425,7 @@ const PEP = ({ tool }) => {
       <div><div className="flex justify-between"><label className="text-sm font-bold">{t('pep_rate_helpful')}</label><span className="font-bold">{helpfulness}/10</span></div><input type="range" min="1" max="10" value={helpfulness} onChange={(e) => setHelpfulness(Number(e.target.value))} className="w-full accent-amber-500" /></div>
       <div><div className="flex justify-between"><label className="text-sm font-bold">{t('pep_energy_now_label')}</label><span className="font-bold">{energyAfter}/10</span></div><input type="range" min="1" max="10" value={energyAfter} onChange={(e) => setEnergyAfter(Number(e.target.value))} className="w-full accent-emerald-500" /></div>
       <textarea value={rateNote} onChange={(e) => setRateNote(e.target.value)} rows={2} placeholder={t('pep_rate_noticed_ph')} className={`w-full p-3 border rounded-xl text-sm ${c.input}`} />
-      <button onClick={submitReflection} disabled={reflectLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>{reflectLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_save_reflection_loading')}</> : t('pep_save_reflection_btn')}</button>
+      <button onClick={submitReflection} disabled={reflectLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>{reflectLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✨'}</span> {t('pep_save_reflection_loading')}</> : t('pep_save_reflection_btn')}</button>
       {reflection && <div className={`${c.success} border rounded-xl p-4 space-y-1`}><p className="text-sm">{reflection.reflection}</p>{reflection.history_observation && <p className="text-sm font-semibold">{reflection.history_observation}</p>}</div>}
     </div>}
 

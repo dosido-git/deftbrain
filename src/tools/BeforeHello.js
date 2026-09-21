@@ -186,7 +186,7 @@ const BeforeHello = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the tool name as the page heading. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🌀'}</span>{t('bh_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🌀'}</span>{t('bh_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
@@ -248,7 +248,7 @@ const BeforeHello = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !targetDescription.trim()}
             className={`relative w-full py-3 rounded-xl font-bold ${(!targetDescription.trim()) ? c.btnIdle : c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🌀'}</span>{t('bh_thinking')}</> : <><span className="me-1">{tool?.icon ?? '🌀'}</span>{t('bh_build_plan')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🌀'}</span>{t('bh_thinking')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🌀'}</span>{t('bh_build_plan')}</>}
             {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

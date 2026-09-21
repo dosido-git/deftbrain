@@ -508,7 +508,7 @@ const SkillGapMap = ({ tool }) => {
 
   const Btn = ({ onClick, disabled, icon, label, color }) => (
     <button onClick={onClick} disabled={disabled} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 ${color || c.btnSecondary}`}>
-      {disabled && typeof icon === 'string' ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span>{icon}</span>} {label}
+      {disabled && typeof icon === 'string' ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : <span>{icon}</span>} {label}
     </button>
   );
   const ScoreBar = ({ score, color }) => (<div className={`w-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-1.5 overflow-hidden`}><div className={`${color || (score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500')} h-1.5 rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} /></div>);
@@ -531,7 +531,7 @@ const SkillGapMap = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('sgm_tagline'))}
+                <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('sgm_tagline'))}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -627,7 +627,7 @@ const SkillGapMap = ({ tool }) => {
           <button title={t('cmd_enter')} onClick={mode === 'map' ? handleAnalyze : handleExplore}
             disabled={loading || !currentRole.trim() || (mode === 'map' && !targetRole.trim())}
             className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${(!currentRole.trim() || (mode === 'map' && !targetRole.trim())) ? c.btnIdle : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
-            {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? t('sgm_exploring') : t('sgm_mapping')}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> {t('sgm_explore_paths')}</>) : (<><span className="text-lg">🗺️</span> {t('sgm_map_gaps')}</>)}
+            {loading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? t('sgm_exploring') : t('sgm_mapping')}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> {t('sgm_explore_paths')}</>) : (<><span className="text-lg">🗺️</span> {t('sgm_map_gaps')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -709,7 +709,7 @@ const SkillGapMap = ({ tool }) => {
             <div className="flex flex-wrap gap-2">
               <button onClick={() => handleExplore({ more: true })} disabled={exploreMoreLoading}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>
-                {exploreMoreLoading ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🧭'}</span>{t('sgm_explore_loading_more')}</> : t('sgm_explore_show_more')}
+                {exploreMoreLoading ? <><span className="inline-block animate-spin me-1 text-xl">{tool?.icon ?? '🧭'}</span>{t('sgm_explore_loading_more')}</> : t('sgm_explore_show_more')}
               </button>
               <button onClick={() => setShowExploreRefine(s => !s)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>
                 {t('sgm_explore_tell_me')}
@@ -1741,7 +1741,7 @@ const SkillGapMap = ({ tool }) => {
                     </div>
                   </div>
                 )}
-                {mockLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('sgm_mock_evaluating')}</p>}
+                {mockLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {t('sgm_mock_evaluating')}</p>}
               </div>
             </div>
           )}

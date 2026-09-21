@@ -390,8 +390,8 @@ const PronounceItRight = ({ tool }) => {
       <button title={t('cmd_enter')} onClick={submit} disabled={loading || (!batchMode && !word.trim()) || (batchMode && !batchWords.trim())}
         className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' +
           (((!batchMode && !word.trim()) || (batchMode && !batchWords.trim())) ? c.btnIdle : c.btnPrimary)}>
-        {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('pir_looking_up')}</>
-          : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_cta')}</>}
+        {loading ? <><span className="relative inline-block animate-spin text-xl">{tool?.icon ?? '🗣️'}</span> {t('pir_looking_up')}</>
+          : <><span className="me-1 text-xl">{tool?.icon ?? '🗣️'}</span> {t('pir_cta')}</>}
       {!loading && (
         <kbd aria-hidden="true"
           className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -435,7 +435,7 @@ const PronounceItRight = ({ tool }) => {
                   <button onClick={fetchAudio} disabled={audioLoading}
                     className={'text-sm font-bold px-4 py-2 rounded-xl border disabled:opacity-40 ' + c.btnSecondary}>
                     {audioLoading
-                      ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
+                      ? <><span className="inline-block animate-spin me-1 text-xl">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
                       : <>🔊 {t('pir_hear_it')}</>}
                   </button>
                 ) : (
@@ -654,7 +654,7 @@ const PronounceItRight = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🗣️'}</span>{t('pir_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🗣️'}</span>{t('pir_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>

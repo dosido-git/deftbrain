@@ -608,7 +608,7 @@ const DecisionCoach = ({ tool }) => {
       <button title={t('cmd_enter')} onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
       disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
       className={`relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${((decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())) ? c.btnIdle : c.btnDecide}`}>
-      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : decideMode === 'proscons' ? <><span>⚖️</span> {t('dc_btn_compare')}</> : decideMode === 'devils' ? <><span>🎭</span> {t('dc_btn_checkgut')}</> : decideMode === 'chain' ? <><span>🔗</span> {t('dc_btn_solvechain')}</> : <><span>🎯</span> {t('dc_btn_decide')}</>}
+      {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : decideMode === 'proscons' ? <><span>⚖️</span> {t('dc_btn_compare')}</> : decideMode === 'devils' ? <><span>🎭</span> {t('dc_btn_checkgut')}</> : decideMode === 'chain' ? <><span>🔗</span> {t('dc_btn_solvechain')}</> : <><span>🎯</span> {t('dc_btn_decide')}</>}
       
         {!loading && (
           <kbd aria-hidden="true"
@@ -853,7 +853,7 @@ const DecisionCoach = ({ tool }) => {
         {groupPeople.length < 6 && <button onClick={() => { shouldFocusNewGroupPeopleRef.current = true; setGroupPeople(p => [...p, {name:'',constraints:''}]); }} className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_add')}</button>}
       </div>
       <button onClick={handleGroupDecide} disabled={loading || !groupDecision.trim() || groupPeople.filter(p => p.name.trim()).length < 2} className={`w-full py-4 rounded-2xl text-sm font-bold ${c.btnDecide} disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : <><span>👥</span> {t('dc_decide_for_group')}</>}
+        {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : <><span>👥</span> {t('dc_decide_for_group')}</>}
       </button>
       {groupResult && (
         <div className="space-y-4 mt-4">
@@ -927,7 +927,7 @@ const DecisionCoach = ({ tool }) => {
           </div>
         ) : (<>
           <button onClick={() => { if (patternsResult && patternsOpen) { setPatternsOpen(false); return; } setPatternsOpen(true); handlePatterns(); }} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
-            {patternsLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : (patternsResult && patternsOpen) ? t('dc_pat_close') : t('dc_pat_cta')}
+            {patternsLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : (patternsResult && patternsOpen) ? t('dc_pat_close') : t('dc_pat_cta')}
           </button>
           {patternsResult && patternsOpen && (<div className="space-y-3">
             {!!patternsResult.tended_to_choose?.length && (
@@ -987,7 +987,7 @@ const DecisionCoach = ({ tool }) => {
           </div>
           <button onClick={handleBatch} disabled={loading || (batchCategory === 'custom' && !batchCustom.trim())}
             className={`self-end px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>
-            {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> : t('dc_batch_cta')}
+            {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> : t('dc_batch_cta')}
           </button>
         </div>
         {batchResult?.decline_reason && (
@@ -1111,7 +1111,7 @@ const DecisionCoach = ({ tool }) => {
                           <div className="mb-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_fu_satisfaction')}</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
                         )}
                         {followUpOutcome === 'changed' && <><label htmlFor="dc-followup-actual" className="sr-only">{t('dc_fu_what_instead')}</label><input id="dc-followup-actual" type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder={t('dc_fu_what_instead')} className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} /></>}
-                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
+                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
                         {followUpResult && (
                           <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
                             <p className={`text-xs ${c.textSecondary} mb-2`}>{followUpResult.response}</p>
@@ -1159,7 +1159,7 @@ const DecisionCoach = ({ tool }) => {
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
           <p className={`text-base ${c.textSecondary}`}>
-            <span className="me-2 text-lg">{tool?.icon ?? '🎯'}</span>{tool?.tagline ?? t('dc_tagline')}
+            <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{tool?.tagline ?? t('dc_tagline')}
           </p>
           {activeTab === 'decide' && !results && !prosResult && !devilsResult && !chainResult && (
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>

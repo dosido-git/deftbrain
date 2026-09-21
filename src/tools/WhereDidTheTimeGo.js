@@ -225,7 +225,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon}</span>{tool?.tagline ?? t('wdttg_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon}</span>{tool?.tagline ?? t('wdttg_tagline')}
                 </p>
                 {!results && (
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -271,11 +271,11 @@ const WhereDidTheTimeGo = ({ tool }) => {
               onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`relative w-full ${loading || dayDescription.trim() ? c.btnPrimary : c.btnIdle} py-3 rounded-xl font-semibold text-sm shadow-md
                 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`} >
               {loading ? (<>
-                  <span className="inline-block animate-spin !text-white">{tool?.icon ?? ICON_FALLBACK}</span>
+                  <span className="inline-block animate-spin !text-white text-xl">{tool?.icon ?? ICON_FALLBACK}</span>
                   <span className="!text-white">{t('wdttg_tracing')}</span>
                 </>
               ) : (<>
-                  <span>{tool?.icon ?? ICON_FALLBACK}</span> {t('wdttg_submit')}
+                  <span className="text-xl">{tool?.icon ?? ICON_FALLBACK}</span> {t('wdttg_submit')}
                 </>
               )} {!loading && (
                              <kbd aria-hidden="true"

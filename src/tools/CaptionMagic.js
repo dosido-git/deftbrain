@@ -472,8 +472,8 @@ const CaptionMagic = ({ tool }) => {
       disabled={loading || (!imageBase64 && !imageDescription.trim())}
       className={`relative w-full py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
         ${(!imageBase64 && !imageDescription.trim()) ? c.btnIdle : c.btnPrimary}`}>
-      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> {t('cm_crafting')}</>
-        : <><span>{tool?.icon ?? '📸'}</span> {t('cm_generate')}</>}
+      {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> {t('cm_crafting')}</>
+        : <><span className="text-xl">{tool?.icon ?? '📸'}</span> {t('cm_generate')}</>}
       {!loading && (
           <kbd aria-hidden="true"
             className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -518,7 +518,7 @@ const CaptionMagic = ({ tool }) => {
               disabled={loading || (!imageBase64 && !imageDescription.trim())}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold disabled:opacity-40 transition-colors ${c.btnPrimary}`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t('cm_regenerate')}
+              {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : t('cm_regenerate')}
             </button>
           </div>
         </div>
@@ -610,13 +610,13 @@ const CaptionMagic = ({ tool }) => {
                     onClick={() => reviseCaption(captions[pickedIndex].text, pickedIndex, opt.value)}
                     disabled={revisingIndex !== null}
                     className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex !== null ? 'opacity-50' : ''}`}>
-                    {revisingIndex === pickedIndex ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
+                    {revisingIndex === pickedIndex ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
                   </button>
                 ))}
                 <button onClick={() => adaptAllPlatforms(captions[pickedIndex].text, captions[pickedIndex].hashtags, pickedIndex)}
                   disabled={adapting !== null}
                   className={`px-3 py-2 rounded-lg text-xs font-semibold ${adapting !== null ? c.stateDisabled : c.btnSecondary}`}>
-                  {adapting === pickedIndex ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
+                  {adapting === pickedIndex ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
                 </button>
                 <button onClick={() => setPickedIndex(null)}
                   className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} opacity-70`}>
@@ -628,12 +628,12 @@ const CaptionMagic = ({ tool }) => {
                 {NUDGE_OPTIONS.map(opt => (
                   <button key={opt.value} onClick={() => askForMore(opt.value)} disabled={!!nudging}
                     className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${nudging ? 'opacity-50' : ''}`}>
-                    {nudging === opt.value ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
+                    {nudging === opt.value ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
                   </button>
                 ))}
                 <button onClick={() => askForMore(null)} disabled={!!nudging}
                   className={`px-3 py-2 rounded-lg text-xs font-semibold ${nudging ? c.stateDisabled : c.btnPrimary}`}>
-                  {nudging === 'more' ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <>🎰 {t('cm_six_more')}</>}
+                  {nudging === 'more' ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : <>🎰 {t('cm_six_more')}</>}
                 </button>
               </>
             )}
@@ -657,7 +657,7 @@ const CaptionMagic = ({ tool }) => {
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
               <button onClick={generate} disabled={loading}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold ${loading ? c.stateDisabled : c.btnPrimary}`}>
-                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t('cm_regenerate_with')}
+                {loading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '📸'}</span> : t('cm_regenerate_with')}
               </button>
             </div>
           )}
@@ -735,7 +735,7 @@ const CaptionMagic = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '📸'}</span>{t('cm_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '📸'}</span>{t('cm_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

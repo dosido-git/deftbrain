@@ -680,8 +680,8 @@ const MeetingHijackStopper = ({ tool }) => {
         <button title={t('cmd_enter')} onClick={buildPlan} disabled={!canGenerate || loading}
           className={`relative w-full ${!canGenerate ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🛡️'}</span> {t('mhp_btn_loading')}</>
-            : <><span className="me-1">{tool?.icon ?? '🛡️'}</span> {t('mhp_btn')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🛡️'}</span> {t('mhp_btn_loading')}</>
+            : <><span className="me-1 text-xl">{tool?.icon ?? '🛡️'}</span> {t('mhp_btn')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -877,7 +877,7 @@ const MeetingHijackStopper = ({ tool }) => {
         <button title={t('cmd_enter')} onClick={buildFollowUp} disabled={!capturedSomething || loading}
           className={`relative w-full ${!capturedSomething ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🛡️'}</span> {t('mhp_fu_btn_loading')}</>
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🛡️'}</span> {t('mhp_fu_btn_loading')}</>
             : <><span className="me-1">✉️</span> {t('mhp_fu_btn')}</>}
           {!loading && (
             <kbd aria-hidden="true"
@@ -997,7 +997,7 @@ const MeetingHijackStopper = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🛡️'}</span>
+                  <span className="me-2 text-xl">{tool?.icon ?? '🛡️'}</span>
                   {toolTagline(tool?.tagline ?? t('mhp_tagline'))}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>

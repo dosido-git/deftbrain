@@ -302,7 +302,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '💬'}</span>{t('asf_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '💬'}</span>{t('asf_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -326,7 +326,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             className={`w-full ${c.btnPanic} disabled:opacity-40 font-black py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-base min-h-[52px] shadow-lg`}
           >
             {panicLoading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '💬'}</span> {t('asf_panic_hold')}</>
+              <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💬'}</span> {t('asf_panic_hold')}</>
             ) : (
               <>{t('asf_panic_btn')}</>
             )}
@@ -453,9 +453,9 @@ const AwkwardSilenceFiller = ({ tool }) => {
             className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '💬'}</span> {t('asf_generating')}</>
+              <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💬'}</span> {t('asf_generating')}</>
             ) : (
-              <><span>{tool?.icon ?? '💬'}</span> {t('asf_generate_btn')}</>
+              <><span className="text-xl">{tool?.icon ?? '💬'}</span> {t('asf_generate_btn')}</>
             )}
             {!loading && (
               <kbd aria-hidden="true"
@@ -471,7 +471,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               className={`px-4 py-3 ${c.btnSecondary} rounded-lg min-h-[48px]`}
               title={t('asf_refresh_title')}
             >
-              <span className={isRunning ? 'animate-spin inline-block' : ''}>{tool?.icon ?? '💬'}</span>
+              <span className={isRunning ? 'animate-spin inline-block text-xl' : 'text-xl'}>{tool?.icon ?? '💬'}</span>
             </button>
           )}
         </div>

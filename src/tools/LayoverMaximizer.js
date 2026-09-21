@@ -916,7 +916,7 @@ const LayoverMaximizer = ({ tool }) => {
 
             <button onClick={runAnalysis} disabled={loading || !airport.trim()} title={t('lmx_cmd_enter')}
             className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_analyzing')}</> : <><span>{tool?.icon ?? '✈️'}</span> {t('lmx_btn_analyze')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_analyzing')}</> : <><span className="text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_analyze')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1463,7 +1463,7 @@ const LayoverMaximizer = ({ tool }) => {
           </div>
           <button onClick={runLounge} disabled={loading || !loungeAirport.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_searching')}</> : <><span>{tool?.icon ?? '✈️'}</span> {t('lmx_btn_find_lounges_full')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_searching')}</> : <><span className="text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_find_lounges_full')}</>}
           </button>
         </div>
       </div>
@@ -1599,7 +1599,7 @@ const LayoverMaximizer = ({ tool }) => {
             </label>
             <button onClick={runRisk} disabled={loading || !riskAirport.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_calculating')}</> : <><span className="me-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_assess_risk')}</>}
+              {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_calculating')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_assess_risk')}</>}
             </button>
           </div>
         </div>
@@ -1819,7 +1819,7 @@ const LayoverMaximizer = ({ tool }) => {
             </div>
             <button onClick={runGateToGate} disabled={loading || !g2gAirport.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_routing')}</> : <><span className="me-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_get_directions')}</>}
+              {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_routing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_get_directions')}</>}
             </button>
           </div>
         </div>
@@ -1977,7 +1977,7 @@ const LayoverMaximizer = ({ tool }) => {
                 <button onClick={runDelayReplan} disabled={loading}
                   className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
                   {loading
-                    ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔄'}</span> {t('lmx_replanning')}</>
+                    ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔄'}</span> {t('lmx_replanning')}</>
                     : <><span>🔄</span> {t('lmx_btn_replan')}</>}
                 </button>
               )}
@@ -2135,7 +2135,7 @@ const LayoverMaximizer = ({ tool }) => {
           )}
           <button onClick={runCompare} disabled={loading || cmpOptions.filter(o => o.airport.trim() && o.hours).length < 2}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_comparing')}</> : <><span>⚖️</span> {t('lmx_btn_compare')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_comparing')}</> : <><span>⚖️</span> {t('lmx_btn_compare')}</>}
           </button>
         </div>
       </div>
@@ -2228,7 +2228,7 @@ const LayoverMaximizer = ({ tool }) => {
         ) : (
           <button onClick={runPacking} disabled={loading}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_building_list')}</> : <><span>🎒</span> {t('lmx_btn_generate_packing')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_building_list')}</> : <><span>🎒</span> {t('lmx_btn_generate_packing')}</>}
           </button>
         )}
       </div>
@@ -2326,7 +2326,7 @@ const LayoverMaximizer = ({ tool }) => {
           </div>
           <button onClick={runSurvivalKit} disabled={loading || !(kitAirport.trim() || results?.airport_code || airport.trim())}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_building_kit')}</> : <><span>🧰</span> {t('lmx_btn_generate_kit')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✈️'}</span> {t('lmx_building_kit')}</> : <><span>🧰</span> {t('lmx_btn_generate_kit')}</>}
           </button>
         </div>
       </div>
@@ -2447,7 +2447,7 @@ const LayoverMaximizer = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '✈️'}</span>{t('lmx_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '✈️'}</span>{t('lmx_tagline')}
                 </p>
                 {/* Dark ink in BOTH themes: the pill sits on the tool's own
                     headerColor, which is pale on almost every tool, so white

@@ -1188,7 +1188,7 @@ const LaundroMat = ({ tool }) => {
           <div className="mb-3">
             {compressing ? (
               <div className={`flex items-center gap-2 p-3 rounded-xl border-2 border-dashed ${c.dropzone}`}>
-                <span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span>
+                <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧺'}</span>
                 <span className={`text-xs ${c.textSecondary}`}>{t('lmt_compressing')}</span>
               </div>
             ) : labelPreview ? (
@@ -1223,7 +1223,7 @@ const LaundroMat = ({ tool }) => {
           <button title={t('cmd_enter')} onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               disabled:opacity-40 ${(!loadDesc.trim() && !labelImage) ? c.btnIdle : c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me_next')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me_next')}</>}
             {!loading && (loadDesc.trim() || labelImage) && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1388,7 +1388,7 @@ const LaundroMat = ({ tool }) => {
           <div className="mb-4">
             {compressingStain ? (
               <div className={`flex items-center gap-2 p-3 rounded-xl border-2 border-dashed ${c.dropzone}`}>
-                <span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span>
+                <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧺'}</span>
                 <span className={`text-xs ${c.textSecondary}`}>{t('lmt_compressing')}</span>
               </div>
             ) : stainPreview ? (
@@ -1411,7 +1411,7 @@ const LaundroMat = ({ tool }) => {
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help_next')}</>}
+            {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🧺'}</span> {t('lmt_help_next')}</>}
             {!loading && (stainType || stainCustom.trim() || stainImage) && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1534,7 +1534,7 @@ const LaundroMat = ({ tool }) => {
 
             <button onClick={getRescueHelp} disabled={!canRescue || loading} title={t('cmd_enter')}
               className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_rescue_assessing')}</> : <><span>🚑</span> {t('lmt_rescue_can_i_fix')}</>}
+              {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧺'}</span> {t('lmt_rescue_assessing')}</> : <><span>🚑</span> {t('lmt_rescue_can_i_fix')}</>}
             {!loading && canRescue && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1748,7 +1748,7 @@ const LaundroMat = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🧺'}</span>{tool?.tagline ?? t('lmt_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🧺'}</span>{tool?.tagline ?? t('lmt_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

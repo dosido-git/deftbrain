@@ -606,9 +606,9 @@ const BrainStateDeejay = ({ tool }) => {
       disabled={loading || !currentState || !desiredState}
       className={`relative w-full py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
       {loading ? (
-        <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
+        <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
       ) : (
-        <><span>{tool?.icon ?? '🎧'}</span> {t('bsd_generate')}</>
+        <><span className="text-xl">{tool?.icon ?? '🎧'}</span> {t('bsd_generate')}</>
       )}
       {!loading && (
         <kbd aria-hidden="true"
@@ -955,7 +955,7 @@ const BrainStateDeejay = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🎧'}</span>{t('bsd_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🎧'}</span>{t('bsd_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

@@ -305,7 +305,7 @@ const Bookmark = ({ tool }) => {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="me-2">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
+            <span className="me-2 text-xl">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{t('bk_tagline')}</p>
           {!results && (
@@ -388,7 +388,7 @@ const Bookmark = ({ tool }) => {
 
       <button title={t('cmd_enter')} onClick={recall} disabled={loading || !title.trim() || !stoppedAt.trim()}
         className={'relative flex-1 py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + ((!title.trim() || !stoppedAt.trim()) ? c.btnIdle : c.btnPrimary)}>
-        {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? '🔖'}</span> {t('bk_recalling')}</> : <><span>{tool?.icon ?? '🔖'}</span> {t('bk_where_was_i')}</>}
+        {loading ? <><span className="relative animate-spin inline-block text-xl">{tool?.icon ?? '🔖'}</span> {t('bk_recalling')}</> : <><span className="text-xl">{tool?.icon ?? '🔖'}</span> {t('bk_where_was_i')}</>}
       {!loading && (
         <kbd aria-hidden="true"
           className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

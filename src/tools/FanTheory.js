@@ -258,7 +258,7 @@ const FanTheory = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🧵'}</span>{tool?.tagline ?? t('ft_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🧵'}</span>{tool?.tagline ?? t('ft_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -311,8 +311,8 @@ const FanTheory = ({ tool }) => {
                 laid out outside the button — white on a pale background, so the
                 button looked like it had no text (owner, 2026-08-26). */}
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span><span>{t('ft_theorizing')}</span></>
-              : <><span>{tool?.icon ?? '🧵'}</span><span>{t('ft_generate')}</span></>}
+              ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧵'}</span><span>{t('ft_theorizing')}</span></>
+              : <><span className="text-xl">{tool?.icon ?? '🧵'}</span><span>{t('ft_generate')}</span></>}
           </button>
 
           {/* Pre-result cross-ref */}
@@ -427,7 +427,7 @@ const FanTheory = ({ tool }) => {
           <div className="flex gap-2">
             <button onClick={() => runGenerate(true)} disabled={loading}
               className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
-              <span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_different_theory')}
+              <span className="me-1 text-xl">{tool?.icon ?? '🧵'}</span>{t('ft_different_theory')}
             </button>
           </div>
 
@@ -454,8 +454,8 @@ const FanTheory = ({ tool }) => {
             <button title={t('cmd_enter')} onClick={runGrade} disabled={!myTheory.trim() || loading}
               className={`relative w-full ${(!myTheory.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap`}>
               {loading
-                ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span><span>{t('ft_grading')}</span></>
-                : <><span>{tool?.icon ?? '🧵'}</span><span>{t('ft_grade_theory')}</span></>}
+                ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧵'}</span><span>{t('ft_grading')}</span></>
+                : <><span className="text-xl">{tool?.icon ?? '🧵'}</span><span>{t('ft_grade_theory')}</span></>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

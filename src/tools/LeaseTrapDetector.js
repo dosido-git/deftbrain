@@ -473,7 +473,7 @@ const LeaseTrapDetector = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🏡'}</span>{t('ltd_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span>{t('ltd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -594,7 +594,7 @@ const LeaseTrapDetector = ({ tool }) => {
             </p>
 
             <button title={t('cmd_enter')} onClick={analyzeLease} disabled={loading} className={`relative w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -726,7 +726,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
                 <button title={t('cmd_enter')} onClick={handleFindMissing} disabled={missingLoading || (!missingContractText.trim() && !fileBase64)}
                   className={`relative w-full py-4 rounded-xl font-black text-lg shadow-lg transition-all ${(missingLoading || (!missingContractText.trim() && !fileBase64)) ? c.btnIdle : c.btnPrimary}`}>
-                  {missingLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
+                  {missingLoading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
                 {!missingLoading && (
                   <kbd aria-hidden="true"
                     className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1219,7 +1219,7 @@ const LeaseTrapDetector = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('ltd_renewal_traps')}</p>
-                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{renewalLoading ? <span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> : <span className="me-1">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? t('ltd_analyzing') : t('ltd_analyze')}</button>}
+                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{renewalLoading ? <span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🏡'}</span> : <span className="me-1 text-xl">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? t('ltd_analyzing') : t('ltd_analyze')}</button>}
               </div>
               {!renewalTraps && !renewalLoading && <p className={`text-xs ${c.textMuted}`}>{t('ltd_renewal_hint')}</p>}
               {renewalTraps && (
@@ -1331,7 +1331,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     ))}
                     <input type="text" value={propertyAddress} onChange={e => setPropertyAddress(e.target.value)} placeholder={t('ltd_property_address_ph')} className={`w-full px-3 py-2 rounded-xl border-2 text-base ${c.input}`} />
                     <button onClick={generateAmendment} disabled={amendmentLoading || !amendmentClauses.length} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                      {amendmentLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generating')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_generate_amendment', { count: amendmentClauses.length })}</>}
+                      {amendmentLoading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_generating')}</> : <><span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span>{t('ltd_generate_amendment', { count: amendmentClauses.length })}</>}
                     </button>
                   </div>
                 )}
@@ -1357,8 +1357,8 @@ const LeaseTrapDetector = ({ tool }) => {
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_personalized_checklist')}</p>
               {!checklist && (
                 <div className="flex gap-3">
-                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_in')}</>}</button>
-                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_out')}</>}</button>
+                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_move_in')}</>}</button>
+                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_move_out')}</>}</button>
                 </div>
               )}
               {checklist && (
@@ -1410,7 +1410,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   <input type="text" value={landlordName} onChange={e => setLandlordName(e.target.value)} placeholder={t('ltd_landlord_name_ph')} className={`w-full px-3 py-2.5 rounded-xl border-2 text-base ${c.input}`} />
                   <input type="text" value={tenantName} onChange={e => setTenantName(e.target.value)} placeholder={t('ltd_tenant_name_ph')} className={`w-full px-3 py-2.5 rounded-xl border-2 text-base ${c.input}`} />
                   <button onClick={generateEmail} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                    {emailLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_drafting')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generate')}</>}
+                    {emailLoading ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_drafting')}</> : <><span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_generate')}</>}
                   </button>
                 </div>
               )}
@@ -1446,7 +1446,7 @@ const LeaseTrapDetector = ({ tool }) => {
               )}
               <input type="text" value={followupQ} onChange={e => setFollowupQ(e.target.value)} placeholder={t('ltd_followup_ph')} onKeyDown={e => e.key === 'Enter' && askFollowup()} className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-base ${c.input}`} />
               <button onClick={askFollowup} disabled={followupLoading || !followupQ.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🏡'}</span> : <span>{tool?.icon ?? '🏡'}</span>}
+                {followupLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🏡'}</span> : <span className="text-xl">{tool?.icon ?? '🏡'}</span>}
               </button>
               {followupA && (
                 <div className={`p-4 rounded-xl border ${c.success}`}>
@@ -1470,7 +1470,7 @@ const LeaseTrapDetector = ({ tool }) => {
                         <p className={`text-xs ${c.textMuted}`}>{new Date(sa.date).toLocaleDateString()}</p>
                       </button>
                     ))}
-                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_comparing')}</p>}
+                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_comparing')}</p>}
                   </div>
                 )}
                 {comparison && (

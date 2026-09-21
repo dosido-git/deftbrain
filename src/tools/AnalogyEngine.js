@@ -236,7 +236,7 @@ const AnalogyEngine = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '💡'}</span>{t('ae_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? '💡'}</span>{t('ae_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -341,12 +341,12 @@ const AnalogyEngine = ({ tool }) => {
         >
         {loading ? (
           <>
-            <span className="animate-spin inline-block">{tool?.icon ?? '💡'}</span>
+            <span className="animate-spin inline-block text-xl">{tool?.icon ?? '💡'}</span>
             {t('ae_crafting')}
           </>
         ) : (
           <>
-            <span>{tool?.icon ?? '💡'}</span> {t('ae_generate')}
+            <span className="text-xl">{tool?.icon ?? '💡'}</span> {t('ae_generate')}
           </>
         )}
         {!loading && (

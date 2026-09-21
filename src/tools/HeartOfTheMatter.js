@@ -485,7 +485,7 @@ const HeartOfTheMatter = ({ tool }) => {
           <p className={`text-xs ${c.textMuted} mb-3`}>{t('rec_input_help')} {t('rec_upload_hint')}</p>
           {extracting ? (
             <div className={`w-full h-40 flex items-center justify-center gap-2 border-2 border-dashed rounded-xl ${c.border} ${c.textMuted} text-sm`}>
-              <span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('rec_extracting')}
+              <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_extracting')}
             </div>
           ) : (
             <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
@@ -516,7 +516,7 @@ const HeartOfTheMatter = ({ tool }) => {
               </div>
               {extracting && uploadTargetRef.current === idx ? (
                 <div className={`w-full h-24 flex items-center justify-center gap-2 border-2 border-dashed rounded-xl ${c.border} ${c.textMuted} text-xs`}>
-                  <span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('rec_extracting')}
+                  <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_extracting')}
                 </div>
               ) : (
                 <textarea value={lec.transcript} onChange={e => updateLecture(idx, 'transcript', e.target.value)}
@@ -579,10 +579,10 @@ const HeartOfTheMatter = ({ tool }) => {
         <button title={t('cmd_enter')} onClick={() => submit()} disabled={loading || !canSubmit}
           className={`relative flex-1 ${(!canSubmit) ? c.btnIdle : c.btnPrimary} py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('rec_processing')}</>
-            : mode === 'distill'     ? <><span>{tool?.icon ?? '🎯'}</span> {t('rec_submit_distill')}</>
-            : mode === 'understand' ? <><span>{tool?.icon ?? '🎯'}</span> {t('rec_submit_understand')}</>
-            : <><span>{tool?.icon ?? '🎯'}</span> {t('rec_submit_connect')}</>}
+            ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_processing')}</>
+            : mode === 'distill'     ? <><span className="text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_submit_distill')}</>
+            : mode === 'understand' ? <><span className="text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_submit_understand')}</>
+            : <><span className="text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_submit_connect')}</>}
         {!loading && (
           <kbd aria-hidden="true"
             className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -809,7 +809,7 @@ const HeartOfTheMatter = ({ tool }) => {
     return (
       <div className={`p-4 rounded-2xl border ${c.histBg}`}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
-          <span>{tool?.icon ?? '🎯'}</span>
+          <span className="text-xl">{tool?.icon ?? '🎯'}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('rec_past_sessions')}</span>
           <span className={`text-xs ${c.textMuted}`}>{validHistory.length}</span>
           <Caret open={showHistory} />
@@ -869,7 +869,7 @@ const HeartOfTheMatter = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🎯'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 {/* Scope chips — signal the breadth of accepted inputs (non-interactive) */}
@@ -900,7 +900,7 @@ const HeartOfTheMatter = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🎯'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
                 </p>
               </div>
               {/* PF-16: "Edit Input" below only offers a partial reset (keeps

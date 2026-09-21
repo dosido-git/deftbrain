@@ -184,7 +184,7 @@ const CrowdWisdom = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
+                  <span className="me-2 text-xl">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{t('cw_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -247,8 +247,8 @@ const CrowdWisdom = ({ tool }) => {
             className={`relative w-full py-3 rounded-xl font-bold ${(!question.trim()) ? c.btnIdle : c.btnPrimary}`}
           >
             {loading
-              ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '👥'}</span>{t('cw_gathering')}</>
-              : <><span className="me-1">{tool?.icon ?? '👥'}</span>{t('cw_ask')}</>}
+              ? <><span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '👥'}</span>{t('cw_gathering')}</>
+              : <><span className="me-1 text-xl">{tool?.icon ?? '👥'}</span>{t('cw_ask')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">

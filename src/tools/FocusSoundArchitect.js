@@ -1426,7 +1426,7 @@ const FocusSoundArchitect = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? ' 🎧'}</span>{tool?.tagline ?? t('fsa_tagline')}
+              <span className="me-2 text-xl">{tool?.icon ?? ' 🎧'}</span>{tool?.tagline ?? t('fsa_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -1554,7 +1554,7 @@ const FocusSoundArchitect = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading}
             className="relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40 disabled:opacity-50">
-            {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1">{tool?.icon ?? '🎧'}</span>{t('fsa_design_btn')}</>}
+            {loading ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🎧'}</span>{t('fsa_design_btn')}</>}
           </button>
 
           {error && (

@@ -539,8 +539,8 @@ const ArgueSmarter = ({ tool }) => {
 
 
         <div className="flex flex-wrap gap-2">
-          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? `✅ ${t('dm_audience_judged')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `👥 ${t('dm_audience_verdict')}`}</button>
-          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? `✅ ${t('dm_map_built')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `🗺️ ${t('dm_argument_map')}`}</button>
+          <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? `✅ ${t('dm_audience_judged')}` : loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span></> : `👥 ${t('dm_audience_verdict')}`}</button>
+          <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? `✅ ${t('dm_map_built')}` : loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span></> : `🗺️ ${t('dm_argument_map')}`}</button>
         </div>
         {audienceData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>👥 {t('dm_audience_verdict')}</h3>
@@ -566,7 +566,7 @@ const ArgueSmarter = ({ tool }) => {
           {argMapData.structural_note && <p className={`text-xs ${c.textSecondary}`}>📐 {argMapData.structural_note}</p>}
         </div>}
         <div className="flex flex-wrap gap-2">
-          <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}><span>{tool?.icon ?? '🥊'}</span> {t('dm_new_debate')}</button>
+          <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}><span className="text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_new_debate')}</button>
         </div>
         <p className={`text-xs ${c.textMuteded} text-center`}>{t('dm_verify_disclaimer')}</p>
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -594,7 +594,7 @@ const ArgueSmarter = ({ tool }) => {
                 {/* PF-30 — the wrapper already prints the tool's name as the
                     page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🥊'}</span>{tool?.tagline ?? t('dm_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🥊'}</span>{tool?.tagline ?? t('dm_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading}
                   style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -644,7 +644,7 @@ const ArgueSmarter = ({ tool }) => {
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_challenge')}</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-start ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(lv.labelKey)}</span><p className={`text-xs ${c.textMuteded}`}>{t(lv.descKey)}</p></button>)}</div></div>
         <button onClick={handleOpen} disabled={loading || !position.trim()} title={t('dm_cmd_enter')}
           className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_preparing')}</> : <><span>{tool?.icon ?? '🥊'}</span> {t('dm_start_debate')}</>}
+          {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_preparing')}</> : <><span className="text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_start_debate')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -704,7 +704,7 @@ const ArgueSmarter = ({ tool }) => {
         {/* Source Check */}
         {showSource && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
           <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 {t('dm_source_check')}</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          {!sourceData && loading && <p className={`text-xs ${c.textMuteded}`}><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
+          {!sourceData && loading && <p className={`text-xs ${c.textMuteded}`}><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
           {sourceData && <div className="space-y-2">
           <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
             <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
@@ -723,7 +723,7 @@ const ArgueSmarter = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
           <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={t('dm_response_ph')} rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 end-2 text-xs ${c.textMuteded}`}>{wc}{t('dm_word_suffix')}</span>}</div>
           <div className="flex flex-wrap gap-1.5">
-            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_responding')}</> : `💬 ${t('dm_respond')}`}</button>
+            <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_responding')}</> : `💬 ${t('dm_respond')}`}</button>
             <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🤝 {t('dm_concede')}</button>
             <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🧑‍🏫 {t('dm_coach_btn')}</button>
             <button onClick={() => { const next = !showSource; setShowSource(next); if (next) handleSourceCheck(); else setSourceData(null); }} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔍 {t('dm_factcheck')}</button>
@@ -763,7 +763,7 @@ const ArgueSmarter = ({ tool }) => {
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder={t('dm_quick_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(t(s.key))} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} border ${c.border}`}>{s.cat} {t(s.key).substring(0, 30)}...</button>)}</div>
-          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_challenging')}</> : `⚡ ${t('dm_challenge_me')}`}</button>
+          <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_challenging')}</> : `⚡ ${t('dm_challenge_me')}`}</button>
         {quickData && <div className="space-y-4">
           {quickData.strength_acknowledged && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✅ {quickData.strength_acknowledged}</p></div>}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}><div className="flex items-center gap-2 mb-3"><span className="text-lg">🥊</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{quickData.steelman_label}</span></div><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{quickData.counter}</p></div>
@@ -785,7 +785,7 @@ const ArgueSmarter = ({ tool }) => {
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder={t('dm_prep_audience_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepContext} onChange={e => setPrepContext(e.target.value)} placeholder={t('dm_prep_context_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_prep_stakes')}</p><div className="flex gap-2">{[['low', 'dm_stake_low'], ['moderate', 'dm_stake_moderate'], ['high', 'dm_stake_high'], ['career-defining', 'dm_stake_career']].map(([s, k]) => <button key={s} onClick={() => setPrepStakes(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${prepStakes === s ? c.on : c.off}`}>{t(k)}</button>)}</div></div>
-          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_simulating')}</> : `🎯 ${t('dm_prep_me')}`}</button>
+          <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_simulating')}</> : `🎯 ${t('dm_prep_me')}`}</button>
         </div>
         {prepData && <div className="space-y-4">
           {prepData.audience_profile && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-xs font-bold">👥 {t('dm_audience_profile')}</p><p className={`text-sm ${c.coachLabel} mt-1`}>{prepData.audience_profile}</p></div>}
@@ -813,7 +813,7 @@ const ArgueSmarter = ({ tool }) => {
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 {t('dm_fallacy_gym')}</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.success} border`}>🔥 {t('dm_streak', { count: ftStreak })}</span>}</div>
           <p className={`text-sm ${c.textMuteded}`}>{t('dm_fallacy_sub')}</p>
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_difficulty')}</p><div className="flex gap-2">{[['easy', 'dm_diff_easy'], ['medium', 'dm_diff_medium'], ['hard', 'dm_diff_hard']].map(([d, k]) => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {t(k)}</button>)}</div></div>
-          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</> : ftExercise ? `🔄 ${t('dm_new_exercise')}` : `🧩 ${t('dm_start_training')}`}</button>
+          <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</> : ftExercise ? `🔄 ${t('dm_new_exercise')}` : `🧩 ${t('dm_start_training')}`}</button>
         </div>
         {ftExercise && <div className="space-y-4">
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
@@ -822,7 +822,7 @@ const ArgueSmarter = ({ tool }) => {
           </div>
           {!ftFeedback && <div className="space-y-2">
             <input value={ftAnswer} onChange={e => setFtAnswer(e.target.value)} placeholder={t('dm_fallacy_answer_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleFallacyCheck(); }} />
-            <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `✅ ${t('dm_check')}`}</button>
+            <button onClick={handleFallacyCheck} disabled={loading || !ftAnswer.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span></> : `✅ ${t('dm_check')}`}</button>
             <button onClick={() => setFtShowAnswer(!ftShowAnswer)} className={`px-4 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{ftShowAnswer ? `🙈 ${t('dm_hide_hint')}` : `💡 ${t('dm_hint')}`}</button>
             {ftShowAnswer && ftExercise.hint && <p className={`text-xs ${c.textSecondary} italic`}>💡 {ftExercise.hint}</p>}
           </div>}
@@ -849,7 +849,7 @@ const ArgueSmarter = ({ tool }) => {
               {s.tl && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>⚙️ {t('dm_preferred')}</p><p className={`text-sm ${c.textSecondary}`}>{LEVELS.find(l => l.id === s.tl[0])?.icon} {t(LEVELS.find(l => l.id === s.tl[0])?.labelKey || 'dm_lvl_rigorous')} ({s.tl[1]}x)</p></div>}
               {s.tf && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ {t('dm_top_fallacy')}</p><p className="text-sm">{s.tf[0]} ({s.tf[1]}x)</p></div>}
             </div>
-            <button onClick={handleHighlightReel} disabled={loading || sessionHistory.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{highlightData ? `✅ ${t('dm_reel_ready')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_analyzing')}</> : `🏆 ${t('dm_generate_reel')}`}</button>
+            <button onClick={handleHighlightReel} disabled={loading || sessionHistory.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{highlightData ? `✅ ${t('dm_reel_ready')}` : loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_analyzing')}</> : `🏆 ${t('dm_generate_reel')}`}</button>
           </div>}
         </div>
 

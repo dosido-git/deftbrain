@@ -316,7 +316,7 @@ export default function BeforeTheCrash() {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
+              <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
             </p>
             {/* PF-17c */}
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -449,7 +449,7 @@ export default function BeforeTheCrash() {
                       className="relative mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40 flex items-center justify-center gap-2"
                     >
                       {loading
-                        ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_comparing')}</>
+                        ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '⚡'}</span> {t('cpv2_comparing')}</>
                         : t('cpv2_compare_cta')}
                       {/* The chip inherits the button's own ink rather than
                           introducing a colour — this is an outlined button, not
@@ -497,7 +497,7 @@ export default function BeforeTheCrash() {
                       <button type="button" onClick={analyzePatterns} disabled={loading}
                         className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40 flex items-center justify-center gap-2">
                         {loading
-                          ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_longterm_cta')}</>
+                          ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '⚡'}</span> {t('cpv2_longterm_cta')}</>
                           : t('cpv2_longterm_cta')}
                       </button>
                     </>
@@ -587,7 +587,7 @@ export default function BeforeTheCrash() {
               <button type="button" onClick={save} disabled={loading}
                 className={`relative w-full min-h-[48px] rounded-lg font-semibold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
                 {loading
-                  ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_save')}</>
+                  ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '⚡'}</span> {t('cpv2_save')}</>
                   : t('cpv2_save')}
                 {!loading && (
                   <kbd aria-hidden="true"

@@ -245,7 +245,7 @@ const HistoryToday = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'HistoryToday'}
+                  <span className="me-2 text-xl">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'HistoryToday'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -311,7 +311,7 @@ const HistoryToday = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={handleSearch} disabled={loading || !event.trim()}
           className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${!event.trim() ? c.btnIdle : c.btnPrimary}`}>
-          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> {t('ht_searching')}</>) : (<><span className="me-1">{tool?.icon ?? '📰'}</span> {t('ht_find_cta')}</>)}
+          {loading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📰'}</span> {t('ht_searching')}</>) : (<><span className="me-1 text-xl">{tool?.icon ?? '📰'}</span> {t('ht_find_cta')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -368,7 +368,7 @@ const HistoryToday = ({ tool }) => {
 {!counterData && (
                 <button onClick={handleCounter} disabled={counterLoading}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${isDark ? 'bg-amber-900/30 text-amber-300 hover:bg-amber-800/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'} disabled:opacity-40`}>
-                  {counterLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> : <span>🔄</span>} {t('ht_counter_example_btn')}
+                  {counterLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '📰'}</span> : <span>🔄</span>} {t('ht_counter_example_btn')}
                 </button>
               )}
             </div>
@@ -520,7 +520,7 @@ const HistoryToday = ({ tool }) => {
                   {!deeperData[idx] ? (
                     <button onClick={() => handleDeeper(idx)} disabled={deeperLoading === idx}
                       className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>
-                      {deeperLoading === idx ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> {t('ht_loading')}</>) : (<><span>🔍</span> {t('ht_dig_deeper')}</>)}
+                      {deeperLoading === idx ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📰'}</span> {t('ht_loading')}</>) : (<><span>🔍</span> {t('ht_dig_deeper')}</>)}
                     </button>
                   ) : (
                     <span className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('ht_deep_dive_loaded')}</span>

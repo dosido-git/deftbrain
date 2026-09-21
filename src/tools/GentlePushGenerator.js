@@ -255,7 +255,7 @@ const GentlePushGenerator = ({ tool }) => {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
       <div className="flex items-center justify-between gap-3">
         <p className={`text-base ${c.textSecondary}`}>
-          <span className="me-2 text-lg">{tool?.icon ?? '🫸'}</span>{t('gpg_tagline')}
+          <span className="me-2 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_tagline')}
         </p>
         {showReset && (
           <button onClick={handleReset} className={`text-xs px-3 py-2 rounded-lg border ${c.border} ${c.text}`}>
@@ -587,7 +587,7 @@ const GentlePushGenerator = ({ tool }) => {
 
         <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || !growthArea.trim()}
           className={`relative w-full py-4 rounded-xl font-bold text-lg ${!growthArea.trim() ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
-          {loading ? <span><span className="animate-spin inline-block me-1">{tool?.icon ?? '🫸'}</span>{t('gpg_generating')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span>{t('gpg_generate_3')}</span>}
+          {loading ? <span><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_generating')}</span> : <span><span className="me-1 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_generate_3')}</span>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -690,7 +690,7 @@ const GentlePushGenerator = ({ tool }) => {
             <div className="flex gap-2">
               <button onClick={handleRegenerate} disabled={loading || (!feedbackType && !feedbackCustom.trim())}
                 className={`flex-1 py-2.5 rounded-lg font-medium text-sm ${c.btnPrimary} disabled:opacity-40`}>
-                {loading ? <span className="animate-spin inline-block me-1">{tool?.icon ?? '🫸'}</span> : null}{t('gpg_generate_new')}
+                {loading ? <span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🫸'}</span> : null}{t('gpg_generate_new')}
               </button>
               <button onClick={() => { setShowFeedback(false); setFeedbackType(''); setFeedbackCustom(''); }} className={`px-4 py-2.5 rounded-lg text-sm ${c.tag}`}>
                 {t('gpg_cancel')}
@@ -791,7 +791,7 @@ const GentlePushGenerator = ({ tool }) => {
 
         <button onClick={handleReflect} disabled={loading}
           className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 shadow-sm`}>
-          {loading ? <span><span className="animate-spin inline-block me-1">{tool?.icon ?? '🫸'}</span>{t('gpg_reflecting')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span>{t('gpg_get_reflection')}</span>}
+          {loading ? <span><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_reflecting')}</span> : <span><span className="me-1 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_get_reflection')}</span>}
         </button>
 
         {error && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm">⚠️ {error}</p></div>}

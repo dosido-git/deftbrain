@@ -660,7 +660,7 @@ const BragSheetBuilder = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🏆'}</span>{t('bsb_tagline')}
+                <span className="me-2 text-xl">{tool?.icon ?? '🏆'}</span>{t('bsb_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -747,7 +747,7 @@ const BragSheetBuilder = ({ tool }) => {
               <div className="mt-1.5">
                 <button onClick={handleExcavate} disabled={excavatorLoading}
                   className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg ${c.excavatorBtn} disabled:opacity-40`}>
-                  {excavatorLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> : <span>🧠</span>} {t('bsb_cant_remember')}
+                  {excavatorLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> : <span>🧠</span>} {t('bsb_cant_remember')}
                 </button>
               </div>
             </div>
@@ -907,7 +907,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* Submit */}
           <button onClick={handleBuild} disabled={loading || (accomplishments.length === 0 && !currentEntry.trim())}
           title={t('bsb_cmd_enter')}
-          className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>          {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_transforming')}</>) : (<><span className="text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_build')}</>)}
+          className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>          {loading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_transforming')}</>) : (<><span className="text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_build')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -989,7 +989,7 @@ const BragSheetBuilder = ({ tool }) => {
                 placeholder={t('bsb_describe_ph')} autoFocus className={`flex-1 p-3 border rounded-xl outline-none text-sm ${c.input}`} />
               <button onClick={handleAddSingle} disabled={addSingleLoading || !newEntry.trim()}
                 className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-sm`}>
-                <span className={addSingleLoading ? 'inline-block animate-spin' : ''}>{tool?.icon ?? '🏆'}</span></button>
+                <span className={addSingleLoading ? 'inline-block animate-spin text-xl' : 'text-xl'}>{tool?.icon ?? '🏆'}</span></button>
               <button onClick={() => { setAddingMore(false); setNewEntry(''); }} className={`px-3 rounded-xl text-sm ${c.textMuteded}`}>✕</button>
             </div>
           )}
@@ -1070,7 +1070,7 @@ const BragSheetBuilder = ({ tool }) => {
                           onKeyDown={e => { if (e.key === 'Enter') handleTweak(idx, tweakInstruction); }}
                           placeholder={t('bsb_tweak_ph')} autoFocus className={`flex-1 p-2 border rounded-lg text-xs outline-none ${c.input}`} />
                         <button onClick={() => handleTweak(idx, tweakInstruction)} disabled={tweakLoading || !tweakInstruction.trim()}
-                          className={`${c.btnPrimary} disabled:opacity-40 px-3 rounded-lg text-xs font-bold`}>{tweakLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> : '✓'}</button>
+                          className={`${c.btnPrimary} disabled:opacity-40 px-3 rounded-lg text-xs font-bold`}>{tweakLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> : '✓'}</button>
                         <button onClick={() => { setTweakingIdx(null); setTweakInstruction(''); }} className={`text-xs ${c.textMuteded}`}>✕</button>
                       </div>
                       </div>
@@ -1083,7 +1083,7 @@ const BragSheetBuilder = ({ tool }) => {
                         placeholder={t('bsb_star_q_ph')} className={`w-full p-2 border rounded-lg text-xs outline-none ${c.input}`} />
                       <button onClick={() => handleGenerateStar(idx)} disabled={starLoading === idx}
                         className={`${c.btnPrimary} disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                        {starLoading === idx ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_generating')}</> : t('bsb_generate')}</button>
+                        {starLoading === idx ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_generating')}</> : t('bsb_generate')}</button>
                       <button onClick={() => { setStarSelectIdx(null); setStarQuestion(''); }} className={`text-xs ${c.textMuteded}`}>{t('bsb_cancel')}</button>
                     </div>
                   )}
@@ -1128,7 +1128,7 @@ const BragSheetBuilder = ({ tool }) => {
               </div>
               <button onClick={handleRefine} disabled={refineLoading || Object.values(metricsAnswers).every(v => !v?.trim())}
                 className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${c.btnPrimary} disabled:opacity-40`}>
-                {refineLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_upgrading')}</> : `🚀 ${t('bsb_upgrade_bullets')}`}</button>
+                {refineLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_upgrading')}</> : `🚀 ${t('bsb_upgrade_bullets')}`}</button>
               {refineRound > 0 && <p className={`text-xs ${c.textMuteded} text-center`}>✅ {t('bsb_round_done', { round: refineRound, count: refinedData?.upgraded_transformations?.length || 0 })}{metrics.length > 0 ? t('bsb_more_questions') : t('bsb_all_maxed')}</p>}
             </div>
           )}
@@ -1143,7 +1143,7 @@ const BragSheetBuilder = ({ tool }) => {
                   <p className={`text-sm ${c.textSecondary} mb-4`}>{t('bsb_radar_desc')}</p>
                   <button onClick={handleRadar} disabled={radarLoading}
                     className={`${c.btnPrimary} disabled:opacity-40 px-6 py-3 rounded-xl font-semibold text-sm`}>
-                    {radarLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_radar_analyzing')}</> : `📡 ${t('bsb_radar_analyze')}`}</button>
+                    {radarLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_radar_analyzing')}</> : `📡 ${t('bsb_radar_analyze')}`}</button>
                 </div>
               )}
               {radarData && (
@@ -1190,7 +1190,7 @@ const BragSheetBuilder = ({ tool }) => {
                   className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                 <button onClick={handleTailor} disabled={tailorLoading || !jdText.trim()}
                   className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${c.btnPrimary} disabled:opacity-40`}>
-                  {tailorLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_tailoring')}</> : `🎯 ${t('bsb_tailor_btn')}`}</button>
+                  {tailorLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_tailoring')}</> : `🎯 ${t('bsb_tailor_btn')}`}</button>
               </div>
               {tailorData && (
                 <div className="space-y-4">
@@ -1295,7 +1295,7 @@ const BragSheetBuilder = ({ tool }) => {
                   <p className={`text-sm ${c.textSecondary} mb-4`}>{t('bsb_interview_desc')}</p>
                   <button onClick={handleMatrix} disabled={matrixLoading}
                     className={`${c.btnPrimary} disabled:opacity-40 px-6 py-3 rounded-xl font-semibold text-sm`}>
-                    {matrixLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_building_matrix')}</> : `🎤 ${t('bsb_build_interview')}`}</button>
+                    {matrixLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_building_matrix')}</> : `🎤 ${t('bsb_build_interview')}`}</button>
                 </div>
               )}
               {matrixData && (
@@ -1366,7 +1366,7 @@ const BragSheetBuilder = ({ tool }) => {
                   className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                 <button onClick={handleVoiceMatch} disabled={voiceLoading || !voiceSample.trim()}
                   className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${c.btnPrimary} disabled:opacity-40`}>
-                  {voiceLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> {t('bsb_matching_voice')}</> : `✍️ ${t('bsb_rewrite_voice')}`}</button>
+                  {voiceLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_matching_voice')}</> : `✍️ ${t('bsb_rewrite_voice')}`}</button>
               </div>
               {voiceData && (
                 <div className="space-y-4">

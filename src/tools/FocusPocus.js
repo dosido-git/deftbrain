@@ -312,7 +312,7 @@ const FocusPocus = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🎩'}</span>{t('fpo_hero')}
+              <span className="me-2 text-xl">{tool?.icon ?? '🎩'}</span>{t('fpo_hero')}
             </p>
             {!session && (
               <button onClick={loadExample} disabled={loading}
@@ -416,8 +416,8 @@ const FocusPocus = ({ tool }) => {
           <button type="button" onClick={startSession} disabled={!task.trim() || loading} title={t('fpo_cmd_enter')}
             className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition whitespace-nowrap ${task.trim() && !loading ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎩'}</span> <span>{t('fpo_starting')}</span></>
-              : <><span>{tool?.icon ?? '🎩'}</span> <span>{t('fpo_start')}</span></>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎩'}</span> <span>{t('fpo_starting')}</span></>
+              : <><span className="text-xl">{tool?.icon ?? '🎩'}</span> <span>{t('fpo_start')}</span></>}
             {!loading && (
               <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
             )}
@@ -552,7 +552,7 @@ const FocusPocus = ({ tool }) => {
                 <button type="button" onClick={() => submitReview(reviewChoice)} disabled={loading}
                   className={`mt-3 min-h-[48px] w-full rounded-xl px-4 py-3 font-bold ${c.btnPrimary}`}>
                   {loading
-                    ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎩'}</span> <span>{t('fpo_saving')}</span></>
+                    ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🎩'}</span> <span>{t('fpo_saving')}</span></>
                     : <span>{t('fpo_leave_breadcrumb')}</span>}
                 </button>
               </div>

@@ -751,8 +751,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <button onClick={runRescue} disabled={loading || !canSubmitRescue}
             className={`w-full py-3 rounded-xl font-bold text-sm ${canSubmitRescue ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_working')}</>
-              : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_submit_rescue')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🍳'}</span> {t('rcs_working')}</>
+              : <><span className="text-xl">{tool?.icon ?? '🍳'}</span> {t('rcs_submit_rescue')}</>}
           </button>
         </div>
       )}
@@ -927,8 +927,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <button onClick={runSubstitute} disabled={loading || !subIngredients.some(i => i.trim()) || !subContext.trim()}
             className={`w-full py-3 rounded-xl font-bold text-sm ${(subIngredients.some(i => i.trim()) && subContext.trim()) ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔄'}</span> {t('rcs_working')}</>
-              : <><span>{tool?.icon ?? '🔄'}</span> {t('rcs_submit_substitute')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔄'}</span> {t('rcs_working')}</>
+              : <><span className="text-xl">{tool?.icon ?? '🔄'}</span> {t('rcs_submit_substitute')}</>}
           </button>
         </div>
       )}
@@ -989,8 +989,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <button onClick={runScale} disabled={loading || !scaleRecipe.trim() || !scaleTarget}
             className={`w-full py-3 rounded-xl font-bold text-sm ${(scaleRecipe.trim() && scaleTarget) ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {t('rcs_working')}</>
-              : <><span>{tool?.icon ?? '⚖️'}</span> {t('rcs_submit_scale')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚖️'}</span> {t('rcs_working')}</>
+              : <><span className="text-xl">{tool?.icon ?? '⚖️'}</span> {t('rcs_submit_scale')}</>}
           </button>
         </div>
       )}
@@ -1057,8 +1057,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <button onClick={runPreflight} disabled={loading || !pfRecipe.trim()}
             className={`w-full py-3 rounded-xl font-bold text-sm ${pfRecipe.trim() ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '✈️'}</span> {t('rcs_working')}</>
-              : <><span>{tool?.icon ?? '✈️'}</span> {t('rcs_submit_preflight')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '✈️'}</span> {t('rcs_working')}</>
+              : <><span className="text-xl">{tool?.icon ?? '✈️'}</span> {t('rcs_submit_preflight')}</>}
           </button>
         </div>
       )}
@@ -1137,8 +1137,8 @@ const RecipeChaosSolver = ({ tool }) => {
           <button onClick={() => runFlavorFix()} disabled={loading || !ffDish.trim()}
             className={`w-full py-3 rounded-xl font-bold text-sm ${ffDish.trim() ? c.btnPrimary : c.btnIdle}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '✨'}</span> {t('rcs_working')}</>
-              : <><span>{tool?.icon ?? '✨'}</span> {t('rcs_submit_flavor')}</>}
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '✨'}</span> {t('rcs_working')}</>
+              : <><span className="text-xl">{tool?.icon ?? '✨'}</span> {t('rcs_submit_flavor')}</>}
           </button>
         </div>
       )}
@@ -1217,7 +1217,7 @@ const RecipeChaosSolver = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🍳'}</span>{tool?.tagline ?? t('rcs_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🍳'}</span>{tool?.tagline ?? t('rcs_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>

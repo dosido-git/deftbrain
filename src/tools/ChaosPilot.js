@@ -325,7 +325,7 @@ export default function ChaosPilot() {
   submitRef.current = generate;
   canSubmitRef.current = !result && !loading && cleanTasks.length > 0;
 
-  const spinner = <span className="animate-spin inline-block me-1">{tool?.icon ?? '🚨'}</span>;
+  const spinner = <span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🚨'}</span>;
 
   return <div className={`space-y-5 ${c.text}`}>
     {/* ── Unified header card: icon + tagline + Try an example + reset ── */}
@@ -334,7 +334,7 @@ export default function ChaosPilot() {
         <div className="flex-1 min-w-0">
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
           <p className={`text-base ${c.textSecondary}`}>
-            <span className="me-2 text-lg">{tool?.icon ?? '🚨'}</span>{t('cp2_tagline')}
+            <span className="me-2 text-xl">{tool?.icon ?? '🚨'}</span>{t('cp2_tagline')}
           </p>
           {/* PF-17c */}
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}

@@ -431,8 +431,8 @@ const DecisionPrism = ({ tool }) => {
         disabled={loading || !decision.trim()}
         className={`relative w-full ${(!decision.trim()) ? c.btnIdle : c.btnPrimary} py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔀'}</span> {t('ptw_analyzing')}</>
-          : <><span>{tool?.icon ?? '🔀'}</span> {t('ptw_analyze')}</>}
+          ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔀'}</span> {t('ptw_analyzing')}</>
+          : <><span className="text-xl">{tool?.icon ?? '🔀'}</span> {t('ptw_analyze')}</>}
       {!loading && (
         <kbd aria-hidden="true"
           className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -752,7 +752,7 @@ const DecisionPrism = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🔀'}</span>{t('ptw_tagline')}
+                  <span className="me-2 text-xl">{tool?.icon ?? '🔀'}</span>{t('ptw_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
