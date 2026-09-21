@@ -163,6 +163,18 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     window.setTimeout(() => catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
   }, []);
 
+  // Clicking "Tools" (or typing a search) replaces the whole homepage intro
+  // with the catalog view — a plain state flip, no URL change, so there is
+  // no browser-history entry to Back out of and the visitor lands somewhere
+  // that looks like a different page with no way back except reloading
+  // (reported 2026-09-20). This is the visible way back the reload was
+  // standing in for.
+  const backToHome = useCallback(() => {
+    setShowCatalog(false);
+    setSearchTerm('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [setSearchTerm]);
+
   // ⌘K shortcut
   useEffect(() => {
     const handler = (e) => {
@@ -474,11 +486,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {(showCatalog || isSearching) && <>
         {/* Search + sort. NOT inside the !isSearching guard — the box must stay
             mounted or it vanishes mid-query, which is why it sits here rather
-            than in HomeIntro. Right-aligned on its own row now that the intro
-            owns the full width above it. */}
-        <div className="flex items-center justify-end gap-2 mt-4">
-          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
+            than in HomeIntro. Back button is the visible way out of this view
+            — see backToHome above. */}
+        <div className="flex items-center justify-between gap-2 mt-4">
+          <button type="button" onClick={backToHome} className="group flex items-center gap-1.5 text-[12px] font-semibold flex-shrink-0" style={{ color: CLR.navy600 }}>
+            <span className="inline-block group-hover:-translate-x-1 transition-transform">←</span>
+            <span>Back to home</span>
+          </button>
+          <div className="flex items-center justify-end gap-2">
+            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
+          </div>
         </div>
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
