@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Caret from './Caret';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
+import { CATEGORY_META } from '../data/categoryMeta';
 
 const NAVY = '#142a43';
 const INK = '#202326';
@@ -344,6 +345,13 @@ function HeroImage({ paused, reducedMotion }) {
 
 export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
   const byId = useMemo(() => new Map(allTools.map(t => [t.id,t])), [allTools]);
+  // Counts for the category chips below — same source DashBoard's own
+  // filter pills use, so the numbers can't drift between the two views.
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    allTools.forEach(t => (t.categories || []).forEach(cat => { counts[cat] = (counts[cat] || 0) + 1; }));
+    return counts;
+  }, [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
   const [slots,setSlots] = useState(() => Array.from({length:6},(_,i)=>i));
   const [incoming,setIncoming] = useState(() => Array(6).fill(null));
@@ -484,6 +492,36 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
     <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
+
+    {/* PREVIEW / placement draft (2026-09-21) — owner asked to see where this
+        goes before the real build (permanent /category/:slug pages, a
+        "Categories" nav item, prerendering) lands. For now each chip opens
+        the existing catalog view pre-filtered to that category — real,
+        functional, but not yet a durable/shareable URL the way the plan
+        calls for. Placement: right after the word cloud, which frames itself
+        as the "life doesn't sort into categories" answer for someone who
+        doesn't think that way — this is the dependable alternative for
+        someone who does. Worth a look together: does that juxtaposition
+        read as two honest options, or as the page arguing with itself two
+        sections apart? Counts come from the live catalog (categoryCounts
+        above), so they can't drift out of sync with DashBoard's own pills. */}
+    <section className="py-7">
+      <h2 className="text-[22px] sm:text-[25px] font-bold text-center" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2>
+      <p className="mt-1.5 text-[10.5px] text-center" style={{color:MUTED}}>Every tool, sorted by what it's actually for.</p>
+      <div className="mt-5 flex flex-wrap justify-center gap-2.5">
+        {CATEGORY_META.map(cat => {
+          const count = categoryCounts[cat.name] || 0;
+          if (!count) return null;
+          return (
+            <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} className="flex items-center gap-2 rounded-full border bg-white px-4 py-2 hover:border-[#142a43] hover:shadow-sm transition" style={{borderColor:BORDER}}>
+              <span className="text-[15px]" aria-hidden="true">{cat.emoji}</span>
+              <span className="text-[12px] font-bold" style={{color:NAVY}}>{cat.name}</span>
+              <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
 
     {/* Objection-handling — collapsed by default, after the tools content
         and before the closing send-off, so lingering doubts get answered

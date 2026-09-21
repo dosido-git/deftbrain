@@ -7,6 +7,7 @@ import LocaleSelectors from './LocaleSelectors';
 import HomeIntro from './HomeIntro';
 import ToolFinderWizard from './ToolFinderWizard';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
+import { CATEGORY_META } from '../data/categoryMeta';
 import IdeaPrompt from './IdeaPrompt';
 import keepList from '../data/tools-keep-list.json';
 
@@ -52,28 +53,9 @@ const CLR = {
 // ════════════════════════════════════════════════════════════
 // CATEGORY DEFINITIONS — 14 categories (count this array, not this comment)
 // ════════════════════════════════════════════════════════════
-// Permanent category names (2026-09-21) — replaces the playful names as the
-// primary label. The playful name isn't gone: it moved into `tag`, the small
-// plain-language line TilePill already rendered under the big label (see
-// that component's own comment — this is the same mechanism, hierarchy
-// flipped). `sub` (the hover tooltip) is untouched, still useful as
-// supplementary detail since it's never visible by default.
-const CATEGORY_META = [
-  { name: 'Home & Daily Life',   emoji: '🌅', tag: 'the grind', sub: 'home · household · daily life' },
-  { name: 'Travel & Events',     emoji: '🗺️',  tag: 'out & about', sub: 'travel · events · adventure'  },
-  { name: 'Relationships',       emoji: '👥', tag: 'humans', sub: 'relationships · people · bonds' },
-  { name: 'Money',               emoji: '💰', tag: 'loot', sub: 'money · finances · consumer'   },
-  { name: 'Career',              emoji: '🚀', tag: 'pursuits', sub: 'career · growth · identity'    },
-  { name: 'Work & Meetings',     emoji: '🏢', tag: 'the office', sub: 'work · meetings · tools'       },
-  { name: 'Health & Wellness',   emoji: '⚡', tag: 'energy', sub: 'mind · body · fuel'  },
-  { name: 'Conversations',       emoji: '🗣️ ', tag: 'discourse', sub: 'say it well!'           },
-  { name: 'Learning',            emoji: '🔬', tag: 'go deep!', sub: 'research · learning · knowledge'},
-  { name: 'Just for Fun',        emoji: '🧩', tag: 'diversions', sub: 'fun · curiosity · play'  },
-  { name: 'Self & Reflection',   emoji: '🪞', tag: 'me', sub: 'self · reflection · growth'    },
-  { name: 'Ideas & Imagination', emoji: '✨', tag: 'what if?', sub: 'imagination · creativity'      },
-  { name: 'Decisions',           emoji: '🧭', tag: 'veer', sub: 'decisions · direction · choices'},
-  { name: 'Tasks',               emoji: '✅', tag: 'do it!', sub: 'execution · unstuck · tasks'   },
-];
+// CATEGORY_META lives in src/data/categoryMeta.js — shared with HomeIntro.js's
+// homepage category chips (an import the other way would be circular, since
+// HomeIntro is rendered by this component).
 
 // Legacy single-category strings → new category name(s)
 // Values updated 2026-09-21 to the new permanent category names (was: Loot,
@@ -192,8 +174,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const pillRefsMap    = useRef({});
   const catalogRef     = useRef(null); // full tool catalog target
 
-  const openCatalog = useCallback(() => {
+  // `category` is optional — passed by the homepage's category chips so
+  // "Money" opens straight into that filter instead of the full "All" list.
+  // Plain openCatalog() (Tools nav, "Browse all N tools") is unaffected.
+  const openCatalog = useCallback((category) => {
     setShowCatalog(true);
+    if (category) setActiveCategory(category);
     window.setTimeout(() => catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
   }, []);
 
