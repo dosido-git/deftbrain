@@ -446,6 +446,23 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
 
     <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
 
-    <section className="py-8 text-center"><h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2><p className="mt-1.5 text-[10.5px]" style={{color:MUTED}}>Practical guidance. Thoughtful questions. Better decisions.</p></section>
+    <section className="py-8 text-center">
+      <h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2>
+      <p className="mt-1.5 text-[10.5px]" style={{color:MUTED}}>Read one, or run a tool — whichever fits.</p>
+      {/* Plain <a>, not <Link>: /guides and /guides/:category are static
+          prerendered pages (built by scripts/prerender.js), not React Router
+          routes — a <Link> here would fall through to the catch-all
+          /:toolId route and 404, same convention as the privacy link above
+          and Footer.js/RelatedLinks.js. */}
+      <nav aria-label="Guides" className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-semibold">
+        <a href="/guides/conversations" className="hover:underline underline-offset-4" style={{color:NAVY}}>Conversations</a>
+        <a href="/guides/money" className="hover:underline underline-offset-4" style={{color:NAVY}}>Money</a>
+        <a href="/guides/workplace" className="hover:underline underline-offset-4" style={{color:NAVY}}>Workplace</a>
+        <a href="/guides/home" className="hover:underline underline-offset-4" style={{color:NAVY}}>Home</a>
+        <a href="/guides/wellness" className="hover:underline underline-offset-4" style={{color:NAVY}}>Wellness</a>
+        <a href="/guides/health" className="hover:underline underline-offset-4" style={{color:NAVY}}>Health</a>
+        <a href="/guides" className="font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all guides →</a>
+      </nav>
+    </section>
   </div>;
 }
