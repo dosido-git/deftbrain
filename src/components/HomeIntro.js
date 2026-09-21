@@ -73,8 +73,6 @@ const ROTATION = [
   { toolId:'WrongAnswersOnly', problem:'I need something ridiculous to lighten the mood.', body:'Get a confidently, beautifully wrong answer.' },
 ];
 
-const POPULAR = ['LeaseTrapDetector','DoctorVisitPrep','DifficultTalkCoach','FakeReviewDetective','BillRescue','TipOfTongue'];
-
 // "There's probably a DeftBrain for that" word cloud — each phrase links to
 // the tool it actually describes (checked against real tags/taglines, not
 // guessed from the words alone — see the ChaosPilot/CrisisPrioritizer
@@ -232,17 +230,6 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   };
 
   return <div className="relative h-[295px] md:h-[332px] lg:h-[253px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
-}
-
-function PopularCard({ tool }) {
-  if (!tool) return null;
-  return <Link to={`/${tool.id}`} className="rounded-xl overflow-hidden bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition">
-    <div className="h-[78px] overflow-hidden bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${tool.id}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
-    <div className="px-3.5 py-3">
-      <div className="font-extrabold text-[12px]" style={{color:NAVY}}>{tool.title}</div>
-      <p className="mt-1 text-[9.5px] leading-snug line-clamp-2" style={{color:MUTED}}>{tool.tagline || tool.description}</p>
-    </div>
-  </Link>;
 }
 
 function ToolScramble({ allTools, onBrowse }) {
@@ -421,14 +408,23 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
       <HeroImage paused={paused} reducedMotion={reducedMotion} />
     </section>
 
-    <section className="py-7 sm:py-8" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-      <div className="flex items-end justify-between gap-4 mb-5"><div><h2 className="text-[23px] sm:text-[26px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s going on?</h2><p className="mt-1 text-[11px] sm:text-[12px]" style={{color:MUTED}}>Start with what’s on your mind. DeftBrain will help you take the next step.</p></div></div>
-      <div className="relative">
-        {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
-        {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
+    {/* Was two sections: this carousel (plain background) + a separate
+        "Some of our most popular tools" card below it, whose POPULAR list
+        was the exact same 6 tools as ROTATION[0..5] just reordered — a
+        first-time visitor saw the same six tools twice on first paint
+        (flagged in the IA review). Removed that section outright rather
+        than reconcile the duplication, and moved its warm gradient-card
+        treatment here instead — same visual weight, no redundant tools. */}
+    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
+      <div className="p-5 sm:p-6" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+        <div className="flex items-end justify-between gap-4 mb-5"><div><h2 className="text-[23px] sm:text-[26px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px] sm:text-[12px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div></div>
+        <div className="relative">
+          {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+          {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
+        </div>
+        {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
       </div>
-      {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
     </section>
 
     <section className="my-8 relative rounded-2xl border overflow-hidden lg:min-h-[300px]" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
@@ -461,8 +457,6 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
         <div className="relative lg:hidden min-h-[260px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="absolute inset-0 w-full h-full object-cover" loading="lazy" /></div>
       </div>
     </section>
-
-    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}><div className="p-5 sm:p-6"><div className="flex items-end justify-between gap-4 mb-4"><div><h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Some of our most popular tools</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Real situations. Real guidance. A better next step.</p></div><button onClick={onBrowse} className="text-[10px] font-semibold underline underline-offset-4 whitespace-nowrap" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{POPULAR.map(id=><PopularCard key={id} tool={byId.get(id)}/>)}</div></div></section>
 
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 

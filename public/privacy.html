@@ -145,9 +145,9 @@
     <div class="container prose">
 <h1>Privacy Policy</h1>
 <p><strong>Effective:</strong> May 1, 2026
-<strong>Last updated:</strong> September 20, 2026</p>
+<strong>Last updated:</strong> September 21, 2026</p>
 <h2>The short version</h2>
-<p>DeftBrain is built to need almost nothing from you. There are no accounts, no emails collected, no cookies, no advertising, and nothing you type into a tool is stored on our servers. We do run a small, anonymous, first-party analytics system — corrected into this policy below, where it was previously described as not existing — but it carries no name, no account, and none of your actual words. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
+<p>DeftBrain is built to need almost nothing from you. There are no accounts, no cookies, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all — voluntary, and handled by a separate mailing service, not by us (details below). We do run a small, anonymous, first-party analytics system — corrected into this policy below, where it was previously described as not existing — but it carries no name, no account, and none of your actual words. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
 <p>A handful of specific tools also talk to other services to do their job — pronunciation audio goes through ElevenLabs, social-handle availability checks ping Instagram, X, TikTok, GitHub, and YouTube, and the fake-review tool fetches a URL you paste. Each of these is described below.</p>
 <p>This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have. It is written in plain English. It is not a contract drafted to obscure things.</p>
 <h2>Who we are</h2>
@@ -166,7 +166,7 @@
 <p>A privacy policy is partly a list of things companies don&#39;t want their users to think about. For DeftBrain:</p>
 <ul>
 <li><strong>No accounts.</strong> You can&#39;t create one, and we don&#39;t want you to.</li>
-<li><strong>No emails collected.</strong> No mailing list, no &quot;create your free account&quot; prompt, no email-gated downloads.</li>
+<li><strong>No required email, ever.</strong> No account to create, no email-gated downloads — nothing on the site requires an email address to use any tool. The one optional exception is the newsletter; see below.</li>
 <li><strong>No third-party analytics.</strong> No Google Analytics, no Plausible, no ad-tech pixel of any kind. We do run our own small, anonymous, first-party analytics — see the next section for exactly what that means, since an earlier version of this page said this didn&#39;t exist at all and that was wrong.</li>
 <li><strong>No cookies.</strong> We don&#39;t set any. No first-party cookies, no third-party cookies, no consent banner. There&#39;s nothing to consent to. (Our analytics uses your browser&#39;s <code>localStorage</code>/<code>sessionStorage</code> instead, for the narrow purpose described below — not a cookie, and not sent to any outside party either.)</li>
 <li><strong>No advertising.</strong> No ads, no retargeting pixels, no marketing partners.</li>
@@ -186,6 +186,10 @@
 <p>This data is written to a private, append-only log on our own server — never sent to Google, Meta, or any analytics vendor — and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with <code>?operator=1</code> once turns off every beacon from that browser going forward (<code>?operator=0</code> turns it back on). That mechanism exists so the operator&#39;s own visits don&#39;t skew the numbers, but it works the same way for anyone who uses it.</p>
 <h2>Feedback and tool ideas you submit voluntarily</h2>
 <p>Two things on this site work differently from a tool&#39;s input and output, and <strong>are</strong> stored: if you answer &quot;was this helpful?&quot; and add an optional comment, or use the &quot;no tool for your problem? describe it&quot; form, what you write is saved to the same private log described above — because the entire point of both is for the operator to read them. Neither is anonymized beyond whatever you choose to leave out, so treat both boxes the way you&#39;d treat an email to a stranger: useful to send, not the place to put anything you wouldn&#39;t want kept.</p>
+<h2>The newsletter, if you sign up</h2>
+<p>This section is new as of the &quot;Last updated&quot; date above. Earlier versions of this policy said flatly that DeftBrain collects no emails and runs no mailing list. That was wrong — there is an optional, opt-in newsletter, and its sign-up form appears on this page and others.</p>
+<p>Signing up sends your email address — and, for spam-filtering purposes, your IP address at that moment — to Buttondown, the email service that actually sends the newsletter, not to us. We keep only the fact that a subscription happened and which page it came from, never the address itself. Buttondown handles the confirmation email (double opt-in — nothing is sent until you confirm) and the one-click unsubscribe link in every issue that follows.</p>
+<p>If you never sign up, none of this applies to you.</p>
 <h2>Third parties involved when you use DeftBrain</h2>
 <p>Three companies are reliably part of any tool you use:</p>
 <h3>Anthropic</h3>
