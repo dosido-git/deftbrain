@@ -380,11 +380,12 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
     return counts;
   }, [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
-  // Reduced from 6 to 4 (2026-09-21) — the carousel now shares the promoted
-  // hero zone with the category grid instead of running full-width, so it
-  // needs half the columns. Still cycles through all of ROTATION via the
-  // same auto-rotate + manual paging, just 4 doors at a time instead of 6.
-  const PAGE_SIZE = 4;
+  // Reduced from 6 to 4, then to 3 (2026-09-21) — the carousel now shares
+  // the promoted hero zone with the category grid instead of running
+  // full-width, and settled on a single row of 3 rather than a 2x2 grid.
+  // Still cycles through all of ROTATION via the same auto-rotate + manual
+  // paging, just 3 doors at a time instead of 6.
+  const PAGE_SIZE = 3;
   const [slots,setSlots] = useState(() => Array.from({length:PAGE_SIZE},(_,i)=>i));
   const [incoming,setIncoming] = useState(() => Array(PAGE_SIZE).fill(null));
   const [tokens,setTokens] = useState(() => Array(PAGE_SIZE).fill(0));
@@ -467,41 +468,45 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
 
           Split two ways (2026-09-21), search moved out entirely (now the
           persistent bar in DashBoard.js's header — see that file):
-          situations on the left answer "recognize yourself in an example";
-          categories on the right answer "I already know the general area."
+          categories on the left answer "I already know the general area";
+          situations on the right answer "recognize yourself in an example."
           Different jobs, same visitor decision — which is why they sit
-          side by side instead of stacked as two more homepage sections. */}
+          side by side instead of stacked as two more homepage sections.
+          Swapped sides + rebalanced narrower/wider (2026-09-21): categories
+          as a vertical stack of larger pills reads better narrow than
+          wrapped wide, and the freed width lets the situations column show
+          a full 3-across row instead of a 2x2 grid. */}
       <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
-            <div className="relative">
-              {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-              <div className="grid grid-cols-2 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
-              {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
-            </div>
-            {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
-          </div>
-
+        <div className="grid lg:grid-cols-[.8fr_1.2fr] gap-6">
           <div>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Every tool, sorted by what it's actually for.</p></div>
-            <div className="flex flex-wrap gap-2">
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Categories</p></div>
+            <div className="flex flex-col gap-2">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
                 // title = the researched per-category example (CATEGORY_EXAMPLES)
-                // — the compact chip has no room to show it, but it's not
-                // wasted: a hover reveals the "oh, that might be useful" line
-                // instead of a bare category name.
+                // — the pill has no room to show it, but it's not wasted: a
+                // hover reveals the "oh, that might be useful" line instead
+                // of a bare category name.
                 return (
-                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-1.5 rounded-full border bg-white/70 px-3 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
-                    <span className="text-[12px]" aria-hidden="true">{cat.emoji}</span>
-                    <span className="text-[11px] font-bold" style={{color:NAVY}}>{cat.name}</span>
-                    <span className="text-[9px] font-semibold" style={{color:MUTED}}>{count}</span>
+                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2.5 rounded-full border bg-white/70 px-4 py-2.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
+                    <span className="text-[20px]" aria-hidden="true">{cat.emoji}</span>
+                    <span className="text-[12px] font-semibold" style={{color:NAVY}}>{cat.name}</span>
+                    <span className="ms-auto text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
                   </button>
                 );
               })}
             </div>
+          </div>
+
+          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
+            <div className="relative">
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
+              <div className="grid grid-cols-3 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
+            </div>
+            {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
           </div>
         </div>
 
