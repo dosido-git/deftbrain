@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Caret from './Caret';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 const NAVY = '#142a43';
 const INK = '#202326';
@@ -312,7 +313,7 @@ function ToolScramble({ allTools, onBrowse }) {
             );
           })}
         </div>
-        <button type="button" onClick={onBrowse} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {allTools.length} tools →</button>
+        <button type="button" onClick={onBrowse} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
       </div>
     </section>
   );
@@ -415,7 +416,7 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
             RelatedLinks.js, which use the same convention for this exact
             reason). */}
         <p className="mt-1 text-[11px] font-bold" style={{color:NAVY}}>Free · No account · <a href="/privacy" className="underline underline-offset-2">Nothing you type is stored on our servers</a></p>
-        <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {allTools.length} tools →</button>
+        <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
       </div>
       <HeroImage paused={paused} reducedMotion={reducedMotion} />
     </section>
@@ -461,11 +462,11 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
       </div>
     </section>
 
-    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}><div className="p-5 sm:p-6"><div className="flex items-end justify-between gap-4 mb-4"><div><h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Some of our most popular tools</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Real situations. Real guidance. A better next step.</p></div><button onClick={onBrowse} className="text-[10px] font-semibold underline underline-offset-4 whitespace-nowrap" style={{color:NAVY}}>Browse all {allTools.length} tools →</button></div><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{POPULAR.map(id=><PopularCard key={id} tool={byId.get(id)}/>)}</div></div></section>
+    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}><div className="p-5 sm:p-6"><div className="flex items-end justify-between gap-4 mb-4"><div><h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Some of our most popular tools</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Real situations. Real guidance. A better next step.</p></div><button onClick={onBrowse} className="text-[10px] font-semibold underline underline-offset-4 whitespace-nowrap" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">{POPULAR.map(id=><PopularCard key={id} tool={byId.get(id)}/>)}</div></div></section>
 
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
-    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {allTools.length} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
+    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Life rarely arrives sorted into categories. Neither does DeftBrain.</p><button onClick={onBrowse} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
 
     {/* Objection-handling — collapsed by default, after the tools content
         and before the closing send-off, so lingering doubts get answered
