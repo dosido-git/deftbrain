@@ -390,33 +390,44 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
   };
 
   return <div className="w-full">
-    <section className="grid lg:grid-cols-[.92fr_1.08fr] rounded-2xl overflow-hidden border bg-white" style={{borderColor:BORDER}}>
-      <div className="px-6 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8 flex flex-col justify-center">
-        <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
-        <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain helps when you don’t know what to do next.</p>
-        <form onSubmit={submit} className="mt-5 flex gap-2 max-w-[520px]"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Describe what you’re dealing with…" className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2" style={{borderColor:BORDER}}/><button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>Find a tool →</button></form>
-        <p className="mt-2 text-[11px]" style={{color:MUTED}}>Try: lease agreement · doctor appointment · suspicious charge · difficult conversation</p>
-        {/* Plain <a>, not <Link>: /privacy is a static prerendered page
-            (public/privacy.html), not a React Router route — a <Link> here
-            would fall through to the catch-all /:toolId route and 404, the
-            same bug already fixed for /guides and /about (see Footer.js and
-            RelatedLinks.js, which use the same convention for this exact
-            reason). */}
-        <p className="mt-1 text-[11px] font-bold" style={{color:NAVY}}>Free · No account · <a href="/privacy" className="underline underline-offset-2">Nothing you type is stored on our servers</a></p>
-        <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+    {/* Hero rework (2026-09-21): was two stacked sections — a search-first
+        hero, then a separate "What's on your mind?" carousel below it,
+        both asking the same visitor to describe their situation twice in
+        a row. Owner's call: a first-time visitor doesn't know DeftBrain's
+        vocabulary yet, so recognizing a written example ("Something in my
+        lease looks wrong") costs nothing, while composing a free-text
+        query to an unfamiliar site is real friction — recognition over
+        recall. Merged into one hero: the cards are now the lead action,
+        search is an appended "or" option, not the headline one. The hero
+        image is untouched — same position, same proportions, still doing
+        the only photographic "what this looks like" work on the page. */}
+    <section className="rounded-2xl overflow-hidden border bg-white" style={{borderColor:BORDER}}>
+      <div className="grid lg:grid-cols-[.92fr_1.08fr]">
+        <div className="px-6 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8 flex flex-col justify-center">
+          <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
+          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain helps when you don’t know what to do next.</p>
+          {/* The one sentence the earlier IA review said was missing: is
+              this a chatbot, articles, or tools — and what do I actually
+              get. Names "AI" once, transparently, per charter Appendix A. */}
+          <p className="mt-2 text-[12px] leading-snug max-w-[470px]" style={{color:MUTED}}>AI-powered tools, not a chatbot — answer a few quick questions about your situation, and get something to act on: a checklist, a script, a plan.</p>
+          {/* Plain <a>, not <Link>: /privacy is a static prerendered page
+              (public/privacy.html), not a React Router route — a <Link> here
+              would fall through to the catch-all /:toolId route and 404, the
+              same bug already fixed for /guides and /about (see Footer.js and
+              RelatedLinks.js, which use the same convention for this exact
+              reason). */}
+          <p className="mt-3 text-[11px] font-bold" style={{color:NAVY}}>Free · No account · <a href="/privacy" className="underline underline-offset-2">Nothing you type is stored on our servers</a></p>
+        </div>
+        <HeroImage paused={paused} reducedMotion={reducedMotion} />
       </div>
-      <HeroImage paused={paused} reducedMotion={reducedMotion} />
-    </section>
 
-    {/* Was two sections: this carousel (plain background) + a separate
-        "Some of our most popular tools" card below it, whose POPULAR list
-        was the exact same 6 tools as ROTATION[0..5] just reordered — a
-        first-time visitor saw the same six tools twice on first paint
-        (flagged in the IA review). Removed that section outright rather
-        than reconcile the duplication, and moved its warm gradient-card
-        treatment here instead — same visual weight, no redundant tools. */}
-    <section className="my-7 rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
-      <div className="p-5 sm:p-6" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+      {/* Promoted from its own section — this is now the hero's lead
+          action, not a follow-up to search. Was also "Some of our most
+          popular tools"'s gradient treatment (that section got removed
+          outright: its list was the exact same 6 tools as ROTATION[0..5],
+          just reordered — a first-time visitor saw the same six twice on
+          first paint). */}
+      <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
         <div className="flex items-end justify-between gap-4 mb-5"><div><h2 className="text-[23px] sm:text-[26px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px] sm:text-[12px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div></div>
         <div className="relative">
           {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
@@ -424,6 +435,18 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
           {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
         </div>
         {totalPages>1 && <div className="flex justify-center gap-1.5 mt-5">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
+
+        {/* Search, demoted: an "or" option, not the headline action —
+            present and fully functional, styled as the fallback (outlined
+            button, not solid) rather than the thing every visitor is
+            asked to do first. */}
+        <div className="mt-6 pt-5 border-t flex flex-wrap items-center gap-x-6 gap-y-3" style={{borderColor:'#e8d9b8'}}>
+          <form onSubmit={submit} className="flex gap-2 flex-1 min-w-[240px] max-w-[480px]">
+            <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Or describe your own situation…" className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2 bg-white" style={{borderColor:BORDER}}/>
+            <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold whitespace-nowrap border-2 bg-white" style={{borderColor:NAVY,color:NAVY}}>Find a tool →</button>
+          </form>
+          <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+        </div>
       </div>
     </section>
 
