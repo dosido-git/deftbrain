@@ -61,10 +61,13 @@ function loadTools() {
   return out;
 }
 
+// Permanent category names (2026-09-21) — was: The Grind, Out & About,
+// Humans, Loot, Pursuits, The Office, Energy, Discourse, Go Deep!,
+// Diversions, Me, What If?, Veer, Do It! — see DashBoard.js's CATEGORY_META.
 const CATEGORY_ORDER = [
-  'The Grind', 'Out & About', 'Humans', 'Loot', 'Pursuits', 'The Office',
-  'Energy', 'Discourse', 'Go Deep!', 'Diversions', 'Me', 'What If?',
-  'Veer', 'Do It!',
+  'Home & Daily Life', 'Travel & Events', 'Relationships', 'Money', 'Career', 'Work & Meetings',
+  'Health & Wellness', 'Conversations', 'Learning', 'Just for Fun', 'Self & Reflection', 'Ideas & Imagination',
+  'Decisions', 'Tasks',
 ];
 
 function primaryCategory(tool) {

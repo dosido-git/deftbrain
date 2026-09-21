@@ -1,194 +1,194 @@
 {
  "homepage": {
-  "hash": "0fa5f4c45c26eebac9034bf73c3f841846af1a29",
-  "lastmod": "2026-09-19"
+  "hash": "d12ff4e9f133493f076f8f3307c5307c4ece0896",
+  "lastmod": "2026-09-21"
  },
  "static:about": {
   "hash": "3baf1608421fe457b235127c416795d8537ac0c7",
   "lastmod": "2026-09-09"
  },
  "static:privacy": {
-  "hash": "0bab11bd70842cc865fb2f3de16ba762f5bb15ab",
-  "lastmod": "2026-09-09"
+  "hash": "3d62d6e2ba8fb4a60e679d807268f77befd49188",
+  "lastmod": "2026-09-21"
  },
  "static:terms": {
   "hash": "885d762b69cf8fb310852bcc0faa6c3c928d7da3",
   "lastmod": "2026-09-09"
  },
  "tool:AlternatePath": {
-  "hash": "c7671cae73f003d01e9b6149b8c6097f840ca8e1",
-  "lastmod": "2026-08-22"
+  "hash": "75b35de251c8bb6c23acb2e9e482f6df6aa03aae",
+  "lastmod": "2026-09-21"
  },
  "tool:ArgueSmarter": {
-  "hash": "5c6d2a5cadedf49f8954e166edb46d1023d9b922",
-  "lastmod": "2026-08-23"
+  "hash": "86b6bcdd62ced1bd3aafab982d646f39c5ed52a1",
+  "lastmod": "2026-09-21"
  },
  "tool:AwkwardSilenceFiller": {
-  "hash": "74eacd14c4667b211f172135d652898e49acb1c8",
-  "lastmod": "2026-08-23"
+  "hash": "7769dfc5b28664db4fa7803dc0970cddb534db80",
+  "lastmod": "2026-09-21"
  },
  "tool:BillRescue": {
-  "hash": "c6f80c34066a56d0c1be8c402621dc3bb5dd4765",
-  "lastmod": "2026-09-19"
+  "hash": "e0cfa8047a1f6b35d0c5f6ecc8ae46f3f1d928ae",
+  "lastmod": "2026-09-21"
  },
  "tool:BragSheetBuilder": {
-  "hash": "74d601a90d73ca47dc8aa886b2dde5da8a11ff59",
-  "lastmod": "2026-08-23"
+  "hash": "627e173d78660e557561ce34acfda9f45966737c",
+  "lastmod": "2026-09-21"
  },
  "tool:ChaosPilot": {
-  "hash": "d8d6a16e8ad34b755fb06692b758ea066bced305",
-  "lastmod": "2026-09-19"
+  "hash": "c6cddcfc29d975c3a9ab8fc3179b573fa4e841cb",
+  "lastmod": "2026-09-21"
  },
  "tool:ComplaintEscalationWriter": {
-  "hash": "f06aba70fcba180edff5e04a59eb59974f35dd4e",
-  "lastmod": "2026-08-23"
+  "hash": "56bbeac8d86e459043c2a7716549f11f087bc4a3",
+  "lastmod": "2026-09-21"
  },
  "tool:ContextCollapse": {
-  "hash": "7f8eeb0092d5ce0b567419c8d907b8744070413a",
-  "lastmod": "2026-08-23"
+  "hash": "1a337263beab0c8fdfa0ddb3581f508ab45cc45f",
+  "lastmod": "2026-09-21"
  },
  "tool:DecoderRing": {
-  "hash": "743fb6114edfde966f283969eef392ccfde6b87c",
-  "lastmod": "2026-08-23"
+  "hash": "beb3313795babd9d317b3bace3ec2d57bbcd830a",
+  "lastmod": "2026-09-21"
  },
  "tool:DifficultTalkCoach": {
-  "hash": "993fafb3c21fdc73d30d58d9bc7bc6eeb295ff00",
-  "lastmod": "2026-08-23"
+  "hash": "f737b2b87f3df405deb35d4917566bf43c94cc16",
+  "lastmod": "2026-09-21"
  },
  "tool:DoctorVisitPrep": {
-  "hash": "6c74ea4b3fb2d54b2457ccf3a15279fd2a7832f3",
-  "lastmod": "2026-09-18"
+  "hash": "4a01f6bcf64e37d1e454f7291c3e74dcdafe1e4c",
+  "lastmod": "2026-09-21"
  },
  "tool:DoctorVisitTranslator": {
-  "hash": "b2a1de4a4948c40fe4b6b9fea027c796c1aedb3a",
-  "lastmod": "2026-08-23"
+  "hash": "4ea6015abb9d03db36f17fe16a710711a5da2dbd",
+  "lastmod": "2026-09-21"
  },
  "tool:FakeReviewDetective": {
-  "hash": "d54ae6f34042fc5814503fd64a1e7ba0aba7eb59",
-  "lastmod": "2026-09-15"
+  "hash": "56def971b6fce16e92c9f6645fac2f1aa1f3ee6d",
+  "lastmod": "2026-09-21"
  },
  "tool:FinalWish": {
-  "hash": "3380bae281bc476b683ae2c6a0ad091d5a988f76",
-  "lastmod": "2026-08-23"
+  "hash": "8d97b9a6d8260be0cf199d2b6b53bc57ee13f6e6",
+  "lastmod": "2026-09-21"
  },
  "tool:GhostWriter": {
-  "hash": "197165cd9695301e1af0ded3ad0f5e03468c2819",
-  "lastmod": "2026-08-23"
+  "hash": "97eb51ed6971a2c3665837a8d12a1032e6c6f3f1",
+  "lastmod": "2026-09-21"
  },
  "tool:HistoryToday": {
-  "hash": "9ed22d52cfa3dae836fda6612b4196ac0cf7dbd9",
-  "lastmod": "2026-08-23"
+  "hash": "9535fab8664308ec562fe8cfc9c2ae21eeb6f9b3",
+  "lastmod": "2026-09-21"
  },
  "tool:LayoverMaximizer": {
-  "hash": "982934ebd7015d46b12af5f8e936cc9259d084ab",
-  "lastmod": "2026-08-23"
+  "hash": "b003eb011e5711e2b051ec0ac7ed393941f873d1",
+  "lastmod": "2026-09-21"
  },
  "tool:LeaseTrapDetector": {
-  "hash": "ee0657043a60a1b8eb282428898379bd2dd3d986",
-  "lastmod": "2026-09-15"
+  "hash": "492d15a420cda75c275e92cf61e4652a101e8170",
+  "lastmod": "2026-09-21"
  },
  "tool:MarkupDetective": {
-  "hash": "8ce5260ebf8b450af6cd7ef8f74bfaa37fdd91b1",
-  "lastmod": "2026-08-23"
+  "hash": "82119bab43d23c7149cd643078fec05c3df1e157",
+  "lastmod": "2026-09-21"
  },
  "tool:Mend": {
-  "hash": "106264611476782ff5bb13457908d17d330e2b6a",
-  "lastmod": "2026-08-23"
+  "hash": "1e0d5e94c2e0f868d518ba34f101e7d9b65530aa",
+  "lastmod": "2026-09-21"
  },
  "tool:MentalHealthNavigator": {
-  "hash": "558451d7ca8532762105ce5163091069fb74c126",
-  "lastmod": "2026-08-23"
+  "hash": "a2d457064d209af022859babc3fee9eeca3f6e64",
+  "lastmod": "2026-09-21"
  },
  "tool:MiseEnPlace": {
-  "hash": "c551847a3d8391aafef4a90ffddb13daa279360d",
-  "lastmod": "2026-08-23"
+  "hash": "a0a4adc7d670bc3334d8f2a23c058ab6f440b98f",
+  "lastmod": "2026-09-21"
  },
  "tool:NameStorm": {
-  "hash": "0fa7efb23ee2ceb75a81ddebeedbb1b49f3eb02f",
-  "lastmod": "2026-08-23"
+  "hash": "1898961d376d8d0adb52e93915533817450962da",
+  "lastmod": "2026-09-21"
  },
  "tool:PlainTalk": {
-  "hash": "c7a94baf00dcf20664b6ce1303bc2ee7a1ddc4f4",
-  "lastmod": "2026-08-23"
+  "hash": "779ffff106a22c0a7121dd3b40a3d2202283f5c0",
+  "lastmod": "2026-09-21"
  },
  "tool:ProcedureProbe": {
-  "hash": "113a07f75b71f6aaa26d3a8fb5d9a08d401bb92f",
-  "lastmod": "2026-08-23"
+  "hash": "6bd3d95ab577faf8cdfbfab5c34a29ecb8357677",
+  "lastmod": "2026-09-21"
  },
  "tool:RentersDepositSaver": {
-  "hash": "5ed49e388f662e82db7b30f3eece2b54cfea5bd3",
-  "lastmod": "2026-08-23"
+  "hash": "1eb9cbb101dfcc1d7c6d07028a9f95cfdcc101f3",
+  "lastmod": "2026-09-21"
  },
  "tool:RoastMe": {
-  "hash": "4362b12dd598b5abcf1af93e356cfde0a14c6bc1",
-  "lastmod": "2026-08-23"
+  "hash": "6faa134d2518cdb6ae1c2ce9dfa40670ef119b72",
+  "lastmod": "2026-09-21"
  },
  "tool:RulebookBreaker": {
   "hash": "43e82ead44f8ebe733d3ab39efd9f767f3ca3cbf",
   "lastmod": "2026-08-14"
  },
  "tool:SixDegreesOfMe": {
-  "hash": "a427f30c1ff0e4f4a1ec45a6208a3258f3bf3e5f",
-  "lastmod": "2026-08-23"
+  "hash": "dc900cc4a946e4dba546a8854ef77fea7eaa110e",
+  "lastmod": "2026-09-21"
  },
  "tool:TheAlibi": {
   "hash": "a72f15d3110673c18c1507d4cb8fd9ae4b8e220d",
   "lastmod": "2026-08-19"
  },
  "tool:TheDebrief": {
-  "hash": "e3dc11687f3655d3139ba276233f3afb8746853f",
-  "lastmod": "2026-08-23"
+  "hash": "6f99c199c06983df7e69ae8060cd75f3312497a5",
+  "lastmod": "2026-09-21"
  },
  "tool:TheGap": {
   "hash": "74d6a5e7c219e56b5cacea0301e930523e227e35",
   "lastmod": "2026-08-20"
  },
  "tool:TipOfTongue": {
-  "hash": "9f37528209c5e8b0b6a054a6f583e955331f97a2",
-  "lastmod": "2026-08-22"
+  "hash": "f0474ebb70e20c3487afe23362d5acccb72f4f27",
+  "lastmod": "2026-09-21"
  },
  "tool:VirtualBodyDouble": {
-  "hash": "640e03f16fd7743a3fe77038df18c5b33457e25b",
-  "lastmod": "2026-08-23"
+  "hash": "3189d73e9b22b1ec1366df612d95aa99c554e025",
+  "lastmod": "2026-09-21"
  },
  "tool:WaitingModeLiberator": {
-  "hash": "645fd3abdf76f6bca7f1b9f431c721874c3c31ff",
-  "lastmod": "2026-08-23"
+  "hash": "d45cc8c0c18df88f6aa401f3997fcfd124b6b5f5",
+  "lastmod": "2026-09-21"
  },
  "tool:WhichLife": {
-  "hash": "797ce3d7e28e02e536eae0610420d4b29d71eb7c",
-  "lastmod": "2026-08-25"
+  "hash": "115bc1e60568f66baa9718f66a8808aa4389e78a",
+  "lastmod": "2026-09-21"
  },
  "tool:WrongAnswersOnly": {
-  "hash": "302cafb76d9b78579e05bbae915e3e760fce3fa5",
-  "lastmod": "2026-08-23"
+  "hash": "6d5a4541ad5c65a64fadcba6218f68aa069028ca",
+  "lastmod": "2026-09-21"
  },
  "tool:HiddenPaths": {
   "hash": "6d5497f2f0be336719f9ed58d232c30c690cc34e",
   "lastmod": "2026-08-19"
  },
  "tool:NotSoFast": {
-  "hash": "9bbe9f61e22a4923e3edec45fe19512b4b70f893",
-  "lastmod": "2026-08-23"
+  "hash": "518045b8b1caca1652d9c240b365d79647d7156c",
+  "lastmod": "2026-09-21"
  },
  "tool:TheWholeStory": {
-  "hash": "936309ccf465509d1b06b5b2db615016b6ff50cd",
-  "lastmod": "2026-08-23"
+  "hash": "2b3cabfea824c660d95c041da432e872c5b15d6f",
+  "lastmod": "2026-09-21"
  },
  "tool:MissingLink": {
-  "hash": "e824eed768c38129e3048e24fdd95cb681030e4f",
-  "lastmod": "2026-08-23"
+  "hash": "20d095a93defcacffc7dceee3ea951abd3160da1",
+  "lastmod": "2026-09-21"
  },
  "tool:PhraseDecoder": {
   "hash": "0cd452c1fcd73352a3f151107d3687088b7f3823",
   "lastmod": "2026-09-08"
  },
  "tool:WhatsThatMean": {
-  "hash": "c32b6a1216d8647f46a8684f74f25cb8bd6f8cbf",
-  "lastmod": "2026-09-15"
+  "hash": "389c2cb5ccfa3c0daf184b0ff1cc55ba3d65895f",
+  "lastmod": "2026-09-21"
  },
  "tool:SomeoneSaidItBetter": {
-  "hash": "e3cdf07a07cd70f387868159d3f82c99ed9adfcd",
-  "lastmod": "2026-09-15"
+  "hash": "93f38391101e64e3c677b153f29eba66e0e29b51",
+  "lastmod": "2026-09-21"
  }
 }

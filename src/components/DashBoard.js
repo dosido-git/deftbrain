@@ -52,59 +52,75 @@ const CLR = {
 // ════════════════════════════════════════════════════════════
 // CATEGORY DEFINITIONS — 14 categories (count this array, not this comment)
 // ════════════════════════════════════════════════════════════
+// Permanent category names (2026-09-21) — replaces the playful names as the
+// primary label. The playful name isn't gone: it moved into `tag`, the small
+// plain-language line TilePill already rendered under the big label (see
+// that component's own comment — this is the same mechanism, hierarchy
+// flipped). `sub` (the hover tooltip) is untouched, still useful as
+// supplementary detail since it's never visible by default.
 const CATEGORY_META = [
-  { name: 'The Grind',     emoji: '🌅', tag: 'home', sub: 'home · household · daily life' },
-  { name: 'Out & About',   emoji: '🗺️',  tag: 'travel', sub: 'travel · events · adventure'  },
-  { name: 'Humans',        emoji: '👥', tag: 'people', sub: 'relationships · people · bonds' },
-  { name: 'Loot',          emoji: '💰', tag: 'money', sub: 'money · finances · consumer'   },
-  { name: 'Pursuits',      emoji: '🚀', tag: 'career', sub: 'career · growth · identity'    },
-  { name: 'The Office',    emoji: '🏢', tag: 'work', sub: 'work · meetings · tools'       },
-  { name: 'Energy',        emoji: '⚡', tag: 'focus', sub: 'mind · body · fuel'  },
-  { name: 'Discourse',     emoji: '🗣️ ', tag: 'speaking', sub: 'say it well!'           },
-  { name: 'Go Deep!',      emoji: '🔬', tag: 'learning', sub: 'research · learning · knowledge'},
-  { name: 'Diversions',   emoji: '🧩', tag: 'fun', sub: 'fun · curiosity · play'  },
-  { name: 'Me',            emoji: '🪞', tag: 'self', sub: 'self · reflection · growth'    },
-  { name: 'What If?',      emoji: '✨', tag: 'ideas', sub: 'imagination · creativity'      },
-  { name: 'Veer',          emoji: '🧭', tag: 'decisions', sub: 'decisions · direction · choices'},
-  { name: 'Do It!',        emoji: '✅', tag: 'tasks', sub: 'execution · unstuck · tasks'   },
+  { name: 'Home & Daily Life',   emoji: '🌅', tag: 'the grind', sub: 'home · household · daily life' },
+  { name: 'Travel & Events',     emoji: '🗺️',  tag: 'out & about', sub: 'travel · events · adventure'  },
+  { name: 'Relationships',       emoji: '👥', tag: 'humans', sub: 'relationships · people · bonds' },
+  { name: 'Money',               emoji: '💰', tag: 'loot', sub: 'money · finances · consumer'   },
+  { name: 'Career',              emoji: '🚀', tag: 'pursuits', sub: 'career · growth · identity'    },
+  { name: 'Work & Meetings',     emoji: '🏢', tag: 'the office', sub: 'work · meetings · tools'       },
+  { name: 'Health & Wellness',   emoji: '⚡', tag: 'energy', sub: 'mind · body · fuel'  },
+  { name: 'Conversations',       emoji: '🗣️ ', tag: 'discourse', sub: 'say it well!'           },
+  { name: 'Learning',            emoji: '🔬', tag: 'go deep!', sub: 'research · learning · knowledge'},
+  { name: 'Just for Fun',        emoji: '🧩', tag: 'diversions', sub: 'fun · curiosity · play'  },
+  { name: 'Self & Reflection',   emoji: '🪞', tag: 'me', sub: 'self · reflection · growth'    },
+  { name: 'Ideas & Imagination', emoji: '✨', tag: 'what if?', sub: 'imagination · creativity'      },
+  { name: 'Decisions',           emoji: '🧭', tag: 'veer', sub: 'decisions · direction · choices'},
+  { name: 'Tasks',               emoji: '✅', tag: 'do it!', sub: 'execution · unstuck · tasks'   },
 ];
 
 // Legacy single-category strings → new category name(s)
+// Values updated 2026-09-21 to the new permanent category names (was: Loot,
+// Veer, Humans, etc. — see CATEGORY_META). Also fixes a real, if inert, bug
+// found during that pass: 'Communication' and 'Conflict Resolution' mapped
+// to 'Intercourse', which itself mapped to 'Discourse' — a two-hop chain
+// resolveCategories() never follows (it does one lookup, not a walk), so
+// either legacy string would have resolved to a name absent from
+// CATEGORY_META and silently vanished from every category filter. No tool
+// currently uses the old singular `category` field this map serves, so it
+// never fired — fixed anyway rather than left as a landmine for the next
+// tool that does. Both now point directly at the real resolved value.
 const LEGACY_MAP = {
-  'Academic':              ['Go Deep!'],
-  'Communication':         ['Intercourse'],
-  'Daily Life':            ['The Grind'],
-  'Health':                ['Energy'],
-  'Mind & Energy':         ['Energy'],
-  'Money':                 ['Loot'],
-  'Productivity':          ['Do It!'],
-  'Detour':                ['Diversions'],
-  'Body':                  ['Energy'],
-  'Life':                  ['The Grind'],
-  'Lifestyle':             ['The Grind'],
-  'Finance':               ['Loot'],
-  'Consumer Rights':       ['Loot'],
-  'Mental Health':         ['Energy'],
-  'Health & Wellness':     ['Energy'],
-  'Neurodivergent Support':['Energy'],
-  'Social':                ['Humans'],
-  'Social Skills':         ['Humans'],
-  'Career':                ['Pursuits'],
-  'Strategic':             ['Veer'],
-  'Goals':                 ['Do It!'],
-  'Focus & Productivity':  ['Energy', 'Do It!'],
-  'Document Analysis':     ['Go Deep!'],
-  'Conflict Resolution':   ['Intercourse'],
-  'Content Creation':      ['Intercourse'],
-  'Work':                  ['The Office'],
-  'Creative':              ['What If?'],
-  'Thinking':              ['Diversions'],
-  'Brain Games':           ['Diversions'],
-  'wellness':              ['Energy'],
-  'Intercourse':           ['Discourse'],
+  'Academic':              ['Learning'],
+  'Communication':         ['Conversations'],
+  'Daily Life':            ['Home & Daily Life'],
+  'Health':                ['Health & Wellness'],
+  'Mind & Energy':         ['Health & Wellness'],
+  'Money':                 ['Money'],
+  'Productivity':          ['Tasks'],
+  'Detour':                ['Just for Fun'],
+  'Body':                  ['Health & Wellness'],
+  'Life':                  ['Home & Daily Life'],
+  'Lifestyle':             ['Home & Daily Life'],
+  'Finance':               ['Money'],
+  'Consumer Rights':       ['Money'],
+  'Mental Health':         ['Health & Wellness'],
+  'Health & Wellness':     ['Health & Wellness'],
+  'Neurodivergent Support':['Health & Wellness'],
+  'Social':                ['Relationships'],
+  'Social Skills':         ['Relationships'],
+  'Career':                ['Career'],
+  'Strategic':             ['Decisions'],
+  'Goals':                 ['Tasks'],
+  'Focus & Productivity':  ['Health & Wellness', 'Tasks'],
+  'Document Analysis':     ['Learning'],
+  'Conflict Resolution':   ['Conversations'],
+  'Content Creation':      ['Conversations'],
+  'Work':                  ['Work & Meetings'],
+  'Creative':              ['Ideas & Imagination'],
+  'Thinking':              ['Just for Fun'],
+  'Brain Games':           ['Just for Fun'],
+  'wellness':              ['Health & Wellness'],
+  'Intercourse':           ['Conversations'],
   // Category deleted 2026-07-26 (all members held another home) — resolve any
   // straggler string so a stale reference can't render an unmapped group.
-  'Read the Room':         ['Humans'],
+  'Read the Room':         ['Relationships'],
 };
 
 // Resolve tool.categories (array) or tool.category (legacy string) → string[]
