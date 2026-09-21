@@ -387,6 +387,13 @@ export default function HomeIntro({ allTools=[], onBrowse, setSearchTerm }) {
         <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain helps when you don’t know what to do next.</p>
         <form onSubmit={submit} className="mt-5 flex gap-2 max-w-[520px]"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Describe what you’re dealing with…" className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2" style={{borderColor:BORDER}}/><button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>Find a tool →</button></form>
         <p className="mt-2 text-[9.5px]" style={{color:MUTED}}>Try: lease agreement · doctor appointment · suspicious charge · difficult conversation</p>
+        {/* Plain <a>, not <Link>: /privacy is a static prerendered page
+            (public/privacy.html), not a React Router route — a <Link> here
+            would fall through to the catch-all /:toolId route and 404, the
+            same bug already fixed for /guides and /about (see Footer.js and
+            RelatedLinks.js, which use the same convention for this exact
+            reason). */}
+        <p className="mt-1 text-[9.5px] font-bold" style={{color:NAVY}}>Free · No account · <a href="/privacy" className="underline underline-offset-2">Nothing you type is stored on our servers</a></p>
         <button type="button" onClick={onBrowse} className="mt-4 self-start text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
       </div>
       <HeroImage paused={paused} reducedMotion={reducedMotion} />
