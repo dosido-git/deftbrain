@@ -251,8 +251,19 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
         </div>
       </div>
       <div className="px-3.5 py-3">
-        <h3 className="text-[13px] font-extrabold leading-[1.18]" style={{color:NAVY}}>{item.problem}</h3>
-        <p className="mt-1.5 text-[10.5px] leading-[1.4]" style={{color:MUTED}}>{item.body}</p>
+        {/* line-clamp, not just a taller fixed height — the card wrapper
+            below is a fixed h-[…] (required for the 3D flip: the faces are
+            position:absolute inset:0, sized off it) with no overflow:hidden
+            of its own (needed so the hover preview above can escape
+            upward). At 4-across the column got narrow enough that a full
+            ROTATION sentence ("I need to have a difficult conversation.")
+            wraps past 2 lines and, with nothing clipping it, spills
+            straight out the bottom of the fixed-height box instead of
+            being contained by it. Clamping is the fix that holds at any
+            card width, not just today's — a taller magic number would
+            just move the same failure to the next narrower breakpoint. */}
+        <h3 className="text-[13px] font-extrabold leading-[1.18] line-clamp-2" style={{color:NAVY}}>{item.problem}</h3>
+        <p className="mt-1.5 text-[10.5px] leading-[1.4] line-clamp-2" style={{color:MUTED}}>{item.body}</p>
       </div>
     </Link>;
   };
@@ -380,12 +391,11 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
     return counts;
   }, [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
-  // Reduced from 6 to 4, then to 3 (2026-09-21) — the carousel now shares
+  // Reduced from 6, settled on 4 (2026-09-21) — the carousel now shares
   // the promoted hero zone with the category grid instead of running
-  // full-width, and settled on a single row of 3 rather than a 2x2 grid.
-  // Still cycles through all of ROTATION via the same auto-rotate + manual
-  // paging, just 3 doors at a time instead of 6.
-  const PAGE_SIZE = 3;
+  // full-width, single row of 4. Still cycles through all of ROTATION via
+  // the same auto-rotate + manual paging, just 4 doors at a time.
+  const PAGE_SIZE = 4;
   const [slots,setSlots] = useState(() => Array.from({length:PAGE_SIZE},(_,i)=>i));
   const [incoming,setIncoming] = useState(() => Array(PAGE_SIZE).fill(null));
   const [tokens,setTokens] = useState(() => Array(PAGE_SIZE).fill(0));
@@ -480,7 +490,12 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
         <div className="grid lg:grid-cols-[.8fr_1.2fr] gap-6">
           <div>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Categories</p></div>
-            <div className="flex flex-col gap-2">
+            {/* grid + justify-items-start (not flex-wrap, not flex-col) so
+                each pill hugs its own content width — "Money" and "Ideas &
+                Imagination" don't force each other to a shared stretched
+                width — while still landing in two clean columns rather
+                than one long list or a ragged wrap. */}
+            <div className="grid grid-cols-2 gap-2 justify-items-start">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
@@ -491,8 +506,8 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 return (
                   <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2.5 rounded-full border bg-white/70 px-4 py-2.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
                     <span className="text-[20px]" aria-hidden="true">{cat.emoji}</span>
-                    <span className="text-[12px] font-semibold" style={{color:NAVY}}>{cat.name}</span>
-                    <span className="ms-auto text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
+                    <span className="text-[12px] font-semibold whitespace-nowrap" style={{color:NAVY}}>{cat.name}</span>
+                    <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
                   </button>
                 );
               })}
@@ -503,7 +518,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
             <div className="relative">
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-              <div className="grid grid-cols-3 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+              <div className="grid grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
             </div>
             {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
