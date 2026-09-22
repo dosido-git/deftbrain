@@ -559,6 +559,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 onChange={e => setNavQuery(e.target.value)}
                 onFocus={() => setNavFocused(true)}
                 onBlur={() => setNavFocused(false)}
+                onKeyDown={e => { if (e.key === 'Escape') { setNavQuery(''); e.currentTarget.blur(); } }}
                 placeholder="Describe what you’re dealing with…"
                 className="w-full rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
                 style={{ borderColor: CLR.sand300 }}

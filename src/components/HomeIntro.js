@@ -696,7 +696,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 convention as the dedicated guides section further down
                 the page and Footer.js. */}
             <div>
-              <p className="text-[13.5px] leading-relaxed" style={{color:MUTED}}>Check out our library of useful guides, one-page articles written to answer common questions that arise in every category. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse DeftBrain guides →</a></p>
+              <p className="text-[13.5px] leading-relaxed" style={{color:MUTED}}>Browse our library of useful guides, brief articles written to answer common questions that arise in every category. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse DeftBrain guides →</a></p>
             </div>
           </div>
         </div>
@@ -742,11 +742,11 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                     usually does on this site (elsewhere it eases a photo
                     in — here it's telling the reader there's more below
                     the cut, on purpose). */}
-                <div className="relative h-[230px] overflow-hidden border-t" style={{borderColor:BORDER}}>
-                  <img src={ex.shot} alt={`The top of ${tool.title}'s real result for this`} loading="lazy" className="w-full h-full object-cover object-top" />
+                <Link to={`/${tool.id}`} className="relative block h-[230px] overflow-hidden border-t group/shot" style={{borderColor:BORDER}}>
+                  <img src={ex.shot} alt={`The top of ${tool.title}'s real result — click to try it yourself`} loading="lazy" className="w-full h-full object-cover object-top transition group-hover/shot:brightness-95" />
                   <div className="absolute inset-x-0 bottom-0 h-14 pointer-events-none" style={{background:'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.98))'}} />
                   <div className="absolute inset-x-0 bottom-1.5 text-center text-[9px] font-bold uppercase tracking-wide" style={{color:MUTED}}>keeps going ↓</div>
-                </div>
+                </Link>
                 <div className="mt-auto px-3.5 py-2.5">
                   <Link to={`/${tool.id}`} className="text-[10px] font-bold" style={{color:NAVY}}>Try {tool.title} →</Link>
                 </div>
