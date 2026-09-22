@@ -156,7 +156,7 @@ const CATEGORY_EXAMPLES = {
   'Tasks':               { example:'Everything feels urgent at once.', accent:'#6c5aa8', bg:'#e8e6f1' },
 };
 
-// "See it in action" worked examples (2026-09-21) — one is picked at random
+// "See it in action" worked examples (2026-09-21) — two shown at once, picked
 // per page load (see HomeIntro below). Replaces a single photo that had the
 // DoctorVisitPrep exchange baked directly into the image as legible text:
 // fine for one fixed example, but impossible to rotate without the picture
@@ -164,16 +164,20 @@ const CATEGORY_EXAMPLES = {
 // exchange as real markup instead means any number of tools can take a turn
 // here — deliberately drawn from OUTSIDE the tools ROTATION[0..5] already
 // leans on most often (Lease/DoctorVisit/DifficultTalk/Bill/FakeReview/
-// TipOfTongue), so this section stops reinforcing the same handful. Each
-// bullet list is condensed from that tool's own guide.howToUse / overview —
-// not invented — so it stays an honest preview of the real output.
+// TipOfTongue), so this section stops reinforcing the same handful. `sub`
+// and the bullets are condensed from that tool's own guide.overview /
+// howToUse — not invented — so it stays an honest preview of the real
+// output. `sub` earns its slot: it's what makes each mockup read as an
+// actual result page's own intro line rather than a 4-item stub (owner
+// feedback 2026-09-21 — the single-block version gave "no clue to the
+// depth of content a user sees").
 const SEE_IT_EXAMPLES = [
-  { toolId:'DoctorVisitPrep', input:'I have a follow-up appointment about high blood pressure. I’m not sure what questions to ask.', header:'Here’s your prep plan:', bullets:['Key questions to ask','What to bring','How to track your symptoms','Questions about next steps'] },
-  { toolId:'RentersDepositSaver', input:'I’m moving into a new apartment tomorrow and want my deposit back when I leave.', header:'Here’s your move-in package:', bullets:['A room-by-room condition checklist','A landlord letter, ready to send','A photo shot list','Your state’s deposit-return deadline'] },
-  { toolId:'ContractDecoder', input:'My freelance contract has a clause I don’t fully understand.', header:'Here’s what it means:', bullets:['The clause, translated into plain English','What it actually obligates you to','Questions worth clarifying before you sign','A before-you-sign checklist'] },
-  { toolId:'TicketTackler', input:'I got a parking ticket I think was issued wrong.', header:'Here’s your case:', bullets:['Whether you actually have grounds to contest it','What still needs confirming','The evidence that would help','A ready-to-file appeal, if it’s warranted'] },
-  { toolId:'BatchFlow', input:'My to-do list today is all over the place and I don’t know where to start.', header:'Here’s your day, batched:', bullets:['Tasks grouped by the kind of focus they need','A schedule built around your energy','Where your breaks go','One batch to start with right now'] },
-  { toolId:'MarkupDetective', input:'This mattress costs $2,000 — is that actually reasonable?', header:'Here’s where the money goes:', bullets:['Materials vs. labor vs. brand markup, broken down','The pricing tactics being used here','What this typically costs elsewhere','Ways to get it for less'] },
+  { toolId:'DoctorVisitPrep', input:'I have a follow-up appointment about high blood pressure. I’m not sure what questions to ask.', sub:'Walk in knowing what matters.', header:'Here’s your prep plan:', bullets:['Key questions to ask','What to bring','How to track your symptoms','Questions about next steps'] },
+  { toolId:'RentersDepositSaver', input:'I’m moving into a new apartment tomorrow and want my deposit back when I leave.', sub:'Your move-in documentation, done before you unpack.', header:'Here’s your move-in package:', bullets:['A room-by-room condition checklist','A landlord letter, ready to send','A photo shot list','Your state’s deposit-return deadline'] },
+  { toolId:'ContractDecoder', input:'My freelance contract has a clause I don’t fully understand.', sub:'Plain-English terms, quoted straight from your contract.', header:'Here’s what it means:', bullets:['The clause, translated into plain English','What it actually obligates you to','Questions worth clarifying before you sign','A before-you-sign checklist'] },
+  { toolId:'TicketTackler', input:'I got a parking ticket I think was issued wrong.', sub:'An honest read on whether you actually have a case.', header:'Here’s your case:', bullets:['Whether you actually have grounds to contest it','What still needs confirming','The evidence that would help','A ready-to-file appeal, if it’s warranted'] },
+  { toolId:'BatchFlow', input:'My to-do list today is all over the place and I don’t know where to start.', sub:'Your day, grouped by the kind of focus each task needs.', header:'Here’s your day, batched:', bullets:['Tasks grouped by the kind of focus they need','A schedule built around your energy','Where your breaks go','One batch to start with right now'] },
+  { toolId:'MarkupDetective', input:'This mattress costs $2,000 — is that actually reasonable?', sub:'Exactly where your money goes — materials, labor, markup.', header:'Here’s where the money goes:', bullets:['Materials vs. labor vs. brand markup, broken down','The pricing tactics being used here','What this typically costs elsewhere','Ways to get it for less'] },
 ];
 
 // Hero banner rotation — one photoreal "everyday life" scene at a time, each
@@ -351,7 +355,7 @@ function ToolScramble({ allTools, onBrowse }) {
       <div className="relative p-5 sm:p-6">
         <div className="flex items-end justify-between gap-4 mb-4">
           <div>
-            <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore without an agenda</div>
+            <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore</div>
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
             <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Some DeftBrain tool taglines. Click for more.</p>
           </div>
@@ -518,14 +522,18 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
 
   const toolFor=id=>byId.get(id);
 
-  // "See it in action" example: one picked per page load, not re-rolled on
-  // every re-render (the seed is chosen once in useState; which example it
-  // maps to is a pure derivation, same split as `available` above, so it
-  // still resolves correctly once allTools finishes loading async).
+  // "See it in action" examples: two picked per page load (owner feedback
+  // 2026-09-21 — one example alone left the section's width mostly empty
+  // padding for what it actually showed). Reuses seededShuffle (same one
+  // ToolScramble uses) rather than hand-rolling a "pick 2 distinct indices"
+  // — it already guarantees no duplicate and a stable order for a given
+  // seed. The seed itself is chosen once in useState, not re-rolled on
+  // every re-render; which examples it maps to is a pure derivation, same
+  // split as `available` above, so it still resolves correctly once
+  // allTools finishes loading async.
   const seeItEligible = useMemo(() => SEE_IT_EXAMPLES.filter(x => byId.has(x.toolId)), [byId]);
   const [seeItSeed] = useState(() => Math.floor(Math.random() * 1000));
-  const seeItExample = seeItEligible.length ? seeItEligible[seeItSeed % seeItEligible.length] : null;
-  const seeItTool = seeItExample && toolFor(seeItExample.toolId);
+  const seeItPair = useMemo(() => seededShuffle(seeItEligible, seeItSeed).slice(0, 2), [seeItEligible, seeItSeed]);
 
   // Manual carousel paging: turns all 6 doors to the next/previous set of six
   // at once, reusing the same flip transition the quiet auto-rotation uses.
@@ -661,37 +669,55 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       </div>
     </section>
 
-    {seeItExample && <section className="my-8 rounded-2xl border overflow-hidden" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
+    {seeItPair.length > 0 && <section className="my-8 rounded-2xl border overflow-hidden" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
       {/* Was a single photo with one tool's exchange baked into it as
           legible pixels (see SEE_IT_EXAMPLES above for why that couldn't
-          rotate). Rendered as real markup instead: a small chat mockup
-          (user bubble + result card) standing in for the screenshot. Same
-          spot in both breakpoints now — the grid has no base grid-cols, so
-          it's a single stacked column pre-lg and splits into the two side
-          by side at lg, same as before, just without needing a separate
-          mobile-only image block. */}
-      <div className="grid lg:grid-cols-[.78fr_1.22fr]">
-        <div className="p-6 sm:p-8 flex flex-col justify-center">
+          rotate), then a single rendered mockup. Now two side by side
+          (2026-09-21, owner feedback): one example left a tall column
+          mostly empty for what it showed, and gave no sense that the
+          catalog is more than one trick. items-start (not the grid
+          default stretch) + no vertical-centering on the text column —
+          same fix as the Categories card above: let each side be exactly
+          as tall as its own content instead of stretching to match
+          whichever side is taller. */}
+      <div className="grid items-start lg:grid-cols-[.62fr_1.38fr]">
+        <div className="p-5 sm:p-6">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
-          <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
-          <div className="mt-4 flex gap-4"><Link to={`/${seeItTool.id}`} className="rounded-lg px-4 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>Try {seeItTool.title} →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
+          <p className="mt-2 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
+          <button onClick={onBrowse} className="mt-3 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Explore more tools →</button>
         </div>
-        <div className="p-6 sm:p-8 lg:pl-0 flex items-center justify-center">
-          <div className="w-full max-w-sm rounded-2xl border shadow-sm overflow-hidden bg-white" style={{borderColor:BORDER}}>
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b" style={{borderColor:BORDER,background:'#f6f2ea'}}>
-              <span className="text-[15px]" aria-hidden="true">🧠</span>
-              <span className="text-[11px] font-extrabold" style={{fontFamily:SERIF,color:NAVY}}>DeftBrain</span>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm px-3.5 py-2.5 text-[11px] leading-snug" style={{background:'#dbeafe',color:NAVY}}>{seeItExample.input}</div>
-              <div className="rounded-2xl rounded-tl-sm border px-3.5 py-3 text-[11px] leading-snug" style={{borderColor:BORDER}}>
-                <p className="font-bold mb-1.5" style={{color:NAVY}}>{seeItExample.header}</p>
-                <ol className="space-y-1 list-decimal list-inside" style={{color:MUTED}}>
-                  {seeItExample.bullets.map((b,i) => <li key={i}>{b}</li>)}
-                </ol>
+        <div className="p-5 sm:p-6 lg:pl-0 grid sm:grid-cols-2 gap-3.5">
+          {seeItPair.map(ex => {
+            const tool = toolFor(ex.toolId);
+            return (
+              <div key={ex.toolId} className="rounded-2xl border shadow-sm overflow-hidden bg-white flex flex-col" style={{borderColor:BORDER}}>
+                <div className="flex items-center gap-2 px-3.5 py-2 border-b" style={{borderColor:BORDER,background:'#f6f2ea'}}>
+                  <span className="text-[13px]" aria-hidden="true">🧠</span>
+                  <span className="text-[10px] font-extrabold" style={{fontFamily:SERIF,color:NAVY}}>DeftBrain</span>
+                </div>
+                <div className="p-3.5 space-y-2.5">
+                  <div className="ml-auto max-w-[90%] rounded-2xl rounded-tr-sm px-3 py-2 text-[10.5px] leading-snug" style={{background:'#dbeafe',color:NAVY}}>{ex.input}</div>
+                  {/* This block stands in for the tool's actual results
+                      page, which is much longer than four bullets —
+                      the `sub` line (that page's own real intro
+                      sentence) is what signals "there's a fuller page
+                      behind this," not just a short checklist floating
+                      alone (owner feedback: "no clue to the depth of
+                      content a user sees"). */}
+                  <div className="rounded-2xl rounded-tl-sm border px-3 py-2.5 text-[10.5px] leading-snug" style={{borderColor:BORDER}}>
+                    <p className="italic mb-1.5" style={{color:MUTED}}>{ex.sub}</p>
+                    <p className="font-bold mb-1" style={{color:NAVY}}>{ex.header}</p>
+                    <ol className="space-y-0.5 list-decimal list-inside" style={{color:MUTED}}>
+                      {ex.bullets.map((b,i) => <li key={i}>{b}</li>)}
+                    </ol>
+                  </div>
+                </div>
+                <div className="mt-auto px-3.5 pb-3">
+                  <Link to={`/${tool.id}`} className="text-[10px] font-bold" style={{color:NAVY}}>Try {tool.title} →</Link>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>}
