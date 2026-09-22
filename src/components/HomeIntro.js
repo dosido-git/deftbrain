@@ -352,8 +352,8 @@ function ToolScramble({ allTools, onBrowse }) {
         <div className="flex items-end justify-between gap-4 mb-4">
           <div>
             <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore without an agenda</div>
-            <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>The Tool Scramble</h2>
-            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Icons and taglines from real DeftBrain tools. Hover to see a preview — click to give it a try.</p>
+            <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
+            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Some DeftBrain tool taglines. Click for more.</p>
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble again</button>
         </div>
@@ -364,27 +364,50 @@ function ToolScramble({ allTools, onBrowse }) {
             const tilt = SCRAMBLE_TILT[i%SCRAMBLE_TILT.length];
             const accent = SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length];
             return (
-              <Link key={t.id} to={`/${t.id}`} className="group relative flex items-center gap-2 max-w-[210px] hover:z-30 focus:z-30" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
-                <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
-                <span>
-                  <b className="block text-[11px] leading-tight" style={{color:accent}}>{t.tagline}</b>
-                  <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
+              <Link key={t.id} to={`/${t.id}`} className="group relative block max-w-[210px]">
+                {/* Scatter transform lives on this inner wrapper now, not the
+                    Link itself (2026-09-21 fix). It used to sit on the Link,
+                    which — because a CSS transform always creates its own
+                    stacking context — meant a hovered tile's WHOLE subtree
+                    (its own text AND its popup) got promoted above every
+                    other tile via hover:z-30. That's what was hiding other
+                    tools' names: a popup opening below a hovered tile could
+                    paint straight over a neighboring tile's icon+tagline,
+                    and no z-index on that neighbor could ever outrank it —
+                    z-index only competes within a shared stacking context,
+                    and the transform had already sealed each tile into its
+                    own. Moving the transform down here (visual scatter
+                    unchanged) leaves the Link itself un-transformed, so this
+                    span's z-20 and the popup's z-10 below now compare
+                    directly across every tile, not just within one — the
+                    always-visible content wins, full stop, hover or not. */}
+                <span className="relative z-20 flex items-center gap-2" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
+                  <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
+                  <span>
+                    <b className="block text-[11px] leading-tight" style={{color:accent}}>{t.tagline}</b>
+                    <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
+                  </span>
                 </span>
-                {/* Preview polaroid — counter-rotates the tile's own scatter
-                    angle, then adds its own independent "just landed" tilt
-                    (rotate happens BEFORE the centering translate so the
-                    shift moves along the true horizontal axis, not the
-                    tile's). Accent border/caption match this tile's own
-                    tagline color — ties the photo back to its tile instead
-                    of reading as an unrelated insert. Desaturated slightly
-                    so it sits closer to the section's pastel palette.
-                    Silently disappears (onError) for the ~35 tools with no
-                    art yet — the em title reveal above still works either
-                    way, and popups are EXPECTED to sit over neighbors while
-                    open, same as any hover card. */}
+                {/* Preview polaroid — only its own independent "just landed"
+                    tilt now (no more counter-rotating the tile's scatter
+                    angle: the Link isn't rotated any more, so there's
+                    nothing to cancel out). Accent border/caption match this
+                    tile's own tagline color — ties the photo back to its
+                    tile instead of reading as an unrelated insert.
+                    Desaturated slightly so it sits closer to the section's
+                    pastel palette. Silently disappears (onError) for the
+                    ~35 tools with no art yet — the em title reveal above
+                    still works either way. Sized up on sm:+ (2026-09-21,
+                    owner asked for bigger) but kept smaller on real phones:
+                    it's centered under its tile with no viewport-edge
+                    clamping, and a tile near the left/right edge of a
+                    ~375px screen already has little room either side —
+                    widening further there risks the popup clipping off
+                    the visible screen, not just overlapping neighbors
+                    (which no longer matters — see z-index note above). */}
                 <div
-                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-[300px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
-                  style={{transform:`rotate(${-rot+tilt}deg) translateX(-50%)`}}
+                  className="pointer-events-none absolute left-1/2 top-full z-10 mt-3 w-[240px] sm:w-[360px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
+                  style={{transform:`rotate(${tilt}deg) translateX(-50%)`}}
                 >
                   <div className="rounded-2xl bg-white p-2.5 pb-3.5" style={{border:`2px solid ${accent}`,boxShadow:'0 20px 45px -12px rgba(20,42,67,.4)'}}>
                     <img

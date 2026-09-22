@@ -402,7 +402,20 @@ for name, fpath in tools:
     import re as _re
     # Check 1: h1/h2 must not contain bare string (non-JSX expression)
     # Only flag bare h1/h2 strings when tool?.title is absent (avoids flagging internal view headings)
-    if 'tool?.title' not in content:
+    # AND only for actual tool pages (src/tools/*.js) — 2026-09-21 fix. This
+    # check's whole premise (an h1/h2 should render {tool?.title}) only makes
+    # sense where a `tool` prop exists at all; src/components/*.js files like
+    # HomeIntro.js/DashBoard.js have real, deliberately-static headings
+    # ("Categories", "Tool Scramble", ...) and were never supposed to have
+    # tool?.title. Worse than a plain false positive: the message embeds the
+    # literal heading text, so editing ANY homepage heading — unrelated copy,
+    # nothing to do with this rule — registered as fixing the old wording and
+    # introducing new wording, i.e. diff-audit's exact-text Counter diff saw
+    # a "new" issue and blocked the push. Found fixing the same S5.5
+    # false-positive class this session (see STATIC_ROUTES above).
+    _norm_fpath = fpath.replace(os.sep, '/')
+    _is_tool_page = '/src/tools/' in _norm_fpath or _norm_fpath.startswith('src/tools/')
+    if _is_tool_page and 'tool?.title' not in content:
         bare_h = [m for m in _re.findall(r'<h[12][^>]*>([^\n{<]{3,})', content) if m.strip()]
         if bare_h:
             fails.append(f'S0: hardcoded text in h1/h2 (must use {{tool?.title}}): {bare_h[:2]}')
