@@ -7,7 +7,11 @@
 .at-nav a{color:var(--blue);text-decoration:none}
 .at-nav a:hover,.at-nav a[aria-current=page]{text-decoration:underline;text-underline-offset:4px}
 
-.at-hero{padding-top:54px;padding-bottom:14px}
+/* 16px, not the original 54px — replicates the homepage's own gap between
+   its header/search chrome and its hero card (DashBoard.js's `mt-4` before
+   <HomeIntro>, measured live: exactly 16px, same at every width since that
+   margin isn't responsive there either). */
+.at-hero{padding-top:16px;padding-bottom:14px}
 
 /* Home + search live in one row now (owner: Home stays left-justified,
    vertically aligned with the search box, not stacked above everything
@@ -37,7 +41,7 @@
    site-wide (no webfont link anywhere), so this — like the homepage —
    renders as the Georgia fallback in every real browser; listed anyway
    for parity with how the homepage declares it. */
-.at-hero h1{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:30px;line-height:.98;letter-spacing:-.035em;margin:0;color:var(--navy)}
+.at-hero h1{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-weight:700;font-size:30px;line-height:.98;letter-spacing:-.035em;margin:0;color:var(--navy)}
 @media(min-width:640px){.at-hero h1{font-size:34px}}
 @media(min-width:1024px){.at-hero h1{font-size:38px}}
 
@@ -111,7 +115,6 @@
   .at-site-header-inner{min-height:72px;align-items:flex-start;padding-block:10px}
   .at-header-right{flex-direction:column-reverse;align-items:flex-end;gap:6px}
   .at-nav{gap:14px}
-  .at-hero{padding-top:30px}
   .at-hero-top-row{flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:20px}
   .at-nav-search{width:100%}
   .at-nav-search-field{width:100%!important}

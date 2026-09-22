@@ -646,7 +646,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
               as before: default align-items:stretch would otherwise
               stretch this wrapper's card to match the taller situations
               column. */}
-          <div className="self-start flex flex-col gap-4">
+          <div id="categories" className="self-start flex flex-col gap-4" style={{scrollMarginTop:20}}>
             {/* Cropped to its own content height, not stretched to match
                 the cards column: stretching (the outer grid's default
                 align-items:stretch) plus bottom-aligning the pills inside

@@ -498,6 +498,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>
+              {/* In-page anchor to the Categories card in HomeIntro.js below
+                  (id="categories"), not a route — matches the same pattern
+                  /tools' own nav already uses for its category picker.
+                  backToHome first: the Categories card only renders on the
+                  plain homepage view (!isSearching && !showCatalog), so if
+                  a search or the catalog is currently showing, jumping
+                  straight to #categories would either scroll to nothing or
+                  land on a stale position from before that view swapped in. */}
+              <button
+                type="button"
+                onClick={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}
+                className="hover:underline underline-offset-4"
+              >Categories</button>
               {/* Plain <a>, not <Link>: /guides and /about are static prerendered
                   pages (public/about.html; guides built by scripts/prerender.js),
                   not React Router routes. A <Link> here does a client-side SPA
