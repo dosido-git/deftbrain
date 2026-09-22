@@ -156,6 +156,26 @@ const CATEGORY_EXAMPLES = {
   'Tasks':               { example:'Everything feels urgent at once.', accent:'#6c5aa8', bg:'#e8e6f1' },
 };
 
+// "See it in action" worked examples (2026-09-21) — one is picked at random
+// per page load (see HomeIntro below). Replaces a single photo that had the
+// DoctorVisitPrep exchange baked directly into the image as legible text:
+// fine for one fixed example, but impossible to rotate without the picture
+// contradicting whatever tool the surrounding copy named. Rendering the
+// exchange as real markup instead means any number of tools can take a turn
+// here — deliberately drawn from OUTSIDE the tools ROTATION[0..5] already
+// leans on most often (Lease/DoctorVisit/DifficultTalk/Bill/FakeReview/
+// TipOfTongue), so this section stops reinforcing the same handful. Each
+// bullet list is condensed from that tool's own guide.howToUse / overview —
+// not invented — so it stays an honest preview of the real output.
+const SEE_IT_EXAMPLES = [
+  { toolId:'DoctorVisitPrep', input:'I have a follow-up appointment about high blood pressure. I’m not sure what questions to ask.', header:'Here’s your prep plan:', bullets:['Key questions to ask','What to bring','How to track your symptoms','Questions about next steps'] },
+  { toolId:'RentersDepositSaver', input:'I’m moving into a new apartment tomorrow and want my deposit back when I leave.', header:'Here’s your move-in package:', bullets:['A room-by-room condition checklist','A landlord letter, ready to send','A photo shot list','Your state’s deposit-return deadline'] },
+  { toolId:'ContractDecoder', input:'My freelance contract has a clause I don’t fully understand.', header:'Here’s what it means:', bullets:['The clause, translated into plain English','What it actually obligates you to','Questions worth clarifying before you sign','A before-you-sign checklist'] },
+  { toolId:'TicketTackler', input:'I got a parking ticket I think was issued wrong.', header:'Here’s your case:', bullets:['Whether you actually have grounds to contest it','What still needs confirming','The evidence that would help','A ready-to-file appeal, if it’s warranted'] },
+  { toolId:'BatchFlow', input:'My to-do list today is all over the place and I don’t know where to start.', header:'Here’s your day, batched:', bullets:['Tasks grouped by the kind of focus they need','A schedule built around your energy','Where your breaks go','One batch to start with right now'] },
+  { toolId:'MarkupDetective', input:'This mattress costs $2,000 — is that actually reasonable?', header:'Here’s where the money goes:', bullets:['Materials vs. labor vs. brand markup, broken down','The pricing tactics being used here','What this typically costs elsewhere','Ways to get it for less'] },
+];
+
 // Hero banner rotation — one photoreal "everyday life" scene at a time, each
 // staged around a different slice of what DeftBrain covers. Alt text names
 // what's actually in the frame (the photo is the only place that content
@@ -475,6 +495,15 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
 
   const toolFor=id=>byId.get(id);
 
+  // "See it in action" example: one picked per page load, not re-rolled on
+  // every re-render (the seed is chosen once in useState; which example it
+  // maps to is a pure derivation, same split as `available` above, so it
+  // still resolves correctly once allTools finishes loading async).
+  const seeItEligible = useMemo(() => SEE_IT_EXAMPLES.filter(x => byId.has(x.toolId)), [byId]);
+  const [seeItSeed] = useState(() => Math.floor(Math.random() * 1000));
+  const seeItExample = seeItEligible.length ? seeItEligible[seeItSeed % seeItEligible.length] : null;
+  const seeItTool = seeItExample && toolFor(seeItExample.toolId);
+
   // Manual carousel paging: turns all 6 doors to the next/previous set of six
   // at once, reusing the same flip transition the quiet auto-rotation uses.
   const goToPage=(n)=>{
@@ -609,36 +638,40 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       </div>
     </section>
 
-    <section className="my-8 relative rounded-2xl border overflow-hidden lg:min-h-[300px]" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
-      {/* Desktop: the tablet photo's box is widened 15% to the left (its
-          right edge stays put, same crop logic as before, so the tablet
-          itself still renders exactly as it did) so there's real photo
-          under the panel below. The panel is ALSO widened 15% beyond the
-          original .78fr text column and painted on top with a true
-          corner-to-corner diagonal fade — solid at the top-left, 0%
-          opacity at the bottom-right.
-
-          A pure alpha fade over a CRISP photo still read as a hard line:
-          the reveal zone happens to land on bright, textured window light,
-          and eyes register the texture snapping into focus far more
-          readily than the gradual alpha change underneath it. Fix: a
-          blurred copy of the same photo sits behind the crisp one; the
-          crisp copy fades itself in (its own left-to-right mask, ending
-          past where the panel finishes) so texture arrives gradually
-          instead of all at once under the panel's fade. */}
-      <img src="/home-scenes/see-it-in-action.jpg" alt="" aria-hidden="true" className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%',filter:'blur(16px)',transform:'scale(1.04)'}} loading="lazy" />
-      <img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="hidden lg:block absolute inset-y-0 right-0 object-cover" style={{width:'66.85%',height:'100%',WebkitMaskImage:'linear-gradient(to right, transparent 0%, black 32%)',maskImage:'linear-gradient(to right, transparent 0%, black 32%)',WebkitMaskRepeat:'no-repeat',maskRepeat:'no-repeat',WebkitMaskSize:'100% 100%',maskSize:'100% 100%'}} loading="lazy" />
-      <div className="hidden lg:block absolute inset-y-0 left-0" style={{width:'44.85%', background:'linear-gradient(to bottom right, #eef7fb 0%, #eef7fb 8%, rgba(238,247,251,0) 100%)'}} />
-      <div className="relative grid lg:grid-cols-[.78fr_1.22fr]">
+    {seeItExample && <section className="my-8 rounded-2xl border overflow-hidden" style={{borderColor:'#dce7ee',background:'linear-gradient(110deg,#eef7fb,#f8fbfd)'}}>
+      {/* Was a single photo with one tool's exchange baked into it as
+          legible pixels (see SEE_IT_EXAMPLES above for why that couldn't
+          rotate). Rendered as real markup instead: a small chat mockup
+          (user bubble + result card) standing in for the screenshot. Same
+          spot in both breakpoints now — the grid has no base grid-cols, so
+          it's a single stacked column pre-lg and splits into the two side
+          by side at lg, same as before, just without needing a separate
+          mobile-only image block. */}
+      <div className="grid lg:grid-cols-[.78fr_1.22fr]">
         <div className="p-6 sm:p-8 flex flex-col justify-center">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
           <p className="mt-3 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
-          <p className="mt-2 text-[12.5px]" style={{color:MUTED}}><b style={{color:NAVY}}>Clear steps.</b> Better questions. A calmer next move.</p>
-          <div className="mt-4 flex gap-4"><Link to="/DoctorVisitPrep" className="rounded-lg px-4 py-2 text-[10px] font-bold text-white" style={{background:NAVY}}>Try Doctor Visit Prep →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
+          <div className="mt-4 flex gap-4"><Link to={`/${seeItTool.id}`} className="rounded-lg px-4 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>Try {seeItTool.title} →</Link><button onClick={onBrowse} className="text-[10px] font-bold" style={{color:NAVY}}>Explore more tools →</button></div>
         </div>
-        <div className="relative lg:hidden min-h-[260px] overflow-hidden bg-[#eee8df]"><img src="/home-scenes/see-it-in-action.jpg" alt="A tablet showing the DeftBrain chat interface with a doctor-visit prep plan, next to a sticky note reading More prepared. A calmer conversation." className="absolute inset-0 w-full h-full object-cover" loading="lazy" /></div>
+        <div className="p-6 sm:p-8 lg:pl-0 flex items-center justify-center">
+          <div className="w-full max-w-sm rounded-2xl border shadow-sm overflow-hidden bg-white" style={{borderColor:BORDER}}>
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b" style={{borderColor:BORDER,background:'#f6f2ea'}}>
+              <span className="text-[15px]" aria-hidden="true">🧠</span>
+              <span className="text-[11px] font-extrabold" style={{fontFamily:SERIF,color:NAVY}}>DeftBrain</span>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm px-3.5 py-2.5 text-[11px] leading-snug" style={{background:'#dbeafe',color:NAVY}}>{seeItExample.input}</div>
+              <div className="rounded-2xl rounded-tl-sm border px-3.5 py-3 text-[11px] leading-snug" style={{borderColor:BORDER}}>
+                <p className="font-bold mb-1.5" style={{color:NAVY}}>{seeItExample.header}</p>
+                <ol className="space-y-1 list-decimal list-inside" style={{color:MUTED}}>
+                  {seeItExample.bullets.map((b,i) => <li key={i}>{b}</li>)}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </section>}
 
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
