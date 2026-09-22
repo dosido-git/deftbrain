@@ -673,12 +673,23 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 );
               })}
             </div>
-            <div className="mt-3 pt-3 border-t flex flex-col gap-1.5" style={{borderColor:'#c9c1e0'}}>
+            <div className="mt-3 pt-3 border-t flex flex-col gap-2" style={{borderColor:'#c9c1e0'}}>
               <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
-              {/* Plain <a>, not <Link>: /guides is a static prerendered page,
-                  not a React Router route — same convention as the dedicated
-                  guides section below (line ~682) and Footer.js. */}
-              <a href="/guides" className="text-[10px] font-semibold underline underline-offset-4" style={{color:MUTED}}>Prefer to read first? Browse guides →</a>
+              {/* Was a bare "Prefer to read first? Browse guides →" link —
+                  owner feedback 2026-09-22: a first-time visitor has no
+                  reason to know what "a guide" even means here, so the
+                  link asked them to choose between two things when only
+                  one (tools) had been explained. This is the plain answer,
+                  not marketing copy: what a guide actually is, and the one
+                  real reason to pick it over a tool (nothing to fill in).
+                  Plain <a>, not <Link>: /guides is a static prerendered
+                  page, not a React Router route — same convention as the
+                  dedicated guides section below (line ~682) and
+                  Footer.js. */}
+              <div>
+                <p className="text-[10px] font-bold" style={{color:NAVY}}>What's a guide?</p>
+                <p className="mt-0.5 text-[10px] leading-snug" style={{color:MUTED}}>A short, already-written answer to a common question — read it, no form to fill in. Good for the general case; a tool's better once your situation gets specific. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse guides →</a></p>
+              </div>
             </div>
           </div>
         </div>
