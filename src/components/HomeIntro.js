@@ -631,65 +631,72 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
           </div>
 
-          {/* Cropped to its own content height (2026-09-21), not stretched
-              to match the cards column: stretching (the outer grid's
-              default align-items:stretch) plus bottom-aligning the pills
-              inside that stretched height (content-end) left a large,
-              genuinely awkward gap between the "Categories" heading and
-              the first pill row — filling that gap "well" isn't really
-              possible when the pill block is just shorter than the cards
-              column's natural height. self-start opts this one card out
-              of the stretch, so it's exactly as tall as its own content
-              (heading + pills + the Browse-all-tools line) — shorter than
-              the cards column, and that's fine; the two don't need to
-              match. Pills are back to a plain top-down flow (no more
-              content-end/flex-1, nothing left for either to do once the
-              card isn't being forced taller than its content). */}
-          <div className="self-start rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
-              {CATEGORY_META.map(cat => {
-                const count = categoryCounts[cat.name] || 0;
-                if (!count) return null;
-                // title = the researched per-category example (CATEGORY_EXAMPLES)
-                // — the pill has no room to show it, but it's not wasted: a
-                // hover reveals the "oh, that might be useful" line instead
-                // of a bare category name.
-                //
-                // grid-cols-1 below sm: (found live on a phone screenshot
-                // 2026-09-21) — the label span is whitespace-nowrap, and a
-                // 2-column grid on a ~350px-wide card gives each track
-                // ~170px, too narrow for "Home & Daily Life"/"Health &
-                // Wellness"/etc. Grid items default to min-width:auto, so
-                // the nowrap label doesn't shrink or wrap — it just
-                // overflows its track and visually overlaps the pill next
-                // to it. One column gives every pill the full card width.
-                return (
-                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
-                    <span className="text-[18px]" aria-hidden="true">{cat.emoji}</span>
-                    <span className="text-[12px] font-semibold whitespace-nowrap" style={{color:NAVY}}>{cat.name}</span>
-                    <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mt-3 pt-3 border-t flex flex-col gap-2" style={{borderColor:'#c9c1e0'}}>
-              <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
-              {/* Was a bare "Prefer to read first? Browse guides →" link —
-                  owner feedback 2026-09-22: a first-time visitor has no
-                  reason to know what "a guide" even means here, so the
-                  link asked them to choose between two things when only
-                  one (tools) had been explained. This is the plain answer,
-                  not marketing copy: what a guide actually is, and the one
-                  real reason to pick it over a tool (nothing to fill in).
-                  Plain <a>, not <Link>: /guides is a static prerendered
-                  page, not a React Router route — same convention as the
-                  dedicated guides section below (line ~682) and
-                  Footer.js. */}
-              <div>
-                <p className="text-[10px] font-bold" style={{color:NAVY}}>What's a guide?</p>
-                <p className="mt-0.5 text-[10px] leading-snug" style={{color:MUTED}}>A short, already-written answer to a common question — read it, no form to fill in. Good for the general case; a tool's better once your situation gets specific. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse guides →</a></p>
+          {/* Wrapper (2026-09-22) is the actual grid item now, not the
+              card itself — added so the guide intro below could sit
+              OUTSIDE the categories card (owner: "guides are separate
+              from tool categories") while still living in this column's
+              white space rather than starting a whole new grid row.
+              self-start moved from the card to here for the same reason
+              as before: default align-items:stretch would otherwise
+              stretch this wrapper's card to match the taller situations
+              column. */}
+          <div className="self-start flex flex-col gap-4">
+            {/* Cropped to its own content height, not stretched to match
+                the cards column: stretching (the outer grid's default
+                align-items:stretch) plus bottom-aligning the pills inside
+                that stretched height (content-end) left a large,
+                genuinely awkward gap between the "Categories" heading and
+                the first pill row — filling that gap "well" isn't really
+                possible when the pill block is just shorter than the
+                cards column's natural height. Pills are a plain top-down
+                flow (no content-end/flex-1 — nothing left for either to
+                do once the card isn't being forced taller than its
+                content). */}
+            <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
+              <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
+                {CATEGORY_META.map(cat => {
+                  const count = categoryCounts[cat.name] || 0;
+                  if (!count) return null;
+                  // title = the researched per-category example (CATEGORY_EXAMPLES)
+                  // — the pill has no room to show it, but it's not wasted: a
+                  // hover reveals the "oh, that might be useful" line instead
+                  // of a bare category name.
+                  //
+                  // grid-cols-1 below sm: (found live on a phone screenshot
+                  // 2026-09-21) — the label span is whitespace-nowrap, and a
+                  // 2-column grid on a ~350px-wide card gives each track
+                  // ~170px, too narrow for "Home & Daily Life"/"Health &
+                  // Wellness"/etc. Grid items default to min-width:auto, so
+                  // the nowrap label doesn't shrink or wrap — it just
+                  // overflows its track and visually overlaps the pill next
+                  // to it. One column gives every pill the full card width.
+                  return (
+                    <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
+                      <span className="text-[18px]" aria-hidden="true">{cat.emoji}</span>
+                      <span className="text-[12px] font-semibold whitespace-nowrap" style={{color:NAVY}}>{cat.name}</span>
+                      <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
+                    </button>
+                  );
+                })}
               </div>
+              <div className="mt-3 pt-3 border-t" style={{borderColor:'#c9c1e0'}}>
+                <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+              </div>
+            </div>
+
+            {/* Guide intro (2026-09-22) — deliberately its own plain block,
+                not inside the categories card: guides aren't a category,
+                they're a separate, parallel way to get an answer (read
+                instead of run a tool), so giving it the categories card's
+                purple/blue gradient would have implied otherwise. Sits in
+                this column's own leftover white space below the card
+                instead. Plain <a>, not <Link>: /guides is a static
+                prerendered page, not a React Router route — same
+                convention as the dedicated guides section further down
+                the page and Footer.js. */}
+            <div>
+              <p className="text-[11px] leading-relaxed" style={{color:MUTED}}>Check out our library of useful guides, one-page articles written to answer common questions that arise in every category. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse DeftBrain guides →</a></p>
             </div>
           </div>
         </div>
