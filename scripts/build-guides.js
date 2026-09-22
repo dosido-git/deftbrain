@@ -343,7 +343,7 @@ ${stepsJsonLd}
       <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
       <span class="masthead-logo-text">Deft<span>Brain</span></span>
     </a>
-    <a href="/" class="masthead-cta">All tools →</a>
+    <a href="/tools" class="masthead-cta">All tools →</a>
   </header>
 
   <main>

@@ -487,7 +487,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             right-aligned on their own line — which is what ToolPageWrapper
             already does on mobile. */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
+          {/* Was unclickable — a plain <div> (BrandMark only wraps itself in
+              a <button> when given onClick). backToHome (not a <Link to="/">)
+              is the right fix here specifically: this header already IS on
+              "/", so a Link to the current route wouldn't reset the active
+              search/catalog state; backToHome does exactly that (same
+              function the "← Back" button during a search already uses)
+              and additionally scrolls to top. */}
+          <BrandMark direction="left" size="md" isDark={false} showTagline={true} onClick={backToHome} />
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>

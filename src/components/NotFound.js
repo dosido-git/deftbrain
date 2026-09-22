@@ -53,10 +53,20 @@ const NotFound = ({
   return (
     <div className={`min-h-screen ${c.bg} flex items-center justify-center p-6`}>
       <div className={`text-center space-y-5 ${c.card} border p-10 sm:p-12 rounded-2xl shadow-sm max-w-md w-full`}>
-        <div className="flex flex-col items-center gap-2 animate-[brand-spin-rest_3s_infinite] motion-reduce:animate-none">
+        {/* Was inert (plain divs, no onClick) — every other logo on the site
+            goes home on click, this is the one 404 users specifically land
+            on and it wasn't one of them. `navigate`, not <Link>: this file
+            already uses it for the explicit Home button below, no need for
+            a second navigation primitive. */}
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="DeftBrain — home"
+          className="flex flex-col items-center gap-2 mx-auto animate-[brand-spin-rest_3s_infinite] motion-reduce:animate-none"
+        >
           <img
             src="/pBrain-l.png"
-            alt="DeftBrain"
+            alt=""
             className="h-16 w-auto object-contain"
           />
           <span
@@ -66,7 +76,7 @@ const NotFound = ({
             <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
             <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
           </span>
-        </div>
+        </button>
         <div>
           <h1 className={`text-6xl font-bold tracking-tight ${c.heading}`}>
             4<span className={c.accent}>0</span>4

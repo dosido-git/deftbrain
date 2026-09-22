@@ -168,7 +168,11 @@ export default function AllToolsPage({ allTools = [] }) {
     <main className="at-page">
       <header className="at-site-header">
         <div className="at-shell at-site-header-inner">
-          <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
+          {/* BrandMark only wraps itself in a clickable <button> when given
+              onClick — plain, it's an inert <div>. Unlike the homepage's own
+              header (DashBoard.js), this page really is somewhere else, so
+              it needs a real navigation, not a state reset. */}
+          <Link to="/" aria-label="DeftBrain — home"><BrandMark direction="left" size="md" isDark={false} showTagline={true} /></Link>
           <div className="at-header-right">
             <nav className="at-nav" aria-label="Primary">
               <Link to="/tools" aria-current="page">Tools</Link>

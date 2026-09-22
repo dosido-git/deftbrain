@@ -4,16 +4,16 @@
   "lastmod": "2026-09-21"
  },
  "static:about": {
-  "hash": "3baf1608421fe457b235127c416795d8537ac0c7",
-  "lastmod": "2026-09-09"
+  "hash": "f3f438a50e591bb846b8b8bbdb1b83120a60cb0c",
+  "lastmod": "2026-09-22"
  },
  "static:privacy": {
-  "hash": "3d62d6e2ba8fb4a60e679d807268f77befd49188",
-  "lastmod": "2026-09-21"
+  "hash": "2be420e09ef45db82a77ef42ebd4a24fa0f36e37",
+  "lastmod": "2026-09-22"
  },
  "static:terms": {
-  "hash": "885d762b69cf8fb310852bcc0faa6c3c928d7da3",
-  "lastmod": "2026-09-09"
+  "hash": "ca6c1552da51908acdbe271f2391ee7972a4710a",
+  "lastmod": "2026-09-22"
  },
  "tool:AlternatePath": {
   "hash": "75b35de251c8bb6c23acb2e9e482f6df6aa03aae",
@@ -192,7 +192,7 @@
   "lastmod": "2026-09-21"
  },
  "static:tools": {
-  "hash": "13d572b5ffd244476c3609bafd985e5ec627626d",
+  "hash": "d37aae96aa962fcec26e6d32c43fc0fbad772ea3",
   "lastmod": "2026-09-22"
  }
 }

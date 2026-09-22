@@ -480,7 +480,7 @@ function PageTemplate(record) {
 
   <header class="masthead">
     <a href="/" class="masthead-logo">Deft<span>Brain</span></a>
-    <a href="/" class="masthead-cta">All tools →</a>
+    <a href="/tools" class="masthead-cta">All tools →</a>
   </header>
 
   <main>

@@ -435,7 +435,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
       <span class="masthead-logo-text">Deft<span>Brain</span></span>
     </a>
-    <a href="/" class="masthead-cta">All tools →</a>
+    <a href="/tools" class="masthead-cta">All tools →</a>
   </header>`;
 }
 
@@ -503,7 +503,7 @@ function renderByCategory(specs) {
 <p class="lede">Each guide gets to the point, and ends with a tool that does the work for you. Find the one that matches your situation and start there.</p>
 ${renderTabs('category')}
 ${body}
-      <p class="index-outro">More guides shipping regularly. If there&#39;s a moment we haven&#39;t written for yet, the <a href="/">tool catalog</a> is where the work continues.</p>
+      <p class="index-outro">More guides shipping regularly. If there&#39;s a moment we haven&#39;t written for yet, the <a href="/tools">tool catalog</a> is where the work continues.</p>
 
     </div>
   </main>
