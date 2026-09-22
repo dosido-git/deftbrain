@@ -369,23 +369,15 @@ function ToolScramble({ allTools, onBrowse }) {
             const accent = SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length];
             return (
               <Link key={t.id} to={`/${t.id}`} className="group relative block max-w-[210px]">
-                {/* Scatter transform lives on this inner wrapper now, not the
-                    Link itself (2026-09-21 fix). It used to sit on the Link,
-                    which — because a CSS transform always creates its own
-                    stacking context — meant a hovered tile's WHOLE subtree
-                    (its own text AND its popup) got promoted above every
-                    other tile via hover:z-30. That's what was hiding other
-                    tools' names: a popup opening below a hovered tile could
-                    paint straight over a neighboring tile's icon+tagline,
-                    and no z-index on that neighbor could ever outrank it —
-                    z-index only competes within a shared stacking context,
-                    and the transform had already sealed each tile into its
-                    own. Moving the transform down here (visual scatter
-                    unchanged) leaves the Link itself un-transformed, so this
-                    span's z-20 and the popup's z-10 below now compare
-                    directly across every tile, not just within one — the
-                    always-visible content wins, full stop, hover or not. */}
-                <span className="relative z-20 flex items-center gap-2" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
+                {/* Scatter transform lives on this inner wrapper, not the
+                    Link itself (2026-09-21). A CSS transform always creates
+                    its own stacking context, so putting it on the Link
+                    would seal that tile's whole subtree (text + popup) away
+                    from every sibling — no z-index anywhere could then rank
+                    one tile's content against another's popup. Keeping the
+                    Link itself un-transformed means the plain z-index rule
+                    below actually applies consistently across every tile. */}
+                <span className="flex items-center gap-2" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
                   <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
                   <span>
                     <b className="block text-[11px] leading-tight" style={{color:accent}}>{t.tagline}</b>
@@ -393,24 +385,40 @@ function ToolScramble({ allTools, onBrowse }) {
                   </span>
                 </span>
                 {/* Preview polaroid — only its own independent "just landed"
-                    tilt now (no more counter-rotating the tile's scatter
-                    angle: the Link isn't rotated any more, so there's
-                    nothing to cancel out). Accent border/caption match this
-                    tile's own tagline color — ties the photo back to its
-                    tile instead of reading as an unrelated insert.
-                    Desaturated slightly so it sits closer to the section's
-                    pastel palette. Silently disappears (onError) for the
-                    ~35 tools with no art yet — the em title reveal above
-                    still works either way. Sized up on sm:+ (2026-09-21,
-                    owner asked for bigger) but kept smaller on real phones:
-                    it's centered under its tile with no viewport-edge
-                    clamping, and a tile near the left/right edge of a
-                    ~375px screen already has little room either side —
-                    widening further there risks the popup clipping off
-                    the visible screen, not just overlapping neighbors
-                    (which no longer matters — see z-index note above). */}
+                    tilt (the Link isn't rotated, so there's no scatter angle
+                    to cancel out). Accent border/caption match this tile's
+                    own tagline color — ties the photo back to its tile
+                    instead of reading as an unrelated insert. Desaturated
+                    slightly so it sits closer to the section's pastel
+                    palette. Silently disappears (onError) for the ~35 tools
+                    with no art yet — the em title reveal above still works
+                    either way.
+
+                    z-20 here, explicitly, is the whole fix (2026-09-21,
+                    2nd pass): every sibling Link is position:relative with
+                    no z-index of its own (z-index:auto), and an element
+                    with a real z-index always paints above a z-auto one
+                    regardless of DOM order — so this popup reliably sits
+                    above ANY neighboring tile's icon+tagline, not just
+                    tiles that happen to come earlier in the list. First
+                    pass tried the opposite (content always above every
+                    popup, everywhere) specifically to stop a popup from
+                    hiding a neighbor's name — it did, but a popup covering
+                    several tiles' worth of space is common at this size,
+                    and every one of THOSE tiles' now-undefeatable text
+                    rendered right through the popup's own card, which read
+                    as broken, not fixed ("text is bleeding through the
+                    popup" — owner, 2026-09-21). A hover preview briefly
+                    covering what's behind it (cleanly, opaquely) is normal,
+                    expected hover-card behavior — it's the SAME piece of
+                    information hidden AND visible at once that actually
+                    looked wrong. Sized up on sm:+ (owner asked for bigger)
+                    but kept smaller on real phones: it's centered under its
+                    tile with no viewport-edge clamping, and a tile near the
+                    left/right edge of a ~375px screen has little room
+                    either side already. */}
                 <div
-                  className="pointer-events-none absolute left-1/2 top-full z-10 mt-3 w-[240px] sm:w-[360px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
+                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-[240px] sm:w-[360px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
                   style={{transform:`rotate(${tilt}deg) translateX(-50%)`}}
                 >
                   <div className="rounded-2xl bg-white p-2.5 pb-3.5" style={{border:`2px solid ${accent}`,boxShadow:'0 20px 45px -12px rgba(20,42,67,.4)'}}>
