@@ -580,11 +580,17 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       <div className="grid lg:grid-cols-[.92fr_1.08fr]">
         <div className="px-6 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8 flex flex-col justify-center">
           <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
-          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain helps when you don’t know what to do next.</p>
-          {/* The one sentence the earlier IA review said was missing: is
-              this a chatbot, articles, or tools — and what do I actually
-              get. Names "AI" once, transparently, per charter Appendix A. */}
-          <p className="mt-2 text-[12px] leading-snug max-w-[470px]" style={{color:MUTED}}>AI-powered tools, not a chatbot — answer a few quick questions about your situation, and get something to act on: a checklist, a script, a plan.</p>
+          {/* Replaces the old two-line pair (a punchy subheadline + a
+              separate "AI-powered tools, not a chatbot" line) with one
+              sentence doing both jobs — what DeftBrain is, and how AI is
+              used — worked out with the owner over several rounds directly
+              in chat, not drafted blind. Still names "AI" exactly once,
+              transparently, per charter Appendix A — that constraint is why
+              this isn't two sentences. "Relying on" (not "built around")
+              deliberately keeps the inquiry, not the AI, as the subject:
+              built-around would have put the model at the center of its
+              own description, the opposite of "guidance, not AI." */}
+          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain is a collection of targeted inquiries into everyday issues, each relying on carefully guided artificial intelligence to produce results you can have confidence in.</p>
           {/* Plain <a>, not <Link>: /privacy is a static prerendered page
               (public/privacy.html), not a React Router route — a <Link> here
               would fall through to the catch-all /:toolId route and 404, the
