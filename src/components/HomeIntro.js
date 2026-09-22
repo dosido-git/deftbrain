@@ -696,7 +696,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 convention as the dedicated guides section further down
                 the page and Footer.js. */}
             <div>
-              <p className="text-[11px] leading-relaxed" style={{color:MUTED}}>Check out our library of useful guides, one-page articles written to answer common questions that arise in every category. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse DeftBrain guides →</a></p>
+              <p className="text-[13.5px] leading-relaxed" style={{color:MUTED}}>Check out our library of useful guides, one-page articles written to answer common questions that arise in every category. <a href="/guides" className="font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse DeftBrain guides →</a></p>
             </div>
           </div>
         </div>
