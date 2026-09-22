@@ -277,6 +277,16 @@ else:
 VALID_TOOL_IDS = set()
 TOOL_META = {}  # id -> {'icon': '...', 'title': '...'}
 
+# Static top-level routes that are real pages but aren't in tools.js — S5.5's
+# href="/Word" check only knows the tool catalog, so these were flagged as
+# "broken links" even though every one of them already resolves (guides is
+# a prerendered page, about/privacy/terms are static routes). Found 2026-09-21
+# when a second legitimate href="/guides" (HomeIntro.js) tripped this as a
+# NEW finding in diff-audit even though the first one was already accepted
+# as pre-existing — the message text carries no line number, so two
+# occurrences of the same static route just double-count the one finding.
+STATIC_ROUTES = {'about', 'guides', 'privacy', 'terms'}
+
 # Resolve tools.js path: env var > sibling-of-/audit/ > Claude environment
 _candidate_paths = [
     os.environ.get('TOOLS_JS'),
@@ -1232,7 +1242,7 @@ for name, fpath in tools:
     # Only checks plain string hrefs (href="/ToolId"), not template literals
     if VALID_TOOL_IDS:
         for tool_id in re.findall(r'href=["\'][/]([A-Za-z][A-Za-z0-9]+)["\']', content):
-            if tool_id not in VALID_TOOL_IDS:
+            if tool_id not in VALID_TOOL_IDS and tool_id not in STATIC_ROUTES:
                 fails.append(f'S5.5: cross-ref link /{tool_id} does not exist in tools.js — broken link')
 
     # S5.5: relative href check — catches href="tool-name" or href={`tool-name`} missing leading slash

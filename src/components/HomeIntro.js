@@ -436,9 +436,14 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
   // Reduced from 6, settled on 8 (2026-09-21) — the carousel now shares
   // the promoted hero zone with the category grid instead of running
-  // full-width. Grid is a fixed 4 columns (see JSX below), so PAGE_SIZE=8
+  // full-width. Grid is 4 columns at sm:+ (see JSX below), so PAGE_SIZE=8
   // renders as two full rows of 4, not one — the taller card fix freed
   // enough room for a second row to fit without the section overrunning.
+  // Below sm: (real phones), the grid drops to 2 columns — a fixed 4 was
+  // never made responsive, so a 375-430px screen was splitting into
+  // ~85px columns and force-breaking every headline mid-word ("So met
+  // hi..." for "Something...") — found live on a phone screenshot
+  // 2026-09-21. 2 columns still renders 8 as 4 rows, just taller.
   // Still cycles through all of ROTATION via the same auto-rotate +
   // manual paging, just 8 doors at a time instead of 6.
   const PAGE_SIZE = 8;
@@ -544,7 +549,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
             <div className="relative">
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-              <div className="grid grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
             </div>
             {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
@@ -566,7 +571,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
               card isn't being forced taller than its content). */}
           <div className="self-start rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
@@ -574,6 +579,15 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 // — the pill has no room to show it, but it's not wasted: a
                 // hover reveals the "oh, that might be useful" line instead
                 // of a bare category name.
+                //
+                // grid-cols-1 below sm: (found live on a phone screenshot
+                // 2026-09-21) — the label span is whitespace-nowrap, and a
+                // 2-column grid on a ~350px-wide card gives each track
+                // ~170px, too narrow for "Home & Daily Life"/"Health &
+                // Wellness"/etc. Grid items default to min-width:auto, so
+                // the nowrap label doesn't shrink or wrap — it just
+                // overflows its track and visually overlaps the pill next
+                // to it. One column gives every pill the full card width.
                 return (
                   <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
                     <span className="text-[18px]" aria-hidden="true">{cat.emoji}</span>
@@ -583,8 +597,12 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 );
               })}
             </div>
-            <div className="mt-3 pt-3 border-t" style={{borderColor:'#c9c1e0'}}>
+            <div className="mt-3 pt-3 border-t flex flex-col gap-1.5" style={{borderColor:'#c9c1e0'}}>
               <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+              {/* Plain <a>, not <Link>: /guides is a static prerendered page,
+                  not a React Router route — same convention as the dedicated
+                  guides section below (line ~682) and Footer.js. */}
+              <a href="/guides" className="text-[10px] font-semibold underline underline-offset-4" style={{color:MUTED}}>Prefer to read first? Browse guides →</a>
             </div>
           </div>
         </div>
