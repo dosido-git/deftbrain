@@ -129,33 +129,6 @@ const PROBLEM_CLOUD = [
   ['something feels off','DecoderRing'],
 ];
 
-// One real, sharp example per category — not new copy: every line here is
-// pulled from ROTATION (already vetted, already shipped) and paired with a
-// tool actually IN that category, so the tile is never showing an example
-// that would mislead about what's inside. Chosen for "oh, that might be
-// useful" recognition, not coverage — one line per category is a claim,
-// not a catalog. bg/accent tint the word cloud's own 7-color accent set
-// (HomeIntro's PROBLEM_CLOUD above) so the two sections read as the same
-// palette, not two different homepages. The tile links the whole category,
-// not just this one tool — the example is a hook, not a shortcut around
-// the category it's illustrating.
-const CATEGORY_EXAMPLES = {
-  'Home & Daily Life':   { example:'Something in my lease looks wrong.', accent:'#d28a2e', bg:'#f8eddf' },
-  'Travel & Events':     { example:'I have hours between flights.', accent:'#1f6f78', bg:'#dde9ea' },
-  'Relationships':       { example:'I need to say something that matters.', accent:'#b14f78', bg:'#f3e4ea' },
-  'Money':               { example:'This bill doesn’t look right.', accent:'#3f7b4d', bg:'#e2ebe4' },
-  'Career':              { example:'I need to talk about my own work.', accent:'#2e5f9e', bg:'#dfe7f0' },
-  'Work & Meetings':     { example:'The meeting ended and I’m still not sure what was decided.', accent:'#c94f45', bg:'#f6e4e3' },
-  'Health & Wellness':   { example:'I have a doctor appointment coming up.', accent:'#6c5aa8', bg:'#e8e6f1' },
-  'Conversations':       { example:'I need to have a difficult conversation.', accent:'#d28a2e', bg:'#f8eddf' },
-  'Learning':            { example:'I’m stuck on a concept and don’t know why.', accent:'#1f6f78', bg:'#dde9ea' },
-  'Just for Fun':        { example:'I know it. I just can’t remember it.', accent:'#b14f78', bg:'#f3e4ea' },
-  'Self & Reflection':   { example:'Everything is stuck in my head at once.', accent:'#3f7b4d', bg:'#e2ebe4' },
-  'Ideas & Imagination': { example:'I can only see the road not taken in hindsight.', accent:'#2e5f9e', bg:'#dfe7f0' },
-  'Decisions':           { example:'I’m about to buy something big.', accent:'#c94f45', bg:'#f6e4e3' },
-  'Tasks':               { example:'Everything feels urgent at once.', accent:'#6c5aa8', bg:'#e8e6f1' },
-};
-
 // "See it in action" worked examples (2026-09-21) — two shown at once, picked
 // per page load (see HomeIntro below). Went through three versions same day:
 // (1) a single photo with the DoctorVisitPrep exchange baked into it as
@@ -664,10 +637,18 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 {CATEGORY_META.map(cat => {
                   const count = categoryCounts[cat.name] || 0;
                   if (!count) return null;
-                  // title = the researched per-category example (CATEGORY_EXAMPLES)
+                  // title = the researched per-category example (now on
+                  // CATEGORY_META itself, see src/data/categoryMeta.js)
                   // — the pill has no room to show it, but it's not wasted: a
                   // hover reveals the "oh, that might be useful" line instead
                   // of a bare category name.
+                  //
+                  // onClick passes the category's real /tools/{slug} page
+                  // (2026-09-22) — previously passed cat.name to onBrowse,
+                  // which routed to /tools?category=X (an in-page filter on
+                  // the flat browse page). Now that every category has its
+                  // own crawlable page, a homepage pill should land a visitor
+                  // there directly rather than on a filtered view of /tools.
                   //
                   // grid-cols-1 below sm: (found live on a phone screenshot
                   // 2026-09-21) — the label span is whitespace-nowrap, and a
@@ -678,7 +659,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                   // overflows its track and visually overlaps the pill next
                   // to it. One column gives every pill the full card width.
                   return (
-                    <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
+                    <button key={cat.name} type="button" onClick={()=>onBrowse(cat.slug)} title={cat.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
                       <span className="text-[18px]" aria-hidden="true">{cat.emoji}</span>
                       <span className="text-[12px] font-semibold whitespace-nowrap" style={{color:NAVY}}>{cat.name}</span>
                       <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>

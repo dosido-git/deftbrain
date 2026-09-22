@@ -194,5 +194,61 @@
  "static:tools": {
   "hash": "13914bcc0209c4673f18eb9a6852442f31264d63",
   "lastmod": "2026-09-22"
+ },
+ "category:home-daily-life": {
+  "hash": "8055f7d5b4ac98293ed89c99b8aebb5e327736ab",
+  "lastmod": "2026-09-22"
+ },
+ "category:travel-events": {
+  "hash": "8d6c46864ab8949b8b6247d6b446b509d2a32a26",
+  "lastmod": "2026-09-22"
+ },
+ "category:relationships": {
+  "hash": "0aa3f0710ae513a57ee615bf400392d936f71014",
+  "lastmod": "2026-09-22"
+ },
+ "category:money": {
+  "hash": "ef6bfa2c6ac063265d9e15e5ee6cadca8aef3d37",
+  "lastmod": "2026-09-22"
+ },
+ "category:career": {
+  "hash": "e288f38f579ed0f49e551618a263d78d28db13da",
+  "lastmod": "2026-09-22"
+ },
+ "category:work-meetings": {
+  "hash": "9ab54af045820f2754604dce3a27b92b631d71a3",
+  "lastmod": "2026-09-22"
+ },
+ "category:health-wellness": {
+  "hash": "17cfbaa96865e079a6190ee996ec72f9b6dd49bd",
+  "lastmod": "2026-09-22"
+ },
+ "category:conversations": {
+  "hash": "640edc1cf3ee9d9645ffc5cf09e2d07379d97626",
+  "lastmod": "2026-09-22"
+ },
+ "category:learning": {
+  "hash": "e8eaa52fff5384969e60bbd138dff4eda4728507",
+  "lastmod": "2026-09-22"
+ },
+ "category:just-for-fun": {
+  "hash": "f900e0a986105f28f407b12c61aeb8439a1f6ba2",
+  "lastmod": "2026-09-22"
+ },
+ "category:self-reflection": {
+  "hash": "c95b6d8869cb8c4934ee3208067bde72d7ea0e75",
+  "lastmod": "2026-09-22"
+ },
+ "category:ideas-imagination": {
+  "hash": "191819796ec4065f391a7ffc7c653c698ea409db",
+  "lastmod": "2026-09-22"
+ },
+ "category:decisions": {
+  "hash": "48f7e05f9af039da27cdce564e9a3cca892ec186",
+  "lastmod": "2026-09-22"
+ },
+ "category:tasks": {
+  "hash": "58352586096c30bf447fbb47e9f9afd0866607f1",
+  "lastmod": "2026-09-22"
  }
 }

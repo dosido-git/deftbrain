@@ -534,6 +534,26 @@ app.get('/tools', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
+// Per-category tool pages (/tools/{slug}, added 2026-09-22) — unlike /tools
+// itself, these ARE real prerendered files (scripts/build-tools-category-
+// pages.js writes build/tools/{slug}/index.html at build time, same shape as
+// the guide hubs below), so this is a plain static serve, not the SPA-shell
+// fallback the bare /tools route above uses. Listed explicitly rather than
+// wildcarded — same reasoning as GUIDE_CATEGORIES below — so a category
+// with no page yet (or a typo) 404s cleanly instead of serving nothing with
+// a 200. Keep in sync with the `slug` field on every src/data/categoryMeta.js
+// entry.
+const TOOL_CATEGORIES = [
+  'home-daily-life', 'travel-events', 'relationships', 'money', 'career',
+  'work-meetings', 'health-wellness', 'conversations', 'learning',
+  'just-for-fun', 'self-reflection', 'ideas-imagination', 'decisions', 'tasks',
+];
+TOOL_CATEGORIES.forEach(slug => {
+  app.get(`/tools/${slug}`, (req, res) => {
+    sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'tools', slug, 'index.html'));
+  });
+});
+
 app.get('/guides', (req, res) => {
   sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', 'index.html'));
 });

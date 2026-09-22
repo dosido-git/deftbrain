@@ -195,6 +195,9 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // "Tools" nav link and the homepage's category chips now both `navigate()`
   // there directly (see onBrowse below) instead of calling a local
   // openCatalog() — removed that function since nothing calls it any more.
+  // A homepage category pill now lands on that category's own real page
+  // (/tools/{slug}, same-day addition — scripts/build-tools-category-pages.js)
+  // instead of a filtered view of /tools, so onBrowse takes a slug, not a name.
   // showCatalog itself stays: it still gates the isSearching-independent
   // parts of this component's own inline results view below, it's just
   // permanently false now in normal use (nothing sets it true) rather than
@@ -612,7 +615,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
-              onBrowse={(category) => navigate(category ? `/tools?category=${encodeURIComponent(category)}` : '/tools')}
+              onBrowse={(slug) => navigate(slug ? `/tools/${slug}` : '/tools')}
             />
           </div>
         )}

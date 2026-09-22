@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { categoriesFor } = require('./lib/toolCategories');
 
 const SITE_URL = 'https://deftbrain.com'; // Update to your production URL
 const TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -122,6 +123,45 @@ for (const id of indexableToolIds) {
   toolLastmod[id] = lastmodFor(`tool:${id}`, sha(JSON.stringify(toolObjects[id])));
 }
 
+// Tool category pages (/tools/{slug}, 2026-09-22) — same content-hash
+// pattern as everything above, one entry per src/data/categoryMeta.js
+// category rather than a hub-style separate state file (generate-guides-
+// sitemap.js's 18 hubs get their own src/data/guides-lastmod.json; 14
+// near-identical generated pages fit fine in this file's own existing
+// lastmodState instead of adding a second state file for a page count this
+// close to the tool/static entries already tracked here).
+//
+// Hashed from source, same reasoning as the guides-hub hash: the rendered
+// build/tools/{slug}/index.html only exists after a full build, and this
+// runs in `prebuild`, before build/ exists at all. What actually determines
+// a category page's content is (a) that category's own name/desc/example in
+// categoryMeta.js, (b) the SET of tools currently in it (a tool gaining or
+// losing that category changes the page even though categoryMeta.js itself
+// didn't change), and (c) the generator script's own template — hashing all
+// three means a template edit legitimately bumps all 14, same tradeoff
+// generate-guides-sitemap.js already accepts for its 18 hubs.
+const categoryMetaPath = path.join(__dirname, '..', 'src', 'data', 'categoryMeta.js');
+const categoryMetaContent = fs.readFileSync(categoryMetaPath, 'utf-8');
+const categoryObjects = (() => {
+  const body = categoryMetaContent.replace(/\bexport\s+const\b/g, 'const');
+  // eslint-disable-next-line no-new-func
+  return new Function(`${body}\n;return typeof CATEGORY_META !== 'undefined' ? CATEGORY_META : [];`)();
+})();
+const categoryPagesGeneratorHash = (() => {
+  try { return sha(fs.readFileSync(path.join(__dirname, 'build-tools-category-pages.js'), 'utf-8')); }
+  catch { return ''; }
+})();
+const categoryLastmod = {};
+for (const cat of categoryObjects) {
+  if (!cat.slug) continue;
+  const toolIdsInCat = Object.values(toolObjects)
+    .filter(t => categoriesFor(t).includes(cat.name))
+    .map(t => t.id)
+    .sort();
+  const hash = sha([cat.slug, cat.name, cat.desc || '', cat.example || '', categoryPagesGeneratorHash, ...toolIdsInCat].join('|'));
+  categoryLastmod[cat.slug] = lastmodFor(`category:${cat.slug}`, hash);
+}
+
 // Homepage: its crawlable content is the featured/keep-list links, the tool
 // index, and the blocks prerender.js writes into #root.
 //
@@ -176,6 +216,13 @@ const STATIC_PAGES = [
   // Future: { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3' },
 ];
 
+// Tool category pages (/tools/{slug}) — same priority tier as the guide hubs
+// in generate-guides-sitemap.js (0.9): real editorial destination pages, not
+// just utility routes like /privacy or /terms.
+const CATEGORY_PAGES = categoryObjects
+  .filter(cat => cat.slug && categoryLastmod[cat.slug])
+  .map(cat => ({ loc: `${SITE_URL}/tools/${cat.slug}`, changefreq: 'weekly', priority: '0.9', lastmod: categoryLastmod[cat.slug] }));
+
 // ── Generate sitemap.xml ──
 const urls = [
   // Homepage — highest priority
@@ -187,6 +234,8 @@ const urls = [
   },
   // Static pages
   ...STATIC_PAGES,
+  // Tool category pages
+  ...CATEGORY_PAGES,
   // Tool pages — keep-list only (see above). Focus tools get a higher priority
   // hint than keepers (documentation of intent — Google ignores priority).
   ...indexableToolIds.map(id => ({
@@ -217,7 +266,7 @@ ${urls.map(u => `  <url>
 const outputPath = path.join(__dirname, '..', 'public', 'sitemap-app.xml');
 fs.writeFileSync(outputPath, sitemap);
 console.log(`Sitemap written to ${outputPath}`);
-console.log(`Total URLs: ${urls.length} (1 homepage + ${STATIC_PAGES.length} static + ${indexableToolIds.length} tools)`);
+console.log(`Total URLs: ${urls.length} (1 homepage + ${STATIC_PAGES.length} static + ${CATEGORY_PAGES.length} categories + ${indexableToolIds.length} tools)`);
 
 // ── Also generate robots.txt if it doesn't exist ──
 const robotsPath = path.join(__dirname, '..', 'public', 'robots.txt');

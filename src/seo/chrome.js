@@ -2,9 +2,10 @@
 //
 // Shared HTML chrome for build-time HTML generators.
 // Consumed by:
-//   - src/seo/PageTemplate.js          (tool prerender)
-//   - scripts/build-guides.js          (guide articles)
-//   - scripts/build-guides-indexes.js  (guide hub pages)
+//   - src/seo/PageTemplate.js               (tool prerender)
+//   - scripts/build-guides.js               (guide articles)
+//   - scripts/build-guides-indexes.js       (guide hub pages)
+//   - scripts/build-tools-category-pages.js (tool category pages)
 //
 // React pages render src/components/Footer.js, which produces the same
 // visual design via React. The two have to stay visually aligned by hand —
@@ -49,6 +50,23 @@ function getToolList() {
   return out;
 }
 
+// Parse src/data/categoryMeta.js for { name, slug } of the 14 permanent tool
+// categories. Same plain-regex-over-source approach as getToolList() above,
+// for the same reason: these build-time scripts are CommonJS and
+// categoryMeta.js is a bundler-free ES module — no `import`/`require` of it
+// works here. `slug:` always follows that entry's own `name:` before the
+// next entry's `name:` can appear, so a non-greedy match between them can't
+// cross into a neighboring category.
+function getCategoryList() {
+  const file = path.join(__dirname, '..', 'data', 'categoryMeta.js');
+  const content = fs.readFileSync(file, 'utf8');
+  const out = [];
+  const re = /name:\s*'([^']+)'[\s\S]*?slug:\s*'([^']+)'/g;
+  let m;
+  while ((m = re.exec(content))) out.push({ name: m[1], slug: m[2] });
+  return out;
+}
+
 // A real, crawlable <a href> index of every tool. Injected into the static HTML
 // of the homepage, every tool page, and every guide — placed OUTSIDE the React
 // root so hydration ignores it. Fixes the orphaned-tools internal-linking problem
@@ -71,6 +89,25 @@ function getToolIndexHTML(tools, relatedHTML = '') {
   // the browser's default `details:not([open]) > *:not(summary){display:none}` rule,
   // which silently forced this open (full link wall visible) on every single page
   // load site-wide. The flex layout is applied only for the [open] state instead.
+  // Category-page links (2026-09-22) — the 14 /tools/{slug} pages
+  // (scripts/build-tools-category-pages.js) get their own collapsed block,
+  // above the flat per-tool index, so every page in this shared chrome
+  // links to every category page: the exact "add a real link to the shared
+  // chrome" fix already used once this session for /tools itself, applied
+  // again here to avoid the new pages being orphaned in the static-HTML
+  // link graph check-orphans.js walks.
+  const categories = getCategoryList();
+  const categoryLinks = categories
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(cat => `<a href="/tools/${cat.slug}" style="color:#2c4a6e;text-decoration:none">${esc(cat.name)}</a>`)
+    .join('\n        ');
+  const categoriesBlock = categories.length ? `<details style="border-top:1px solid #e8e1d5;padding-top:14px;margin-bottom:14px">
+      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">Browse tools by category</summary>
+      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
+        ${categoryLinks}
+      </nav>
+    </details>` : '';
   return `
   <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
     <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}
@@ -80,7 +117,7 @@ function getToolIndexHTML(tools, relatedHTML = '') {
        rule for the same reason; here it travels with the markup, so
        every page that emits the strip suppresses it on paper. */
     @media print{.db-tool-index{display:none!important}}</style>
-    ${related}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
+    ${related}${categoriesBlock}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
       <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
       <nav style="font-size:13px;line-height:1.5;margin-top:14px">
         ${links}
@@ -188,4 +225,4 @@ function getFooterHTML() {
   </footer>`;
 }
 
-module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML };
+module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList };

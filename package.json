@@ -48,7 +48,7 @@
     "build:og:force": "node scripts/generate-og-images.js --force && python3 scripts/generate-og.py --force",
     "prebuild": "node scripts/build-locales.js && node scripts/build-guides.js && node scripts/generate-sitemap.js && node scripts/generate-llms.js",
     "build": "react-scripts build",
-    "postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js && node scripts/check-sitemap-urls.js && node scripts/check-orphans.js && node scripts/verify-build.js && node scripts/indexnow.js",
+    "postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/build-tools-category-pages.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js && node scripts/check-sitemap-urls.js && node scripts/check-orphans.js && node scripts/verify-build.js && node scripts/indexnow.js",
     "build:locales": "node scripts/build-locales.js",
     "predev:frontend": "node scripts/build-locales.js",
     "gates": "npm run check:syntax && npm run audit && node scripts/scan-guard-keys.js && node scripts/localization-audit.js && node scripts/primer-audit.js && node scripts/generate-sitemap.js --check && node scripts/check-renames.js",
