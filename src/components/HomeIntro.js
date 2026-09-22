@@ -261,14 +261,25 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
             straight out the bottom of the fixed-height box instead of
             being contained by it. Clamping is the fix that holds at any
             card width, not just today's — a taller magic number would
-            just move the same failure to the next narrower breakpoint. */}
-        <h3 className="text-[13px] font-extrabold leading-[1.18] line-clamp-2" style={{color:NAVY}}>{item.problem}</h3>
-        <p className="mt-1.5 text-[10.5px] leading-[1.4] line-clamp-2" style={{color:MUTED}}>{item.body}</p>
+            just move the same failure to the next narrower breakpoint.
+
+            line-clamp-2 (first pass) overcorrected: measured live, several
+            real ROTATION lines need 3 lines to read in full — a 3-sentence
+            body ("Find the clause. Understand the risk. Know what to
+            ask.") or a longer headline both clamped to 2 lines were losing
+            their last sentence/word even though nothing was actually
+            overflowing the old box, just wrapping more than expected.
+            Bumped to line-clamp-3 and gave the card itself more height
+            (below) to match — clamp is still the safety net, not the
+            primary fit, so a still-longer line in the future gets cut
+            cleanly instead of spilling. */}
+        <h3 className="text-[13px] font-extrabold leading-[1.18] line-clamp-3" style={{color:NAVY}}>{item.problem}</h3>
+        <p className="mt-1.5 text-[10.5px] leading-[1.4] line-clamp-3" style={{color:MUTED}}>{item.body}</p>
       </div>
     </Link>;
   };
 
-  return <div className="relative h-[295px] md:h-[332px] lg:h-[253px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
+  return <div className="relative h-[320px] md:h-[357px] lg:h-[278px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
 }
 
 function ToolScramble({ allTools, onBrowse }) {
@@ -391,11 +402,14 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
     return counts;
   }, [allTools]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
-  // Reduced from 6, settled on 4 (2026-09-21) — the carousel now shares
+  // Reduced from 6, settled on 8 (2026-09-21) — the carousel now shares
   // the promoted hero zone with the category grid instead of running
-  // full-width, single row of 4. Still cycles through all of ROTATION via
-  // the same auto-rotate + manual paging, just 4 doors at a time.
-  const PAGE_SIZE = 4;
+  // full-width. Grid is a fixed 4 columns (see JSX below), so PAGE_SIZE=8
+  // renders as two full rows of 4, not one — the taller card fix freed
+  // enough room for a second row to fit without the section overrunning.
+  // Still cycles through all of ROTATION via the same auto-rotate +
+  // manual paging, just 8 doors at a time instead of 6.
+  const PAGE_SIZE = 8;
   const [slots,setSlots] = useState(() => Array.from({length:PAGE_SIZE},(_,i)=>i));
   const [incoming,setIncoming] = useState(() => Array(PAGE_SIZE).fill(null));
   const [tokens,setTokens] = useState(() => Array(PAGE_SIZE).fill(0));
@@ -489,7 +503,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
         <div className="grid lg:grid-cols-[.8fr_1.2fr] gap-6">
           <div>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Already know the general area?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>Categories</p></div>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
             {/* grid + justify-items-start (not flex-wrap, not flex-col) so
                 each pill hugs its own content width — "Money" and "Ideas &
                 Imagination" don't force each other to a shared stretched
