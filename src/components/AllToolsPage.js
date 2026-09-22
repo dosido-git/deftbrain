@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
@@ -111,11 +111,30 @@ export default function AllToolsPage({ allTools = [] }) {
   const [category, setCategory] = useState(initialCategory);
   const [mode, setMode] = useState('forme');
   const [categoryOpen, setCategoryOpen] = useState(false);
+  // Matches the homepage's persistent nav search exactly (narrow-then-
+  // expand on focus/content) — owner asked for the same box, same
+  // location, same action, not just a similar-looking one.
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     const previous = document.body.style.background;
     document.body.style.background = '#faf8f5';
     return () => { document.body.style.background = previous; };
+  }, []);
+
+  // ⌘K focuses the search box — same shortcut the homepage's own copy of
+  // this box supports; the ⌘K badge inside it would be a lie otherwise.
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   // query/category were only ever read from the URL once, via the useState
@@ -162,7 +181,6 @@ export default function AllToolsPage({ allTools = [] }) {
 
   const submitSearch = e => { e.preventDefault(); syncUrl(query, category); };
   const chooseCategory = next => { setCategory(next); setCategoryOpen(false); syncUrl(query, next); };
-  const clearSearch = () => { setQuery(''); syncUrl('', category); };
 
   return (
     <main className="at-page">
@@ -176,6 +194,11 @@ export default function AllToolsPage({ allTools = [] }) {
           <div className="at-header-right">
             <nav className="at-nav" aria-label="Primary">
               <Link to="/tools" aria-current="page">Tools</Link>
+              {/* In-page anchor, not a route — there's no dedicated
+                  /categories page anywhere in the app, and this page
+                  already has the category picker built in a few hundred
+                  pixels down. Scrolls straight to it. */}
+              <a href="#categories">Categories</a>
               <a href="/guides">Guides</a>
               <a href="/about">About</a>
             </nav>
@@ -185,26 +208,45 @@ export default function AllToolsPage({ allTools = [] }) {
       </header>
 
       <section className="at-hero at-shell">
-        <Link to="/" className="at-home-link">← Home</Link>
+        {/* Home + search share one row (owner asked for Home kept
+            left-justified but vertically aligned with the search box,
+            rather than sitting alone on its own line above everything).
+            The search box itself is a straight port of the homepage's
+            persistent nav search (DashBoard.js) — same 220->420px
+            narrow-then-expand behavior, same input/button sizing and
+            copy, same Escape-to-clear, same ⌘K shortcut — not a
+            similar-looking one built separately. It still filters this
+            page (query state already drives `visible` below) and still
+            syncs ?q= on submit; "same action" is about the box's own
+            behavior, not about leaving /tools. */}
+        <div className="at-hero-top-row">
+          <Link to="/" className="at-home-link">← Home</Link>
+          <form className="at-nav-search" onSubmit={submitSearch}>
+            <div className="at-nav-search-field" style={{ width: (query || searchFocused) ? 420 : 220 }}>
+              <input
+                ref={searchRef}
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                onKeyDown={e => { if (e.key === 'Escape') { setQuery(''); e.currentTarget.blur(); } }}
+                placeholder="Describe what you’re dealing with…"
+                aria-label="What do you need help with?"
+              />
+              {!query && <span className="at-kbd">⌘K</span>}
+            </div>
+            <button type="submit" className="at-nav-search-btn">Find a tool →</button>
+          </form>
+        </div>
         <p className="at-eyebrow">THE WHOLE TOOLBOX</p>
-        <h1>All DeftBrain Tools</h1>
-        <p className="at-lede">Whatever you’re dealing with, there’s probably a tool for it.</p>
-
-        <form className="at-search" onSubmit={submitSearch}>
-          <span className="at-search-icon" aria-hidden="true">⌕</span>
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Try “I need to talk to my landlord”"
-            aria-label="What do you need help with?"
-          />
-          {query && <button type="button" className="at-clear" onClick={clearSearch} aria-label="Clear search">×</button>}
-          <button type="submit" className="at-search-button">Find a tool</button>
-        </form>
-        <p className="at-search-note">Search by the situation you’re in — you don’t need to know the tool’s name.</p>
+        <h1>DeftBrain Toolbox</h1>
+        {/* Styled like the homepage's own intro line ("DeftBrain is a
+            collection of...") — same size/weight/color/max-width — not
+            the page's pre-existing --muted lede treatment. */}
+        <p className="at-lede">“There’s probably a tool for that!”</p>
       </section>
 
-      <div className="at-controls-sticky">
+      <div id="categories" className="at-controls-sticky">
         <div className="at-shell at-controls">
           <div className="at-category-row" aria-label="Filter tools by category">
             <button className={`at-chip ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All <span>{allTools.length}</span></button>
