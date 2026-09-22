@@ -508,10 +508,17 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
           side by side instead of stacked as two more homepage sections.
           Swapped sides again (2026-09-21) — situations left, categories
           right — with the grid proportions swapped to match (wide side
-          now under the 4-across cards, narrow side under the pills). */}
-      <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
-        <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-6">
-          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+          now under the 4-across cards, narrow side under the pills).
+
+          Two separate cards, not one shared gradient (2026-09-21): each
+          gets its own rounded border + gradient, split from what used to
+          be one continuous gradient (warm half for situations, cool half
+          for categories) — reinforces "two different paths" instead of
+          implying one continuous thing. Browse all tools moved inside the
+          categories card specifically, as its closing line. */}
+      <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER}}>
+        <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-5">
+          <div className="rounded-2xl border p-4 sm:p-5" style={{borderColor:BORDER,background:'linear-gradient(120deg,#fff0cf 0%,#f8ddd7 100%)'}} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
             <div className="relative">
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
@@ -521,17 +528,17 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
           </div>
 
-          {/* flex flex-col on this column + content-between on the pill
-              grid: the outer grid's default align-items:stretch already
-              gives this column the SAME height as the cards column on its
-              left (whichever is taller). content-between then spreads the
-              7 pill rows evenly across that full height instead of
-              clustering at the top with dead space below — the two
-              columns end up occupying the same visual block regardless of
-              which one's content is naturally taller. */}
-          <div className="flex flex-col">
+          {/* flex flex-col + content-end (not content-between) on the pill
+              grid: the outer grid's default align-items:stretch still
+              gives this card the same height as the situations card on
+              its left, but the pills now draw together with a small,
+              fixed gap and sit flush against the BOTTOM of that shared
+              height — aligning the last pill row with the cards' own
+              bottom edge — rather than stretching to fill the whole
+              height with large gaps between every row. */}
+          <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            <div className="grid grid-cols-2 gap-x-2 content-between justify-items-start flex-1">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-2 content-end justify-items-start flex-1">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
@@ -540,19 +547,18 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 // hover reveals the "oh, that might be useful" line instead
                 // of a bare category name.
                 return (
-                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2.5 rounded-full border bg-white/70 px-4 py-2.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
-                    <span className="text-[20px]" aria-hidden="true">{cat.emoji}</span>
+                  <button key={cat.name} type="button" onClick={()=>onBrowse(cat.name)} title={CATEGORY_EXAMPLES[cat.name]?.example} className="flex items-center gap-2 rounded-full border bg-white/70 px-3.5 py-1.5 hover:border-[#142a43] hover:bg-white transition" style={{borderColor:BORDER}}>
+                    <span className="text-[18px]" aria-hidden="true">{cat.emoji}</span>
                     <span className="text-[12px] font-semibold whitespace-nowrap" style={{color:NAVY}}>{cat.name}</span>
                     <span className="text-[10px] font-semibold" style={{color:MUTED}}>{count}</span>
                   </button>
                 );
               })}
             </div>
+            <div className="mt-3 pt-3 border-t" style={{borderColor:'#c9c1e0'}}>
+              <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-6 pt-5 border-t" style={{borderColor:'#e8d9b8'}}>
-          <button type="button" onClick={onBrowse} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
         </div>
       </div>
     </section>

@@ -168,6 +168,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // so the header input isn't fighting the in-catalog SearchBox's own value
   // when both could theoretically be visible.
   const [navQuery, setNavQuery] = useState('');
+  const [navFocused, setNavFocused] = useState(false);
   const navSearchRef = useRef(null);
   const submitNavSearch = useCallback((e) => {
     e.preventDefault();
@@ -527,16 +528,26 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             ms-auto right-justifies it under the nav/locale row above
             (which is itself right-heavy — Tools/Guides/About + selectors
             end at the right edge), so the search sits under that cluster
-            instead of stranded under the logo on the left. mt-2, not
+            instead of stranded under the logo on the left. mt-1, not
             mt-4 — tighter to the row above now that it's aligned with it
-            rather than sitting under the wordmark's own whitespace. */}
+            rather than sitting under the wordmark's own whitespace.
+
+            Narrow-then-expand (2026-09-21), same idea as the in-catalog
+            SearchBox's own 160->320px behavior below: starts small (it's
+            a fixture, not a demand for attention), grows on focus OR once
+            there's a query, so it doesn't look abandoned-and-empty at
+            full width before anyone's touched it. Width is inline-styled
+            (not a Tailwind class) so the transition actually animates —
+            swapping between two arbitrary-value classes doesn't. */}
         {!isSearching && !showCatalog && (
-          <form onSubmit={submitNavSearch} className="mt-2 ms-auto flex gap-2 max-w-[520px]">
-            <div className="relative flex-1 min-w-0">
+          <form onSubmit={submitNavSearch} className="mt-1 ms-auto flex gap-2">
+            <div className="relative min-w-0" style={{ width: (navQuery || navFocused) ? 420 : 220, transition: 'width 0.2s' }}>
               <input
                 ref={navSearchRef}
                 value={navQuery}
                 onChange={e => setNavQuery(e.target.value)}
+                onFocus={() => setNavFocused(true)}
+                onBlur={() => setNavFocused(false)}
                 placeholder="Describe what you’re dealing with…"
                 className="w-full rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
                 style={{ borderColor: CLR.sand300 }}
