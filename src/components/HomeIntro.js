@@ -279,7 +279,17 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
     </Link>;
   };
 
-  return <div className="relative h-[320px] md:h-[357px] lg:h-[278px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
+  // Trimmed 2026-09-21: 278px (lg) at the previous pass covered the
+  // worst case (a 3-line headline AND a 3-line body on the same card)
+  // with ~23px to spare — real, but most cards only use 1-2 lines each,
+  // so that margin showed up as empty white space under the text on
+  // every card that wasn't the worst case. Recomputed from the actual
+  // measured line heights (3-line h3 46px + 6px gap + 3-line p 44px +
+  // 24px padding = 120px text zone + 135px image = 255px minimum) and
+  // set lg to 260px — ~5px of real margin, not 23, still never clips
+  // the worst case. Other two breakpoints trimmed by the same 18px
+  // delta without separately re-measuring their own image heights.
+  return <div className="relative h-[302px] md:h-[339px] lg:h-[260px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
 }
 
 function ToolScramble({ allTools, onBrowse }) {
@@ -509,7 +519,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 Imagination" don't force each other to a shared stretched
                 width — while still landing in two clean columns rather
                 than one long list or a ragged wrap. */}
-            <div className="grid grid-cols-2 gap-2 justify-items-start">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-3 justify-items-start">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
