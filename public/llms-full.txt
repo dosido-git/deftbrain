@@ -6,7 +6,7 @@ This file carries the substance behind https://deftbrain.com/llms.txt: what each
 
 ## Start here
 
-- [All tools](https://deftbrain.com/): the full catalog, grouped by category
+- [All tools](https://deftbrain.com/tools): search or browse the full catalog by category
 - [ToolFinder](https://deftbrain.com/ToolFinder): describe a problem in plain words and get pointed at the right tool
 - [Guides](https://deftbrain.com/guides): how-to hubs for the most common problems
 

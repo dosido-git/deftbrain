@@ -28,6 +28,12 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://deftbrain.com/tools</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://deftbrain.com/MentalHealthNavigator</loc>
     <lastmod>2026-09-21</lastmod>
     <changefreq>monthly</changefreq>

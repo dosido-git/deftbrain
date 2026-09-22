@@ -520,6 +520,20 @@ app.use('/guides', (req, res, next) => {
   next();
 });
 
+// /tools (AllToolsPage.js, added 2026-09-22) is a client-rendered React page,
+// not a standalone prerendered file like /guides or /about — it needs its own
+// explicit handler for the same reason a tool rename needs one added to
+// TOOL_IDS (see audit/REWRITE-INSTALL-KIT.md §7): the catch-all below only
+// recognizes '/' and known tool ids, so an unlisted path like '/tools' falls
+// through to its bottom branch and gets served with an HTTP 404 status —
+// React Router still renders AllToolsPage client-side once the JS loads, but
+// the wrong status code makes it a soft-404 to any crawler. Matches this
+// param string too (Express path matching ignores the query string), so
+// /tools?category=Money hits this same handler.
+app.get('/tools', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+});
+
 app.get('/guides', (req, res) => {
   sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', 'index.html'));
 });

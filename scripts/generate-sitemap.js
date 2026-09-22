@@ -106,6 +106,14 @@ for (const p of ['about', 'privacy', 'terms']) {
   const f = path.join(__dirname, '..', 'public', `${p}.html`);
   staticLastmod[p] = fs.existsSync(f) ? lastmodFor(`static:${p}`, sha(fs.readFileSync(f, 'utf-8'))) : TODAY;
 }
+// /tools (AllToolsPage.js, added 2026-09-22) is client-rendered, not a
+// standalone public/*.html file like the three above — hash its component
+// source instead so it gets the same "date only moves on a real edit"
+// contract rather than re-stamping on every deploy.
+{
+  const f = path.join(__dirname, '..', 'src', 'components', 'AllToolsPage.js');
+  staticLastmod.tools = fs.existsSync(f) ? lastmodFor('static:tools', sha(fs.readFileSync(f, 'utf-8'))) : TODAY;
+}
 
 // Tools: hash the serialized tools.js entry (title/description/guide/faq/seo
 // fields — everything that feeds the prerendered page body and meta).
@@ -164,6 +172,7 @@ const STATIC_PAGES = [
   { loc: `${SITE_URL}/privacy`, changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.privacy },
   { loc: `${SITE_URL}/about`,   changefreq: 'monthly', priority: '0.5', lastmod: staticLastmod.about },
   { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.terms },
+  { loc: `${SITE_URL}/tools`,   changefreq: 'weekly',  priority: '0.6', lastmod: staticLastmod.tools },
   // Future: { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3' },
 ];
 

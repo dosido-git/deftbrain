@@ -190,5 +190,9 @@
  "tool:SomeoneSaidItBetter": {
   "hash": "93f38391101e64e3c677b153f29eba66e0e29b51",
   "lastmod": "2026-09-21"
+ },
+ "static:tools": {
+  "hash": "13d572b5ffd244476c3609bafd985e5ec627626d",
+  "lastmod": "2026-09-22"
  }
 }

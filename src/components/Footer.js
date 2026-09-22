@@ -30,8 +30,15 @@ const Footer = () => {
 
   // Right-side links (extensible — append future links here)
   const links = [
-    // Dropped while Tool Finder is paused — it sits on every page, and a
-    // sitewide link to a maintenance notice is not a useful footer entry.
+    // Added with AllToolsPage.js (2026-09-22) — also the fix for a real
+    // orphan-checker failure: /tools is client-rendered (App.js's <Route>,
+    // no prerendered file), so scripts/check-orphans.js could only find it
+    // via a real <a href> in some page's own STATIC prerendered HTML, not
+    // via the React <Link>/navigate() calls elsewhere that only exist once
+    // the JS has loaded. Footer.js renders on every page's prerender, same
+    // reason /about, /privacy and /terms below are reachable network-wide
+    // rather than only from the homepage.
+    { label: 'All Tools',   href: '/tools' },
     ...(TOOL_FINDER_PAUSED ? [] : [{ label: 'Find a Tool', href: '/ToolFinder' }]),
     { label: 'Guides',      href: '/guides' },
     { label: 'About',       href: '/about' },

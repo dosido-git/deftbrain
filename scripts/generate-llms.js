@@ -37,7 +37,7 @@ const GUIDES_DIR = path.join(ROOT, 'guides');
 const summaryText = (n) => `> DeftBrain (${SITE}) is a free collection of ${n} single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.`;
 
 const START_HERE = [
-  `- [All tools](${SITE}/): the full catalog, grouped by category`,
+  `- [All tools](${SITE}/tools): search or browse the full catalog by category`,
   `- [ToolFinder](${SITE}/ToolFinder): describe a problem in plain words and get pointed at the right tool`,
   `- [Guides](${SITE}/guides): how-to hubs for the most common problems`,
 ];

@@ -12,6 +12,7 @@
 //   /guides/{cat}/{slug}         → build/guides/{cat}/{slug}.html
 //   /guides | /guides/{cat} etc. → the matching index.html
 //   /                            → build/index.html
+//   /tools                       → build/index.html (client-rendered, no prerender)
 // Exits 1 (fails the build) listing every unresolvable URL.
 
 const fs = require('fs');
@@ -29,6 +30,10 @@ function locs(file) {
 
 function fileFor(urlPath) {
   if (urlPath === '/' || urlPath === '') return path.join(BUILD, 'index.html');
+  // /tools (AllToolsPage.js, added 2026-09-22) is client-rendered like the
+  // homepage — no dedicated prerendered file, backend/server.js explicitly
+  // serves build/index.html for it (see the /tools handler there).
+  if (urlPath === '/tools') return path.join(BUILD, 'index.html');
   const p = urlPath.replace(/^\//, '').replace(/\/$/, '');
   const candidates = [
     path.join(BUILD, `${p}.html`),        // flat prerendered page

@@ -1,6 +1,6 @@
 // src/components/DashBoard.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
@@ -160,6 +160,7 @@ function fuzzyMatch(query, target) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
   // Persistent header search (2026-09-21) — draft text only; nothing filters
@@ -187,21 +188,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const pillRefsMap    = useRef({});
   const catalogRef     = useRef(null); // full tool catalog target
 
-  // `category` is optional — passed by the homepage's category chips so
-  // "Money" opens straight into that filter instead of the full "All" list.
-  // Plain openCatalog() (Tools nav, "Browse all N tools") is unaffected.
-  const openCatalog = useCallback((category) => {
-    setShowCatalog(true);
-    if (category) setActiveCategory(category);
-    window.setTimeout(() => catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
-  }, []);
-
-  // Clicking "Tools" (or typing a search) replaces the whole homepage intro
-  // with the catalog view — a plain state flip, no URL change, so there is
-  // no browser-history entry to Back out of and the visitor lands somewhere
-  // that looks like a different page with no way back except reloading
-  // (reported 2026-09-20). This is the visible way back the reload was
-  // standing in for.
+  // Browsing "all tools" moved to a real route (2026-09-22, /tools —
+  // AllToolsPage.js) instead of this plain state flip: the flip had no
+  // browser-history entry to Back out of and no shareable/bookmarkable URL
+  // for a specific category, both flagged in the earlier IA review. The
+  // "Tools" nav link and the homepage's category chips now both `navigate()`
+  // there directly (see onBrowse below) instead of calling a local
+  // openCatalog() — removed that function since nothing calls it any more.
+  // showCatalog itself stays: it still gates the isSearching-independent
+  // parts of this component's own inline results view below, it's just
+  // permanently false now in normal use (nothing sets it true) rather than
+  // toggled by the old Tools link.
   const backToHome = useCallback(() => {
     setShowCatalog(false);
     setSearchTerm('');
@@ -493,7 +490,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
-              <button type="button" onClick={openCatalog} className="hover:underline underline-offset-4">Tools</button>
+              <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>
               {/* Plain <a>, not <Link>: /guides and /about are static prerendered
                   pages (public/about.html; guides built by scripts/prerender.js),
                   not React Router routes. A <Link> here does a client-side SPA
@@ -595,7 +592,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
-              onBrowse={openCatalog}
+              onBrowse={(category) => navigate(category ? `/tools?category=${encodeURIComponent(category)}` : '/tools')}
             />
           </div>
         )}
