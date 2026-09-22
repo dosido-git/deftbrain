@@ -157,27 +157,33 @@ const CATEGORY_EXAMPLES = {
 };
 
 // "See it in action" worked examples (2026-09-21) — two shown at once, picked
-// per page load (see HomeIntro below). Replaces a single photo that had the
-// DoctorVisitPrep exchange baked directly into the image as legible text:
-// fine for one fixed example, but impossible to rotate without the picture
-// contradicting whatever tool the surrounding copy named. Rendering the
-// exchange as real markup instead means any number of tools can take a turn
-// here — deliberately drawn from OUTSIDE the tools ROTATION[0..5] already
-// leans on most often (Lease/DoctorVisit/DifficultTalk/Bill/FakeReview/
-// TipOfTongue), so this section stops reinforcing the same handful. `sub`
-// and the bullets are condensed from that tool's own guide.overview /
-// howToUse — not invented — so it stays an honest preview of the real
-// output. `sub` earns its slot: it's what makes each mockup read as an
-// actual result page's own intro line rather than a 4-item stub (owner
-// feedback 2026-09-21 — the single-block version gave "no clue to the
-// depth of content a user sees").
+// per page load (see HomeIntro below). Went through three versions same day:
+// (1) a single photo with the DoctorVisitPrep exchange baked into it as
+// legible pixels — fine as one fixed example, impossible to rotate without
+// the picture contradicting whatever tool the copy named; (2) a hand-built
+// chat-bubble mockup (input + a short "here's what you get" list) — honest,
+// but a 4-item list undersold what these tools actually produce (owner
+// feedback: "gives no clue to the depth of content a user sees" — see the
+// real BatchFlow screenshot that prompted this). `shot` is now a REAL
+// screenshot: each tool was actually run (Try an example -> submit) and the
+// live result captured and cropped, not staged or hand-drawn. `input` is a
+// short, accurate paraphrase of what was actually typed for that run (the
+// real text is sometimes too long for a caption — e.g. ContractDecoder's
+// input was a full pasted contract — but every `shot` is the true, complete
+// result for the paraphrase shown, nothing invented on either side).
+// Deliberately drawn from OUTSIDE the tools ROTATION[0..5] already leans on
+// most often (Lease/DoctorVisit/DifficultTalk/Bill/FakeReview/TipOfTongue),
+// so this section stops reinforcing the same handful. To refresh a shot:
+// rerun that tool's "Try an example" -> submit, screenshot the result, crop
+// to the richest ~1500px band (skip the input form), save as
+// public/see-it-in-action/<ToolId>.webp.
 const SEE_IT_EXAMPLES = [
-  { toolId:'DoctorVisitPrep', input:'I have a follow-up appointment about high blood pressure. I’m not sure what questions to ask.', sub:'Walk in knowing what matters.', header:'Here’s your prep plan:', bullets:['Key questions to ask','What to bring','How to track your symptoms','Questions about next steps'] },
-  { toolId:'RentersDepositSaver', input:'I’m moving into a new apartment tomorrow and want my deposit back when I leave.', sub:'Your move-in documentation, done before you unpack.', header:'Here’s your move-in package:', bullets:['A room-by-room condition checklist','A landlord letter, ready to send','A photo shot list','Your state’s deposit-return deadline'] },
-  { toolId:'ContractDecoder', input:'My freelance contract has a clause I don’t fully understand.', sub:'Plain-English terms, quoted straight from your contract.', header:'Here’s what it means:', bullets:['The clause, translated into plain English','What it actually obligates you to','Questions worth clarifying before you sign','A before-you-sign checklist'] },
-  { toolId:'TicketTackler', input:'I got a parking ticket I think was issued wrong.', sub:'An honest read on whether you actually have a case.', header:'Here’s your case:', bullets:['Whether you actually have grounds to contest it','What still needs confirming','The evidence that would help','A ready-to-file appeal, if it’s warranted'] },
-  { toolId:'BatchFlow', input:'My to-do list today is all over the place and I don’t know where to start.', sub:'Your day, grouped by the kind of focus each task needs.', header:'Here’s your day, batched:', bullets:['Tasks grouped by the kind of focus they need','A schedule built around your energy','Where your breaks go','One batch to start with right now'] },
-  { toolId:'MarkupDetective', input:'This mattress costs $2,000 — is that actually reasonable?', sub:'Exactly where your money goes — materials, labor, markup.', header:'Here’s where the money goes:', bullets:['Materials vs. labor vs. brand markup, broken down','The pricing tactics being used here','What this typically costs elsewhere','Ways to get it for less'] },
+  { toolId:'DoctorVisitPrep', input:'Right-sided lower back pain, getting worse for 3 weeks.', shot:'/see-it-in-action/DoctorVisitPrep.webp' },
+  { toolId:'DecisionCoach', input:'What should I make for dinner? I have chicken, rice, and broccoli — no more pasta.', shot:'/see-it-in-action/DecisionCoach.webp' },
+  { toolId:'ContractDecoder', input:'A freelance services agreement with a client — before I sign it.', shot:'/see-it-in-action/ContractDecoder.webp' },
+  { toolId:'TicketTackler', input:'A parking ticket — the sign’s posted hours don’t match when I was cited.', shot:'/see-it-in-action/TicketTackler.webp' },
+  { toolId:'BatchFlow', input:'Six unrelated tasks today — writing, code review, calls, errands — no idea where to start.', shot:'/see-it-in-action/BatchFlow.webp' },
+  { toolId:'MarkupDetective', input:'$6 latte at a trendy coffee shop.', shot:'/see-it-in-action/MarkupDetective.webp' },
 ];
 
 // Hero banner rotation — one photoreal "everyday life" scene at a time, each
@@ -699,28 +705,26 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             const tool = toolFor(ex.toolId);
             return (
               <div key={ex.toolId} className="rounded-2xl border shadow-sm overflow-hidden bg-white flex flex-col" style={{borderColor:BORDER}}>
-                <div className="flex items-center gap-2 px-3.5 py-2 border-b" style={{borderColor:BORDER,background:'#f6f2ea'}}>
-                  <span className="text-[13px]" aria-hidden="true">🧠</span>
-                  <span className="text-[10px] font-extrabold" style={{fontFamily:SERIF,color:NAVY}}>DeftBrain</span>
+                <div className="px-3.5 pt-3 pb-2.5">
+                  <p className="text-[9px] font-bold uppercase tracking-wide" style={{color:MUTED}}>You type</p>
+                  <p className="mt-0.5 text-[11px] leading-snug" style={{color:NAVY}}>{ex.input}</p>
                 </div>
-                <div className="p-3.5 space-y-2.5">
-                  <div className="ml-auto max-w-[90%] rounded-2xl rounded-tr-sm px-3 py-2 text-[10.5px] leading-snug" style={{background:'#dbeafe',color:NAVY}}>{ex.input}</div>
-                  {/* This block stands in for the tool's actual results
-                      page, which is much longer than four bullets —
-                      the `sub` line (that page's own real intro
-                      sentence) is what signals "there's a fuller page
-                      behind this," not just a short checklist floating
-                      alone (owner feedback: "no clue to the depth of
-                      content a user sees"). */}
-                  <div className="rounded-2xl rounded-tl-sm border px-3 py-2.5 text-[10.5px] leading-snug" style={{borderColor:BORDER}}>
-                    <p className="italic mb-1.5" style={{color:MUTED}}>{ex.sub}</p>
-                    <p className="font-bold mb-1" style={{color:NAVY}}>{ex.header}</p>
-                    <ol className="space-y-0.5 list-decimal list-inside" style={{color:MUTED}}>
-                      {ex.bullets.map((b,i) => <li key={i}>{b}</li>)}
-                    </ol>
-                  </div>
+                {/* A real screenshot (see SEE_IT_EXAMPLES above), not a
+                    mockup — cropped to a fixed-height window with a
+                    fade-to-white at the bottom and a "keeps going" label,
+                    so it reads honestly as the TOP of a longer page rather
+                    than the page's whole content. This is the direct fix
+                    for "gives no clue to the depth of content a user
+                    sees": the fade is doing the opposite job a fade
+                    usually does on this site (elsewhere it eases a photo
+                    in — here it's telling the reader there's more below
+                    the cut, on purpose). */}
+                <div className="relative h-[230px] overflow-hidden border-t" style={{borderColor:BORDER}}>
+                  <img src={ex.shot} alt={`The top of ${tool.title}'s real result for this`} loading="lazy" className="w-full h-full object-cover object-top" />
+                  <div className="absolute inset-x-0 bottom-0 h-14 pointer-events-none" style={{background:'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.98))'}} />
+                  <div className="absolute inset-x-0 bottom-1.5 text-center text-[9px] font-bold uppercase tracking-wide" style={{color:MUTED}}>keeps going ↓</div>
                 </div>
-                <div className="mt-auto px-3.5 pb-3">
+                <div className="mt-auto px-3.5 py-2.5">
                   <Link to={`/${tool.id}`} className="text-[10px] font-bold" style={{color:NAVY}}>Try {tool.title} →</Link>
                 </div>
               </div>
