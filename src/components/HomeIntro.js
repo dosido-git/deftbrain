@@ -250,7 +250,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
           <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-full aspect-[8/5] object-cover rounded-xl origin-bottom scale-[1.7]" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
         </div>
       </div>
-      <div className="px-3.5 py-3">
+      <div className="px-3.5 py-2">
         {/* line-clamp, not just a taller fixed height — the card wrapper
             below is a fixed h-[…] (required for the 3D flip: the faces are
             position:absolute inset:0, sized off it) with no overflow:hidden
@@ -272,9 +272,21 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
             Bumped to line-clamp-3 and gave the card itself more height
             (below) to match — clamp is still the safety net, not the
             primary fit, so a still-longer line in the future gets cut
-            cleanly instead of spilling. */}
+            cleanly instead of spilling.
+
+            IMPORTANT if touching the card height below: line-clamp limits
+            the MAXIMUM lines, it doesn't shrink text below what a 3-line
+            headline + 3-line body actually need — so the wrapper's fixed
+            height has a real floor (currently: image height + this box's
+            padding + a 3-line h3 + the h3-p gap + a 3-line p). Go below
+            that floor and the rare card that genuinely needs 3+3 lines
+            overflows again, just less often. py-3->py-2 and the h3-p gap
+            below were trimmed specifically to lower that floor (owner:
+            the box below the text read as "a little overdone" for the
+            common 1-2 line case) — the height a few lines down was
+            reduced by the same amount this saved, not further. */}
         <h3 className="text-[13px] font-extrabold leading-[1.18] line-clamp-3" style={{color:NAVY}}>{item.problem}</h3>
-        <p className="mt-1.5 text-[10.5px] leading-[1.4] line-clamp-3" style={{color:MUTED}}>{item.body}</p>
+        <p className="mt-1 text-[10.5px] leading-[1.4] line-clamp-3" style={{color:MUTED}}>{item.body}</p>
       </div>
     </Link>;
   };
@@ -289,7 +301,17 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   // set lg to 260px — ~5px of real margin, not 23, still never clips
   // the worst case. Other two breakpoints trimmed by the same 18px
   // delta without separately re-measuring their own image heights.
-  return <div className="relative h-[302px] md:h-[339px] lg:h-[260px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
+  //
+  // Trimmed again same day: still read as "a little overdone" below the
+  // text for the common 1-2 line case. Rather than shrink the box below
+  // its real floor (which would clip the rare 3-line+3-line card again —
+  // line-clamp caps the max, it doesn't shrink text to fit whatever
+  // height is left), lowered the floor itself: text-box padding and the
+  // h3-p gap were trimmed by 10px combined, so the true minimum is now
+  // 245px. Set lg to 250px (same ~5px margin as before, just recomputed
+  // against the new, lower floor) and carried the same -10px through the
+  // other two breakpoints.
+  return <div className="relative h-[292px] md:h-[329px] lg:h-[250px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
 }
 
 function ToolScramble({ allTools, onBrowse }) {
@@ -528,20 +550,23 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
           </div>
 
-          {/* flex flex-col + content-end (not content-between) on the pill
-              grid: the outer grid's default align-items:stretch still
-              gives this card the same height as the situations card on
-              its left, but the pills now draw together with a small,
-              fixed gap and sit flush against the BOTTOM of that shared
-              height — aligning the last pill row with the cards' own
-              bottom edge — rather than stretching to fill the whole
-              height with large gaps between every row. gap-y-2 (first
-              pass) read as too tight once live — bumped to gap-y-4 for
-              real breathing room between rows, still nowhere near
-              content-between's full-height spread. */}
-          <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
+          {/* Cropped to its own content height (2026-09-21), not stretched
+              to match the cards column: stretching (the outer grid's
+              default align-items:stretch) plus bottom-aligning the pills
+              inside that stretched height (content-end) left a large,
+              genuinely awkward gap between the "Categories" heading and
+              the first pill row — filling that gap "well" isn't really
+              possible when the pill block is just shorter than the cards
+              column's natural height. self-start opts this one card out
+              of the stretch, so it's exactly as tall as its own content
+              (heading + pills + the Browse-all-tools line) — shorter than
+              the cards column, and that's fine; the two don't need to
+              match. Pills are back to a plain top-down flow (no more
+              content-end/flex-1, nothing left for either to do once the
+              card isn't being forced taller than its content). */}
+          <div className="self-start rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-4 content-end justify-items-start flex-1">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
