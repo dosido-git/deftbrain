@@ -168,6 +168,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // so the header input isn't fighting the in-catalog SearchBox's own value
   // when both could theoretically be visible.
   const [navQuery, setNavQuery] = useState('');
+  const navSearchRef = useRef(null);
   const submitNavSearch = useCallback((e) => {
     e.preventDefault();
     const q = navQuery.trim();
@@ -206,13 +207,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setSearchTerm]);
 
-  // ⌘K shortcut
+  // ⌘K shortcut — focuses whichever search box is actually mounted.
+  // searchRef (compact in-catalog SearchBox) and navSearchRef (persistent
+  // header search) are mutually exclusive in the DOM (same !isSearching
+  // && !showCatalog condition that shows/hides each), so only one of
+  // these two calls ever does anything; the other is a no-op on a null ref.
   useEffect(() => {
     const handler = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         searchRef.current?.focus();
         searchRef.current?.select();
+        navSearchRef.current?.focus();
+        navSearchRef.current?.select();
       }
       if (e.key === 'Escape') setSearchTerm('');
     };
@@ -515,16 +522,43 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             page's main event, which it deliberately isn't for a new visitor.
             Hidden once results are showing: the in-catalog SearchBox below
             (same searchTerm) takes over from there rather than running two
-            editable copies of the same query at once. */}
+            editable copies of the same query at once.
+
+            ms-auto right-justifies it under the nav/locale row above
+            (which is itself right-heavy — Tools/Guides/About + selectors
+            end at the right edge), so the search sits under that cluster
+            instead of stranded under the logo on the left. mt-2, not
+            mt-4 — tighter to the row above now that it's aligned with it
+            rather than sitting under the wordmark's own whitespace. */}
         {!isSearching && !showCatalog && (
-          <form onSubmit={submitNavSearch} className="mt-4 flex gap-2 max-w-[520px]">
-            <input
-              value={navQuery}
-              onChange={e => setNavQuery(e.target.value)}
-              placeholder="Describe what you’re dealing with…"
-              className="min-w-0 flex-1 rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
-              style={{ borderColor: CLR.sand300 }}
-            />
+          <form onSubmit={submitNavSearch} className="mt-2 ms-auto flex gap-2 max-w-[520px]">
+            <div className="relative flex-1 min-w-0">
+              <input
+                ref={navSearchRef}
+                value={navQuery}
+                onChange={e => setNavQuery(e.target.value)}
+                placeholder="Describe what you’re dealing with…"
+                className="w-full rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
+                style={{ borderColor: CLR.sand300 }}
+              />
+              {/* Same ⌘K badge/behavior as the in-catalog SearchBox below —
+                  hidden on touch widths (no Command key on a phone) and
+                  once there's a query, matching that component's own
+                  convention exactly rather than inventing a second one. */}
+              {!navQuery && (
+                <span className="hidden sm:inline-block" style={{
+                  position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)',
+                  fontSize: 10, color: CLR.warm500,
+                  background: CLR.sand100,
+                  border: `1px solid ${CLR.sand200}`,
+                  borderRadius: 4,
+                  padding: '1px 4px',
+                  pointerEvents: 'none',
+                  fontWeight: 600,
+                  letterSpacing: 0.2,
+                }}>⌘K</span>
+              )}
+            </div>
             <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{ background: CLR.navy700 }}>Find a tool →</button>
           </form>
         )}
