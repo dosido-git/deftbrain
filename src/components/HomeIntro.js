@@ -502,24 +502,36 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
 
           Split two ways (2026-09-21), search moved out entirely (now the
           persistent bar in DashBoard.js's header — see that file):
-          categories on the left answer "I already know the general area";
-          situations on the right answer "recognize yourself in an example."
+          situations on the left answer "recognize yourself in an example";
+          categories on the right answer "I already know the general area."
           Different jobs, same visitor decision — which is why they sit
           side by side instead of stacked as two more homepage sections.
-          Swapped sides + rebalanced narrower/wider (2026-09-21): categories
-          as a vertical stack of larger pills reads better narrow than
-          wrapped wide, and the freed width lets the situations column show
-          a full 3-across row instead of a 2x2 grid. */}
+          Swapped sides again (2026-09-21) — situations left, categories
+          right — with the grid proportions swapped to match (wide side
+          now under the 4-across cards, narrow side under the pills). */}
       <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER,background:'linear-gradient(105deg,#fff0cf 0%,#f8ddd7 35%,#e9e1f5 68%,#d7ebf7 100%)'}}>
-        <div className="grid lg:grid-cols-[.8fr_1.2fr] gap-6">
-          <div>
+        <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-6">
+          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
+            <div className="relative">
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
+              <div className="grid grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
+              {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
+            </div>
+            {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
+          </div>
+
+          {/* flex flex-col on this column + content-between on the pill
+              grid: the outer grid's default align-items:stretch already
+              gives this column the SAME height as the cards column on its
+              left (whichever is taller). content-between then spreads the
+              7 pill rows evenly across that full height instead of
+              clustering at the top with dead space below — the two
+              columns end up occupying the same visual block regardless of
+              which one's content is naturally taller. */}
+          <div className="flex flex-col">
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            {/* grid + justify-items-start (not flex-wrap, not flex-col) so
-                each pill hugs its own content width — "Money" and "Ideas &
-                Imagination" don't force each other to a shared stretched
-                width — while still landing in two clean columns rather
-                than one long list or a ragged wrap. */}
-            <div className="grid grid-cols-2 gap-x-2 gap-y-3 justify-items-start">
+            <div className="grid grid-cols-2 gap-x-2 content-between justify-items-start flex-1">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
@@ -536,16 +548,6 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 );
               })}
             </div>
-          </div>
-
-          <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
-            <div className="relative">
-              {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
-              <div className="grid grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
-              {totalPages>1 && <button type="button" onClick={()=>goToPage(page+1)} aria-label="More tools" className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>›</button>}
-            </div>
-            {totalPages>1 && <div className="flex justify-center gap-1.5 mt-4">{Array.from({length:totalPages}).map((_,i)=><button key={i} type="button" onClick={()=>goToPage(i)} aria-label={`Go to tools page ${i+1}`} className="rounded-full transition-all duration-300" style={{width:i===page?16:6,height:6,background:i===page?NAVY:'#ddd4c6'}}/>)}</div>}
           </div>
         </div>
 
