@@ -525,12 +525,22 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             (same searchTerm) takes over from there rather than running two
             editable copies of the same query at once.
 
-            ms-auto right-justifies it under the nav/locale row above
-            (which is itself right-heavy — Tools/Guides/About + selectors
-            end at the right edge), so the search sits under that cluster
+            Right-justified under the nav/locale row above (which is
+            itself right-heavy — Tools/Guides/About + selectors end at
+            the right edge), so the search sits under that cluster
             instead of stranded under the logo on the left. mt-1, not
             mt-4 — tighter to the row above now that it's aligned with it
             rather than sitting under the wordmark's own whitespace.
+
+            flex justify-end on a wrapper div, not ms-auto on the form
+            itself: a plain <form> is a block box with width:auto, which
+            for a block element means "fill 100% of the containing
+            block" — there's no leftover space left for an auto margin
+            to push into, so ms-auto on the form silently did nothing
+            (confirmed live 2026-09-21: 0px of leftover space, form
+            pinned flush left despite the class being right there). A
+            flex parent with justify-end sidesteps the question of the
+            form's own box type entirely.
 
             Narrow-then-expand (2026-09-21), same idea as the in-catalog
             SearchBox's own 160->320px behavior below: starts small (it's
@@ -540,7 +550,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             (not a Tailwind class) so the transition actually animates —
             swapping between two arbitrary-value classes doesn't. */}
         {!isSearching && !showCatalog && (
-          <form onSubmit={submitNavSearch} className="mt-1 ms-auto flex gap-2">
+        <div className="mt-1 flex justify-end">
+          <form onSubmit={submitNavSearch} className="flex gap-2">
             <div className="relative min-w-0" style={{ width: (navQuery || navFocused) ? 420 : 220, transition: 'width 0.2s' }}>
               <input
                 ref={navSearchRef}
@@ -572,6 +583,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             </div>
             <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{ background: CLR.navy700 }}>Find a tool →</button>
           </form>
+        </div>
         )}
         {/* The rethought intro. Replaces HeroPitch's rotating triplet and the
             two-CTA row: both assumed a visitor already knew they wanted a

@@ -535,10 +535,13 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
               fixed gap and sit flush against the BOTTOM of that shared
               height — aligning the last pill row with the cards' own
               bottom edge — rather than stretching to fill the whole
-              height with large gaps between every row. */}
+              height with large gaps between every row. gap-y-2 (first
+              pass) read as too tight once live — bumped to gap-y-4 for
+              real breathing room between rows, still nowhere near
+              content-between's full-height spread. */}
           <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2 content-end justify-items-start flex-1">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-4 content-end justify-items-start flex-1">
               {CATEGORY_META.map(cat => {
                 const count = categoryCounts[cat.name] || 0;
                 if (!count) return null;
