@@ -541,12 +541,14 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
   // padding for what it actually showed). Reuses seededShuffle (same one
   // ToolScramble uses) rather than hand-rolling a "pick 2 distinct indices"
   // — it already guarantees no duplicate and a stable order for a given
-  // seed. The seed itself is chosen once in useState, not re-rolled on
-  // every re-render; which examples it maps to is a pure derivation, same
-  // split as `available` above, so it still resolves correctly once
-  // allTools finishes loading async.
+  // seed. The seed starts random (one useState call) so a fresh page load
+  // doesn't always open on the same pair, but setSeeItSeed is exposed so a
+  // button can advance it too (owner asked to change tools without a
+  // reload) — same "bump a seed, let useMemo re-derive" shape as
+  // ToolScramble's own "↻ Scramble again", just one increment instead of a
+  // full re-shuffle of 42 tiles.
   const seeItEligible = useMemo(() => SEE_IT_EXAMPLES.filter(x => byId.has(x.toolId)), [byId]);
-  const [seeItSeed] = useState(() => Math.floor(Math.random() * 1000));
+  const [seeItSeed, setSeeItSeed] = useState(() => Math.floor(Math.random() * 1000));
   const seeItPair = useMemo(() => seededShuffle(seeItEligible, seeItSeed).slice(0, 2), [seeItEligible, seeItSeed]);
 
   // Manual carousel paging: turns all 6 doors to the next/previous set of six
@@ -698,7 +700,10 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
         <div className="p-5 sm:p-6">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
           <p className="mt-2 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
-          <button onClick={onBrowse} className="mt-3 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Explore more tools →</button>
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <button type="button" onClick={()=>setSeeItSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Show different tools</button>
+            <button onClick={onBrowse} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Explore more tools →</button>
+          </div>
         </div>
         <div className="p-5 sm:p-6 lg:pl-0 grid sm:grid-cols-2 gap-3.5">
           {seeItPair.map(ex => {
