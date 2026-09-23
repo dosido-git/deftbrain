@@ -37,7 +37,6 @@ function findProjectRoot(start) {
 }
 const ROOT       = findProjectRoot(__dirname);
 const BUILD_DIR  = path.join(ROOT, 'build');
-const PUBLIC_DIR = path.join(ROOT, 'public');
 const TOOLS_FILE = path.join(ROOT, 'src', 'data', 'tools.js');
 const GUIDES_DIR = path.join(ROOT, 'guides');
 const SITE_NAME  = 'DeftBrain';
@@ -638,20 +637,27 @@ async function main() {
   // Directories named after tool IDs (e.g. build/SpiralStopper/index.html) cause
   // static servers to serve /SpiralStopper/ as 200, creating trailing-slash duplicates
   // that confuse Google. Flat files (build/SpiralStopper.html) have no slash variant.
-  // Protect build output plus EVERY directory that came from public/. The
-  // list used to be hardcoded ['static','og','guides'], which silently ate
-  // any new asset folder: public/illustrations/ was deleted on every build,
-  // so the signpost image 404'd in production while the same URL worked
-  // locally. Deriving it means adding a folder to public/ just works.
-  const publicDirs = fs.existsSync(PUBLIC_DIR)
-    ? fs.readdirSync(PUBLIC_DIR).filter(e => {
-        try { return fs.statSync(path.join(PUBLIC_DIR, e)).isDirectory(); }
-        catch { return false; }
-      })
-    : [];
-  const protectedDirs = new Set(['static', ...publicDirs]);
+  //
+  // Only removes a directory whose name is an ACTUAL tool id — the literal
+  // legacy artifact this exists to clean — never a blanket "delete anything
+  // we don't recognize" pass. An allowlist-based version of this (protect
+  // 'static' + every directory that came from public/, delete everything
+  // else) used to live here; it silently ate any OTHER legitimate directory
+  // a later postbuild script writes with no public/ counterpart. build/tools/
+  // {slug} (build-tools-category-pages.js) has none, so when this script
+  // runs a SECOND time, standalone, after the full `npm run build` pipeline
+  // already completed once (a redundant leftover in Railway's own configured
+  // build command — "npm run build && node scripts/prerender.js" — predating
+  // prerender.js's move into package.json's postbuild chain), that second
+  // pass deleted the whole directory and nothing after it in that standalone
+  // invocation ever regenerated it: 14 live category pages silently 404ing
+  // in production while every other page on the site looked fine
+  // (2026-09-23). Matching against real tool ids can't reproduce that
+  // failure — it has no opinion on directories it doesn't know are tool
+  // output, so it only ever removes what it actually put there.
+  const toolIds = new Set(tools.map(t => t.id));
   for (const entry of fs.readdirSync(BUILD_DIR)) {
-    if (protectedDirs.has(entry)) continue;
+    if (!toolIds.has(entry)) continue;
     const full = path.join(BUILD_DIR, entry);
     if (fs.statSync(full).isDirectory()) {
       fs.rmSync(full, { recursive: true, force: true });
