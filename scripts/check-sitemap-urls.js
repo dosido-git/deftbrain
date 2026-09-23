@@ -30,10 +30,11 @@ function locs(file) {
 
 function fileFor(urlPath) {
   if (urlPath === '/' || urlPath === '') return path.join(BUILD, 'index.html');
-  // /tools (AllToolsPage.js, added 2026-09-22) is client-rendered like the
+  // /tools (AllToolsPage.js, added 2026-09-22) and /organizations
+  // (OrganizationsPage.js, added 2026-09-23) are client-rendered like the
   // homepage — no dedicated prerendered file, backend/server.js explicitly
-  // serves build/index.html for it (see the /tools handler there).
-  if (urlPath === '/tools') return path.join(BUILD, 'index.html');
+  // serves build/index.html for each (see their handlers there).
+  if (urlPath === '/tools' || urlPath === '/organizations') return path.join(BUILD, 'index.html');
   const p = urlPath.replace(/^\//, '').replace(/\/$/, '');
   const candidates = [
     path.join(BUILD, `${p}.html`),        // flat prerendered page

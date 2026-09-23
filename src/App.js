@@ -15,6 +15,7 @@ import EmailCapture from './components/EmailCapture';
 import NotFound from './components/NotFound';
 import SharedVerdict from './components/SharedVerdict';
 import AllToolsPage from './components/AllToolsPage';
+import OrganizationsPage from './components/OrganizationsPage';
 
 export default function App() {
   const [college] = useState("");
@@ -44,6 +45,7 @@ export default function App() {
                 } />
                 <Route path="/verdict/:id" element={<SharedVerdict />} />
                 <Route path="/tools" element={<AllToolsPage allTools={tools} />} />
+                <Route path="/organizations" element={<OrganizationsPage allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -42,6 +42,7 @@ const Footer = () => {
     { label: 'All Tools',   href: '/tools' },
     ...(TOOL_FINDER_PAUSED ? [] : [{ label: 'Find a Tool', href: '/ToolFinder' }]),
     { label: 'Guides',      href: '/guides' },
+    { label: 'Organizations', href: '/organizations' },
     { label: 'About',       href: '/about' },
     { label: 'Privacy',     href: '/privacy' },
     { label: 'Terms',       href: '/terms' },

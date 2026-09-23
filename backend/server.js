@@ -534,6 +534,15 @@ app.get('/tools', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
+// /organizations (OrganizationsPage.js, added 2026-09-23) — same reasoning
+// and same fix as /tools directly above: a client-rendered React route with
+// no prerendered file needs an explicit handler, or the catch-all below
+// serves it with a 404 status (soft-404 to crawlers) even though the SPA
+// itself renders fine once the JS loads.
+app.get('/organizations', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+});
+
 // Per-category tool pages (/tools/{slug}, added 2026-09-22) — unlike /tools
 // itself, these ARE real prerendered files (scripts/build-tools-category-
 // pages.js writes build/tools/{slug}/index.html at build time, same shape as

@@ -1,18 +1,18 @@
 {
  "homepage": {
-  "hash": "614aff780b4a0f07b12a16e1fca7a5032a063a9e",
+  "hash": "acb04697bc34bd8bf5d1ebe4c90b352647d68edf",
   "lastmod": "2026-09-23"
  },
  "static:about": {
-  "hash": "aee3410fbce6d9215a88519763aaa3f7100616de",
+  "hash": "47d6fa211bc6bb29bc5418385715db8b69113c9d",
   "lastmod": "2026-09-23"
  },
  "static:privacy": {
-  "hash": "ea5409b758f050dc69fae933c8cb361652f1cfdb",
+  "hash": "85dd9b07fe9eea778523db175fa10dd98aa989c4",
   "lastmod": "2026-09-23"
  },
  "static:terms": {
-  "hash": "913721e0444a0c44f89e5d12499e486ec67ca978",
+  "hash": "f7c5b8fa31f6d1a613a532b88cd3ff11553824b3",
   "lastmod": "2026-09-23"
  },
  "tool:AlternatePath": {
@@ -249,6 +249,10 @@
  },
  "category:tasks": {
   "hash": "bfcf338d17385a63aa1b59a1d41f9eefa277e3e2",
+  "lastmod": "2026-09-23"
+ },
+ "static:organizations": {
+  "hash": "dd4eceb0b112637a2acde61ba9559e3bb95ddd7e",
   "lastmod": "2026-09-23"
  }
 }
