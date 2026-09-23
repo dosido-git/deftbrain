@@ -131,7 +131,7 @@ function renderHead({ title, description, canonicalPath }) {
        a React component. If you change one card design, change the other.
        Ported color constants: --navy/--blue/--gold/--muted/--line/--sand2
        from .at-page in AllToolsPage.css. */
-    .tcp-page{--tcp-navy:#1e2a3a;--tcp-blue:#2c4a6e;--tcp-gold:#9c691c;--tcp-muted:#6e6659;--tcp-line:#e3dbcf;--tcp-sand2:#f3efe8;color:var(--tcp-navy)}
+    .tcp-page{--tcp-navy:#1e2a3a;--tcp-blue:#2c4a6e;--tcp-gold:#c8872e;--tcp-muted:#6e6659;--tcp-line:#e3dbcf;--tcp-sand2:#f3efe8;color:var(--tcp-navy)}
     .tcp-shell{width:min(1240px,calc(100% - 40px));margin-inline:auto;padding:20px 0 64px}
     .tcp-back{display:inline-block;margin-bottom:22px;color:var(--tcp-blue);font-family:'DM Sans',system-ui,sans-serif;font-size:12px;font-weight:700;text-decoration:none}
     .tcp-back:hover{text-decoration:underline}
@@ -167,7 +167,10 @@ function renderHead({ title, description, canonicalPath }) {
   <header class="masthead">
     <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
       <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
-      <span class="masthead-logo-text">Deft<span>Brain</span></span>
+      <span class="masthead-logo-word">
+        <span class="masthead-logo-text">Deft<span>Brain</span></span>
+        <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+      </span>
     </a>
     <a href="/tools" class="masthead-cta">All tools →</a>
   </header>`;

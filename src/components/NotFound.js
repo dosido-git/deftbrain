@@ -64,17 +64,22 @@ const NotFound = ({
           aria-label="DeftBrain — home"
           className="flex flex-col items-center gap-2 mx-auto animate-[brand-spin-rest_3s_infinite] motion-reduce:animate-none"
         >
+          {/* Footer-standard size (2026-09-22) — this is a "brand mark on
+              the bottom of a page" occasion, not a page header, even though
+              it sits at the top of the 404 card: same size/no-tagline
+              treatment as Footer.js, just recolored blue "Deft" + gold
+              "Brain" to match the site-wide split. */}
           <img
             src="/pBrain-l.png"
             alt=""
             className="h-16 w-auto object-contain"
           />
           <span
-            className="text-2xl font-extrabold leading-none tracking-tight"
+            className="text-sm font-extrabold leading-none tracking-tight"
             style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
           >
-            <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
-            <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
+            <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>Deft</span>
+            <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>Brain</span>
           </span>
         </button>
         <div>

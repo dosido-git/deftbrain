@@ -18,11 +18,12 @@ const Footer = () => {
     bg:        isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
     border:    isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
     text:      isDark ? 'text-zinc-400' : 'text-[#5a544a]',
-    // Two-tone wordmark, matching the header lockup (gold "D" + navy rest) —
-    // the footer used to render an all-ochre "DeftBrain", two brand marks on
-    // one page.
-    goldD:     isDark ? 'text-orange-400' : 'text-[#c8872e]',
-    navyRest:  isDark ? 'text-zinc-200'   : 'text-[#2c4a6e]',
+    // Two-tone wordmark, matching the site-wide standard (2026-09-22): blue
+    // "Deft" + gold "Brain" — see BrandMark.js. (Previously split at the
+    // letter "D" instead of the word boundary; before that, an all-ochre
+    // "DeftBrain", two brand marks on one page.)
+    deftBlue:  isDark ? 'text-zinc-200'   : 'text-[#2c4a6e]',
+    brainGold: isDark ? 'text-orange-400' : 'text-[#c8872e]',
     link:      isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
   };
 
@@ -81,14 +82,18 @@ const Footer = () => {
             className="flex items-center gap-3"
             aria-label="DeftBrain — home"
           >
+            {/* Standard footer size (2026-09-22) — matches the size already
+                used on the bottom of every guide/static page
+                (public/guides/guide.css's .footer-brand-img/.footer-brand),
+                bumped up from this component's previous 48px/18px. */}
             <img
               src="/pBrain-r.png"
               alt=""
-              className="h-12 w-auto object-contain"
-              height="48"
+              className="h-16 w-auto object-contain"
+              height="64"
             />
-            <span className="text-lg font-semibold">
-              <span className={c.goldD}>D</span><span className={c.navyRest}>eftBrain</span>
+            <span className="text-sm font-semibold">
+              <span className={c.deftBlue}>Deft</span><span className={c.brainGold}>Brain</span>
             </span>
           </a>
 

@@ -2,7 +2,11 @@
  * BrandMark — DeftBrain logo wordmark component
  * ───────────────────────────────────────────────
  * Renders the brain+glasses image alongside the styled "DeftBrain" text
- * with gold "D" + navy "eftBrain" (Concept D from the style guide).
+ * with blue "Deft" + gold "Brain" (site-wide standard, 2026-09-22 —
+ * supersedes the earlier letter-split "Concept D" that colored just the
+ * "D" gold and the rest navy). Every hand-rolled copy of this wordmark
+ * elsewhere (Footer.js, ToolPageWrapper.js, NotFound.js,
+ * public/guides/guide.css) shares this exact split + color pair.
  *
  * Props:
  *   direction  — "left" (brain left, text right) or "right" (text left, brain right)
@@ -39,10 +43,11 @@ const BrandMark = ({
     ? '/pBrain-r.png'
     : '/pBrain-l.png';
 
-  // Navy & Gold palette — theme-aware
-  const goldD    = isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]';
-  const navyRest = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
-  // Definition reads in the wordmark's own navy — the old warm gray
+  // Blue & Gold palette — theme-aware. "Deft" in DeftBrain blue, "Brain" in
+  // DeftBrain gold.
+  const deftBlue  = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
+  const brainGold = isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]';
+  // Definition reads in the wordmark's own blue — the old warm gray
   // (#a8a196) was too subtle for a line that carries the brand argument.
   const tagColor = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
 
@@ -61,8 +66,8 @@ const BrandMark = ({
         className={`${s.text} font-extrabold leading-none tracking-tight`}
         style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
       >
-        <span className={goldD}>D</span>
-        <span className={navyRest}>eftBrain</span>
+        <span className={deftBlue}>Deft</span>
+        <span className={brainGold}>Brain</span>
       </span>
       {showTagline && (
         /* Dictionary entry, played straight — lowercase, not the old

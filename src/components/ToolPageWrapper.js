@@ -10,6 +10,7 @@ import LocaleSelectors from './LocaleSelectors';
 import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
 import { headerGradient } from '../utils/headerGradient';
+import BrandMark from './BrandMark';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -139,33 +140,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Home</span>
           </button>
+          {/* Left-facing full logo (2026-09-22 site-wide standard) — the
+              slightly-smaller-than-home-page size, via the shared BrandMark
+              component instead of a fourth hand-rolled copy of this markup
+              (this file, Footer.js, NotFound.js and SharedVerdict.js all
+              used to carry their own). direction="right" = text-then-image,
+              same order this header always had. */}
           <Link to="/" title="Back Home" className="flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="flex flex-col justify-center">
-                <span className="text-xl sm:text-2xl font-extrabold leading-none tracking-tight" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-                  <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
-                  <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
-                </span>
-                {/* 10px was too small to read comfortably (reported 2026-07-30).
-                    Now 12px, and the inks match the dashboard's corrected pair:
-                    #78716c/#8a8275 only cleared AA by a hair (4.53/4.67:1),
-                    while #6e6659 and #a8a29a give 5.3:1 and 7:1. max-w widened
-                    so the larger text still breaks after "deft (adj.) —"
-                    instead of wrapping to three lines.
-
-                    Hidden below sm: at 375px the gloss made this block 294px
-                    wide inside a 351px bar that also holds the Dashboard
-                    button, and the wrapper is flex-shrink-0, so the header
-                    overflowed by 37px and every tool page scrolled sideways.
-                    The word "deft" is a nice thing to explain once on a wide
-                    screen; it is not worth a horizontal scrollbar on a
-                    phone. */}
-                <p className={`hidden sm:block text-xs leading-snug mt-1.5 max-w-[34ch] ${isDark ? 'text-[#a8a29a]' : 'text-[#6e6659]'}`}>
-                  <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
-                </p>
-              </div>
-              <img src="/pBrain-l.png" alt="DeftBrain" className="h-14 sm:h-16 w-auto block object-contain flex-shrink-0" />
-            </div>
+            <BrandMark direction="right" size="sm" isDark={isDark} showTagline />
           </Link>
         </div>
       </div>
@@ -237,7 +219,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'2px',paddingBottom:'8px',marginBottom:'10px',borderBottom:'2px solid #e5e7eb'}}>
             <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
               <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'32px',width:'auto'}} />
-              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
+              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold'}}><span style={{color:'#2c4a6e'}}>Deft</span><span style={{color:'#c8872e'}}>Brain</span></div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
             </div>
             {detectedTool && (
               <div style={{marginTop:'4px'}}>
@@ -359,7 +341,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 every print-out (the print-only header above), so a second copy
                 28px from the bottom of the page was the same logo twice. The
                 URL line stays — a printed page should say where it came from. */}
-            <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span>
+            <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}>Deft<span style={{color:'#c8872e',fontWeight:'bold'}}>Brain</span> · deftbrain.com</span>
           </div>
         </main>
 

@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { decodeSharePayload } from '../utils/shareEncode';
+import BrandMark from './BrandMark';
 
 const SourcesList = ({ sources, c }) => {
   if (!sources?.length) return null;
@@ -115,12 +116,12 @@ export default function SharedVerdict() {
   return (
     <div className={`min-h-screen ${c.bg} px-4 py-10 sm:py-16`}>
       <div className="max-w-xl mx-auto space-y-5">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-2">
-          <img src="/pBrain-l.png" alt="DeftBrain" className="h-10 w-auto object-contain" />
-          <span className="text-xl font-extrabold tracking-tight" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-            <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
-            <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
-          </span>
+        {/* Full left-facing logo (2026-09-22 site-wide standard) — this page
+            has no other chrome (no ToolPageWrapper, no dashboard nav), so
+            it's the page's only header; upgraded from a small tagline-less
+            mark to the real BrandMark, matching every other page header. */}
+        <Link to="/" className="flex justify-center mb-2">
+          <BrandMark direction="right" size="sm" isDark={isDark} showTagline />
         </Link>
 
         {state === 'notfound' && (
