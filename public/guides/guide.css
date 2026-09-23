@@ -46,7 +46,16 @@ body {
   text-decoration: none;
   letter-spacing: .03em;
 }
-.masthead-logo span { color: var(--accent); }
+/* Scoped to .masthead-logo-text specifically, not the whole .masthead-logo
+   link — the markup grew a wrapping <span class="masthead-logo-text"> around
+   "Deft<span>Brain</span>" (to sit the wordmark next to the logo image) after
+   this rule was written for the older flat "Deft<span>Brain</span>" markup.
+   ".masthead-logo span" is a descendant selector with no depth limit, so it
+   matched BOTH spans — the wrapper AND the inner "Brain" one — painting the
+   whole wordmark solid accent-orange instead of leaving "Deft" as the
+   inherited --ink black it's supposed to be. Found on every static page
+   (guides, /about, /privacy, /terms all share this masthead markup+CSS). */
+.masthead-logo-text span { color: var(--accent); }
 .masthead-cta {
   font-size: 12px;
   font-weight: 500;
@@ -361,7 +370,12 @@ footer {
   color: var(--ink3);
   text-decoration: none;
 }
-.footer-brand span { color: var(--accent); }
+/* Same fix, same bug as .masthead-logo-text above: the wordmark markup is
+   wrapped in <span class="footer-brand-text">Deft<span>Brain</span></span>,
+   and the old ".footer-brand span" descendant selector matched both spans —
+   the wrapper too — so "Deft" rendered accent-orange instead of the
+   inherited --ink3 it's supposed to be. */
+.footer-brand-text span { color: var(--accent); }
 .footer-copy { font-size: 12px; color: var(--ink3); }
 
 /* ── Entrance animation ── */
