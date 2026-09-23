@@ -7,6 +7,7 @@ import NotFound from './NotFound';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
+import PublicProductDemo from './PublicProductDemo';
 
 // Renamed tools keep their old URL alive: old id → current id. A client-side
 // 301-equivalent so existing links, bookmarks, and search results don't break.
@@ -32,6 +33,15 @@ const TOOL_ALIASES = {
   SensoryMinefieldMapper: 'TripRecon', // renamed 2026-09-09, then 2026-09-09 again (chain collapsed)
   SensoryScout: 'TripRecon', // renamed 2026-09-09
 };
+
+// Static example-output SEO experiment (see src/data/tools.js's own
+// exampleOutput field + PublicProductDemo.js). Cohort 1 (LeaseTrapDetector,
+// DoctorVisitPrep, FakeReviewDetective — 2026-09-15) predates this shared
+// component: each of those 3 already renders its own copy of this same demo
+// inline in its own tools/*.js file, so they're deliberately NOT in this set
+// — adding them here too would render the demo twice. Cohort 2 (added
+// 2026-09-23) uses the shared component instead, rendered once below.
+const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
@@ -103,6 +113,7 @@ const ToolRenderer = ({ college }) => {
         <ToolErrorBoundary toolId={toolId}>
           <ToolComponent college={college} tool={toolData} />
         </ToolErrorBoundary>
+        {STATIC_CONTENT_COHORT_2.has(toolId) && <PublicProductDemo tool={toolData} />}
       </Suspense>
     </ToolPageWrapper>
   );

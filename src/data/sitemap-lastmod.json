@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "acb04697bc34bd8bf5d1ebe4c90b352647d68edf",
+  "hash": "f0e0bbffca11a454e6e3567c14289418f70a5bd4",
   "lastmod": "2026-09-23"
  },
  "static:about": {
@@ -48,8 +48,8 @@
   "lastmod": "2026-09-21"
  },
  "tool:DecoderRing": {
-  "hash": "beb3313795babd9d317b3bace3ec2d57bbcd830a",
-  "lastmod": "2026-09-21"
+  "hash": "e8410388b52cbe4930692e935bdb268b52c4f1e2",
+  "lastmod": "2026-09-23"
  },
  "tool:DifficultTalkCoach": {
   "hash": "f737b2b87f3df405deb35d4917566bf43c94cc16",
@@ -68,12 +68,12 @@
   "lastmod": "2026-09-21"
  },
  "tool:FinalWish": {
-  "hash": "8d97b9a6d8260be0cf199d2b6b53bc57ee13f6e6",
-  "lastmod": "2026-09-21"
+  "hash": "9328a7bfa00464c3a57429fd0f00cbb563c752a9",
+  "lastmod": "2026-09-23"
  },
  "tool:GhostWriter": {
-  "hash": "97eb51ed6971a2c3665837a8d12a1032e6c6f3f1",
-  "lastmod": "2026-09-21"
+  "hash": "ea4e97f1a346c8192086ead493d77956253e51ac",
+  "lastmod": "2026-09-23"
  },
  "tool:HistoryToday": {
   "hash": "9535fab8664308ec562fe8cfc9c2ae21eeb6f9b3",
@@ -96,24 +96,24 @@
   "lastmod": "2026-09-21"
  },
  "tool:MentalHealthNavigator": {
-  "hash": "a2d457064d209af022859babc3fee9eeca3f6e64",
-  "lastmod": "2026-09-21"
+  "hash": "c9e58804cf808bb7160a7ac334ed7514cbf52bfe",
+  "lastmod": "2026-09-23"
  },
  "tool:MiseEnPlace": {
-  "hash": "a0a4adc7d670bc3334d8f2a23c058ab6f440b98f",
-  "lastmod": "2026-09-21"
+  "hash": "0e6efaae99725469b790c42daa1625537c823eb6",
+  "lastmod": "2026-09-23"
  },
  "tool:NameStorm": {
   "hash": "1898961d376d8d0adb52e93915533817450962da",
   "lastmod": "2026-09-21"
  },
  "tool:PlainTalk": {
-  "hash": "779ffff106a22c0a7121dd3b40a3d2202283f5c0",
-  "lastmod": "2026-09-21"
+  "hash": "2d3ee449892a063fa4c6039173f97236ff6db3e0",
+  "lastmod": "2026-09-23"
  },
  "tool:ProcedureProbe": {
-  "hash": "6bd3d95ab577faf8cdfbfab5c34a29ecb8357677",
-  "lastmod": "2026-09-21"
+  "hash": "425d1342f04e7951b754827484a2e10e3603bdf9",
+  "lastmod": "2026-09-23"
  },
  "tool:RentersDepositSaver": {
   "hash": "1eb9cbb101dfcc1d7c6d07028a9f95cfdcc101f3",
@@ -128,16 +128,16 @@
   "lastmod": "2026-08-14"
  },
  "tool:SixDegreesOfMe": {
-  "hash": "dc900cc4a946e4dba546a8854ef77fea7eaa110e",
-  "lastmod": "2026-09-21"
+  "hash": "21c40e79617c7e163b0af96c8868b91a7c088168",
+  "lastmod": "2026-09-23"
  },
  "tool:TheAlibi": {
   "hash": "a72f15d3110673c18c1507d4cb8fd9ae4b8e220d",
   "lastmod": "2026-08-19"
  },
  "tool:TheDebrief": {
-  "hash": "6f99c199c06983df7e69ae8060cd75f3312497a5",
-  "lastmod": "2026-09-21"
+  "hash": "b4b25875908f90fefdf3e00a66de8abc0e17125d",
+  "lastmod": "2026-09-23"
  },
  "tool:TheGap": {
   "hash": "74d6a5e7c219e56b5cacea0301e930523e227e35",
@@ -156,8 +156,8 @@
   "lastmod": "2026-09-21"
  },
  "tool:WhichLife": {
-  "hash": "115bc1e60568f66baa9718f66a8808aa4389e78a",
-  "lastmod": "2026-09-21"
+  "hash": "4bc0dd9a6f50152681e84a3d71f813feefcfd3e5",
+  "lastmod": "2026-09-23"
  },
  "tool:WrongAnswersOnly": {
   "hash": "6d5a4541ad5c65a64fadcba6218f68aa069028ca",

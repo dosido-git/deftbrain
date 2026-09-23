@@ -62,6 +62,17 @@ export const tools = [
   categories: ['Health & Wellness'],
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
+  exampleOutput: {
+    title: "See what Mental Health Navigator gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your situation",
+    intro: "A fictional example showing how the tool helps with the practical question of where to start.", sampleLabel: "Sample situation",
+    sampleText: "I've been anxious most days for a few months, sleeping badly, and having trouble concentrating at work. I've never seen a therapist and don't know whether I should start with therapy, my regular doctor, or a psychiatrist.", context: "Fictional situation · not a diagnosis",
+    sections: [
+      { label: "A reasonable starting route", tone: "green", text: "A therapist or your primary-care clinician could both be sensible first contacts. A primary-care visit can also help check whether physical conditions, medications, sleep, or other factors are contributing." },
+      { label: "When another kind of support may fit", tone: "neutral", items: ["A psychiatrist focuses on medical evaluation and medication management.", "A therapist focuses on assessment, coping patterns, behavior, and talk-based treatment.", "A support group can add peer connection but is not a substitute for individualized care when symptoms are significantly affecting daily life."] },
+      { label: "What to say when you call", tone: "yellow", text: "I've had persistent anxiety and poor sleep for several months and it's starting to affect work. I'm looking for an initial appointment to understand what kind of support makes sense." }
+    ], nextStep: "Describe what has been going on and what you have already tried. The tool helps you understand types of support and practical next steps; it does not diagnose or provide emergency care.", disclaimer: "If there is immediate danger or a risk of self-harm, use local emergency or crisis services rather than waiting for an online planning tool."
+  },
+
   guide: {
     overview: "Knowing you need help is the first step — but figuring out what kind of help, and how to actually get it, is its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? The difference matters, and most people don't know where to start. MentalHealthNavigator cuts through the confusion: you describe what's been going on, and it recommends the right type of support for your situation, tells you how to find it (country-specific where possible), gives you the exact words to say when you reach out, and identifies what you can do today — not someday.",
 
@@ -1370,6 +1381,17 @@ export const tools = [
   categories: ['Health & Wellness', 'Home & Daily Life', 'Money'],
   headerColor: "#ccdfc4",
   description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
+  exampleOutput: {
+    title: "See what Procedure Probe gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your procedure",
+    intro: "A fictional example showing the briefing and questions the tool can prepare before a medical conversation.", sampleLabel: "Sample situation",
+    sampleText: "My orthopedist recommended an arthroscopic knee procedure after months of pain. Physical therapy helped somewhat. I want to understand why surgery is the next step, alternatives, recovery, and what insurance may cover.", context: "Fictional scheduled-care example · not medical advice",
+    sections: [
+      { label: "Questions about necessity", tone: "green", items: ["What finding makes you think this procedure is likely to help my specific problem?", "What happens if I wait or continue conservative treatment?", "What result should I realistically expect: less pain, better function, or both?"] },
+      { label: "Alternatives to compare", tone: "neutral", items: ["More or different physical therapy", "Medication or injection options, if appropriate", "Watchful waiting or activity modification", "A second opinion when the decision is elective or uncertain"] },
+      { label: "Practical questions", tone: "yellow", items: ["What does recovery usually require and when can I drive or work?", "Which parts need insurance authorization?", "What facility, surgeon, anesthesia, therapy, or equipment charges should I ask about separately?"] }
+    ], nextStep: "Tell Procedure Probe what was recommended and what you already know. It prepares a focused briefing for the conversation with your clinician; it does not decide whether you should have the procedure.", disclaimer: "This example is for preparation and medical literacy, not diagnosis or treatment advice."
+  },
+
   guide: {
     overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
     howToUse: [
@@ -1978,6 +2000,17 @@ export const tools = [
   categories: ['Decisions', 'Ideas & Imagination'],
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
+  exampleOutput: {
+    title: "See what Which Life? gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your two paths",
+    intro: "A fictional example showing how two choices can look different when imagined as ordinary life rather than bullet points.", sampleLabel: "Sample choice",
+    sampleText: "Path A: keep my stable job in Boston. Path B: take a smaller-company role in Portland with less pay but more creative work.", context: "Fictional decision · not a prediction",
+    sections: [
+      { label: "An ordinary Tuesday in Path A", tone: "neutral", text: "Your commute and team are familiar. The work is competent and predictable; by late afternoon you notice the same restlessness that made you consider leaving." },
+      { label: "An ordinary Tuesday in Path B", tone: "neutral", text: "The work asks more of you and feels less settled. You are watching expenses more closely, but you spend more of the day making things rather than maintaining them." },
+      { label: "The tradeoff made visible", tone: "yellow", text: "The choice is not simply security versus creativity. It also changes financial margin, familiarity, uncertainty, and what kind of tired you bring home." }
+    ], nextStep: "Describe both paths honestly. Which Life? makes each future concrete enough to react to without pretending it can predict what will happen."
+  },
+
   guide: {
     overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
     howToUse: [
@@ -2421,6 +2454,17 @@ export const tools = [
   categories: ['Decisions', 'Tasks', 'Work & Meetings'],
   headerColor: "#d4dde8",
   description: "What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.",
+  exampleOutput: {
+    title: "See what The Debrief gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your meeting",
+    intro: "Here is a shortened fictional example of how a messy meeting becomes decisions, owners, and follow-up.", sampleLabel: "Sample meeting note",
+    sampleText: "Team agrees to move the launch to October 14. Maya will confirm vendor capacity by Friday. Jordan will revise onboarding copy. Pricing is still unresolved and needs a separate decision.", context: "Fictional meeting · shortened for demonstration",
+    sections: [
+      { label: "Decisions", tone: "green", items: ["Launch moves to October 14.", "Vendor capacity must be confirmed before the schedule is announced."] },
+      { label: "Action items", tone: "neutral", items: ["Maya — confirm vendor capacity by Friday.", "Jordan — revise onboarding copy before the next review."] },
+      { label: "Still open", tone: "yellow", text: "Pricing was discussed but not decided. It should not be recorded as an agreement." }
+    ], nextStep: "Paste your transcript or notes and choose the kind of debrief you need. The tool separates what was decided from what was merely discussed and turns commitments into follow-up you can use."
+  },
+
   guide: {
     overview: "The Debrief is The Crux's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of talks and long reads. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
     howToUse: [
@@ -2703,6 +2747,17 @@ export const tools = [
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
   description: "Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.",
+  exampleOutput: {
+    title: "See what Decoder Ring gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your message",
+    intro: "A fictional example showing how the tool widens the plausible readings without pretending to know the sender's mind.", sampleLabel: "Sample message",
+    sampleText: "No worries. Do whatever you think is best.", context: "Fictional text message · context matters",
+    sections: [
+      { label: "Literal reading", tone: "green", text: "They may genuinely be comfortable letting you decide." },
+      { label: "Other plausible readings", tone: "yellow", items: ["They are disappointed but do not want to argue.", "They are frustrated and withdrawing from the decision.", "They are busy and truly do not care which option you choose."] },
+      { label: "Low-drama reply", tone: "neutral", text: "I can make the call. I just want to check that you're actually comfortable with either option before I do." }
+    ], nextStep: "Paste the exact message and add the surrounding context. Decoder Ring separates the words from reasonable subtext and gives you reply options matched to the ambiguity."
+  },
+
   guide: {
     overview: "Decoder Ring looks at the pragmatics, subtext, and emotional undercurrent of a message and lays out how it could reasonably be read — often more than one way. It doesn't tell you what the sender meant; nobody can know that from a message. It widens the range of readings you're considering, rates how ambiguous the message actually is, and gives you three different ways to reply.",
     howToUse: [
@@ -2793,6 +2848,17 @@ export const tools = [
   categories: ['Decisions', 'Home & Daily Life'],
   headerColor: "#d4dde8",
   description: "Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.",
+  exampleOutput: {
+    title: "See what Mise en Place gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your ingredients",
+    intro: "A shortened fictional example showing the difference between a recipe and a cooking plan.", sampleLabel: "Sample kitchen",
+    sampleText: "Chicken thighs, broccoli, half a lemon, rice, garlic and yogurt. About 35 minutes. Comfortable with basic cooking; no dietary restrictions.", context: "Fictional kitchen · shortened for demonstration",
+    sections: [
+      { label: "The meal", tone: "green", text: "Lemon-garlic chicken with roasted broccoli, rice, and a quick yogurt sauce." },
+      { label: "Start first", tone: "neutral", items: ["Heat the oven and start the rice.", "Season the chicken while the oven heats.", "Cut the broccoli while the chicken begins cooking."] },
+      { label: "Use the waiting time", tone: "yellow", text: "Mix yogurt, lemon and garlic while the rice and chicken cook; check the broccoli near the end so everything finishes together." }
+    ], nextStep: "Give Mise en Place what you actually have plus your time and constraints. It builds the sequence around your kitchen instead of handing you another recipe to organize yourself."
+  },
+
   guide: {
     overview: "Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.",
     howToUse: [
@@ -2849,6 +2915,17 @@ export const tools = [
   categories: ['Career', 'Conversations'],
   headerColor: "#ccdfc4",
   description: "You already know why this person deserves your recommendation. The difficult part is turning years of experience, impressions, and memories into a letter that does them justice.",
+  exampleOutput: {
+    title: "See what Ghost Writer gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your notes",
+    intro: "A fictional example showing how rough memories become specific recommendation language instead of generic praise.", sampleLabel: "Sample notes",
+    sampleText: "Priya worked for me for three years. Smart, reliable, good with messy projects. Biggest example: our reporting system broke during a client expansion and she rebuilt the process without dropping deadlines.", context: "Fictional recommendation · shortened for demonstration",
+    sections: [
+      { label: "The strongest evidence", tone: "green", text: "The reporting-system story demonstrates judgment under pressure, not just 'reliability.' That concrete episode should carry the letter." },
+      { label: "Possible opening", tone: "neutral", text: "In three years managing Priya, I learned that the projects with the least structure were often the ones I most wanted her to own." },
+      { label: "What to add before sending", tone: "yellow", items: ["The role or program she is applying for.", "A measurable result from the reporting rebuild, if you have one.", "One sentence explaining why you are qualified to recommend her."] }
+    ], nextStep: "Give Ghost Writer the relationship, destination, and real examples you remember. It turns your evidence into polished drafts while keeping the claims grounded in what you supplied."
+  },
+
   guide: {
     overview: "Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.",
     howToUse: [
@@ -3937,6 +4014,17 @@ tagline: "Work with the energy you have.",
   categories: ['Learning'],
   headerColor: "#d4dde8",
   description: "Most complex text isn't trying to confuse you — it was written for an audience that already shares a context you don't have. Paste anything and PlainTalk bridges the gap: plain-English translation plus a structural X-ray showing how the text is built — its argument, narrative, logic, or obligations — adapted automatically to what you're reading.",
+  exampleOutput: {
+    title: "See what Plain Talk gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your text",
+    intro: "A fictional example showing plain-language translation plus the structure underneath dense wording.", sampleLabel: "Sample clause",
+    sampleText: "The subscriber shall provide written notice of cancellation no fewer than thirty days prior to the conclusion of the then-current term, failing which the agreement shall renew for a successive term.", context: "Fictional contract language · shortened for demonstration",
+    sections: [
+      { label: "Plain English", tone: "green", text: "You must cancel in writing at least 30 days before the current term ends. If you miss that deadline, the agreement renews for another term." },
+      { label: "What the sentence is doing", tone: "neutral", items: ["Creates a cancellation deadline.", "Requires written notice.", "Makes renewal the default if you do nothing or act too late."] },
+      { label: "What to check", tone: "yellow", text: "Look elsewhere in the document for the length of the renewal term, acceptable ways to give written notice, and any cancellation fee." }
+    ], nextStep: "Paste the text you are trying to understand. Plain Talk translates the wording and maps the obligations, argument, or structure without replacing the original document.", disclaimer: "For legal, medical, financial, or other high-stakes documents, use the explanation to prepare questions and verify important decisions with an appropriate professional."
+  },
+
   guide: {
     overview: "PlainTalk is a universal text comprehension tool. Paste any complex text — a contract, a research paper, a chapter of literature, a medical form, a political speech — and get two things: a plain-English translation anyone can understand, and a structural X-ray showing how the text is built, what each section is doing, and what matters most. The analysis adapts automatically to the type of text you provide.",
 
@@ -4134,6 +4222,16 @@ tagline: "Work with the energy you have.",
   categories: ['Just for Fun', 'Self & Reflection'],
   headerColor: "#d4dde8",
   description: "Find the hidden connections between seemingly unrelated parts of your life.\nYour favorite movie and your career. Your childhood hobby and your closest friendship.\n\nThe chain is always there. You just can't see it yet.",
+  exampleOutput: {
+    title: "See what Six Degrees of Me gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your two things",
+    intro: "A fictional example of tracing a surprising connection through one person's own history.", sampleLabel: "Sample pair",
+    sampleText: "My childhood obsession with model trains and the project-management work I do now.", context: "Fictional personal chain · for exploration",
+    sections: [
+      { label: "The chain", tone: "green", items: ["Model trains rewarded planning before action.", "Layouts made dependencies visible: one misplaced section affected the whole route.", "That same habit later showed up in scheduling school projects and volunteer events.", "Project management turned that instinct into a profession."] },
+      { label: "The interesting link", tone: "neutral", text: "The connection is less 'trains led to your career' than a repeated pleasure in arranging many moving parts so they work together." }
+    ], nextStep: "Give the tool two pieces of your life. It builds a plausible link-by-link chain and shows where the connection is strong, surprising, or speculative."
+  },
+
   guide: {
     overview: "Everything in your life is connected by threads you've never noticed. This tool traces the chain between any two things -- your philosophy degree and your coding career, your fear of flying and your love of sushi. Build a profile once, then play endlessly.",
 
@@ -4240,6 +4338,17 @@ tagline: "Work with the energy you have.",
   categories: ['Home & Daily Life', 'Relationships', 'Self & Reflection'],
   headerColor: "#e0b8b8",
   description: "One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.",
+  exampleOutput: {
+    title: "See what Final Wish gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your wishes",
+    intro: "A shortened fictional example showing how personal wishes can become clearer instructions for the people who may need them.", sampleLabel: "Sample wish",
+    sampleText: "I want something simple. No formal religious service. I would rather have people tell stories, play music I loved, and not feel obligated to spend a lot of money.", context: "Fictional planning example",
+    sections: [
+      { label: "What matters most", tone: "green", items: ["Keep the gathering informal and story-centered.", "Music matters more than ceremony.", "Avoid unnecessary expense or pressure to make the event elaborate."] },
+      { label: "What still needs deciding", tone: "yellow", items: ["Who should make final arrangements?", "Burial, cremation, donation, or another preference?", "Any people, songs, readings, or traditions you definitely want included or excluded?"] },
+      { label: "A clearer way to say it", tone: "neutral", text: "Please keep the gathering simple. I would like people to share stories and play music that reminds them of me. I do not want anyone to feel they need to spend heavily to honor me." }
+    ], nextStep: "Final Wish helps turn values and preferences into something loved ones can actually understand and use. It does not replace legal estate or advance-directive documents."
+  },
+
   guide: {
       overview: "Final Wish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
       howToUse: [
