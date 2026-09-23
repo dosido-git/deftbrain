@@ -423,44 +423,93 @@ export const tools = [
   // Public, reviewed demonstration used by both the React page and prerenderer.
   exampleOutput: {
     title: "See what Doctor Visit Prep gives you",
-    expandLabel: "See example results ↓",
+    expandLabel: "See the full real example results ↓",
     nextStepLabel: "What happens with your visit",
-    intro: "Not ready to build your own prep sheet? Here is a shortened fictional example showing the kind of help you can expect.",
+    intro: "This is the complete, real output from an actual Doctor Visit Prep run on the sample situation below — nothing here is invented or shortened.",
     sampleLabel: "Sample situation",
-    sampleText: "I've had right-sided lower back pain for about three weeks. Sitting makes it worse and walking helps. I've been taking ibuprofen. My mother had kidney stones, and I'm worried this could be kidney-related.",
-    context: "Fictional scheduled doctor visit · not a diagnosis",
+    sampleText: "Right-sided lower back pain for about three weeks, gradually worsening, sometimes shooting down the back of the right leg to the knee. Worse after sitting more than 30 minutes or bending forward; better with walking, lying flat, and ibuprofen (400mg, 2-3x/day for the past week). Morning stiffness that loosens with movement. Desk job. Mother had kidney stones twice, prompting worry about a kidney connection. Allergy to sulfa drugs. No prior back injuries.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario, a scheduled visit for new back pain.",
     sections: [
       {
-        label: "A clear opener",
+        label: "Mention these first (3)",
+        tone: "red",
+        items: [
+          "If you develop a fever, chills, or feel suddenly unwell alongside the back pain, don't wait for a scheduled appointment — those deserve same-day attention.",
+          "If you notice blood in your urine, pain when urinating, or a significant change in how often you're urinating, call the office before your next appointment rather than waiting for it.",
+          "If the leg symptom spreads below the knee, becomes numbness or weakness, or you have any loss of bladder or bowel control, seek same-day care immediately.",
+        ],
+      },
+      {
+        label: "Your opening line",
         tone: "green",
-        text: "I've had right-sided lower back pain for about three weeks. It's worse when I sit for a long time and improves when I walk. I'm worried about whether it could be kidney-related because of my family history."
+        text: "Say this in the first minute: “I've had a dull, deep ache in my lower right back for about three weeks — it's gradually getting worse, and it sometimes shoots down the back of my right leg to the knee.” Clinical-ready description: the pain is on the right side, lower back, dull and deep in quality, rated about 6 out of 10. It radiates down the back of the right leg to the knee and is worse after sitting more than 30 minutes or bending forward, but improves with walking, lying flat, and ibuprofen. Stiff in the mornings but loosens up after a few minutes of movement — three weeks with a gradual onset, desk job with most of the day spent sitting. Your goal for this visit: leave with either a clear working explanation, a specific test or referral ordered, or a concrete plan — including what symptom change or timeline would trigger the next step.",
       },
       {
-        label: "Questions to ask first",
+        label: "Prioritized questions (5)",
         tone: "neutral",
         items: [
-          "What possibilities fit this pattern, and what would help distinguish among them?",
-          "Does my family history of kidney stones change what you would want to check?",
-          "What changes or symptoms should make me contact you sooner?"
-        ]
+          "[High — possible causes] Based on where the pain is, how it moves, and what makes it better or worse — what explanations best fit what we're seeing? Why: this is your primary goal for the visit and frames everything else that follows.",
+          "[High — next steps] I'm worried about a kidney connection given my mother's history with kidney stones. Is there a quick way to tell whether this is coming from my spine or somewhere else — and what would we check first? Why: this addresses your biggest worry directly and asks the doctor to help you prioritize without over-testing.",
+          "[High — medication] I've been taking ibuprofen 400mg two or three times a day for the past week — is that safe to keep up, and is there something that would work better for what's going on? Why: daily NSAID use for a week warrants a conversation about whether it's appropriate to continue and at what dose.",
+          "[Medium — day to day] What should I do differently day-to-day — with sitting, movement, or posture — while we're figuring this out? Why: you have a desk job that is likely making things worse, and concrete guidance now prevents you from inadvertently aggravating it.",
+          "[Medium — next steps] If this doesn't improve in the next few weeks, what's the next step — and what would need to happen for you to order imaging? Why: establishes a clear decision point so you're not left waiting indefinitely without a plan.",
+        ],
       },
       {
-        label: "Mention even if you aren't asked",
+        label: "Mention proactively, even if not asked (4)",
         tone: "yellow",
-        text: "How often you take ibuprofen and the dose, when the pain first started, whether you have noticed urinary symptoms or fever, and how much the pain is affecting sitting, sleep, work, or normal activity."
+        items: [
+          "I have an allergy to sulfa drugs — I get a rash.",
+          "My mother had kidney stones twice, which is part of why I'm concerned about the right-sided location.",
+          "I have no history of back injuries — this came on gradually with no specific incident I can point to.",
+          "The leg symptom goes down the back of my right leg to the knee — not past the knee, not to the foot.",
+        ],
       },
       {
-        label: "Bring with you",
+        label: "Pre-visit checklist (5)",
         tone: "neutral",
         items: [
-          "Your current medication and supplement list",
-          "A short timeline of when the pain started and how it has changed",
-          "Any relevant prior test results or records you already have"
-        ]
-      }
+          "Write down the exact date the pain started and whether anything was different that week — even if there was no obvious injury.",
+          "Note the two or three positions or activities that reliably make it worse, so you can describe them quickly if the doctor asks.",
+          "Count roughly how many ibuprofen doses you've taken in the past week so you can give the doctor an accurate number.",
+          "Think through whether you've had any changes in urination — frequency, color, discomfort — so you can answer honestly if asked.",
+          "Decide in advance what you'd consider a good outcome from this visit, so you can say it out loud if the appointment feels like it's ending without a plan.",
+        ],
+      },
+      {
+        label: "If medication is prescribed, ask (5)",
+        tone: "neutral",
+        items: [
+          "What is this treating or targeting — the pain itself, or something else going on?",
+          "Are there any interactions with ibuprofen, or should I stop taking it while I'm on this?",
+          "What side effects should I watch for in the first week?",
+          "How will we know if it's working, and what would make us reconsider it?",
+          "Is there a generic version available?",
+        ],
+      },
+      {
+        label: "What to bring (4)",
+        tone: "neutral",
+        items: [
+          "Your ibuprofen bottle or a note with the exact dose and how often you've been taking it.",
+          "Insurance card and a photo ID.",
+          "A phone or notebook to write down what the doctor says the next steps are.",
+          "A written note of your mother's kidney stone history in case the detail matters and you go blank under pressure.",
+        ],
+      },
+      {
+        label: "Conversation tips",
+        tone: "green",
+        items: [
+          "Lead with the leg symptom early — if the doctor knows the pain radiates down your leg, that changes which questions they'll ask and may save time.",
+          "If you reach the end of the visit without a clear next step, it's fair to say: ‘Can you tell me what I should do, what to watch for, and when I should come back or call?’",
+          "You don't need to choose between the kidney worry and the back worry — ask the doctor to help you sort out which is worth investigating first, and let them lead.",
+          "If something the doctor says doesn't make sense, ask them to repeat it in different words — not to challenge them, just to make sure you leave with something you can actually act on.",
+        ],
+      },
     ],
-    nextStep: "With your own concern, timeline, medications, and worries, Doctor Visit Prep turns what you already know into a short, prioritized visit sheet so the important part does not get buried at the end of the appointment.",
-    disclaimer: "This example helps prepare for a scheduled medical conversation. It does not diagnose symptoms, recommend treatment, or replace urgent medical care when needed."
+    nextStep: "With your own concern, timeline, medications, and worries, Doctor Visit Prep turns what you already know into a short, prioritized visit sheet — mention-first items, an opening line, prioritized questions, and a pre-visit checklist — so the important part does not get buried at the end of the appointment.",
+    disclaimer: "This is a real, complete tool run against a realistic sample situation. It does not diagnose symptoms, recommend treatment, or replace urgent medical care when needed."
   },
 
   guide: {
@@ -4676,40 +4725,61 @@ tagline: "Work with the energy you have.",
   // Public, reviewed demonstration used by both the React page and prerenderer.
   exampleOutput: {
     title: "See what Fake Review Detective gives you",
-    expandLabel: "See example results ↓",
+    expandLabel: "See the full real example results ↓",
     nextStepLabel: "What happens with your reviews",
-    intro: "Here is a shortened fictional example showing how the tool separates measurable review patterns from judgments that need caution.",
-    sampleLabel: "Sample review set",
-    sampleText: "Eight headphone reviews: five 5-star reviews posted within two days using broad phrases such as ‘amazing quality’ and ‘highly recommend’; two longer verified-purchase reviews mention comfortable fit but weak bass; one 2-star review describes a charging problem.",
-    context: "Fictional review set · shortened for demonstration",
+    intro: "This is the complete, real output from an actual Fake Review Detective run on the sample reviews below — nothing here is invented or shortened.",
+    sampleLabel: "Sample review set (6 reviews, wireless earbuds)",
+    sampleText: "Six reviews for a pair of wireless earbuds: four unverified 5-star reviews posted 19-25 weeks ago using broad superlative praise (“amazing product,” “perfect in every way,” “phenomenal,” “wow just wow”) with no product-specific detail; one unverified 3-star review naming an awkward fit and an intermittent connection drop on one side; one unverified 2-star review reporting the left side stopped charging within 3 days and slow customer service.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario, deciding whether to buy the product.",
     sections: [
       {
-        label: "What the data shows",
-        tone: "neutral",
-        text: "Five of the eight reviews are tightly clustered in time. Several of those reviews use similar, nonspecific praise. The smaller detailed group describes concrete product characteristics, including fit, bass, and charging."
-      },
-      {
-        label: "What looks suspicious",
+        label: "Stats & trust score",
         tone: "red",
-        text: "The timing cluster and repeated generic language are reasons to treat the five-star burst cautiously. Those patterns can occur in manipulated review sets, but they do not prove that any individual reviewer is fake."
+        text: "6 reviews, 4.2★ average, 0% verified purchases, 1 generic-praise review, no timing clusters detected. Trust score: 22/100 — Approach with Caution. Four of six reviews show signs of being promotional rather than genuine, and zero are verified purchases, so the 4.2-star average probably overstates real-world quality. The star rating looks less trustworthy than it first appears.",
       },
       {
-        label: "What seems more useful",
-        tone: "green",
-        text: "The detailed reviews provide specific claims that can be compared across reviewers: comfort appears more than once, while weak bass and a charging problem deserve further checking."
-      },
-      {
-        label: "Before buying",
+        label: "What genuine reviews say",
         tone: "yellow",
+        text: "The two reviews that read as genuine describe a product with acceptable sound for the price but real reliability problems: connectivity dropouts, a charging failure within days, and slow customer service. Genuine-only rating: 2.5/5★. Pros: sound quality described as adequate for the price point. Cons: one side loses connection intermittently; left side stopped charging within 3 days of use; customer service took a week to respond; fit described as awkward.",
+      },
+      {
+        label: "Recommendation: look for another option (medium confidence)",
+        tone: "red",
+        text: "The only reviews that describe actual use report a unit that failed within days and a seller slow to respond — worth looking at alternatives with verified buyers and more consistent reliability reports before committing here.",
+      },
+      {
+        label: "Review-by-review scores (6, suspicious first)",
+        tone: "red",
         items: [
-          "Read more reviews outside the clustered dates",
-          "Look for repeated comments about bass, charging, comfort, and durability",
-          "Check independent sources rather than relying on the displayed star average alone"
-        ]
-      }
+          "Score 12/100, likely fake — ★★★★★ “Amazing product! Best purchase I ever made. My life changed completely. Everyone should buy these immediately. 10/10 recommend to all family members!” Unverified, 23w old. No verified purchase; pure superlative praise with zero product detail; life-changing claim combined with urgent recommendation to everyone reads as promotional boilerplate; stars embedded in text suggest copy-paste from a template. Every phrase is interchangeable with any other product category.",
+          "Score 18/100, likely fake — ★★★★★ “Perfect in every way!! I've tried many similar products and these are THE BEST. My partner who has very high standards also loves them.” Unverified, 25w old. Emphatic superlative ('THE BEST') with no product-specific support; third-party endorsement from an unnamed partner is an unverifiable social-proof device; caps-heavy phrasing and double exclamation combined with zero functional detail.",
+          "Score 28/100, likely fake — ★★★★★ “I was skeptical but these exceeded ALL my expectations. The sound quality is phenomenal. Five stars isn't enough!” Unverified, 19w old. Skeptic-turned-believer framing is a common promotional pattern; 'phenomenal' sound quality stated but not described in any way; no mention of use context or comparison point.",
+          "Score 30/100, likely fake — ★★★★★ “Wow just wow. Received yesterday and already love it. Great sound great quality great everything. Will buy again as gifts!” Unverified, 21w old, posted 1 day after receipt. Three consecutive vague praise units with no elaboration; posted 1 day after receipt yet expresses complete confidence across all dimensions; mentions sound but says nothing about it.",
+          "Score 72/100, likely genuine — ★★★☆☆ “Sound is decent for the price. Fit is awkward and one side occasionally loses connection. Battery life as advertised.” Unverified, 20w old. Names a specific physical problem (awkward fit) and a specific technical problem (intermittent connection drop on one side); distinguishes between what works and what doesn't; measured, non-promotional tone consistent with real use over time.",
+          "Score 78/100, likely genuine — ★★☆☆☆ “Returned after 3 days. Left side stopped charging. Customer service took a week to respond. Sound was fine until it died.” Unverified, 22w old. Names a specific hardware failure (left side stopped charging) and a specific service experience (one-week response time).",
+        ],
+      },
+      {
+        label: "Positive campaign detected (high confidence)",
+        tone: "red",
+        text: "Four reviews pile on superlatives with no functional detail, while the two credible reviews — a 3-star and a 2-star — describe specific problems. The shape of that split suggests the positive reviews are not coming from ordinary buyers. Reviews 0, 1, 2, and 4 all award 5 stars yet cannot name a single concrete feature, use case, or comparison point. None of the six reviews carry a verified purchase badge, removing the one platform-level check that separates buyers from non-buyers.",
+      },
+      {
+        label: "Category comparison",
+        tone: "yellow",
+        text: "Unusual for this category: 0% verified purchases across all six reviews is atypical — most product listings with real buyers accumulate at least some verified badges; stars embedded in review text suggest copy-paste from a template rather than organic typing. Normal for this category: a mix of high and low ratings is normal; the problem here is that the high-rated ones lack any substance to back them up.",
+      },
+      {
+        label: "What to watch for next time",
+        tone: "neutral",
+        items: [
+          "Praise with no receipts — a review that gives the highest rating but cannot describe what the product actually does. Reviews 0, 1, 2, and 4 offer 'life-changing,' 'great everything,' 'phenomenal,' and 'perfect in every way' but zero specifics. How to spot it: ask whether the review could be copy-pasted onto any product in the category and still make sense.",
+          "The someone-else-loved-it move — borrowing credibility from an unnamed third party whose opinion cannot be checked. Review 4 invokes a partner with 'very high standards' who also approves. How to spot it: ask what you actually know about that off-screen person — the answer is always nothing.",
+        ],
+      },
     ],
-    nextStep: "With a larger review sample, Fake Review Detective can compute the patterns present in the material you provide, flag reviews that deserve scrutiny, and summarize what the more informative reviews consistently say.",
-    disclaimer: "Review-pattern analysis can identify reasons for caution, not prove who wrote a review or whether a particular review is fraudulent."
+    nextStep: "With a larger review sample, Fake Review Detective computes the patterns present in the material you provide, flags reviews that deserve scrutiny, scores each one individually, and summarizes what the more credible reviews consistently say.",
+    disclaimer: "This is a real, complete tool run against a realistic sample review set. Review-pattern analysis can identify reasons for caution, not prove who wrote a review or whether a particular review is fraudulent."
   },
   guide: {
     overview: "Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.",
