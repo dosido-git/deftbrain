@@ -5067,40 +5067,120 @@ tagline: "Work with the energy you have.",
   // jurisdiction-specific legal conclusion.
   exampleOutput: {
     title: "See what Lease Trap Detector gives you",
-    expandLabel: "See example results ↓",
+    expandLabel: "See the full real example results ↓",
     nextStepLabel: "What happens with your lease",
-    intro: "Not ready to upload a lease? Here is a shortened fictional example showing the kind of analysis you can expect.",
-    sampleLabel: "Sample lease language",
-    sampleText: "Tenant shall pay a $350 non-refundable cleaning fee. Landlord may enter the premises at reasonable times for inspection. Tenant is responsible for all repairs under $250.",
-    context: "Fictional apartment lease · location not specified",
+    intro: "This is the complete, real output from an actual Lease Trap Detector run on the sample lease shown below — nothing here is invented or shortened.",
+    sampleLabel: "Sample lease (excerpt)",
+    sampleText: "RESIDENTIAL LEASE AGREEMENT — 1428 Elm Street, Apt. 3B, San Francisco, CA. Rent $2,800/month (Clause 4), due on the 1st with a 5-day grace period; $200 flat late fee plus $50/day thereafter, tenant waives right to challenge. Security deposit $4,200 (Clause 5), returned within 30 days, sole landlord discretion on deductions; holes in walls forfeit entire deposit (Clause 7). $75/month building services fee. Section 3: auto-renews month-to-month at 110% of rent absent 60 days notice. Section 8: landlord may enter at any reasonable time with or without notice. Section 9: no subletting without consent, sole discretion; unauthorized occupancy over 7 days is breach. Section 10: tenant pays landlord's attorney's fees even if landlord does not prevail. Section 12: early termination requires 2 months rent plus full deposit forfeiture.",
+    context: "Real run, 2026-09-23 — a realistic San Francisco residential lease (the tool's own built-in example scenario).",
     sections: [
       {
-        label: "What stands out",
+        label: "3 things to fix before you sign",
         tone: "red",
-        text: "Three clauses deserve a closer look: the non-refundable cleaning fee, the undefined entry language, and the broad repair-cost shift to the tenant."
+        items: [
+          "Remove the automatic 10% rent increase in Section 3 and replace it with a renewal at the same rent, or delete the auto-renewal clause entirely and negotiate renewal terms at the time. Why: if you miss the 60-day notice window, your rent increases by $280/month immediately with no further negotiation possible.",
+          "Strike the one-sided attorney's fees clause in Section 10 and replace it with a mutual prevailing-party clause: each party pays their own fees unless a court awards them to the prevailing party. Why: as written, you owe the landlord's legal fees even if you win; this may conflict with Cal. Civ. Code § 1717 and creates serious financial exposure if any dispute arises.",
+          "Reduce the security deposit from $4,200 to $2,800 (one month's rent) to comply with California AB 12, effective July 1, 2024, which capped residential security deposits at one month's rent for most landlords — Cal. Civ. Code § 1950.5(c). Why: the $4,200 deposit appears to exceed the current statutory cap, meaning $1,400 may be recoverable if you paid it, but disputing it mid-tenancy creates friction — fix it before signing.",
+        ],
       },
       {
-        label: "Why it matters",
+        label: "Overall assessment",
+        tone: "red",
+        text: "High risk — 4 major concerns. Several clauses in this lease appear to conflict with California law or San Francisco local rules and should be corrected or struck before signing. Jurisdiction type: tenant-favorable. Rent control: San Francisco's Rent Ordinance (SF Admin. Code Ch. 37) likely applies to this unit if it was built before June 13, 1979 — verify the building's construction date, as rent increases and eviction protections under the Ordinance are substantial.",
+      },
+      {
+        label: "Financial exposure",
         tone: "yellow",
-        text: "Each could create costs or reduce your control later. Whether any clause is enforceable depends on the law where the property is located and on the rest of the lease."
+        items: [
+          "Monthly rent: $2,800 per month, due on the 1st of each month per Clause 4.",
+          "Move-in cost: $7,000 (first month's rent of $2,800 plus security deposit of $4,200).",
+          "Annual extras: the $75/month building services fee adds $900 over 12 months; if no late fees are triggered, total fees beyond rent are approximately $900 for the year.",
+          "Worst case: if rent is paid late once (10 days late), early termination is exercised, and the full deposit is forfeited — approximately $200 flat late fee + $500 in daily late fees + $5,600 early termination payment (2 months rent) + $4,200 forfeited deposit = roughly $10,500 in penalties on top of rent already paid.",
+        ],
       },
       {
-        label: "What to verify",
-        tone: "neutral",
-        text: "Check local rules for deposits and cleaning charges, landlord notice before entry, and which repair obligations can legally be assigned to a tenant. Also check whether another section defines these terms more precisely."
+        label: "Security deposit",
+        tone: "yellow",
+        text: "Lease charges $4,200 against a legal max of $2,800. Over limit. Under Cal. Civ. Code § 1950.5, as amended by AB 12 (effective July 1, 2024), the maximum security deposit for an unfurnished residential unit is one month's rent — $2,800 in this case — for most landlords; the tenant should verify whether the landlord qualifies for any narrow exception (small individual landlords who own no more than two residential rental properties totaling no more than four dwelling units may still charge up to two months' rent under the AB 12 exception, but this should be confirmed directly). Return: 21 days is required by Cal. Civ. Code § 1950.5(g); the lease states 30 days, which appears to conflict with this statute. Interest: no. Walkthrough: required.",
+        items: [
+          "The deposit of $4,200 (1.5 months' rent) likely exceeds the one-month cap established by AB 12 (Cal. Civ. Code § 1950.5, eff. July 1, 2024) for most landlords — the tenant should ask the landlord to confirm which exception, if any, applies and request that in writing.",
+          "The lease states the itemized statement will be provided within 30 days, but Cal. Civ. Code § 1950.5(g) sets the deadline at 21 days; the statute controls, but the discrepancy is worth flagging so the tenant knows their actual legal deadline.",
+          "Clause 5 gives the landlord sole discretion to apply the deposit to any cleaning, repairs, or unpaid charges without defining the standard; California law limits deductions to damage beyond ordinary wear and tear — deductions for ordinary wear are not permitted regardless of what the lease says.",
+          "Clause 7 states that holes in walls shall cause forfeiture of the entire security deposit; a blanket forfeiture provision for a single category of damage may not reflect the proportionality California law requires for deposit deductions, and the tenant should document wall condition thoroughly at move-in.",
+        ],
       },
       {
-        label: "Questions worth asking before signing",
+        label: "Red flags — likely unenforceable (4)",
+        tone: "red",
+        items: [
+          "Section 8: “Landlord may enter the Premises at any reasonable time with or without notice for any purpose Landlord deems necessary.” This clause eliminates the 24-hour advance written notice California law requires before landlord entry in nearly all circumstances. Unenforceable — Cal. Civ. Code § 1954 requires at least 24 hours written notice before entry except in a documented emergency; a lease cannot waive this right. Your script: “California Civil Code Section 1954 requires 24 hours written notice before entry and this cannot be waived by lease. Please revise Section 8 to reflect the statutory notice requirement.”",
+          "Section 10: “Tenant shall pay Landlord's attorney's fees and costs, including in actions where Landlord is not the prevailing party.” Requiring the tenant to pay the landlord's fees even when the landlord loses is one-sided. Unenforceable — Cal. Civ. Code § 1717 makes a contractual attorney's fees clause mutual by operation of law in contract actions, and courts may decline to enforce a clause that purports to award fees to a non-prevailing party. Your script: “Section 10 purports to make me liable for fees even if the landlord does not prevail, which conflicts with California Civil Code Section 1717. I am willing to accept a standard mutual prevailing-party attorney's fees clause in its place.”",
+          "Section 4: “A late fee of $200 plus $50 per day shall apply if rent is received after the 5th. Tenant agrees that all late fees are reasonable and waives any right to challenge them.” The compounding daily fee structure and the embedded waiver of the right to challenge reasonableness are both legally suspect. Unenforceable — under California common law liquidated damages principles (Cal. Civ. Code § 1671), a late fee must represent a reasonable estimate of actual loss; an escalating daily penalty and a pre-signed waiver of challenge do not insulate the clause from court scrutiny. Your script: “The $50-per-day escalating late fee and the waiver of challenge in Section 4 are likely unenforceable under California liquidated damages law. I would like to replace these with a flat, reasonable late fee and remove the waiver language.”",
+          "Section 5: “Landlord may apply the deposit to any cleaning, repairs, or unpaid charges at Landlord's sole discretion. Itemized statement will be provided within 30 days of move-out.” The 30-day return timeline exceeds the 21-day deadline California law requires. Unenforceable — Cal. Civ. Code § 1950.5(g) requires the landlord to return the deposit and any itemized statement of deductions within 21 calendar days of the tenant vacating. Your script: “Section 5 states 30 days for the deposit return, but California Civil Code Section 1950.5 requires 21 days. Please correct the timeline and add language confirming deductions will not include normal wear and tear.”",
+        ],
+      },
+      {
+        label: "Yellow flags — worth clarifying (3)",
+        tone: "yellow",
+        items: [
+          "Section 3 — Term and Renewal: “Unless either party gives 60 days written notice prior to expiration, this lease shall automatically renew on a month-to-month basis at a rent equal to 110% of the most recent monthly rent.” The 10% rent increase on automatic renewal may conflict with San Francisco Rent Ordinance limits if the unit is rent-controlled, and 60 days notice to exit is longer than the 30 days California law requires of tenants on month-to-month tenancies. Questions to ask: Is this unit covered by the San Francisco Rent Ordinance, and if so, how does the 110% renewal rent comply with allowable annual increase limits? If I miss the 60-day window and the lease converts, am I still bound to 60 days notice to vacate rather than the statutory 30 days?",
+          "Section 9 — Assignment and Subletting: “Tenant may not sublet or assign without written consent withheld at sole discretion, and any unauthorized occupancy of more than 7 days by a non-tenant shall constitute breach.” California Civil Code Section 1995.310 and San Francisco Rent Ordinance Section 6.15 give tenants qualified rights to sublet in rent-controlled units. Questions to ask: Does the landlord consider a regular overnight guest who stays more than 7 days cumulatively or consecutively to be an unauthorized occupant? Under what circumstances would the landlord approve a sublet request?",
+          "Section 12 — Early Termination: “Tenant may terminate early by paying 2 months rent as liquidated damages plus forfeiting the security deposit.” Requiring both a liquidated damages payment and full deposit forfeiture could amount to a penalty exceeding actual damages under California Civil Code Section 1671. Questions to ask: Is the landlord willing to separate the deposit from the early termination fee? Would the landlord accept a mitigation-based early termination clause where the fee reduces if the unit is re-rented quickly?",
+        ],
+      },
+      {
+        label: "May not hold up in court (3)",
+        tone: "red",
+        items: [
+          "Section 5's 30-day deposit-return timeline appears to conflict with the 21-day statutory deadline under Cal. Civ. Code § 1950.5, so a court may decline to treat the longer period as controlling. Note in writing before move-out that you expect the deposit accounting within 21 days, and document the unit's condition thoroughly at move-out.",
+          "Section 8's no-notice entry provision appears to conflict with Cal. Civ. Code § 1954's 24-hour notice requirement, and a court may decline to enforce entry without the required notice except in genuine emergencies. If the landlord attempts to enter without notice in a non-emergency, you can cite Cal. Civ. Code § 1954 in writing.",
+          "Section 10's attorney's-fees clause — requiring the tenant to pay fees even when the landlord loses — appears to conflict with California's reciprocal fee statute (Cal. Civ. Code § 1717) and public policy, and a court may not uphold it as written. Request that this clause be revised to a standard mutual prevailing-party fee provision, or ask that it be removed entirely.",
+        ],
+      },
+      {
+        label: "Green flags (2)",
         tone: "green",
         items: [
-          "When exactly can the $350 cleaning fee be charged, and what does it cover?",
-          "What notice will I receive before a non-emergency entry?",
-          "Which repairs count toward the $250 tenant responsibility, and are there exceptions for building systems or normal wear?"
-        ]
-      }
+          "“The security deposit is set at $4,200, equal to 1.5 months rent, and an itemized statement will be provided within 30 days of move-out.” As of July 1, 2024, California AB 12 limits residential security deposits to one month's rent for most tenants, so the deposit here appears to exceed that cap and may be reducible — but the commitment to an itemized statement is consistent with the statute's requirement and gives you a documented basis to dispute improper deductions.",
+          "“Monthly rent of $2,800 is due on the 1st of each month with a 5-day grace period before any late fee applies.” A 5-day grace period before late fees trigger is a concrete buffer that limits your exposure if a payment is delayed by a weekend or bank processing, and it is stated clearly enough to be enforceable as written in your favor.",
+        ],
+      },
+      {
+        label: "Missing from this lease (4)",
+        tone: "yellow",
+        items: [
+          "No lead paint disclosure or acknowledgment. For housing built before 1978, federal law (42 U.S.C. § 4852d) requires landlords to disclose known lead paint hazards and provide the EPA pamphlet before a tenant is bound. Ask the landlord to confirm the building's construction date and, if applicable, provide the required disclosure before signing.",
+          "No move-in inspection or move-in condition checklist. Without a documented baseline, disputes about pre-existing versus tenant-caused damage become much harder to resolve. Cal. Civ. Code § 1950.5(f) gives tenants the right to request an initial inspection before moving in; this lease does not mention that right. Request a joint move-in inspection and a signed condition checklist.",
+          "No mention of San Francisco Rent Ordinance coverage. If this unit is covered, the landlord's ability to raise rent and permissible grounds for eviction are governed by local law regardless of what the lease says. Ask the landlord in writing whether the unit is subject to the Ordinance, and verify separately with the Rent Board.",
+          "The $4,200 deposit (1.5 months rent) should be verified against the current California cap. AB 12, effective July 1, 2024, caps most deposits at one month's rent — $2,800 here — meaning this deposit may exceed the current legal limit by $1,400. Ask whether the landlord qualifies for any AB 12 exemption before paying.",
+        ],
+      },
+      {
+        label: "Unusual fees (3)",
+        tone: "yellow",
+        items: [
+          "Building services fee: $75/month ($900/year), flagged as unusual (depends on jurisdiction). Ask the landlord to itemize exactly what this covers and whether it duplicates costs already reflected in rent.",
+          "Daily late fee accrual: $50/day after the 5th, flagged as unusual (depends on jurisdiction). California courts have declined to enforce late fees disproportionate to actual damages; ask for a single flat fee instead.",
+          "Early termination deposit forfeiture: $4,200 (full deposit, per Clause 12), flagged as unusual (depends on jurisdiction). Request that early termination be a standalone liquidated-damages provision without the additional automatic deposit forfeiture.",
+        ],
+      },
+      {
+        label: "Negotiation strategy",
+        tone: "neutral",
+        text: "Key points to hit: correct the security deposit to $2,800 to comply with AB 12 / Cal. Civ. Code § 1950.5(c); revise Section 8 to require 24 hours written notice before entry per Cal. Civ. Code § 1954; replace the one-sided attorney's fees clause in Section 10 with a mutual prevailing-party clause. Stand firm on: 24-hour written notice before entry (non-waivable under Cal. Civ. Code § 1954); the 21-day deposit return timeline (cannot be extended by contract under Cal. Civ. Code § 1950.5(g)); a deposit at or below one month's rent (AB 12's $2,800 cap for this unit). Opening email: “I have reviewed the proposed lease for 1428 Elm Street, Apt. 3B and identified several provisions that appear to conflict with California Civil Code and San Francisco local ordinances. I would like to resolve these before signing and have listed the specific changes I am requesting below.” If the landlord says “The late fee clause is standard and you already agreed it is reasonable,” you respond: “California Civil Code Section 1671 allows courts to evaluate whether a late fee is a reasonable estimate of actual loss regardless of any pre-signed agreement, so the waiver language does not remove that right.” If the landlord says “The 1.5-month deposit is what we charge everyone and has always been our policy,” you respond: “California AB 12, effective July 1, 2024, limits residential security deposits to one month's rent for most landlords, so the current statutory cap for this unit is $2,800.”",
+      },
+      {
+        label: "Resources",
+        tone: "neutral",
+        items: [
+          "San Francisco Rent Board (housing authority) — can confirm whether this unit is covered by the San Francisco Rent Ordinance, explain lawful rent increase limits, and provide free counseling; search sf.gov for the Rent Board contact page.",
+          "Tenderloin Housing Clinic or Bay Area Legal Aid (legal aid) — provide free or low-cost legal advice to San Francisco tenants on lease disputes, security deposit issues, and unlawful lease terms.",
+          "San Francisco Tenants Union (tenant union) — offers counseling sessions where tenants can review lease terms with experienced advisors before signing; search sf-tenants.org for current hours.",
+        ],
+      },
     ],
-    nextStep: "With your full lease and location, Lease Trap Detector can examine these clauses in context, surface other provisions worth attention, and identify local rules you may want to verify before signing.",
-    disclaimer: "This example is educational and uses fictional lease language. It is not legal advice or a statement that any sample clause is lawful or unlawful in a particular jurisdiction."
+    nextStep: "With your full lease, Lease Trap Detector examines every clause in context against the law that actually applies to your unit's location, and gives you a negotiation strategy, an amendment you can send, and a personalized move-in/move-out checklist.",
+    disclaimer: "This is a real, complete tool run against a realistic sample lease. It is general guidance, not legal advice — consult a tenant rights attorney for your specific situation."
   },
 
   guide: {
