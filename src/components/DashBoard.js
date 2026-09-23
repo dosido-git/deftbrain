@@ -615,7 +615,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
-              onBrowse={(slug) => navigate(slug ? `/tools/${slug}` : '/tools')}
+              // A category slug is a real prerendered static file
+              // (build/tools/{slug}/index.html, served by backend/server.js)
+              // — not a React Router route, the same reason /guides, /about
+              // and /privacy links elsewhere in this file use a plain <a>
+              // instead of <Link>. navigate() does client-side SPA routing,
+              // which never reaches the server: the URL changes but React
+              // Router has no matching <Route>, so it falls through to the
+              // catch-all and renders NotFound — a false 404 (2026-09-23,
+              // reported live: clicking a category pill 404'd). A hard
+              // navigation is required so the browser actually requests the
+              // page from the server. Bare "/tools" stays client-routed —
+              // that one IS a real <Route path="/tools"> (AllToolsPage.js).
+              onBrowse={(slug) => slug ? (window.location.href = `/tools/${slug}`) : navigate('/tools')}
             />
           </div>
         )}
