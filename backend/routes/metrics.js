@@ -261,24 +261,24 @@ function lineChart(days) {
   // A polyline needs two points. The past-day range often has one bucket, which
   // drew an empty chart under a heading, so a lone day is plotted as dots.
   const dots = days.length === 1
-    ? `<circle cx="${x(0)}" cy="${y(days[0].views)}" r="3" fill="#2c4a6e"/>`
+    ? `<circle cx="${x(0)}" cy="${y(days[0].views)}" r="3" fill="#165b9a"/>`
       + `<circle cx="${x(0)}" cy="${y(days[0].runs)}" r="3" fill="#c8872e"/>`
     : '';
   const labels = days.map((d, i) => (i === 0 || i === days.length - 1 || i === Math.floor(days.length / 2))
     ? `<text x="${x(i)}" y="${H - 8}" font-size="10" text-anchor="middle" fill="#888">${d.day.slice(5)}</text>` : '').join('');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">
     <text x="${P}" y="14" font-size="10" fill="#888">max ${max}</text>
-    <polyline points="${pts('views')}" fill="none" stroke="#2c4a6e" stroke-width="2"/>
+    <polyline points="${pts('views')}" fill="none" stroke="#165b9a" stroke-width="2"/>
     <polyline points="${pts('runs')}" fill="none" stroke="#c8872e" stroke-width="2"/>
     ${dots}
     ${labels}
-    <text x="${W - P}" y="14" font-size="10" text-anchor="end"><tspan fill="#2c4a6e">— views</tspan>  <tspan fill="#c8872e">— runs</tspan></text>
+    <text x="${W - P}" y="14" font-size="10" text-anchor="end"><tspan fill="#165b9a">— views</tspan>  <tspan fill="#c8872e">— runs</tspan></text>
   </svg>`;
 }
 
 function barRow(label, value, max, extra) {
   const w = max ? Math.max(1, Math.round((value / max) * 100)) : 0;
-  return `<tr><td>${escH(label)}</td><td style="width:50%"><div style="background:#2c4a6e;height:12px;width:${w}%;border-radius:2px"></div></td><td>${value}</td><td>${extra || ''}</td></tr>`;
+  return `<tr><td>${escH(label)}</td><td style="width:50%"><div style="background:#165b9a;height:12px;width:${w}%;border-radius:2px"></div></td><td>${value}</td><td>${extra || ''}</td></tr>`;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1099,7 +1099,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
     const anomalyBadge = (flags) => flags.length
       ? ` <span title="${escH(flags.join('; '))}" style="color:#b45309;cursor:help">⚠️</span>` : '';
-    const rowLabelBtn = (id, label) => `<button class="ledger-open" data-row="${id}" style="all:unset;cursor:pointer;color:#2c4a6e;font-weight:600;text-decoration:underline;text-decoration-style:dotted">${escH(label)}</button>`;
+    const rowLabelBtn = (id, label) => `<button class="ledger-open" data-row="${id}" style="all:unset;cursor:pointer;color:#165b9a;font-weight:600;text-decoration:underline;text-decoration-style:dotted">${escH(label)}</button>`;
 
     function ledgerTr(label, b, prevBucket, opts) {
       const id = registerDetail(b);
@@ -1332,7 +1332,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>
-    <table><tr><th>week of</th><th>sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#2c4a6e;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
+    <table><tr><th>week of</th><th>sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#165b9a;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Locations (sessions)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. ${interactAttributable
       ? '&ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers.'

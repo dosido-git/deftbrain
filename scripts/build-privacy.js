@@ -124,7 +124,7 @@ const html = `<!DOCTYPE html>
     }
     .prose li { margin: 0.4rem 0; }
     .prose a {
-      color: #2c4a6e;
+      color: #165b9a;
       text-decoration: underline;
     }
     .prose a:hover { color: #1a2e44; }

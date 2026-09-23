@@ -201,7 +201,7 @@ function relatedTools(tool, all, n = 2) {
 function getRelatedHTML(related) {
   if (!related.length) return '';
   const links = related
-    .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(t.title)}</a>`)
+    .map(t => `<a href="/${t.id}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(t.title)}</a>`)
     .join('\n        ');
   return `<nav class="db-related" aria-label="Related tools" style="margin:0 0 20px">
       <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Related tools</h2>
@@ -237,7 +237,7 @@ function getHubsHTML() {
   const cats = Object.keys(HUB_NAMES);
   if (cats.length < 2) return '';
   const links = cats.sort((a, b) => HUB_NAMES[a].localeCompare(HUB_NAMES[b]))
-    .map(c => `<a href="/guides/${c}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(HUB_NAMES[c])}</a>`)
+    .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(HUB_NAMES[c])}</a>`)
     .join('\n        ');
   return `<details class="db-hubs" style="margin:0 0 12px">
       <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Browse guides by topic</summary>
@@ -256,7 +256,7 @@ function getToolHubsHTML(guides) {
   const cats = [...new Set(guides.map(g => g.category))].filter(c => HUB_NAMES[c]).slice(0, 3);
   if (!cats.length) return '';
   const links = cats
-    .map(c => `<a href="/guides/${c}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
+    .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
     .join('\n        ');
   return `<nav class="db-tool-hubs" aria-label="Guide categories for this tool" style="margin:0 0 20px">
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
@@ -271,7 +271,7 @@ function getToolHubsHTML(guides) {
 function getRelatedGuidesHTML(guides, n = 4) {
   if (!guides || !guides.length) return '';
   const links = guides.slice(0, n)
-    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
+    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
     .join('\n        ');
   return `<nav class="db-related-guides" aria-label="Related guides" style="margin:0 0 20px">
       <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Related guides</h2>
@@ -301,7 +301,7 @@ function getFeaturedToolsHTML(tools) {
   if (!featured.length) return '';
   const items = featured.map(t => {
     const blurb = t.tagline || t.seoTitle || '';
-    return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
+    return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
   }).join('\n        ');
   return `<details class="db-featured-tools" style="max-width:760px;margin:0 auto;padding:1rem 1.25rem 0">
       <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Some of our most popular tools</summary>
@@ -325,14 +325,14 @@ function getHomepageGuidesHTML(guidesByTool, n = 10) {
   }
   if (!picks.length) return '';
   const links = picks
-    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
+    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
     .join('\n        ');
   return `<details class="db-home-guides" style="margin:0 0 12px">
       <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Guides — browse all ${total}</summary>
       <nav aria-label="Guides" style="padding:.25rem 0 0 1rem">
         <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
           ${links}
-          <a href="/guides" style="color:#2c4a6e;font-weight:600">Browse all guides &rarr;</a>
+          <a href="/guides" style="color:#165b9a;font-weight:600">Browse all guides &rarr;</a>
         </div>
       </nav>
     </details>`;

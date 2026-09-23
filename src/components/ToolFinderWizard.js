@@ -21,7 +21,7 @@ const CLR = {
   sand200: '#e8e1d5',
   sand300: '#d5cab8',
   navy400: '#4a6a8a',
-  navy500: '#2c4a6e',
+  navy500: '#165b9a',
   navy600: '#1e3550',
   gold100: '#f9edd8',
   gold300: '#e8be7a',

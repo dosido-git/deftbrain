@@ -47,7 +47,7 @@ const EmailCapture = () => {
       : 'bg-white border-[#d8d0c2] text-[#1a2e44] placeholder-[#a8a39a] focus:border-[#c8872e]',
     btn:    isDark
       ? 'bg-orange-500 text-zinc-950 hover:bg-orange-400 disabled:opacity-60'
-      : 'bg-[#1a2e44] text-white hover:bg-[#2c4a6e] disabled:opacity-60',
+      : 'bg-[#1a2e44] text-white hover:bg-[#165b9a] disabled:opacity-60',
   };
 
   const submit = async (e) => {

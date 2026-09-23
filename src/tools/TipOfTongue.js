@@ -70,7 +70,7 @@ const TipOfTongue = ({ tool }) => {
     warning:       isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#f9edd8] border-[#c8872e]/30 text-[#93541f]',
     danger:        isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40 text-[#e88880]' : 'bg-[#fceae8] border-[#e8a8a0] text-[#b54a3f]',
     // Tool-specific UI states
-    pillActive:    isDark ? 'border-[#4a6a8a] bg-[#2c4a6e]/30 text-[#a8b9ce]' : 'border-[#2c4a6e] bg-[#d4dde8] text-[#1e3a58]',
+    pillActive:    isDark ? 'border-[#4a6a8a] bg-[#165b9a]/30 text-[#85afd6]' : 'border-[#165b9a] bg-[#d4dde8] text-[#1e3a58]',
     pillInactive:  isDark ? 'border-[#3d3630] text-[#8a8275] hover:border-[#5a544a]' : 'border-[#d5cab8] text-[#5a544a] hover:border-[#8a8275]',
     tipBg:         isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
     tipText:       isDark ? 'text-[#d9a04e]' : 'text-[#93541f]',
@@ -79,15 +79,15 @@ const TipOfTongue = ({ tool }) => {
     highText:      isDark ? 'text-[#7aba7c]' : 'text-[#3a6a3c]',
     medBg:         isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30' : 'bg-[#f9edd8] border-[#c8872e]/30',
     medText:       isDark ? 'text-[#d9a04e]' : 'text-[#93541f]',
-    lowBg:         isDark ? 'bg-[#2c4a6e]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    lowText:       isDark ? 'text-[#a8b9ce]' : 'text-[#1e3a58]',
-    histBg:        isDark ? 'bg-[#2c4a6e]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#2c4a6e]/15',
-    accentTxt:     isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
+    lowBg:         isDark ? 'bg-[#165b9a]/15 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#165b9a]/15',
+    lowText:       isDark ? 'text-[#85afd6]' : 'text-[#1e3a58]',
+    histBg:        isDark ? 'bg-[#165b9a]/10 border-[#4a6a8a]/30' : 'bg-[#d4dde8]/30 border-[#165b9a]/15',
+    accentTxt:     isDark ? 'text-[#85afd6]' : 'text-[#165b9a]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline';
+  const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#85afd6] underline' : 'text-[#165b9a] hover:text-[#1e3a58] underline';
 
   // ── State (useState before usePersistentState — PF-11/PF-14) ─────
   const [showHistory, setShowHistory] = useState(false);

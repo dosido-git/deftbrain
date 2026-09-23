@@ -104,7 +104,7 @@ export default function RelatedLinks() {
   const c = {
     bg: isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
     head: isDark ? 'text-zinc-400' : 'text-[#6e675c]',
-    link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
+    link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#165b9a] hover:text-[#1a2e44]',
     border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
   };
 

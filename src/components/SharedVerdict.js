@@ -110,7 +110,7 @@ export default function SharedVerdict() {
     textSecondary: isDark ? 'text-zinc-300' : 'text-[#3a3530]',
     textMuted: isDark ? 'text-zinc-500' : 'text-[#8a8378]',
     accent: isDark ? 'text-amber-400' : 'text-[#c8872e]',
-    primary: isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400' : 'bg-[#1a2e44] text-white hover:bg-[#2c4a6e]',
+    primary: isDark ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400' : 'bg-[#1a2e44] text-white hover:bg-[#165b9a]',
   };
 
   return (

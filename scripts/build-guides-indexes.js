@@ -317,7 +317,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
     }
     .tabs a:hover { color: #c8872e; }
     .tabs a.active {
-      color: #2c4a6e;
+      color: #165b9a;
       border-bottom-color: #c8872e;
       font-weight: 600;
     }
@@ -356,7 +356,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.4rem;
       font-weight: 700;
-      color: #2c4a6e;
+      color: #165b9a;
       margin: 0 0 0.4rem;
     }
     .category-card .cat-desc {
@@ -392,7 +392,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       line-height: 1.55;
     }
     .index-outro a {
-      color: #2c4a6e;
+      color: #165b9a;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -408,7 +408,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.6rem;
       font-weight: 700;
-      color: #2c4a6e;
+      color: #165b9a;
       margin: 0 0 0.4rem;
     }
     .tool-name a {
@@ -438,13 +438,13 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       line-height: 1.5;
     }
     .tool-guides a {
-      color: #2c4a6e;
+      color: #165b9a;
       text-decoration: none;
       border-bottom: 1px solid transparent;
       transition: border-color 0.15s;
     }
     .tool-guides a:hover {
-      border-bottom-color: #2c4a6e;
+      border-bottom-color: #165b9a;
     }
     .tool-guides .cat-tag {
       display: inline-block;
@@ -480,12 +480,12 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
     .cat-guides-list a {
       font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 1rem;
-      color: #2c4a6e;
+      color: #165b9a;
       text-decoration: none;
       line-height: 1.5;
     }
     .cat-guides-list a:hover {
-      border-bottom: 1px solid #2c4a6e;
+      border-bottom: 1px solid #165b9a;
     }
     ${extraStyle}
   </style>

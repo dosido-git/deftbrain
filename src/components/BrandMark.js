@@ -45,11 +45,11 @@ const BrandMark = ({
 
   // Blue & Gold palette — theme-aware. "Deft" in DeftBrain blue, "Brain" in
   // DeftBrain gold.
-  const deftBlue  = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
+  const deftBlue  = isDark ? 'text-[#85afd6]' : 'text-[#165b9a]';
   const brainGold = isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]';
   // Definition reads in the wordmark's own blue — the old warm gray
   // (#a8a196) was too subtle for a line that carries the brand argument.
-  const tagColor = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
+  const tagColor = isDark ? 'text-[#85afd6]' : 'text-[#165b9a]';
 
   const brainImg = (
     <img

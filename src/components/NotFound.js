@@ -20,7 +20,7 @@ const NotFound = ({
     body:      isDark ? 'text-zinc-400' : 'text-[#5a544a]',
     primary:   isDark
       ? 'bg-orange-500 text-zinc-950 hover:bg-orange-400'
-      : 'bg-[#1a2e44] text-white hover:bg-[#2c4a6e]',
+      : 'bg-[#1a2e44] text-white hover:bg-[#165b9a]',
     secondary: isDark
       ? 'bg-zinc-900 text-zinc-200 border-zinc-700 hover:border-orange-400 hover:text-orange-400'
       : 'bg-white text-[#1a2e44] border-[#e8e1d5] hover:border-[#c8872e] hover:text-[#c8872e]',
@@ -78,7 +78,7 @@ const NotFound = ({
             className="text-sm font-extrabold leading-none tracking-tight"
             style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
           >
-            <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>Deft</span>
+            <span className={isDark ? 'text-[#85afd6]' : 'text-[#165b9a]'}>Deft</span>
             <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>Brain</span>
           </span>
         </button>

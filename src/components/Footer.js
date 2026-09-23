@@ -22,9 +22,9 @@ const Footer = () => {
     // "Deft" + gold "Brain" — see BrandMark.js. (Previously split at the
     // letter "D" instead of the word boundary; before that, an all-ochre
     // "DeftBrain", two brand marks on one page.)
-    deftBlue:  isDark ? 'text-zinc-200'   : 'text-[#2c4a6e]',
+    deftBlue:  isDark ? 'text-zinc-200'   : 'text-[#165b9a]',
     brainGold: isDark ? 'text-orange-400' : 'text-[#c8872e]',
-    link:      isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
+    link:      isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#165b9a] hover:text-[#1a2e44]',
   };
 
   const year = new Date().getFullYear();

@@ -456,7 +456,7 @@ const SmallChangeBigDifference = ({ tool }) => {
             {/* THE SMALL CHANGE — hero card */}
             {results?.change_to_try && (
               <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-cyan-800 bg-zinc-800' : 'border-cyan-800 bg-white'}`}>
-                <div style={{ background: isDark ? 'linear-gradient(135deg, #1e2a3a, #2c4a6e)' : 'linear-gradient(135deg, #2c4a6e, #4a6a8a)' }}
+                <div style={{ background: isDark ? 'linear-gradient(135deg, #1e2a3a, #165b9a)' : 'linear-gradient(135deg, #165b9a, #4a6a8a)' }}
                   className="px-6 py-5">
                   <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-2">⚡ {t('op_the_change_label')}</p>
                   <h2 className="text-xl font-black text-white leading-snug">{results?.change_to_try?.change}</h2>

@@ -219,7 +219,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'2px',paddingBottom:'8px',marginBottom:'10px',borderBottom:'2px solid #e5e7eb'}}>
             <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
               <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'32px',width:'auto'}} />
-              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold'}}><span style={{color:'#2c4a6e'}}>Deft</span><span style={{color:'#c8872e'}}>Brain</span></div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
+              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold'}}><span style={{color:'#165b9a'}}>Deft</span><span style={{color:'#c8872e'}}>Brain</span></div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
             </div>
             {detectedTool && (
               <div style={{marginTop:'4px'}}>

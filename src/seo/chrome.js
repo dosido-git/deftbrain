@@ -74,7 +74,7 @@ function getCategoryList() {
 function getToolIndexHTML(tools, relatedHTML = '') {
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const links = tools
-    .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none">${esc(t.title)}</a>`)
+    .map(t => `<a href="/${t.id}" style="color:#165b9a;text-decoration:none">${esc(t.title)}</a>`)
     .join('\n        ');
   // Optional per-page "Related tools" block (visible) renders above the full
   // index — see prerender.js getRelatedHTML(). When empty (homepage, guides),
@@ -100,7 +100,7 @@ function getToolIndexHTML(tools, relatedHTML = '') {
   const categoryLinks = categories
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map(cat => `<a href="/tools/${cat.slug}" style="color:#2c4a6e;text-decoration:none">${esc(cat.name)}</a>`)
+    .map(cat => `<a href="/tools/${cat.slug}" style="color:#165b9a;text-decoration:none">${esc(cat.name)}</a>`)
     .join('\n        ');
   const categoriesBlock = categories.length ? `<details style="border-top:1px solid #e8e1d5;padding-top:14px;margin-bottom:14px">
       <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">Browse tools by category</summary>
@@ -214,12 +214,12 @@ function getFooterHTML() {
       <span class="footer-brand-text">Deft<span>Brain</span></span>
     </a>
     <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
-      <a href="/tools" style="color:#2c4a6e;text-decoration:none;">All Tools</a>
-      <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
-      <a href="/about" style="color:#2c4a6e;text-decoration:none;">About</a>
-      <a href="/privacy" style="color:#2c4a6e;text-decoration:none;">Privacy</a>
-      <a href="/terms" style="color:#2c4a6e;text-decoration:none;">Terms</a>
-      <a href="mailto:hello@deftbrain.com" style="color:#2c4a6e;text-decoration:none;">Contact</a>
+      <a href="/tools" style="color:#165b9a;text-decoration:none;">All Tools</a>
+      <a href="/guides" style="color:#165b9a;text-decoration:none;">Guides</a>
+      <a href="/about" style="color:#165b9a;text-decoration:none;">About</a>
+      <a href="/privacy" style="color:#165b9a;text-decoration:none;">Privacy</a>
+      <a href="/terms" style="color:#165b9a;text-decoration:none;">Terms</a>
+      <a href="mailto:hello@deftbrain.com" style="color:#165b9a;text-decoration:none;">Contact</a>
     </nav>
     <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>
   </footer>`;

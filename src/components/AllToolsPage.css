@@ -1,7 +1,7 @@
 /* --gold unified to the site-wide DeftBrain gold (2026-09-22) — was
    #9c691c, a page-local accent from the supplied design; now matches the
    wordmark's own "Brain" gold everywhere else (BrandMark.js and friends). */
-.at-page{--sand:#faf8f5;--sand2:#f3efe8;--line:#e3dbcf;--navy:#1e2a3a;--blue:#2c4a6e;--gold:#c8872e;--muted:#6e6659;background:var(--sand);color:var(--navy);min-height:100vh}
+.at-page{--sand:#faf8f5;--sand2:#f3efe8;--line:#e3dbcf;--navy:#1e2a3a;--blue:#165b9a;--gold:#c8872e;--muted:#6e6659;background:var(--sand);color:var(--navy);min-height:100vh}
 .at-shell{width:min(1240px,calc(100% - 40px));margin-inline:auto}
 .at-site-header{border-bottom:1px solid var(--line);background:rgba(250,248,245,.96)}
 .at-site-header-inner{min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:24px}
