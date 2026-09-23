@@ -789,7 +789,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             What’s the catch — how is it free?
             <Caret groupOpen className="ms-auto" />
           </summary>
-          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>There isn’t one. DeftBrain is free to use — no ads, no account, nothing to buy.</p>
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>There isn’t one. DeftBrain is free to use — no ads, no account, nothing to buy. We’re focused on making DeftBrain genuinely useful before we think about how — or whether — to charge for anything. And an ad-supported or data-selling model would work against the whole point: you should be able to trust us with a lease, a diagnosis, or a hard conversation without wondering what we’re getting out of what you typed.</p>
         </details>
       </div>
     </section>
