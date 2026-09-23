@@ -67,9 +67,14 @@ if (process.env.NODE_ENV !== 'production' && !process.env.FORCE_INDEXNOW) {
 const TODAY       = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 const SUBMIT_ALL  = process.env.INDEXNOW_ALL === '1';
 
-// Tool + static URLs, from the sitemap-lastmod state the sitemap build writes.
-// Keys are `tool:<Id>` and `static:<page>`, and ONLY for keep-list (indexable)
-// pages — so this is both the indexable filter and the change filter.
+// Tool + static + tool-category URLs, from the sitemap-lastmod state the
+// sitemap build writes. Keys are `tool:<Id>`, `static:<page>`, and
+// `category:<slug>` (added 2026-09-22 for the /tools/{slug} category pages —
+// this function's key-prefix map was never updated for it, so those 14 pages
+// silently fell into the `continue` below and were never submitted; caught
+// 2026-09-23 while answering "should I request indexing"). ONLY for
+// keep-list (indexable) pages — so this is both the indexable filter and the
+// change filter.
 function getSitemapStateUrls() {
   const statePath = path.join(ROOT, 'src', 'data', 'sitemap-lastmod.json');
   if (!fs.existsSync(statePath)) {
@@ -87,8 +92,9 @@ function getSitemapStateUrls() {
   const urls = [];
   let considered = 0;
   for (const [key, entry] of Object.entries(state)) {
-    const loc = key.startsWith('tool:')   ? `${SITE_URL}/${key.slice(5)}`
-              : key.startsWith('static:') ? `${SITE_URL}/${key.slice(7)}`
+    const loc = key.startsWith('tool:')     ? `${SITE_URL}/${key.slice(5)}`
+              : key.startsWith('static:')   ? `${SITE_URL}/${key.slice(7)}`
+              : key.startsWith('category:') ? `${SITE_URL}/tools/${key.slice(9)}`
               : null;
     if (!loc) continue;              // unknown key shape — never guess a URL
     considered++;
