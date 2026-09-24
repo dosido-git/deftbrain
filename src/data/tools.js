@@ -2638,14 +2638,78 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.",
   exampleOutput: {
-    title: "See what The Debrief gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your meeting",
-    intro: "Here is a shortened fictional example of how a messy meeting becomes decisions, owners, and follow-up.", sampleLabel: "Sample meeting note",
-    sampleText: "Team agrees to move the launch to October 14. Maya will confirm vendor capacity by Friday. Jordan will revise onboarding copy. Pricing is still unresolved and needs a separate decision.", context: "Fictional meeting · shortened for demonstration",
+    title: "See what The Debrief gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your meeting",
+    intro: "This is the complete, real output from an actual The Debrief run on the sample meeting note below — nothing here is invented or shortened.",
+    sampleLabel: "Sample meeting transcript (excerpt)",
+    sampleText: "Weekly v2 product review. Sarah (Eng Lead) flags a 3-week slip risk on the full analytics dashboard due to slow aggregation queries and a customer-level data exposure issue. Priya wants the dashboard in given direct customer feedback. Marcus proposes shipping a simplified version (top-line metrics only, no drill-down) at launch, with the full version as a fast-follow. Priya agrees. PM will write up the simplified scope by end of day; Sarah will give a real engineering estimate tomorrow.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario, Distill mode.",
     sections: [
-      { label: "Decisions", tone: "green", items: ["Launch moves to October 14.", "Vendor capacity must be confirmed before the schedule is announced."] },
-      { label: "Action items", tone: "neutral", items: ["Maya — confirm vendor capacity by Friday.", "Jordan — revise onboarding copy before the next review."] },
-      { label: "Still open", tone: "yellow", text: "Pricing was discussed but not decided. It should not be recorded as an agreement." }
-    ], nextStep: "Paste your transcript or notes and choose the kind of debrief you need. The tool separates what was decided from what was merely discussed and turns commitments into follow-up you can use."
+      {
+        label: "Meeting summary",
+        tone: "neutral",
+        text: "Product scope alignment meeting — a structured weekly review that moved from status update into a live scope decision. Duration: 15–25 minutes, based on transcript volume and the focused single-topic resolution. Weekly v2 product review where the team resolved a scope conflict over the analytics dashboard, deciding to ship a simplified version at launch with a full version to follow.",
+      },
+      {
+        label: "At risk",
+        tone: "red",
+        items: [
+          "The fast-follow full analytics dashboard has no named owner, no deadline, and no definition of what distinguishes it from the v1 version being shipped — it could drift without a follow-up commitment.",
+          "Sarah's estimate for the simplified dashboard ('about a week') is a rough read, not a confirmed scope — her real estimate is not due until tomorrow, meaning the launch date has not actually been validated yet.",
+        ],
+      },
+      {
+        label: "Decisions made (2)",
+        tone: "green",
+        items: [
+          "The analytics dashboard will ship as a simplified version (top-line metrics only, no drill-down) at v2 launch rather than being cut or delayed. Engineering flagged a three-week slip risk due to slow aggregation queries and a security issue; Marcus proposed a scoped-down version, which Priya preferred over shipping nothing. Proposed by PM, confirmed by Priya, accepted by Sarah. Can this still change? Probably — could reopen if Sarah's real estimate tomorrow shows the simplified version is also not achievable in the launch window.",
+          "The full analytics dashboard with drill-down capability is deferred to a fast-follow release after v2 launch. The security issue with customer-level data exposure and slow aggregation queries made the full version infeasible for the current launch timeline. Proposed by PM, agreed by Priya. Can this still change? Probably — timing and ownership of the fast-follow have not been set.",
+        ],
+      },
+      {
+        label: "Action items (2)",
+        tone: "neutral",
+        items: [
+          "[High] Write up the v2 scope — specifically what is in scope for the simplified analytics dashboard. Owner: Me (PM). Due: end of day today (Wednesday, September 23, 2026).",
+          "[High] Provide a real engineering estimate for the simplified dashboard. Owner: Sarah (Eng Lead). Due: tomorrow (Thursday, September 24, 2026). Depends on: PM scope write-up may inform the estimate boundary.",
+        ],
+      },
+      {
+        label: "Tensions detected",
+        tone: "yellow",
+        text: "Analytics dashboard at launch: include vs. cut. Priya wanted the dashboard in given direct customer feedback; Sarah had flagged a multi-week slip risk due to technical issues. Resolution: resolved by Marcus's suggestion to ship a simplified version — both positions partially accommodated.",
+      },
+      {
+        label: "Open questions (3)",
+        tone: "yellow",
+        items: [
+          "What is the exact scope of the simplified dashboard — which top-line metrics are included, and what is explicitly excluded? The concept was agreed on but the content was not defined in the meeting. Suggested owner: Me (PM), with input from Marcus and Sarah.",
+          "What is the timeline and owner for the full analytics dashboard fast-follow? The meeting focused on resolving the immediate launch decision; the fast-follow was named but not planned. Suggested owner: Me (PM) to initiate, Sarah and Marcus to estimate.",
+          "Has the security issue with customer-level data exposure been resolved or just deferred by descoping drill-down? Sarah raised it as a reason for the slip but the conversation moved to scope options without confirming whether the simplified version is clear of the same issue. Suggested owner: Sarah (Eng Lead).",
+        ],
+      },
+      {
+        label: "Parking lot",
+        tone: "neutral",
+        items: [
+          "Full analytics dashboard with drill-down — deferred to post-launch fast-follow, needs its own planning.",
+          "Security issue with customer-level data exposure — raised but not confirmed resolved by the scope change.",
+        ],
+      },
+      {
+        label: "What this meeting revealed",
+        tone: "neutral",
+        text: "Tight and focused — the meeting moved quickly from status to a concrete decision with no extended tangents, though the simplified dashboard scope and fast-follow details were left to be worked out separately. Ownership is clear for the two immediate actions — PM owns the scope write-up today, Sarah owns the estimate tomorrow — but the fast-follow dashboard has no owner and no deadline attached to it yet. The analytics dashboard has been a point of disagreement between engineering and the CEO heading into this meeting; if the simplified scope or fast-follow timeline is not pinned down quickly, this topic may resurface at the next review.",
+      },
+      {
+        label: "Ready-to-send follow-up",
+        tone: "green",
+        text: "Hi all — quick recap from today's v2 review. We decided to ship a simplified analytics dashboard at launch (top-line metrics, no drill-down), with the full version as a fast-follow. Two actions coming out of this: I will send a scope write-up for the simplified dashboard by end of day today, and Sarah will have a real engineering estimate by tomorrow. Open item to schedule: we still need to assign ownership and a timeline for the full dashboard fast-follow — I will propose a path on that once the estimate is in.",
+      },
+    ],
+    nextStep: "Paste your transcript or notes and choose the kind of debrief you need. The Debrief separates what was decided from what was merely discussed, flags what's still at risk, and turns commitments into a ready-to-send follow-up you can use.",
+    disclaimer: "This is a real, complete tool run against a realistic sample meeting transcript."
   },
 
   guide: {
@@ -2931,14 +2995,52 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.",
   exampleOutput: {
-    title: "See what Decoder Ring gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your message",
-    intro: "A fictional example showing how the tool widens the plausible readings without pretending to know the sender's mind.", sampleLabel: "Sample message",
-    sampleText: "No worries. Do whatever you think is best.", context: "Fictional text message · context matters",
+    title: "See what Decoder Ring gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your message",
+    intro: "This is the complete, real output from an actual Decoder Ring run on the sample message below — nothing here is invented or shortened.",
+    sampleLabel: "Sample message (from a partner/spouse, text message)",
+    sampleText: "I totally get where you're coming from — maybe we should take some time to think about things separately. No pressure at all, whenever you're ready to talk. Or not! Totally fine either way, with a smiling emoji. (Sent after the sender learned about a trip that was booked without checking in with them first.)",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario.",
     sections: [
-      { label: "Literal reading", tone: "green", text: "They may genuinely be comfortable letting you decide." },
-      { label: "Other plausible readings", tone: "yellow", items: ["They are disappointed but do not want to argue.", "They are frustrated and withdrawing from the decision.", "They are busy and truly do not care which option you choose."] },
-      { label: "Low-drama reply", tone: "neutral", text: "I can make the call. I just want to check that you're actually comfortable with either option before I do." }
-    ], nextStep: "Paste the exact message and add the surrounding context. Decoder Ring separates the words from reasonable subtext and gives you reply options matched to the ambiguity."
+      {
+        label: "On the surface",
+        tone: "neutral",
+        text: "Your partner acknowledges what you said, says they want some time apart to think, and leaves the door open for future conversation — or not — with a friendly, low-pressure tone.",
+      },
+      {
+        label: "One possible reading",
+        tone: "yellow",
+        text: "One reading is that they felt sidelined by your decision to take the trip without checking in first, and this message is their way of saying so without saying it outright. Rather than arguing or accusing, they may be stepping back to create some distance — and possibly to see whether you will close that distance. The lightness of the tone could be genuine, or it could be doing a lot of work to keep something harder from showing. Emotional undercurrent: hurt or disappointment plus uncertainty about how to raise it directly. Tone analysis — warmth 6/10, directness 3/10, ambiguity 7/10, emotional intensity 5/10. This one could genuinely be read several ways; hold the reading loosely.",
+      },
+      {
+        label: "Layer-by-layer breakdown (5 layers)",
+        tone: "neutral",
+        items: [
+          "“I totally get where you're coming from” — Surface: they understand your perspective. Subtext: could be genuine acknowledgment, or a quick concession before pivoting to their own position (the 'I get it, but...' move); 'totally' could be plain enthusiasm or doing extra work to soften what follows. Read as: cushioning before a turn (low confidence).",
+          "“maybe we should take some time to think about things separately” — Surface: suggesting a period of individual reflection rather than immediate conversation. Subtext: could be a straightforward request for processing space, or the opening of a larger conversation about the relationship itself — 'things' is broad enough to include more than the trip. Read as: handing off the next move (medium confidence).",
+          "“No pressure at all, whenever you're ready to talk” — Surface: no urgency, respond on your own timeline. Subtext: could be a sincere offer of patience, or naming 'no pressure' creates an awareness of pressure that wasn't explicitly there before. Read as: mixed signals (low confidence).",
+          "“Or not! Totally fine either way” — Surface: talking is optional, either outcome acceptable. Subtext: could be genuinely releasing you from any obligation to respond, or leaving the relationship's next step entirely to you, which could feel like distance or an invitation to take initiative. Read as: unclear intentions (low confidence).",
+          "“😊” — Surface: a friendly, light closing emoji. Subtext: could be a genuine signal this isn't meant as cold or hostile, or could be functioning to soften or offset the weight of what was said — a tonal buffer. Read as: playing it down (low confidence).",
+        ],
+      },
+      {
+        label: "Worth noticing",
+        tone: "yellow",
+        text: "What could matter: the message leaves the terms of 'thinking separately' entirely undefined — worth checking whether you two mean the same thing by it. The scope of 'things' is vague — it could mean only the trip, or something larger; that gap may be worth addressing. What's reassuring: the sender explicitly says they understand your perspective rather than leading with accusation or blame; the message leaves the door open rather than closing it; the overall tone, whatever is underneath it, is not hostile or punishing in its wording.",
+      },
+      {
+        label: "Three ways you could respond",
+        tone: "green",
+        items: [
+          "Acknowledge and open the door — let them know you noticed something is there and that you want to actually talk about it, without forcing the conversation before they are ready. Sample: “Hey. I read your message and I wanted you to know I did not just take it at face value. I think there is something worth talking through — not 'or not' for me. Whenever you want to, I am here.” Risk: if they genuinely wanted space and meant the 'no pressure' sincerely, this could feel like you are not respecting what they asked for.",
+          "Name your part directly — address the thing that likely prompted the message (the trip decision) rather than responding only to the tone. Sample: “I have been sitting with this. I think I should have talked to you before I said yes to the trip, and I did not. That was not a good call on my part. I would like to talk about it when you are ready.” Risk: if there is more underneath this than just the trip, this response may not reach it.",
+          "Ask what they need — rather than guessing what 'thinking separately' means, ask plainly. Sample: “I want to make sure I understand what you need right now. When you say take some time separately — are you saying you want a few days before we talk, or is there something bigger you want to think through? I am asking because I want to get it right.” Risk: this puts a question back to someone who may have been hoping you would already know the answer, which could land as deflecting rather than engaging.",
+        ],
+      },
+    ],
+    nextStep: "Paste the exact message and add the surrounding context. Decoder Ring separates the words from reasonable subtext, breaks the message down phrase by phrase, and gives you reply options matched to the actual ambiguity — not a single guess at what they meant.",
+    disclaimer: "This is a real, complete tool run against a realistic sample message. AI analysis — use your own judgment when interpreting messages."
   },
 
   guide: {
