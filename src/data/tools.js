@@ -3134,14 +3134,65 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.",
   exampleOutput: {
-    title: "See what Mise en Place gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your ingredients",
-    intro: "A shortened fictional example showing the difference between a recipe and a cooking plan.", sampleLabel: "Sample kitchen",
-    sampleText: "Chicken thighs, broccoli, half a lemon, rice, garlic and yogurt. About 35 minutes. Comfortable with basic cooking; no dietary restrictions.", context: "Fictional kitchen · shortened for demonstration",
+    title: "See what Mise en Place gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your ingredients",
+    intro: "This is the complete, real output from an actual Mise en Place run on the sample kitchen below — nothing here is invented or shortened.",
+    sampleLabel: "Sample kitchen",
+    sampleText: "Working with: chicken thighs, rice, frozen broccoli, garlic, soy sauce, sesame oil, ginger, scallions, eggs. Dinner, 45 minutes available, intermediate skill, no dietary restrictions.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario.",
     sections: [
-      { label: "The meal", tone: "green", text: "Lemon-garlic chicken with roasted broccoli, rice, and a quick yogurt sauce." },
-      { label: "Start first", tone: "neutral", items: ["Heat the oven and start the rice.", "Season the chicken while the oven heats.", "Cut the broccoli while the chicken begins cooking."] },
-      { label: "Use the waiting time", tone: "yellow", text: "Mix yogurt, lemon and garlic while the rice and chicken cook; check the broccoli near the end so everything finishes together." }
-    ], nextStep: "Give Mise en Place what you actually have plus your time and constraints. It builds the sequence around your kitchen instead of handing you another recipe to organize yourself."
+      {
+        label: "Tonight's move",
+        tone: "green",
+        text: "One-Pan Soy Chicken with Ginger Rice and Broccoli. Works within your 45-minute window, uses everything in your pantry (chicken thighs, rice, frozen broccoli, garlic, soy sauce, sesame oil, ginger, scallions, eggs), delivers restaurant-quality depth with minimal oversight, and teaches the most useful technique — searing protein before braising it in aromatic liquid.",
+      },
+      {
+        label: "Meal options (2)",
+        tone: "neutral",
+        items: [
+          "One-Pan Soy Chicken with Ginger Rice and Broccoli (40 min, medium) — chicken thighs seared and braised in a ginger-soy glaze, served over fluffy rice with roasted broccoli and a soft scrambled egg stirred through. Uses every ingredient you have, delivers savory umami depth, requires only one cooking vessel.",
+          "Egg-Fried Rice with Chicken and Broccoli (30 min with cooked rice / 50 min from raw, easy) — quick-cooking fried rice made with cooked rice, shredded chicken, frozen broccoli, and a scrambled egg base, spiked with soy, sesame, and ginger. Fastest option if you have cooked rice on hand.",
+        ],
+      },
+      {
+        label: "Cook along (40 minutes, step by step)",
+        tone: "neutral",
+        items: [
+          "0:00 (3 min) Prep mise en place — mince garlic (~4 cloves), slice ginger into matchsticks, chop scallions keeping white/green separate, pat chicken thighs dry.",
+          "0:03 (2 min) Mix braising liquid — whisk 1.5 cups stock, 3 tbsp soy sauce, 1 tbsp sesame oil, the ginger, and a pinch of pepper; set aside.",
+          "0:05 (4 min) Sear chicken thighs skin-side down in 2 tbsp hot oil, undisturbed, until golden. Checkpoint at 0:09: skin should be deep golden and release easily when jiggled — if not, cook 2-3 more minutes.",
+          "0:09 (2 min) Flip chicken, sear the other side ~90 seconds until light golden — not cooking through, just building color.",
+          "0:11 (1 min) Add minced garlic and white scallions to the pan, stir ~20 seconds until fragrant. (Watch garlic carefully — if it browns or smells harsh, pull the pan off heat for 5 seconds.)",
+          "0:12 (1 min) Pour braising liquid over the chicken, bring to a simmer, reduce to medium-low, cover partially. Meanwhile start rice separately (2 cups liquid to 1 cup rice).",
+          "0:13 (18 min) Braise chicken while rice cooks simultaneously on a separate burner. Checkpoint at 0:21: liquid should smell fragrant, chicken mostly submerged. At minute 8 beat 2 eggs with a splash of soy and sesame oil; at minute 15 add frozen broccoli to the braising liquid.",
+          "0:31 (3 min) Check rice is tender and liquid absorbed (cook 2 more minutes if not); chicken should be easily pierced with a fork.",
+          "0:34 (3 min) Scramble eggs into the braising liquid — push chicken/broccoli aside, increase heat to medium, pour in beaten eggs, stir gently until set but still creamy (~2 min). Eggs curdle fast, so stir constantly and pull off heat the moment they set.",
+          "0:37 (2 min) Finish and plate — fluff rice, divide among bowls, top with chicken, broccoli, and a spoonful of the egg-braising liquid; garnish with green scallions.",
+        ],
+      },
+      {
+        label: "Quick shopping list",
+        tone: "yellow",
+        text: "Essential: white or black pepper, neutral oil (vegetable or canola), chicken or vegetable stock. Nice to have: chili flakes or fresh chilies, rice vinegar.",
+      },
+      {
+        label: "Pro tips",
+        tone: "neutral",
+        items: [
+          "Dry your chicken before searing — moisture on the surface steams the skin instead of letting it crisp. This is the single biggest difference between home and restaurant results. (Intermediate)",
+          "Do not move the chicken while searing — every flip or jiggle resets the browning process. Let it sit undisturbed for a full 4 minutes; if it sticks, wait 30 seconds more. (Intermediate)",
+          "Scramble eggs into hot liquid off-heat or at very low heat — eggs set nearly instantly in boiling liquid and become grainy; reduce heat, stir constantly, and pull off heat the moment curds form. (Intermediate)",
+        ],
+      },
+      {
+        label: "Tomorrow's meal (leftovers)",
+        tone: "green",
+        text: "Storage: store chicken, broccoli, rice, and braising liquid together in an airtight container for up to 3 days; keep eggs separate if possible. Transform into: fried rice remix — shred leftover chicken, stir-fry cold rice and broccoli in oil until crispy (~3 min), scramble a fresh egg into the center, fold in soy sauce, sesame oil, and the shredded chicken; finish with fresh scallions and a drizzle of the reserved braising liquid. Total time: 8 minutes. Scaling for 1 person: 1 large thigh, halve stock/soy to 3/4 cup and 1.5 tbsp, keep sesame oil at 2 tbsp (doesn't halve linearly), 1 egg — rice ratio stays the same by volume. Scaling to 4-6 people: 8 thighs, double the braising liquid and rice, 3-4 eggs; the braise may need an extra 5-8 minutes (use a fork test, not a timer) — rice cooking time never changes.",
+      },
+    ],
+    nextStep: "Give Mise en Place what you actually have plus your time and constraints. It builds the sequence around your kitchen instead of handing you another recipe to organize yourself — a timed cook-along, checkpoints if something looks off, and what to do with the leftovers tomorrow.",
+    disclaimer: "This is a real, complete tool run against a realistic sample kitchen. AI-generated meal plans — always use your own judgement about food safety and dietary needs."
   },
 
   guide: {
@@ -3201,14 +3252,61 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "You already know why this person deserves your recommendation. The difficult part is turning years of experience, impressions, and memories into a letter that does them justice.",
   exampleOutput: {
-    title: "See what Ghost Writer gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your notes",
-    intro: "A fictional example showing how rough memories become specific recommendation language instead of generic praise.", sampleLabel: "Sample notes",
-    sampleText: "Priya worked for me for three years. Smart, reliable, good with messy projects. Biggest example: our reporting system broke during a client expansion and she rebuilt the process without dropping deadlines.", context: "Fictional recommendation · shortened for demonstration",
+    title: "See what Ghost Writer gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your notes",
+    intro: "This is the complete, real output from an actual Ghost Writer run on the sample notes below — nothing here is invented or shortened.",
+    sampleLabel: "Sample notes (job recommendation, professional tone)",
+    sampleText: "Letter for Jordan Kim (she/her), job recommendation, professional tone. Traits: leadership, communication, initiative, technical skills. I managed Jordan for 3 years as a product manager. She stepped in during a hiring freeze to run a stalled project with no formal authority over the engineers, and delivered it on time — two engineers later asked to work with her again. She also drove an onboarding redesign across design, engineering, and data that cut drop-off by 34%, run in a way that left every stakeholder feeling heard. Fintech startup context.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario, Narrative style.",
     sections: [
-      { label: "The strongest evidence", tone: "green", text: "The reporting-system story demonstrates judgment under pressure, not just 'reliability.' That concrete episode should carry the letter." },
-      { label: "Possible opening", tone: "neutral", text: "In three years managing Priya, I learned that the projects with the least structure were often the ones I most wanted her to own." },
-      { label: "What to add before sending", tone: "yellow", items: ["The role or program she is applying for.", "A measurable result from the reporting rebuild, if you have one.", "One sentence explaining why you are qualified to recommend her."] }
-    ], nextStep: "Give Ghost Writer the relationship, destination, and real examples you remember. It turns your evidence into polished drafts while keeping the claims grounded in what you supplied."
+      {
+        label: "The letter (narrative style)",
+        tone: "neutral",
+        text: "There is a moment I think about when someone asks me what kind of product manager Jordan Kim is. We were eight weeks into a hiring freeze, a critical project was stalled, and the engineers assigned to it had no formal PM support. Jordan stepped in. She had no direct authority over the four engineers on that team — no reporting line, no leverage — and she never seemed to need it. She ran standups, cleared blockers, kept the roadmap honest, and delivered the project on time. I found out later that two of those engineers had specifically asked to work with her again. I managed Jordan for three years, and I will say plainly: her resume does not capture what she actually is. What she is, is someone who makes the people around her better — and does it so quietly that you only notice it when you look at what the team produced. The onboarding rebrand is another example worth naming. Jordan identified that our activation funnel was losing users at a rate that had become structural, not incidental. She drove the redesign of the onboarding flow end to end — working across design, engineering, and data — and the result was a 34% reduction in drop-off. What I remember most is not the number. It is that she ran the project in a way that left every stakeholder feeling heard. Nobody felt steamrolled. The outcome was significant; the process was clean. Jordan is also the person you want when something goes wrong. She does not perform calm — she is calm. In [NUMBER] years of managing product teams, I have worked with very few people who can hold a room steady during a real crisis without losing the thread of what needs to happen next. She is one of them. She is ready for a senior role. More than ready — she has been operating at that level for some time without the title. I would hire her again without hesitation, and whoever brings her in next will benefit from something that does not show up in a job description: a person who makes the work around her better, every time.",
+      },
+      {
+        label: "Personalize these parts",
+        tone: "yellow",
+        items: [
+          "Add the name of the project the engineers asked to work on again, if you recall it.",
+          "Replace [NUMBER] with your actual years managing product teams.",
+          "If there is a specific crisis moment you witnessed firsthand, name it — even briefly.",
+        ],
+      },
+      {
+        label: "Fill in these details (3)",
+        tone: "yellow",
+        items: [
+          "[SPECIFIC CRISIS OR INCIDENT] — name the actual high-pressure event you have in mind (a launch that nearly failed, a sudden stakeholder shift, a production incident) so the reader sees a real situation, not a category.",
+          "[WRITER'S CONTACT INFORMATION] — add your direct email and, optionally, a phone number if you are open to a call.",
+          "[name of the onboarding project or product] — if the project had an internal name or the product line is something you can mention, adding it makes the claim verifiable.",
+        ],
+      },
+      {
+        label: "Power phrases",
+        tone: "green",
+        items: [
+          "“She managed by earning trust, staying organized when the situation was not, and making sure credit landed where it belonged.”",
+          "“She spent the first weeks of that project making sure the engineers and designers felt heard before she proposed a single solution.”",
+          "“She calibrates without being told to.”",
+          "“Her steadiness in those situations set the tone for everyone around her.”",
+          "“Whoever hires her will benefit not just from what she delivers, but from what she draws out of the people she works with.”",
+        ],
+      },
+      {
+        label: "Writing tips",
+        tone: "neutral",
+        items: [
+          "The 34% drop-off stat is your strongest hard evidence — make sure it appears early enough to anchor credibility, not just as a footnote.",
+          "Avoid adding any accomplishments Jordan did not tell you about; the letter is already compelling without invention.",
+          "Read it aloud once before sending — any sentence that sounds like a press release should be rewritten in your own voice.",
+          "The fintech startup context rewards specificity about cross-functional coordination and comfort with ambiguity; both are already in the letter, but you can amplify them if you have a concrete example from a scrappy or under-resourced moment.",
+        ],
+      },
+    ],
+    nextStep: "Give Ghost Writer the relationship, destination, and real examples you remember. It turns your evidence into a polished draft — in narrative, structured, or concise style — while keeping every claim grounded in what you actually supplied, and flags exactly what still needs filling in before you send it.",
+    disclaimer: "This is a real, complete tool run against realistic sample notes."
   },
 
   guide: {

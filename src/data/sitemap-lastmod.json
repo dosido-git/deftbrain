@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "7fd93629659a87c278e6b4be163adf91f95eacb0",
+  "hash": "451160a2d5647c036dea086ade0d3a82d9a591cc",
   "lastmod": "2026-09-24"
  },
  "static:about": {
@@ -72,8 +72,8 @@
   "lastmod": "2026-09-23"
  },
  "tool:GhostWriter": {
-  "hash": "ea4e97f1a346c8192086ead493d77956253e51ac",
-  "lastmod": "2026-09-23"
+  "hash": "0a593e62a8b5759e706876f323437721f0dcda72",
+  "lastmod": "2026-09-24"
  },
  "tool:HistoryToday": {
   "hash": "9535fab8664308ec562fe8cfc9c2ae21eeb6f9b3",
@@ -100,8 +100,8 @@
   "lastmod": "2026-09-24"
  },
  "tool:MiseEnPlace": {
-  "hash": "0e6efaae99725469b790c42daa1625537c823eb6",
-  "lastmod": "2026-09-23"
+  "hash": "9f74df37f61cab6a5d8e42d789176857f0576a02",
+  "lastmod": "2026-09-24"
  },
  "tool:NameStorm": {
   "hash": "1898961d376d8d0adb52e93915533817450962da",
