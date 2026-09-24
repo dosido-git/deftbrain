@@ -338,7 +338,7 @@ function ToolScramble({ allTools, onBrowse }) {
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
             <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Some DeftBrain tool taglines. Click for more.</p>
           </div>
-          <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble again</button>
+          <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble more</button>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-7 py-6">
           {shown.map((t,i) => {
@@ -518,7 +518,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
   // doesn't always open on the same pair, but setSeeItSeed is exposed so a
   // button can advance it too (owner asked to change tools without a
   // reload) — same "bump a seed, let useMemo re-derive" shape as
-  // ToolScramble's own "↻ Scramble again", just one increment instead of a
+  // ToolScramble's own "↻ Scramble more", just one increment instead of a
   // full re-shuffle of 42 tiles.
   const seeItEligible = useMemo(() => SEE_IT_EXAMPLES.filter(x => byId.has(x.toolId)), [byId]);
   const [seeItSeed, setSeeItSeed] = useState(() => Math.floor(Math.random() * 1000));
