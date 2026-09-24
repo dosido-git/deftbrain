@@ -63,14 +63,55 @@ export const tools = [
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
   exampleOutput: {
-    title: "See what Mental Health Navigator gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your situation",
-    intro: "A fictional example showing how the tool helps with the practical question of where to start.", sampleLabel: "Sample situation",
-    sampleText: "I've been anxious most days for a few months, sleeping badly, and having trouble concentrating at work. I've never seen a therapist and don't know whether I should start with therapy, my regular doctor, or a psychiatrist.", context: "Fictional situation · not a diagnosis",
+    title: "See what Mental Health Navigator gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your situation",
+    intro: "This is the complete, real output from an actual Mental Health Navigator run on the sample situation below — nothing here is invented or shortened.",
+    sampleLabel: "Sample situation",
+    sampleText: "I've been having really bad anxiety for the past 6 months, mostly around work. I can't sleep, I overthink everything, and I've started avoiding situations that make me nervous. I'm not sure if I need a therapist or a doctor. I tried talking to my GP once but they just told me to exercise more. (Tagged: Anxiety / worry, Work / career, Sleep problems)",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario.",
     sections: [
-      { label: "A reasonable starting route", tone: "green", text: "A therapist or your primary-care clinician could both be sensible first contacts. A primary-care visit can also help check whether physical conditions, medications, sleep, or other factors are contributing." },
-      { label: "When another kind of support may fit", tone: "neutral", items: ["A psychiatrist focuses on medical evaluation and medication management.", "A therapist focuses on assessment, coping patterns, behavior, and talk-based treatment.", "A support group can add peer connection but is not a substitute for individualized care when symptoms are significantly affecting daily life."] },
-      { label: "What to say when you call", tone: "yellow", text: "I've had persistent anxiety and poor sleep for several months and it's starting to affect work. I'm looking for an initial appointment to understand what kind of support makes sense." }
-    ], nextStep: "Describe what has been going on and what you have already tried. The tool helps you understand types of support and practical next steps; it does not diagnose or provide emergency care.", disclaimer: "If there is immediate danger or a risk of self-harm, use local emergency or crisis services rather than waiting for an online planning tool."
+      {
+        label: "What we heard",
+        tone: "green",
+        text: "It sounds like the past six months have been genuinely exhausting — the worry, the sleepless nights, the sense that you're constantly bracing for the next thing, and then the frustration of not feeling heard when you did reach out for help. What you're carrying is real, and wanting to figure out the right kind of support takes courage.",
+      },
+      {
+        label: "Recommended support",
+        tone: "neutral",
+        items: [
+          "Licensed therapist, CBT or ACT-focused (best fit) — structured talk therapies like CBT or ACT are designed to work with persistent worry, broken sleep, and avoidance. Expect weekly or biweekly 50-minute sessions working through patterns in thinking and behavior. Find one: Psychology Today's therapist finder (psychologytoday.com/us/therapists) — filter by zip code, then Insurance/Fees, and add Anxiety and Workplace Stress as issues; most profiles let you message directly. Other options: Alma or Headway, which verify insurance coverage upfront. Cost: with insurance, a $20–$50 copay per session is common; without insurance, many therapists offer sliding scale starting around $50–$80.",
+          "Employee Assistance Programme, EAP (lowest cost) — since the anxiety is tied closely to work, the employer may already pay for short-term counseling at no cost. Expect 3–8 free sessions with a licensed counselor via a confidential hotline, separate from HR. Find one: check the employee benefits portal or email HR and ask whether the benefits package includes an EAP and what number to call. Cost: typically free, employer-funded.",
+          "Psychiatrist or psychiatric nurse practitioner — if therapy alone doesn't feel like enough after a few months, or sleep deteriorates further, a psychiatrist can evaluate whether medication might help alongside therapy. Expect an initial 45–60 minute evaluation, then shorter follow-ups if medication is part of the plan. Find one: ZocDoc (zocdoc.com) lets you filter by psychiatrist, insurance, and availability, often showing real open slots. Cost: covered by most insurance plans; telehealth can reduce cost and wait time.",
+        ],
+      },
+      {
+        label: "What to say when reaching out",
+        tone: "neutral",
+        items: [
+          "Hi, I've been dealing with anxiety and sleep problems for about six months, mostly connected to work stress, and I'm looking for someone who can help me work through it.",
+          "I've tried my GP but didn't feel like it got to the root of things — I'm hoping to find a therapist or counselor who works with anxiety and avoidance.",
+          "I'm not sure exactly what I need yet, but I wanted to reach out and ask whether you work with people dealing with work-related anxiety and sleep difficulties.",
+        ],
+      },
+      {
+        label: "Addressing your barriers",
+        tone: "yellow",
+        text: "For cost: start by asking HR about an EAP — it's the most overlooked free resource, and your employer likely already offers it. If not, search Psychology Today with the Sliding Scale filter on, and mention cost directly when you contact a therapist. For not knowing where to start: you only need to take one step — open psychologytoday.com/us/therapists, put in your zip code, and send one message to one person whose profile sounds right.",
+      },
+      {
+        label: "Immediate steps",
+        tone: "green",
+        items: [
+          "Today: call or email HR, or log into your benefits portal, and ask one question — does the company have an EAP and what is the number?",
+          "Today or tomorrow: go to psychologytoday.com/us/therapists, filter by your location and anxiety, and send a short message to one therapist whose profile feels right.",
+          "In the next 48 hours: if you want insurance verified upfront before booking, go to headway.co or helloalma.com and enter your insurance details — both show confirmed in-network therapists with real availability.",
+          "Tonight: try Sleep Architect — not as a replacement for support, but because getting even a little more sleep will make every other step easier.",
+        ],
+      },
+    ],
+    nextStep: "With your own situation, Mental Health Navigator maps what you're going through to the kinds of support most likely to fit, gives you real ways to find and contact them, exact words to use when reaching out, and immediate next steps you can take today.",
+    disclaimer: "This is a real, complete tool run against a realistic sample situation. This tool does not diagnose or treat anything. If things feel overwhelming or unsafe right now, please reach out — US/Canada: call or text 988. UK/Ireland: Samaritans 116 123. Or your local emergency number."
   },
 
   guide: {
@@ -1431,14 +1472,79 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
   exampleOutput: {
-    title: "See what Procedure Probe gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your procedure",
-    intro: "A fictional example showing the briefing and questions the tool can prepare before a medical conversation.", sampleLabel: "Sample situation",
-    sampleText: "My orthopedist recommended an arthroscopic knee procedure after months of pain. Physical therapy helped somewhat. I want to understand why surgery is the next step, alternatives, recovery, and what insurance may cover.", context: "Fictional scheduled-care example · not medical advice",
+    title: "See what Procedure Probe gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your procedure",
+    intro: "This is the complete, real output from an actual Procedure Probe run on the sample situation below — nothing here is invented or shortened.",
+    sampleLabel: "Sample situation",
+    sampleText: "Wisdom teeth removal (all four), already booked, elective / can wait. Quoted $2,400 after insurance, with a $1,500 annual PPO maximum. Worried about whether all four really need to come out at once.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario.",
     sections: [
-      { label: "Questions about necessity", tone: "green", items: ["What finding makes you think this procedure is likely to help my specific problem?", "What happens if I wait or continue conservative treatment?", "What result should I realistically expect: less pain, better function, or both?"] },
-      { label: "Alternatives to compare", tone: "neutral", items: ["More or different physical therapy", "Medication or injection options, if appropriate", "Watchful waiting or activity modification", "A second opinion when the decision is elective or uncertain"] },
-      { label: "Practical questions", tone: "yellow", items: ["What does recovery usually require and when can I drive or work?", "Which parts need insurance authorization?", "What facility, surgeon, anesthesia, therapy, or equipment charges should I ask about separately?"] }
-    ], nextStep: "Tell Procedure Probe what was recommended and what you already know. It prepares a focused briefing for the conversation with your clinician; it does not decide whether you should have the procedure.", disclaimer: "This example is for preparation and medical literacy, not diagnosis or treatment advice."
+      {
+        label: "In plain language",
+        tone: "neutral",
+        text: "Wisdom teeth are your third and final set of molars, usually the last to come in. Removal involves numbing the area (or sedating you), cutting through gum tissue if needed, and extracting each tooth — sometimes in pieces if they are impacted (stuck under the gum or bone). The goal is to prevent crowding, infection, decay, or damage to neighboring teeth.",
+      },
+      {
+        label: "Time-sensitive?",
+        tone: "yellow",
+        text: "If any of your wisdom teeth are actively infected, pressing on a neighboring tooth root, or causing damage that is progressing, delay does carry real risk — but if none of the four is currently causing symptoms or active damage, taking two to four weeks to get a second opinion and review your options is unlikely to change your outcome and may save you from an unnecessary procedure or unnecessary cost.",
+      },
+      {
+        label: "Common but alternatives exist",
+        tone: "neutral",
+        text: "Removing all four at once is a common approach when all four are impacted or pose a risk, since it means one round of anesthesia and one recovery. However, removing teeth that are fully erupted, not causing problems, and not at elevated risk is not universally agreed upon — some dental professionals advocate a watch-and-wait approach for teeth that are symptom-free and healthy.",
+        items: [
+          "Watch-and-wait: if one or more teeth are fully erupted and not causing problems, some providers recommend monitoring with periodic X-rays rather than removing them preemptively.",
+          "Staged removal: removing only the problematic teeth now and reassessing the others later — reduces immediate cost and recovery burden.",
+          "Coronectomy: a less common procedure where only the crown of a deeply impacted tooth is removed, leaving the roots in place to avoid nerve injury risk — relevant mainly when roots are very close to the inferior alveolar nerve.",
+        ],
+      },
+      {
+        label: "Questions to ask your provider (6)",
+        tone: "neutral",
+        items: [
+          "“Can you show me on my X-rays exactly why each of the four teeth needs to come out now, and what happens if I wait on any of them?” This forces a tooth-by-tooth clinical justification and helps you distinguish between teeth that are genuinely urgent versus ones that could be monitored.",
+          "“Are any of my tooth roots close to the inferior alveolar nerve or the sinus cavity, and how does that affect your technique and the risk of nerve damage?” Root proximity to the nerve is the primary risk factor for temporary or permanent numbness of the lip, chin, or tongue.",
+          "“Will you be performing the extractions, or will I be referred to an oral surgeon — and does that affect the quoted price?” General dentists and oral surgeons have different training for complex extractions.",
+          "“What type of anesthesia is included in this quote — local only, nitrous oxide, or IV sedation — and what are the risks of the sedation you are recommending?” Sedation level significantly affects both cost and risk profile.",
+          "“Is the $2,400 quote a fixed fee, or could it change if the extractions turn out to be more complex than expected?” Some offices quote a base price that can increase if impaction is deeper or surgical time is longer than anticipated.",
+          "“Would removing fewer teeth now — for example, only the ones currently causing concern — reduce my cost and still address the immediate risk?” This directly tests whether the all-four recommendation is clinically driven or driven by convenience.",
+        ],
+      },
+      {
+        label: "What this usually costs",
+        tone: "yellow",
+        text: "Dental pricing varies substantially by area and provider type; ask for an itemized fee schedule to compare. Dental PPO plans vary widely in how they classify wisdom tooth extractions, and many apply the cost toward your annual maximum. In this example, the patient was quoted $2,400 after insurance, against a $1,500 annual PPO maximum already factored in — confirm with your insurer exactly how much benefit remains before paying. Worth asking: whether splitting the procedure across two calendar years (two teeth now, two in January) would let you use this year's remaining maximum for the first pair and a fresh maximum for the second, potentially cutting the total out-of-pocket significantly.",
+      },
+      {
+        label: "What to expect",
+        tone: "neutral",
+        items: [
+          "Duration: the extraction appointment for all four teeth commonly runs roughly 45 minutes to an hour and a half, depending on impaction complexity and anesthesia type.",
+          "Recovery: most people return to non-strenuous activity within a few days; full soft-tissue healing takes several weeks, and bone remodeling continues for months — the first three to five days are typically the most uncomfortable.",
+          "Pain level: expect meaningful soreness and swelling in the first two to four days, generally managed with prescribed or over-the-counter pain medication.",
+          "Lifestyle impact: plan to be away from work or school for two to four days, stick to soft foods for roughly a week, and avoid straws, smoking, and vigorous rinsing to protect against dry socket.",
+          "Follow-up: typically scheduled around one week after the procedure to check healing; clarify whether it's included in the quoted fee or billed separately.",
+        ],
+      },
+      {
+        label: "Red flags to watch for",
+        tone: "red",
+        items: [
+          "The provider cannot point to a specific clinical reason on your X-rays for removing each individual tooth — a recommendation to remove all four without a tooth-by-tooth explanation warrants closer scrutiny.",
+          "You feel pressured to schedule immediately without being given time to review your imaging, ask questions, or seek a second opinion — genuine urgency should be explainable in clinical terms.",
+          "The quote is presented as a single lump sum with no itemized breakdown showing what is charged for each tooth, the type of impaction, and the anesthesia.",
+        ],
+      },
+      {
+        label: "Second opinion recommended",
+        tone: "yellow",
+        text: "Because the all-four-at-once recommendation involves real surgical risk and a meaningful out-of-pocket cost, a second opinion from an oral surgeon — who can review your X-rays independently — is a reasonable step before committing, especially if any of the four teeth are currently asymptomatic. You are entitled to see your own X-rays, ask for an itemized written quote, and take as much time as you reasonably need to make this decision.",
+      },
+    ],
+    nextStep: "With your own procedure, cost, and concerns, Procedure Probe gives you a plain-language explanation, the questions worth asking your provider, what the procedure usually involves, and the specific red flags worth watching for before you say yes.",
+    disclaimer: "This is a real, complete tool run against a realistic sample situation. Educational information to help you have better conversations with your healthcare provider — not medical advice. Always discuss treatment decisions with your doctor or dentist."
   },
 
   guide: {
@@ -2050,14 +2156,42 @@ export const tools = [
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
   exampleOutput: {
-    title: "See what Which Life? gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your two paths",
-    intro: "A fictional example showing how two choices can look different when imagined as ordinary life rather than bullet points.", sampleLabel: "Sample choice",
-    sampleText: "Path A: keep my stable job in Boston. Path B: take a smaller-company role in Portland with less pay but more creative work.", context: "Fictional decision · not a prediction",
+    title: "See what Which Life? gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your two paths",
+    intro: "This is the complete, real output from an actual Which Life? run on the sample choice below — nothing here is invented or shortened.",
+    sampleLabel: "Sample choice (2 years out)",
+    sampleText: "Path A: stay in my current city, keep my job, stay close to family, and buy a small place in two or three years. Path B: take the offer in Seattle, with a 30% raise and a genuinely better role, and leave behind twelve years of friendships and parents twenty minutes away.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario.",
     sections: [
-      { label: "An ordinary Tuesday in Path A", tone: "neutral", text: "Your commute and team are familiar. The work is competent and predictable; by late afternoon you notice the same restlessness that made you consider leaving." },
-      { label: "An ordinary Tuesday in Path B", tone: "neutral", text: "The work asks more of you and feels less settled. You are watching expenses more closely, but you spend more of the day making things rather than maintaining them." },
-      { label: "The tradeoff made visible", tone: "yellow", text: "The choice is not simply security versus creativity. It also changes financial margin, familiarity, uncertainty, and what kind of tired you bring home." }
-    ], nextStep: "Describe both paths honestly. Which Life? makes each future concrete enough to react to without pretending it can predict what will happen."
+      {
+        label: "Path A — Stay, save, stay close",
+        tone: "neutral",
+        text: "You are up before your partner, coffee on, the familiar sound of the street below. The commute is the commute — you know which lane to be in, which light takes forever. At your desk by nine, and there is a small satisfaction in that: the competence of a place where you already know where everything is. Mid-morning, your mother texts a photo of something in her garden. You reply immediately because you are twenty minutes away and it costs nothing. Lunch is with two people you have known for seven years — nobody has to explain their history. The afternoon is ordinary in the way afternoons here are ordinary; whether manageable is enough is a question that surfaces around three o'clock, then recedes. On the way home you stop at the place you have been looking at online, the one that might be realistic in another year or so if the savings hold. Dinner is easy. One of your oldest friends drops by unannounced and stays two hours. The question you brought into this year is still there. You have not answered it.",
+      },
+      {
+        label: "Path B — Seattle, new role, starting over",
+        tone: "neutral",
+        text: "The alarm goes at six-forty and for a half-second you still do not quite know which city this is. The commute is not what you expected — some mornings it is fine, this morning there is a delay and you stand in it, aware that you still do not know anyone well enough to text about something small. The work is harder than the old job — that is mostly good. A problem lands on your desk that you have not seen before, and by noon you have something that might hold. The raise is real. The responsibility is real. Somebody from the team suggests lunch; the conversation is careful in the way it is with people you are still learning — not bad, just not fast yet. At three your phone shows a missed call from home; it lasted four minutes and you were glad for it, and also aware of the distance in a way that does not go away after you hang up. You have started to learn the neighbourhood. You make dinner. The raise is in your account. Twelve years of friendships are in a different time zone, and you have texted two of them this week, and it is not the same as a friend who just drops by.",
+      },
+      {
+        label: "The tradeoff you described",
+        tone: "yellow",
+        text: "You named it plainly: the money and the work are genuinely better there, and you would be choosing that over the people who show up when something goes wrong — parents twenty minutes away, twelve years of friendships, the kind of presence that does not translate to a different time zone. That is the actual exchange you are weighing: a better role and a 30% raise on one side, and proximity to the people you rely on in a crisis on the other.",
+      },
+      {
+        label: "Watch your reaction",
+        tone: "neutral",
+        text: "Notice which moments pulled you in and which ones felt off or flat — both are useful. A moment that feels wrong tells you where the sketch missed your actual life; a moment that pulls you in is worth looking at more closely, though a scene can pull because it is unfamiliar or because it is frightening, not only because it is wanted.",
+      },
+      {
+        label: "A question to sit with",
+        tone: "green",
+        text: "“If your parents were not ageing and the friendships would somehow stay as easy at a distance, would the Seattle offer still feel like a hard choice?”",
+      },
+    ],
+    nextStep: "Describe both paths honestly, with real details about what would change and what would stay the same. Which Life? makes each future concrete enough to react to — not a prediction, but a way to notice what actually pulls you toward, or away from, each one.",
+    disclaimer: "This is a real, complete tool run against a realistic sample decision. AI-generated narratives — simulations, not predictions or advice. Notice what draws you in, what pushes you away, and what feels wrong."
   },
 
   guide: {
