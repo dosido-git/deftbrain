@@ -4398,14 +4398,72 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Most complex text isn't trying to confuse you — it was written for an audience that already shares a context you don't have. Paste anything and PlainTalk bridges the gap: plain-English translation plus a structural X-ray showing how the text is built — its argument, narrative, logic, or obligations — adapted automatically to what you're reading.",
   exampleOutput: {
-    title: "See what Plain Talk gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your text",
-    intro: "A fictional example showing plain-language translation plus the structure underneath dense wording.", sampleLabel: "Sample clause",
-    sampleText: "The subscriber shall provide written notice of cancellation no fewer than thirty days prior to the conclusion of the then-current term, failing which the agreement shall renew for a successive term.", context: "Fictional contract language · shortened for demonstration",
+    title: "See what Plain Talk gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your text",
+    intro: "This is the complete, real output from an actual Plain Talk run on the sample clause below — nothing here is invented or shortened.",
+    sampleLabel: "Sample clause (lease indemnification)",
+    sampleText: "Tenant shall be liable for and shall indemnify, defend, and hold harmless Landlord from and against any and all claims, damages, losses, and expenses, including reasonable attorneys' fees, arising in whole or in part from any injury to person or property occurring at the Premises, including injury caused by Tenant's guests, invitees, contractors, concessionaires, or licensees.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example scenario, auto-detected as Legal / Contract.",
     sections: [
-      { label: "Plain English", tone: "green", text: "You must cancel in writing at least 30 days before the current term ends. If you miss that deadline, the agreement renews for another term." },
-      { label: "What the sentence is doing", tone: "neutral", items: ["Creates a cancellation deadline.", "Requires written notice.", "Makes renewal the default if you do nothing or act too late."] },
-      { label: "What to check", tone: "yellow", text: "Look elsewhere in the document for the length of the renewal term, acceptable ways to give written notice, and any cancellation fee." }
-    ], nextStep: "Paste the text you are trying to understand. Plain Talk translates the wording and maps the obligations, argument, or structure without replacing the original document.", disclaimer: "For legal, medical, financial, or other high-stakes documents, use the explanation to prepare questions and verify important decisions with an appropriate professional."
+      {
+        label: "Reading level & plain translation",
+        tone: "neutral",
+        text: "Legal / Contract, high confidence. Simplified by 8 grade levels — original: Graduate/Professional (grade 16), translated: 8th grade. Plain English: this clause makes the tenant legally responsible for paying any costs — lawsuits, damages, injuries — that arise from anything happening at the rental property, even if caused by the tenant's guests or workers.",
+      },
+      {
+        label: "What matters to you",
+        tone: "yellow",
+        text: "As the tenant, you are accepting broad financial liability. If a guest trips and falls, if a contractor damages something, or if any incident occurs on the property, the landlord can look to you to cover their losses and legal fees. This is a significant one-sided obligation — verify whether your renter's or business liability insurance covers this scope, and check the indemnification laws in your jurisdiction, as some courts have limited how far such clauses can extend.",
+      },
+      {
+        label: "Key takeaways",
+        tone: "neutral",
+        items: [
+          "You (the tenant) must cover the landlord's legal costs and damages if anyone is hurt or property is damaged at your premises.",
+          "This responsibility extends to people you invite or hire — guests, contractors, employees — not just your own direct actions.",
+          "The landlord is fully shielded from liability for incidents on the property; all financial risk sits with you.",
+        ],
+      },
+      {
+        label: "Red flags",
+        tone: "red",
+        items: [
+          "The obligation is entirely one-directional — the tenant bears all risk, the landlord bears none under this clause.",
+          "The clause covers 'any and all' claims with no cap on the dollar amount you could owe.",
+          "Liability extends to acts of third parties you bring onto the property, including contractors and licensees, which may be beyond your control.",
+          "No carve-out exists for incidents caused by the landlord's own negligence or building defects — in some jurisdictions such clauses are unenforceable to that extent, but you must verify current local law.",
+        ],
+      },
+      {
+        label: "Action items",
+        tone: "green",
+        items: [
+          "Review your liability insurance policy to confirm it covers indemnification obligations of this scope.",
+          "Consult a local attorney to verify whether this clause is fully enforceable in your jurisdiction under current law.",
+          "Negotiate a carve-out so the clause does not apply when an incident results from the landlord's own negligence or property defects.",
+          "Request a liability cap or mutual indemnification provision to balance obligations between both parties.",
+        ],
+      },
+      {
+        label: "Deep analysis — power & obligation",
+        tone: "red",
+        text: "Strong landlord advantage. Your obligations as tenant: indemnify the landlord, cover all legal costs, absorb liability for anyone you invite or hire, even if fault is only partial. Their obligations: none stated in this clause. Asymmetry: the landlord owes you nothing here — this is a one-way shield protecting only the landlord. Compared to standard: this clause is on the broader end of standard commercial lease indemnification language; there is no mutual indemnification, no carve-out for landlord negligence, and no liability cap — all three are common negotiating points that more tenant-favorable versions include.",
+      },
+      {
+        label: "Commonly negotiated",
+        tone: "neutral",
+        items: [
+          "Add a mutual indemnification clause so the landlord also indemnifies the tenant.",
+          "Insert a carve-out excluding tenant liability for incidents caused solely by landlord negligence or willful misconduct.",
+          "Add a liability cap (e.g., capped at insurance policy limits).",
+          "Narrow 'in part' language so tenant is only liable proportionate to their actual fault.",
+          "Remove 'concessionaires' and 'licensees' if those categories do not apply to your use of the space.",
+        ],
+      },
+    ],
+    nextStep: "Paste the text you are trying to understand. Plain Talk translates the wording, maps the obligations or argument, and — for dense clauses like this one — runs a deeper power-and-obligation X-ray showing exactly who benefits and what's commonly negotiated, without replacing the original document.",
+    disclaimer: "This is a real, complete tool run against a realistic sample clause. For legal, medical, financial, or other high-stakes documents, use the explanation to prepare questions and verify important decisions with an appropriate professional."
   },
 
   guide: {
@@ -4606,13 +4664,38 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Find the hidden connections between seemingly unrelated parts of your life.\nYour favorite movie and your career. Your childhood hobby and your closest friendship.\n\nThe chain is always there. You just can't see it yet.",
   exampleOutput: {
-    title: "See what Six Degrees of Me gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your two things",
-    intro: "A fictional example of tracing a surprising connection through one person's own history.", sampleLabel: "Sample pair",
-    sampleText: "My childhood obsession with model trains and the project-management work I do now.", context: "Fictional personal chain · for exploration",
+    title: "See what Six Degrees of Me gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your two things",
+    intro: "This is the complete, real output from an actual Six Degrees of Me run on the sample pair below — nothing here is invented or shortened.",
+    sampleLabel: "Sample pair (Chain mode)",
+    sampleText: "One part of your life: my first job. Another part of your life: my closest friendship.",
+    context: "Real run, 2026-09-23 — one of the tool's own built-in Try These pairings.",
     sections: [
-      { label: "The chain", tone: "green", items: ["Model trains rewarded planning before action.", "Layouts made dependencies visible: one misplaced section affected the whole route.", "That same habit later showed up in scheduling school projects and volunteer events.", "Project management turned that instinct into a profession."] },
-      { label: "The interesting link", tone: "neutral", text: "The connection is less 'trains led to your career' than a repeated pleasure in arranging many moving parts so they work together." }
-    ], nextStep: "Give the tool two pieces of your life. It builds a plausible link-by-link chain and shows where the connection is strong, surprising, or speculative."
+      {
+        label: "The chain",
+        tone: "neutral",
+        text: "This isn't a biography. It's one possible story connecting two experiences. Keep what resonates and ignore what doesn't. Your first job asked you to do something specific — learn a role, meet expectations, deliver something measurable. You likely discovered what you were capable of. Once you showed you could do something well, others began to depend on that skill. You may have become the person people turned to — reliable, capable, consistent. Over time, it is possible that a quiet expectation formed: if you did something, you did it fully, thoroughly, without cutting corners. Care and execution became tangled. You may have gravitated toward people who either shared that standard or who needed someone to hold it. Friendships began where trust meant: this person will not let it fall apart. Your closest friendship may have crystallized around someone who either matched your care for how things are done, or who trusted you precisely because you would not let the friendship become careless.",
+      },
+      {
+        label: "Link by link",
+        tone: "neutral",
+        items: [
+          "First job → Early competence (career): your first job asked you to do something specific — learn a role, meet expectations, deliver something measurable. You likely discovered what you were capable of.",
+          "Early competence → Being relied on (skill): once you showed you could do something well, others began to depend on that skill. You may have become the person people turned to — reliable, capable, consistent.",
+          "Being relied on → Unspoken standard (identity): over time, a quiet expectation formed — if you did something, you did it fully, thoroughly, without cutting corners. Care and execution became tangled.",
+          "Unspoken standard → Choosing your people (belief): you may have gravitated toward people who either shared that standard or who needed someone to hold it. Friendships began where trust meant: this person will not let it fall apart.",
+          "Choosing your people → Closest friendship (relationship): your closest friendship may have crystallized around someone who either matched your care for how things are done, or who trusted you precisely because you would not let the friendship become careless.",
+        ],
+      },
+      {
+        label: "A possible insight",
+        tone: "green",
+        text: "Care learned to speak through reliability. Perhaps your first job taught you that affection and competence were inseparable — that showing up fully for something was how you showed it mattered. Your closest friendship may be the place where that same language is spoken fluently back to you: someone who understands that you are present not despite the standards, but because of them. The pattern worth noticing: you may not separate love from doing something well. Through-line: competence became your native dialect of care.",
+      },
+    ],
+    nextStep: "Give the tool two pieces of your life — in Chain mode, or map your whole Life Web, find your Story, or compare two people. It builds a plausible link-by-link chain and shows where the connection is strong, surprising, or speculative.",
+    disclaimer: "This is a real, complete tool run against a realistic sample pair. These connections are possibilities, not conclusions — a way to think about your life, not an explanation of it."
   },
 
   guide: {
@@ -4722,14 +4805,32 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.",
   exampleOutput: {
-    title: "See what Final Wish gives you", expandLabel: "See example results ↓", nextStepLabel: "What happens with your wishes",
-    intro: "A shortened fictional example showing how personal wishes can become clearer instructions for the people who may need them.", sampleLabel: "Sample wish",
-    sampleText: "I want something simple. No formal religious service. I would rather have people tell stories, play music I loved, and not feel obligated to spend a lot of money.", context: "Fictional planning example",
+    title: "See what Final Wish gives you",
+    expandLabel: "See the full real example results ↓",
+    nextStepLabel: "What happens with your own document",
+    intro: "This is the complete, real output from an actual Final Wish run using the tool's own example scenario — nothing here is invented or shortened. Only two sections are shown; the tool also organizes documents, financial accounts, and end-of-account wishes the same way.",
+    sampleLabel: "Sample scenario",
+    sampleText: "Alex Rivera, writing for primary trusted person Jordan Rivera (a sibling) and additional trusted person Sam Chen. Message recipient: Jordan. Relationship: younger sibling — grew up close, drifted in their 20s, reconnected in recent years. What Alex wants Jordan to know: proud of who they've become, and that Jordan should let go of guilt over the year they didn't speak much. Tone requested: Heartfelt.",
+    context: "Real run, 2026-09-23 — the tool's own built-in example names, using the AI Interview / message-drafting flow.",
     sections: [
-      { label: "What matters most", tone: "green", items: ["Keep the gathering informal and story-centered.", "Music matters more than ceremony.", "Avoid unnecessary expense or pressure to make the event elaborate."] },
-      { label: "What still needs deciding", tone: "yellow", items: ["Who should make final arrangements?", "Burial, cremation, donation, or another preference?", "Any people, songs, readings, or traditions you definitely want included or excluded?"] },
-      { label: "A clearer way to say it", tone: "neutral", text: "Please keep the gathering simple. I would like people to share stories and play music that reminds them of me. I do not want anyone to feel they need to spend heavily to honor me." }
-    ], nextStep: "Final Wish helps turn values and preferences into something loved ones can actually understand and use. It does not replace legal estate or advance-directive documents."
+      {
+        label: "Drafted message to Jordan (heartfelt tone)",
+        tone: "green",
+        text: "“Jordan — I want you to know that I am proud of the person you have become, and I mean that without any qualifications. Whatever guilt you have been carrying about the year we drifted, put it down: those childhood arguments never mattered half as much as you probably thought they did, and neither did the quiet spell in our 20s. What I actually remember is the Big Sur road trip in 2018, Christmas in the kitchen, and the way you always start laughing at your own jokes before you even get to the punchline — and I would not trade any of that. You are my sibling and I love you, full stop. — Alex”",
+      },
+      {
+        label: "Top critical accounts (from the Emergency quick plan)",
+        tone: "neutral",
+        items: [
+          "Apple iCloud — photos and personal documents; recovery key in the fireproof safe.",
+          "Gmail (alex.rivera@gmail.com) — 2FA via Authenticator app on phone; backup codes in the safe envelope marked GMAIL.",
+          "1Password — master password is in the sealed envelope in the filing cabinet, top drawer; has access to most other accounts.",
+          "Instagram (@alex.rivera) — login saved in 1Password.",
+        ],
+      },
+    ],
+    nextStep: "Final Wish organizes your accounts, documents, financial details, personal wishes, and messages that matter into one document, drafted in your voice and refinable in tone (warmer, funnier, shorter, more direct) — built step by step, through an AI interview, or all at once in an emergency 5-minute version.",
+    disclaimer: "This is a real, complete tool run using the tool's own example scenario. This is not a legal document. Consult an attorney for legal estate planning."
   },
 
   guide: {
