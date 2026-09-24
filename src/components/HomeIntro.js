@@ -553,17 +553,17 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       <div className="grid lg:grid-cols-[.92fr_1.08fr]">
         <div className="px-6 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8 flex flex-col justify-center">
           <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
-          {/* Replaces the old two-line pair (a punchy subheadline + a
-              separate "AI-powered tools, not a chatbot" line) with one
-              sentence doing both jobs — what DeftBrain is, and how AI is
-              used — worked out with the owner over several rounds directly
-              in chat, not drafted blind. Still names "AI" exactly once,
-              transparently, per charter Appendix A — that constraint is why
-              this isn't two sentences. "Relying on" (not "built around")
-              deliberately keeps the inquiry, not the AI, as the subject:
-              built-around would have put the model at the center of its
-              own description, the opposite of "guidance, not AI." */}
-          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain is a collection of targeted inquiries into everyday issues, each relying on carefully guided artificial intelligence to produce results you can have confidence in.</p>
+          {/* Charter 4.5 amendment (2026-09-23): DeftBrain doesn't presume
+              there is one next step — it helps people discover possibilities
+              and decide for themselves. This line dropped the earlier
+              "AI-powered... results you can have confidence in" framing,
+              which named AI directly and asserted a single confident
+              outcome; "shine light on... uncertainties and possibilities"
+              carries the wider-field-of-view idea instead. AI transparency
+              still lives on this page, just further down (the "AI can be
+              wrong, confidently" disclaimer near the tool grid), so this
+              sentence no longer needs to carry that job too. */}
+          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain is a collection of single-purpose tools that shine light on life's uncertainties and possibilities.</p>
           {/* Plain <a>, not <Link>: /privacy is a static prerendered page
               (public/privacy.html), not a React Router route — a <Link> here
               would fall through to the catch-all /:toolId route and 404, the
