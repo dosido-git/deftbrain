@@ -49,9 +49,12 @@ The three that come up most:
 1. **People have problems, not prompts.** Never surface prompt-writing, models,
    tokens, or AI mechanics in the interface. Charter Appendix A lists the
    vocabulary we prefer and the vocabulary we avoid — use it when writing copy.
-2. **Every outcome ends with a next step.** A report must answer: what matters
-   most, why, what to do now, what to ask next, how confident to be. An output
-   that stops at information is unfinished.
+2. **DeftBrain doesn't presume there is one next step.** A report must answer:
+   what matters most, why, what the possibilities/alternatives are, what to ask
+   next, how confident to be. An output that stops at information is
+   unfinished — but guidance is a wider field of view, not a verdict. Watch for
+   directive phrasing ("what to do next," "the right answer," "here's what you
+   should do") — see Charter Appendix A.
 3. **Choose calm over clever.** One primary action per screen. Every question
    must earn its place and explain itself when the reason isn't obvious.
 

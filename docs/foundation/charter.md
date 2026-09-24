@@ -94,11 +94,15 @@ Every screen should reduce uncertainty.
 
 If people leave a page feeling more confused than when they arrived, we have failed.
 
-### 4.5 People need to know what to do next.
+### 4.5 DeftBrain doesn't presume there is one next step.
 
-Information without action is incomplete.
+It helps people discover possibilities, consider alternatives, and make their own better-informed choices.
 
-Every guide should leave people knowing their next step.
+Guidance is not a verdict.
+
+It's a wider field of view.
+
+The visitor still decides.
 
 ### 4.6 Trust is our product.
 
@@ -250,7 +254,7 @@ Every DeftBrain guide should:
 - Respect the person's time.
 - Produce practical guidance.
 - Explain its conclusions.
-- Recommend concrete next steps.
+- Surface possibilities and alternatives — not a single directive.
 - Acknowledge uncertainty honestly.
 - Recommend professional assistance whenever appropriate.
 - Leave the person calmer than before.
@@ -270,7 +274,7 @@ Every report should answer:
 
 - What matters most?
 - Why does it matter?
-- What should I do now?
+- What are my options?
 - What should I ask next?
 - How confident should I be in these conclusions?
 
@@ -323,9 +327,13 @@ We will never forget that there is a real person behind every question.
 - Compare
 - Plan
 - Explain
+- Explore
+- Discover
+- Possibilities
+- Alternatives
+- Consider
 - Confidence
 - Clarity
-- Next Steps
 - Trusted
 - Practical
 - Private
@@ -344,6 +352,22 @@ We will never forget that there is a real person behind every question.
 - Artificial Intelligence (except where transparency requires it)
 
 Whenever possible, people should experience guidance—not AI.
+
+### Directive Phrasing We Watch For
+
+DeftBrain doesn't presume there is one right answer. Phrases that imply otherwise
+undercut that, even when the tool behind them is genuinely useful:
+
+- "what to do next" / "your next step"
+- "the right answer"
+- "here's what you should do"
+- "here's what I'd do"
+
+These aren't banned words — a tool can still surface a genuinely concrete
+action (a deadline, a script to say, a step worth taking today) when that's
+actually what it found. What we watch for is the *framing*: guidance that
+reads as a verdict rather than as one of several ways to see the
+situation. See Core Principle 4.5.
 
 ---
 

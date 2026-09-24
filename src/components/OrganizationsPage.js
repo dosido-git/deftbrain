@@ -17,7 +17,7 @@ const SHOWCASE_IDS = ['ScamRadar','DoctorVisitPrep','DifficultTalkCoach','LeaseT
 
 const AUDIENCES = [
   { key:'employers', eyebrow:'Employers', title:'Support people beyond the job description.', copy:'Give employees approachable help with the everyday problems that consume attention, create stress, and follow them to work.' },
-  { key:'libraries', eyebrow:'Libraries', title:"Give patrons somewhere to turn when they don't know where to turn.", copy:"Extend the library's role as a trusted source of practical information and everyday help." },
+  { key:'libraries', eyebrow:'Libraries', title:"Help patrons discover options they hadn't considered.", copy:"Extend the library's role as a trusted source of practical information and everyday help." },
   { key:'credit-unions', eyebrow:'Credit unions', title:'Help members make more confident everyday decisions.', copy:'Extend member support beyond transactions with practical guidance for purchases, bills, scams, negotiations, and more.' },
   { key:'community', eyebrow:'Community organizations', title:'Make practical guidance more accessible.', copy:'Offer people an approachable starting point regardless of their technical experience.' },
 ];
@@ -62,7 +62,7 @@ export default function OrganizationsPage({ allTools = [] }) {
       <section className="org-hero org-shell">
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
         <h1>Practical help for the things life throws at your people.</h1>
-        <p className="org-lede">DeftBrain gives employees, members, patrons, and communities easy-to-use guidance for the everyday situations where they don't know what to do next.</p>
+        <p className="org-lede">DeftBrain gives employees, members, patrons, and communities an easy way to explore the everyday situations they're facing — the possibilities, the alternatives, the things they might not have considered.</p>
         <div className="org-actions"><a className="org-btn org-btn-primary" href="mailto:hello@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a><span>No AI expertise required.</span></div>
         <div className="org-moments" aria-label="Examples of everyday questions">
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
@@ -82,7 +82,7 @@ export default function OrganizationsPage({ allTools = [] }) {
           <div className="org-steps">
             <article><b>1</b><h3>Choose what's going on.</h3><p>No prompt writing. No figuring out what to ask an AI.</p></article>
             <article><b>2</b><h3>Answer a few thoughtful questions.</h3><p>DeftBrain asks for the information that matters.</p></article>
-            <article><b>3</b><h3>Get practical guidance.</h3><p>Clear thinking, useful questions, and concrete next steps.</p></article>
+            <article><b>3</b><h3>Get practical guidance.</h3><p>Clear thinking, useful questions, and real options to weigh.</p></article>
           </div>
           <blockquote>Your people don't need to learn AI.<br/><strong>They just need to know what's going on.</strong></blockquote>
         </div>
@@ -124,7 +124,7 @@ export default function OrganizationsPage({ allTools = [] }) {
         <div className="org-pilot-points"><article><h3>Easy to introduce</h3><p>We'll provide materials to help people discover what's available.</p></article><article><h3>Easy to use</h3><p>No training or AI expertise required.</p></article><article><h3>Easy to evaluate</h3><p>We'll define useful, privacy-respecting pilot measures before launch.</p></article></div>
       </section>
 
-      <section className="org-final"><div className="org-shell"><h2>Everyone has moments when they don't know what to do next.</h2><p>Give them somewhere to start.</p><a className="org-btn org-btn-light" href="mailto:hello@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a></div></section>
+      <section className="org-final"><div className="org-shell"><h2>There's almost always more than one way forward.</h2><p>DeftBrain helps people discover possibilities.</p><a className="org-btn org-btn-light" href="mailto:hello@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a></div></section>
     </main>
   );
 }

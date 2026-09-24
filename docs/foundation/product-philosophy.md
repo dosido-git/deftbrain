@@ -90,9 +90,9 @@ They ask thoughtful questions.
 
 They explain their reasoning.
 
-They recommend practical next steps.
+They surface the possibilities and considerations that matter.
 
-The visitor leaves better prepared to act.
+The visitor leaves with a clearer view — and decides for themselves.
 
 ### Explorations
 
@@ -163,7 +163,7 @@ The conversation should:
 - explain why.
 - avoid assumptions.
 - build confidence gradually.
-- recommend practical next steps.
+- surface possibilities and alternatives, not a single directive.
 - leave the person calmer than before.
 
 ---
@@ -202,7 +202,7 @@ Every DeftBrain outcome should answer:
 
 - What matters most?
 - Why does it matter?
-- What should I do next?
+- What are my options?
 - What should I ask next?
 - How confident should I be?
 
@@ -334,7 +334,7 @@ We measure success by the number of moments in which someone says:
 
 > "I understand."
 >
-> "I know what to do."
+> "I have real options now."
 >
 > "I hadn't thought of that."
 >

@@ -191,15 +191,15 @@ Not certainty.
 
 ---
 
-## 12. Recommend Action
+## 12. Widen the View
 
-Insight without action creates frustration.
+Insight without perspective creates frustration.
 
-Every conversation should end with clear next steps.
+Every conversation should end with a clearer view of the possibilities — not a single instruction.
 
 Visitors should know:
 
-- What to do.
+- What their options are.
 - What to watch for.
 - What questions to ask.
 - Who to talk to if appropriate.
@@ -242,7 +242,7 @@ A conversation is successful when people leave feeling:
 >
 > "I hadn't thought of that."
 >
-> "I know what to do."
+> "I have real options now."
 >
 > "I feel better."
 
@@ -271,8 +271,8 @@ Every DeftBrain conversation should follow this rhythm.
 **5. Guidance**
 > "Here are your options."
 
-**6. Action**
-> "Here's what I'd do next."
+**6. Momentum**
+> "Here's how I'd think about it."
 
 **7. Confidence**
 > "You've got this."

@@ -212,15 +212,15 @@ Uncertainty inside the interface increases uncertainty outside it.
 
 ---
 
-## 15. Every Outcome Ends With Action
+## 15. Every Outcome Widens the View
 
 Every experience should answer:
 
 - What matters?
 - Why?
-- What should I do now?
+- What are my options?
 
-The experience is not complete until someone knows their next step.
+The experience is not complete until someone can see more possibilities than when they arrived.
 
 ---
 

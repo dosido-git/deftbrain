@@ -601,7 +601,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
       <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER}}>
         <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-5">
           <div className="rounded-2xl border p-4 sm:p-5" style={{borderColor:BORDER,background:'linear-gradient(120deg,#fff0cf 0%,#f8ddd7 100%)'}} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain will help you take the next step.</p></div>
+            <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain helps you explore the possibilities.</p></div>
             <div className="relative">
               {totalPages>1 && <button type="button" onClick={()=>goToPage(page-1)} aria-label="Previous tools" className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow-sm items-center justify-center text-[15px] hover:shadow-md" style={{borderColor:BORDER,color:NAVY}}>‹</button>}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">{slots.map((idx,slot)=>{const current=available[idx%Math.max(available.length,1)];return <DoorCard key={slot} initial={current} incoming={incoming[slot]} toolFor={toolFor} flipToken={tokens[slot]} reducedMotion={reducedMotion}/>;})}</div>
