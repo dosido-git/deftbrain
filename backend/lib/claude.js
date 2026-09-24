@@ -32,11 +32,14 @@ const VOLATILE_SUFFIX_RE = /\n\nLANGUAGE: Respond entirely in|\n\nLOCALE CONTEXT
 // Every model call in the product passes through here. See lib/epistemics.js.
 // options.epistemicLabel identifies the tool for the (deliberately tiny)
 // exemption list; absent, the rules always apply, which is the safe default.
+// options.__dateLine (set by the date-injection wrapper below) rides the
+// UNCACHED side — see that wrapper's comment for why.
 const _rawMessagesCreate = anthropic.messages.create.bind(anthropic.messages);
 anthropic.messages.create = function (params, ...rest) {
   if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
   const label = params.epistemicLabel;
-  const { epistemicLabel, ...clean } = params;
+  const dateLine = params.__dateLine;
+  const { epistemicLabel, __dateLine, ...clean } = params;
   const rawSystem = typeof clean.system === 'string' ? clean.system : undefined;
   // Split off the per-visitor suffix (language/locale) BEFORE the universal
   // and per-tool prompt text is assembled, so the cache breakpoint lands
@@ -49,17 +52,24 @@ anthropic.messages.create = function (params, ...rest) {
   // top as the stable cacheable prefix; the v2 output standard sits under it and
   // applies only to routes that declared it. See lib/outputStandard.js.
   const stableText = withEpistemics(withOutputStandard(stablePart), label) || ' ';
+  // The date line rides here, not in stableText — it changes once every 24h,
+  // and putting it in the cached block would invalidate EVERY route's cache
+  // app-wide once a day (found 2026-09-24 investigating an org-wide cache-hit
+  // drop). Uncached is the right place for it regardless: it varies by request
+  // time exactly like language/locale, just on a daily instead of per-visitor
+  // cadence.
+  const volatileText = dateLine ? (volatilePart ? `${dateLine}\n\n${volatilePart}` : dateLine) : volatilePart;
   // system as an array of blocks, not a string: this is what makes the block
   // eligible for Anthropic prompt caching. cache_control on the stable block
   // tells the API to cache everything up to and including it; the volatile
-  // suffix (if any) rides uncached in a second block. Below the provider's
+  // text (if any) rides uncached in a second block. Below the provider's
   // per-model minimum (1024 tokens on Sonnet/Opus, 2048 on Haiku) this is a
   // silent no-op — never an error — so it's always safe to mark. Verified live
   // 2026-09-07: a repeat call with an unchanged stable block read the cache at
   // ~10% of the normal input-token cost instead of paying full price again.
   const system = [
     { type: 'text', text: stableText, cache_control: { type: 'ephemeral' } },
-    ...(volatilePart ? [{ type: 'text', text: volatilePart }] : []),
+    ...(volatileText ? [{ type: 'text', text: volatileText }] : []),
   ];
   return _rawMessagesCreate({ ...clean, system }, ...rest);
 };
@@ -72,17 +82,18 @@ anthropic.messages.create = function (params, ...rest) {
 // both the callClaudeWithRetry path and the ~31 routes that call
 // anthropic.messages.create directly — shares THIS one client, so wrapping
 // create() here injects today's date into every request with no per-route
-// change. This runs BEFORE the override above, so `system` here is always
-// still the plain string a route built — the array/cache_control form is
-// assembled once, downstream of this prepend.
+// change. Passed as a hidden __dateLine param rather than prepended into
+// `system` directly, so the wrapper above can route it into the UNCACHED
+// block instead of the cached one — see that wrapper's comment. (Until
+// 2026-09-24 this prepended the date onto the system string here, which put
+// it inside the cached prefix and reset every route's cache once every 24h.)
 const _messagesCreate = anthropic.messages.create.bind(anthropic.messages);
 anthropic.messages.create = function (params, ...rest) {
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
   const dateLine = `CURRENT DATE: Today is ${today}. Reason from this date as "now" — treat model years, product ages, prices, recency, availability, and any reference to "current"/"this year"/"new" accordingly. Do not assume an earlier year.`;
-  const system = params && params.system ? `${dateLine}\n\n${params.system}` : dateLine;
-  return _messagesCreate({ ...params, system }, ...rest);
+  return _messagesCreate({ ...params, __dateLine: dateLine }, ...rest);
 };
 
 /**
