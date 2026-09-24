@@ -1509,6 +1509,28 @@ const LeaseTrapDetector = ({ tool }) => {
               </div>
             )}
 
+            {/* Verified sources — real pages web_search actually visited for
+                this jurisdiction's tenant law (backend/lib/groundedFacts.js),
+                not a model-recalled domain name. Absent, not empty, when the
+                pre-pass didn't run or cited nothing — see lease-trap-detector.js. */}
+            {results.verified_sources?.length > 0 && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <button onClick={() => toggle('sources')} className="w-full flex items-center justify-between">
+                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_verified_sources_header')}</p>
+                  <Caret open={expandedSections.sources} />
+                </button>
+                {expandedSections.sources && (
+                  <div className="mt-4 space-y-2">
+                    {results.verified_sources.map((src, idx) => (
+                      <a key={idx} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                        {src.title} ↗
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <p className={`text-center text-xs ${c.textMuted}`}>{t('ltd_disclaimer_tenant')}</p>
 
           </div>

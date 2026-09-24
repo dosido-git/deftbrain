@@ -3,7 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted clause text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
 
@@ -26,23 +26,59 @@ function handleAiError(res, error, longDocMessage) {
 // TTL cache; see lib/groundedFacts.js for the pattern rationale. Best-effort:
 // returns '' on any failure and the main prompt's hedge rule takes over.
 async function groundTenantLawFacts({ location }) {
-  return groundedFacts({
-    cacheKey: `tenant-law:${normalizeKeyPart(location)}`,
+  const cacheKey = `tenant-law:${normalizeKeyPart(location)}`;
+  const block = await groundedFacts({
+    cacheKey,
     label: 'lease-trap-detector-facts',
     userPrompt: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
 
 Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability. Skip any you cannot verify.
 
 Return ONLY valid JSON:
-{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }`,
-    render: (cleanFacts) => {
-      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-        return `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
-          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official legislature/court/regulator/government domain when the search found one." }] }`,
+    // `searchResults` is every page web_search actually retrieved (real URLs
+    // — see claude.js's extractSearchResults), typically two dozen+ across 5
+    // topic searches, most of it SEO/blog content the model never relied on.
+    // f.source (a bare domain the model claims it verified against, e.g.
+    // "cityofnewyork.us") is NOT independently trustworthy on its own — it's
+    // the model's own recollection, the same kind of claim NO_BORROWED
+    // CERTAINTY exists to catch. So a fact only gets a visible citation when
+    // its claimed domain matches a page that was ACTUALLY retrieved — that
+    // cross-check is what makes the link real rather than decorative, and a
+    // claimed domain with no matching result gets no link at all rather than
+    // one manufactured from the domain name.
+    render: (cleanFacts, searchResults) => {
+      if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
+      const block = `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
+        cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+      const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
+      // Despite the schema asking for ONE bare domain, the model sometimes
+      // lists several candidates ("law.justia.com; nolo.com") or tacks on a
+      // parenthetical ("recordinglaw.com (July 2026)") — verified live,
+      // 2026-09-24. Pull every domain-shaped token out of the field instead
+      // of trusting its exact format, and take the first one that matches a
+      // real result.
+      const domainsIn = (s) => [...String(s || '').toLowerCase().matchAll(/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/g)].map(m => m[0].replace(/^www\./, ''));
+      const seen = new Set();
+      const sources = [];
+      for (const f of cleanFacts.verified) {
+        const claimed = domainsIn(f.source).find(claimedDomain =>
+          searchResults.some(r => {
+            const host = hostnameOf(r.url);
+            return host === claimedDomain || host.endsWith(`.${claimedDomain}`);
+          })
+        );
+        if (!claimed) continue;
+        const match = searchResults.find(r => {
+          const host = hostnameOf(r.url);
+          return host === claimed || host.endsWith(`.${claimed}`);
+        });
+        if (match && !seen.has(match.url)) { seen.add(match.url); sources.push(match); }
       }
-      return '';
+      return { block, data: { sources } };
     },
   });
+  return { block, cacheKey };
 }
 
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -341,7 +377,7 @@ ${criticalRules}`;
     // Grounded VERIFIED CURRENT TENANT LAW block is appended to ALL split
     // prompts; its override rule lives in the shared LEGAL RESEARCH REQUIREMENTS
     // text, which every prompt also carries.
-    const verifiedLawBlock = await groundTenantLawFacts({ location, userLanguage });
+    const { block: verifiedLawBlock, cacheKey: tenantLawCacheKey } = await groundTenantLawFacts({ location, userLanguage });
 
     // contentBlocks (optional PDF document block + instruction text) is shared by
     // every call; each call appends its own prompt as the final text block — same
@@ -381,7 +417,16 @@ ${criticalRules}`;
     if (Array.isArray(parsed.red_flags)) {
       parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
     }
-    res.json(stripCites(parsed));
+    // Real sources (API-verified, not model-recalled) for the tenant-law facts
+    // folded into the prompt above — present only when the pre-pass actually
+    // ran and cited something for this jurisdiction; absent (not an empty
+    // array) when there's nothing to show, so the frontend's `?.length > 0`
+    // check has one thing to test instead of two.
+    const verifiedSources = groundedData(tenantLawCacheKey)?.sources;
+    res.json({
+      ...stripCites(parsed),
+      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+    });
 
   } catch (error) {
     console.error('[LeaseTrapDetector] Error:', error);

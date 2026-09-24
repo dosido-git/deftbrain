@@ -16,7 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { callClaudeWithRetry } = require('./claude');
+const { callClaudeWithRetry, extractSearchResults } = require('./claude');
 const { MODELS } = require('./models');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -139,7 +139,10 @@ function normalizeKeyPart(s) {
  * @param {string} opts.cacheKey   e.g. `deposit-law:${normalizeKeyPart(location)}`
  * @param {string} opts.label      log label, e.g. 'renters-deposit-saver-facts'
  * @param {string} opts.userPrompt the verification request (ask for ONLY valid JSON)
- * @param {function} opts.render   parsed JSON → facts block string ('' if unusable)
+ * @param {function} opts.render   (parsed JSON, searchResults) → facts block
+ *   string ('' if unusable). `searchResults` is every page web_search
+ *   actually retrieved (real URLs — see claude.js's extractSearchResults),
+ *   always passed, safe for a render fn to ignore if it doesn't need them.
  * @param {number} [opts.ttlMs]    default 14 days
  * @param {number} [opts.maxTokens] default 6000. Was 2500, which truncated the
  *   search summary outright at max_uses 3 or 2 — so even a pre-pass that beat
@@ -183,25 +186,33 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
     const p = (async () => {
       let timer;
       try {
-        const facts = await Promise.race([
+        const { parsed: facts, message } = await Promise.race([
           callClaudeWithRetry({
             model: MODELS.SMART,
             max_tokens: maxTokens,
             tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }],
             system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
             messages: [{ role: 'user', content: userPrompt }],
-          }, { label }),
+          }, { label, returnMessage: true }),
           // Nothing is waiting on this, so the bound only stops a hung search
           // from pinning the in-flight slot forever.
           new Promise((_, reject) => {
             timer = setTimeout(() => reject(new Error(`grounding exceeded ${timeoutMs}ms`)), timeoutMs);
           }),
         ]);
+        const searchResults = extractSearchResults(message);
         // render may be async, and may return either a plain string (every
         // consumer before venues.js) or { block, data } when it has structure
         // worth keeping — opening hours and coordinates are not prose and
-        // should not have to be re-parsed out of a prompt.
-        const rendered = await render(stripCites(facts));
+        // should not have to be re-parsed out of a prompt. `searchResults` is
+        // every page web_search actually retrieved (real URLs, not model
+        // self-report) — passed alongside so a render fn can cross-check a
+        // claimed source against what was really found before treating it as
+        // verified. Usually far more results than are relevant to any one
+        // claim (a lease-law search alone returns dozens); it's on the render
+        // fn to filter down to what actually supports its own facts, not to
+        // surface the raw list.
+        const rendered = await render(stripCites(facts), searchResults);
         const block = (typeof rendered === 'string' ? rendered : rendered && rendered.block) || '';
         const data = (rendered && typeof rendered === 'object' && rendered.data) || null;
         store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS, data);

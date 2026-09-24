@@ -439,14 +439,21 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       // identical to before.
       const textContent = message.content.filter(item => item.type === 'text').map(item => item.text).join('');
       const cleaned = cleanJsonResponse(textContent);
+      let parsed;
       try {
-        return JSON.parse(cleaned);
+        parsed = JSON.parse(cleaned);
       } catch (_primaryErr) {
         // Second attempt with the more aggressive (non-string-aware) repairs —
         // see repairMalformedJson. A genuinely malformed response fails both
         // and falls through to the retry loop below as before.
-        return JSON.parse(repairMalformedJson(cleaned));
+        parsed = JSON.parse(repairMalformedJson(cleaned));
       }
+      // options.returnMessage: an opt-in escape hatch for callers that need
+      // more than the parsed JSON — currently just lib/groundedFacts.js,
+      // which extracts real citation URLs the web_search tool actually
+      // visited (see extractCitations below). Every other caller is
+      // unaffected: the default stays the bare parsed object.
+      return options.returnMessage ? { parsed, message } : parsed;
     } catch (err) {
       // Complete response but unparseable JSON — uncommon model variance; a retry may help.
       lastError = err;
@@ -462,6 +469,37 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
   // not one refused attempt, is the unit the health signal counts.
   noteApiOutcome(lastError);
   throw new Error(`[${label}] All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`);
+}
+
+/**
+ * Real pages a web_search-enabled call actually retrieved — read from the raw
+ * `web_search_tool_result` blocks, not from the API's per-sentence `citations`
+ * annotation. Tried citations first (2026-09-24): when a call is forced into
+ * "return ONLY JSON, no preamble" mode — every JSON-schema tool call in this
+ * codebase — Claude does not attach `citations` to the JSON text block, even
+ * after real searches ran; verified live, zero citations on five real
+ * lease-trap-detector searches. The search-result blocks are populated
+ * regardless of output mode, so that's the real signal: not "this exact
+ * sentence is proven by this source" but "these pages were actually
+ * retrieved" — enough to confirm a claimed source isn't invented (see
+ * groundedFacts.js render callers, which cross-check a model-claimed domain
+ * against this list before treating it as verified).
+ * Empty array when the call didn't use web_search, found nothing, or every
+ * search errored. Deduped by URL, first-seen order.
+ */
+function extractSearchResults(message) {
+  const seen = new Set();
+  const out = [];
+  for (const item of (message && message.content) || []) {
+    if (item.type !== 'web_search_tool_result' || !Array.isArray(item.content)) continue; // non-array `content` is the tool's own error shape
+    for (const result of item.content) {
+      const url = result && result.url;
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      out.push({ url, title: result.title || url });
+    }
+  }
+  return out;
 }
 
 /**
@@ -630,4 +668,4 @@ important limitation, and one useful thing to watch next is often enough.`;
 
 function getModelStatus() { return _modelStatus; }
 
-module.exports = { anthropic, classifyApiError, noteApiOutcome, getApiBlock, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, SMALL_SAMPLE_PATTERN_DISCIPLINE, MODELS, ALL_MODELS };
+module.exports = { anthropic, classifyApiError, noteApiOutcome, getApiBlock, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, extractSearchResults, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, SMALL_SAMPLE_PATTERN_DISCIPLINE, MODELS, ALL_MODELS };
