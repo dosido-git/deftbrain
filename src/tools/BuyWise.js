@@ -1170,7 +1170,16 @@ const BuyWise = ({ tool }) => {
               {r.verified_facts.map((f, i) => (
                 <li key={i} className={`text-xs ${c.textSecondary}`}>
                   <span>{f.detail}</span>
-                  {f.source && <span className={`block ${c.textMuted} mt-0.5`}>{t('bw_verified_source')} {f.source}</span>}
+                  {/* f.url is only present when the claimed source domain
+                      matched a page web_search actually retrieved
+                      (attachSourceUrls, lib/groundedFacts.js) — real
+                      citation when it's there, same plain-text domain as
+                      before when it isn't. */}
+                  {f.source && (f.url ? (
+                    <a href={f.url} target="_blank" rel="noopener noreferrer" className={`block mt-0.5 ${linkStyle}`}>{t('bw_verified_source')} {f.source} ↗</a>
+                  ) : (
+                    <span className={`block ${c.textMuted} mt-0.5`}>{t('bw_verified_source')} {f.source}</span>
+                  ))}
                 </li>
               ))}
             </ul>

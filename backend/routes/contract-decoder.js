@@ -4,7 +4,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 const { runOutputGuard } = require('../lib/outputGuard');
 
 router.outputStandard = 'v2';
@@ -236,17 +236,24 @@ Rules:
     }
 
     let verifiedLawBlock = '';
+    let contractLawCacheKey = null;
     if (jurisdiction?.trim() && first.legal_questions.length) {
       const topics = first.legal_questions.map(q => q.topic).join('; ');
+      contractLawCacheKey = `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(topics)}`;
       const facts = await groundedFacts({
-        cacheKey: `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(topics)}`,
+        cacheKey: contractLawCacheKey,
         label: 'contract-decoder-v2-targeted-law',
-        userPrompt: `Verify only the following current legal questions for ${jurisdiction.trim()} as of today, because they were raised by terms actually present in a contract: ${first.legal_questions.map(q => `${q.topic} — ${q.why_relevant}`).join(' | ')}. Use authoritative government, statutory, regulatory, or court sources where available. Skip any proposition you cannot verify. Do not add unrelated contract-law rules.\n\nReturn ONLY valid JSON:\n{ "verified": [{ "topic": "topic", "rule": "narrow verified rule", "authority": "statute/regulation/case or official source", "effective": "effective date if material and known", "source": "source domain" }] }`,
-        render: (cleanFacts) => {
+        userPrompt: `Verify only the following current legal questions for ${jurisdiction.trim()} as of today, because they were raised by terms actually present in a contract: ${first.legal_questions.map(q => `${q.topic} — ${q.why_relevant}`).join(' | ')}. Use authoritative government, statutory, regulatory, or court sources where available. Skip any proposition you cannot verify. Do not add unrelated contract-law rules.\n\nReturn ONLY valid JSON:\n{ "verified": [{ "topic": "topic", "rule": "narrow verified rule", "authority": "statute/regulation/case or official source", "effective": "effective date if material and known", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official government/statutory/court domain when the search found one." }] }`,
+        // See matchVerifiedSources (lib/groundedFacts.js): a fact only gets a
+        // visible citation when its claimed domain matches a page web_search
+        // actually retrieved — the model's own domain self-report isn't
+        // independently trustworthy on its own.
+        render: (cleanFacts, searchResults) => {
           if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
-          return cleanFacts.verified.map(f =>
+          const block = cleanFacts.verified.map(f =>
             `- ${f.topic}: ${f.rule} (${f.authority}${f.effective ? `; ${f.effective}` : ''}; source: ${f.source})`
           ).join('\n');
+          return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
         },
       });
       verifiedLawBlock = facts || '';
@@ -352,11 +359,13 @@ THREE MORE, and they are the ones that survive the phrasing rule:
       console.error('[contract-decoder] v2 guard skipped:', guardErr.message);
     }
 
+    const verifiedSources = contractLawCacheKey ? groundedData(contractLawCacheKey)?.sources : null;
     res.json(stripCites({
       summary: final.summary,
       important_terms: final.important_terms,
       things_to_clarify: final.things_to_clarify,
       before_you_sign: final.before_you_sign,
+      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
     }));
   } catch (err) {
     console.error('[contract-decoder] Error:', err.message);

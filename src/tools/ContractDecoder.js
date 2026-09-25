@@ -441,6 +441,24 @@ function ContractDecoder({ tool }) {
             </ul>
           </div>
         )}
+
+        {/* Verified sources — real pages web_search actually visited for the
+            jurisdiction-specific legal questions above (lib/groundedFacts.js),
+            not a model-recalled domain name. Absent, not empty, when no
+            legal_questions were raised or nothing was cited — see
+            contract-decoder.js. */}
+        {results.verified_sources?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔎 {t('cd_verified_sources_header')}</p>
+            <div className="space-y-2">
+              {results.verified_sources.map((src, i) => (
+                <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                  {src.title} ↗
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };

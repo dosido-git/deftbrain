@@ -3,7 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites, attachSourceUrls } = require('../lib/groundedFacts');
 
 // ════════════════════════════════════════════════════════════
 // GROUNDING — the only part of this tool that knows anything current
@@ -44,7 +44,13 @@ Skip anything you cannot confirm. Do not infer, do not fill gaps from memory, an
 
 Return ONLY valid JSON:
 { "verified": [{ "kind": "price | status | warranty | issue", "detail": "What you found, one sentence, with the figure or term where there is one", "source": "The domain you saw it on" }] }`,
-    render: (clean) => ({ block: renderFactsBlock(clean.verified), data: clean.verified }),
+    // attachSourceUrls (lib/groundedFacts.js) cross-checks each item's
+    // claimed `source` domain against a page web_search actually retrieved
+    // before attaching a clickable `url` — the domain alone is the model's
+    // own self-report, not independently trustworthy (NO_BORROWED CERTAINTY).
+    // Unmatched items pass through with no `url`, so the existing plain-text
+    // "Verified via: {source}" display keeps working unchanged for those.
+    render: (clean, searchResults) => ({ block: renderFactsBlock(clean.verified), data: attachSourceUrls(clean.verified, searchResults) }),
   });
 }
 

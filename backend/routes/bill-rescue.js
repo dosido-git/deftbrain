@@ -3,7 +3,7 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
@@ -123,22 +123,27 @@ async function createParseRetry(params, attempts = 3) {
 // user's region in one small bounded web-search call, so the main call can
 // stay ungrounded. Best-effort — returns '' on any failure.
 async function groundBillRescueFacts({ userRegion, userLocale, billType }) {
-  return groundedFacts({
-    cacheKey: `bill-facts:${normalizeKeyPart(userRegion || userLocale || 'US')}:${normalizeKeyPart(billType)}`,
+  const cacheKey = `bill-facts:${normalizeKeyPart(userRegion || userLocale || 'US')}:${normalizeKeyPart(billType)}`;
+  const block = await groundedFacts({
+    cacheKey,
     label: 'bill-rescue-facts',
     userPrompt: `Verify with web_search, as of today, for region "${userRegion || userLocale || 'US'}" and bill type "${billType}":
 (1) the key consumer/patient billing-protection law (name + what it guarantees), (2) one or two REAL assistance programs (official name + how to reach them — only if you can verify they exist and serve this region). Skip anything you cannot verify.
 
 Return ONLY valid JSON:
-{ "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "Domain verified against" }] }`,
-    render: (cleanFacts) => {
-      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-        return `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
-          cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
-      }
-      return '';
+{ "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official government/regulator domain when the search found one." }] }`,
+    // See matchVerifiedSources (lib/groundedFacts.js): a fact only gets a
+    // visible citation when its claimed domain matches a page web_search
+    // actually retrieved — the model's own domain self-report isn't
+    // independently trustworthy on its own.
+    render: (cleanFacts, searchResults) => {
+      if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
+      const block = `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
+        cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
+      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
     },
   });
+  return { block, cacheKey };
 }
 
 router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -363,7 +368,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     // responses interleave; the old local createParseRetry read only the first.
     // The grounded VERIFIED CURRENT FACTS block (+ its override rule in the
     // shared PERSONALITY system text) must reach BOTH split calls.
-    const verifiedFactsBlock = await groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType });
+    const { block: verifiedFactsBlock, cacheKey: billFactsCacheKey } = await groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType });
     const contentFor = (promptText) => [
       ...imageBlocks,
       { type: 'text', text: promptText + (verifiedFactsBlock || '') },
@@ -397,7 +402,11 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
-    res.json(stripCites(parsed));
+    const verifiedSources = groundedData(billFactsCacheKey)?.sources;
+    res.json({
+      ...stripCites(parsed),
+      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+    });
 
   } catch (error) {
     console.error('BillRescue error:', error);

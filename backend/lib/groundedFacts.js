@@ -114,6 +114,55 @@ function stripCites(val) {
   return val;
 }
 
+// Cross-checks a claimed source domain against pages web_search ACTUALLY
+// retrieved, so a visible citation is confirmed real rather than trusted from
+// the model's own recollection — the same class of claim NO_BORROWED
+// CERTAINTY exists to catch (see extractSearchResults in lib/claude.js).
+// A claimed domain with no matching result is dropped, not linked anyway.
+//
+// `items` is any array of objects with a `.source` field naming the domain
+// the model says it verified against — the schema every groundedFacts()
+// consumer in this codebase already uses for that field. Despite the schema
+// asking for ONE bare domain, the model sometimes lists several
+// ("law.justia.com; nolo.com") or adds a parenthetical ("recordinglaw.com
+// (July 2026)") — verified live, 2026-09-24 (lease-trap-detector) — so this
+// pulls every domain-shaped token out of the field rather than trusting its
+// exact format, and takes the first one (in the item's own listed order)
+// that matches a real result.
+//
+// Returns a deduped list of {url, title}, in the order items appear —
+// callers cap it further if they want (most tools produce well under 10).
+function matchVerifiedSources(items, searchResults) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items || []) {
+    const match = findVerifiedSource(item, searchResults);
+    if (match && !seen.has(match.url)) { seen.add(match.url); out.push(match); }
+  }
+  return out;
+}
+
+// Same cross-check as matchVerifiedSources, but for a caller that already
+// shows each item individually (BuyWise's verified_facts list) and wants a
+// clickable link on the ones that check out, in place, rather than a
+// separate combined list. Unmatched items pass through unchanged — no `url`
+// field — so a frontend that falls back to plain text when `url` is absent
+// keeps working exactly as it did before this existed.
+function attachSourceUrls(items, searchResults) {
+  return (items || []).map(item => {
+    const match = findVerifiedSource(item, searchResults);
+    return match ? { ...item, url: match.url } : item;
+  });
+}
+
+function findVerifiedSource(item, searchResults) {
+  const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
+  const domainsIn = (s) => [...String(s || '').toLowerCase().matchAll(/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/g)].map(m => m[0].replace(/^www\./, ''));
+  const isMatch = (url, domain) => { const host = hostnameOf(url); return host === domain || host.endsWith(`.${domain}`); };
+  const claimed = domainsIn(item && item.source).find(d => searchResults.some(r => isMatch(r.url, d)));
+  return claimed ? searchResults.find(r => isMatch(r.url, claimed)) : undefined;
+}
+
 // Normalize free-text jurisdiction input ("Berlin, Deutschland ") into a stable
 // cache key part.
 //
@@ -300,4 +349,4 @@ function groundedData(cacheKey) {
   return (hit && hit.data) || null;
 }
 
-module.exports = { groundedFacts, groundedData, groundedStatus, normalizeKeyPart, stripCites };
+module.exports = { groundedFacts, groundedData, groundedStatus, normalizeKeyPart, stripCites, matchVerifiedSources, attachSourceUrls };

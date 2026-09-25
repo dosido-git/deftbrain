@@ -1385,6 +1385,22 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
+            {/* Verified sources — real pages web_search actually visited for
+                the billing-protection law/programs above (lib/groundedFacts.js),
+                not a model-recalled domain name. Absent, not empty, when the
+                pre-pass didn't run or cited nothing — see bill-rescue.js. */}
+            {r.verified_sources?.length > 0 && (
+              <Section icon="🔎" title={t('br_verified_sources_header')} c={c}>
+                <div className="space-y-2">
+                  {r.verified_sources.map((src, i) => (
+                    <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                      {src.title} ↗
+                    </a>
+                  ))}
+                </div>
+              </Section>
+            )}
+
             {/* Worst case */}
             {r.worst_case && (
               <Section icon="⚠️" title={t('br_sec_worst_case')} c={c}>

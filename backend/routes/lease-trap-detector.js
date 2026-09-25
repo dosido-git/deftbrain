@@ -3,7 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted clause text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
 
@@ -39,43 +39,15 @@ Return ONLY valid JSON:
     // `searchResults` is every page web_search actually retrieved (real URLs
     // — see claude.js's extractSearchResults), typically two dozen+ across 5
     // topic searches, most of it SEO/blog content the model never relied on.
-    // f.source (a bare domain the model claims it verified against, e.g.
-    // "cityofnewyork.us") is NOT independently trustworthy on its own — it's
-    // the model's own recollection, the same kind of claim NO_BORROWED
-    // CERTAINTY exists to catch. So a fact only gets a visible citation when
-    // its claimed domain matches a page that was ACTUALLY retrieved — that
-    // cross-check is what makes the link real rather than decorative, and a
-    // claimed domain with no matching result gets no link at all rather than
-    // one manufactured from the domain name.
+    // matchVerifiedSources (lib/groundedFacts.js) cross-checks each fact's
+    // claimed `source` domain against that list before treating it as a real,
+    // linkable citation — a claimed domain with no matching result gets no
+    // link at all rather than one manufactured from the domain name.
     render: (cleanFacts, searchResults) => {
       if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
       const block = `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
         cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
-      const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
-      // Despite the schema asking for ONE bare domain, the model sometimes
-      // lists several candidates ("law.justia.com; nolo.com") or tacks on a
-      // parenthetical ("recordinglaw.com (July 2026)") — verified live,
-      // 2026-09-24. Pull every domain-shaped token out of the field instead
-      // of trusting its exact format, and take the first one that matches a
-      // real result.
-      const domainsIn = (s) => [...String(s || '').toLowerCase().matchAll(/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/g)].map(m => m[0].replace(/^www\./, ''));
-      const seen = new Set();
-      const sources = [];
-      for (const f of cleanFacts.verified) {
-        const claimed = domainsIn(f.source).find(claimedDomain =>
-          searchResults.some(r => {
-            const host = hostnameOf(r.url);
-            return host === claimedDomain || host.endsWith(`.${claimedDomain}`);
-          })
-        );
-        if (!claimed) continue;
-        const match = searchResults.find(r => {
-          const host = hostnameOf(r.url);
-          return host === claimed || host.endsWith(`.${claimed}`);
-        });
-        if (match && !seen.has(match.url)) { seen.add(match.url); sources.push(match); }
-      }
-      return { block, data: { sources } };
+      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
     },
   });
   return { block, cacheKey };

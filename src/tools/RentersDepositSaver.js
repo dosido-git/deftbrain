@@ -1520,6 +1520,23 @@ const RentersDepositSaver = ({ tool }) => {
             </div>
           ) : null}
 
+          {/* Verified sources — real pages web_search actually visited for the
+              deposit law above (lib/groundedFacts.js), not a model-recalled
+              domain name. Absent, not empty, when the pre-pass didn't run or
+              cited nothing — see renters-deposit-saver.js. */}
+          {results.verified_sources?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-5`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔎 {t('rds_verified_sources_header')}</p>
+              <div className="space-y-2">
+                {results.verified_sources.map((src, i) => (
+                  <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                    {src.title} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Cross-references */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('rds_related')}</p>

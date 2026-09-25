@@ -3,7 +3,7 @@ const router = express.Router();
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted statute names or checklist notes must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -12,25 +12,30 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // goes stale (2026-07-23 probe: /stream confidently called an illegal CA
 // 2-month deposit "the legal maximum" — AB 12 capped it at 1 month in 2024).
 async function groundDepositLawFacts({ location }) {
-  return groundedFacts({
-    cacheKey: `deposit-law:${normalizeKeyPart(location)}`,
+  const cacheKey = `deposit-law:${normalizeKeyPart(location)}`;
+  const block = await groundedFacts({
+    cacheKey,
     label: 'renters-deposit-saver-facts',
     userPrompt: `Verify with web_search the CURRENT security-deposit rules (as of today) for residential tenants in: ${location}.
 
 Cover ONLY: (1) maximum deposit amount, (2) return deadline after move-out, (3) itemization requirement, (4) interest on deposit, (5) penalties for landlord non-compliance. Skip any you cannot verify. Note the effective date of any rule that changed since 2023.
 
 Return ONLY valid JSON:
-{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | itemization | interest | penalties", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | itemization | interest | penalties", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official legislature/court/regulator/government domain when the search found one." }] }
 
 ${NO_QUOTE_RULE}`,
-    render: (cleanFacts) => {
-      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-        return `\n\nVERIFIED CURRENT DEPOSIT LAW (web-checked today for ${cleanFacts.jurisdiction || location}) — these figures OVERRIDE your training knowledge; use them verbatim:\n` +
-          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
-      }
-      return '';
+    // See matchVerifiedSources (lib/groundedFacts.js): a fact only gets a
+    // visible citation when its claimed domain matches a page web_search
+    // actually retrieved — the model's own domain self-report isn't
+    // independently trustworthy on its own.
+    render: (cleanFacts, searchResults) => {
+      if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
+      const block = `\n\nVERIFIED CURRENT DEPOSIT LAW (web-checked today for ${cleanFacts.jurisdiction || location}) — these figures OVERRIDE your training knowledge; use them verbatim:\n` +
+        cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
     },
   });
+  return { block, cacheKey };
 }
 
 /**
@@ -152,7 +157,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
       return `${room.room}:\n${items}`;
     }).join('\n\n');
 
-    const depositLawBlock = await groundDepositLawFacts({ location });
+    const { block: depositLawBlock, cacheKey: depositLawCacheKey } = await groundDepositLawFacts({ location });
     const staleness = 'DEPOSIT LAW CURRENCY: deposit caps and deadlines changed in several jurisdictions after 2023 — state a cap or deadline only together with its effective date; if you are not certain a figure is current, advise the tenant to verify it rather than presenting it as the legal maximum.';
 
     const ctx = `Address: ${fullAddress}\nMove-In Date: ${moveInDate}\nLocation/Jurisdiction: ${location}\nSecurity Deposit: ${depositLine}\nLandlord: ${landlordLine}${depositLawBlock}\n\n${staleness}`;
@@ -234,6 +239,11 @@ Return ONLY valid JSON with exactly this key (use \\n for line breaks, no markdo
       });
 
     await Promise.all([p1, p2, p3]);
+    // Real sources (API-verified, not model-recalled) for the deposit-law
+    // facts folded into ctx above — sent as its own section, same as every
+    // other stream group, only when the pre-pass actually cited something.
+    const verifiedSources = groundedData(depositLawCacheKey)?.sources;
+    if (verifiedSources && verifiedSources.length) sendEvent({ section: 'verified_sources', content: verifiedSources });
     sendEvent({ done: true });
     res.end();
 
