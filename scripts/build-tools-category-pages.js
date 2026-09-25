@@ -147,7 +147,12 @@ function renderHead({ title, description, canonicalPath }) {
     .tcp-card{display:block;background:#fff;border:1px solid #e5ded4;border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 2px 10px rgba(30,42,58,.035);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
     .tcp-card:hover{transform:translateY(-3px);border-color:#cfc3b3;box-shadow:0 12px 28px rgba(30,42,58,.10)}
     .tcp-card-image-wrap{aspect-ratio:640/566;background:#e9e2d8;overflow:hidden}
-    .tcp-card-image{display:block;width:100%;height:100%;object-fit:cover}
+    .tcp-card-image{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+    /* Art zooms inside its frame on hover — hover-capable pointers only (a tap
+       on touch would leave it stuck zoomed), and off under reduced motion.
+       Twin of AllToolsPage.css's .at-card-image rule; keep them in step. */
+    @media(hover:hover){.tcp-card:hover .tcp-card-image{transform:scale(1.05)}}
+    @media(prefers-reduced-motion:reduce){.tcp-card,.tcp-card-image{transition:none!important}.tcp-card:hover .tcp-card-image{transform:none}}
     .tcp-card-fallback{height:100%;display:grid;place-items:center;background:linear-gradient(145deg,#e7edf3,#f2e8da)}
     .tcp-card-fallback span{font-size:48px;filter:grayscale(.25)}
     .tcp-card-copy{padding:15px 16px 17px;min-height:108px}

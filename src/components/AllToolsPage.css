@@ -81,7 +81,10 @@
 .at-card:hover{transform:translateY(-3px);border-color:#cfc3b3;box-shadow:0 12px 28px rgba(30,42,58,.10)}
 .at-card-image-wrap{aspect-ratio:640/566;background:#e9e2d8;overflow:hidden}
 .at-card-image{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
-.at-card:hover .at-card-image{transform:scale(1.025)}
+/* Art zooms inside its frame — hover-capable pointers only (a tap on touch
+   would leave it stuck zoomed). Twin of the /tools/{slug} category pages'
+   .tcp-card-image rule in scripts/build-tools-category-pages.js. */
+@media(hover:hover){.at-card:hover .at-card-image{transform:scale(1.05)}}
 .at-card-fallback{height:100%;display:grid;place-items:center;background:linear-gradient(145deg,#e7edf3,#f2e8da)}
 .at-card-fallback span{font-size:48px;filter:grayscale(.25)}
 .at-card-copy{padding:15px 16px 17px;min-height:108px}
@@ -142,4 +145,5 @@
 }
 @media(prefers-reduced-motion:reduce){
   .at-card,.at-card-image,.at-arrow{transition:none!important}
+  .at-card:hover .at-card-image{transform:none}
 }
