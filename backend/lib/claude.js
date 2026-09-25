@@ -585,8 +585,10 @@ let _modelStatus = null;  // { at, allOk, retired:[], results:[{model, ok, retir
 async function checkModels() {
   const results = await Promise.all(ALL_MODELS.map(async (model) => {
     try {
-      // Raw client (skip the date-injection wrapper — irrelevant for a ping).
-      await _messagesCreate({ model, max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] });
+      // Truly raw client — skip BOTH wrappers. _messagesCreate still runs the
+      // epistemics wrapper, which injected a ~4k-token system prompt into every
+      // ping (3 models × every 10 min, uncached). A ping only needs 'hi'.
+      await _rawMessagesCreate({ model, max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] });
       return { model, ok: true, retired: false };
     } catch (err) {
       const status = err && err.status;
