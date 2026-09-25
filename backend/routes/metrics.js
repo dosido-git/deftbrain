@@ -857,34 +857,51 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // 27 routes build the system string from all four. So a run counted as a
     // hit here might still miss in production. If even this number is small,
     // caching cannot pay, and no restructuring is worth doing.
-    const TTL_MIN = 5;
-    const runsByTool = {};
-    for (const e of events) {
-      if (e.event !== 'tool_run' || !e.at) continue;
-      const tool = (e.props && e.props.tool) || '?';
-      const ms = Date.parse(e.at);
-      if (Number.isNaN(ms)) continue;
-      (runsByTool[tool] = runsByTool[tool] || []).push(ms);
-    }
-    let cacheRuns = 0, cacheWouldHit = 0;
-    const cacheRows = Object.entries(runsByTool).map(([tool, times]) => {
-      times.sort((a, b) => a - b);
-      let hits = 0;
-      for (let i = 1; i < times.length; i++) {
-        if (times[i] - times[i - 1] <= TTL_MIN * 60 * 1000) hits++;
+    // Parameterized so the report can compare the current 5-minute ephemeral
+    // tier against Anthropic's 1-hour tier (cache_control ttl:'1h') side by
+    // side — see backend/lib/claude.js:71, which hardcodes the 5-minute
+    // default today. The 1-hour tier writes at ~2x input price instead of
+    // 1.25x (same 0.1x read rate), so it only pays off if enough real runs
+    // are spaced beyond 5 minutes but within an hour — exactly what this
+    // comparison is for, using this range's actual tool_run spacing instead
+    // of guessing.
+    function cacheViabilityFor(ttlMin) {
+      const runsByTool = {};
+      for (const e of events) {
+        if (e.event !== 'tool_run' || !e.at) continue;
+        const tool = (e.props && e.props.tool) || '?';
+        const ms = Date.parse(e.at);
+        if (Number.isNaN(ms)) continue;
+        (runsByTool[tool] = runsByTool[tool] || []).push(ms);
       }
-      cacheRuns += times.length; cacheWouldHit += hits;
-      return { tool, runs: times.length, hits };
-    }).filter(r => r.runs >= 2).sort((a, b) => b.hits - a.hits || b.runs - a.runs).slice(0, 12);
-    const cacheRate = cacheRuns ? Math.round(cacheWouldHit / cacheRuns * 100) : 0;
-    // Two hits per write to break even, so a rate under ~67% loses money.
-    const cacheVerdict = cacheRuns < 30
-      ? 'Not enough runs yet to tell — this needs a few hundred before it means anything.'
-      : cacheRate >= 67
-        ? 'Worth doing. Move the stable PERSONALITY into its own cached system block, with the language and locale directives AFTER it — today they are concatenated, so every language x locale pair is a different prefix.'
-        : 'Not worth doing yet. Below roughly 67% the cache writes cost more than the hits save, and this figure is already the optimistic one.';
-    const cacheTable = cacheRows.map(r =>
-      `<tr><td>${escH(r.tool)}</td><td>${r.runs}</td><td>${r.hits}</td><td>${pct(r.hits, r.runs)}</td></tr>`).join('');
+      let runs = 0, wouldHit = 0;
+      const rows = Object.entries(runsByTool).map(([tool, times]) => {
+        times.sort((a, b) => a - b);
+        let hits = 0;
+        for (let i = 1; i < times.length; i++) {
+          if (times[i] - times[i - 1] <= ttlMin * 60 * 1000) hits++;
+        }
+        runs += times.length; wouldHit += hits;
+        return { tool, runs: times.length, hits };
+      }).filter(r => r.runs >= 2).sort((a, b) => b.hits - a.hits || b.runs - a.runs).slice(0, 12);
+      const rate = runs ? Math.round(wouldHit / runs * 100) : 0;
+      // Two hits per write to break even at the 5-minute tier's 1.25x write
+      // cost. The 1-hour tier's write costs more (~2x), so its own break-even
+      // sits higher — roughly 91% (2 / (2 + 0.1*2) hit-per-write territory,
+      // i.e. needing closer to 20 reads per write) rather than 67%. Both
+      // thresholds are shown so neither tier's verdict borrows the other's bar.
+      const breakEven = ttlMin <= 5 ? 67 : 91;
+      const verdict = runs < 30
+        ? 'Not enough runs yet to tell — this needs a few hundred before it means anything.'
+        : rate >= breakEven
+          ? `Worth it at this TTL (above the ~${breakEven}% break-even for its write cost).`
+          : `Not worth it at this TTL — below the ~${breakEven}% break-even, cache writes would cost more than the hits save, and this is already the optimistic figure.`;
+      const table = rows.map(r =>
+        `<tr><td>${escH(r.tool)}</td><td>${r.runs}</td><td>${r.hits}</td><td>${pct(r.hits, r.runs)}</td></tr>`).join('');
+      return { runs, wouldHit, rate, verdict, table };
+    }
+    const cache5 = cacheViabilityFor(5);
+    const cache60 = cacheViabilityFor(60);
 
     // ── Second tool visited ──────────────────────────────────────────
     // One row per FIRST tool of a session, listing where people went next.
@@ -1305,10 +1322,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
     <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
-    <h2>Prompt-cache viability</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token; a hit costs 0.1x — so a prompt prefix needs roughly <b>two hits per write</b> before caching saves money. This counts a run as a would-be hit when the same tool ran again within ${TTL_MIN} minutes. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further.</p>
-    <p style="font-size:13px;margin:0 0 8px"><b>${cacheWouldHit} of ${cacheRuns} runs</b> (${cacheRate}%) would have hit a warm cache. ${escH(cacheVerdict)}</p>
-    <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cacheTable || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
+    <h2>Prompt-cache viability — 5-minute (current) vs. 1-hour TTL</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token at the 5-minute tier, ~2x at the 1-hour tier; a hit costs 0.1x either way. This counts a run as a would-be hit when the same tool ran again within the TTL. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further — treat these as an upper bound on what switching could achieve, not a guarantee.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <p style="font-size:13px;margin:0 0 6px"><b>5 min (live today):</b> <b>${cache5.wouldHit} of ${cache5.runs} runs</b> (${cache5.rate}%) would have hit. ${escH(cache5.verdict)}</p>
+        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache5.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
+      </div>
+      <div style="flex:1;min-width:280px">
+        <p style="font-size:13px;margin:0 0 6px"><b>1 hour (hypothetical):</b> <b>${cache60.wouldHit} of ${cache60.runs} runs</b> (${cache60.rate}%) would have hit. ${escH(cache60.verdict)}</p>
+        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache60.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
+      </div>
+    </div>
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
