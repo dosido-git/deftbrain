@@ -5,10 +5,10 @@
 // — never an "AI lawyer", never an outcome promise, never a manufactured case.
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext, extractSearchResults } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { stripCites } = require('../lib/groundedFacts');
+const { stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted ticket text, signage wording, or things-to-say must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -190,7 +190,7 @@ RULES:
       ? [...imageBlocks, { type: 'text', text: investigatorPrompt }]
       : investigatorPrompt;
 
-    const investigation = await callClaudeWithRetry({
+    const { parsed: investigation, message: investigatorMessage } = await callClaudeWithRetry({
       model: MODELS.SMART,
       // 2026-09-16: bumped 2600 -> 4000 after a live golden-check truncation
       // on the German quote-heavy case (stop_reason max_tokens, all 3 retries
@@ -201,9 +201,32 @@ RULES:
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
       system: withLanguage(INVESTIGATOR_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: investigatorContent }],
-    }, { label: 'ticket-tackler-investigator' });
+    }, { label: 'ticket-tackler-investigator', returnMessage: true });
 
     const researchDossier = JSON.stringify(stripCites(investigation));
+
+    // The investigator names a source per VERIFIED finding (source_name/
+    // source_url) directly in its own JSON — but that's the model's own
+    // self-report, not independently confirmed; a plausible-looking URL can
+    // be invented the same way a bare domain can (see lease-trap-detector).
+    // Cross-check each named source against pages web_search actually
+    // retrieved in THIS call before treating it as real. Unlike the other
+    // tools' groundedFacts() pre-passes, there's no cache here — every
+    // ticket's investigation is unique to that specific citation, so this
+    // runs once per request against this request's own search results.
+    //
+    // source_url, when present, gives a reliable domain directly (no need to
+    // fuzzy-extract one from a human-readable name); fall back to pulling a
+    // domain-shaped token out of source_name for a finding that named a
+    // source without a URL.
+    const ticketSearchResults = extractSearchResults(investigatorMessage);
+    const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
+    const verifiedSources = Array.isArray(investigation.findings)
+      ? matchVerifiedSources(
+          investigation.findings.map(f => ({ source: (f.source_url && hostnameOf(f.source_url)) || f.source_name })),
+          ticketSearchResults,
+        )
+      : [];
 
     const userPrompt = `${baseCasePrompt}
 
@@ -284,7 +307,10 @@ RULES:
     // headers are already sent (the heartbeat flushed them before the call) —
     // res.end, not res.json, since Express's res.json() would try to set
     // headers again and throw ERR_HTTP_HEADERS_SENT.
-    res.end(JSON.stringify(stripCites(parsed)));
+    res.end(JSON.stringify({
+      ...stripCites(parsed),
+      ...(verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+    }));
   } catch (error) {
     if (keepAlive) clearInterval(keepAlive);
     console.error('[TicketTackler]', error);

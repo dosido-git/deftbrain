@@ -3,6 +3,46 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources, stripCites } = require('../lib/groundedFacts');
+
+// Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern; see
+// lease-trap-detector.js for the rationale). The tool's core claim —
+// `is_this_standard.verdict` — was, until now, pure training-knowledge
+// recall with nothing checking it: a materially higher-stakes failure mode
+// than a stale legal figure, since it's a "don't worry, this is normal"
+// judgment about a medical decision. Keyed on the procedure name only (not
+// region): standard-of-care and alternatives are the same everywhere in a
+// way deposit law is not, so one search serves every visitor asking about
+// the same procedure regardless of where they are.
+async function groundProcedureFacts({ procedure }) {
+  const cacheKey = `procedure-facts:${normalizeKeyPart(procedure)}`;
+  const block = await groundedFacts({
+    cacheKey,
+    label: 'procedure-probe-facts',
+    system: 'You verify current medical-consensus facts with web search. Prefer major medical institutions (Mayo Clinic, Cleveland Clinic, NIH/MedlinePlus), government health agencies, and specialty medical society clinical guidelines over general health-content sites, patient blogs, or clinic marketing pages. Report only what current guidance actually supports, and skip anything you cannot verify — an empty array is a correct answer. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Verify with web_search, as of today, current medical guidance for the procedure/treatment: "${procedure.trim().slice(0, 200)}"
+
+Check, and report ONLY what current clinical guidance actually supports:
+(1) whether this is a standard, first-line recommendation for its typical indication, or whether it is often over-recommended / alternatives are typically tried first;
+(2) real alternative treatments or approaches that current guidance considers for the same condition.
+
+Skip anything you cannot confirm against a credible source. Do not infer, do not fill gaps from memory, and do not include a claim you did not see stated on a page.
+
+Return ONLY valid JSON:
+{ "verified": [{ "aspect": "standard_of_care | alternative", "finding": "What current guidance says, one sentence", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer a major medical institution, government health agency, or specialty medical society domain when the search found one." }] }`,
+    // See matchVerifiedSources (lib/groundedFacts.js): a finding only gets a
+    // visible citation when its claimed domain matches a page web_search
+    // actually retrieved — the model's own domain self-report isn't
+    // independently trustworthy on its own.
+    render: (cleanFacts, searchResults) => {
+      if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
+      const block = `\n\nCURRENT MEDICAL GUIDANCE (web-checked today) — use this where it bears on standard-of-care or alternatives; everything else stays your own reasoning under the rules above:\n` +
+        cleanFacts.verified.map(f => `- [${f.aspect}] ${f.finding} (source: ${f.source})`).join('\n');
+      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
+    },
+  });
+  return { block, cacheKey };
+}
 
 // ════════════════════════════════════════════════════════════
 // POST /procedure-probe — Procedure Probe
@@ -14,6 +54,8 @@ router.post('/procedure-probe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!procedure?.trim()) {
       return res.status(400).json({ error: 'Tell us what procedure or treatment was recommended.' });
     }
+
+    const { block: verifiedFactsBlock, cacheKey: procedureFactsCacheKey } = await groundProcedureFacts({ procedure });
 
     const systemPrompt = `You are a patient advocate and healthcare literacy coach. When someone has been recommended a medical or dental procedure, you help them understand what they're agreeing to — without replacing their doctor's advice.
 
@@ -31,6 +73,7 @@ ${scheduled === 'scheduled' ? 'ALREADY SCHEDULED: yes — this is happening, so 
   : ''}
 
 Help me be an informed patient. COST ARITHMETIC: out_of_pocket_estimate must NET OUT any stated remaining insurance benefit from covered items before quoting a number — never state an unused benefit and then quote a full-price out-of-pocket in the same breath; show the subtraction inline.
+${verifiedFactsBlock || '\n\nNo current medical guidance was verified for this procedure today — base is_this_standard and alternatives on your own knowledge, and let the verdict/explanation reflect that this was not independently checked.'}
 
 Return ONLY valid JSON:
 {
@@ -94,7 +137,11 @@ Generate AT MOST 6 questions to ask (6 is plenty). Keep every field to one conci
     if (!parsed.plain_english) {
       return res.status(500).json({ error: 'Could not analyze this procedure. Please try again.' });
     }
-    return res.json(parsed);
+    const verifiedSources = groundedData(procedureFactsCacheKey)?.sources;
+    return res.json(stripCites({
+      ...parsed,
+      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+    }));
 
   } catch (error) {
     console.error('ProcedureProbe error:', error);

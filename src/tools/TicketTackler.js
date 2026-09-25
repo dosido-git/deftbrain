@@ -488,6 +488,25 @@ const TicketTackler = ({ tool }) => {
             </div>
           ) : null}
 
+          {/* Verified sources — real pages web_search actually visited during
+              this ticket's investigation (see ticket-tackler.js), not the
+              investigator's own self-reported source name/URL. Absent, not
+              empty, when nothing named a source that checked out. */}
+          {results?.verified_sources?.length ? (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+              <h3 className={`font-bold ${c.text}`}>🔎 {t('tt_verified_sources_header')}</h3>
+              <ul className="mt-2 space-y-1.5">
+                {results.verified_sources.map((src, i) => (
+                  <li key={i} className="text-sm">
+                    <a href={src.url} target="_blank" rel="noopener noreferrer" className={`font-semibold hover:underline ${c.accentTxt}`}>
+                      {src.title} ↗
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
           {/* Evidence to get */}
           {results?.evidence_to_get?.length ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
