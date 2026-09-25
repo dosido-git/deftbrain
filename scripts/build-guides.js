@@ -24,6 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { getFooterHTML, getToolList, getToolIndexHTML } = require('../src/seo/chrome');
+const { GA_SNIPPET } = require('./lib/gaSnippet');
 
 // ── Guides keep-list (SEO concentration, 2026-07) ──
 // Mirrors the tools policy in prerender.js: every guide keeps a real, standalone
@@ -252,31 +253,7 @@ function renderGuide(spec, siblings) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) — skipped for operator/dev traffic.
-       Same db-operator flag as public/index.html and src/utils/analytics.js
-       (?operator=1 / ?operator=0). Keep both templates in sync. -->
-  <script>
-    (function () {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var op = params.get('operator');
-        if (op === '1') localStorage.setItem('db-operator', '1');
-        else if (op === '0') localStorage.removeItem('db-operator');
-        if (localStorage.getItem('db-operator') === '1') return;
-      } catch (e) {}
-
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
-      document.head.appendChild(s);
-
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-0MLY19QEW6');
-    })();
-  </script>
+  ${GA_SNIPPET}
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

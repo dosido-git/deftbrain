@@ -29,6 +29,7 @@ const fs   = require('fs');
 const path = require('path');
 const { getFooterHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
+const { GA_SNIPPET } = require('./lib/gaSnippet');
 
 const ROOT      = path.join(__dirname, '..');
 const BUILD_DIR = path.join(ROOT, 'build', 'tools');
@@ -77,15 +78,7 @@ function renderHead({ title, description, canonicalPath }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-0MLY19QEW6');
-  </script>
+  ${GA_SNIPPET}
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

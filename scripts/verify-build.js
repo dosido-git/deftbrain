@@ -144,6 +144,23 @@ if (toolCount > 0) {
   }
 }
 
+// --- GA owner/dev guard -----------------------------------------------------
+// Every built page that loads gtag must carry the hostname guard from
+// scripts/lib/gaSnippet.js — otherwise dev/preview traffic lands in Google
+// Analytics (it did, on the hub, category and privacy pages, until 2026-09-25).
+const { GA_HOST_TEST } = require('./lib/gaSnippet');
+(function walkBuiltHtml(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const abs = path.join(dir, entry.name);
+    if (entry.isDirectory()) { walkBuiltHtml(abs); continue; }
+    if (!entry.name.endsWith('.html')) continue;
+    const html = fs.readFileSync(abs, 'utf8');
+    if (html.includes('googletagmanager.com') && !html.includes(GA_HOST_TEST)) {
+      failures.push(`GA UNGUARDED: ${path.relative(ROOT, abs)} loads gtag without the gaSnippet.js host guard`);
+    }
+  }
+})(BUILD);
+
 // --- Report -----------------------------------------------------------------
 if (failures.length > 0) {
   console.error('\n❌ verify-build FAILED — postbuild chain produced incomplete artifacts:\n');

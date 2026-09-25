@@ -4,16 +4,16 @@
   "lastmod": "2026-09-24"
  },
  "static:about": {
-  "hash": "47d6fa211bc6bb29bc5418385715db8b69113c9d",
-  "lastmod": "2026-09-23"
+  "hash": "9527495ea346dc5281e9cd3e682342ac14cf4fc5",
+  "lastmod": "2026-09-25"
  },
  "static:privacy": {
-  "hash": "85dd9b07fe9eea778523db175fa10dd98aa989c4",
-  "lastmod": "2026-09-23"
+  "hash": "f30e105343b2aff74bcfe9d9604c5af94a8fe62e",
+  "lastmod": "2026-09-25"
  },
  "static:terms": {
-  "hash": "f7c5b8fa31f6d1a613a532b88cd3ff11553824b3",
-  "lastmod": "2026-09-23"
+  "hash": "f2a1c782cb6db3080015d600f655299a556dff99",
+  "lastmod": "2026-09-25"
  },
  "tool:AlternatePath": {
   "hash": "75b35de251c8bb6c23acb2e9e482f6df6aa03aae",
@@ -196,59 +196,59 @@
   "lastmod": "2026-09-22"
  },
  "category:home-daily-life": {
-  "hash": "e6364cebef563c9691ead4f3d217a925c211d8a4",
+  "hash": "1a88772fbcac02da4290001369a42ca8e666c0e4",
   "lastmod": "2026-09-25"
  },
  "category:travel-events": {
-  "hash": "095122589b037762802683a235bc886a324faed5",
+  "hash": "a7f2029796bd741580b4f6d83d5b0ca8f34cebde",
   "lastmod": "2026-09-25"
  },
  "category:relationships": {
-  "hash": "29905cc88f165a1677a9e478f0211c0462a59038",
+  "hash": "56e3b09ecdbabaec2bb62b6c78d43570b497e37d",
   "lastmod": "2026-09-25"
  },
  "category:money": {
-  "hash": "b5890e405bfbf18f64025cc322357174b20472df",
+  "hash": "4d5262037791330035055b8d14284381ddce56bd",
   "lastmod": "2026-09-25"
  },
  "category:career": {
-  "hash": "0e2a3410f02e56b21b685fbe907c1a50514a7a3c",
+  "hash": "d41198e61edb7132263404c39ff288a8acc501c9",
   "lastmod": "2026-09-25"
  },
  "category:work-meetings": {
-  "hash": "40590ef7f991b43e8cf2e4b6df8ce3d9954ad806",
+  "hash": "b703a5c7354b9383fb94dbc8d7be8fa2ce491360",
   "lastmod": "2026-09-25"
  },
  "category:health-wellness": {
-  "hash": "e7918ef95ea5c032dd26188cbe4e269091e2daf1",
+  "hash": "beaa00fff9cd3a4b84fb7bd1dddbee7d1390e243",
   "lastmod": "2026-09-25"
  },
  "category:conversations": {
-  "hash": "20020b23bef1a1015b1a06c07c8d1d433c64140b",
+  "hash": "bcae30a4b1aabb4e9a3f0be23850950edc5c3c9a",
   "lastmod": "2026-09-25"
  },
  "category:learning": {
-  "hash": "c2e43d1db0c14cc80e0f49de19c03d7978857d3f",
+  "hash": "556eeebacb94fb173da775f9162d6a42e00c6ea4",
   "lastmod": "2026-09-25"
  },
  "category:just-for-fun": {
-  "hash": "85bab1723a834e6e839cf85a8e4c0696242f3c52",
+  "hash": "b75719165b4ccf56a25e8463e1011636cf53d6ed",
   "lastmod": "2026-09-25"
  },
  "category:self-reflection": {
-  "hash": "08b39540c78ab5aad2177867f5b18011e8e18cdb",
+  "hash": "6ec03d6ce91c719590da4bd8e14a05877bff5d33",
   "lastmod": "2026-09-25"
  },
  "category:ideas-imagination": {
-  "hash": "39b494877e77828a34721799893b0386c71346da",
+  "hash": "32bc827bb6d42a765acfa9ef28d5c3777e6e7f23",
   "lastmod": "2026-09-25"
  },
  "category:decisions": {
-  "hash": "dc693f1f50b36a3675a4d0ea2b348478f2d3be66",
+  "hash": "d15496da95175aeb31700b4fd3244c062a92ab90",
   "lastmod": "2026-09-25"
  },
  "category:tasks": {
-  "hash": "12d00f5837d74f8aa675dd37c8653b77934a3cd0",
+  "hash": "4da663ec3cc971505cba9cc6abda23c49524c0ad",
   "lastmod": "2026-09-25"
  },
  "static:organizations": {

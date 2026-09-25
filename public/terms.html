@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) — skipped for operator/dev traffic.
-       Same db-operator flag as public/index.html and src/utils/analytics.js
-       (?operator=1 / ?operator=0). Keep all templates in sync. -->
+  <!-- Google tag (gtag.js) — skipped for owner/dev traffic.
+       Canonical source: scripts/lib/gaSnippet.js (see there for why). -->
   <script>
     (function () {
       try {
@@ -13,6 +12,7 @@
         else if (op === '0') localStorage.removeItem('db-operator');
         if (localStorage.getItem('db-operator') === '1') return;
       } catch (e) {}
+      if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
 
       var s = document.createElement('script');
       s.async = true;
