@@ -674,11 +674,12 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 content). */}
             <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
               <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-              {/* Rows are display:contents until lg: — sm..lg the card spans
-                  the full page width (stacked layout), so pills flow 3-4 per
-                  line instead of leaving half the card empty; lg+ (narrow
-                  side column) restores the longest/shortest pairs. */}
-              <div className="flex flex-col items-start gap-y-4 sm:flex-row sm:flex-wrap sm:gap-x-2 lg:flex-col lg:flex-nowrap">
+              {/* Rows are display:contents until lg: — below lg the card spans
+                  the full page width (stacked layout), so pills flow as many
+                  per line as fit (flex-wrap can't overlap, unlike the old
+                  fixed grid) instead of leaving the card half empty; lg+
+                  (narrow side column) restores the longest/shortest pairs. */}
+              <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-4 lg:flex-col lg:flex-nowrap">
                 {categoryRows.map(row => (
                 <div key={row[0].name} className="contents lg:flex lg:flex-row lg:flex-wrap lg:items-start lg:gap-x-2 lg:gap-y-4">
                 {row.map(cat => {
