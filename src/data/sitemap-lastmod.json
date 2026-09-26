@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "b92b2d7647078a14898be6d6a74242f23cb098cb",
-  "lastmod": "2026-09-24"
+  "hash": "54b568f83e95c5c04d7476827794674f8c7e4efc",
+  "lastmod": "2026-09-26"
  },
  "static:about": {
   "hash": "9527495ea346dc5281e9cd3e682342ac14cf4fc5",
@@ -32,8 +32,8 @@
   "lastmod": "2026-09-21"
  },
  "tool:BragSheetBuilder": {
-  "hash": "627e173d78660e557561ce34acfda9f45966737c",
-  "lastmod": "2026-09-21"
+  "hash": "67c51372c6b2338d9dddd5d7d66b8feae1fae2e5",
+  "lastmod": "2026-09-26"
  },
  "tool:ChaosPilot": {
   "hash": "c6cddcfc29d975c3a9ab8fc3179b573fa4e841cb",
@@ -44,16 +44,16 @@
   "lastmod": "2026-09-21"
  },
  "tool:ContextCollapse": {
-  "hash": "1a337263beab0c8fdfa0ddb3581f508ab45cc45f",
-  "lastmod": "2026-09-21"
+  "hash": "11b18b259cc3990b5001d8aba545f0b1b1e3a91f",
+  "lastmod": "2026-09-26"
  },
  "tool:DecoderRing": {
-  "hash": "70d6d6174b2f942c5a8366de2d3d11e088c57196",
-  "lastmod": "2026-09-24"
+  "hash": "d30179a5b928ee8282932f7f3b1392d3897443d0",
+  "lastmod": "2026-09-26"
  },
  "tool:DifficultTalkCoach": {
-  "hash": "f737b2b87f3df405deb35d4917566bf43c94cc16",
-  "lastmod": "2026-09-21"
+  "hash": "a8a24875aa1fb3d1a094b8e6724cadb22fe0dc51",
+  "lastmod": "2026-09-26"
  },
  "tool:DoctorVisitPrep": {
   "hash": "5dbe1283ee878e82e32a9de7642e392d8599106b",
