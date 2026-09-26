@@ -130,6 +130,12 @@ function saveToStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
 
+// The focus-search shortcut accepts ⌘K or Ctrl K (see the keydown handler);
+// the visible hint names the one this device's keyboard actually has.
+const SHORTCUT_LABEL = typeof navigator !== 'undefined'
+  && /Mac|iPhone|iPad|iPod/i.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '')
+  ? '⌘K' : 'Ctrl K';
+
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
@@ -516,6 +522,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 <form onSubmit={submitNavSearch} className="db-home-finder" role="search" aria-label="Find a DeftBrain tool">
                   <label htmlFor="home-tool-query">What would you like help with?</label>
                   <div className="db-home-finder-controls">
+                    <div className="db-home-finder-field">
                     <input
                       id="home-tool-query"
                       ref={navSearchRef}
@@ -526,7 +533,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                       aria-describedby="home-tool-process"
                       type="search"
                       required
+                      aria-keyshortcuts="Meta+K Control+K"
                     />
+                    {/* The ⌘K / Ctrl K shortcut (handler above) was invisible
+                        once the header search moved into the page. Shown on
+                        pointer devices only and until something is typed. */}
+                    {!navQuery && <kbd className="db-home-finder-kbd" aria-hidden="true">{SHORTCUT_LABEL}</kbd>}
+                    </div>
                     <button type="submit">Find a tool <span aria-hidden="true">→</span></button>
                   </div>
                   <p id="home-tool-process">Choose a tool <span aria-hidden="true">→</span> Answer a few questions <span aria-hidden="true">→</span> Get practical guidance</p>

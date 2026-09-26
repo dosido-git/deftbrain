@@ -30,6 +30,9 @@
 .db-home-finder { padding: 22px 24px; margin: 20px 0 0; background: #fff1e4; border: 1px solid #dfbfa0; border-radius: 14px; }
 .db-home-finder label { display: block; font-size: 22px; margin-bottom: 10px; }
 .db-home-finder-controls { display: flex; gap: 12px; }
+.db-home-finder-field { position: relative; flex: 1; min-width: 0; display: flex; }
+.db-home-finder-kbd { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; color: #655f56; background: #f6f1ea; border: 1px solid #d8cfc3; border-radius: 5px; padding: 4px 7px; display: none; }
+@media (hover: hover) and (min-width: 540px) { .db-home-finder-kbd { display: block; } .db-home-finder .db-home-finder-field input { padding-inline-end: 72px; } }
 .db-home-finder input { min-width: 0; flex: 1; width: 100%; border: 1px solid #a49b90; border-radius: 8px; padding: 13px 16px; background: #fff; color: #142a43; font: inherit; font-size: 16px; }
 .db-home-finder input::placeholder { color: #655f56; opacity: 1; }
 .db-home-finder input:focus-visible { outline: 3px solid #165b9a; outline-offset: 2px; }
