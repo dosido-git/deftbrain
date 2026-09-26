@@ -1,37 +1,74 @@
+// ============================================================
+// guides/workplace/how-to-politely-decline-a-meeting.js
+// ============================================================
+// 2026-09-26: merged with the duplicate guides/meetings/ version of this
+// guide. This URL survives (keep-list, indexed); the meetings URL 301s here
+// (backend/server.js MERGED_GUIDE_REDIRECTS). From the meetings version:
+// the title, the opening scene, "acknowledge the goal", the scripted line,
+// "decline early", and the call-to-action. From this one: warmth, the
+// better-placed colleague, and brevity.
+
 module.exports = {
   slug:          'how-to-politely-decline-a-meeting',
   category:      'workplace',
   categoryLabel: 'Workplace',
-  title:         "How to politely decline a meeting",
-  titleHtml:     "How to <em>politely decline a meeting</em>",
+
+  title:         "How to Politely Decline a Meeting (Without Looking Like You're Hiding)",
+  titleHtml:     "How to Politely Decline a Meeting <em>(Without Looking Like You're Hiding)</em>",
   shortTitle:    "Decline a meeting",
-  navTitle:      "decline a meeting",
-  description:   "Specific language for declining a meeting you should not be in — without sounding difficult, lazy, or political.",
-  deck:          "Specific language for declining a meeting you should not be in — without sounding difficult, lazy, or political.",
+  navTitle:      "How to politely decline a meeting",
+
+  description:   "Specific language for declining a meeting you shouldn't be in — without sounding difficult, lazy, or political, and without giving the organizer an easy reason to push back.",
+  deck:          "Declining is a skill, not a personality trait. Here's how to say no to a meeting in a way that keeps the relationship and that the organizer can't easily push back on.",
+
+  published:     '2026-04-28',
+  modified:      '2026-09-26',
+
   ledes: [
-    `An invite landed in your calendar. You looked at the agenda and immediately knew you should not be there. You are not the decision-maker. You are not the subject matter expert. You will not benefit from being there, and your presence will not benefit the group. But declining feels risky — it might be read as not being a team player, or not being interested, or not being collaborative. So the default is to accept, sit silently for an hour, and resent the meeting.\n\nDeclining well is a skill, and it is one of the highest-leverage skills in modern work. Done badly, it creates friction. Done well, it is barely noticed and it returns hours of your week.`,
-    `Here is how to decline a meeting you should not be in, in language that lands well.`,
+    `The invite arrived at 4:47pm. It's for tomorrow at 10am. There's no agenda, eight people on it, and you genuinely cannot think of a reason you should be there. You're not the decision-maker or the subject-matter expert, and your being there won't change the outcome. But declining feels risky — it might read as not being a team player — so you're going to accept, half-attend, multitask through it, and resent the hour.`,
+    `Saying no cleanly is mostly about giving the organizer a graceful out: a way to take you off the invite that doesn't require them to admit the meeting was unnecessary. Done well, it's barely noticed, you keep the relationship, and you get the hour back. Here's the version that works.`,
   ],
+
   steps: [
-    { name: 'Acknowledge the invite warmly', body: 'Start the response with appreciation, not deflection. \'Thanks for including me in this\' or \'Appreciate you thinking of me.\' This is sixty percent of the work. The warmth at the start signals that you are not declining out of disrespect or disengagement — you are declining out of practical considerations. People respond very differently to warm declines than to cold ones, even when the substance is identical.' },
-    { name: 'Give a specific, neutral reason', body: 'Vague reasons sound like excuses. Specific reasons sound like reality. \'I have a conflicting commitment that I cannot move\' is fine. \'I am at capacity this week and need to protect time for X\' is fine. \'I do not think I am the right person for this — Sarah would be better positioned to contribute.\' is excellent. The specific reason makes the decline feel grounded, not avoidant.' },
-    { name: 'Offer a useful alternative', body: 'If you can, offer something. Read the notes after. Send written input ahead of time. Suggest someone better suited to attend in your place. The alternative shows you are still engaged with the goal of the meeting, just not engaging through this particular meeting. This converts the decline from a refusal into a redirect, and redirects almost never create friction.' },
-    { name: 'Be brief', body: 'Long, elaborate explanations trigger suspicion. Short, clear ones trigger acceptance. A two-sentence decline lands better than a five-sentence one. The longer you explain, the more it sounds like you are justifying yourself, which signals that you think you are doing something wrong. Treat the decline as a normal calendar adjustment, not as a confession. Brevity reflects this.' },
-    { name: 'Do not over-apologize', body: 'Apology language (\'so sorry,\' \'I really wish I could,\' \'feel terrible about this\') makes the decline sound like a moral failure. It is not. Declining a meeting that does not need you is good professional judgment, not something to feel bad about. Replace apology with appreciation and information. \'Thanks for the invite — I won\'t be able to join. Happy to read the notes after if useful.\' Done.' }
+    {
+      name: "Open warmly, and name the goal — not the meeting",
+      body: "Start with appreciation, not deflection: 'Thanks for including me.' Then name what the meeting is trying to accomplish rather than your objection to it. 'I want to make sure the launch plan gets locked in this week' is a different opening than 'I don't think I need to be on this call.' The first keeps you on the same team as the organizer; the second casts you as an obstacle to what they're trying to do — which is rarely the real situation. People respond very differently to warm declines than to cold ones, even when the substance is identical.",
+    },
+    {
+      name: "Offer something in place of your attendance",
+      body: "A bare decline forces the organizer to either accept your absence or push back. A decline plus an offer makes the same point and gives them somewhere to go. Send written input ahead of time, read the notes after, or suggest someone better placed to attend — 'Sarah is closer to this and would get more out of it than I would.' The offer doesn't have to be big; it has to remove their reason to need you in the room. It turns a refusal into a redirect, and redirects almost never create friction.",
+    },
+    {
+      name: "Keep the reason short and specific",
+      body: "'I have a conflict' is a complete sentence and almost never gets pushed back on. 'I'm protecting this week for the Q3 report' works too. Vague reasons sound like excuses; specific ones sound like reality. But stop there — you don't owe a detailed explanation, and the more you explain, the more openings you give for a reschedule. A two-sentence decline lands better than a five-sentence one. Treat it as a normal calendar adjustment, not a confession.",
+    },
+    {
+      name: "Don't apologize for declining",
+      body: "'So sorry, I really wish I could' frames declining as something to feel bad about. 'Won't be able to make it — here's my input' frames it as ordinary professional judgment, which is what it is. The apology is a tell that you think you owe the organizer more than your input. You don't. Replace apology with appreciation and information, and stop.",
+    },
+    {
+      name: "Decline early, not the morning of",
+      body: "A decline at 9:55am for a 10am meeting is rude. The same words sent the day before are professional. Once you've decided you're not going, send the message — it gives the organizer time to adjust, cancel, or move on. The longer you sit on it, the more it looks like avoidance, which is the exact thing you were trying not to look like.",
+    },
   ],
+
+  callout: {
+    afterStep: 2,
+    scriptedLine: "Thanks for including me. I won't be able to make this one — but I'll send written input on the launch plan tomorrow morning so you have it before the meeting.",
+    explanation: "This covers what makes a decline land well: it's warm, it's short, it offers a contribution in place of attendance, and it removes the organizer's need to chase you. Adapt the specifics; keep the structure.",
+  },
+
   cta: {
     glyph:    '🕵️',
-    headline: "Should this be a meeting? Probably not.",
-    body:     "Justify My Meeting gives you the reasoning first — what earns the meeting, what weakens the case, and what would change the answer — then drafts the message that proposes a shorter or written version. It assumes no authority you did not tell it about, so the wording invites rather than commands.",
+    headline: "Should this be a meeting at all?",
+    body:     "Justify My Meeting gives you the argument before the script: why this verdict, what would change it, and what the meeting costs in people's time. Then it drafts the message — one that proposes a shorter or written version and keeps the relationship intact, not one that assumes you can walk away.",
     features: [
-      "Verdict (BS / borderline / legitimate) with confidence score",
-      "Specific red flags identified — and what they mean",
-      "Async alternative with exact template to propose it",
-      "Permission statement: you are not being difficult by asking"
+      "Tailored decline messages",
+      "Written alternatives to propose",
+      "Verdict: worth it, borderline, or not",
+      "Tone that invites rather than commands",
     ],
     toolId:   'JustifyMyMeeting',
     toolName: 'Justify My Meeting',
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
 };

@@ -480,7 +480,21 @@ const LEGACY_REDIRECTS = {
   '/say-it-right':               '/PronounceItRight',
   '/where-did-it-go':            '/WhereDidTheTimeGo',
 };
+// Merged guides — a duplicate folded into the surviving page. Registered
+// here (before express.static) so the removed URL 301s instead of 404ing.
+// 2026-09-26: meetings/ and workplace/ each had "How to politely decline a
+// meeting". The workplace one kept its URL (keep-list, indexed); the
+// meetings one's material (the scripted line, "decline early") merged in.
+const MERGED_GUIDE_REDIRECTS = {
+  '/guides/meetings/how-to-politely-decline-a-meeting':      '/guides/workplace/how-to-politely-decline-a-meeting',
+  '/guides/meetings/how-to-politely-decline-a-meeting.html': '/guides/workplace/how-to-politely-decline-a-meeting',
+};
+// Two loops, not one merged object: scripts/check-renames.js locates the tool
+// map by the literal `Object.entries(LEGACY_REDIRECTS)`.
 Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
+  app.get(from, (req, res) => res.redirect(301, to));
+});
+Object.entries(MERGED_GUIDE_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
 });
 
