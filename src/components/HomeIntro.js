@@ -40,7 +40,7 @@ const ROTATION = [
   { toolId:'ArgueSmarter', problem:'I think I’m right, but I want to be sure.', body:'Pressure-test your case against the strongest pushback.' },
   { toolId:'AwkwardSilenceFiller', problem:'The conversation just stalled.', body:'Get something to say that actually fits the moment.' },
   { toolId:'BatchFlow', problem:'My to-do list is a mess of unrelated tasks.', body:'Group them so your day stops fighting you.' },
-  { toolId:'BeforeHello', problem:'I have a first date, interview, or intro coming up.', body:'Get ready before you say hello.' },
+  { toolId:'BeforeHello', problem:'There’s someone in my field I’d like to know.', body:'Get ready before you say hello.' },
   { toolId:'BeforeTheCrash', problem:'I keep running myself into the ground.', body:'Learn the pattern before it happens again.' },
   { toolId:'BeliefStressTest', problem:'I’ve held this belief for years.', body:'See where it holds — and where it breaks.' },
   { toolId:'BikeMedic', problem:'Something’s wrong with my bike.', body:'Figure out what it is and what to do next.' },
