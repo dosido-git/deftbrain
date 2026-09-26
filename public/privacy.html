@@ -150,7 +150,7 @@
 <p><strong>Effective:</strong> May 1, 2026
 <strong>Last updated:</strong> September 25, 2026</p>
 <h2>The short version</h2>
-<p>DeftBrain is built to need almost nothing from you. There are no accounts, no cookies, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all — voluntary, and handled by a separate mailing service, not by us (details below). We do run a small, anonymous, first-party analytics system — corrected into this policy below, where it was previously described as not existing — but it carries no name, no account, and none of your actual words. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
+<p>DeftBrain is built to need almost nothing from you. There are no accounts, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all — voluntary, and handled by a separate mailing service, not by us (details below). We measure how the site is used in two ways: Google Analytics, which sets its own cookies, and a small, anonymous analytics system of our own — both described below, and both corrections to earlier versions of this page that said neither existed. Neither ever sees what you type into a tool. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
 <p>A handful of specific tools also talk to other services to do their job — pronunciation audio goes through ElevenLabs, social-handle availability checks ping Instagram, X, TikTok, GitHub, and YouTube, and the fake-review tool fetches a URL you paste. Each of these is described below.</p>
 <p>This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have. It is written in plain English. It is not a contract drafted to obscure things.</p>
 <h2>Who we are</h2>
@@ -170,8 +170,8 @@
 <ul>
 <li><strong>No accounts.</strong> You can&#39;t create one, and we don&#39;t want you to.</li>
 <li><strong>No required email, ever.</strong> No account to create, no email-gated downloads — nothing on the site requires an email address to use any tool. The one optional exception is the newsletter; see below.</li>
-<li><strong>No third-party analytics.</strong> No Google Analytics, no Plausible, no ad-tech pixel of any kind. We do run our own small, anonymous, first-party analytics — see the next section for exactly what that means, since an earlier version of this page said this didn&#39;t exist at all and that was wrong.</li>
-<li><strong>No cookies.</strong> We don&#39;t set any. No first-party cookies, no third-party cookies, no consent banner. There&#39;s nothing to consent to. (Our analytics uses your browser&#39;s <code>localStorage</code>/<code>sessionStorage</code> instead, for the narrow purpose described below — not a cookie, and not sent to any outside party either.)</li>
+<li><strong>No ad-tech.</strong> No advertising pixels, no retargeting, no Plausible or similar. The one outside analytics service is Google Analytics — see &quot;Google Analytics&quot; below. We also run our own small, anonymous analytics — see the next section.</li>
+<li><strong>No cookies of our own.</strong> DeftBrain itself sets none. The only cookies on the site are the ones Google Analytics sets (below). Our own analytics uses your browser&#39;s <code>localStorage</code>/<code>sessionStorage</code> instead — not a cookie, and not sent to any outside party.</li>
 <li><strong>No advertising.</strong> No ads, no retargeting pixels, no marketing partners.</li>
 <li><strong>No selling, sharing, or renting of personal information.</strong> Specifically and explicitly: we do not &quot;sell&quot; personal information as defined by California or any other US state privacy law. We have no users database to sell from.</li>
 </ul>
@@ -185,8 +185,8 @@
 <li>An approximate location — city, region, country — looked up from your IP address <em>at the moment of the request</em>, using a lookup table stored on our own server (no call to any outside service). The IP address itself is used for that one moment, to filter out bots and known cloud-hosting traffic in addition to the location lookup, and then discarded. We do not store your IP address.</li>
 <li>Your browser&#39;s language setting, the site you arrived from if you followed a link here, and which DeftBrain page you were on just before the current one.</li>
 </ul>
-<p>What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this or anything else — the coarse &quot;have I been here before&quot; flag lives in your browser&#39;s own <code>localStorage</code> and is never joined with anything else that could identify you.</p>
-<p>This data is written to a private, append-only log on our own server — never sent to Google, Meta, or any analytics vendor — and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with <code>?operator=1</code> once turns off every beacon from that browser going forward (<code>?operator=0</code> turns it back on). That mechanism exists so the operator&#39;s own visits don&#39;t skew the numbers, but it works the same way for anyone who uses it.</p>
+<p>What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this — the coarse &quot;have I been here before&quot; flag lives in your browser&#39;s own <code>localStorage</code> and is never joined with anything else that could identify you.</p>
+<p>This data is written to a private, append-only log on our own server — never sent to Google, Meta, or any analytics vendor — and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with <code>?operator=1</code> once turns off every beacon from that browser going forward — and stops Google Analytics loading in it too (<code>?operator=0</code> turns both back on). That mechanism exists so the operator&#39;s own visits don&#39;t skew the numbers, but it works the same way for anyone who uses it.</p>
 <h2>Feedback and tool ideas you submit voluntarily</h2>
 <p>Two things on this site work differently from a tool&#39;s input and output, and <strong>are</strong> stored: if you answer &quot;was this helpful?&quot; and add an optional comment, or use the &quot;no tool for your problem? describe it&quot; form, what you write is saved to the same private log described above — because the entire point of both is for the operator to read them. Neither is anonymized beyond whatever you choose to leave out, so treat both boxes the way you&#39;d treat an email to a stranger: useful to send, not the place to put anything you wouldn&#39;t want kept.</p>
 <h2>The newsletter, if you sign up</h2>
@@ -194,7 +194,7 @@
 <p>Signing up sends your email address — and, for spam-filtering purposes, your IP address at that moment — to Buttondown, the email service that actually sends the newsletter, not to us. We keep only the fact that a subscription happened and which page it came from, never the address itself. Buttondown handles the confirmation email (double opt-in — nothing is sent until you confirm) and the one-click unsubscribe link in every issue that follows.</p>
 <p>If you never sign up, none of this applies to you.</p>
 <h2>Third parties involved when you use DeftBrain</h2>
-<p>Three companies are reliably part of any tool you use:</p>
+<p>Four companies are reliably involved when you visit DeftBrain:</p>
 <h3>Anthropic</h3>
 <p>Our tools are powered by Anthropic&#39;s Claude API. Whatever you type into a tool is sent to Anthropic so Claude can generate a response. Under Anthropic&#39;s standard commercial API terms — which is what we use:</p>
 <ul>
@@ -208,6 +208,10 @@
 <p>Railway&#39;s privacy policy: <a href="https://railway.com/legal/privacy">https://railway.com/legal/privacy</a></p>
 <h3>Fastly</h3>
 <p>Railway delivers traffic through Fastly&#39;s CDN. Fastly may briefly process your IP and request data to serve cached pages efficiently. They are a sub-processor of Railway under Railway&#39;s DPA.</p>
+<h3>Google Analytics</h3>
+<p>Every page loads Google Analytics, which tells us in aggregate how people find and move around the site: pages viewed, how they arrived, approximate location, and device and browser type. To recognize a returning browser it sets its own cookies (named <code>_ga</code> and <code>_ga_…</code>). Google receives your IP address and standard browser information to do this, and handles that data under its own privacy policy: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></p>
+<p>Google Analytics never receives anything you type into a tool. You can block it with Google&#39;s own opt-out add-on (<a href="https://tools.google.com/dlpage/gaoptout">https://tools.google.com/dlpage/gaoptout</a>), with most content blockers, or with the <code>?operator=1</code> switch described above.</p>
+<p>An earlier version of this page said DeftBrain used no Google Analytics and set no cookies. That was wrong, and this section corrects it.</p>
 <h2>Per-tool third-party calls</h2>
 <p>A few specific tools make additional outbound requests to do their job. They are disclosed individually:</p>
 <ul>

@@ -782,7 +782,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             Is my information safe?
             <Caret groupOpen className="ms-auto" />
           </summary>
-          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>Nothing you type into a tool is stored on our servers. No accounts, no cookies. <a href="/privacy" className="!no-underline hover:!underline underline-offset-2 font-semibold" style={{color:NAVY}}>Read the privacy policy →</a></p>
+          <p className="mt-2 text-[11.5px] leading-relaxed" style={{color:MUTED}}>Nothing you type into a tool is stored on our servers. No accounts. The only cookies are Google Analytics’, which never see what you type. <a href="/privacy" className="!no-underline hover:!underline underline-offset-2 font-semibold" style={{color:NAVY}}>Read the privacy policy →</a></p>
         </details>
         <details className="group py-3">
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 text-[13px] font-semibold" style={{color:NAVY}}>
