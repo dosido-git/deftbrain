@@ -679,9 +679,9 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                   per line as fit (flex-wrap can't overlap, unlike the old
                   fixed grid) instead of leaving the card half empty; lg+
                   (narrow side column) restores the longest/shortest pairs. */}
-              <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-4 lg:flex-col lg:flex-nowrap">
+              <div className="flex flex-row flex-wrap items-start justify-center gap-x-2 gap-y-4 lg:flex-col lg:flex-nowrap lg:items-center">
                 {categoryRows.map(row => (
-                <div key={row[0].name} className="contents lg:flex lg:flex-row lg:flex-wrap lg:items-start lg:gap-x-2 lg:gap-y-4">
+                <div key={row[0].name} className="contents lg:flex lg:flex-row lg:flex-wrap lg:items-start lg:justify-center lg:gap-x-2 lg:gap-y-4">
                 {row.map(cat => {
                   const count = categoryCounts[cat.name] || 0;
                   // title = the researched per-category example (now on
