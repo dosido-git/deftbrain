@@ -137,13 +137,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
-  // Persistent header search (2026-09-21) — draft text only; nothing filters
+  // Homepage finder — draft text only; nothing filters
   // until submit, same submit-not-live pattern the old hero search used.
   // Separate from `searchTerm` (the prop that actually drives filteredTools)
-  // so the header input isn't fighting the in-catalog SearchBox's own value
+  // so the homepage input isn't fighting the in-catalog SearchBox's own value
   // when both could theoretically be visible.
   const [navQuery, setNavQuery] = useState('');
-  const [navFocused, setNavFocused] = useState(false);
   const navSearchRef = useRef(null);
   const submitNavSearch = useCallback((e) => {
     e.preventDefault();
@@ -184,7 +183,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
   // ⌘K shortcut — focuses whichever search box is actually mounted.
   // searchRef (compact in-catalog SearchBox) and navSearchRef (persistent
-  // header search) are mutually exclusive in the DOM (same !isSearching
+  // homepage finder) are mutually exclusive in the DOM (same !isSearching
   // && !showCatalog condition that shows/hides each), so only one of
   // these two calls ever does anything; the other is a no-op on a null ref.
   useEffect(() => {
@@ -441,19 +440,15 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         }`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
-      <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
-        <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+      <header className="db-home-header w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
+        {(isSearching || showCatalog) && <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
           DeftBrain — AI-Powered Tools for Everyday Life
-        </h1>
+        </h1>}
         {/* Brand left, locale controls right — the header is now the single,
             consistent home for language/currency everywhere (tool pages carry
             their own via ToolPageWrapper; the footer copy was removed). */}
-        {/* Below sm the brand and the pills cannot share a row: the wordmark
-            runs to ~252px and the two pills need ~165px more, so at 390px the
-            pills painted an opaque white box over the tail of "DeftBrain"
-            (measured 51x11px overlap, 2026-08-01). Stack them instead, pills
-            right-aligned on their own line — which is what ToolPageWrapper
-            already does on mobile. */}
+        {/* The compact brand and language control wrap safely at narrow
+            widths; the mobile menu keeps all navigation reachable. */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           {/* Was unclickable — a plain <div> (BrandMark only wraps itself in
               a <button> when given onClick). backToHome (not a <Link to="/">)
@@ -462,7 +457,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               search/catalog state; backToHome does exactly that (same
               function the "← Back" button during a search already uses)
               and additionally scrolls to top. */}
-          <BrandMark direction="left" size="md" isDark={false} showTagline={true} onClick={backToHome} />
+          <BrandMark direction="left" size="sm" isDark={false} showTagline={false} onClick={backToHome} />
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>
@@ -496,81 +491,18 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
             </nav>
             <LocaleSelectors dark={false} showCurrency={false} />
+            <details className="db-home-mobile-menu">
+              <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+              <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
+                <Link to="/tools">Tools</Link>
+                <button type="button" onClick={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}>Categories</button>
+                <a href="/guides">Guides</a>
+                <a href="/about">About</a>
+              </nav>
+            </details>
           </div>
         </div>
-        {/* Persistent search (2026-09-21) — moved out of the hero entirely.
-            Owner's read: a returning visitor already knows what DeftBrain
-            does and will search first, so search should be a fixture right
-            under the nav, not something to scroll to or discover inside the
-            hero. First-time visitors get the hero's own cards + categories
-            instead (see HomeIntro). Sized like the original hero search
-            (~520px), not full-width — a search bar this wide reads like the
-            page's main event, which it deliberately isn't for a new visitor.
-            Hidden once results are showing: the in-catalog SearchBox below
-            (same searchTerm) takes over from there rather than running two
-            editable copies of the same query at once.
-
-            Right-justified under the nav/locale row above (which is
-            itself right-heavy — Tools/Guides/About + selectors end at
-            the right edge), so the search sits under that cluster
-            instead of stranded under the logo on the left. mt-1, not
-            mt-4 — tighter to the row above now that it's aligned with it
-            rather than sitting under the wordmark's own whitespace.
-
-            flex justify-end on a wrapper div, not ms-auto on the form
-            itself: a plain <form> is a block box with width:auto, which
-            for a block element means "fill 100% of the containing
-            block" — there's no leftover space left for an auto margin
-            to push into, so ms-auto on the form silently did nothing
-            (confirmed live 2026-09-21: 0px of leftover space, form
-            pinned flush left despite the class being right there). A
-            flex parent with justify-end sidesteps the question of the
-            form's own box type entirely.
-
-            Narrow-then-expand (2026-09-21), same idea as the in-catalog
-            SearchBox's own 160->320px behavior below: starts small (it's
-            a fixture, not a demand for attention), grows on focus OR once
-            there's a query, so it doesn't look abandoned-and-empty at
-            full width before anyone's touched it. Width is inline-styled
-            (not a Tailwind class) so the transition actually animates —
-            swapping between two arbitrary-value classes doesn't. */}
-        {!isSearching && !showCatalog && (
-        <div className="mt-1 flex justify-end">
-          <form onSubmit={submitNavSearch} className="flex gap-2">
-            <div className="relative min-w-0" style={{ width: (navQuery || navFocused) ? 420 : 220, transition: 'width 0.2s' }}>
-              <input
-                ref={navSearchRef}
-                value={navQuery}
-                onChange={e => setNavQuery(e.target.value)}
-                onFocus={() => setNavFocused(true)}
-                onBlur={() => setNavFocused(false)}
-                onKeyDown={e => { if (e.key === 'Escape') { setNavQuery(''); e.currentTarget.blur(); } }}
-                placeholder="Describe what you’re dealing with…"
-                className="w-full rounded-lg border px-3.5 py-2.5 text-[12px] outline-none focus:ring-2"
-                style={{ borderColor: CLR.sand300 }}
-              />
-              {/* Same ⌘K badge/behavior as the in-catalog SearchBox below —
-                  hidden on touch widths (no Command key on a phone) and
-                  once there's a query, matching that component's own
-                  convention exactly rather than inventing a second one. */}
-              {!navQuery && (
-                <span className="hidden sm:inline-block" style={{
-                  position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)',
-                  fontSize: 10, color: CLR.warm500,
-                  background: CLR.sand100,
-                  border: `1px solid ${CLR.sand200}`,
-                  borderRadius: 4,
-                  padding: '1px 4px',
-                  pointerEvents: 'none',
-                  fontWeight: 600,
-                  letterSpacing: 0.2,
-                }}>⌘K</span>
-              )}
-            </div>
-            <button className="rounded-lg px-4 py-2.5 text-[11px] font-bold text-white whitespace-nowrap" style={{ background: CLR.navy700 }}>Find a tool →</button>
-          </form>
-        </div>
-        )}
+      </header>
         {/* The rethought intro. Replaces HeroPitch's rotating triplet and the
             two-CTA row: both assumed a visitor already knew they wanted a
             tool. Hidden while searching — someone mid-query wants results,
@@ -580,6 +512,26 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
+              finder={
+                <form onSubmit={submitNavSearch} className="db-home-finder" role="search" aria-label="Find a DeftBrain tool">
+                  <label htmlFor="home-tool-query">What would you like help with?</label>
+                  <div className="db-home-finder-controls">
+                    <input
+                      id="home-tool-query"
+                      ref={navSearchRef}
+                      value={navQuery}
+                      onChange={e => setNavQuery(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Escape') { setNavQuery(''); e.currentTarget.blur(); } }}
+                      placeholder="For example, I need to question a bill"
+                      aria-describedby="home-tool-process"
+                      type="search"
+                      required
+                    />
+                    <button type="submit">Find a tool <span aria-hidden="true">→</span></button>
+                  </div>
+                  <p id="home-tool-process">Choose a tool <span aria-hidden="true">→</span> Answer a few questions <span aria-hidden="true">→</span> Get practical guidance</p>
+                </form>
+              }
               // A category slug is a real prerendered static file
               // (build/tools/{slug}/index.html, served by backend/server.js)
               // — not a React Router route, the same reason /guides, /about
@@ -596,7 +548,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             />
           </div>
         )}
-      </header>
 
       {(showCatalog || isSearching) && <>
         {/* Search + sort. NOT inside the !isSearching guard — the box must stay
