@@ -1,6 +1,5 @@
 # Privacy Policy
 
-**Effective:** May 1, 2026
 **Last updated:** September 25, 2026
 
 ## The short version
@@ -25,7 +24,7 @@ When you type something into a DeftBrain tool — describe a difficult conversat
 2. From our server to Anthropic's Claude API for processing.
 3. The result returns to our server, which sends it back to your browser.
 
-We do not store your input or the result on our servers. We do not write either to a database, to disk, or to our application logs. The audit that confirmed this and the code change that prevents future regressions were both completed on the effective date of this policy.
+We do not store your input or the result on our servers. We do not write either to a database, to disk, or to our application logs. The audit that confirmed this and the code change that prevents future regressions were both completed on May 1, 2026.
 
 If a tool offers to "remember" your work between sessions — for example, DifficultTalkCoach saves your past topics and rehearsals — that data lives in your browser's `localStorage`. It does not leave your device. We can't see it, and clearing your browser data removes it.
 
@@ -116,7 +115,7 @@ Railway captures standard HTTP request information — IP address, user agent, U
 
 Under GDPR, an IP address is considered personal data even though it doesn't always feel like it. We rely on Article 6(1)(f) ("legitimate interests" — running and securing a web service) as the lawful basis for processing this information.
 
-Our application code does not write user-submitted content to logs. We audited and removed all such logging on the effective date of this policy, and added an automated check to prevent it from being reintroduced.
+Our application code does not write user-submitted content to logs. We audited and removed all such logging on May 1, 2026, and added an automated check to prevent it from being reintroduced.
 
 ## Your browser's storage
 
