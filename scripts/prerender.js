@@ -176,7 +176,10 @@ function loadGuidesByTool() {
 // actual subject matter. Extend this list only when a re-run of that same
 // audit turns up another offender, not preemptively — removing a tag here
 // silently weakens every genuine connection that tag was carrying too.
-const GENERIC_TAGS = new Set(['planning']);
+// 'my boss' / 'my manager' (2026-09-26) are search-only tags on six
+// workplace tools — shared by all six, so without this they'd re-pair those
+// tools as each other's related links on a thin "both involve a boss" basis.
+const GENERIC_TAGS = new Set(['planning', 'my boss', 'my manager']);
 
 function relatedTools(tool, all, n = 2) {
   const tags = new Set((tool.tags || []).map(s => s.toLowerCase()).filter(t => !GENERIC_TAGS.has(t)));
