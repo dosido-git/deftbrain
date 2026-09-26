@@ -449,8 +449,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const isSearching  = searchTerm.trim().length > 0;
   const activeMeta   = CATEGORY_META.find(c => c.name === activeCategory);
 
+  // lg:min-w-[1180px] — on desktop (1024px+) the page holds its full layout
+  // and scrolls sideways rather than squeezing. Measured 2026-09-25: from
+  // 1180px up the home page lays out exactly as at the 1440px reference;
+  // below it the category pills start overlapping and card text clamps
+  // (3 overlaps and 13 clamped card lines at 1024). Under 1024 the page
+  // switches to its stacked tablet/phone layout, which has no such floor.
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
+    <div className="w-full max-w-[1200px] lg:min-w-[1180px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
       <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}
         /* PRINT. Measured three ways before settling here.
