@@ -1133,14 +1133,22 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const topN = (obj, n) => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
     function registerDetail(bucket) {
       const id = 'r' + (ledgerRowId++);
-      const pages = topN(bucket.pages, 20).map(([name, n]) => {
+      // The list used to stop silently at 20 pages, so a day's list could add
+      // up to fewer views than the row said (reported 2026-09-25: 40 views,
+      // list summed to 31). Now 60, and whatever is left is counted in a
+      // closing "+ N more pages" line so the list always adds up to the row.
+      const PAGE_CAP = 60;
+      const allPages = Object.entries(bucket.pages).sort((a, b) => b[1] - a[1]);
+      const rest = allPages.slice(PAGE_CAP);
+      const pagesMore = rest.length ? [rest.length, rest.reduce((t, [, n]) => t + n, 0)] : null;
+      const pages = allPages.slice(0, PAGE_CAP).map(([name, n]) => {
         const en = bucket.entries[name];
         const srcText = en ? topN(en.src, 5).map(([k, v]) => `${k} ${v}`).join(', ') : '';
         const fm = bucket.froms[name];
         const fromText = fm ? topN(fm, 5).map(([k, v]) => `${k === '/' ? 'home page' : k} ${v}`).join(', ') : '';
         return [name, n, en ? en.n : 0, srcText, fromText];
       });
-      ledgerDetail[id] = { pages, tools: topN(bucket.tools, 20) };
+      ledgerDetail[id] = { pages, pagesMore, tools: topN(bucket.tools, 20) };
       return id;
     }
 
@@ -1339,15 +1347,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         // One line per item, never wrapped: long guide paths are cut with an
         // ellipsis and the full text is in the hover title.
         var LINE = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
-        function pagesList(pairs) {
+        function pagesList(pairs, more) {
           if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
+          var tail = more ? '<div style="color:#9db3c8">+ ' + more[0] + ' more page' + (more[0] === 1 ? '' : 's') + ' (' + more[1] + ' view' + (more[1] === 1 ? '' : 's') + ')</div>' : '';
           return pairs.map(function (p) {
             var name = p[0] === '/' ? '/ (home page)' : p[0];
             var entered = p[2] ? ' <span style="color:#9db3c8">· ' + p[2] + ' entered here' + (p[3] ? ' (' + esc(p[3]) + ')' : '') + '</span>' : '';
             var came = p[4] ? ' <span style="color:#9db3c8">· from ' + esc(p[4]) + '</span>' : '';
             var tip = name + ' — ' + p[1] + ' view(s)' + (p[2] ? '; ' + p[2] + ' opened a visit (' + p[3] + ')' : '') + (p[4] ? '; came from: ' + p[4] : '') + (p[1] - p[2] > 0 && !p[4] ? '; the rest came from another DeftBrain page (which one is recorded only since Sep 25)' : '');
             return '<div style="' + LINE + '" title="' + esc(tip) + '">' + esc(name) + ' <b>' + p[1] + '</b>' + entered + came + '</div>';
-          }).join('');
+          }).join('') + tail;
         }
         function toolsList(pairs) {
           if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
@@ -1357,7 +1366,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           // width:0;min-width:100% keeps the unwrapped lines from widening the
           // table — the block takes the table's width instead of setting it.
           return '<div style="width:0;min-width:100%;display:flex;gap:24px;background:#1a2e44;color:#fff;border-radius:8px;padding:12px 16px;box-sizing:border-box">' +
-            '<div style="flex:3;min-width:0"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">PAGES VISITED</div><div style="font-size:12.5px">' + pagesList(d.pages) + '</div></div>' +
+            '<div style="flex:3;min-width:0"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">PAGES VISITED</div><div style="font-size:12.5px">' + pagesList(d.pages, d.pagesMore) + '</div></div>' +
             '<div style="flex:1;min-width:0"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">TOOLS RUN</div><div style="font-size:12.5px">' + toolsList(d.tools) + '</div></div>' +
           '</div>';
         }
