@@ -262,13 +262,22 @@ This is the central paradox of self-directed work. The freedom is what you wante
             sessionStorage.setItem('db-saw-guide', '1');
             lang = (navigator.language || '').slice(0, 5) || undefined;
           } catch (e) { /* private mode — send what we have */ }
+          // Previous DeftBrain page, from the same-origin referrer (path only).
+          // Twin of fromPath() in src/utils/analytics.js.
+          var from;
+          try {
+            if (document.referrer) {
+              var ru = new URL(document.referrer);
+              if (ru.hostname === location.hostname && ru.pathname !== location.pathname) from = ru.pathname.slice(0, 160);
+            }
+          } catch (e) {}
           var body = JSON.stringify({
             event: 'page_view',
             path: location.pathname,
             ts: now,
             sawGuide: true,
             ref: ref,
-            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang }
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from }
           });
           try {
             if (navigator.sendBeacon) {

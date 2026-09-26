@@ -1021,7 +1021,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     function emptyBucket() {
       return { views: 0, sessions: 0, interactive: 0, returning: 0, runs: 0,
         completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
-        pages: {}, entries: {}, tools: {} };
+        pages: {}, entries: {}, froms: {}, tools: {} };
     }
     const ledgerByDay = {};
     for (const d of ledgerDayList) ledgerByDay[d] = emptyBucket();
@@ -1034,6 +1034,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         const seg = (e.path || '').split('/')[1];
         const pageName = (seg && /^[A-Z]/.test(seg)) ? seg : (e.path || '(unknown)');
         b.pages[pageName] = (b.pages[pageName] || 0) + 1;
+        // The DeftBrain page they were on just before (props.from, sent since
+        // 2026-09-25). Tool pages fold to their id like pageName does.
+        const fromRaw = e.props && e.props.from;
+        if (fromRaw && !(e.props && e.props.newSession)) {
+          const fseg = String(fromRaw).split('/')[1];
+          const fromName = (fseg && /^[A-Z]/.test(fseg)) ? fseg : String(fromRaw);
+          const fm = b.froms[pageName] || (b.froms[pageName] = {});
+          fm[fromName] = (fm[fromName] || 0) + 1;
+        }
         if (e.props && e.props.newSession) {
           // This view opened the session, so the visitor arrived here from
           // outside the site. Its source is the session's ref (a referring
@@ -1069,6 +1078,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           const o = out.entries[k] || (out.entries[k] = { n: 0, src: {} });
           o.n += en.n;
           for (const [sk, sn] of Object.entries(en.src)) o.src[sk] = (o.src[sk] || 0) + sn;
+        }
+        for (const [k, fm] of Object.entries(b.froms)) {
+          const o = out.froms[k] || (out.froms[k] = {});
+          for (const [fk, fn] of Object.entries(fm)) o[fk] = (o[fk] || 0) + fn;
         }
         for (const [k, n] of Object.entries(b.tools)) out.tools[k] = (out.tools[k] || 0) + n;
       }
@@ -1123,7 +1136,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const pages = topN(bucket.pages, 20).map(([name, n]) => {
         const en = bucket.entries[name];
         const srcText = en ? topN(en.src, 5).map(([k, v]) => `${k} ${v}`).join(', ') : '';
-        return [name, n, en ? en.n : 0, srcText];
+        const fm = bucket.froms[name];
+        const fromText = fm ? topN(fm, 5).map(([k, v]) => `${k === '/' ? 'home page' : k} ${v}`).join(', ') : '';
+        return [name, n, en ? en.n : 0, srcText, fromText];
       });
       ledgerDetail[id] = { pages, tools: topN(bucket.tools, 20) };
       return id;
@@ -1282,6 +1297,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         <tr><td style="white-space:nowrap"><b>delivered</b></td><td>Runs that came back AND displayed without crashing.</td></tr>
         <tr><td style="white-space:nowrap"><b>took it with them</b></td><td>Copy, print or share clicks on a result.</td></tr>
         <tr><td style="white-space:nowrap"><b>entered here</b></td><td>(In a day's pages list.) Views that started a visit — the person arrived on that page from outside: a search engine, a link, or typing the address ("direct"). Every other view of that page came from another DeftBrain page.</td></tr>
+        <tr><td style="white-space:nowrap"><b>from</b></td><td>(In a day's pages list.) For views that did NOT start a visit: the DeftBrain page the person was on just before. Recorded since Sep 25, 2026.</td></tr>
         <tr><td style="white-space:nowrap"><b>/</b></td><td>The home page.</td></tr>
       </table>
     </details>
@@ -1328,8 +1344,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           return pairs.map(function (p) {
             var name = p[0] === '/' ? '/ (home page)' : p[0];
             var entered = p[2] ? ' <span style="color:#9db3c8">· ' + p[2] + ' entered here' + (p[3] ? ' (' + esc(p[3]) + ')' : '') + '</span>' : '';
-            var tip = name + ' — ' + p[1] + ' view(s)' + (p[2] ? '; ' + p[2] + ' opened a visit (' + p[3] + '), the rest came from another DeftBrain page' : '; all came from another DeftBrain page');
-            return '<div style="' + LINE + '" title="' + esc(tip) + '">' + esc(name) + ' <b>' + p[1] + '</b>' + entered + '</div>';
+            var came = p[4] ? ' <span style="color:#9db3c8">· from ' + esc(p[4]) + '</span>' : '';
+            var tip = name + ' — ' + p[1] + ' view(s)' + (p[2] ? '; ' + p[2] + ' opened a visit (' + p[3] + ')' : '') + (p[4] ? '; came from: ' + p[4] : '') + (p[1] - p[2] > 0 && !p[4] ? '; the rest came from another DeftBrain page (which one is recorded only since Sep 25)' : '');
+            return '<div style="' + LINE + '" title="' + esc(tip) + '">' + esc(name) + ' <b>' + p[1] + '</b>' + entered + came + '</div>';
           }).join('');
         }
         function toolsList(pairs) {

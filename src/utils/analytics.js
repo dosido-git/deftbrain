@@ -166,12 +166,29 @@ let rescanSections = null;
 //    router. Patches history.pushState/replaceState + popstate so every SPA
 //    navigation fires one page_view. Guarded so it only installs once. ──
 let lastPath = null;
+// Which DeftBrain page the visitor was on just before this one. In-app
+// navigation: the previous route. A full page load (arriving from a guide,
+// a category page, or any other static page): the same-origin referrer —
+// the site sends strict-origin-when-cross-origin, so same-origin referrers
+// keep their path. Path only, never the query. Undefined when they came from
+// outside the site; that side is `ref`.
+function fromPath(prev) {
+  if (prev) return prev;
+  try {
+    if (document.referrer) {
+      const u = new URL(document.referrer);
+      if (u.hostname === window.location.hostname && u.pathname !== window.location.pathname) return u.pathname.slice(0, 160);
+    }
+  } catch (_) {}
+  return undefined;
+}
 function pageView() {
   if (typeof window === 'undefined') return;
   const p = window.location.pathname;
   if (p === lastPath) return;
+  const from = fromPath(lastPath);
   lastPath = p;
-  track('page_view', visitContext());
+  track('page_view', { ...visitContext(), ...(from ? { from } : {}) });
   trackSecondTool(p);
   if (rescanSections) rescanSections();
 }
