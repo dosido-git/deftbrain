@@ -202,7 +202,7 @@ export default function AllToolsPage({ allTools = [] }) {
               <a href="/guides">Guides</a>
               <a href="/about">About</a>
             </nav>
-            <LocaleSelectors dark={false} />
+            <LocaleSelectors dark={false} showCurrency={false} />
           </div>
         </div>
       </header>

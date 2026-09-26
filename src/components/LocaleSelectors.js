@@ -25,7 +25,11 @@ import { useLocale } from '../hooks/useLocale';
  * is still a real <select>, so keyboard and screen-reader behaviour is
  * unchanged; `aria-hidden` on the visible label stops it being announced twice.
  */
-const LocaleSelectors = ({ dark = false }) => {
+// showCurrency: the home page and /tools pass false. Beside the language
+// picker on a page with no prices, a currency picker read as billing or
+// shopping (2026-09-21 external review, item 10). Tool pages keep it, where
+// it actually changes the answer. 'Auto' sets currency either way.
+const LocaleSelectors = ({ dark = false, showCurrency = true }) => {
   const { language, currency, setLanguage, setCurrency, LANGUAGES, CURRENCIES } = useLocale();
 
   const pill = `relative inline-flex items-center gap-1.5 ps-2 pe-5 rounded-lg border text-xs font-medium transition-colors min-h-[32px] ${
@@ -62,7 +66,7 @@ const LocaleSelectors = ({ dark = false }) => {
         <span className={caret} aria-hidden="true">▼</span>
       </span>
 
-      <span className={pill} title="Currency">
+      {showCurrency && <span className={pill} title="Currency">
         <span aria-hidden="true">💱</span>
         <span aria-hidden="true" className="truncate max-w-[12rem]">{currLabel}</span>
         <select aria-label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className={select}>
@@ -74,7 +78,7 @@ const LocaleSelectors = ({ dark = false }) => {
           ))}
         </select>
         <span className={caret} aria-hidden="true">▼</span>
-      </span>
+      </span>}
     </div>
   );
 };

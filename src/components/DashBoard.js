@@ -531,7 +531,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <a href="/guides" className="!no-underline hover:!underline underline-offset-4">Guides</a>
               <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
             </nav>
-            <LocaleSelectors dark={false} />
+            <LocaleSelectors dark={false} showCurrency={false} />
           </div>
         </div>
         {/* Persistent search (2026-09-21) — moved out of the hero entirely.
