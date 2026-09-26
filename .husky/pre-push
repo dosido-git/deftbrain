@@ -55,6 +55,11 @@ node scripts/generate-sitemap.js --check
 # Reads source only, so this needs no build.
 node scripts/generate-guides-sitemap.js --check
 
+# Privacy policy is generated from docs/PRIVACY.md. A hand-edit to the HTML
+# is silently reverted by the next regeneration — the 2026-09-21 corrections
+# were, and the false policy went back live for four days.
+node scripts/build-privacy.js --check
+
 # Gate 8 — every rename in audit/RENAMES.md has a server-side 301. Recall →
 # TheCrux shipped with a CLIENT-side alias only, which a crawler never reaches:
 # the server 404s first and the React redirect never runs. /Recall returned 404

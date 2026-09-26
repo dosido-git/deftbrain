@@ -1,11 +1,11 @@
 # Privacy Policy
 
 **Effective:** May 1, 2026
-**Last updated:** May 1, 2026
+**Last updated:** September 25, 2026
 
 ## The short version
 
-DeftBrain is built to need almost nothing from you. There are no accounts, no emails collected, no cookies, no analytics, and nothing you type is stored on our servers. Anything you submit to a tool is sent to Anthropic's Claude API to generate a result, and the result comes back to your browser. That's the whole interaction in the typical case.
+DeftBrain is built to need almost nothing from you. There are no accounts, no cookies, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all — voluntary, and handled by a separate mailing service, not by us (details below). We do run a small, anonymous, first-party analytics system — corrected into this policy below, where it was previously described as not existing — but it carries no name, no account, and none of your actual words. Anything you submit to a tool is sent to Anthropic's Claude API to generate a result, and the result comes back to your browser. That's the whole interaction in the typical case.
 
 A handful of specific tools also talk to other services to do their job — pronunciation audio goes through ElevenLabs, social-handle availability checks ping Instagram, X, TikTok, GitHub, and YouTube, and the fake-review tool fetches a URL you paste. Each of these is described below.
 
@@ -34,11 +34,39 @@ If a tool offers to "remember" your work between sessions — for example, Diffi
 A privacy policy is partly a list of things companies don't want their users to think about. For DeftBrain:
 
 - **No accounts.** You can't create one, and we don't want you to.
-- **No emails collected.** No mailing list, no "create your free account" prompt, no email-gated downloads.
-- **No analytics.** No Google Analytics, no Plausible, no homemade tracking. As of the effective date of this policy, nothing on the site counts views, tracks events, or measures funnels.
-- **No cookies.** We don't set any. No first-party cookies, no third-party cookies, no consent banner. There's nothing to consent to.
+- **No required email, ever.** No account to create, no email-gated downloads — nothing on the site requires an email address to use any tool. The one optional exception is the newsletter; see below.
+- **No third-party analytics.** No Google Analytics, no Plausible, no ad-tech pixel of any kind. We do run our own small, anonymous, first-party analytics — see the next section for exactly what that means, since an earlier version of this page said this didn't exist at all and that was wrong.
+- **No cookies.** We don't set any. No first-party cookies, no third-party cookies, no consent banner. There's nothing to consent to. (Our analytics uses your browser's `localStorage`/`sessionStorage` instead, for the narrow purpose described below — not a cookie, and not sent to any outside party either.)
 - **No advertising.** No ads, no retargeting pixels, no marketing partners.
 - **No selling, sharing, or renting of personal information.** Specifically and explicitly: we do not "sell" personal information as defined by California or any other US state privacy law. We have no users database to sell from.
+
+## Anonymous usage analytics
+
+This section is new as of the "Last updated" date above. Earlier versions of this policy said DeftBrain ran no analytics of any kind. That was inaccurate — we run a small, first-party analytics system, and this section describes exactly what it does instead of asserting it doesn't exist.
+
+The goal is narrow: seeing whether a tool actually gets used and finished, not building a profile of who is visiting. What gets recorded, as anonymous events with no name or account attached to any of them:
+
+- That a page loaded, a tool ran, and whether it finished or errored.
+- Which section of a long page someone actually scrolled to, and which of several result variants (if a tool offers more than one) they opened.
+- A coarse "have I been here before" flag and a rough recency bucket (new, within a week, within a month, longer) — derived from a timestamp your browser already holds, not from anything we assign you.
+- An approximate location — city, region, country — looked up from your IP address *at the moment of the request*, using a lookup table stored on our own server (no call to any outside service). The IP address itself is used for that one moment, to filter out bots and known cloud-hosting traffic in addition to the location lookup, and then discarded. We do not store your IP address.
+- Your browser's language setting, the site you arrived from if you followed a link here, and which DeftBrain page you were on just before the current one.
+
+What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this or anything else — the coarse "have I been here before" flag lives in your browser's own `localStorage` and is never joined with anything else that could identify you.
+
+This data is written to a private, append-only log on our own server — never sent to Google, Meta, or any analytics vendor — and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with `?operator=1` once turns off every beacon from that browser going forward (`?operator=0` turns it back on). That mechanism exists so the operator's own visits don't skew the numbers, but it works the same way for anyone who uses it.
+
+## Feedback and tool ideas you submit voluntarily
+
+Two things on this site work differently from a tool's input and output, and **are** stored: if you answer "was this helpful?" and add an optional comment, or use the "no tool for your problem? describe it" form, what you write is saved to the same private log described above — because the entire point of both is for the operator to read them. Neither is anonymized beyond whatever you choose to leave out, so treat both boxes the way you'd treat an email to a stranger: useful to send, not the place to put anything you wouldn't want kept.
+
+## The newsletter, if you sign up
+
+This section is new as of the "Last updated" date above. Earlier versions of this policy said flatly that DeftBrain collects no emails and runs no mailing list. That was wrong — there is an optional, opt-in newsletter, and its sign-up form appears on this page and others.
+
+Signing up sends your email address — and, for spam-filtering purposes, your IP address at that moment — to Buttondown, the email service that actually sends the newsletter, not to us. We keep only the fact that a subscription happened and which page it came from, never the address itself. Buttondown handles the confirmation email (double opt-in — nothing is sent until you confirm) and the one-click unsubscribe link in every issue that follows.
+
+If you never sign up, none of this applies to you.
 
 ## Third parties involved when you use DeftBrain
 

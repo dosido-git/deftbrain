@@ -180,6 +180,24 @@ ${getFooterHTML()}
 </html>
 `;
 
+// --check: fail if the committed public/privacy.html is not what the source
+// renders to. public/privacy.html is GENERATED — hand-edits to it are lost the
+// next time anyone runs this script. That happened: the 2026-09-21 newsletter
+// and analytics corrections were made in the HTML only, and a site-wide chrome
+// regeneration four commits later quietly put the old, false policy back live.
+// Edit docs/PRIVACY.md, then run this script.
+if (process.argv.includes('--check')) {
+  const current = fs.existsSync(OUTPUT) ? fs.readFileSync(OUTPUT, 'utf8') : '';
+  if (current !== html) {
+    console.error('\n❌ public/privacy.html does not match docs/PRIVACY.md.');
+    console.error('   It is generated. Put the change in docs/PRIVACY.md, then:');
+    console.error('     node scripts/build-privacy.js && git add public/privacy.html docs/PRIVACY.md\n');
+    process.exit(1);
+  }
+  console.log('✓ privacy.html matches docs/PRIVACY.md');
+  process.exit(0);
+}
+
 fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
 fs.writeFileSync(OUTPUT, html);
 console.log(`✓ ${path.relative(ROOT, OUTPUT)}`);
