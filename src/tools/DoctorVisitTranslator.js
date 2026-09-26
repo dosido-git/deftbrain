@@ -253,7 +253,6 @@ const DoctorVisitTranslator = ({ tool }) => {
   const handleTranslate = async () => {
     if (!doctorNotes.trim() && !pdfFile) { setError(t('dvt_err_notes_or_pdf')); return; }
     setError(''); setResults(null);
-    track('tool_run', { tool: 'DoctorVisitTranslator', documentType, hasPdf: !!pdfFile });
     const allMeds = currentMedications.trim()
       ? currentMedications.trim() + (activeMeds.length ? `\n\nAlso taking (from tracked list): ${activeMeds.map(m => m.name).join(', ')}` : '')
       : activeMeds.length ? activeMeds.map(m => m.name).join(', ') : null;
@@ -268,7 +267,6 @@ const DoctorVisitTranslator = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data); setMode('results');
-      track('tool_complete', { tool: 'DoctorVisitTranslator', documentType });
       setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false }));
     } catch (err) { setError(err.message || t('dvt_err_translate')); }
   };
