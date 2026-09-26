@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Caret from './Caret';
-import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { CATEGORY_META } from '../data/categoryMeta';
 import './HomeIntro.css';
 
@@ -204,7 +203,7 @@ function ToolScramble({ allTools, onBrowse }) {
             );
           })}
         </div>
-        <button type="button" onClick={() => onBrowse()} className="text-sm font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
+        <button type="button" onClick={() => onBrowse()} className="text-sm font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all tools →</button>
       </div>
     </section>
   );
@@ -274,12 +273,16 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       {/* The "you don't have to figure out what to ask" point moved here from
           the hero (2026-09-27): it's the claim this demo shows, and the hero
           said it a second time right above the finder's own steps line. */}
-      <p className="db-home-demo-intro"><strong>You don’t have to figure out what to ask.</strong> Each tool asks about your situation and turns your answers into practical guidance — here, from an upcoming appointment to a plan for the conversation.</p>
+      <p className="db-home-demo-intro"><strong>You don’t have to figure out what to ask.</strong> Each tool asks questions about your situation, then helps you create something useful—a clear explanation, a message draft, a question list, or a plan.</p>
       <ol className="db-home-demo-steps">
         <li>
           <h3><span aria-hidden="true">1</span> Your situation</h3>
           <p className="db-home-example">“Right-sided lower back pain, getting worse for 3 weeks.”</p>
           <p>You want to explain what’s happening and remember what to ask.</p>
+          {/* Sits at the foot of step 1 so it lines up with the bottom of
+              step 3's caption; on one-column layouts the copy after the
+              list shows instead (CSS swaps them), so it still comes last. */}
+          <Link to="/DoctorVisitPrep" className="db-home-primary-link db-home-demo-cta-inline">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
         </li>
         <li>
           <h3><span aria-hidden="true">2</span> The tool asks</h3>
@@ -298,13 +301,13 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
           <p className="db-home-result-caption">A real sample result, with more detail below the preview.</p>
         </li>
       </ol>
-      <Link to="/DoctorVisitPrep" className="db-home-primary-link">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
+      <Link to="/DoctorVisitPrep" className="db-home-primary-link db-home-demo-cta-after">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
     </section>}
 
     <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title" data-db-section="categories">
       <div className="db-home-section-heading">
         <h2 id="home-categories-title">Explore by category</h2>
-        <Link to="/tools" className="db-home-text-link">Browse all {TOOL_COUNT_LABEL} tools <span aria-hidden="true">→</span></Link>
+        <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
       </div>
       <nav aria-label="Tool categories" className="db-home-category-list">
         {CATEGORY_META.filter(cat => categoryCounts[cat.name]).map(cat => (

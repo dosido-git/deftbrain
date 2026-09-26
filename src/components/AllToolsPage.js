@@ -72,6 +72,11 @@ export default function AllToolsPage({ allTools = [] }) {
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef(null);
 
+  // Arriving from a link lower on another page (the home page's "Browse all
+  // tools"), client-side navigation kept that page's scroll offset and
+  // landed mid-catalog. Start at the top.
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   useEffect(() => {
     const previous = document.body.style.background;
     document.body.style.background = '#faf8f5';

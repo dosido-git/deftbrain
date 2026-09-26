@@ -51,13 +51,18 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
 .db-home-situation-copy { position: relative; flex: 1; padding: 18px 18px 24px; }
 .db-home-situation p { margin-block: 10px 0; margin-inline: 0 16px; font-size: 15px; }
 .db-home-card-arrow { position: absolute; inset-inline-end: 12px; bottom: 12px; font-size: 24px; }
-.db-home-demo { padding: 28px; border: 1px solid #d9d1e8; border-radius: 16px; background: #f0ebf7; }
-.db-home-demo-intro { margin: 8px 0 22px; }
-.db-home-demo-steps { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; list-style: none; padding: 0; margin: 0 0 20px; }
-.db-home-demo-steps > li { min-width: 0; }
-.db-home-demo-steps h3 { display: flex; gap: 8px; align-items: center; line-height: 1.4; font-family: inherit; font-size: 16px; margin-bottom: 12px; }
+.db-home-demo { padding: 24px 28px 28px; border: 1px solid #d9d1e8; border-radius: 16px; background: #f0ebf7; }
+.db-home-demo-intro { margin: 6px 0 18px; }
+.db-home-demo-steps { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; list-style: none; padding: 0; margin: 0; }
+.db-home-demo-steps > li { min-width: 0; display: flex; flex-direction: column; }
+.db-home-demo-steps > li > :last-child { margin-bottom: 0; }
+/* Step 1's button drops to the foot of its column, level with the bottom of
+   step 3's caption (grid rows stretch every step to the same height). */
+.db-home-demo-cta-inline { margin-top: auto; align-self: flex-start; }
+.db-home-demo-cta-after { display: none !important; }
+.db-home-demo-steps h3 { display: flex; gap: 8px; align-items: center; line-height: 1.4; font-family: inherit; font-size: 16px; margin-bottom: 10px; }
 .db-home-demo-steps h3 > span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 50%; background: #d6c7ef; }
-.db-home-demo-steps p { font-size: 15px; margin: 12px 0; }
+.db-home-demo-steps p { font-size: 15px; margin: 10px 0; }
 .db-home-demo-steps .db-home-example { background: #fffdfd; border: 1px solid #d9d1e8; border-radius: 8px; padding: 14px; }
 .db-home-example small { display: block; font-size: 13px; color: var(--home-muted); margin-top: 4px; }
 .db-home-result-preview { display: block; position: relative; height: 240px; overflow: hidden; border: 1px solid #d9d1e8; border-radius: 8px; background: white; }
@@ -98,7 +103,9 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
   .db-home-hero-copy { padding: 12px 0 4px; }
   .db-home-hero-art { display: none; }
   .db-home h1 { font-size: clamp(32px, 7.5vw, 42px); max-width: 17ch; }
-  .db-home-demo-steps { grid-template-columns: 1fr; }
+  .db-home-demo-steps { grid-template-columns: 1fr; margin-bottom: 20px; }
+  .db-home-demo-cta-inline { display: none !important; }
+  .db-home-demo-cta-after { display: inline-flex !important; }
   .db-home-demo { padding: 22px; }
   .db-home-result-preview { max-width: 420px; }
 }
