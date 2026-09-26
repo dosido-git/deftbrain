@@ -203,6 +203,18 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   const [faces, setFaces] = useState([initial, incoming || initial]);
   const [side, setSide] = useState(0);
   const lastToken = useRef(flipToken);
+  const faceRefs = [useRef(null), useRef(null)];
+
+  // Keyboard focus follows the flip: if the visitor had tabbed onto the card
+  // when it turns, the face they were on is about to become the hidden one,
+  // and focus left there would sit on a link nobody can see.
+  useEffect(() => {
+    const hiddenFace = faceRefs[side === 0 ? 1 : 0].current;
+    if (hiddenFace && hiddenFace === document.activeElement && faceRefs[side].current) {
+      faceRefs[side].current.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [side]);
 
   useEffect(() => {
     if (lastToken.current === flipToken) return;
@@ -223,7 +235,13 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
     // even though Chrome/Safari resolve it fine. This card's h3/p never
     // had ANY underline reset before, relying entirely on that unreliable
     // inherited default.
-    return <Link to={`/${tool.id}`} className="group absolute inset-0 rounded-xl bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2 !no-underline" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
+    // Both faces are real links stacked in the same spot, and backface-
+    // visibility only hides the back one VISUALLY — it stayed in the tab
+    // order and the accessibility tree, so screen readers announced every
+    // card twice (flagged in the 2026-09-21 external home-page review). The
+    // face turned away is now hidden from both.
+    const isHidden = index !== side;
+    return <Link ref={faceRefs[index]} to={`/${tool.id}`} aria-hidden={isHidden ? 'true' : undefined} tabIndex={isHidden ? -1 : undefined} className="group absolute inset-0 rounded-xl bg-white border border-[#e4ddd2] hover:border-[#142a43] shadow-sm hover:shadow-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2 !no-underline" style={{backfaceVisibility:'hidden',WebkitBackfaceVisibility:'hidden',transform:index===1?'rotateY(180deg)':'rotateY(0deg)'}}>
       <div className="relative">
         <div className="aspect-[9/8] overflow-hidden rounded-t-xl bg-[#eee8df]"><img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" className="w-full h-full object-cover" loading="lazy" /></div>
         {/* Hover preview — a larger, less-cropped version of the same photo,
