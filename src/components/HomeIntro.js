@@ -166,22 +166,27 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
   }, [allTools]);
   const situations = SITUATIONS.filter(item => byId.has(item.toolId));
 
-  return <main className="db-home" id="home-content">
-    <section className="db-home-hero" aria-labelledby="home-title">
+  // Scroll-depth markers (data-db-section, see src/utils/analytics.js) feed the
+  // metrics report's "How far down the home page people get". data-db-layout
+  // names THIS layout: the report counts only the newest layout's markers, so
+  // a redesign that reuses a section name ("hero", "closing") starts a clean
+  // funnel instead of blending into the old page's. Change it when the page's
+  // sections change.
+  return <main className="db-home" id="home-content" data-db-layout="home-2026-09-27">
+    <section className="db-home-hero" aria-labelledby="home-title" data-db-section="hero">
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
         <p className="db-home-description">Simple AI-powered tools to help you understand a document, prepare for a conversation, make a decision, or explore an idea.</p>
-        <p className="db-home-advantage"><strong>You don’t have to figure out what to ask.</strong> Each tool asks questions about your situation and turns your answers into practical guidance.</p>
-        <p className="db-home-reassurance">Free <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Privacy</a></p>
+        <p className="db-home-reassurance">Free <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Nothing you type is stored on our servers</a></p>
       </div>
       <div className="db-home-hero-art">
         <img src="/home-scenes/hero-everyday.jpg" alt="A lease, doctor-visit notes, and a difficult text conversation — everyday situations DeftBrain can help with" fetchpriority="high" />
       </div>
     </section>
 
-    {finder}
+    <div data-db-section="finder">{finder}</div>
 
-    <section className="db-home-section" aria-labelledby="home-situations-title">
+    <section className="db-home-section" aria-labelledby="home-situations-title" data-db-section="situations">
       <div className="db-home-section-heading">
         <h2 id="home-situations-title">What’s on your mind?</h2>
         <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
@@ -198,9 +203,12 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
     </section>
 
-    {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title">
+    {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title" data-db-section="demo">
       <h2 id="home-demo-title">See how it works</h2>
-      <p className="db-home-demo-intro">From an upcoming appointment to a useful plan for the conversation.</p>
+      {/* The "you don't have to figure out what to ask" point moved here from
+          the hero (2026-09-27): it's the claim this demo shows, and the hero
+          said it a second time right above the finder's own steps line. */}
+      <p className="db-home-demo-intro"><strong>You don’t have to figure out what to ask.</strong> Each tool asks about your situation and turns your answers into practical guidance — here, from an upcoming appointment to a plan for the conversation.</p>
       <ol className="db-home-demo-steps">
         <li>
           <h3><span aria-hidden="true">1</span> Your situation</h3>
@@ -227,7 +235,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       <Link to="/DoctorVisitPrep" className="db-home-primary-link">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
     </section>}
 
-    <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title">
+    <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title" data-db-section="categories">
       <div className="db-home-section-heading">
         <h2 id="home-categories-title">Explore by category</h2>
         <Link to="/tools" className="db-home-text-link">Browse all {TOOL_COUNT_LABEL} tools <span aria-hidden="true">→</span></Link>
@@ -244,7 +252,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       <p className="db-home-guide-intro">Prefer to read first? Our guides explain common questions in everyday language. <a href="/guides">Browse guides →</a></p>
     </section>
 
-    <div className="db-home-explore"><ToolScramble allTools={allTools} onBrowse={onBrowse} /></div>
+    <div className="db-home-explore" data-db-section="scramble"><ToolScramble allTools={allTools} onBrowse={onBrowse} /></div>
     {/* Objection-handling — collapsed by default, after the tools content
         and before the closing send-off, so lingering doubts get answered
         right before someone leaves rather than sitting mid-scroll. Answers
@@ -253,7 +261,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
         disclaimer; the hero's own free/no-account/privacy line) rather than
         inventing new claims — the one exception is "what's the catch",
         which has no prior answer anywhere on the site. */}
-    <section className="py-7">
+    <section className="py-7" data-db-section="faq">
       <h2 className="text-[22px] sm:text-[25px] font-bold text-center" style={{fontFamily:SERIF,color:NAVY}}>Before you dig in</h2>
       <div className="mt-5 max-w-xl mx-auto divide-y" style={{borderColor:BORDER}}>
         <details className="group py-3">
@@ -290,7 +298,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
     </section>
 
-    <section className="py-8 text-center">
+    <section className="py-8 text-center" data-db-section="closing">
       <h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2>
       <p className="mt-1.5 text-sm" style={{color:MUTED}}>Read one, or run a tool — whichever fits.</p>
       {/* Plain <a>, not <Link>: /guides and /guides/:category are static

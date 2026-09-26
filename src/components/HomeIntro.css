@@ -23,8 +23,6 @@
 .db-home-hero { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px solid var(--home-border); border-radius: 16px; overflow: hidden; background: #fffdf9; }
 .db-home-hero-copy { padding: 32px; }
 .db-home-description { margin: 18px 0 0; font-size: 17px; }
-.db-home-advantage { margin: 20px 0 0; }
-.db-home-advantage strong { display: block; font-size: 18px; margin-bottom: 3px; }
 .db-home-reassurance { margin: 18px 0 0; font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .db-home-reassurance a, .db-home-guide-intro a { text-decoration: underline; text-underline-offset: 3px; }
 .db-home-hero-art { position: relative; min-width: 0; background: #eee8df; }

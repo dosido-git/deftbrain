@@ -139,7 +139,12 @@ function armSectionMarkers() {
       if (!name || seen.has(name)) continue;
       seen.add(name);
       io.unobserve(e.target);
-      track('section_view', { section: String(name).slice(0, 40), idx: e.target.__dbIdx });
+      // layout: the page version the marker belongs to (data-db-layout on an
+      // ancestor), so the report can keep one layout's funnel apart from the
+      // next redesign's even when section names repeat.
+      const holder = e.target.closest && e.target.closest('[data-db-layout]');
+      const layout = holder ? String(holder.getAttribute('data-db-layout')).slice(0, 40) : undefined;
+      track('section_view', { section: String(name).slice(0, 40), idx: e.target.__dbIdx, layout });
     }
   }, { threshold: 0.01 });
 

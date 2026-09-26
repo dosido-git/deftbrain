@@ -678,16 +678,29 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     //
     // Self-calibrating: the earliest section_view IS the deploy, so no date to
     // hardcode and nothing to update the next time markers move.
-    const firstMarkerAt = events.reduce((min, e) =>
-      e.event === 'section_view' && e.at && (!min || e.at < min) ? e.at : min, null);
+    //
+    // One layout at a time (2026-09-27). Markers carry props.layout (the
+    // page's data-db-layout), and only the NEWEST layout's markers count —
+    // otherwise a redesign reusing "hero"/"closing" blends two different
+    // pages into one funnel, and its denominator reaches back to the old
+    // page's first marker across a stretch with no markers at all (the 09-16
+    // redesign dropped them until 09-27). Markers from before layouts were
+    // tagged count only when no tagged layout exists yet.
+    const markerEvents = events.filter(e => e.event === 'section_view' && e.at);
+    const newestTagged = markerEvents.reduce((best, e) =>
+      e.props && e.props.layout && (!best || e.at > best.at) ? e : best, null);
+    const currentLayout = newestTagged ? newestTagged.props.layout : null;
+    const layoutMarkers = currentLayout
+      ? markerEvents.filter(e => e.props && e.props.layout === currentLayout)
+      : markerEvents;
+    const firstMarkerAt = layoutMarkers.reduce((min, e) => (!min || e.at < min) ? e.at : min, null);
     const homeViewsAll = pv.filter(e => e.path === '/').length;
     const homeViews = firstMarkerAt
       ? pv.filter(e => e.path === '/' && (e.at || '') >= firstMarkerAt).length
       : 0;
     const homeViewsBefore = homeViewsAll - homeViews;
     const secSeen = {};
-    for (const e of events) {
-      if (e.event !== 'section_view') continue;
+    for (const e of layoutMarkers) {
       const name = e.props && e.props.section;
       if (!name) continue;
       const rec = secSeen[name] || (secSeen[name] = { n: 0, idx: 999 });
@@ -1405,7 +1418,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       })();
     </script>
     <h2>How far down the home page people get</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${currentLayout ? ` for the current layout (<code>${escH(currentLayout)}</code>)` : ''}${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate it and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
