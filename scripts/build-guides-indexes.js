@@ -832,7 +832,10 @@ function renderGuidesHome(specs, keepSet) {
       if(!query||!window.DeftSearch)return plain();
       window.DeftSearch.search(query).then(res=>{
         if(mine!==seq)return;
-        const arr=res.guides.map(g=>byHref.get(g.href)).filter(g=>g&&(cat==='all'||g.category===cat));
+        // A guide cross-listed in two categories is ONE search result; try
+        // each of its links so the category filter still finds it.
+        const seen=new Set();
+        const arr=res.guides.map(g=>[g.href,...(g.alt||[])].map(h=>byHref.get(h)).find(x=>x&&(cat==='all'||x.category===cat))).filter(g=>g&&!seen.has(g.slug)&&seen.add(g.slug));
         const tools=res.tools.slice(0,2);
         toolHits.innerHTML=tools.length?'<p>Tools that can help</p>'+tools.map(t=>\`<a href="/\${esc(t.id)}"><b>\${esc(t.title)}</b> <span>— \${esc(t.tagline)}</span></a>\`).join(''):'';
         toolHits.hidden=!tools.length;

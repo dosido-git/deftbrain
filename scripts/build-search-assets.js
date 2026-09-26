@@ -81,20 +81,36 @@ function main() {
 
   const keep = loadKeepSet();
   const toolNames = Object.fromEntries(toolRows.map(t => [t.id, t.title]));
-  const guideRows = loadSpecs()
-    .sort((a, b) => a.title.localeCompare(b.title))
-    .map(g => ({
+  const hrefOf = g => keep.has(`${g.category}/${g.slug}`) ? `/guides/${g.category}/${g.slug}` : `/guides/${g.category}#${g.slug}`;
+
+  // A guide can live in two categories on purpose (~29 slugs, e.g. meetings/
+  // and workplace/ — owner call 2026-09-26). Search lists it ONCE: the copy
+  // with its own indexed page (keep-list) wins, else the first category
+  // alphabetically. `alt` keeps the other copies' links so the /guides
+  // library can still find it under either category filter, and the category
+  // field carries both names so either one matches.
+  const bySlug = new Map();
+  for (const g of loadSpecs()) {
+    if (!bySlug.has(g.slug)) bySlug.set(g.slug, []);
+    bySlug.get(g.slug).push(g);
+  }
+  const guideRows = [...bySlug.values()]
+    .map(copies => copies.sort((a, b) =>
+      keep.has(`${b.category}/${b.slug}`) - keep.has(`${a.category}/${a.slug}`) || a.category.localeCompare(b.category)))
+    .map(([g, ...others]) => ({
       title: g.title,
-      href: keep.has(`${g.category}/${g.slug}`) ? `/guides/${g.category}/${g.slug}` : `/guides/${g.category}#${g.slug}`,
+      href: hrefOf(g),
+      alt: others.map(hrefOf),
       category: g.categoryLabel || g.category,
       f: {
         title: g.title,
         description: g.deck || g.description || '',
         steps: (g.steps || []).map(s => s.name).join(' | '),
-        category: g.categoryLabel || g.category,
+        category: [g, ...others].map(c => c.categoryLabel || c.category).join(' | '),
         tool: g.cta ? [g.cta.toolName || toolNames[g.cta.toolId], g.cta.headline].filter(Boolean).join(' | ') : '',
       },
-    }));
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));
 
   const core = fs.readFileSync(path.join(ROOT, 'src/utils/searchCore.js'), 'utf8');
   if (/^import /m.test(core)) throw new Error('searchCore.js must not import anything — the browser copy has no bundler');
@@ -106,7 +122,7 @@ function main() {
   fs.writeFileSync(path.join(OUT_DIR, 'tools.json'), JSON.stringify(toolRows));
   fs.writeFileSync(path.join(OUT_DIR, 'guides.json'), JSON.stringify(guideRows));
   fs.writeFileSync(path.join(OUT_DIR, 'deft-search.js'), browserJs);
-  console.log(`🔎  Search assets: ${toolRows.length} tools, ${guideRows.length} guides → public/search/`);
+  console.log(`🔎  Search assets: ${toolRows.length} tools, ${guideRows.length} guides (one entry per guide, cross-listed ones once) → public/search/`);
 }
 
 try {
