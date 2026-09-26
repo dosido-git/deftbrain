@@ -496,6 +496,18 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
     allTools.forEach(t => (t.categories || []).forEach(cat => { counts[cat] = (counts[cat] || 0) + 1; }));
     return counts;
   }, [allTools]);
+  // Category pills in rows of two, longest paired with shortest (2026-09-26)
+  // — a fixed 2-column grid let a long pill ("Ideas & Imagination") overrun
+  // its half and overlap its neighbour. Pairing by label length evens out
+  // each row; rows are independent flex lines, so widths never collide.
+  const categoryRows = useMemo(() => {
+    const cats = CATEGORY_META.filter(c => categoryCounts[c.name]);
+    const len = c => c.name.length + String(categoryCounts[c.name]).length;
+    const sorted = [...cats].sort((a, b) => len(b) - len(a));
+    const rows = [];
+    for (let i = 0, j = sorted.length - 1; i <= j; i++, j--) rows.push(i === j ? [sorted[i]] : [sorted[i], sorted[j]]);
+    return rows;
+  }, [categoryCounts]);
   const available = useMemo(() => ROTATION.filter(x => byId.has(x.toolId)), [byId]);
   // Reduced from 6, settled on 8 (2026-09-21) — the carousel now shares
   // the promoted hero zone with the category grid instead of running
@@ -662,10 +674,11 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                 content). */}
             <div className="rounded-2xl border p-4 sm:p-5 flex flex-col" style={{borderColor:BORDER,background:'linear-gradient(120deg,#e9e1f5 0%,#d7ebf7 100%)'}}>
               <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Categories</h2></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-4 justify-items-start">
-                {CATEGORY_META.map(cat => {
+              <div className="flex flex-col gap-y-4">
+                {categoryRows.map(row => (
+                <div key={row[0].name} className="flex flex-col sm:flex-row sm:flex-wrap items-start gap-x-2 gap-y-4">
+                {row.map(cat => {
                   const count = categoryCounts[cat.name] || 0;
-                  if (!count) return null;
                   // title = the researched per-category example (now on
                   // CATEGORY_META itself, see src/data/categoryMeta.js)
                   // — the pill has no room to show it, but it's not wasted: a
@@ -695,6 +708,8 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
                     </button>
                   );
                 })}
+                </div>
+                ))}
               </div>
               <div className="mt-3 pt-3 border-t" style={{borderColor:'#c9c1e0'}}>
                 <button type="button" onClick={() => onBrowse()} className="text-[11px] font-semibold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button>
