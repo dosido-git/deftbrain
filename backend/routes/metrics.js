@@ -566,6 +566,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         returning: psess.filter(e => e.props.returning).length,
         interactive: ev.filter(e => e.event === 'interact').length,
         runs: ev.filter(e => e.event === 'tool_run').length,
+        delivered: Math.max(0, ev.filter(e => e.event === 'tool_complete').length - ev.filter(e => e.event === 'tool_render_error').length),
         taken: ev.filter(e => ['print', 'copy', 'share'].includes(e.event)).length,
         events: ev.length,
       };
@@ -1177,14 +1178,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       if (opts && opts.weekStart) styles.push('border-top:2px solid #c8ad6e');
       const cls = styles.length ? ` style="${styles.join(';')}"` : '';
       return `<tr${cls}><td>${rowLabelBtn(id, label)}${opts && opts.tag ? ` <span style="font-weight:400;font-size:11px;color:#888">${opts.tag}</span>` : ''}${anomalyBadge(flags)}</td>` +
-        `<td>${b.views}${deltaPct(b.views, prevBucket, 'views')}</td>` +
-        `<td>${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
-        `<td>${b.interactive}${deltaPct(b.interactive, prevBucket, 'interactive')}</td>` +
+        `<td><b>${b.delivered}</b></td>` +
+        `<td>${b.taken}</td>` +
         `<td>${b.returning}</td>` +
+        `<td>${b.interactive}${deltaPct(b.interactive, prevBucket, 'interactive')}</td>` +
         `<td>${b.runs}${deltaPct(b.runs, prevBucket, 'runs')}</td>` +
-        `<td>${b.delivered}</td>` +
         `<td>${fmtPct1(b.delivered, b.sessions)}</td>` +
-        `<td>${b.taken}</td></tr>`;
+        `<td style="color:#888">${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
+        `<td style="color:#888">${b.views}${deltaPct(b.views, prevBucket, 'views')}</td></tr>`;
     }
 
     // ── three separate, stacked lists (day / week / month) rather than one
@@ -1297,45 +1298,51 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <details style="margin:10px 0 4px;font-size:12.5px;background:#fff;border:1px solid #e5e2da;border-radius:8px;padding:8px 12px">
       <summary style="cursor:pointer;font-weight:600;color:#1a2e44">Key — what each number means</summary>
       <table style="border:0;margin-top:6px;font-size:12.5px">
-        <tr><td style="white-space:nowrap"><b>page views</b></td><td>How many times a page loaded. One person opening five pages = 5.</td></tr>
-        <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits. One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified.</td></tr>
-        <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once. The best guess at "a real person" — bots load pages but rarely do this.</td></tr>
-        <tr><td style="white-space:nowrap"><b>return visitors</b></td><td>Sessions from a browser that has visited DeftBrain before — any earlier visit, even earlier the same day. Cleared browser data looks new.</td></tr>
-        <tr><td style="white-space:nowrap"><b>tool runs</b></td><td>Times someone pressed a tool's main button and it asked for an answer — counted when the request starts, so failures count too. Follow-ups and "go deeper" buttons are extra runs.</td></tr>
         <tr><td style="white-space:nowrap"><b>delivered</b></td><td>Runs that came back AND displayed without crashing.</td></tr>
         <tr><td style="white-space:nowrap"><b>took it with them</b></td><td>Copy, print or share clicks on a result.</td></tr>
+        <tr><td style="white-space:nowrap"><b>return visitors</b></td><td>Sessions from a browser that has visited DeftBrain before — any earlier visit, even earlier the same day. Cleared browser data looks new.</td></tr>
+        <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once. The best guess at "a real person" — bots load pages but rarely do this.</td></tr>
+        <tr><td style="white-space:nowrap"><b>tool runs</b></td><td>Times someone pressed a tool's main button and it asked for an answer — counted when the request starts, so failures count too. Follow-ups and "go deeper" buttons are extra runs.</td></tr>
+        <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits. One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified.</td></tr>
+        <tr><td style="white-space:nowrap"><b>page views</b></td><td>How many times a page loaded. One person opening five pages = 5.</td></tr>
         <tr><td style="white-space:nowrap"><b>entered here</b></td><td>(In a day's pages list.) Views that started a visit — the person arrived on that page from outside: a search engine, a link, or typing the address ("direct"). Every other view of that page came from another DeftBrain page.</td></tr>
         <tr><td style="white-space:nowrap"><b>from</b></td><td>(In a day's pages list.) For views that did NOT start a visit: the DeftBrain page the person was on just before. Recorded since Sep 25, 2026.</td></tr>
         <tr><td style="white-space:nowrap"><b>/</b></td><td>The home page.</td></tr>
       </table>
     </details>
+    <!-- Order (2026-09-26): what people got out of it first, traffic last.
+         Views and sessions stay as denominators and spike detectors, but they
+         mostly count arrivals — bots and bounces included. -->
     <div class="cards">
-      ${card('page views', pv.length, vsPrev(prevMetrics && prevMetrics.pv), deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
-      ${card('sessions', sessions.length, vsPrev(prevMetrics && prevMetrics.sessions), deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
-      ${card('interactive', interactiveSessions, (pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human') + (vsPrev(prevMetrics && prevMetrics.interactive) ? ' · ' + vsPrev(prevMetrics && prevMetrics.interactive) : ''), deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
-      ${card('return visitors', returningSessions.length, (pct(returningSessions.length, sessions.length) + ' of sessions') + (vsPrev(prevMetrics && prevMetrics.returning) ? ' · ' + vsPrev(prevMetrics && prevMetrics.returning) : ''), deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
-      ${card('tool runs', runs.length, (pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : '')) + (vsPrev(prevMetrics && prevMetrics.runs) ? ' · ' + vsPrev(prevMetrics && prevMetrics.runs) : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
+      ${card('delivered', delivered, ('of ' + runs.length + ' tool run' + (runs.length === 1 ? '' : 's') + ' — answered and rendered' + (renderErrors.length ? ` · ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : '')) + (vsPrev(prevMetrics && prevMetrics.delivered) ? ' · ' + vsPrev(prevMetrics && prevMetrics.delivered) : ''), deltaHtml(delivered, prevMetrics && prevMetrics.delivered))}
       ${card('took it with them', taken.length, ('print + copy + share') + (vsPrev(prevMetrics && prevMetrics.taken) ? ' · ' + vsPrev(prevMetrics && prevMetrics.taken) : ''), deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
-      ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
+      ${card('return visitors', returningSessions.length, (pct(returningSessions.length, sessions.length) + ' of sessions') + (vsPrev(prevMetrics && prevMetrics.returning) ? ' · ' + vsPrev(prevMetrics && prevMetrics.returning) : ''), deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
+      ${card('interactive', interactiveSessions, (pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human') + (vsPrev(prevMetrics && prevMetrics.interactive) ? ' · ' + vsPrev(prevMetrics && prevMetrics.interactive) : ''), deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
+      ${card('tool runs', runs.length, ('started, incl. failures') + (vsPrev(prevMetrics && prevMetrics.runs) ? ' · ' + vsPrev(prevMetrics && prevMetrics.runs) : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
+      ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
+    </div>
+    <div class="cards" style="margin-top:12px;opacity:.75">
+      ${card('sessions', sessions.length, vsPrev(prevMetrics && prevMetrics.sessions), deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
+      ${card('page views', pv.length, vsPrev(prevMetrics && prevMetrics.pv), deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
     </div>
     ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs ${escH(prevLabel)} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>So far today <span style="font-weight:400;font-size:12px;color:#888">(${todaySoFar.hours}h into ${escH(TZ)} — not in the range above)</span></h2>
     <div class="cards">
-      ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
-      ${card('sessions today', todaySoFar.sessions, `vs ${todaySoFar.prevSessions} by this time yesterday`, deltaHtml(todaySoFar.sessions, todaySoFar.prevSessions))}
       ${card('tool runs today', todaySoFar.runs, `vs ${todaySoFar.prevRuns} by this time yesterday`, deltaHtml(todaySoFar.runs, todaySoFar.prevRuns))}
+      ${card('sessions today', todaySoFar.sessions, `vs ${todaySoFar.prevSessions} by this time yesterday`, deltaHtml(todaySoFar.sessions, todaySoFar.prevSessions))}
+      ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
     </div>
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's ▸ date/label to open the pages and tools behind its numbers beneath it (click again, or Esc, to close).</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
     </div>
     <script>
       window.__ledgerDetail = ${JSON.stringify(ledgerDetail)};
