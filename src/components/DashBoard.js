@@ -8,6 +8,7 @@ import HomeIntro from './HomeIntro';
 import ToolFinderWizard from './ToolFinderWizard';
 import SearchGuide, { isSentenceQuery } from './SearchGuide';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
+import GuideMatches from './GuideMatches';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import { CATEGORY_META } from '../data/categoryMeta';
 import IdeaPrompt from './IdeaPrompt';
@@ -843,6 +844,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <p className="text-xs mt-1 mb-6" style={{ color: CLR.warm500 }}>
             {isSearching ? 'Try different words' : 'Nothing in this category yet'}
           </p>
+          {isSearching && <GuideMatches query={searchTerm} colors={{ muted: CLR.warm500, border: CLR.sand200, text: CLR.warm800, bg: '#ffffff', link: CLR.navy500 }} />}
           {isSearching && <IdeaPrompt source="search-zero" query={searchTerm.trim()} />}
         </div>
       )}

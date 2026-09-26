@@ -22,7 +22,7 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { getFooterHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getSearchFormHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 
 const ROOT       = path.join(__dirname, '..');
@@ -259,7 +259,7 @@ function loadKeepSet() {
 const KEEP_SET = loadKeepSet();
 
 // Shared <head> markup — common to all index pages
-function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
+function renderHead({ title, description, canonicalPath, extraStyle = '', search = true }) {
   const canonical = `${BASE_URL}${canonicalPath}`;
   return `<!DOCTYPE html>
 <html lang="en">
@@ -493,6 +493,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
         <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
       </span>
     </a>
+    ${search ? getSearchFormHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}
     <a href="/tools" class="masthead-cta">All tools →</a>
   </header>`;
 }
@@ -579,6 +580,13 @@ const GUIDES_HOME_STYLE = `
     .gh-category-panel button span{color:#89949d;margin-left:4px}
     .gh-category-panel button.active{background:var(--gh-ink);color:#fff;border-color:var(--gh-ink)}
     .gh-result-note{font-size:13px;color:var(--gh-muted);margin:22px 0 8px}
+    .gh-tool-hits{margin:22px 0 0;padding:14px 16px;border:1px solid #d9e6f1;background:#f5f9fc;border-radius:12px}
+    .gh-tool-hits[hidden]{display:none}
+    .gh-tool-hits p{margin:0 0 8px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--gh-blue)}
+    .gh-tool-hits a{display:block;padding:6px 0;text-decoration:none;color:var(--gh-ink)}
+    .gh-tool-hits a b{font-weight:750}
+    .gh-tool-hits a span{color:var(--gh-muted);font-size:13px}
+    .gh-tool-hits a:hover b{color:var(--gh-blue)}
     .gh-guide-list{display:grid;grid-template-columns:repeat(3,1fr);column-gap:40px}
     .gh-guide-item{padding:24px 0;border-bottom:1px solid #e8e8e5;text-decoration:none;color:var(--gh-ink);display:block}
     .gh-guide-item .gh-cat{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gh-blue);font-weight:800}
@@ -684,6 +692,8 @@ function renderGuidesHome(specs, keepSet) {
     description: 'Clear, practical DeftBrain guides for everyday questions about money, health, home, relationships, work, travel, and more.',
     canonicalPath: '/guides',
     extraStyle: GUIDES_HOME_STYLE,
+    // The guides home has its own search (hero + library) — see below.
+    search: false,
   }) + `
 
   <main class="gh-page">
@@ -753,6 +763,7 @@ function renderGuidesHome(specs, keepSet) {
           <button type="button" data-cat="all" class="active">All <span>${specs.length}</span></button>
           ${categoryPanelHtml}
         </div>
+        <div class="gh-tool-hits" id="toolHits" hidden></div>
         <p class="gh-result-note" id="resultNote"></p>
         <div class="gh-guide-list" id="guideList"></div>
         <button class="gh-load-more" id="loadMore" type="button">Show more guides</button>
@@ -778,6 +789,7 @@ function renderGuidesHome(specs, keepSet) {
   </main>
 
   <script>window.DEFT_GUIDES=${guidesData};</script>
+  <script src="/search/deft-search.js"></script>
   <script>
   (()=>{
     const all=window.DEFT_GUIDES||[];
@@ -799,12 +811,33 @@ function renderGuidesHome(specs, keepSet) {
       return hay.includes(query)||words.every(w=>hay.includes(w));
     }
     function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    // A search is ranked by the shared matcher (/search/deft-search.js —
+    // the same one the home page and every guide page use), best first, with
+    // the tool or two that best fit shown above the guides: someone reading
+    // about a problem is one step from doing something about it. With no
+    // query, or if search can't load, it's the plain A-Z list.
+    const toolHits=document.querySelector('#toolHits');
+    const byHref=new Map(all.map(g=>[g.href,g]));
+    let seq=0;
+    function paint(arr,query){
+      list.innerHTML=arr.slice(0,shown).map(g=>\`<a class="gh-guide-item" id="\${g.slug}" href="\${g.href}"><span class="gh-cat">\${esc(g.categoryLabel)}</span><h3>\${esc(g.title)}</h3><p>\${esc(g.description||'')}</p></a>\`).join('');
+      note.textContent=\`\${arr.length} guide\${arr.length===1?'':'s'}\${query?' matching "'+query+'"':''}\`;
+      load.style.display=arr.length>shown?'block':'none';
+    }
     function render(reset=false){
       if(reset)shown=36;
-      const arr=all.filter(matches).sort((a,b)=>a.title.replace(/^The /i,'').localeCompare(b.title.replace(/^The /i,'')));
-      list.innerHTML=arr.slice(0,shown).map(g=>\`<a class="gh-guide-item" id="\${g.slug}" href="\${g.href}"><span class="gh-cat">\${esc(g.categoryLabel)}</span><h3>\${esc(g.title)}</h3><p>\${esc(g.description||'')}</p></a>\`).join('');
-      note.textContent=\`\${arr.length} guide\${arr.length===1?'':'s'}\${q.value.trim()?' matching "'+q.value.trim()+'"':''}\`;
-      load.style.display=arr.length>shown?'block':'none';
+      const query=q.value.trim();
+      const mine=++seq;
+      const plain=()=>{toolHits.hidden=true;paint(all.filter(matches).sort((a,b)=>a.title.replace(/^The /i,'').localeCompare(b.title.replace(/^The /i,''))),query);};
+      if(!query||!window.DeftSearch)return plain();
+      window.DeftSearch.search(query).then(res=>{
+        if(mine!==seq)return;
+        const arr=res.guides.map(g=>byHref.get(g.href)).filter(g=>g&&(cat==='all'||g.category===cat));
+        const tools=res.tools.slice(0,2);
+        toolHits.innerHTML=tools.length?'<p>Tools that can help</p>'+tools.map(t=>\`<a href="/\${esc(t.id)}"><b>\${esc(t.title)}</b> <span>— \${esc(t.tagline)}</span></a>\`).join(''):'';
+        toolHits.hidden=!tools.length;
+        paint(arr,query);
+      }).catch(()=>{if(mine===seq)plain();});
     }
     q.addEventListener('input',()=>render(true));
     document.querySelector('#clearSearch').onclick=()=>{q.value='';q.focus();render(true)};
@@ -839,6 +872,10 @@ function renderGuidesHome(specs, keepSet) {
       load.style.display='none';
       document.querySelector('#library').scrollIntoView({behavior:'smooth'});
     });
+    // /guides?q=… (the "All matching guides" link in the guide pages' search)
+    // opens the library already searched.
+    const fromUrl=new URLSearchParams(location.search).get('q');
+    if(fromUrl)q.value=fromUrl;
     render(true);
   })();
   </script>

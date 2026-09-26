@@ -226,4 +226,18 @@ function getFooterHTML() {
   </footer>`;
 }
 
-module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList };
+// Masthead search box for the static guide pages (2026-09-26). Results open in
+// a panel beneath it — tools that can help first, then guides — drawn by
+// /search/deft-search.js (built by scripts/build-search-assets.js from the same
+// matcher the React app uses). `tools`/`guides` = how many of each to show: a
+// guide page leans on tools (the reader already has a guide); a guide hub
+// leans on guides (the reader came to read) but still leads with a tool or two.
+function getSearchFormHTML({ tools = 3, guides = 6, placeholder = 'Search tools and guides…' } = {}) {
+  return `<form class="ds-form" role="search" data-deft-search data-tools="${Number(tools)}" data-guides="${Number(guides)}" action="/tools">
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"></div>
+      <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
+    </form>
+    <script src="/search/deft-search.js" defer></script>`;
+}
+
+module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML };

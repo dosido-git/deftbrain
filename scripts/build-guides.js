@@ -23,7 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { getFooterHTML, getToolList, getToolIndexHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getToolList, getToolIndexHTML, getSearchFormHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 
 // ── Guides keep-list (SEO concentration, 2026-07) ──
@@ -323,6 +323,7 @@ ${stepsJsonLd}
         <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
       </span>
     </a>
+    ${getSearchFormHTML({ tools: 4, guides: 5 })}
     <a href="/tools" class="masthead-cta">All tools →</a>
   </header>
 
