@@ -3,10 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
 import { CATEGORY_META } from '../data/categoryMeta';
-import { toolFinderMetadata } from '../data/toolFinderMetadata';
+import { buildSearchIndex, searchTools } from '../utils/toolSearch';
 import './AllToolsPage.css';
-
-const GENERIC_TAGS = new Set(['return', 'security']);
 
 const LEGACY_MAP = {
   Academic:['Learning'], Communication:['Conversations'], 'Daily Life':['Home & Daily Life'],
@@ -26,49 +24,6 @@ function categoriesFor(tool) {
   if (Array.isArray(tool.categories) && tool.categories.length) return tool.categories;
   if (tool.category) return LEGACY_MAP[tool.category] || [tool.category];
   return [];
-}
-
-function normalizedWords(value) {
-  return String(value || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2);
-}
-
-function finderText(tool) {
-  const meta = toolFinderMetadata[tool.id];
-  if (!meta) return '';
-  return [
-    ...(meta.problems || []), ...(meta.capabilities || []), ...(meta.accepts || []),
-    meta.primaryIntent, meta.whenToRecommend,
-  ].filter(Boolean).join(' ');
-}
-
-function relevance(tool, query) {
-  const q = query.toLowerCase().trim();
-  if (!q) return 0;
-  const words = normalizedWords(q);
-  const title = (tool.title || '').toLowerCase();
-  const tagline = (tool.tagline || '').toLowerCase();
-  const description = (tool.description || '').toLowerCase();
-  const tags = (tool.tags || []).map(t => String(t).toLowerCase());
-  const cats = categoriesFor(tool).join(' ').toLowerCase();
-  const finder = finderText(tool).toLowerCase();
-  let score = 0;
-  if (title.includes(q)) score += 100;
-  if (tagline.includes(q)) score += 55;
-  if (description.includes(q)) score += 45;
-  if (finder.includes(q)) score += 70;
-  tags.forEach(tag => {
-    if (tag.includes(q)) score += 35;
-    if (!GENERIC_TAGS.has(tag) && q.includes(tag)) score += 24;
-  });
-  if (cats.includes(q) || q.includes(cats)) score += 20;
-  words.forEach(word => {
-    if (title.includes(word)) score += 14;
-    if (tagline.includes(word)) score += 10;
-    if (description.includes(word)) score += 6;
-    if (finder.includes(word)) score += 9;
-    if (tags.some(tag => tag.includes(word))) score += 8;
-  });
-  return score;
 }
 
 function alpha(a, b) {
@@ -156,13 +111,17 @@ export default function AllToolsPage({ allTools = [] }) {
     return counts;
   }, [allTools]);
 
+  // Shared relevance search (src/utils/toolSearch.js) — same matcher as the
+  // home page search, so the two can't disagree about what "boss" finds.
+  const searchIndex = useMemo(() => buildSearchIndex(allTools, categoriesFor), [allTools]);
+
   const visible = useMemo(() => {
-    let list = allTools.map(tool => ({ ...tool, _categories: categoriesFor(tool), _score: relevance(tool, query) }));
+    const base = query.trim() ? searchTools(searchIndex, query) : allTools;
+    let list = base.map(tool => ({ ...tool, _categories: categoriesFor(tool) }));
     if (category !== 'All') list = list.filter(tool => tool._categories.includes(category));
-    if (query.trim()) list = list.filter(tool => tool._score > 0);
 
     if (mode === 'az') return list.sort(alpha);
-    if (query.trim()) return list.sort((a,b) => b._score - a._score || alpha(a,b));
+    if (query.trim()) return list; // already best-first
 
     const catOrder = Object.fromEntries(CATEGORY_META.map((cat, i) => [cat.name, i]));
     return list.sort((a,b) => {
@@ -170,7 +129,7 @@ export default function AllToolsPage({ allTools = [] }) {
       const bi = Math.min(...b._categories.map(c => catOrder[c] ?? 999), 999);
       return ai - bi || alpha(a,b);
     });
-  }, [allTools, category, mode, query]);
+  }, [allTools, searchIndex, category, mode, query]);
 
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};
