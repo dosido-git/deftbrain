@@ -247,7 +247,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
         {/* Hover preview — a larger, less-cropped version of the same photo,
             bottom-anchored to the image's own box so it only ever grows
             upward and outward, never over the problem/body text below.
-            Desktop only (desk:); a hover reveal serves no touch device, and
+            Desktop only (lg:); a hover reveal serves no touch device, and
             the fixed 6-column grid there means each tile has room on
             either side. The Link above deliberately has no overflow-hidden
             of its own (this needs to escape the card's box) — the normal
@@ -267,7 +267,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
             rendered size (base * 1.7 in both dimensions), identical
             across every engine because transform math isn't part of the
             percentage-resolution spec area that disagreed. */}
-        <div className="hidden desk:flex justify-center pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150">
+        <div className="hidden lg:flex justify-center pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150">
           <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" className="w-full aspect-[8/5] object-cover rounded-xl origin-bottom scale-[1.7]" style={{border:'2px solid #142a43',boxShadow:'0 20px 45px -12px rgba(20,42,67,.45)'}} />
         </div>
       </div>
@@ -332,7 +332,7 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
   // 245px. Set lg to 250px (same ~5px margin as before, just recomputed
   // against the new, lower floor) and carried the same -10px through the
   // other two breakpoints.
-  return <div className="relative h-[292px] md:h-[329px] desk:h-[250px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
+  return <div className="relative h-[292px] md:h-[329px] lg:h-[250px] hover:z-30 focus-within:z-30" style={{perspective:'1400px'}}><div className="absolute inset-0" style={{transformStyle:'preserve-3d',transition:reducedMotion?'none':'transform 2325ms cubic-bezier(.22,.61,.28,1)',transform:`rotateY(${side*180}deg)`}}>{face(faces[0],0)}{face(faces[1],1)}</div></div>;
 }
 
 function ToolScramble({ allTools, onBrowse }) {
@@ -476,7 +476,7 @@ function HeroImage({ paused, reducedMotion }) {
 
   const img = HERO_IMAGES[index];
   return (
-    <div className="relative min-h-[245px] desk:min-h-[285px] overflow-hidden bg-[#eee8df]">
+    <div className="relative min-h-[245px] lg:min-h-[285px] overflow-hidden bg-[#eee8df]">
       <img
         src={img.src}
         alt={img.alt}
@@ -579,9 +579,9 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
         image is untouched — same position, same proportions, still doing
         the only photographic "what this looks like" work on the page. */}
     <section className="rounded-2xl overflow-hidden border bg-white" style={{borderColor:BORDER}}>
-      <div className="grid desk:grid-cols-[.92fr_1.08fr]">
-        <div className="px-6 py-6 sm:px-7 sm:py-7 desk:px-8 desk:py-8 flex flex-col justify-center">
-          <h2 className="text-[30px] sm:text-[34px] desk:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
+      <div className="grid lg:grid-cols-[.92fr_1.08fr]">
+        <div className="px-6 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8 flex flex-col justify-center">
+          <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] leading-[.98] tracking-[-.035em] font-bold max-w-[560px]" style={{fontFamily:SERIF,color:INK}}>Life doesn’t come with instructions.</h2>
           {/* Charter 4.5 amendment (2026-09-23): DeftBrain doesn't presume
               there is one next step — it helps people discover possibilities
               and decide for themselves. This line dropped the earlier
@@ -628,7 +628,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
           implying one continuous thing. Browse all tools moved inside the
           categories card specifically, as its closing line. */}
       <div className="p-5 sm:p-6 border-t" style={{borderColor:BORDER}}>
-        <div className="grid desk:grid-cols-[1.2fr_.8fr] gap-5">
+        <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-5">
           <div className="rounded-2xl border p-4 sm:p-5" style={{borderColor:BORDER,background:'linear-gradient(120deg,#fff0cf 0%,#f8ddd7 100%)'}} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
             <div className="mb-4"><h2 className="text-[20px] sm:text-[22px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>What’s on your mind?</h2><p className="mt-1 text-[11px]" style={{color:MUTED}}>DeftBrain helps you explore the possibilities.</p></div>
             <div className="relative">
@@ -730,7 +730,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
           same fix as the Categories card above: let each side be exactly
           as tall as its own content instead of stretching to match
           whichever side is taller. */}
-      <div className="grid items-start desk:grid-cols-[.62fr_1.38fr]">
+      <div className="grid items-start lg:grid-cols-[.62fr_1.38fr]">
         <div className="p-5 sm:p-6">
           <h2 className="text-[25px] sm:text-[29px] font-bold leading-[1.05]" style={{fontFamily:SERIF,color:NAVY}}>See it in action</h2>
           <p className="mt-2 text-[12.5px] leading-snug" style={{color:MUTED}}>Tell DeftBrain what’s happening. Get something useful.</p>
@@ -739,7 +739,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
             <button onClick={() => onBrowse()} className="text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Explore more tools →</button>
           </div>
         </div>
-        <div className="p-5 sm:p-6 desk:pl-0 grid sm:grid-cols-2 gap-3.5">
+        <div className="p-5 sm:p-6 lg:pl-0 grid sm:grid-cols-2 gap-3.5">
           {seeItPair.map(ex => {
             const tool = toolFor(ex.toolId);
             return (
@@ -775,7 +775,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
 
     <ToolScramble allTools={allTools} onBrowse={onBrowse} />
 
-    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid desk:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Skip the category — scan for whatever sounds like your day.</p><button onClick={() => onBrowse()} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
+    <section className="py-7"><div className="rounded-2xl border overflow-hidden" style={{borderColor:BORDER,background:'linear-gradient(120deg,#ffe9d6 0%,#fdf3ea 30%,#fbf7f1 60%,#fffaf2 100%)'}}><div className="grid lg:grid-cols-[.62fr_1.38fr]"><div className="p-6 sm:p-7"><div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-500">More than one kind of problem</div><h2 className="mt-2 text-[25px] font-bold leading-tight" style={{fontFamily:SERIF,color:NAVY}}>There’s probably a DeftBrain for that.</h2><p className="mt-2 text-[10.5px] leading-relaxed" style={{color:MUTED}}>Skip the category — scan for whatever sounds like your day.</p><button onClick={() => onBrowse()} className="mt-4 text-[10px] font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all {TOOL_COUNT_LABEL} tools →</button></div><div className="relative min-h-[205px] px-5 py-6 flex flex-wrap content-center justify-center gap-x-4 gap-y-2 bg-white/30">{PROBLEM_CLOUD.map(([x,toolId],i)=>{const colors=['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e'];const deg=[-5,3,-2,5,-4,2,4][i%7];return <Link key={x} to={`/${toolId}`} className="inline-block font-bold whitespace-nowrap hover:underline underline-offset-2" style={{fontFamily:i%4===0?SERIF:'inherit',fontSize:`${9+(i%5)*0.8}px`,color:colors[i%colors.length],transform:`rotate(${deg}deg)`,opacity:.88}}>{x}</Link>})}</div></div></div></section>
 
 
     {/* Objection-handling — collapsed by default, after the tools content
