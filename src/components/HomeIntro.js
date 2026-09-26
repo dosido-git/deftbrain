@@ -338,7 +338,11 @@ function DoorCard({ initial, incoming, toolFor, flipToken, reducedMotion }) {
 function ToolScramble({ allTools, onBrowse }) {
   const eligible = useMemo(() => allTools.filter(t => t?.id && t?.title && t?.tagline), [allTools]);
   const [seed, setSeed] = useState(0);
-  const shown = useMemo(() => seededShuffle(eligible, seed).slice(0, 42), [eligible, seed]);
+  // 18, down from 42 (2026-09-21 external review, item 7): the scramble is
+  // for someone curious, and a purposeful visitor had to scroll past 42
+  // tiles to reach anything below it. "Scramble more" and "Browse all" are
+  // still right there for anyone who wants more.
+  const shown = useMemo(() => seededShuffle(eligible, seed).slice(0, 18), [eligible, seed]);
 
   if (eligible.length === 0) return null;
 
@@ -354,7 +358,7 @@ function ToolScramble({ allTools, onBrowse }) {
           <div>
             <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore</div>
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
-            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>Some DeftBrain tool taglines. Click for more.</p>
+            <p className="mt-1 text-[11px] max-w-md" style={{color:MUTED}}>A random handful of tools. Open any one, or scramble for another handful.</p>
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-[10px] font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble more</button>
         </div>
@@ -378,7 +382,11 @@ function ToolScramble({ allTools, onBrowse }) {
                   <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
                   <span>
                     <b className="block text-[11px] leading-tight" style={{color:accent}}>{t.tagline}</b>
-                    <em className="block not-italic text-[9px] mt-0.5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" style={{color:NAVY}}>{t.title} →</em>
+                    {/* The tool's name is always shown, not revealed on hover (external
+                        review, item 7): a tagline alone made visitors decode a
+                        clever line before knowing what they'd open, and touch
+                        screens never saw the name at all. */}
+                    <em className="block not-italic text-[9px] mt-0.5" style={{color:NAVY}}>{t.title} →</em>
                   </span>
                 </span>
                 {/* Preview polaroid — only its own independent "just landed"
@@ -414,8 +422,11 @@ function ToolScramble({ allTools, onBrowse }) {
                     tile with no viewport-edge clamping, and a tile near the
                     left/right edge of a ~375px screen has little room
                     either side already. */}
+                {/* Preview shows on real hover (mouse/trackpad) and on keyboard
+                    focus only. On a touch screen a tap just opens the tool —
+                    one predictable action, no half-shown popup first. */}
                 <div
-                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-[240px] sm:w-[360px] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100"
+                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-[240px] sm:w-[360px] opacity-0 transition-opacity duration-150 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:opacity-100"
                   style={{transform:`rotate(${tilt}deg) translateX(-50%)`}}
                 >
                   <div className="rounded-2xl bg-white p-2.5 pb-3.5" style={{border:`2px solid ${accent}`,boxShadow:'0 20px 45px -12px rgba(20,42,67,.4)'}}>
