@@ -6,6 +6,7 @@ import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
 import HomeIntro from './HomeIntro';
 import ToolFinderWizard from './ToolFinderWizard';
+import SearchGuide, { isSentenceQuery } from './SearchGuide';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import { CATEGORY_META } from '../data/categoryMeta';
 import IdeaPrompt from './IdeaPrompt';
@@ -806,12 +807,18 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ RESULTS HEADER ═══════════ */}
       <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
 
+        {/* A search written as a situation gets a guided starting point
+            first; the word matches follow as the fallback list. */}
+        {isSearching && isSentenceQuery(searchTerm) && <SearchGuide problem={searchTerm} />}
+
         {/* Search result count — tight below category bar */}
         {isSearching && (
           <p className="text-[11px] font-semibold mt-2 mb-1" style={{ color: CLR.warm500 }}>
             {filteredTools.length === 0
-              ? 'No tools found — try different words'
-              : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
+              ? (isSentenceQuery(searchTerm) ? 'No other tools use those words' : 'No tools found — try different words')
+              : isSentenceQuery(searchTerm)
+                ? `${filteredTools.length} other tool${filteredTools.length !== 1 ? 's' : ''} that mention these words`
+                : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
           </p>
         )}
 
