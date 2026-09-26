@@ -11,12 +11,69 @@ const BORDER = '#e4ddd2';
 const SERIF = "'Playfair Display', Georgia, serif";
 
 // Stable entry points: visitors can finish reading before choosing a tool.
+// Shown four at a time; "Show other situations" steps through the rest
+// (2026-09-27) — variety the visitor asks for, instead of the old cards
+// flipping on their own. The first four are the default set; the rest are
+// the earlier rotation's situations (each has a card photo in
+// public/home-scenes/flip-cards/), in that list's order.
 const SITUATIONS = [
   { toolId: 'LeaseTrapDetector', problem: 'Something in my lease looks wrong.', body: 'Understand the risk and what to ask.' },
   { toolId: 'DoctorVisitPrep', problem: 'I have a doctor appointment coming up.', body: 'Walk in knowing what matters.' },
   { toolId: 'DifficultTalkCoach', problem: 'I need to have a difficult conversation.', body: 'Think it through before you say it.' },
   { toolId: 'WhichLife', problem: 'I want to explore a different path.', body: 'See possibilities you haven’t considered.' },
+  { toolId: 'BillRescue', problem: 'This bill doesn’t look right.', body: 'Figure out what to question and what to do next.' },
+  { toolId: 'FakeReviewDetective', problem: 'Can I trust these reviews?', body: 'Look for the patterns that don’t add up.' },
+  { toolId: 'TipOfTongue', problem: 'I know it. I just can’t remember it.', body: 'Work backward from the clues you still have.' },
+  { toolId: 'ComplaintEscalationWriter', problem: 'They’re not listening to my complaint.', body: 'Make the next message harder to ignore.' },
+  { toolId: 'PlainTalk', problem: 'I don’t understand this document.', body: 'Turn dense language into something usable.' },
+  { toolId: 'LayoverMaximizer', problem: 'I have hours between flights.', body: 'Find out what you can realistically do.' },
+  { toolId: 'RentersDepositSaver', problem: 'I want my security deposit back.', body: 'Prepare before move-out, not after the dispute.' },
+  { toolId: 'ProcedureProbe', problem: 'A procedure was recommended. What should I ask?', body: 'Understand the decision before you say yes.' },
+  { toolId: 'MarkupDetective', problem: 'Is this price actually reasonable?', body: 'Look past the sticker and inspect the markup.' },
+  { toolId: 'GhostWriter', problem: 'I know what I mean. I can’t get the words right.', body: 'Turn the thought into something you can send.' },
+  { toolId: 'WaitingModeLiberator', problem: 'I’m stuck waiting and can’t start anything.', body: 'Get some of your day back.' },
+  { toolId: 'NameStorm', problem: 'I need a name that doesn’t sound generic.', body: 'Generate directions worth reacting to.' },
+  { toolId: 'ChaosPilot', problem: 'Everything feels urgent at once.', body: 'Sort the pile and find the next move.' },
+  { toolId: 'FinalWish', problem: 'I need to say something that matters.', body: 'Find the words without making them sound borrowed.' },
+  { toolId: 'FocusSoundArchitect', problem: 'My surroundings are making it hard to work.', body: 'Build a background your attention can live with.' },
+  { toolId: 'AlternatePath', problem: 'What if I’d made a different choice?', body: 'See where the other path would have led.' },
+  { toolId: 'AnalogyEngine', problem: 'I need to explain something complicated.', body: 'Get an analogy built for exactly who’s listening.' },
+  { toolId: 'ArgueSmarter', problem: 'I think I’m right, but I want to be sure.', body: 'Pressure-test your case against the strongest pushback.' },
+  { toolId: 'AwkwardSilenceFiller', problem: 'The conversation just stalled.', body: 'Get something to say that actually fits the moment.' },
+  { toolId: 'BatchFlow', problem: 'My to-do list is a mess of unrelated tasks.', body: 'Group them so your day stops fighting you.' },
+  { toolId: 'BeforeHello', problem: 'There’s someone in my field I’d like to know.', body: 'Get ready before you say hello.' },
+  { toolId: 'BeforeTheCrash', problem: 'I keep running myself into the ground.', body: 'Learn the pattern before it happens again.' },
+  { toolId: 'BeliefStressTest', problem: 'I’ve held this belief for years.', body: 'See where it holds — and where it breaks.' },
+  { toolId: 'BikeMedic', problem: 'Something’s wrong with my bike.', body: 'Figure out what it is and what to do next.' },
+  { toolId: 'Bookmark', problem: 'I stopped reading and can’t remember where I was.', body: 'Pick up again — without the spoilers.' },
+  { toolId: 'BragSheetBuilder', problem: 'I need to talk about my own work.', body: 'Remember it clearly and say it with confidence.' },
+  { toolId: 'BrainDumpBuddy', problem: 'Everything is stuck in my head at once.', body: 'Get it out and find the one next step.' },
+  { toolId: 'BrainRoulette', problem: 'I want to think about something new.', body: 'Follow your curiosity somewhere unexpected.' },
+  { toolId: 'BrainStateDeejay', problem: 'I need to feel different than I do right now.', body: 'Get music that moves you there.' },
+  { toolId: 'BreakMyPlan', problem: 'I think my plan is solid, but I’m not sure.', body: 'Find its weak spots before they find you.' },
+  { toolId: 'BuyWise', problem: 'I’m about to buy something big.', body: 'Go in with your eyes open.' },
+  { toolId: 'CaptionMagic', problem: 'I have the photo. I don’t have the words.', body: 'Find the caption that actually fits.' },
+  { toolId: 'ColdOpenCraft', problem: 'I don’t know how to start the message.', body: 'Make the first line easier to send — and answer.' },
+  { toolId: 'ContextCollapse', problem: 'The same message reads differently to my boss, my partner, and my friend.', body: 'See how each of them will actually read it — before you send it.' },
+  { toolId: 'DecoderRing', problem: 'I can’t tell what they actually meant by that.', body: 'Explore what might really be going on beneath the words.' },
+  { toolId: 'DoctorVisitTranslator', problem: 'My diagnosis is full of words I don’t understand.', body: 'Turn the medical jargon into plain English.' },
+  { toolId: 'HistoryToday', problem: 'This feels unprecedented, but does it?', body: 'Find the real historical parallel — not the obvious one.' },
+  { toolId: 'Mend', problem: 'I need to apologize, but not over- or under-do it.', body: 'Match the apology to the actual harm.' },
+  { toolId: 'MentalHealthNavigator', problem: 'I don’t know what kind of help I actually need.', body: 'Find the right support for what you’re going through.' },
+  { toolId: 'MiseEnPlace', problem: 'I can cook. I just can’t decide what to cook.', body: 'Get the plan, not just the recipe.' },
+  { toolId: 'MissingLink', problem: 'I’m stuck on a concept and don’t know why.', body: 'Find exactly where your understanding broke.' },
+  { toolId: 'NotSoFast', problem: 'I got a flat no, and I don’t think it’s final.', body: 'Find the appeal, the escalation path, or the conversation nobody explained.' },
+  { toolId: 'PlantRescue', problem: 'My plant looks off and I don’t know why.', body: 'Get a few plausible explanations and what to check first.' },
+  { toolId: 'RoastMe', problem: 'I’ve read this so many times I can’t see what’s wrong anymore.', body: 'Find the clichés and buzzwords you stopped noticing.' },
+  { toolId: 'SixDegreesOfMe', problem: 'My interests feel scattered and unrelated.', body: 'Discover the surprising threads that connect them.' },
+  { toolId: 'SomeoneSaidItBetter', problem: 'I know the feeling. I just can’t find the words.', body: 'Get the words you needed, already said.' },
+  { toolId: 'TheDebrief', problem: 'The meeting ended and I’m still not sure what was decided.', body: 'Figure out what actually happened.' },
+  { toolId: 'TheWholeStory', problem: 'I need to explain a messy chapter of my life.', body: 'Frame the real story — honest, but strategic.' },
+  { toolId: 'VirtualBodyDouble', problem: 'I focus better with someone else in the room.', body: 'Work alongside a presence that keeps you on task.' },
+  { toolId: 'WhatsThatMean', problem: 'I don’t know what that phrase actually means.', body: 'Get the plain explanation, not just the dictionary entry.' },
+  { toolId: 'WrongAnswersOnly', problem: 'I need something ridiculous to lighten the mood.', body: 'Get a confidently, beautifully wrong answer.' },
 ];
+const SITUATIONS_PER_SET = 4;
 
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
 const SCRAMBLE_ROTATE = [-12,-7,-3,3,7,12];
@@ -164,7 +221,13 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
     }));
     return counts;
   }, [allTools]);
-  const situations = SITUATIONS.filter(item => byId.has(item.toolId));
+  const allSituations = useMemo(() => SITUATIONS.filter(item => byId.has(item.toolId)), [byId]);
+  const [situationSet, setSituationSet] = useState(0);
+  // Wraps around the list, so every set is a full four (55 situations don't
+  // divide by 4) and it never runs out.
+  const hasMoreSituations = allSituations.length > SITUATIONS_PER_SET;
+  const situations = Array.from({ length: Math.min(SITUATIONS_PER_SET, allSituations.length) }, (_, k) =>
+    allSituations[(situationSet * SITUATIONS_PER_SET + k) % allSituations.length]);
 
   // Scroll-depth markers (data-db-section, see src/utils/analytics.js) feed the
   // metrics report's "How far down the home page people get". data-db-layout
@@ -189,9 +252,12 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
     <section className="db-home-section" aria-labelledby="home-situations-title" data-db-section="situations">
       <div className="db-home-section-heading">
         <h2 id="home-situations-title">What’s on your mind?</h2>
-        <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
+        <div className="db-home-section-links">
+          {hasMoreSituations && <button type="button" className="db-home-text-link" onClick={() => setSituationSet(n => n + 1)} aria-controls="home-situations">Show other situations <span aria-hidden="true">↻</span></button>}
+          <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
+        </div>
       </div>
-      <div className="db-home-situations">
+      <div className="db-home-situations" id="home-situations" aria-live="polite">
         {situations.map(item => <Link key={item.toolId} to={`/${item.toolId}`} className="db-home-situation">
           <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" />
           <div className="db-home-situation-copy">

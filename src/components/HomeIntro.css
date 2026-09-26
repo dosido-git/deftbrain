@@ -38,6 +38,8 @@
 .db-home-finder p { margin: 12px 0 0; font-size: 14px; }
 .db-home-section { margin-top: 32px; }
 .db-home-section-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.db-home-section-links { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: baseline; }
+button.db-home-text-link { background: none; border: 0; cursor: pointer; font-family: inherit; color: inherit; }
 .db-home-text-link { font-size: 14px; font-weight: 600; text-decoration: underline !important; text-underline-offset: 4px; padding-block: 8px; }
 .db-home-situations { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .db-home-situation { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--home-border); border-radius: 12px; background: #fffdf9; text-decoration: none !important; color: inherit; }
