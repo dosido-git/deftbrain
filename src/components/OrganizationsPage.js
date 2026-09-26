@@ -63,7 +63,7 @@ export default function OrganizationsPage({ allTools = [] }) {
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
         <h1>Practical help for the things life throws at your people.</h1>
         <p className="org-lede">DeftBrain gives employees, members, patrons, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>
-        <div className="org-actions"><a className="org-btn org-btn-primary" href="mailto:hello@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a><span>No AI expertise required.</span></div>
+        <div className="org-actions"><a className="org-btn org-btn-primary" href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a><span>No AI expertise required.</span></div>
         <div className="org-moments" aria-label="Examples of everyday questions">
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
         </div>
@@ -120,11 +120,11 @@ export default function OrganizationsPage({ allTools = [] }) {
       </section>
 
       <section className="org-section org-shell org-pilot" id="pilot">
-        <div><div className="org-kicker">START SMALL</div><h2>Bring DeftBrain to your organization.</h2><p>Start with a limited pilot. Give your people access, see what they actually use, and decide whether DeftBrain belongs in the resources you provide.</p><a className="org-btn org-btn-primary" href="mailto:hello@deftbrain.com?subject=DeftBrain%20Organization%20Pilot">Discuss a pilot →</a></div>
+        <div><div className="org-kicker">START SMALL</div><h2>Bring DeftBrain to your organization.</h2><p>Start with a limited pilot. Give your people access, see what they actually use, and decide whether DeftBrain belongs in the resources you provide.</p><a className="org-btn org-btn-primary" href="mailto:Org@deftbrain.com?subject=DeftBrain%20Organization%20Pilot">Discuss a pilot →</a></div>
         <div className="org-pilot-points"><article><h3>Easy to introduce</h3><p>We'll provide materials to help people discover what's available.</p></article><article><h3>Easy to use</h3><p>No training or AI expertise required.</p></article><article><h3>Easy to evaluate</h3><p>We'll define useful, privacy-respecting pilot measures before launch.</p></article></div>
       </section>
 
-      <section className="org-final"><div className="org-shell"><h2>There's almost always more than one way forward.</h2><p>DeftBrain helps people discover possibilities.</p><a className="org-btn org-btn-light" href="mailto:hello@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a></div></section>
+      <section className="org-final"><div className="org-shell"><h2>There's almost always more than one way forward.</h2><p>DeftBrain helps people discover possibilities.</p><a className="org-btn org-btn-light" href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a></div></section>
     </main>
   );
 }
