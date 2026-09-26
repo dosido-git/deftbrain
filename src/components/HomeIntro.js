@@ -604,7 +604,7 @@ export default function HomeIntro({ allTools=[], onBrowse }) {
               still lives on this page, just further down (the "AI can be
               wrong, confidently" disclaimer near the tool grid), so this
               sentence no longer needs to carry that job too. */}
-          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain is a collection of single-purpose tools that shine light on life's uncertainties and possibilities.</p>
+          <p className="mt-3 text-[15px] sm:text-base max-w-[470px]" style={{color:NAVY}}>DeftBrain is a collection of single-purpose tools that shine light on life's uncertainties and possibilities — plus a library of <a href="/guides" className="underline underline-offset-4">guides</a> that explain them.</p>
           {/* Plain <a>, not <Link>: /privacy is a static prerendered page
               (public/privacy.html), not a React Router route — a <Link> here
               would fall through to the catch-all /:toolId route and 404, the
