@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { track } from '../utils/analytics';
 import { useTheme } from '../hooks/useTheme';
 import Caret from '../components/Caret';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -574,6 +575,12 @@ const RentersDepositSaver = ({ tool }) => {
     }));
 
     let stepped = false;
+    // This stream bypasses useClaudeAPI, which is where every other tool's
+    // run/complete/error beacons fire — so the main report was never counted.
+    // Same three events, same tool key convention (the endpoint).
+    const _t0 = Date.now();
+    const TRACK_TOOL = 'renters-deposit-saver/stream';
+    track('tool_run', { tool: TRACK_TOOL });
     try {
       const response = await fetch('/api/renters-deposit-saver/stream', {
         method: 'POST',
@@ -616,7 +623,7 @@ const RentersDepositSaver = ({ tool }) => {
             setError(t('rds_sections_failed'));
             continue;
           }
-          if (event.done) continue;
+          if (event.done) { track('tool_complete', { tool: TRACK_TOOL, ms: Date.now() - _t0 }); continue; }
           if (event.section && event.content) {
             if (!stepped) {
               // First section arrived — jump to step 3 with results initialized
@@ -631,6 +638,7 @@ const RentersDepositSaver = ({ tool }) => {
       }
 
     } catch (err) {
+      track('tool_error', { tool: TRACK_TOOL, message: String(err.message || '').slice(0, 80) });
       if (stepped) {
         // Some sections already rendered — keep them, show an inline error instead of wiping
         setError(t('rds_sections_failed'));

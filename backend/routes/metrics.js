@@ -578,17 +578,24 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // number that makes that obvious is the prior window's own value, so it
     // travels with the delta rather than living in a footnote.
     const prevWindowText = rangeText.replace(/^(last|yesterday)\s?/, '') || rangeText;
+    // With range=yesterday every headline number IS yesterday, so the thing it
+    // is compared with is the day BEFORE yesterday. Saying "vs 9 yesterday"
+    // there read as if the 9 on the card were today's (reported 2026-09-25).
+    const dayBeforeLabel = (isPastDay && prevCutoffISO)
+      ? new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(prevCutoffISO))
+      : null;
+    const prevLabel = isPastDay ? `the day before (${dayBeforeLabel})` : `the previous ${prevWindowText}`;
     const deltaHtml = (cur, prev) => {
       if (prev == null) return '';
       const d = cur - prev;
-      const title = `previous ${prevWindowText}: ${prev}`;
+      const title = `${prevLabel}: ${prev}`;
       if (d === 0) return `<span title="${escH(title)}" style="font-size:12px;color:#999;font-weight:400"> ±0</span>`;
       const up = d > 0;
       return `<span title="${escH(title)}" style="font-size:12px;font-weight:600;color:${up ? '#15803d' : '#b91c1c'}"> ${up ? '▲' : '▼'} ${up ? '+' : '−'}${Math.abs(d)}</span>`;
     };
     // Same text under the number, where it cannot be missed on a touch screen
     // that has no hover.
-    const vsPrev = (prev) => (prev == null ? null : isPastDay ? `vs ${prev} yesterday` : `vs ${prev} in the previous ${prevWindowText}`);
+    const vsPrev = (prev) => (prev == null ? null : isPastDay ? `vs ${prev} ${prevLabel}` : `vs ${prev} in ${prevLabel}`);
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
     // Canonical per-tool key = the frontend tool id from the page path
@@ -1014,7 +1021,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     function emptyBucket() {
       return { views: 0, sessions: 0, interactive: 0, returning: 0, runs: 0,
         completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
-        pages: {}, tools: {} };
+        pages: {}, entries: {}, tools: {} };
     }
     const ledgerByDay = {};
     for (const d of ledgerDayList) ledgerByDay[d] = emptyBucket();
@@ -1028,6 +1035,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         const pageName = (seg && /^[A-Z]/.test(seg)) ? seg : (e.path || '(unknown)');
         b.pages[pageName] = (b.pages[pageName] || 0) + 1;
         if (e.props && e.props.newSession) {
+          // This view opened the session, so the visitor arrived here from
+          // outside the site. Its source is the session's ref (a referring
+          // host or ?utm_source/?ref), else direct. Views that did NOT open a
+          // session came from another DeftBrain page — which one isn't recorded.
+          const en = b.entries[pageName] || (b.entries[pageName] = { n: 0, src: {} });
+          en.n++;
+          const src = e.props.ref || e.ref || 'direct';
+          en.src[src] = (en.src[src] || 0) + 1;
           b.sessions++;
           if (e.props.returning) b.returning++;
           if (e.props.bucket === '1-7d') b.bucket1_7++;
@@ -1050,6 +1065,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         out.errors += b.errors; out.renderErrors += b.renderErrors; out.taken += b.taken;
         out.bucket1_7 += b.bucket1_7;
         for (const [k, n] of Object.entries(b.pages)) out.pages[k] = (out.pages[k] || 0) + n;
+        for (const [k, en] of Object.entries(b.entries)) {
+          const o = out.entries[k] || (out.entries[k] = { n: 0, src: {} });
+          o.n += en.n;
+          for (const [sk, sn] of Object.entries(en.src)) o.src[sk] = (o.src[sk] || 0) + sn;
+        }
         for (const [k, n] of Object.entries(b.tools)) out.tools[k] = (out.tools[k] || 0) + n;
       }
       out.delivered = Math.max(0, out.completes - out.renderErrors);
@@ -1096,11 +1116,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
 
     let ledgerRowId = 0;
-    const ledgerDetail = {}; // rowId -> { pages: [[name,n]...], tools: [[name,n]...] }
+    const ledgerDetail = {}; // rowId -> { pages: [[name,n,entered,sources]...], tools: [[name,n]...] }
     const topN = (obj, n) => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
     function registerDetail(bucket) {
       const id = 'r' + (ledgerRowId++);
-      ledgerDetail[id] = { pages: topN(bucket.pages, 20), tools: topN(bucket.tools, 20) };
+      const pages = topN(bucket.pages, 20).map(([name, n]) => {
+        const en = bucket.entries[name];
+        const srcText = en ? topN(en.src, 5).map(([k, v]) => `${k} ${v}`).join(', ') : '';
+        return [name, n, en ? en.n : 0, srcText];
+      });
+      ledgerDetail[id] = { pages, tools: topN(bucket.tools, 20) };
       return id;
     }
 
@@ -1116,7 +1141,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
     const anomalyBadge = (flags) => flags.length
       ? ` <span title="${escH(flags.join('; '))}" style="color:#b45309;cursor:help">⚠️</span>` : '';
-    const rowLabelBtn = (id, label) => `<button class="ledger-open" data-row="${id}" style="all:unset;cursor:pointer;color:#165b9a;font-weight:600;text-decoration:underline;text-decoration-style:dotted">${escH(label)}</button>`;
+    const rowLabelBtn = (id, label) => `<button class="ledger-open" data-row="${id}" aria-expanded="false" style="all:unset;cursor:pointer;color:#165b9a;font-weight:600"><span class="ledger-caret" aria-hidden="true" style="display:inline-block;width:1em;color:#888">\u25B8</span><span style="text-decoration:underline;text-decoration-style:dotted">${escH(label)}</span></button>`;
 
     function ledgerTr(label, b, prevBucket, opts) {
       const id = registerDetail(b);
@@ -1246,6 +1271,20 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
+    <details style="margin:10px 0 4px;font-size:12.5px;background:#fff;border:1px solid #e5e2da;border-radius:8px;padding:8px 12px">
+      <summary style="cursor:pointer;font-weight:600;color:#1a2e44">Key — what each number means</summary>
+      <table style="border:0;margin-top:6px;font-size:12.5px">
+        <tr><td style="white-space:nowrap"><b>page views</b></td><td>How many times a page loaded. One person opening five pages = 5.</td></tr>
+        <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits. One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified.</td></tr>
+        <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once. The best guess at "a real person" — bots load pages but rarely do this.</td></tr>
+        <tr><td style="white-space:nowrap"><b>return visitors</b></td><td>Sessions from a browser that has visited DeftBrain before — any earlier visit, even earlier the same day. Cleared browser data looks new.</td></tr>
+        <tr><td style="white-space:nowrap"><b>tool runs</b></td><td>Times someone pressed a tool's main button and it asked for an answer — counted when the request starts, so failures count too. Follow-ups and "go deeper" buttons are extra runs.</td></tr>
+        <tr><td style="white-space:nowrap"><b>delivered</b></td><td>Runs that came back AND displayed without crashing.</td></tr>
+        <tr><td style="white-space:nowrap"><b>took it with them</b></td><td>Copy, print or share clicks on a result.</td></tr>
+        <tr><td style="white-space:nowrap"><b>entered here</b></td><td>(In a day's pages list.) Views that started a visit — the person arrived on that page from outside: a search engine, a link, or typing the address ("direct"). Every other view of that page came from another DeftBrain page.</td></tr>
+        <tr><td style="white-space:nowrap"><b>/</b></td><td>The home page.</td></tr>
+      </table>
+    </details>
     <div class="cards">
       ${card('page views', pv.length, vsPrev(prevMetrics && prevMetrics.pv), deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
       ${card('sessions', sessions.length, vsPrev(prevMetrics && prevMetrics.sessions), deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
@@ -1256,7 +1295,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
-    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs ${isPastDay ? 'yesterday' : 'the previous ' + escH(rangeText.replace(/^(last|yesterday)\s?/, ''))} (${prevMetrics.events} events in that window)</p>` : ''}
+    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs ${escH(prevLabel)} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>So far today <span style="font-weight:400;font-size:12px;color:#888">(${todaySoFar.hours}h into ${escH(TZ)} — not in the range above)</span></h2>
     <div class="cards">
       ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
@@ -1265,7 +1304,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </div>
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's date/label to see the pages and tools behind its numbers (Esc closes that panel).</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's ▸ date/label to open the pages and tools behind its numbers beneath it (click again, or Esc, to close).</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
@@ -1274,43 +1313,61 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>views</th><th>sessions</th><th>interactive</th><th>returning</th><th>runs</th><th>delivered</th><th>delivered/session</th><th>took it</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
     </div>
-    <div id="ledgerDetailBox" style="display:none;position:sticky;bottom:0;margin-top:10px;background:#1a2e44;color:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 -4px 16px rgba(0,0,0,.15)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <b id="ledgerDetailTitle" style="font-size:14px"></b>
-        <button onclick="document.getElementById('ledgerDetailBox').style.display='none'" style="all:unset;cursor:pointer;color:#cbd5e1;font-size:16px;padding:0 4px">✕</button>
-      </div>
-      <div style="display:flex;gap:24px;flex-wrap:wrap">
-        <div style="flex:1;min-width:220px"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">PAGES VISITED</div><div id="ledgerDetailPages" style="font-size:13px"></div></div>
-        <div style="flex:1;min-width:220px"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">TOOLS RUN</div><div id="ledgerDetailTools" style="font-size:13px"></div></div>
-      </div>
-    </div>
     <script>
       window.__ledgerDetail = ${JSON.stringify(ledgerDetail)};
+      // Click a row's label to open its pages/tools as a row directly beneath
+      // it — part of the table, so it scrolls with the page (it used to be a
+      // sticky panel pinned to the bottom of the window). Several can be open.
       (function () {
-        var box = document.getElementById('ledgerDetailBox');
-        var title = document.getElementById('ledgerDetailTitle');
-        var pagesEl = document.getElementById('ledgerDetailPages');
-        var toolsEl = document.getElementById('ledgerDetailTools');
-        function list(pairs) {
+        function esc(x) { return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        // One line per item, never wrapped: long guide paths are cut with an
+        // ellipsis and the full text is in the hover title.
+        var LINE = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+        function pagesList(pairs) {
           if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
-          return pairs.map(function (p) { return '<div>' + p[0].replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' <b>' + p[1] + '</b></div>'; }).join('');
+          return pairs.map(function (p) {
+            var name = p[0] === '/' ? '/ (home page)' : p[0];
+            var entered = p[2] ? ' <span style="color:#9db3c8">· ' + p[2] + ' entered here' + (p[3] ? ' (' + esc(p[3]) + ')' : '') + '</span>' : '';
+            var tip = name + ' — ' + p[1] + ' view(s)' + (p[2] ? '; ' + p[2] + ' opened a visit (' + p[3] + '), the rest came from another DeftBrain page' : '; all came from another DeftBrain page');
+            return '<div style="' + LINE + '" title="' + esc(tip) + '">' + esc(name) + ' <b>' + p[1] + '</b>' + entered + '</div>';
+          }).join('');
         }
-        function closeBox() { box.style.display = 'none'; }
-        // One delegated listener on the shared wrapper covers all three
-        // tables (daily/weekly/monthly) instead of one per table.
+        function toolsList(pairs) {
+          if (!pairs || !pairs.length) return '<span style="color:#9db3c8">none</span>';
+          return pairs.map(function (p) { return '<div style="' + LINE + '" title="' + esc(p[0]) + '">' + esc(p[0]) + ' <b>' + p[1] + '</b></div>'; }).join('');
+        }
+        function detailHtml(d) {
+          // width:0;min-width:100% keeps the unwrapped lines from widening the
+          // table — the block takes the table's width instead of setting it.
+          return '<div style="width:0;min-width:100%;display:flex;gap:24px;background:#1a2e44;color:#fff;border-radius:8px;padding:12px 16px;box-sizing:border-box">' +
+            '<div style="flex:3;min-width:0"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">PAGES VISITED</div><div style="font-size:12.5px">' + pagesList(d.pages) + '</div></div>' +
+            '<div style="flex:1;min-width:0"><div style="font-size:11px;color:#9db3c8;margin-bottom:4px">TOOLS RUN</div><div style="font-size:12.5px">' + toolsList(d.tools) + '</div></div>' +
+          '</div>';
+        }
+        function closeRow(btn) {
+          var tr = btn.closest('tr');
+          var next = tr.nextElementSibling;
+          if (next && next.classList.contains('ledger-detail-row')) next.remove();
+          btn.setAttribute('aria-expanded', 'false');
+          btn.querySelector('.ledger-caret').textContent = '\u25B8';
+        }
         document.getElementById('ledgerTables').addEventListener('click', function (e) {
           var btn = e.target.closest('.ledger-open');
           if (!btn) return;
-          var id = btn.getAttribute('data-row');
-          var d = window.__ledgerDetail[id];
+          if (btn.getAttribute('aria-expanded') === 'true') { closeRow(btn); return; }
+          var d = window.__ledgerDetail[btn.getAttribute('data-row')];
           if (!d) return;
-          title.textContent = btn.textContent;
-          pagesEl.innerHTML = list(d.pages);
-          toolsEl.innerHTML = list(d.tools);
-          box.style.display = 'block';
+          var tr = btn.closest('tr');
+          var row = document.createElement('tr');
+          row.className = 'ledger-detail-row';
+          row.innerHTML = '<td colspan="' + tr.children.length + '" style="padding:4px 6px 10px">' + detailHtml(d) + '</td>';
+          tr.parentNode.insertBefore(row, tr.nextSibling);
+          btn.setAttribute('aria-expanded', 'true');
+          btn.querySelector('.ledger-caret').textContent = '\u25BE';
         });
         document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && box.style.display !== 'none') closeBox();
+          if (e.key !== 'Escape') return;
+          document.querySelectorAll('.ledger-open[aria-expanded="true"]').forEach(closeRow);
         });
       })();
     </script>
