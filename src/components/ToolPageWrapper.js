@@ -11,6 +11,15 @@ import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
 import { headerGradient } from '../utils/headerGradient';
 import BrandMark from './BrandMark';
+import SiteHeader from './SiteHeader';
+import './ToolPageSiteStyle.css';
+
+// PILOT (2026-09-27): tools shown in the home page's frame — its header (with
+// the light/dark switch), navy serif title, 1200px width, warm neutrals in
+// light mode, and one flat card (the tool's color becomes a pale band across
+// its top, drawn by the tool) instead of a colored panel around an inner card. To judge the look before
+// any wider rollout; remove a tool here and it reverts untouched.
+const SITE_STYLE_PILOT = new Set(['DoctorVisitPrep', 'WrongAnswersOnly']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -83,6 +92,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
   // Theme-aware classes
   const isDark = theme === 'dark';
+  const sitePilot = SITE_STYLE_PILOT.has(detectedTool?.id);
 
   // Bookmark toast
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
@@ -95,9 +105,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   
   const colors = {
     // Backgrounds
-    bg: isDark ? 'bg-zinc-900' : 'bg-stone-50',
+    bg: isDark ? 'bg-zinc-900' : (sitePilot ? 'bg-[#faf8f5]' : 'bg-stone-50'),
     surface: isDark ? 'bg-zinc-800' : 'bg-white',
-    surfaceAlt: isDark ? 'bg-zinc-800' : 'bg-stone-100',
+    surfaceAlt: isDark ? 'bg-zinc-800' : (sitePilot ? 'bg-[#f3efe8]' : 'bg-stone-100'),
     
     // Text
     text: isDark ? 'text-zinc-50' : 'text-stone-900',
@@ -107,7 +117,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     textMuted: isDark ? 'text-zinc-400' : 'text-stone-500',
     
     // Borders
-    border: isDark ? 'border-zinc-700' : 'border-stone-200',
+    border: isDark ? 'border-zinc-700' : (sitePilot ? 'border-[#e4ddd2]' : 'border-stone-200'),
     
     // Accents — amber-700 (not 600) in light mode: the 10-12px accent
     // headings/pill sit at ~2.9:1 with amber-600; amber-700 reaches 4.6:1.
@@ -128,10 +138,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div data-print-wrapper className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200`}>
+    <div data-print-wrapper data-site-style={sitePilot ? 'home' : undefined} data-print-handout={sitePilot ? '' : undefined} className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
       
+      {sitePilot && <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />}
       {/* ── Compact Logo Bar ── */}
-      <div data-print-hide className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
+      {!sitePilot && <div data-print-hide className={`w-full px-3 sm:px-6 py-4 ${colors.bg} sticky top-0 z-20 border-b ${colors.border}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <button 
             onClick={() => navigate('/')}
@@ -150,7 +161,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <BrandMark direction="right" size="sm" isDark={isDark} showTagline />
           </Link>
         </div>
-      </div>
+      </div>}
 
       {/* lg:gap-y-0 — the header is its own grid item now, so the 32px row gap
           landed between the action bar and the tool card, where there used to
@@ -159,7 +170,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
           No base row-gap on this grid (gap only applies at lg:, for the
           column split) — see 2026-09-14 note below for why. */}
-      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
+      <div data-print-grid className={`relative ${sitePilot ? 'max-w-[1200px] px-4 sm:px-6' : 'max-w-7xl px-4'} mx-auto pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0`}>
         {/* Locale controls — the trailing columns of row 1, beside the page
             header. They used to be absolutely positioned here, which meant row
             1 sized itself as if they did not exist: nothing stopped them
@@ -187,9 +198,10 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             unreliable. At lg+ the pills sit beside the header in the same
             row, so margin here
             is moot — kept at 0 for clarity. */}
-        <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
+        {/* Pilot pages carry the locale controls in SiteHeader instead. */}
+        {!sitePilot && <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
-        </div>
+        </div>}
 
         {/* Page header + action bar — their own grid item, not part of <main>.
             Row 1 is now fully occupied (8 + 4), so <main> wraps to row 2 and
@@ -217,14 +229,20 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               margins are narrower, so Chrome fragments and never showed it.
               Every number below is trimmed to buy back that page. */}
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'2px',paddingBottom:'8px',marginBottom:'10px',borderBottom:'2px solid #e5e7eb'}}>
-            <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+            {/* Handout (pilot) pages open with the title alone; the brand is
+                the one-line attribution at the foot of the page. */}
+            {!sitePilot && <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
               <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'32px',width:'auto'}} />
               <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold'}}><span style={{color:'#165b9a'}}>Deft</span><span style={{color:'#c8872e'}}>Brain</span></div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
-            </div>
+            </div>}
             {detectedTool && (
               <div style={{marginTop:'4px'}}>
-                <div style={{fontSize:'20px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
-                <div style={{fontSize:'11px',color:'#4b5563',marginTop:'3px',lineHeight:'1.35',whiteSpace:'pre-line'}}>{detectedTool.description}</div>
+                {/* Pilot pages print the title the way the page shows it:
+                    navy serif, not the default bold sans. */}
+                <div style={sitePilot
+                  ? {fontFamily:"'Playfair Display', Georgia, serif",fontSize:'24px',fontWeight:'700',lineHeight:'1.1',color:'#142a43'}
+                  : {fontSize:'20px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
+                {!sitePilot && <div style={{fontSize:'11px',color:'#4b5563',marginTop:'3px',lineHeight:'1.35',whiteSpace:'pre-line'}}>{detectedTool.description}</div>}
               </div>
             )}
           </div>
@@ -244,7 +262,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 {detectedTool?.categories?.[0] || 'General'}
               </span>
             </div>
-            <h1 className={`text-5xl font-light ${colors.text} tracking-tight`}>
+            <h1 className={sitePilot ? `tp-title ${colors.text}` : `text-5xl font-light ${colors.text} tracking-tight`}>
               {detectedTool?.title || 'Tool'}
             </h1>
             <p className={`${colors.textSecondary} max-w-2xl leading-relaxed whitespace-pre-line`}>
@@ -291,7 +309,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 }`}>D</kbd> to bookmark this tool
               </div>
             )}
-            <button
+            {/* Pilot pages switch themes from the site header instead. */}
+            {!sitePilot && <button
               onClick={toggleTheme}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
               aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
@@ -301,7 +320,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 ? <><span className="text-base leading-none">☀️</span><span className="text-xs font-medium">Light Mode</span></>
                 : <><span className="text-base leading-none">🌙</span><span className="text-xs font-medium">Dark Mode</span></>
               }
-            </button>
+            </button>}
             </div>
             {actions.content && (
               <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
@@ -322,11 +341,18 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               // See src/utils/headerGradient.js for why each number is what
               // it is. headerGradient returns null for a malformed hex, which
               // falls through to the plain surface below.
-              ...(headerGradient(detectedTool?.headerColor, isDark)
-                ? { background: headerGradient(detectedTool.headerColor, isDark) }
-                : { background: isDark ? '#27272a' : '#ffffff' }),
+              ...(sitePilot
+                // Pilot: one flat card. The tool's color is a pale band the
+                // tool's own intro draws across the card's top (see
+                // DoctorVisitPrep's header). Same section > div structure, so
+                // printStyles' frame rules (which zero this div's
+                // margin/padding) still apply.
+                ? { background: isDark ? '#27272a' : '#ffffff' }
+                : headerGradient(detectedTool?.headerColor, isDark)
+                  ? { background: headerGradient(detectedTool.headerColor, isDark) }
+                  : { background: isDark ? '#27272a' : '#ffffff' }),
             }}>
-            <div className={`${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
+            <div className={sitePilot ? `${colors.surface} p-4 sm:p-6 lg:p-8` : `${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
               {children}
             </div>
           </section>
@@ -341,7 +367,12 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 every print-out (the print-only header above), so a second copy
                 28px from the bottom of the page was the same logo twice. The
                 URL line stays — a printed page should say where it came from. */}
-            <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}>Deft<span style={{color:'#c8872e',fontWeight:'bold'}}>Brain</span> · deftbrain.com</span>
+            {sitePilot
+              // Handout pages: this line IS the attribution (no logo up top,
+              // no site footer), so it says so plainly and prints dark enough
+              // to read — the light grey version was near-invisible on paper.
+              ? <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#374151'}}>Produced by <span style={{color:'#142a43',fontWeight:'bold'}}>Deft</span><span style={{color:'#9c691c',fontWeight:'bold'}}>Brain</span>. DeftBrain.com</span>
+              : <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}>Deft<span style={{color:'#c8872e',fontWeight:'bold'}}>Brain</span> · deftbrain.com</span>}
           </div>
         </main>
 

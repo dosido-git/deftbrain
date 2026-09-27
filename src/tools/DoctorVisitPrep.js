@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
+import AutoGrowTextarea from '../components/AutoGrowTextarea';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -41,7 +42,7 @@ const HOPED_OUTCOMES = [
 const PRIORITY_COLOR = (p, d) => {
   if (p === 'high')   return d ? 'text-red-400 bg-red-900/20'   : 'text-red-700 bg-red-100';
   if (p === 'medium') return d ? 'text-amber-400 bg-amber-900/20' : 'text-amber-700 bg-amber-100';
-  return d ? 'text-cyan-400 bg-cyan-900/20' : 'text-cyan-700 bg-cyan-100';
+  return d ? 'text-zinc-300 bg-zinc-700/60' : 'text-slate-700 bg-slate-100';
 };
 
 // Keys are pinned English (the prompt says never to translate them); the
@@ -83,17 +84,23 @@ const BiText = ({ text, c }) => {
   return <span>{en}<br /><span className={`${c.textSecondary} italic`}>{tr}</span></span>;
 };
 
-// Collapsible section, matching the DVT pattern
+// Collapsible section, matching the DVT pattern. Step-2 pilot: a section is a
+// heading over a rule, not a card — the page's tool card is already the box,
+// and a card per section read as boxes inside a box. The count is plain text.
 function Sec({ icon, title, badge, open, onToggle, children, c }) {
   return (
-    <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-      <button onClick={onToggle} className="flex items-center gap-2 w-full text-start">
+    <div className={`border-t ${c.border} pt-5`}>
+      {/* data-print-heading: prints as a heading (not an outlined button) and
+          stays on the same page as the section's first lines. */}
+      <button onClick={onToggle} data-print-heading className="flex items-center gap-2 w-full text-start">
         <span className="text-lg">{icon}</span>
-        <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
-        {badge != null && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
-        <Caret open={open} />
+        <h3 className={`text-base font-bold ${c.text} flex-1`}>{title}</h3>
+        {badge != null && <span className={`text-sm ${c.textMuted}`}>{badge}</span>}
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className="mt-4">{children}</div>}
+      {/* Always rendered, hidden while closed — so a printed handout carries
+          every section, not just the ones open on screen. */}
+      <div className="mt-4" data-sec-body hidden={!open}>{children}</div>
     </div>
   );
 }
@@ -111,18 +118,21 @@ const DoctorVisitPrep = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
-    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Step-2 pilot (2026-09-27): the home page's navy for the main action and
+    // for selected choices, instead of cyan — same values as HomeTheme.css.
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    chosen:        isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-50' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
+    unchosen:      isDark ? 'border-zinc-700 text-zinc-300 hover:border-zinc-500' : 'border-gray-300 text-gray-700 hover:border-gray-400',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     // Bespoke
-    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
-    pillGray:      isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
+    highlight:     isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
@@ -130,8 +140,8 @@ const DoctorVisitPrep = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+    ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
+    : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   // ── useState (all first per PF-14) ──
   // FORM
@@ -413,12 +423,21 @@ const DoctorVisitPrep = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* HEADER CARD — standalone, not wrapped in c.card div per PF-4 */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
+      {/* HEADER — standalone, not wrapped in c.card div per PF-4. Step-2
+          pilot: no card of its own. It bleeds to the edges of the page's tool
+          card (negative margins = the wrapper's padding; the card clips the
+          corners) on a pale band of the tool's color — the tool's identity,
+          lighter than the old colored frame, and the pale ground the "Try an
+          example" pill was designed for (PF-17c). */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '📝'}</span>{tool?.tagline ?? t('dvp_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap" title={t('dvp_try_example_title')}>✨ {t('try_example')}</button>
@@ -435,21 +454,24 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
       </div>
 
-      {/* INPUT CARD */}
-      <div className={`${c.card} rounded-xl shadow-sm border ${c.border} p-6 space-y-5`}>
+      {/* INPUT — step-2 pilot: sections separated by spacing, not a box.
+          On paper: with results, the handout prints the results and a short
+          summary of these answers instead (below); without, the form prints
+          with each question kept on one page (data-print-form). */}
+      <div className="pt-2 space-y-6" data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* Disclaimer */}
         <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
           <span>⚠️</span>
           <div>
             <h4 className="font-bold text-sm mb-0.5">{t('dvp_disclaimer_title')}</h4>
-            <p className="text-xs">{t('dvp_disclaimer_body')}</p>
+            <p className="text-[13px] leading-relaxed">{t('dvp_disclaimer_body')}</p>
           </div>
         </div>
 
         {/* Appointment type + Try Example */}
         <div>
-          <label className={`block text-sm font-semibold ${c.textSecondary} mb-0.5`}>{t('dvp_appt_type')}</label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('dvp_appt_type_hint')}</p>
+          <label className={`block text-[15px] font-semibold ${c.textSecondary} mb-1`}>{t('dvp_appt_type')}</label>
+          <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dvp_appt_type_hint')}</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             {APPT_TYPES.map(at => (
               <button
@@ -458,13 +480,12 @@ const DoctorVisitPrep = ({ tool }) => {
                   ? prev.filter(x => x !== at.id)
                   : [...prev, at.id])}
                 title={t(at.hintKey)}
-                className={`p-2 border-2 rounded-lg text-center transition-colors ${
-                  appointmentTypes.includes(at.id)
-                    ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50')
-                    : (isDark ? 'border-zinc-700' : 'border-gray-200')
+                aria-pressed={appointmentTypes.includes(at.id)}
+                className={`p-2.5 border-2 rounded-lg text-center transition-colors ${
+                  appointmentTypes.includes(at.id) ? c.chosen : c.unchosen
                 }`}
               >
-                <p className={`text-[11px] font-semibold ${c.text}`}>{t(at.labelKey)}</p>
+                <p className="text-[13px] font-semibold">{t(at.labelKey)}</p>
               </button>
             ))}
           </div>
@@ -472,39 +493,40 @@ const DoctorVisitPrep = ({ tool }) => {
 
         {/* Chief concern (required) */}
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
             {t('dvp_chief_concern')} <span className={c.required}>*</span>
-            <span className={`ms-1 text-[10px] font-normal ${c.textMuted}`}>{t('dvp_chief_concern_hint')}</span>
+            <span className={`ms-1 text-[13px] font-normal ${c.textMuted}`}>{t('dvp_chief_concern_hint')}</span>
           </label>
-          <textarea
+          <AutoGrowTextarea
             value={chiefConcern}
             onChange={e => setChiefConcern(e.target.value)}
             placeholder={t('dvp_chief_concern_ph')}
-            className={`w-full h-20 p-3 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`}
+            minHeight={80}
+            className={`w-full p-3 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-[15px]`}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_duration')}</label>
+            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_duration')}</label>
             <input
               value={durationText}
               onChange={e => setDurationText(e.target.value)}
               placeholder={t('dvp_duration_ph')}
-              className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
+              className={`w-full p-3 border rounded-lg ${c.input} outline-none text-[15px]`}
             />
           </div>
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
+            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
               {t('dvp_severity')} <span className={`${c.text} font-bold`}>{severity}</span>
             </label>
             <input
               type="range" min="1" max="10"
               value={severity}
               onChange={e => setSeverity(Number(e.target.value))}
-              className="w-full accent-cyan-600"
+              className={`w-full ${isDark ? "accent-[#7fb3e0]" : "accent-[#142a43]"}`}
             />
-            <div className="flex justify-between text-[9px]">
+            <div className="flex justify-between text-[12px]">
               <span className={c.textMuted}>{t('dvp_severity_mild')}</span>
               <span className={c.textMuted}>{t('dvp_severity_moderate')}</span>
               <span className={c.textMuted}>{t('dvp_severity_severe')}</span>
@@ -514,24 +536,25 @@ const DoctorVisitPrep = ({ tool }) => {
 
         {/* Specific worry */}
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-            {t('dvp_worry')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_worry_hint')}</span>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            {t('dvp_worry')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_worry_hint')}</span>
           </label>
-          <textarea
+          <AutoGrowTextarea
             value={specificWorry}
             onChange={e => setSpecificWorry(e.target.value)}
             placeholder={t('dvp_worry_ph')}
-            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
+            minHeight={64}
+            className={`w-full p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-[15px]`}
           />
         </div>
 
         {/* What are you hoping for? — expectations, not symptoms. Sits next to
             the worry because those two together are why someone booked. */}
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-0.5`}>
-            {t('dvp_hoped')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_hoped_hint')}</span>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1`}>
+            {t('dvp_hoped')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_hoped_hint')}</span>
           </label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('dvp_hoped_help')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dvp_hoped_help')}</p>
           <div className="flex flex-wrap gap-1.5">
             {HOPED_OUTCOMES.map(h => (
               <button
@@ -539,10 +562,9 @@ const DoctorVisitPrep = ({ tool }) => {
                 onClick={() => setHopedOutcomes(prev => prev.includes(h.id)
                   ? prev.filter(x => x !== h.id)
                   : [...prev, h.id])}
-                className={`px-3 py-1.5 rounded-lg border-2 text-xs font-semibold transition-colors ${
-                  hopedOutcomes.includes(h.id)
-                    ? (isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-200' : 'border-cyan-500 bg-cyan-50 text-cyan-800')
-                    : (isDark ? 'border-zinc-700 text-zinc-400' : 'border-gray-200 text-gray-600')
+                aria-pressed={hopedOutcomes.includes(h.id)}
+                className={`px-3 py-2 rounded-lg border-2 text-[13px] font-semibold transition-colors ${
+                  hopedOutcomes.includes(h.id) ? c.chosen : c.unchosen
                 }`}
               >
                 {h.icon} {t(h.labelKey)}
@@ -553,67 +575,69 @@ const DoctorVisitPrep = ({ tool }) => {
 
         {/* Symptom details + duration + severity */}
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-            {t('dvp_symptom_details')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_symptom_details_hint')}</span>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            {t('dvp_symptom_details')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_symptom_details_hint')}</span>
           </label>
-          <textarea
+          <AutoGrowTextarea
             value={symptomDetails}
             onChange={e => setSymptomDetails(e.target.value)}
             placeholder={t('dvp_symptom_details_ph')}
-            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
+            minHeight={64}
+            className={`w-full p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-[15px]`}
           />
         </div>
 
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_better_worse')}</label>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_better_worse')}</label>
           <input
             value={whatMakesItBetterWorse}
             onChange={e => setWhatMakesItBetterWorse(e.target.value)}
             placeholder={t('dvp_better_worse_ph')}
-            className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
+            className={`w-full p-3 border rounded-lg ${c.input} outline-none text-[15px]`}
           />
         </div>
 
         {/* Meds + allergies + sessionHistory */}
         <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-            {t('dvp_current_meds')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_current_meds_hint')}</span>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            {t('dvp_current_meds')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_current_meds_hint')}</span>
           </label>
           {activeMeds.length > 0 && (
             <div className={`${c.success} border rounded-lg p-3 mb-2`}>
-              <p className="text-[10px] font-bold mb-1">{t('dvp_meds_auto', { count: activeMeds.length })}</p>
+              <p className="text-xs font-bold mb-1">{t('dvp_meds_auto', { count: activeMeds.length })}</p>
               <p className="text-xs">{activeMeds.map(m => m.name).join(', ')}</p>
             </div>
           )}
-          <textarea
+          <AutoGrowTextarea
             value={currentMedications}
             onChange={e => setCurrentMedications(e.target.value)}
             placeholder={t('dvp_current_meds_ph')}
-            className={`w-full h-14 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
+            minHeight={56}
+            className={`w-full p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-[15px]`}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-              {t('dvp_allergies')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_allergies_hint')}</span>
+            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+              {t('dvp_allergies')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_allergies_hint')}</span>
             </label>
             <input
               value={allergies}
               onChange={e => setAllergies(e.target.value)}
               placeholder={t('dvp_allergies_ph')}
-              className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
+              className={`w-full p-3 border rounded-lg ${c.input} outline-none text-[15px]`}
             />
           </div>
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-              {t('dvp_history')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_history_hint')}</span>
+            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+              {t('dvp_history')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_history_hint')}</span>
             </label>
             <input
               value={relevantHistory}
               onChange={e => setRelevantHistory(e.target.value)}
               placeholder={t('dvp_history_ph')}
-              className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
+              className={`w-full p-3 border rounded-lg ${c.input} outline-none text-[15px]`}
             />
           </div>
         </div>
@@ -646,7 +670,7 @@ const DoctorVisitPrep = ({ tool }) => {
         )}
 
         {/* Pre-result cross-ref (S5.5) */}
-        <p className={`text-xs ${c.textMuted} text-center pt-2`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-2`}>
           {t('dvp_xref_pre')}{' '}
           <a href="/ProcedureProbe" className={linkStyle}>🔬 {t('dvp_procedure_probe')}</a>{' '}
           {t('dvp_xref_pre_suffix')}
@@ -655,18 +679,18 @@ const DoctorVisitPrep = ({ tool }) => {
 
       {/* ══════════ RESULTS ══════════ */}
       {results && (
-        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
           {/* First thing on the page, because it changes how everything below
               it should be read. It used to be the last thing on the page.
               Framing, not a warning — so no ⚠️ and no amber. */}
-          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-4`}>
-            <p className={`text-sm ${c.text}`}>
+          <div className={`${c.card} border ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-4`}>
+            <p className={`text-[15px] leading-relaxed ${c.text}`}>
               <strong>{t('dvp_remember_label')}</strong> {t('dvp_remember_body')}
             </p>
           </div>
 
           {/* Save / saved feedback */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
+          <div data-print-hide className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={saveCurrentPrep}
@@ -688,9 +712,9 @@ const DoctorVisitPrep = ({ tool }) => {
               c={c}
             >
               <div className={`${c.danger} border-2 rounded-lg p-4`}>
-                <p className="text-xs mb-2 font-semibold">{t('dvp_red_flags_intro')}</p>
+                <p className="text-[13px] mb-2 font-semibold">{t('dvp_red_flags_intro')}</p>
                 {results?.red_flag_symptoms_to_report?.map((rf, i) => (
-                  <p key={i} className="text-sm mb-1">• <BiText text={rf} c={c} /></p>
+                  <p key={i} className="text-[15px] leading-relaxed mb-1">• <BiText text={rf} c={c} /></p>
                 ))}
               </div>
             </Sec>
@@ -700,19 +724,19 @@ const DoctorVisitPrep = ({ tool }) => {
           {results?.opener && (
             <Sec icon="🎯" title={t('dvp_sec_opener')} open={secs.opener} onToggle={() => tog('opener')} c={c}>
               <div className={`${c.highlight} border rounded-lg p-4`}>
-                <p className="text-[10px] font-bold mb-1">{t('dvp_say_first_minute')}</p>
-                <p className={`text-base ${c.text} font-medium italic`}>"<BiText text={results?.opener} c={c} />"</p>
+                <p className="text-xs font-bold tracking-wide mb-1.5">{t('dvp_say_first_minute')}</p>
+                <p className={`text-[17px] leading-relaxed ${c.text} font-medium italic`}>"<BiText text={results?.opener} c={c} />"</p>
               </div>
               {results?.symptom_description_clinical && (
-                <div className={`${c.cardAlt} border rounded-lg p-4 mt-3`}>
-                  <p className="text-[10px] font-bold mb-1">{t('dvp_clinical_ready')}</p>
-                  <p className={`text-sm ${c.textSecondary}`}><BiText text={results?.symptom_description_clinical} c={c} /></p>
+                <div className="mt-5">
+                  <p className={`text-xs font-bold tracking-wide mb-1.5 ${c.textMuted}`}>{t('dvp_clinical_ready')}</p>
+                  <p className={`text-[15px] leading-relaxed ${c.textSecondary}`}><BiText text={results?.symptom_description_clinical} c={c} /></p>
                 </div>
               )}
               {results?.goal_for_the_visit && (
-                <div className={`${c.success} border rounded-lg p-4 mt-3`}>
-                  <p className="text-[10px] font-bold mb-1">{t('dvp_your_goal')}</p>
-                  <p className="text-sm">{results?.goal_for_the_visit}</p>
+                <div className="mt-5">
+                  <p className={`text-xs font-bold tracking-wide mb-1.5 ${c.textMuted}`}>{t('dvp_your_goal')}</p>
+                  <p className={`text-[15px] leading-relaxed ${c.text}`}>{results?.goal_for_the_visit}</p>
                 </div>
               )}
             </Sec>
@@ -728,25 +752,25 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('questions')}
               c={c}
             >
-              <div className="space-y-3">
+              <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
                 {results?.prioritized_questions?.map((q, i) => (
-                  <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
+                  <div key={i} data-print-keep className="py-4 first:pt-0 last:pb-0">
                     <div className="flex items-start gap-2 mb-2">
                       <span className="text-lg">{CATEGORY_ICON[q.category] || '❓'}</span>
-                      <h4 className={`font-bold text-sm ${c.text} flex-1`}>
+                      <h4 className={`font-bold text-[15px] leading-snug ${c.text} flex-1`}>
                         <BiText text={q.question} c={c} />
                       </h4>
                       {q.priority && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${PRIORITY_COLOR(q.priority, isDark)}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded font-bold ${PRIORITY_COLOR(q.priority, isDark)}`}>
                           {q.priority}
                         </span>
                       )}
                     </div>
                     {q.why_this_matters && (
-                      <p className={`text-xs ${c.textMuted} ms-7`}>{t('dvp_why')} {q.why_this_matters}</p>
+                      <p className={`text-[13px] leading-relaxed ${c.textSecondary} ms-7`}>{t('dvp_why')} {q.why_this_matters}</p>
                     )}
                     {q.category && (
-                      <p className={`text-[10px] ${c.textMuted} ms-7 mt-1 uppercase tracking-wide`}>{CATEGORY_LABEL[q.category] ? t(CATEGORY_LABEL[q.category]) : q.category}</p>
+                      <p className={`text-xs ${c.textMuted} ms-7 mt-1.5`}>{CATEGORY_LABEL[q.category] ? t(CATEGORY_LABEL[q.category]) : q.category}</p>
                     )}
                   </div>
                 ))}
@@ -764,9 +788,9 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('mention')}
               c={c}
             >
-              <div className={`${c.warning} border rounded-lg p-4`}>
+              <div className="space-y-2">
                 {results?.things_to_mention_even_if_not_asked?.map((item, i) => (
-                  <p key={i} className="text-sm mb-1">• <BiText text={item} c={c} /></p>
+                  <p key={i} className={`text-[15px] leading-relaxed ${c.text}`}>• <BiText text={item} c={c} /></p>
                 ))}
               </div>
             </Sec>
@@ -784,9 +808,9 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('checklist')}
               c={c}
             >
-              <div className={`${c.cardAlt} border rounded-lg p-4`}>
+              <div className="space-y-2">
                 {results?.pre_visit_checklist?.map((item, i) => (
-                  <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>☐ {item}</p>
+                  <p key={i} className={`text-[15px] leading-relaxed ${c.text}`}>☐ {item}</p>
                 ))}
               </div>
             </Sec>
@@ -802,9 +826,9 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('medQs')}
               c={c}
             >
-              <div className={`${c.cardAlt} border rounded-lg p-4`}>
+              <div className="space-y-2">
                 {results?.questions_to_ask_if_medication_is_prescribed?.map((q, i) => (
-                  <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>❓ {q}</p>
+                  <p key={i} className={`text-[15px] leading-relaxed ${c.text}`}>❓ {q}</p>
                 ))}
               </div>
             </Sec>
@@ -820,9 +844,9 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('bring')}
               c={c}
             >
-              <div className={`${c.cardAlt} border rounded-lg p-4`}>
+              <div className="space-y-2">
                 {results?.what_to_bring?.map((item, i) => (
-                  <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {item}</p>
+                  <p key={i} className={`text-[15px] leading-relaxed ${c.text}`}>• {item}</p>
                 ))}
               </div>
             </Sec>
@@ -837,16 +861,50 @@ const DoctorVisitPrep = ({ tool }) => {
               onToggle={() => tog('tips')}
               c={c}
             >
-              <div className={`${c.success} border rounded-lg p-4`}>
+              <div className="space-y-2">
                 {results?.conversation_tips?.map((tip, i) => (
-                  <p key={i} className="text-sm mb-1">💬 {tip}</p>
+                  <p key={i} className={`text-[15px] leading-relaxed ${c.text}`}>💬 {tip}</p>
                 ))}
               </div>
             </Sec>
           )}
 
+          {/* Print only: what the visitor entered, as a short reference under
+              the handout. Only the fields they filled in. */}
+          {(() => {
+            const apptLabels = appointmentTypes.map(id => APPT_TYPES.find(a => a.id === id)).filter(Boolean).map(a => t(a.labelKey)).join(', ');
+            const hopeLabels = hopedOutcomes.map(id => HOPED_OUTCOMES.find(h => h.id === id)).filter(Boolean).map(h => t(h.labelKey)).join(', ');
+            const rows = [
+              [t('dvp_appt_type'), apptLabels],
+              [t('dvp_chief_concern'), chiefConcern],
+              [t('dvp_duration'), durationText],
+              [t('dvp_severity'), chiefConcern.trim() ? `${severity}/10` : ''],
+              [t('dvp_worry'), specificWorry],
+              [t('dvp_hoped'), hopeLabels],
+              [t('dvp_symptom_details'), symptomDetails],
+              [t('dvp_better_worse'), whatMakesItBetterWorse],
+              [t('dvp_current_meds'), currentMedications],
+              [t('dvp_allergies'), allergies],
+              [t('dvp_history'), relevantHistory],
+            ].filter(([, v]) => String(v || '').trim());
+            if (!chiefConcern.trim()) return null;
+            return (
+              <div data-print-show data-print-keep className="hidden border-t border-gray-300 pt-4">
+                <h3 className="text-base font-bold mb-2">{t('dvp_print_details')}</h3>
+                <dl className="text-[13px] leading-snug">
+                  {rows.map(([k, v]) => (
+                    <div key={k} className="flex gap-2 mb-1">
+                      <dt className="font-semibold shrink-0">{String(k).replace(/:\s*$/, '')}:</dt>
+                      <dd className="m-0">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            );
+          })()}
+
           {/* Post-result cross-ref (closes the loop with DVT) */}
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('dvp_xref_post')}{' '}
             <a href="/DoctorVisitTranslator" className={linkStyle}>🩺 {t('dvp_doctor_translator')}</a>.
           </p>
@@ -855,7 +913,7 @@ const DoctorVisitPrep = ({ tool }) => {
 
       {/* Prep sessionHistory drawer (only when there are any) */}
       {prepHistory.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div data-print-hide className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text}`}>{t('dvp_prep_history', { count: prepHistory.length })}</h3>
             <button
@@ -870,9 +928,9 @@ const DoctorVisitPrep = ({ tool }) => {
               <div key={p.id} className={`${c.cardAlt} border rounded-lg p-3`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-semibold ${c.text} flex-1 truncate`}>{p.label}</span>
-                  <span className={`text-[10px] ${c.textMuted}`}>{p.date}</span>
+                  <span className={`text-xs ${c.textMuted}`}>{p.date}</span>
                 </div>
-                <p className={`text-[10px] ${c.textMuted} mb-2`}>
+                <p className={`text-xs ${c.textMuted} mb-2`}>
                   {(() => { const ids = p.appointmentTypes || (p.appointmentType ? [p.appointmentType] : []); const ls = ids.map(id => APPT_TYPES.find(a => a.id === id)).filter(Boolean); return ls.length ? ls.map(a => t(a.labelKey)).join(', ') : (ids[0] || ''); })()}
                 </p>
                 <div className="flex gap-2">
@@ -910,13 +968,13 @@ const DoctorVisitPrep = ({ tool }) => {
           neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
         };
         return (
-          <details className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
+          <details data-print-hide className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
             <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40'}`}>
               <div>
                 <p className={`text-base font-black ${c.text}`}>{x.title}</p>
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
               </div>
-              <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>
+              <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{x.expandLabel}</span>
             </summary>
             <div className={`border-t border-dashed ${isDark ? 'border-amber-800/50' : 'border-amber-200'} p-5 space-y-4`}>
               <div>

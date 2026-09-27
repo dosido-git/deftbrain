@@ -53,37 +53,38 @@ const WrongAnswersOnly = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    // Site-style pilot (2026-09-27): navy for the main action, choices, focus
+    // and links (CONVENTIONS.md "House primary"); the tool's own turquoise
+    // stays in its band and callouts.
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-[#2a5248]/30 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#fafefe] border-[#b8dcd8] text-[#1e3030]',
     warning:       isDark ? 'bg-[#2a5248]/60 border-[#5aaa9e] text-[#e4f2f0]' : 'bg-[#f0f8f6] border-[#8cc8c0] text-[#1e3030]',
     danger:        isDark ? 'bg-[#2a5248]/30 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#fafefe] border-[#b8dcd8] text-[#1e3030]',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    infoBox:       isDark ? 'bg-[#1e3030]/60 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#f0f8f6] border-[#8cc8c0] text-[#1e3030]',
-    quoteBg:       isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-50' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'border-gray-300 text-gray-700 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
   const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+    ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
+    : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [question, setQuestion] = useState('');
@@ -183,79 +184,92 @@ const WrongAnswersOnly = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (<div className={`space-y-4 ${c.text}`}>
-      {/* Input */} <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-500' : 'border-zinc-500'}`}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2 text-xl">{tool?.icon}</span>{tool?.title}</h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-            </div>
-            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-            {(results || question.trim()) ? (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                ↺ {t('start_over')}
-              </button>
-            ) : null}
+      {/* HEADER — site-style pilot (2026-09-27). PF-30: no in-card title (the
+          page's <h1> already names the tool); the icon rides the tagline. It
+          bleeds to the edges of the page's tool card on a pale band of the
+          tool's turquoise — the tool's identity, and the pale ground the "Try
+          an example" pill was designed for (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon}</span>{tool?.tagline}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
+          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+          {(results || question.trim()) ? (
+            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+              ↺ {t('start_over')}
+            </button>
+          ) : null}
         </div>
+      </div>
 
-        {/* Quick questions */} <div className="mb-4">
-          <label className={`text-[10px] font-bold ${c.labelText} uppercase block mb-2`}>{t('wao_try_one')}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {QUICK_QUESTIONS.map((q, i) => (<button key={i} onClick={() => {
+      {/* INPUT — no box of its own; sections separated by spacing. On paper it
+          prints only as a blank form; with a result, the result prints. */}
+      <div className="space-y-6" data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Quick questions */}
+        <div>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>{t('wao_try_one')}</label>
+          <div className="flex flex-wrap gap-2">
+            {QUICK_QUESTIONS.map((q, i) => (<button key={i} aria-pressed={question === q} onClick={() => {
                   setQuestion(q);
                   setResults(null);
                   setShowReal(false);
                   setError('');
-                }} className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] border transition-colors ${
+                }} className={`px-3 py-2 rounded-lg text-[13px] font-medium min-h-[32px] border transition-colors ${
                   question === q ? c.pillActive : c.btnSecondary
                 }`}>
                 {q} </button>
             ))} </div>
         </div>
 
-        {/* Question */} <div className="mb-4">
-          <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('wao_q_label')} <span className={c.required}>*</span></label>
+        {/* Question */}
+        <div>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('wao_q_label')} <span className={c.required}>*</span></label>
           <input type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder={t('wao_ph')}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
+            className={`w-full p-3 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
         </div>
 
         {/* How wrong — the one control the model cannot infer, and the only
-             one that is part of the joke. */} <div className="mb-5">
-          <div>
-            <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('wao_how_wrong')}</label>
-            <div className="flex gap-2">
-              {SERIOUSNESS.map(s => (<button key={s.value} onClick={() => setSeriousness(s.value)} className={`flex-1 py-2 rounded-lg border text-center transition-colors min-h-[44px] ${
-                    seriousness === s.value ? c.pillActive : c.pillInactive
-                  }`}>
-                  <span className="text-sm block">{s.icon}</span>
-                  <span className="text-[10px] font-bold block">{s.label}</span>
-                </button>
-              ))} </div>
-          </div>
+             one that is part of the joke. */}
+        <div>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>{t('wao_how_wrong')}</label>
+          <div className="flex gap-2">
+            {SERIOUSNESS.map(s => (<button key={s.value} aria-pressed={seriousness === s.value} onClick={() => setSeriousness(s.value)} className={`flex-1 py-2.5 rounded-lg border-2 text-center transition-colors min-h-[48px] ${
+                  seriousness === s.value ? c.pillActive : c.pillInactive
+                }`}>
+                <span className="text-base block">{s.icon}</span>
+                <span className="text-[13px] font-bold block">{s.label}</span>
+              </button>
+            ))} </div>
         </div>
 
-        <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${(!question.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading
-            ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🙃'}</span> {t('wao_making')}</>
-            : <><span className="text-xl">{tool?.icon ?? '🙃'}</span> {t('wao_run')}</>} {!loading && (
-          <kbd aria-hidden="true"
-            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-            ⌘↵
-          </kbd>
-        )}
-        </button>
-        <p className={`text-xs text-center ${c.textMuted}`}>{t('wao_disclaimer')}</p>
-        {!results && (
-          <p className={`text-xs text-center ${c.textMuted} mt-3`}>
-            {t('wao_chaos_q')} <a href="/DecisionPrism" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}
-          </p>
-        )}
+        <div className="space-y-3">
+          <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${(!question.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading
+              ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🙃'}</span> {t('wao_making')}</>
+              : <><span className="text-xl">{tool?.icon ?? '🙃'}</span> {t('wao_run')}</>} {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
+          <p className={`text-[13px] text-center ${c.textMuted}`}>{t('wao_disclaimer')}</p>
+          {!results && (
+            <p data-print-hide className={`text-[13px] text-center ${c.textMuted}`}>
+              {t('wao_chaos_q')} <a href="/DecisionPrism" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
-          <span>⚠️</span><p className="text-sm">{error}</p>
+          <span>⚠️</span><p className="text-[15px]">{error}</p>
         </div>
       )} {/* One results block, two shapes. A decline arrives with every other
              field null on purpose, so it is a kind of result rather than a
@@ -263,66 +277,68 @@ const WrongAnswersOnly = ({ tool }) => {
       {results && (results.decline_reason ? (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-6 text-center`}>
           <span className="text-3xl block mb-2">{tool?.icon ?? '🙃'}</span>
-          <p className={`text-sm ${c.text}`}>{results.decline_reason}</p>
+          <p className={`text-[15px] ${c.text}`}>{results.decline_reason}</p>
         </div>
-      ) : (<div className="space-y-4">
+      ) : (<div className="space-y-6">
           <div className="flex justify-end">
             <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
           </div>
 
-          {/* Question + Wrongness meter */} {results.question_rephrased && (<div className={`${c.infoBox} border-2 rounded-xl p-5`}>
-              <p className={`text-xs ${c.textMuted} mb-1`}>{t('wao_you_asked')}</p>
-              <p className={`text-sm font-bold ${c.text} mb-3`}>{results.question_rephrased}</p>
+          {/* Question + Wrongness meter — no box: the page's card is the box. */}
+          {results.question_rephrased && (<div data-print-keep>
+              <p className={`text-[13px] ${c.textMuted} mb-1`}>{t('wao_you_asked')}</p>
+              <p className={`text-[17px] font-bold leading-snug ${c.text} mb-3`}>{results.question_rephrased}</p>
               {wrongnessLevel > 0 && (<div>
                   <div className="flex justify-between mb-1">
-                    <span className={`text-[9px] font-bold ${c.labelText}`}>{t('wao_wrongness')}</span>
-                    <span className={`text-[9px] font-bold ${c.accentTxt}`}>{wrongnessLevel}/10</span>
+                    <span className={`text-xs font-bold ${c.labelText}`}>{t('wao_wrongness')}</span>
+                    <span className={`text-xs font-bold ${c.accentTxt}`}>{wrongnessLevel}/10</span>
                   </div>
-                  <div className={`h-2 rounded-full ${isDark ? 'bg-zinc-500' : 'bg-zinc-500'}`}>
+                  <div className={`h-2 rounded-full ${isDark ? 'bg-zinc-600' : 'bg-zinc-200'}`}>
                     <div className="h-full rounded-full bg-gradient-to-r from-[#c8a951] to-[#a03030] transition-all"
                       style={{ width: wrongnessWidth }} />
                   </div>
                 </div>
               )} </div>
-          )} {/* The wrong answer */} {results.confident_answer && (<div className={`${c.card} border rounded-xl p-5`}>
+          )} {/* The wrong answer */} {results.confident_answer && (<div className={`border-t ${c.border} pt-5`}>
               {/* The one place this tool gets to misbehave. The comedy is a
                   dead-serious presentation of nonsense, so the stamp plays it
                   perfectly straight and the asterisk does the work. */}
               <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                <h3 className={`text-sm font-bold ${c.text}`}>🎓 {t('wao_expert_answer')}</h3>
-                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded border ${c.pillActive}`}>
+                <h3 className={`text-base font-bold ${c.text}`}>🎓 {t('wao_expert_answer')}</h3>
+                <span className={`text-xs font-bold uppercase tracking-widest px-2 py-1 rounded border ${c.pillActive}`}>
                   ✓ {t('wao_verified')}
                 </span>
               </div>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed whitespace-pre-line`}>{results.confident_answer}</p>
-              <p className={`text-[9px] ${c.textMuted} mt-2 italic`}>{t('wao_verified_note')}</p>
+              <p className={`text-[15px] ${c.text} leading-relaxed whitespace-pre-line`}>{results.confident_answer}</p>
+              <p className={`text-xs ${c.textMuted} mt-2 italic`}>{t('wao_verified_note')}</p>
             </div>
-          )} {/* Fake evidence */} {results.supporting_evidence?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>📎 {t('wao_evidence')}</h3>
-              <div className="space-y-2">
-                {results.supporting_evidence.map((e, i) => (<div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-xs ${c.text} font-medium mb-1`}>{e.fake_fact}</p>
-                    <p className={`text-[10px] ${c.textMuted} italic`}>— {e.fake_source}</p>
-                    {showReal && e.how_wrong && (<p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'} mt-1`}>❌ {t('wao_reality')} {e.how_wrong}</p>
+          )} {/* Fake evidence — each source a quoted line, not a box. */} {results.supporting_evidence?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>📎 {t('wao_evidence')}</h3>
+              <div className="space-y-3">
+                {results.supporting_evidence.map((e, i) => (<div key={i} data-print-keep className={`border-s-4 ${isDark ? 'border-[#3a6e60]' : 'border-[#b8dcd8]'} ps-3`}>
+                    <p className={`text-[15px] ${c.text} font-medium mb-1`}>{e.fake_fact}</p>
+                    <p className={`text-[13px] ${c.textMuted} italic`}>— {e.fake_source}</p>
+                    {showReal && e.how_wrong && (<p className={`text-[13px] ${c.textMuted} mt-1`}>❌ {t('wao_reality')} {e.how_wrong}</p>
                     )} </div>
                 ))} </div>
             </div>
-          )} {/* Common "misconception" (actually the real answer) */} {results.common_misconception && (<div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase mb-1`}>⚠️ {t('wao_misconception')}</p>
-              <p className={`text-xs`}>{results.common_misconception}</p>
-              <p className={`text-[9px] ${c.textMuted} mt-1 italic`}>{t('wao_misconception_note')}</p>
+          )} {/* Common "misconception" (actually the real answer) — the one
+                 callout that earns a box: it's the joke's reveal. */} {results.common_misconception && (<div data-print-keep className={`${c.warning} border rounded-xl p-4`}>
+              <p className="text-[13px] font-bold mb-1">⚠️ {t('wao_misconception')}</p>
+              <p className="text-[15px]">{results.common_misconception}</p>
+              <p className={`text-xs ${c.textMuted} mt-1 italic`}>{t('wao_misconception_note')}</p>
             </div>
-          )} {/* Expert tip */} {results.expert_tip && (<div className={`${c.quoteBg} border ${isDark ? 'border-zinc-500' : 'border-zinc-500'} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>💡 {t('wao_expert_tip')}</p>
-              <p className={`text-sm font-medium ${c.text}`}>{results.expert_tip}</p>
+          )} {/* Expert tip */} {results.expert_tip && (<div data-print-keep className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-1`}>💡 {t('wao_expert_tip')}</h3>
+              <p className={`text-[15px] font-medium ${c.text}`}>{results.expert_tip}</p>
             </div>
           )} {/* Real answer hint (toggled) */} {results.real_answer_hint && (<div className="flex gap-2">
-              <button onClick={() => setShowReal(p => !p)} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
+              <button onClick={() => setShowReal(p => !p)} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold min-h-[36px]`}>
                 {showReal ? `🙈 ${t('wao_hide_real')}` : `👀 ${t('wao_show_real')}`} </button>
             </div>
-          )} {showReal && results.real_answer_hint && (<div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase mb-1`}>✅ {t('wao_actually')}</p>
-              <p className="text-xs">{results.real_answer_hint}</p>
+          )} {showReal && results.real_answer_hint && (<div data-print-keep className={`${c.success} border rounded-xl p-4`}>
+              <p className="text-[13px] font-bold mb-1">✅ {t('wao_actually')}</p>
+              <p className="text-[15px]">{results.real_answer_hint}</p>
             </div>
           )} {/* Again */} <button title={t('cmd_enter')} onClick={runWrong} disabled={loading || !question.trim()} className={`relative w-full ${!question.trim() ? c.btnIdle : c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
             {tool?.icon ?? '🙃'} {t('wao_different')}
@@ -334,22 +350,22 @@ const WrongAnswersOnly = ({ tool }) => {
                            )}
                            </button>
 
-          {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wao_more_like')}</p>
+          {/* Post-result cross-refs — a line, not a box. */}
+          <div data-print-hide>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('wao_more_like')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
-              <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
+              <a href="/DecisionPrism" className={`text-sm ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
+              <a href="/TimeWarp" className={`text-sm ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
               {/* Kept in Diversions. Which Life? sat here and is a reflective
                   tool about a real decision — a strange place to land from a
                   page whose entire promise is that nothing on it is true. */}
-              <a href="/PlotHoleFinder" className={`text-xs ${linkStyle}`}>🕳️ {t('wao_plothole')}</a>
+              <a href="/PlotHoleFinder" className={`text-sm ${linkStyle}`}>🕳️ {t('wao_plothole')}</a>
             </div>
           </div>
         </div>
-      ))} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details className={`group ${c.cardAlt} border ${c.border} rounded-xl px-4 py-3 mt-4`}>
+      ))} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details data-print-hide className={`group border-t ${c.border} pt-4`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-            <span className={`text-xs font-bold ${c.textMuted} flex items-center gap-2`}>
+            <span className={`text-[13px] font-bold ${c.textMuted} flex items-center gap-2`}>
               🙃 {t('wao_previously_wrong')}
               {/* eslint-disable-next-line no-restricted-globals */}
               <span className="font-normal">({sessionHistory.length})</span>
@@ -358,7 +374,7 @@ const WrongAnswersOnly = ({ tool }) => {
           </summary>
           <div className="space-y-1 mt-3">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wao_session')}</span>
+                <span className={`text-[13px] ${c.textSecondary} truncate`}>{s.preview || t('wao_session')}</span>
                 <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>

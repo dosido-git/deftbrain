@@ -75,7 +75,8 @@ const EmailCapture = () => {
   };
 
   return (
-    <div className={`${c.bg} border-y ${c.border}`}>
+    // data-site-tail: omitted from a tool's printed handout only (printStyles).
+    <div data-site-tail className={`${c.bg} border-y ${c.border}`}>
       <div className="max-w-7xl mx-auto px-5 py-5 sm:py-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
           <div className="lg:flex lg:items-baseline lg:gap-4 lg:flex-1 min-w-0">

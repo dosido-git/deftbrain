@@ -70,10 +70,16 @@ const Footer = () => {
   // this got swept up with them. It is not chrome. Reverted the same day. If
   // you are here to hide it again: the paragraph above is the reason not to.
   //
+  // 2026-09-27: one exception, and only by marker — data-site-tail. A tool page
+  // printed as a handout (ToolPageWrapper sets data-print-handout, pilot tools
+  // only) drops the footer, newsletter and related links, and ends with the
+  // wrapper's own one-line "DeftBrain · deftbrain.com" instead. Every other
+  // printout keeps this footer.
+  //
   // A normal JS comment, not a JSX one: a {/* */} between `return (` and the
   // root element is a second child of the return and does not compile.
   return (
-    <footer className={`${c.bg} border-t ${c.border}`}>
+    <footer data-site-tail className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 

@@ -251,6 +251,45 @@ export const PRINT_CSS = `
 
         /* Suppress transitions during print capture */
         * { transition: none !important; animation: none !important; }
+
+        /* ── Handout printing (2026-09-27, pilot tools) ─────────────────────
+           A tool page carrying data-print-handout (ToolPageWrapper, for the
+           SITE_STYLE_PILOT tools) prints as a handout: the result, and a
+           one-line attribution — no buttons, site footer, newsletter, related
+           links or sample-result disclosure. Everything here is scoped to
+           that attribute, so no other printout changes. */
+        body:has([data-print-handout]) [data-site-tail] { display: none !important; }
+        /* Section toggles print as headings: no outline, no caret. */
+        [data-print-handout] button[data-print-heading] {
+          border: 0 !important; padding: 0 !important; color: #111 !important;
+        }
+        /* The results block takes keyboard focus when it appears, and its
+           focus ring printed as a blue frame around every page. */
+        [data-print-handout] *:focus, [data-print-handout] *:focus-visible { outline: none !important; box-shadow: none !important; }
+        /* Every other button is screen-only in a handout — except a choice
+           (aria-pressed): on a printed blank form the options ARE the
+           question's answers, to circle by hand. */
+        [data-print-handout] [data-print-section] button:not([data-print-heading]):not([aria-pressed]) { display: none !important; }
+        /* A blank form on paper: example text in an empty box reads as an
+           answer someone already gave, and a scrollbar means nothing. */
+        [data-print-handout] ::placeholder { color: transparent !important; }
+        [data-print-handout] textarea { overflow: hidden !important; scrollbar-width: none !important; }
+        [data-print-handout] textarea::-webkit-scrollbar { display: none !important; }
+        /* Collapsed sections still print. */
+        [data-print-handout] [data-sec-body][hidden] { display: block !important; }
+        /* Keep each label with what it labels. A heading never ends a page on
+           its own, and a short block (one question, one form field — its
+           label, help text and controls) stays on one page. Needs the
+           specificity to beat the break-inside: auto rule above, which exists
+           so that LONG blocks still split instead of jumping to a fresh page. */
+        [data-print-handout] h3, [data-print-handout] h4, [data-print-handout] label,
+        [data-print-handout] [data-print-heading] {
+          break-after: avoid !important; page-break-after: avoid !important;
+        }
+        [data-print-handout] [data-print-section] [data-print-keep],
+        [data-print-handout] [data-print-section] [data-print-form] > div {
+          break-inside: avoid !important; page-break-inside: avoid !important;
+        }
       }
     `;
 

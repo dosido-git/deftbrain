@@ -1,0 +1,10 @@
+/* PILOT (2026-09-27) — tool pages in the home page's style, for the tools in
+   ToolPageWrapper's SITE_STYLE_PILOT only (the wrapper sets
+   data-site-style="home" on them). The navy serif is for the tool's title
+   only — form labels, instructions and results stay in the sans-serif, which
+   reads better small and covers every script the results are written in.
+   Light mode takes the home page's warm off-white; dark mode already matches
+   the home page's dark surfaces. */
+[data-site-style="home"] .tp-title { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: clamp(34px, 4vw, 44px); line-height: 1.08; letter-spacing: -.02em; }
+[data-site-style="home"]:not(.tp-dark) .tp-title { color: #142a43; }
+[data-site-style="home"]:not(.tp-dark) { background: #faf8f5; }
