@@ -290,7 +290,12 @@ export const PRINT_CSS = `
            specificity to beat the break-inside: auto rule above, which exists
            so that LONG blocks still split instead of jumping to a fresh page. */
         [data-print-handout] h3, [data-print-handout] h4, [data-print-handout] label,
-        [data-print-handout] [data-print-heading] {
+        [data-print-handout] [data-print-heading],
+        /* The site-style section pattern: a ruled block (border-t) whose first
+           child is its label, often a <p>, not a heading element — so it
+           needs naming here or it can end a page alone (Grief Guide's
+           "Words, if you need them", 2026-09-27). */
+        [data-print-handout] [data-print-section] [class~="border-t"] > p:first-child {
           break-after: avoid !important; page-break-after: avoid !important;
         }
         [data-print-handout] [data-print-section] [data-print-keep],

@@ -356,10 +356,14 @@ const PaperworkPath = ({ tool }) => {
             const weekLabel = (w) => w === 0 ? (results.event_label || t('pwp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
             return (
               <div className={`border-t ${c.border} pt-5`}>
+                {/* Heading, note and chart travel together on paper (data-print-keep). */}
+                <div data-print-keep>
                 <h3 className={`text-base font-bold ${c.text} mb-1`}>🗓️ {t('pwp_order_title')}</h3>
-                <p className={`text-[13px] ${c.textMuted} mb-4`}>{t('pwp_cal_note_rel', { label: results.event_label || t('pwp_cal_event') })}</p>
+                <p data-print-heading className={`text-[13px] ${c.textMuted} mb-4`}>{t('pwp_cal_note_rel', { label: results.event_label || t('pwp_cal_event') })}</p>
 
-                {/* Relative-week timeline (Gantt). Scrolls sideways on small screens. */}
+                {/* Relative-week timeline (Gantt). Scrolls sideways on small screens.
+                    data-print-keep: on paper the chart moves whole to the next
+                    page rather than splitting its bars across two. */}
                 <div className="overflow-x-auto -mx-1 px-1 mb-5">
                   <div className="relative" style={{ minWidth: `${totalCols * 46}px` }}>
                     {/* Event anchor — a thin marker line (the event is a point in time,
@@ -409,6 +413,7 @@ const PaperworkPath = ({ tool }) => {
                   ))}
                 </div>
               </div>
+                </div>
             );
           })()}
 
