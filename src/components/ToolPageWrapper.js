@@ -322,6 +322,17 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div data-print-hide className="max-w-2xl mx-auto px-4">
             <FeedbackTap tool={detectedTool?.id || tool || toolId || 'unknown'} />
           </div>
+          {/* "Before You Go" on paper. The sidebar never prints, but this one
+              caveat is the part a person needs AFTER they walk away with the
+              handout — it's about acting on the result (hours, prices,
+              bookings), not about the tool. The rest of the sidebar explains
+              DeftBrain, which is not what a handout is for. */}
+          {guide.beforeYouGo && (
+            <div data-print-show style={{display:'none',marginTop:'16px',paddingTop:'10px',borderTop:'1px solid #e5e7eb',breakInside:'avoid'}}>
+              <div style={{fontSize:'11px',fontWeight:'bold',letterSpacing:'0.05em',textTransform:'uppercase',color:'#047857',marginBottom:'4px'}}>✓ Before You Go</div>
+              <div style={{fontSize:'13px',color:'#374151',lineHeight:'1.5'}}>{guide.beforeYouGo}</div>
+            </div>
+          )}
           {/* Print-only footer */}
           <div data-print-show-flex style={{display:'none',justifyContent:'center',alignItems:'center',gap:'8px',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}>
             {/* Wordmark + URL only. The brain mark is already at the top of
