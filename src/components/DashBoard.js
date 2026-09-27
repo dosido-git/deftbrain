@@ -151,7 +151,7 @@ const SHORTCUT_LABEL = typeof navigator !== 'undefined'
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // Home follows the same light/dark setting as the tool pages (HomeTheme.css
   // does the colors; this only feeds the components that take an isDark prop).
-  const { isDark } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
@@ -508,7 +508,25 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <a href="/guides" className="!no-underline hover:!underline underline-offset-4">Guides</a>
               <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
             </nav>
+            <div className="flex items-center gap-2">
             <LocaleSelectors dark={isDark} showCurrency={false} />
+            {/* Light/dark switch (2026-09-27). The home page follows the same
+                saved setting as the tool pages, which each have their own
+                switch; without this one, someone on a dark device had to
+                open a tool to get a light home page. Same size and border as
+                the language pill beside it. */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              className={`inline-flex items-center justify-center min-h-[32px] min-w-[32px] px-2 rounded-lg border text-sm transition-colors ${
+                isDark ? 'bg-zinc-800 border-zinc-600 hover:border-zinc-400' : 'bg-white border-slate-300 hover:border-slate-400'
+              }`}
+            >
+              <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
+            </button>
+            </div>
             <details className="db-home-mobile-menu">
               <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
               <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
