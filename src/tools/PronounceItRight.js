@@ -90,23 +90,20 @@ const PronounceItRight = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -121,8 +118,7 @@ const PronounceItRight = ({ tool }) => {
     successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Bespoke keys for this tool
@@ -134,9 +130,7 @@ const PronounceItRight = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const resultsRef = useRef(null);
 
@@ -280,7 +274,7 @@ const PronounceItRight = ({ tool }) => {
   }, [loading]);
 
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
+    <button aria-pressed={active} onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
@@ -289,14 +283,14 @@ const PronounceItRight = ({ tool }) => {
     const open = expandedSections[sKey] ?? defaultOpen;
     return (
       <div className={c.card + ' border rounded-xl overflow-hidden'}>
-        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
+        <button data-print-heading aria-expanded={!!(open)} onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
           <div className="flex items-center gap-2">
             <span className="text-base">{emoji}</span>
             <span className={'text-sm font-semibold ' + c.text}>{title}</span>
           </div>
-          <Caret open={open} />
+          <span data-print-hide><Caret open={open} /></span>
         </button>
-        {open && <div className={'px-4 pb-4 border-t ' + c.border}>{children}</div>}
+        {<div data-sec-body hidden={!(open)} className={'px-4 pb-4 border-t ' + c.border}>{children}</div>}
       </div>
     );
   };
@@ -313,14 +307,14 @@ const PronounceItRight = ({ tool }) => {
             {activeCat.emoji} {batchMode ? t('pir_enter_multiple') : t('pir_what_say_right')} <span className={c.required}>*</span>
           </label>
           <button onClick={() => { setBatchMode(!batchMode); setResults(null); setBatchResults(null); }}
-            className={'text-[10px] font-bold px-2.5 py-1 rounded-lg border ' + (batchMode ? c.pillActive : c.pillInactive)}>
+            className={'text-xs font-bold px-2.5 py-1 rounded-lg border ' + (batchMode ? c.pillActive : c.pillInactive)}>
             {batchMode ? '✓ ' + t('pir_batch_mode') : t('pir_batch_mode')}
           </button>
         </div>
 
         {batchMode ? (
           <>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('pir_batch_words_label')} <span className={c.required}>*</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('pir_batch_words_label')} <span className={c.required}>*</span></label>
             <p className={'text-xs ' + c.textMuted + ' mb-3'}>{t('pir_batch_hint')}</p>
             <textarea value={batchWords} onChange={e => setBatchWords(e.target.value)}
               placeholder={t('pir_batch_ph')}
@@ -380,7 +374,7 @@ const PronounceItRight = ({ tool }) => {
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none mb-2'} />
             <div className="space-y-0.5">
               {CONTEXT_EXAMPLE_KEYS.map(key => (
-                <p key={key} className={'text-[11px] italic ' + c.textMuted}>{t(key)}</p>
+                <p key={key} className={'text-[13px] italic ' + c.textMuted}>{t(key)}</p>
               ))}
             </div>
           </div>
@@ -424,7 +418,7 @@ const PronounceItRight = ({ tool }) => {
         {/* Hero pronunciation, or an honest "not enough to go on" state */}
         {hasHero ? (
           <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
-            {statusKey && <p className={'text-[11px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
+            {statusKey && <p className={'text-[13px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{results.language || t('pir_pronunciation')}</p>
             <p className={'text-3xl font-black tracking-wide ' + c.text + ' mb-2'}>{results.word}</p>
             <p className={'text-xl font-bold ' + c.tipText + ' mb-3'}>{p.phonetic}</p>
@@ -443,10 +437,10 @@ const PronounceItRight = ({ tool }) => {
                     <audio controls autoPlay src={audioUrl} className="h-8 w-48"
                       onEnded={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }} />
                     <button onClick={() => { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }}
-                      className={'text-[10px] ' + c.textMuted}>✕ {t('pir_close')}</button>
+                      className={'text-xs ' + c.textMuted}>✕ {t('pir_close')}</button>
                   </div>
                 )}
-                <p className={'text-[10px] ' + c.textMuted}>{t('pir_audio_note')}</p>
+                <p className={'text-xs ' + c.textMuted}>{t('pir_audio_note')}</p>
               </div>
             )}
 
@@ -458,7 +452,7 @@ const PronounceItRight = ({ tool }) => {
           </div>
         ) : (
           <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
-            {statusKey && <p className={'text-[11px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
+            {statusKey && <p className={'text-[13px] font-semibold ' + c.textMuted + ' mb-1'}>{t(statusKey)}</p>}
             <p className={'text-3xl font-black tracking-wide ' + c.text}>{results.word}</p>
           </div>
         )}
@@ -516,7 +510,7 @@ const PronounceItRight = ({ tool }) => {
               {results.watch_out_for.map((w, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.warning}>
                   <p className={'text-xs ' + c.warningTxt}>{w.trap}</p>
-                  {w.fix && <p className={'text-[10px] font-semibold ' + c.successTxt + ' mt-1'}>→ {w.fix}</p>}
+                  {w.fix && <p className={'text-xs font-semibold ' + c.successTxt + ' mt-1'}>→ {w.fix}</p>}
                 </div>
               ))}
             </div>
@@ -532,9 +526,9 @@ const PronounceItRight = ({ tool }) => {
                   <div className="flex items-center gap-2 flex-wrap">
                     {v.label && <span className={'text-xs font-bold ' + c.text}>{v.label}</span>}
                     {v.phonetic && <span className={'text-xs ' + c.tipText}>{v.phonetic}</span>}
-                    {v.ipa && <span className={'text-[10px] font-mono ' + c.textMuted}>{v.ipa}</span>}
+                    {v.ipa && <span className={'text-xs font-mono ' + c.textMuted}>{v.ipa}</span>}
                   </div>
-                  {v.when_used && <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{v.when_used}</p>}
+                  {v.when_used && <p className={'text-xs ' + c.textMuted + ' mt-0.5'}>{v.when_used}</p>}
                 </div>
               ))}
             </div>
@@ -574,9 +568,9 @@ const PronounceItRight = ({ tool }) => {
         )}
 
         {/* Post-result cross-ref */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('pir_next_step')}</p>
-          <p className={`text-xs ${c.textSecondary}`}>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('pir_next_step')}</p>
+          <p data-print-hide className={`text-xs ${c.textSecondary}`}>
             {t('pir_xref_nervecheck_q')} <a href="/NerveCheck" className={linkStyle}>💪 {t('pir_nervecheck')}</a> {t('pir_xref_nervecheck_tail')}
           </p>
         </div>
@@ -599,16 +593,16 @@ const PronounceItRight = ({ tool }) => {
               <p className={'text-lg font-bold ' + c.text}>{g.word}</p>
               {g.phonetic
                 ? <p className={'text-base font-bold ' + c.tipText}>{g.phonetic}</p>
-                : <p className={'text-[10px] font-bold uppercase ' + c.textMuted}>{t('pir_batch_needs_context')}</p>}
+                : <p className={'text-[13px] font-bold ' + c.textMuted}>{t('pir_batch_needs_context')}</p>}
             </div>
             {g.prosody && <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{g.prosody}</p>}
             {g.sound_note && <p className={'text-xs ' + c.text + ' mb-1'}>👂 {g.sound_note}</p>}
             {g.watch_out_for && (
               <div className={'p-2 rounded-lg ' + c.warning + ' mt-2'}>
-                <p className={'text-[10px] ' + c.warningTxt}>⚠️ {g.watch_out_for}</p>
+                <p className={'text-xs ' + c.warningTxt}>⚠️ {g.watch_out_for}</p>
               </div>
             )}
-            {!g.phonetic && g.context_needed && <p className={'text-[10px] italic ' + c.textMuted + ' mt-1'}>{g.context_needed}</p>}
+            {!g.phonetic && g.context_needed && <p className={'text-xs italic ' + c.textMuted + ' mt-1'}>{g.context_needed}</p>}
           </div>
         ))}
       </div>
@@ -622,14 +616,14 @@ const PronounceItRight = ({ tool }) => {
     if (sessionHistory.length === 0) return null;
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.cardAlt}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🗣️</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('pir_words_looked_up')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 flex flex-wrap gap-1.5">
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => { setWord(entry.word); setCategory(entry.category); setResults(null); setBatchResults(null); setBatchMode(false); }}
@@ -649,11 +643,19 @@ const PronounceItRight = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🗣️'}</span>{t('pir_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -664,10 +666,11 @@ const PronounceItRight = ({ tool }) => {
             </button>
           )}
         </div>
+        </div>
       </div>
       {!results && !batchResults && renderInput()}
       {!results && !batchResults && (
-        <p className={`text-[11px] ${c.textMuted} text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
           {t('pir_xref_plaintalk_q')} <a href="/PlainTalk" className={linkStyle}>📄 {t('pir_plaintalk')}</a> {t('pir_xref_plaintalk_tail')}
         </p>
       )}
@@ -681,8 +684,8 @@ const PronounceItRight = ({ tool }) => {
               <span>✏️</span> {t('pir_edit_input')}
             </button>
           </div>
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pir_related_tools')}</p>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('pir_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecoderRing" className={`text-xs ${linkStyle}`}>💬 {t('pir_decoder_ring')}</a>
               <a href="/TipOfTongue" className={`text-xs ${linkStyle}`}>💡 {t('pir_tip_of_tongue')}</a>

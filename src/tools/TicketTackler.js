@@ -61,22 +61,19 @@ const TicketTackler = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -92,8 +89,7 @@ const TicketTackler = ({ tool }) => {
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     dangerTxt:     isDark ? 'text-red-300' : 'text-red-800',
     neutralTxt:    isDark ? 'text-zinc-400' : 'text-zinc-600',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -303,11 +299,19 @@ const TicketTackler = ({ tool }) => {
   return (
     <div className="space-y-6">
       {/* Header + inputs card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-center justify-between">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🚦'}</span>{t('tt_tagline')}
             </p>
             <button
@@ -331,6 +335,7 @@ const TicketTackler = ({ tool }) => {
               </button>
             ) : null}
           </div>
+        </div>
         </div>
 
         <div className="pt-4 space-y-4">
@@ -365,7 +370,7 @@ const TicketTackler = ({ tool }) => {
             <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_type_label')}</label>
             <div className="flex flex-wrap gap-2">
               {[['parking', t('tt_type_parking')], ['camera', t('tt_type_camera')]].map(([val, label]) => (
-                <button key={val} onClick={() => setTicketType(val)}
+                <button aria-pressed={ticketType === val} key={val} onClick={() => setTicketType(val)}
                   className={`px-3 py-1.5 rounded-full border text-sm font-medium ${ticketType === val ? c.pillActive : c.pillInactive}`}>
                   {label}
                 </button>
@@ -432,7 +437,7 @@ const TicketTackler = ({ tool }) => {
           </button>
 
           {error ? <div className={`${c.danger} border rounded-lg px-3 py-2 text-sm`}>{t('tt_error')}</div> : null}
-          <p className={`text-xs ${c.textMuted}`}>{t('tt_disclaimer')}</p>
+          <p className={`text-[13px] ${c.textMuted}`}>{t('tt_disclaimer')}</p>
         </div>
       </div>
 
@@ -441,7 +446,7 @@ const TicketTackler = ({ tool }) => {
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
           {/* Verdict */}
           {results?.assessment ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className={`border rounded-xl px-4 py-3 ${verdictMeta(results.assessment?.verdict).cls}`}>
                 <div className="text-lg font-bold">
                   <span className="me-2">{verdictMeta(results.assessment?.verdict).icon}</span>
@@ -454,13 +459,13 @@ const TicketTackler = ({ tool }) => {
 
           {/* What may matter */}
           {results?.what_may_matter?.length ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-3`}>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
               <h3 className={`font-bold ${c.text}`}>🔍 {t('tt_matter_title')}</h3>
               {results.what_may_matter.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                   <div className="flex items-center justify-between gap-2">
                     <span className={`font-semibold text-sm ${c.text}`}>{a?.fact}</span>
-                    <span className={`text-[10px] font-bold uppercase whitespace-nowrap ${c.textMuted}`}>{sourceMeta(a?.source).icon} {sourceMeta(a?.source).label}</span>
+                    <span className={`text-[13px] font-bold whitespace-nowrap ${c.textMuted}`}>{sourceMeta(a?.source).icon} {sourceMeta(a?.source).label}</span>
                   </div>
                   <p className={`text-sm mt-1 ${c.textSecondary}`}>{a?.why_it_matters}</p>
                   <p className={`text-xs mt-1 ${c.warningTxt}`}>❓ {t('tt_matter_verify')}: {a?.needs_verification}</p>
@@ -472,7 +477,7 @@ const TicketTackler = ({ tool }) => {
 
           {/* What to verify / What I verified — title switches once research has an answer */}
           {results?.what_to_verify?.length ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text}`}>
                 {results.what_to_verify.some(v => v?.status === 'VERIFIED') ? `✓ ${t('tt_verified_title')}` : `❓ ${t('tt_verify_title')}`}
               </h3>
@@ -493,7 +498,7 @@ const TicketTackler = ({ tool }) => {
               investigator's own self-reported source name/URL. Absent, not
               empty, when nothing named a source that checked out. */}
           {results?.verified_sources?.length ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text}`}>🔎 {t('tt_verified_sources_header')}</h3>
               <ul className="mt-2 space-y-1.5">
                 {results.verified_sources.map((src, i) => (
@@ -509,7 +514,7 @@ const TicketTackler = ({ tool }) => {
 
           {/* Evidence to get */}
           {results?.evidence_to_get?.length ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text}`}>📸 {t('tt_evidence_title')}</h3>
               <ul className="mt-2 space-y-2">
                 {results.evidence_to_get.map((ev, i) => (
@@ -529,7 +534,7 @@ const TicketTackler = ({ tool }) => {
               plausible-but-not-yet-verified story, before_appeal explains what's
               missing instead of a premature draft. */}
           {results?.appeal_letter ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className={`font-bold ${c.text}`}>✉️ {t('tt_letter_title')}</h3>
                 <CopyBtn content={results.appeal_letter + BRAND} label={t('tt_letter_copy')} />
@@ -537,7 +542,7 @@ const TicketTackler = ({ tool }) => {
               <p className={`text-sm mt-2 whitespace-pre-wrap leading-relaxed ${c.textSecondary}`}>{results.appeal_letter}</p>
             </div>
           ) : results?.before_appeal ? (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text}`}>🧩 {t('tt_before_appeal_title')}</h3>
               <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.before_appeal}</p>
             </div>
@@ -546,7 +551,7 @@ const TicketTackler = ({ tool }) => {
           {/* How to file + pay or contest */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {results?.how_to_file ? (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`font-bold ${c.text}`}>📮 {t('tt_file_title')}</h3>
                 <p className={`text-sm mt-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_file_where')}:</span> {results.how_to_file?.where}</p>
                 {results.how_to_file?.method_tips ? (
@@ -556,7 +561,7 @@ const TicketTackler = ({ tool }) => {
               </div>
             ) : null}
             {results?.pay_or_contest ? (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`font-bold ${c.text}`}>{t('tt_pay_or_contest_title')}</h3>
                 <div className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-xs font-bold ${verdictMeta(results.pay_or_contest?.recommendation).cls}`}>
                   <span>{verdictMeta(results.pay_or_contest?.recommendation).icon}</span>
@@ -581,7 +586,7 @@ const TicketTackler = ({ tool }) => {
           {/* Don't say */}
           {results?.dont_say?.length ? (
             <div className={`${c.danger} border rounded-xl p-4`}>
-              <h3 className="font-bold text-sm">🤐 {t('tt_dontsay_title')}</h3>
+              <h3 className="text-base font-bold text-sm">🤐 {t('tt_dontsay_title')}</h3>
               <ul className="mt-1 space-y-1 text-sm list-disc ps-5">
                 {results.dont_say.map((d, i) => <li key={i}>{d}</li>)}
               </ul>
@@ -589,7 +594,7 @@ const TicketTackler = ({ tool }) => {
           ) : null}
 
           {/* Follow-up */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_followup_label')}</label>
             <div className="flex gap-2">
               <input type="text" value={followupQ} onChange={(e) => setFollowupQ(e.target.value)}

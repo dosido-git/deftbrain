@@ -64,8 +64,7 @@ const TipOfTongue = ({ tool }) => {
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label do the work of being visible.
     // Border clears 3:1 against the card in both themes, label clears 7:1.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     success:       isDark ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/40 text-[#7aba7c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/30 text-[#3a6a3c]',
     warning:       isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#f9edd8] border-[#c8872e]/30 text-[#93541f]',
     danger:        isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40 text-[#e88880]' : 'bg-[#fceae8] border-[#e8a8a0] text-[#b54a3f]',
@@ -230,7 +229,7 @@ const TipOfTongue = ({ tool }) => {
               className={'flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all text-center ' +
                 (category === cat.value ? c.pillActive + ' border-2' : c.pillInactive)}>
               <span className="text-xl">{cat.emoji}</span>
-              <span className="text-[10px] font-semibold leading-tight">{t(cat.labelKey)}</span>
+              <span className="text-xs font-semibold leading-tight">{t(cat.labelKey)}</span>
             </button>
           ))}
         </div>
@@ -281,7 +280,7 @@ const TipOfTongue = ({ tool }) => {
         {!loading && (
           <kbd aria-hidden="true"
             className={'hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide '
-              + (description.trim() ? 'border-white/30 bg-white/15' : (isDark ? 'border-cyan-500/50 text-cyan-300' : 'border-cyan-600/50 text-cyan-800'))}>
+              + (description.trim() ? 'border-white/30 bg-white/15' : (isDark ? 'border-[#7fb3e0] text-[#a9cdef]' : 'border-[#142a43] text-[#142a43]'))}>
             ⌘↵
           </kbd>
         )}
@@ -397,11 +396,11 @@ const TipOfTongue = ({ tool }) => {
         {results.also_try?.length > 0 && foundIt && (
           <div className={'border rounded-xl p-5 ' + c.card + ' ' + c.border}>
             <p className={'text-sm font-bold ' + c.text + ' mb-2'}>{t('tot_since_liked', { name: foundIt })}</p>
-            <button onClick={() => setShowAlsoTry(v => !v)} aria-expanded={showAlsoTry}
+            <button data-print-heading onClick={() => setShowAlsoTry(v => !v)} aria-expanded={showAlsoTry}
               className={'flex items-center gap-1.5 text-xs font-bold mb-3 ' + c.accentTxt}>
-              ✨ {t('tot_also_like')} <Caret open={showAlsoTry} />
+              ✨ {t('tot_also_like')} <span data-print-hide><Caret open={showAlsoTry} /></span>
             </button>
-            <div className={'space-y-2 ' + (showAlsoTry ? '' : 'hidden')}>
+            <div data-sec-body hidden={!showAlsoTry} className="space-y-2">
               {results.also_try.map((item, idx) => (
                 <div key={idx} className={'p-3 rounded-lg ' + c.inset}>
                   <p className={'text-sm font-semibold ' + c.text}>{item.name}</p>
@@ -424,7 +423,7 @@ const TipOfTongue = ({ tool }) => {
                   <span className={'text-xs ' + c.text + ' flex-1 line-clamp-2'}>{m.name}</span>
                   {['yes', 'close', 'no'].map(val => (
                     <button key={val} onClick={() => setMatchFeedback(prev => ({ ...prev, [idx]: val }))}
-                      className={'px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ' +
+                      className={'px-2 py-1 rounded-lg text-xs font-bold border transition-all ' +
                         (matchFeedback[idx] === val
                           ? val === 'yes'   ? 'border-[#5a8a5c] bg-[#5a8a5c]/20 text-[#5a8a5c]'
                           : val === 'close' ? 'border-[#c8872e] bg-[#c8872e]/20 text-[#c8872e]'
@@ -471,7 +470,7 @@ const TipOfTongue = ({ tool }) => {
             use costs more than an empty space, and the old catch-all was handing
             a ceramic glaze a TV-catch-up tool. */}
         {XREF_CATEGORIES.includes(category) && (
-        <div className={'p-4 rounded-2xl border ' + c.card + ' ' + c.border}>
+        <div data-print-hide className={'p-4 rounded-2xl border ' + c.card + ' ' + c.border}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 {t('tot_related')}</p>
           {/* What follows an identification depends on what was identified. A
               dish leads to cooking it; a film to catching up on it; a product,
@@ -543,15 +542,15 @@ const TipOfTongue = ({ tool }) => {
       } catch { return ''; }
     };
     return (
-      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🕐</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tot_past_searches')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => {
               const restorable = !!(entry.inputs && entry.results);
               return restorable ? (
@@ -599,11 +598,19 @@ const TipOfTongue = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Persistent header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-center justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💭'}</span>{t('tot_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -612,11 +619,12 @@ const TipOfTongue = ({ tool }) => {
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('tot_start_over')}</button>
           )}
         </div>
+        </div>
       </div>
 
       {!results && renderInput()}
       {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
           {t('tot_pre_xref')} <a href="/Bookmark" className={linkStyle}>🔖 {t('tot_xref_bookmark')}</a> {t('tot_pre_xref_tail')}
         </p>
       )}

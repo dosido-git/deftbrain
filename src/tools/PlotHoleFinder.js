@@ -67,18 +67,15 @@ const PlotHoleFinder = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -90,8 +87,7 @@ const PlotHoleFinder = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     quoteBg:       isDark ? 'bg-zinc-700/60' : 'bg-slate-100',
@@ -99,9 +95,7 @@ const PlotHoleFinder = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [view, setView]               = useState('find');
@@ -334,12 +328,20 @@ const PlotHoleFinder = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header + tab nav ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div data-print-hide>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🕳️'}</span>{tool?.tagline ?? t('plh_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-4 py-2 rounded-full text-sm font-semibold border ${isDark ? 'border-white/25 text-zinc-50' : 'border-black/25 text-zinc-900'} shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
@@ -351,13 +353,14 @@ const PlotHoleFinder = ({ tool }) => {
               )}
             </div>
           </div>
+          </div>
         </div>
-        <div className="px-5 py-3 flex gap-2">
+        <div className="pt-4 flex gap-2">
           {[
             { key: 'find',   label: `🕳️ ${t('plh_tab_find')}` },
             { key: 'defend', label: `⚖️ ${t('plh_tab_defend')}` },
           ].map(tabItem => (
-            <button key={tabItem.key} onClick={() => { setView(tabItem.key); setError(''); }}
+            <button aria-pressed={view === tabItem.key} key={tabItem.key} onClick={() => { setView(tabItem.key); setError(''); }}
               className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
                 view === tabItem.key ? c.pillActive : c.pillInactive}`}>
               {tabItem.label}
@@ -369,12 +372,12 @@ const PlotHoleFinder = ({ tool }) => {
       {/* ── Find Holes ── */}
       {view === 'find' && (
         <>
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
             <div>
-              <label className={`text-xs font-bold ${c.label} uppercase block mb-2`}>{t('plh_type')}</label>
+              <label className={`text-[15px] font-semibold ${c.label} block mb-2`}>{t('plh_type')}</label>
               <div className="flex flex-wrap gap-2">
                 {MEDIA_TYPES.map(m => (
-                  <button key={m.value} onClick={() => setMediaType(m.value)}
+                  <button aria-pressed={mediaType === m.value} key={m.value} onClick={() => setMediaType(m.value)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${
                       mediaType === m.value ? c.pillActive : c.pillInactive}`}>
                     <span className="me-1">{m.icon}</span>{m.label}
@@ -413,9 +416,9 @@ const PlotHoleFinder = ({ tool }) => {
               )}
             </button>
 
-            <p className={`text-[11px] text-center ${c.textMuted}`}>⚠️ {t('plh_spoiler_notice')}</p>
+            <p className={`text-[13px] text-center ${c.textMuted}`}>⚠️ {t('plh_spoiler_notice')}</p>
 
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('plh_xref_find')} <a href="/DecisionPrism" className={linkStyle}>🔀 {t('plh_plottwist')}</a> {t('plh_xref_find_tail')}
             </p>
           </div>
@@ -425,7 +428,7 @@ const PlotHoleFinder = ({ tool }) => {
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
               {viewingHistoryId && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}>
-                  <p className={`text-[11px] ${c.textMuted}`}>{t('plh_viewing_saved')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('plh_viewing_saved')}</p>
                 </div>
               )}
 
@@ -439,43 +442,43 @@ const PlotHoleFinder = ({ tool }) => {
                     <span className="text-2xl">🧀</span>{' '}
                     <span className={`text-3xl font-black ${c.accentTxt}`}>{results.swiss_cheese_rating}</span>
                     <span className={`text-sm ${c.textMuted}`}>/10 {t('plh_swiss_rating')}</span>
-                    {results?.swiss_cheese_note && <p className={`text-xs ${c.textMuted} mt-1`}>{results.swiss_cheese_note}</p>}
+                    {results?.swiss_cheese_note && <p className={`text-[13px] ${c.textMuted} mt-1`}>{results.swiss_cheese_note}</p>}
                   </div>
                 )}
               </div>
 
               {results?.focus_answer?.show && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`text-xs font-bold ${c.label} uppercase mb-2`}>🎯 {t('plh_your_question')}</h3>
                   <p className={`text-sm italic ${c.text} mb-2`}>“{results.focus_answer.question}”</p>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded border inline-block mb-2 ${verdictStyle(results.focus_answer.verdict)}`}>{verdictLabel(results.focus_answer.verdict)}</span>
+                  <span className={`text-xs font-black px-2 py-0.5 rounded border inline-block mb-2 ${verdictStyle(results.focus_answer.verdict)}`}>{verdictLabel(results.focus_answer.verdict)}</span>
                   <p className={`text-sm ${c.textSecondary}`}>{results.focus_answer.explanation}</p>
                 </div>
               )}
 
               {results?.findings?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕳️ {t('plh_findings_heading')} ({results.findings.length})</h3>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-3`}>🕳️ {t('plh_findings_heading')} ({results.findings.length})</h3>
                   <div className="space-y-3">
                     {results.findings.map((f, i) => (
                       <div key={i} className={`${c.quoteBg} rounded-lg p-4`}>
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <p className={`text-sm font-bold ${c.text}`}>{findingTypeIcon(f.type)} {f.name}</p>
-                          <span className={`text-[9px] font-black px-2 py-0.5 rounded border whitespace-nowrap ${c.pillInactive}`}>{findingTypeLabel(f.type)}</span>
+                          <span className={`text-xs font-black px-2 py-0.5 rounded border whitespace-nowrap ${c.pillInactive}`}>{findingTypeLabel(f.type)}</span>
                         </div>
-                        {f.severity && <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{severityLabel(f.severity)}</p>}
+                        {f.severity && <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{severityLabel(f.severity)}</p>}
                         {f.what_happens && <p className={`text-xs ${c.textSecondary} mb-2`}>{f.what_happens}</p>}
-                        {f.case_against && <p className={`text-[11px] ${c.textMuted} mb-1`}>💥 {f.case_against}</p>}
-                        {f.best_defense && <p className={`text-[11px] ${c.textMuted} mb-1`}>🛡️ {f.best_defense} <span className="italic">({defenseBasisLabel(f.defense_basis)})</span></p>}
+                        {f.case_against && <p className={`text-[13px] ${c.textMuted} mb-1`}>💥 {f.case_against}</p>}
+                        {f.best_defense && <p className={`text-[13px] ${c.textMuted} mb-1`}>🛡️ {f.best_defense} <span className="italic">({defenseBasisLabel(f.defense_basis)})</span></p>}
                         <div className="flex items-center gap-2 mt-2">
-                          <span className={`text-[9px] font-black px-2 py-0.5 rounded border whitespace-nowrap ${verdictStyle(f.verdict)}`}>{verdictLabel(f.verdict)}</span>
-                          <p className={`text-[11px] ${c.textMuted}`}>{f.why}</p>
+                          <span className={`text-xs font-black px-2 py-0.5 rounded border whitespace-nowrap ${verdictStyle(f.verdict)}`}>{verdictLabel(f.verdict)}</span>
+                          <p className={`text-[13px] ${c.textMuted}`}>{f.why}</p>
                         </div>
                         {f.snarky_version && (
-                          <p className={`text-[11px] ${c.textMuted} italic mt-2`}>💬 {t('plh_snarky_prefix')} “{f.snarky_version}”</p>
+                          <p className={`text-[13px] ${c.textMuted} italic mt-2`}>💬 {t('plh_snarky_prefix')} “{f.snarky_version}”</p>
                         )}
                         <button onClick={() => handleDefendFinding(f)}
-                          className={`text-[10px] font-bold ${c.accentTxt} mt-2 min-h-[24px]`}>
+                          className={`text-xs font-bold ${c.accentTxt} mt-2 min-h-[24px]`}>
                           ⚖️ {t('plh_defend_this')}
                         </button>
                       </div>
@@ -486,7 +489,7 @@ const PlotHoleFinder = ({ tool }) => {
 
               {results?.strongest_case?.show && (
                 <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className="text-[10px] font-bold uppercase mb-1">🕳️ {t('plh_strongest_case')}</p>
+                  <p className="text-[13px] font-bold mb-1">🕳️ {t('plh_strongest_case')}</p>
                   <p className="text-sm font-bold">{results.strongest_case.finding}</p>
                   <p className="text-xs mt-1">{results.strongest_case.why}</p>
                 </div>
@@ -496,7 +499,7 @@ const PlotHoleFinder = ({ tool }) => {
                   verdict dressed up as one. */}
               {!results?.strongest_case?.show && results?.hardest_question?.show && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>🤔 {t('plh_hardest_question')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>🤔 {t('plh_hardest_question')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{results.hardest_question.question}</p>
                   <p className={`text-xs mt-1 ${c.textSecondary}`}>{results.hardest_question.why}</p>
                 </div>
@@ -504,21 +507,21 @@ const PlotHoleFinder = ({ tool }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {results?.what_the_story_gets_right?.show && (
                   <div className={`${c.success} border rounded-xl p-4`}>
-                    <p className="text-[10px] font-bold uppercase mb-1">✨ {t('plh_gets_right')}</p>
+                    <p className="text-[13px] font-bold mb-1">✨ {t('plh_gets_right')}</p>
                     <p className="text-xs">{results.what_the_story_gets_right.text}</p>
                   </div>
                 )}
                 {results?.why_it_still_works?.show && (
                   <div className={`${c.warning} border rounded-xl p-4`}>
-                    <p className="text-[10px] font-bold uppercase mb-1">❤️ {t('plh_still_works')}</p>
+                    <p className="text-[13px] font-bold mb-1">❤️ {t('plh_still_works')}</p>
                     <p className="text-xs">{results.why_it_still_works.text}</p>
                   </div>
                 )}
               </div>
 
               {/* Post-result cross-refs */}
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('plh_related')}</p>
+              <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('plh_related')}</p>
                 <div className="flex flex-wrap gap-3">
                   <a href="/FanTheory" className={`text-xs ${linkStyle}`}>🔭 {t('plh_fantheory')}</a>
                 </div>
@@ -531,7 +534,7 @@ const PlotHoleFinder = ({ tool }) => {
       {/* ── Defend ── */}
       {view === 'defend' && (
         <>
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <p className={`text-sm font-bold ${c.textSecondary}`}>{t('plh_defend_intro')}</p>
 
             <div>
@@ -572,12 +575,12 @@ const PlotHoleFinder = ({ tool }) => {
               )}
             </button>
 
-            <p className={`text-[11px] text-center ${c.textMuted}`}>⚠️ {t('plh_spoiler_notice')}</p>
+            <p className={`text-[13px] text-center ${c.textMuted}`}>⚠️ {t('plh_spoiler_notice')}</p>
           </div>
 
           {defendResults && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`text-xs font-bold ${c.label} uppercase mb-2`}>⚖️ {t('plh_the_case')}</h3>
                 <p className={`text-sm ${c.text}`}>{defendResults.hole_summary}</p>
               </div>
@@ -589,8 +592,8 @@ const PlotHoleFinder = ({ tool }) => {
               </div>
 
               {defendResults.defense_arguments?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-3`}>🛡️ {t('plh_the_defense')}</h3>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-3`}>🛡️ {t('plh_the_defense')}</h3>
                   <div className="space-y-2">
                     {defendResults.defense_arguments.map((a, i) => (
                       <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -602,8 +605,8 @@ const PlotHoleFinder = ({ tool }) => {
                           </div>
                         </div>
                         <p className={`text-xs ${c.text} mb-1`}>{a.argument}</p>
-                        {a.support && <p className={`text-[10px] ${c.textMuted} mb-1`}>{a.support}</p>}
-                        {a.counterpoint && <p className={`text-[10px] ${c.warningTxt}`}>{t('plh_but')} {a.counterpoint}</p>}
+                        {a.support && <p className={`text-[13px] ${c.textMuted} mb-1`}>{a.support}</p>}
+                        {a.counterpoint && <p className={`text-xs ${c.warningTxt}`}>{t('plh_but')} {a.counterpoint}</p>}
                       </div>
                     ))}
                   </div>
@@ -612,28 +615,28 @@ const PlotHoleFinder = ({ tool }) => {
 
               {defendResults.best_defense && (
                 <div className={`${c.success} border rounded-xl p-4`}>
-                  <p className="text-[10px] font-bold uppercase mb-1">🏆 {t('plh_best_defense')}</p>
+                  <p className="text-[13px] font-bold mb-1">🏆 {t('plh_best_defense')}</p>
                   <p className="text-sm">{defendResults.best_defense}</p>
                 </div>
               )}
 
               {defendResults.closing_statement && (
                 <div className={`${c.warningBox} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>⚖️ {t('plh_closing')}</p>
+                  <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>⚖️ {t('plh_closing')}</p>
                   <p className={`text-sm ${c.text} italic`}>{defendResults.closing_statement}</p>
                 </div>
               )}
 
               {defendResults.final_call && (
                 <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>🔎 {t('plh_hat_off')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>🔎 {t('plh_hat_off')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{defendResults.final_call}</p>
                 </div>
               )}
 
               {/* Post-result cross-refs */}
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('plh_related')}</p>
+              <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('plh_related')}</p>
                 <div className="flex flex-wrap gap-3">
                   <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('plh_plottwist')}</a>
                 </div>
@@ -662,13 +665,13 @@ const PlotHoleFinder = ({ tool }) => {
               <div key={s.id} className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <p className={`text-xs font-bold ${c.text} truncate`}>{s.title}</p>
-                  <p className={`text-[11px] ${c.textMuted} truncate`}>
+                  <p className={`text-[13px] ${c.textMuted} truncate`}>
                     {s.verdictLabel ? overallVerdictLabel(s.verdictLabel) : ''}{s.strongestFinding ? ` — ${s.strongestFinding}` : ''}
                   </p>
                 </div>
-                <span className={`text-[10px] ${c.textMuted} whitespace-nowrap`}>{new Date(s.date).toLocaleDateString()}</span>
-                <button onClick={() => handleViewHistoryAnalysis(s)} className={`${c.btnSecondary} px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap`}>{t('plh_view_analysis')}</button>
-                <button onClick={() => handleLookAgain(s)} className={`${c.btnSecondary} px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap`}>{t('plh_look_again')}</button>
+                <span className={`text-[13px] ${c.textMuted} whitespace-nowrap`}>{new Date(s.date).toLocaleDateString()}</span>
+                <button onClick={() => handleViewHistoryAnalysis(s)} className={`${c.btnSecondary} px-2 py-1 rounded text-xs font-bold whitespace-nowrap`}>{t('plh_view_analysis')}</button>
+                <button onClick={() => handleLookAgain(s)} className={`${c.btnSecondary} px-2 py-1 rounded text-xs font-bold whitespace-nowrap`}>{t('plh_look_again')}</button>
               </div>
             ))}
           </div>

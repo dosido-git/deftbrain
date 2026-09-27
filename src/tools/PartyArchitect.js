@@ -40,22 +40,19 @@ const PartyArchitect = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -67,8 +64,7 @@ const PartyArchitect = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -77,9 +73,7 @@ const PartyArchitect = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [occasion, setOccasion] = useState('');
   const [guestCount, setGuestCount] = useState('');
@@ -273,12 +267,20 @@ const PartyArchitect = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🎪'}</span>{t('pa_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -289,6 +291,7 @@ const PartyArchitect = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         <div>
@@ -317,7 +320,7 @@ const PartyArchitect = ({ tool }) => {
 
         <div>
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_who_label')}</label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('pa_who_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('pa_who_hint')}</p>
           <input type="text" value={whoIsComing} onChange={e => setWhoIsComing(e.target.value)}
             placeholder={t('pa_who_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
@@ -334,7 +337,7 @@ const PartyArchitect = ({ tool }) => {
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_vibe_label')}</label>
           <div className="flex flex-wrap gap-1.5">
             {VIBES.map(v => (
-              <button key={v.value} onClick={() => setVibe(vibe === v.value ? '' : v.value)}
+              <button aria-pressed={vibe === v.value} key={v.value} onClick={() => setVibe(vibe === v.value ? '' : v.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
                   vibe === v.value ? c.pillActive : c.pillInactive}`}>
                 {v.emoji} {t(v.labelKey)}
@@ -347,8 +350,8 @@ const PartyArchitect = ({ tool }) => {
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_duration_label')}</label>
           <div className="flex gap-2">
             {DURATIONS.map(d => (
-              <button key={d.value} onClick={() => setDuration(d.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+              <button aria-pressed={duration === d.value} key={d.value} onClick={() => setDuration(d.value)}
+                className={`flex-1 py-2 rounded-xl text-[13px] font-bold border transition-colors min-h-[36px] ${
                   duration === d.value ? c.pillActive : c.pillInactive}`}>
                 {d.emoji} {t(d.labelKey)}
               </button>
@@ -360,7 +363,7 @@ const PartyArchitect = ({ tool }) => {
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
             {t('pa_constraints_label')} <span className={`font-normal ${c.textMuted}`}>{t('pa_constraints_hint')}</span>
           </label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('pa_constraints_help')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('pa_constraints_help')}</p>
           <input type="text" value={constraints} onChange={e => setConstraints(e.target.value)}
             placeholder={t('pa_constraints_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
@@ -381,7 +384,7 @@ const PartyArchitect = ({ tool }) => {
           </button>
         </div>
 
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
           {t('pa_xref_datenight_q')} <a href="/DateNight" className={linkStyle}>💘 {t('pa_xref_datenight')}</a> {t('pa_xref_datenight_tail')}
         </p>
       </div>
@@ -400,31 +403,31 @@ const PartyArchitect = ({ tool }) => {
           <div data-copy-results ref={resultsRef} className="scroll-mt-24"/>
 
           {r.event_read?.what_matters && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>🎯 {t('pa_the_plan')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🎯 {t('pa_the_plan')}</p>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.event_read.what_matters}</p>
               {r.event_read.design_priority && (
-                <p className={`text-xs ${c.textMuted} mt-2 italic`}>{t('pa_design_priority_label')}: {r.event_read.design_priority}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-2 italic`}>{t('pa_design_priority_label')}: {r.event_read.design_priority}</p>
               )}
             </div>
           )}
 
           {r.event_shape && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.warningTxt} mb-1`}>🎚️ {t('pa_the_shape')}</p>
+              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>🎚️ {t('pa_the_shape')}</p>
               <p className={`text-sm font-medium leading-relaxed`}>{r.event_shape}</p>
             </div>
           )}
 
           {r.timeline?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('timeline')}
+              <button data-print-heading aria-expanded={!!(expandedSections.timeline)} onClick={() => toggleSection('timeline')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⏱️</span> {t('pa_event_plan')}</h3>
-                <Caret open={expandedSections.timeline} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>⏱️</span> {t('pa_event_plan')}</h3>
+                <span data-print-hide><Caret open={expandedSections.timeline} /></span>
               </button>
-              {expandedSections.timeline && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.timeline)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.timeline.map((item, i) => (
                     <div key={i} className="flex gap-3">
                       <div className="flex flex-col items-center flex-shrink-0">
@@ -434,12 +437,12 @@ const PartyArchitect = ({ tool }) => {
                       <div className={`flex-1 ${c.cardAlt} rounded-lg p-3`}>
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`text-xs font-bold ${c.text}`}>{item.time}</span>
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{item.phase}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{item.phase}</span>
                         </div>
                         <p className={`text-xs ${c.text} mb-1`}>{item.action}</p>
-                        <p className={`text-[10px] ${c.textMuted} italic`}>🎯 {t('pa_host_job_label')}: {item.host_job}</p>
-                        {item.why && <p className={`text-[10px] ${c.textMuted} mt-1`}>💡 {item.why}</p>}
-                        {item.adjust_if && <p className={`text-[10px] ${c.accentTxt} mt-1`}>↺ {t('pa_adjust_label')}: {item.adjust_if}</p>}
+                        <p className={`text-[13px] ${c.textMuted} italic`}>🎯 {t('pa_host_job_label')}: {item.host_job}</p>
+                        {item.why && <p className={`text-[13px] ${c.textMuted} mt-1`}>💡 {item.why}</p>}
+                        {item.adjust_if && <p className={`text-xs ${c.accentTxt} mt-1`}>↺ {t('pa_adjust_label')}: {item.adjust_if}</p>}
                       </div>
                     </div>
                   ))}
@@ -450,20 +453,20 @@ const PartyArchitect = ({ tool }) => {
 
           {r.helping_people_connect?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('connect')}
+              <button data-print-heading aria-expanded={!!(expandedSections.connect)} onClick={() => toggleSection('connect')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🤝</span> {t('pa_helping_connect')}</h3>
-                <Caret open={expandedSections.connect} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>🤝</span> {t('pa_helping_connect')}</h3>
+                <span data-print-hide><Caret open={expandedSections.connect} /></span>
               </button>
-              {expandedSections.connect && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.connect)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.helping_people_connect.map((m, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-4`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>{m.idea}</p>
                       <p className={`text-xs ${c.textSecondary} mb-2`}>{m.how}</p>
                       <div className="flex gap-3">
-                        {m.when && <p className={`text-[10px] ${c.textMuted}`}>⏱ {m.when}</p>}
-                        {m.why_it_fits && <p className={`text-[10px] ${c.textMuted} italic`}>{m.why_it_fits}</p>}
+                        {m.when && <p className={`text-[13px] ${c.textMuted}`}>⏱ {m.when}</p>}
+                        {m.why_it_fits && <p className={`text-[13px] ${c.textMuted} italic`}>{m.why_it_fits}</p>}
                       </div>
                     </div>
                   ))}
@@ -473,7 +476,7 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.conversation_catalysts?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>💬 {t('pa_conversation')}</p>
               <div className="space-y-1.5">
                 {r.conversation_catalysts.map((s, i) => (
@@ -484,7 +487,7 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.food_and_drink && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🍽️ {t('pa_food_drink')}</p>
               <div className="space-y-2">
                 {r.food_and_drink.format && <p className={`text-xs ${c.textSecondary}`}>{r.food_and_drink.format}</p>}
@@ -500,7 +503,7 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.music?.show && (r.music.arrival || r.music.later || r.music.wind_down) && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🎵 {t('pa_music')}</p>
               <div className="space-y-1.5">
                 {[[t('pa_music_arrival'), r.music.arrival], [t('pa_music_later'), r.music.later], [t('pa_music_winddown'), r.music.wind_down]]
@@ -512,25 +515,25 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.budget_priorities && (r.budget_priorities.approach || r.budget_priorities.protect_spending_on?.length > 0) && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>💰 {t('pa_budget_priorities')}</p>
               <div className="space-y-1.5">
                 {r.budget_priorities.approach && <p className={`text-xs ${c.textSecondary}`}>{r.budget_priorities.approach}</p>}
                 {r.budget_priorities.protect_spending_on?.length > 0 && (
                   <div className="mt-1">
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pa_protect_label')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pa_protect_label')}</p>
                     {r.budget_priorities.protect_spending_on.map((v, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {v}</p>)}
                   </div>
                 )}
                 {r.budget_priorities.keep_secondary?.length > 0 && (
                   <div className="mt-1">
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pa_keep_secondary_label')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pa_keep_secondary_label')}</p>
                     {r.budget_priorities.keep_secondary.map((v, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {v}</p>)}
                   </div>
                 )}
                 {r.budget_priorities.use_what_you_have?.length > 0 && (
                   <div className="mt-1">
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pa_use_what_you_have_label')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pa_use_what_you_have_label')}</p>
                     {r.budget_priorities.use_what_you_have.map((v, i) => <p key={i} className={`text-xs ${c.successTxt}`}>• {v}</p>)}
                   </div>
                 )}
@@ -539,7 +542,7 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.things_to_plan_for?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🧯 {t('pa_things_to_plan_for')}</p>
               <div className="space-y-2">
                 {r.things_to_plan_for.map((d, i) => (
@@ -554,7 +557,7 @@ const PartyArchitect = ({ tool }) => {
 
           {r.wind_down && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.warningTxt} mb-1`}>👋 {t('pa_wind_down')}</p>
+              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>👋 {t('pa_wind_down')}</p>
               {r.wind_down.signals?.length > 0 && (
                 <div className="mb-2 space-y-0.5">
                   {r.wind_down.signals.map((s, i) => <p key={i} className={`text-xs ${c.warningTxt}`}>{s}</p>)}
@@ -567,8 +570,8 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {/* Related tools */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pa_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('pa_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>🗺️ {t('pa_xref_mam')}</a>
               <a href="/AwkwardSilenceFiller" className={`text-xs ${linkStyle}`}>💬 {t('pa_xref_asf')}</a>
@@ -595,14 +598,14 @@ const PartyArchitect = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-semibold ${c.text} truncate`}>{p.preview || t('pa_history_fallback')}</p>
                       {metaBits.length > 0 && (
-                        <p className={`text-xs ${c.textMuted} mt-0.5 truncate`}>{metaBits.join(' · ')}</p>
+                        <p className={`text-[13px] ${c.textMuted} mt-0.5 truncate`}>{metaBits.join(' · ')}</p>
                       )}
-                      <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{dateStr}</p>
+                      <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{dateStr}</p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button onClick={() => viewPlan(p)} className={`text-xs font-bold ${linkStyle}`}>{t('pa_view')} →</button>
                       <button onClick={() => duplicateAndEdit(p)} className={`text-xs font-bold ${linkStyle}`}>{t('pa_duplicate_edit')} →</button>
-                      <button onClick={() => removePlan(p.id)} className={`text-xs ${c.textMuted} hover:${c.text}`} aria-label={t('pa_remove')}>✕</button>
+                      <button onClick={() => removePlan(p.id)} className={`text-[13px] ${c.textMuted} hover:${c.text}`} aria-label={t('pa_remove')}>✕</button>
                     </div>
                   </div>
                 </div>
@@ -619,8 +622,8 @@ const PartyArchitect = ({ tool }) => {
               <div className="space-y-1 pt-1">
                 {legacyHistory.map((h, i) => (
                   <div key={h.id || i} className="flex items-center justify-between opacity-60">
-                    <span className={`text-xs ${c.textMuted} truncate`}>{h.preview || t('pa_history_fallback')}</span>
-                    <span className={`text-[10px] ${c.textMuted} ms-2`}>{h.date ? new Date(h.date).toLocaleDateString() : ''}</span>
+                    <span className={`text-[13px] ${c.textMuted} truncate`}>{h.preview || t('pa_history_fallback')}</span>
+                    <span className={`text-[13px] ${c.textMuted} ms-2`}>{h.date ? new Date(h.date).toLocaleDateString() : ''}</span>
                   </div>
                 ))}
               </div>

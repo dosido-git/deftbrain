@@ -171,8 +171,7 @@ const DriveHome = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
@@ -188,20 +187,16 @@ const DriveHome = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-100'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-600 hover:border-gray-400',
     // PF-13 exception — an outline, not a smudge, while the form is incomplete.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Form ──
   const [from, setFrom] = useState('');
@@ -423,11 +418,19 @@ const DriveHome = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── PF-30 header: icon + tagline, Try an example, Start over ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🚗'}</span>{t('dh_hero')}
             </p>
             {/* PF-17c */}
@@ -442,6 +445,7 @@ const DriveHome = ({ tool }) => {
               className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
             >↺ {t('start_over')}</button>
           ) : null}
+        </div>
         </div>
       </div>
 
@@ -522,7 +526,7 @@ const DriveHome = ({ tool }) => {
       {result && (
         <div ref={revealRef} className="scroll-mt-24 space-y-4">
           <section className={`rounded-xl border p-4 md:p-5 ${tone}`}>
-            <p className="text-xs font-bold uppercase tracking-wide">{readLabel}</p>
+            <p className="text-[13px] font-bold">{readLabel}</p>
             <h2 className="mt-2 text-xl font-bold">{result.headline}</h2>
             {result.summary && <p className="mt-2">{result.summary}</p>}
             {result.main_concern && <p className="mt-3 text-sm"><strong>{t('dh_main_concern')}</strong> {result.main_concern}</p>}
@@ -559,7 +563,7 @@ const DriveHome = ({ tool }) => {
             </button>
           )}
 
-          <p className={`text-center text-sm ${c.textMuted}`}>
+          <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
             {t('dh_diff_trip')} <a href="/SafeWalk" className={linkStyle}>🚶 {t('dh_safewalk')}</a> {t('dh_safewalk_walking')}
           </p>
         </div>
@@ -642,7 +646,7 @@ const DriveHome = ({ tool }) => {
       )}
 
       {!result && (
-        <p className={`text-center text-sm ${c.textMuted}`}>
+        <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
           {t('dh_diff_trip')} <a href="/SafeWalk" className={linkStyle}>🚶 {t('dh_safewalk')}</a> {t('dh_safewalk_walking')}
         </p>
       )}

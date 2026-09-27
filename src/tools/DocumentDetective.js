@@ -43,22 +43,19 @@ const DocumentDetective = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -70,8 +67,7 @@ const DocumentDetective = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -97,9 +93,7 @@ const DocumentDetective = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const STATUS_LABEL = {
     'CLEAR FROM DOCUMENT': t('nc_status_clear'),
@@ -114,7 +108,7 @@ const DocumentDetective = ({ tool }) => {
   const StatusBadge = ({ status }) => {
     if (!status) return null;
     return (
-      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLE[status] || c.badge}`}>
+      <span className={`text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLE[status] || c.badge}`}>
         {STATUS_LABEL[status] || status}
       </span>
     );
@@ -266,17 +260,17 @@ const DocumentDetective = ({ tool }) => {
   // ═══ RENDER HELPERS ═══
   const Section = ({ title, emoji, open, onToggle, badge, hint, children }) => (
     <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+      <button data-print-heading aria-expanded={!!(open)} onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && (
-        <div className={`px-5 pb-5 border-t ${c.border}`}>
-          {hint && <p className={`text-xs ${c.textMuted} mt-3 mb-1`}>{hint}</p>}
+      {(
+        <div data-sec-body hidden={!(open)} className={`px-5 pb-5 border-t ${c.border}`}>
+          {hint && <p className={`text-[13px] ${c.textMuted} mt-3 mb-1`}>{hint}</p>}
           {children}
         </div>
       )}
@@ -284,7 +278,7 @@ const DocumentDetective = ({ tool }) => {
   );
 
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
+    <button aria-pressed={active} onClick={onClick} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
@@ -310,10 +304,10 @@ const DocumentDetective = ({ tool }) => {
         <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">🔎</span>
-            <span className={`text-xs font-bold uppercase tracking-wide ${c.tipText}`}>{t('nc_result_the_chase')}</span>
+            <span className={`text-[13px] font-bold ${c.tipText}`}>{t('nc_result_the_chase')}</span>
           </div>
           <p className={`text-sm font-bold ${c.text}`}>{results?.document?.bottom_line}</p>
-          {results?.document?.type && <p className={`text-xs ${c.textMuted} mt-2`}>{results?.document?.type}</p>}
+          {results?.document?.type && <p className={`text-[13px] ${c.textMuted} mt-2`}>{results?.document?.type}</p>}
         </div>
 
         {/* Needs Your Attention */}
@@ -327,10 +321,10 @@ const DocumentDetective = ({ tool }) => {
                   <StatusBadge status={a.status} />
                 </div>
                 {a.why_it_matters_to_you && <p className={`text-xs ${c.textSecondary} mb-1`}>{t('nc_why_matters_to_you')}: {a.why_it_matters_to_you}</p>}
-                {a.source && <p className={`text-[10px] ${c.textMuted} mb-1`}>{t('nc_source_label')}: {a.source}</p>}
+                {a.source && <p className={`text-[13px] ${c.textMuted} mb-1`}>{t('nc_source_label')}: {a.source}</p>}
                 {a.deadline && <p className={`text-xs font-bold ${c.actionText} mb-1`}>{t('nc_deadline')}: {a.deadline}</p>}
                 {a.if_you_do_nothing && <p className={`text-xs ${c.textSecondary} mb-1`}>{t('nc_if_you_do_nothing')}: {a.if_you_do_nothing}</p>}
-                {a.what_to_do && <p className={`text-xs ${c.textMuted}`}>{t('nc_what_to_do')}: {a.what_to_do}</p>}
+                {a.what_to_do && <p className={`text-[13px] ${c.textMuted}`}>{t('nc_what_to_do')}: {a.what_to_do}</p>}
               </div>
             ))}
           </div>
@@ -348,7 +342,7 @@ const DocumentDetective = ({ tool }) => {
                 </div>
                 {item.amount_or_rule && <p className={`text-sm font-bold ${c.costText}`}>{item.amount_or_rule}</p>}
                 {item.when && <p className={`text-xs ${c.textSecondary}`}>{t('nc_effective')}: {item.when}</p>}
-                {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
+                {item.source && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
               </div>
             ))}
           </div>
@@ -365,7 +359,7 @@ const DocumentDetective = ({ tool }) => {
                     <span className={`text-sm font-semibold ${c.text}`}>{item.what}</span>
                   </div>
                   <p className={`text-xs ${c.textSecondary}`}>{item.why_it_matters}</p>
-                  {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
+                  {item.source && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
                 </div>
               ))}
             </div>
@@ -379,7 +373,7 @@ const DocumentDetective = ({ tool }) => {
               {needsClarification.map((item, idx) => (
                 <div key={idx} className={`p-3 rounded-lg border ${c.warningBox}`}>
                   <p className={`text-sm font-semibold ${c.text}`}>{item.what}</p>
-                  {item.source && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
+                  {item.source && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nc_source_label')}: {item.source}</p>}
                 </div>
               ))}
             </div>
@@ -394,7 +388,7 @@ const DocumentDetective = ({ tool }) => {
                 <div key={idx} className={`p-3 rounded-lg ${c.inset}`}>
                   <p className={`text-sm font-semibold ${c.text}`}>{item.what}</p>
                   <p className={`text-xs ${c.textSecondary} mt-1`}>{item.why}</p>
-                  {item.could_change_if && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('nc_doesnt_apply_could_change')}: {item.could_change_if}</p>}
+                  {item.could_change_if && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nc_doesnt_apply_could_change')}: {item.could_change_if}</p>}
                 </div>
               ))}
             </div>
@@ -408,7 +402,7 @@ const DocumentDetective = ({ tool }) => {
               {buried.map((item, idx) => (
                 <div key={idx} className={`p-3 rounded-lg border ${c.tipBg}`}>
                   <p className={`text-xs font-bold ${c.tipText} mb-1`}>{item.what}</p>
-                  {item.source && <p className={`text-[10px] ${c.textMuted}`}>{t('nc_source_label')}: {item.source}</p>}
+                  {item.source && <p className={`text-[13px] ${c.textMuted}`}>{t('nc_source_label')}: {item.source}</p>}
                   <p className={`text-xs ${c.tipText} mt-1`}>{t('nc_buried_why_miss_label')}: {item.why_easy_to_miss}</p>
                 </div>
               ))}
@@ -448,8 +442,8 @@ const DocumentDetective = ({ tool }) => {
               {outsideHelp.map((item, idx) => (
                 <div key={idx} className="pb-2 last:pb-0">
                   <p className={`text-xs font-semibold ${c.text}`}>{item.question}</p>
-                  <p className={`text-[10px] ${c.textSecondary}`}>{item.why_the_document_doesnt_resolve_it}</p>
-                  {item.who_to_ask_first && <p className={`text-[10px] ${c.infoText} mt-1`}>{t('nc_outside_help_who_first')}: {item.who_to_ask_first}</p>}
+                  <p className={`text-xs ${c.textSecondary}`}>{item.why_the_document_doesnt_resolve_it}</p>
+                  {item.who_to_ask_first && <p className={`text-xs ${c.infoText} mt-1`}>{t('nc_outside_help_who_first')}: {item.who_to_ask_first}</p>}
                 </div>
               ))}
             </div>
@@ -470,20 +464,20 @@ const DocumentDetective = ({ tool }) => {
       } catch { return ''; }
     };
     return (
-      <div className={`p-4 rounded-xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(p => !p)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={`p-4 rounded-xl border ${c.histBg}`}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(p => !p)} className="w-full flex items-center gap-2 text-start">
           <span>📋</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('nc_past_filters')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.bottomLine || entry.situation}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.documentType}</div>
+                  <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.documentType}</div>
                 </div>
                 <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('nc_view')}</button>
@@ -500,13 +494,21 @@ const DocumentDetective = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ─── Persistent input card ─── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🔎'}</span>{tool?.tagline ?? t('nc_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -517,6 +519,7 @@ const DocumentDetective = ({ tool }) => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </div>
 
@@ -529,7 +532,7 @@ const DocumentDetective = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
                 {t('nc_paste_label')} <span className={c.required}>*</span>
               </label>
-              <p className={`text-xs ${c.textMuted} mb-2`}>{t('nc_paste_hint')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('nc_paste_hint')}</p>
 
               {pdfBase64 ? (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3 mb-2`}>
@@ -543,7 +546,7 @@ const DocumentDetective = ({ tool }) => {
                     className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>
                     📎 {t('nc_upload')}
                   </button>
-                  <span className={`text-xs ${c.textMuted}`}>{t('nc_upload_hint')}</span>
+                  <span className={`text-[13px] ${c.textMuted}`}>{t('nc_upload_hint')}</span>
                   <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf,.html" className="hidden"
                     onChange={e => handleFile(e.target.files?.[0])} />
                 </div>
@@ -556,12 +559,12 @@ const DocumentDetective = ({ tool }) => {
                 rows={8}
                 className={`w-full p-4 border rounded-xl text-sm font-mono resize-none ${c.input}`}
               />}
-              {!pdfBase64 && docText.length > 0 && <p className={`text-xs ${c.textMuted} mt-1`}>{t('nc_char_count', { n: docText.length.toLocaleString(userLocale || undefined) })}</p>}
+              {!pdfBase64 && docText.length > 0 && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nc_char_count', { n: docText.length.toLocaleString(userLocale || undefined) })}</p>}
             </div>
 
             {/* Document type */}
             <div>
-              <label className={`block text-xs font-bold ${c.labelText} uppercase tracking-wide mb-2`}>{t('nc_doc_type_label')} <span className={`normal-case font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+              <label className={`block text-[13px] font-bold ${c.labelText} mb-2`}>{t('nc_doc_type_label')} <span className={`normal-case font-normal ${c.textMuted}`}>({t('optional')})</span></label>
               <div className="flex flex-wrap gap-1.5">
                 {DOC_TYPE_VALUES.map(dt => (
                   <Pill key={dt.value} active={documentType === dt.value} onClick={() => setDocumentType(dt.value)}>
@@ -576,8 +579,8 @@ const DocumentDetective = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
                 {t('nc_situation_label')} <span className={c.required}>*</span>
               </label>
-              <p className={`text-xs ${c.textMuted} mb-1`}>{t('nc_situation_hint')}</p>
-              <p className={`text-xs ${c.textMuted} mb-2 italic`}>{t('nc_situation_ex1')} · {t('nc_situation_ex2')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-1`}>{t('nc_situation_hint')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-2 italic`}>{t('nc_situation_ex1')} · {t('nc_situation_ex2')}</p>
               <textarea
                 value={mySituation}
                 onChange={e => setMySituation(e.target.value)}
@@ -590,7 +593,7 @@ const DocumentDetective = ({ tool }) => {
             {/* Anything you especially want to know */}
             <div>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('nc_concerns_label')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-              <p className={`text-xs ${c.textMuted} mb-2 italic`}>{t('nc_concerns_ex1')} · {t('nc_concerns_ex2')} · {t('nc_concerns_ex3')} · {t('nc_concerns_ex4')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-2 italic`}>{t('nc_concerns_ex1')} · {t('nc_concerns_ex2')} · {t('nc_concerns_ex3')} · {t('nc_concerns_ex4')}</p>
               <input
                 type="text"
                 value={concerns}
@@ -618,7 +621,7 @@ const DocumentDetective = ({ tool }) => {
           </button>
 
             {/* Pre-result cross-ref */}
-            <p className={`text-xs ${c.textMuted}`}>{t('nc_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>📄 {t('nc_lease_trap')}</a> {t('nc_xref_lease_tail')}</p>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>{t('nc_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>📄 {t('nc_lease_trap')}</a> {t('nc_xref_lease_tail')}</p>
 
           </div>
         )}
@@ -637,8 +640,8 @@ const DocumentDetective = ({ tool }) => {
 
       {/* ─── Post-result cross-refs ─── */}
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('nc_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('nc_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ {t('nc_jargon_assassin')}</a>
             <a href="/LeaseTrapDetector" className={`text-xs ${linkStyle}`}>📄 {t('nc_lease_trap')}</a>

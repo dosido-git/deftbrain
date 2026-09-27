@@ -68,7 +68,7 @@ function Metric({ label, value, onChange, low, high }) {
           these there is nothing telling you how far 7 is from 4 (owner,
           2026-08-26). Rendered with the inherited colour at two opacities so
           the row needs no palette and works in both themes. */}
-      <div className="flex justify-between px-0.5 text-[10px] tabular-nums leading-none" aria-hidden="true">
+      <div className="flex justify-between px-0.5 text-xs tabular-nums leading-none" aria-hidden="true">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
           <span key={n} className={n === value ? 'font-bold opacity-100' : 'opacity-40'}>{n}</span>
         ))}
@@ -92,7 +92,7 @@ function ToggleChip({ active, onClick, children }) {
 function Section({ title, children }) {
   return (
     <section className="rounded-xl border p-4 md:p-5">
-      <h3 className="font-bold mb-3">{title}</h3>
+      <h3 className="text-base font-bold mb-3">{title}</h3>
       {children}
     </section>
   );
@@ -116,7 +116,7 @@ export default function BeforeTheCrash() {
     cardAlt:       isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100' : 'bg-white border-gray-300 text-gray-900',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -128,9 +128,7 @@ export default function BeforeTheCrash() {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const tool = tools.find(x => x.id === 'BeforeTheCrash');
 
@@ -311,11 +309,19 @@ export default function BeforeTheCrash() {
   return (
     <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
       {/* ── Unified header card: icon + tagline + Try an example + reset + tabs ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
             </p>
             {/* PF-17c */}
@@ -330,6 +336,7 @@ export default function BeforeTheCrash() {
               className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
             >↺ {t('start_over')}</button>
           ) : null}
+        </div>
         </div>
 
         <div className="flex gap-2 pt-3">
@@ -372,7 +379,7 @@ export default function BeforeTheCrash() {
                   {metricRows.map(([label, value]) => (
                     <div key={label} className={`${c.cardAlt} rounded-lg p-3 text-center`}>
                       <div className="text-xl font-bold">{value ?? '—'}</div>
-                      <div className={`text-xs ${c.textMuted}`}>{label}</div>
+                      <div className={`text-[13px] ${c.textMuted}`}>{label}</div>
                     </div>
                   ))}
                 </div>
@@ -428,7 +435,7 @@ export default function BeforeTheCrash() {
                         {/* Two different offers. One asks you to notice something
                             because the logs cannot answer it yet; the other asks you
                             to change something because they can (owner, 2026-08-26). */}
-                        <p className="text-xs font-bold uppercase tracking-wide">
+                        <p className="text-[13px] font-bold">
                           {nextStep.kind === 'small_change' ? t('cpv2_try_change') : t('cpv2_gather_clue')}
                         </p>
                         <p className="font-medium mt-1">{nextStep.try}</p>
@@ -553,7 +560,7 @@ export default function BeforeTheCrash() {
                 <input type="checkbox" checked={entry.crashDay} onChange={e => update('crashDay', e.target.checked)} className="mt-1 h-5 w-5" />
                 <span>
                   <span className="font-medium block">{t('cpv2_crashed')}</span>
-                  <span className={`text-xs ${c.textMuted}`}>{t('cpv2_crashed_hint')}</span>
+                  <span className={`text-[13px] ${c.textMuted}`}>{t('cpv2_crashed_hint')}</span>
                 </span>
               </label>
 
@@ -580,7 +587,7 @@ export default function BeforeTheCrash() {
                       </label>
                     ))}
                   </div>
-                  <p className={`text-xs ${c.textMuted}`}>{t('cpv2_optional_note')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('cpv2_optional_note')}</p>
                 </div>
               )}
 
@@ -641,14 +648,14 @@ export default function BeforeTheCrash() {
       )}
 
       {!results && (
-        <p className={`text-xs text-center px-4 ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center px-4 ${c.textMuted}`}>
           {t('cpv2_xref_pre')} <a href="/PEP" className={linkStyle}>✨ {t('cpr_xref_pep')}</a>
         </p>
       )}
 
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-          <p className={`text-xs ${c.textMuted}`}>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
             {t('cpv2_xref_post')}{' '}
             <a href="/PEP" className={linkStyle}>✨ {t('cpr_xref_pep')}</a>
           </p>
