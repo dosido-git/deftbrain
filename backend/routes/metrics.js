@@ -868,10 +868,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // and is how this shipped wrong the first time.
     // ── Prompt-cache viability ───────────────────────────────────────
     // Anthropic flags a low cache hit rate and estimates a saving from token
-    // volume alone. Volume is the wrong question: a cache WRITE costs 1.25x a
-    // normal token and a HIT costs 0.1x, so a prefix needs roughly two hits
-    // per write before caching saves anything. What matters is whether the
-    // same prompt prefix recurs inside the TTL.
+    // volume alone. Volume is the wrong question: with caching on, a call that
+    // misses pays 1.25x (a write) and a call that hits pays 0.1x, against 1.0x
+    // with caching off. So caching pays when 1.25(1-h) + 0.1h < 1, i.e. when
+    // the hit rate h is above ~22% at the 5-minute tier (2(1-h) + 0.1h < 1 →
+    // ~53% at the 1-hour tier, whose write costs ~2x). What matters is
+    // whether the same prompt prefix recurs inside the TTL.
+    //
+    // Since 2026-09-27 caching is OPT-IN per route (PROMPT_CACHE_ROUTES, see
+    // lib/claude.js). The per-tool table below is how to choose: a tool
+    // steadily above the break-even is a candidate to add.
     //
     // This measures the OPTIMISTIC case. tool_run carries the tool but not the
     // language, and the real cache key is tool+language+locale+currency —
@@ -880,8 +886,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // caching cannot pay, and no restructuring is worth doing.
     // Parameterized so the report can compare the current 5-minute ephemeral
     // tier against Anthropic's 1-hour tier (cache_control ttl:'1h') side by
-    // side — see backend/lib/claude.js:71, which hardcodes the 5-minute
-    // default today. The 1-hour tier writes at ~2x input price instead of
+    // side — lib/claude.js uses the 5-minute default for opted-in routes. The 1-hour tier writes at ~2x input price instead of
     // 1.25x (same 0.1x read rate), so it only pays off if enough real runs
     // are spaced beyond 5 minutes but within an hour — exactly what this
     // comparison is for, using this range's actual tool_run spacing instead
@@ -906,12 +911,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         return { tool, runs: times.length, hits };
       }).filter(r => r.runs >= 2).sort((a, b) => b.hits - a.hits || b.runs - a.runs).slice(0, 12);
       const rate = runs ? Math.round(wouldHit / runs * 100) : 0;
-      // Two hits per write to break even at the 5-minute tier's 1.25x write
-      // cost. The 1-hour tier's write costs more (~2x), so its own break-even
-      // sits higher — roughly 91% (2 / (2 + 0.1*2) hit-per-write territory,
-      // i.e. needing closer to 20 reads per write) rather than 67%. Both
-      // thresholds are shown so neither tier's verdict borrows the other's bar.
-      const breakEven = ttlMin <= 5 ? 67 : 91;
+      // Break-even hit rate from the cost comparison above: ~22% at the
+      // 5-minute tier, ~53% at the 1-hour tier. (Until 2026-09-27 these read
+      // 67% / 91% — "two hits per write" — which overstated the bar: one hit
+      // saves 0.9x and a write only adds 0.25x.) Each tier gets its own bar.
+      const breakEven = ttlMin <= 5 ? 22 : 53;
       const verdict = runs < 30
         ? 'Not enough runs yet to tell — this needs a few hundred before it means anything.'
         : rate >= breakEven
@@ -1425,11 +1429,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
     <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
-    <h2>Prompt-cache viability — 5-minute (current) vs. 1-hour TTL</h2>
+    <h2>Prompt-cache viability — 5-minute vs. 1-hour TTL</h2>
+    <p style="font-size:12px;margin:0 0 6px">Caching is <b>off unless a route is listed in <code>PROMPT_CACHE_ROUTES</code></b> (Railway variable; comma-separated route slugs, <code>*</code> = all). Currently on for: <b>${escH(process.env.PROMPT_CACHE_ROUTES || 'none')}</b>. Add a tool only if it stays above the ~22% break-even below.</p>
     <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token at the 5-minute tier, ~2x at the 1-hour tier; a hit costs 0.1x either way. This counts a run as a would-be hit when the same tool ran again within the TTL. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further — treat these as an upper bound on what switching could achieve, not a guarantee.</p>
     <div style="display:flex;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:280px">
-        <p style="font-size:13px;margin:0 0 6px"><b>5 min (live today):</b> <b>${cache5.wouldHit} of ${cache5.runs} runs</b> (${cache5.rate}%) would have hit. ${escH(cache5.verdict)}</p>
+        <p style="font-size:13px;margin:0 0 6px"><b>5 min:</b> <b>${cache5.wouldHit} of ${cache5.runs} runs</b> (${cache5.rate}%) would have hit. ${escH(cache5.verdict)}</p>
         <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache5.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
       </div>
       <div style="flex:1;min-width:280px">

@@ -34,6 +34,15 @@ const VOLATILE_SUFFIX_RE = /\n\nLANGUAGE: Respond entirely in|\n\nLOCALE CONTEXT
 // exemption list; absent, the rules always apply, which is the safe default.
 // options.__dateLine (set by the date-injection wrapper below) rides the
 // UNCACHED side — see that wrapper's comment for why.
+// Routes allowed to use prompt caching — see the OPT-IN note in create() below.
+// Read per call (not at load) so a Railway variable change needs no redeploy
+// logic here beyond the restart Railway already does.
+function promptCacheOn(route) {
+  const list = String(process.env.PROMPT_CACHE_ROUTES || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (!list.length) return false;
+  return list.includes('*') || (!!route && list.includes(route));
+}
+
 const _rawMessagesCreate = anthropic.messages.create.bind(anthropic.messages);
 anthropic.messages.create = function (params, ...rest) {
   if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
@@ -67,8 +76,18 @@ anthropic.messages.create = function (params, ...rest) {
   // silent no-op — never an error — so it's always safe to mark. Verified live
   // 2026-09-07: a repeat call with an unchanged stable block read the cache at
   // ~10% of the normal input-token cost instead of paying full price again.
+  //
+  // OPT-IN since 2026-09-27. A cache write costs 1.25x normal input and a
+  // read 0.1x, so caching only pays when >~22% of a route's calls land within
+  // 5 minutes of the previous one with the same prefix. The cache is per
+  // tool, split ~124 ways, at validation-stage traffic — most writes are
+  // likely never read, each one a 25% surcharge on the prompt. PROMPT_CACHE_ROUTES (comma-
+  // separated route slugs, e.g. "debate-me,room-reader"; "*" = every route)
+  // turns it back on where the metrics report's "cache net" column shows it
+  // pays. Unset = no caching anywhere.
+  const cached = promptCacheOn(currentRoute());
   const system = [
-    { type: 'text', text: stableText, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: stableText, ...(cached ? { cache_control: { type: 'ephemeral' } } : {}) },
     ...(volatileText ? [{ type: 'text', text: volatileText }] : []),
   ];
   return _rawMessagesCreate({ ...clean, system }, ...rest);
