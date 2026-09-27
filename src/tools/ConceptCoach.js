@@ -76,27 +76,23 @@ function ConceptCoach({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -108,9 +104,7 @@ function ConceptCoach({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [ideaStage, setIdeaStage]           = useState('idea');
   const [ideaDescription, setIdeaDescription] = useState('');
@@ -250,14 +244,14 @@ function ConceptCoach({ tool }) {
   ];
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+    <div className={`border-t ${c.border} pt-5 space-y-4`}>
 
       {/* Stage */}
       <div>
         <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('ia_stage_label')}</label>
         <div className="flex flex-wrap gap-2">
           {IDEA_STAGES.map(s => (
-            <button key={s.id} onClick={() => setIdeaStage(s.id)}
+            <button aria-pressed={ideaStage === s.id} key={s.id} onClick={() => setIdeaStage(s.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${ideaStage === s.id ? c.pillActive : c.pillInactive}`}>
               <span className="me-1">{s.icon}</span>{t(s.labelKey)}
             </button>
@@ -314,7 +308,7 @@ function ConceptCoach({ tool }) {
         </label>
         <div className="flex flex-wrap gap-2">
           {FOCUS_AREAS.map(fa => (
-            <button key={fa.id} onClick={() => toggleFocus(fa.id)}
+            <button aria-pressed={focusAreas.includes(fa.id)} key={fa.id} onClick={() => toggleFocus(fa.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${focusAreas.includes(fa.id) ? c.pillActive : c.pillInactive}`}>
               {t(fa.labelKey)}
             </button>
@@ -341,8 +335,8 @@ function ConceptCoach({ tool }) {
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('ia_prev')}</p>
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('ia_clear')}</button>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>🕓 {t('ia_prev')}</p>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('ia_clear')}</button>
           </div>
           <ul className="space-y-1.5">
             {sessionHistory.map((h, i) => (
@@ -363,7 +357,7 @@ function ConceptCoach({ tool }) {
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
 
         {/* Verdict banner */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="flex items-start gap-4">
             {results.assessment_label && (
               <div className={`${c.infoBox} border rounded-lg px-3 py-2 text-xs font-bold flex-shrink-0`}>
@@ -384,7 +378,7 @@ function ConceptCoach({ tool }) {
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 min-w-max px-3 py-2.5 text-xs font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab.id
-                    ? isDark ? 'bg-zinc-700 text-zinc-50 border-b-2 border-cyan-500' : 'bg-slate-50 text-gray-900 border-b-2 border-cyan-600'
+                    ? isDark ? 'bg-zinc-700 text-zinc-50 border-b-2 border-[#7fb3e0]' : 'bg-slate-50 text-gray-900 border-b-2 border-[#142a43]'
                     : `${c.textMuted} hover:${c.textSecondary}`
                 }`}>
                 {tab.label}
@@ -397,7 +391,7 @@ function ConceptCoach({ tool }) {
             {/* What we know tab */}
             {activeTab === 'evidence' && (
               <div className="space-y-2">
-                <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_evidence_intro')}</p>
+                <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_evidence_intro')}</p>
                 {results?.evidence_summary?.map((s, i) => (
                   <div key={i} className={`text-sm ${c.infoBox} border rounded-lg px-3 py-2.5 flex gap-2`}>
                     <span className="flex-shrink-0">•</span><span>{s}</span>
@@ -414,7 +408,7 @@ function ConceptCoach({ tool }) {
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="text-base">{cfg.icon}</span>
                     <span className={`font-bold text-sm ${cfg.txt(isDark)}`}>{risk.title}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg.bg(isDark)} ${cfg.txt(isDark)}`}>{t(cfg.labelKey)}</span>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${cfg.bg(isDark)} ${cfg.txt(isDark)}`}>{t(cfg.labelKey)}</span>
                   </div>
                   <p className={`text-sm ${cfg.txt(isDark)} mb-2`}>{risk.description}</p>
                   {risk.test && (
@@ -440,7 +434,7 @@ function ConceptCoach({ tool }) {
             {/* Kill questions tab */}
             {activeTab === 'questions' && (
               <div className="space-y-2">
-                <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_questions_intro')}</p>
+                <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_questions_intro')}</p>
                 {results?.questions?.map((q, i) => (
                   <div key={i} className={`text-sm ${c.warning} border rounded-lg px-3 py-2.5 flex gap-2`}>
                     <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{q}</span>
@@ -452,7 +446,7 @@ function ConceptCoach({ tool }) {
             {/* Next steps tab */}
             {activeTab === 'next' && (
               <div className="space-y-2">
-                <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_next_intro')}</p>
+                <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_next_intro')}</p>
                 {results?.next_tests?.map((s, i) => (
                   <div key={i} className={`text-sm ${c.infoBox} border rounded-lg px-3 py-2.5 flex gap-2`}>
                     <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{typeof s === 'string' ? s : <><strong>{s.test}</strong>{s.signal ? ` — ${s.signal}` : ''}</>}</span>
@@ -464,8 +458,8 @@ function ConceptCoach({ tool }) {
         </div>
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ia_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('ia_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/BreakMyPlan" className={`text-xs ${linkStyle}`}>🪦 {t('ia_premortem')}</a>
             <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>⚖️ {t('ia_leverage')}</a>
@@ -477,13 +471,21 @@ function ConceptCoach({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🔬'}</span>{t('ia_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -497,8 +499,9 @@ function ConceptCoach({ tool }) {
             </div>
           </div>
         </div>
+        </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('ia_xref_pitch')} <a href="/BreakMyPlan" className={linkStyle}>🪦 {t('ia_premortem')}</a> {t('ia_xref_pitch_after')}</p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('ia_xref_pitch')} <a href="/BreakMyPlan" className={linkStyle}>🪦 {t('ia_premortem')}</a> {t('ia_xref_pitch_after')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>

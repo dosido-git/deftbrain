@@ -29,28 +29,26 @@ const PEP = ({ tool }) => {
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt: isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt: isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    highlight: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    highlight: isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     savedBadge: isDark ? 'text-emerald-400' : 'text-emerald-600',
     required: isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const chip = (active) => active
     ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800')
@@ -323,11 +321,11 @@ const PEP = ({ tool }) => {
     return <div className={`${c.card} border ${top ? 'border-emerald-400 border-2' : c.border} rounded-xl p-4 space-y-2`}>
       <div className="flex items-start justify-between gap-3">
         <h4 className={`font-bold ${top ? 'text-base' : 'text-sm'} ${c.text} flex-1 min-w-0`}>{item.activity}</h4>
-        {item.duration && <span className={`text-xs ${c.textMuted} flex-shrink-0 max-w-[40%] text-end`}>{item.duration}</span>}
+        {item.duration && <span className={`text-[13px] ${c.textMuted} flex-shrink-0 max-w-[40%] text-end`}>{item.duration}</span>}
       </div>
       {item.why_it_fits && <p className={`text-sm ${c.textSecondary}`}>{item.why_it_fits}</p>}
       {item.first_step && <p className={`text-sm font-semibold ${c.text}`}>→ {item.first_step}</p>}
-      {item.done_when && <p className={`text-xs ${c.textMuted}`}>✓ {item.done_when}</p>}
+      {item.done_when && <p className={`text-[13px] ${c.textMuted}`}>✓ {item.done_when}</p>}
       <div className="flex flex-wrap gap-2 pt-1">
         {!saved ? <button onClick={() => addToMenu(item.activity)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>＋ {t('pep_add_my_menu')}</button>
           : <span className={`px-2 py-1 text-xs ${c.savedBadge}`}>✓ {t('pep_on_menu')}</span>}
@@ -339,12 +337,20 @@ const PEP = ({ tool }) => {
   const hasSomethingToReset = !!(results || context.trim());
 
   return <div className={`max-w-4xl mx-auto space-y-4 ${c.text}`}>
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-      <div className="pb-3 border-b border-zinc-500">
+    <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+      {/* Header — site style (2026-09-27): a pale band of the tool's color
+          bleeding to the card edges, the ground the "Try an example" pill was
+          made for (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div>
         <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '✨'}</span>{tool?.tagline ?? t('pep_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -356,6 +362,7 @@ const PEP = ({ tool }) => {
           )}
         </div>
       </div>
+      </div>
 
       <div className="pt-4 space-y-5">
         <div>
@@ -366,22 +373,22 @@ const PEP = ({ tool }) => {
         <div>
           <div className="flex justify-between items-baseline"><label className="text-sm font-bold">{t('pep_energy_label')}</label><span className="text-lg font-bold">{ENERGY_EMOJIS[energy]} {energy}/10</span></div>
           <input type="range" min="1" max="10" value={energy} onChange={(e) => setEnergy(Number(e.target.value))} className="w-full accent-emerald-500" />
-          <div className={`flex justify-between text-[11px] ${c.textMuted}`}><span>1 — {t('pep_energy_scale_low')}</span><span>10 — {t('pep_energy_scale_high')}</span></div>
+          <div className={`flex justify-between text-[13px] ${c.textMuted}`}><span>1 — {t('pep_energy_scale_low')}</span><span>10 — {t('pep_energy_scale_high')}</span></div>
         </div>
 
         <div>
           <label className="text-sm font-bold">{t('pep_time_label')}</label>
-          <div className="flex flex-wrap gap-2 mt-2">{TIME_OPTS.map((x) => <button key={x.v} onClick={() => setTimeAvail(x.v)} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${chip(timeAvail === x.v)}`}>{x.l}</button>)}</div>
+          <div className="flex flex-wrap gap-2 mt-2">{TIME_OPTS.map((x) => <button aria-pressed={timeAvail === x.v} key={x.v} onClick={() => setTimeAvail(x.v)} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${chip(timeAvail === x.v)}`}>{x.l}</button>)}</div>
         </div>
 
         <div>
           <label className="text-sm font-bold">{t('pep_mood_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <div className="flex flex-wrap gap-2 mt-2">{MOOD_OPTS.map((x) => <button key={x.v} onClick={() => setMood(mood === x.v ? '' : x.v)} className={`px-3 py-2 rounded-lg border text-sm ${chip(mood === x.v)}`}>{x.e} {x.l}</button>)}</div>
+          <div className="flex flex-wrap gap-2 mt-2">{MOOD_OPTS.map((x) => <button aria-pressed={mood === x.v} key={x.v} onClick={() => setMood(mood === x.v ? '' : x.v)} className={`px-3 py-2 rounded-lg border text-sm ${chip(mood === x.v)}`}>{x.e} {x.l}</button>)}</div>
         </div>
 
         <div>
           <label className="text-sm font-bold">{t('pep_location_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <div className="flex flex-wrap gap-2 mt-2">{ENV_OPTS.map((x) => <button key={x.v} onClick={() => setEnvironment(environment === x.v ? '' : x.v)} className={`px-3 py-2 rounded-lg border text-sm ${chip(environment === x.v)}`}>{x.e} {x.l}</button>)}</div>
+          <div className="flex flex-wrap gap-2 mt-2">{ENV_OPTS.map((x) => <button aria-pressed={environment === x.v} key={x.v} onClick={() => setEnvironment(environment === x.v ? '' : x.v)} className={`px-3 py-2 rounded-lg border text-sm ${chip(environment === x.v)}`}>{x.e} {x.l}</button>)}</div>
         </div>
 
         <div>
@@ -397,7 +404,7 @@ const PEP = ({ tool }) => {
     </div>
 
     {!results && (
-      <p className={`text-xs ${c.textMuted} px-1`}>
+      <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>
         {t('pep_spiral_intro')} <a href="/ChaosPilot" className={linkStyle}>🚨 {t('pep_spiral_stopper')}</a> {t('pep_spiral_first')}
       </p>
     )}
@@ -407,12 +414,12 @@ const PEP = ({ tool }) => {
     {results && (results.top_pick && <div id="pep-result" className="space-y-4">
       {results.read && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{results.read}</p></div>}
       {/* Just Tell Me What To Do skips the "Top pick" framing — there was no menu to pick from. */}
-      {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}
-      {results.alternatives?.length > 0 && <div><h3 className="font-bold text-base mb-2">{t('pep_other_options')}</h3><div className="space-y-2">{results.alternatives.slice(0, 2).map((x, i) => <Activity key={`${x.activity}-${i}`} item={x} />)}</div></div>}
+      {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="text-base font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}
+      {results.alternatives?.length > 0 && <div><h3 className="text-base font-bold text-base mb-2">{t('pep_other_options')}</h3><div className="space-y-2">{results.alternatives.slice(0, 2).map((x, i) => <Activity key={`${x.activity}-${i}`} item={x} />)}</div></div>}
       {results.history_note && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold uppercase mb-1">{t('pep_from_history')}</p><p className="text-sm">{results.history_note}</p></div>}
       <button onClick={() => generate({ fresh: true })} disabled={loading} className={`w-full py-3 rounded-xl border-2 border-dashed ${c.border} ${c.textSecondary}`}>{activeAction === 'fresh' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '✨'}</span> {t('pep_generate_loading')}</> : <>🔄 {t('pep_swap_cta')}</>}</button>
 
-      <p className={`text-xs ${c.textMuted} text-center`}>
+      <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
         {t('pep_xref_intro')}{' '}
         {t('pep_xref_crash_q')}{' '}<a href="/BeforeTheCrash" className={linkStyle}>{t('pep_crash_predictor')}</a>{' '}
         {t('pep_xref_crash_mid')}{' '}<a href="/BrainStateDeejay" className={linkStyle}>{t('pep_brain_state_deejay')}</a>{' '}
@@ -421,7 +428,7 @@ const PEP = ({ tool }) => {
     </div>)}
 
     {ratingActivity && <div className={`${c.card} border-2 border-amber-400 rounded-xl p-5 space-y-4`}>
-      <div className="flex justify-between gap-3"><div><h3 className="font-bold text-lg">⭐ {t('pep_rate_title')}</h3><p className={`text-sm ${c.textSecondary}`}>{ratingActivity.activity}</p></div><button onClick={() => { setRatingActivity(null); setReflection(null); }} className={c.textMuted}>✕</button></div>
+      <div className="flex justify-between gap-3"><div><h3 className="text-base font-bold text-lg">⭐ {t('pep_rate_title')}</h3><p className={`text-sm ${c.textSecondary}`}>{ratingActivity.activity}</p></div><button onClick={() => { setRatingActivity(null); setReflection(null); }} className={c.textMuted}>✕</button></div>
       <div><div className="flex justify-between"><label className="text-sm font-bold">{t('pep_rate_helpful')}</label><span className="font-bold">{helpfulness}/10</span></div><input type="range" min="1" max="10" value={helpfulness} onChange={(e) => setHelpfulness(Number(e.target.value))} className="w-full accent-amber-500" /></div>
       <div><div className="flex justify-between"><label className="text-sm font-bold">{t('pep_energy_now_label')}</label><span className="font-bold">{energyAfter}/10</span></div><input type="range" min="1" max="10" value={energyAfter} onChange={(e) => setEnergyAfter(Number(e.target.value))} className="w-full accent-emerald-500" /></div>
       <textarea value={rateNote} onChange={(e) => setRateNote(e.target.value)} rows={2} placeholder={t('pep_rate_noticed_ph')} className={`w-full p-3 border rounded-xl text-sm ${c.input}`} />
@@ -434,18 +441,18 @@ const PEP = ({ tool }) => {
       <button onClick={() => setShowHistory((x) => !x)} className={`${c.card} border ${c.border} rounded-xl p-4 text-left`}><span className="font-bold">🧪 {t('pep_history_nav')}</span><span className={`ms-2 text-sm ${c.textMuted}`}>{t('pep_count_attempts', { n: activityLog.length })}</span><p className={`text-xs mt-1 ${c.textMuted}`}>{t('pep_history_nav_desc')}</p></button>
     </div>
 
-    {showMenu && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-      <div className="flex justify-between"><h3 className="font-bold">📋 {t('pep_my_menu')}</h3><button onClick={() => setShowMenu(false)} className={c.textMuted}>✕</button></div>
+    {showMenu && <div className={`border-t ${c.border} pt-5 space-y-3`}>
+      <div className="flex justify-between"><h3 className="text-base font-bold">📋 {t('pep_my_menu')}</h3><button onClick={() => setShowMenu(false)} className={c.textMuted}>✕</button></div>
       {!myMenu.length ? <p className={`text-sm ${c.textMuted}`}>{t('pep_my_menu_empty')}</p> : myMenu.map((x) => {
         const stats = menuStats(x.name);
         const summary = ratingSummary(stats);
-        return <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><div><p className="font-semibold text-sm">{x.name}</p>{stats ? <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_times_tried', { n: stats.tries })}{summary ? ` · ${summary}` : ''}{stats.last ? ` · ${t('pep_menu_last_tried', { d: new Date(stats.last).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }) })}` : ''}</p> : <p className={`text-xs ${c.textMuted}`}>{t('pep_menu_not_tried_yet')}</p>}</div><button onClick={() => removeFromMenu(x.id)} className={c.textMuted}>🗑️</button></div></div>;
+        return <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><div><p className="font-semibold text-sm">{x.name}</p>{stats ? <p className={`text-[13px] ${c.textMuted}`}>{t('pep_menu_times_tried', { n: stats.tries })}{summary ? ` · ${summary}` : ''}{stats.last ? ` · ${t('pep_menu_last_tried', { d: new Date(stats.last).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }) })}` : ''}</p> : <p className={`text-[13px] ${c.textMuted}`}>{t('pep_menu_not_tried_yet')}</p>}</div><button onClick={() => removeFromMenu(x.id)} className={c.textMuted}>🗑️</button></div></div>;
       })}
     </div>}
 
-    {showHistory && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-      <div className="flex justify-between"><h3 className="font-bold">🧪 {t('pep_history_nav')}</h3><button onClick={() => setShowHistory(false)} className={c.textMuted}>✕</button></div>
-      {!activityLog.length ? <p className={`text-sm ${c.textMuted}`}>{t('pep_history_empty')}</p> : activityLog.slice(0, 12).map((x) => <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><p className="font-semibold text-sm">{x.preview || x.activity}</p><span className={`text-xs ${c.textMuted}`}>{new Date(x.date).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' })}</span></div><p className={`text-xs ${c.textSecondary}`}>{t('pep_history_row_stats', { rating: x.rating, before: x.energy_before, after: x.energy_after })}</p></div>)}
+    {showHistory && <div className={`border-t ${c.border} pt-5 space-y-3`}>
+      <div className="flex justify-between"><h3 className="text-base font-bold">🧪 {t('pep_history_nav')}</h3><button onClick={() => setShowHistory(false)} className={c.textMuted}>✕</button></div>
+      {!activityLog.length ? <p className={`text-sm ${c.textMuted}`}>{t('pep_history_empty')}</p> : activityLog.slice(0, 12).map((x) => <div key={x.id} className={`${c.cardAlt} rounded-lg p-3`}><div className="flex justify-between gap-3"><p className="font-semibold text-sm">{x.preview || x.activity}</p><span className={`text-[13px] ${c.textMuted}`}>{new Date(x.date).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' })}</span></div><p className={`text-xs ${c.textSecondary}`}>{t('pep_history_row_stats', { rating: x.rating, before: x.energy_before, after: x.energy_after })}</p></div>)}
     </div>}
   </div>;
 };

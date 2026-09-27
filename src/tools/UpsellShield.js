@@ -31,19 +31,18 @@ const UpsellShield = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -52,15 +51,13 @@ const UpsellShield = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // Tool-specific
-    hookBg:        isDark ? 'bg-cyan-900/30 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
-    hookText:      isDark ? 'text-cyan-200' : 'text-cyan-800',
+    hookBg:        isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    hookText:      isDark ? 'text-zinc-100' : 'text-[#142a43]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [whatYouWant, setWhatYouWant] = useState('');
@@ -206,11 +203,19 @@ const UpsellShield = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border} flex items-start justify-between gap-3`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🛡️'}</span>{t('us_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -220,6 +225,7 @@ const UpsellShield = ({ tool }) => {
               ↺ {t('start_over')}
             </button>
           )}
+        </div>
         </div>
 
         {/* Opening hook */}
@@ -272,7 +278,7 @@ const UpsellShield = ({ tool }) => {
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        <p className={`text-xs text-center ${c.textMuted} mb-2`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted} mb-2`}>
           {t('us_xref_pre')} <a href="/FakeReviewDetective" className={linkStyle}>🔍 {t('us_xref_fakereview')}</a> {t('us_xref_post')}
         </p>
 
@@ -317,8 +323,8 @@ const UpsellShield = ({ tool }) => {
           {/* Your Plan — first result, always visible. Begin with the
               user's own footing, not the seller's presumed intentions. */}
           {r.your_plan?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🧭</span> {t('us_plan_title')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🧭</span> {t('us_plan_title')}</h3>
               <div className="space-y-1.5">
                 {r.your_plan.map((item, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary}`}>• {item}</p>
@@ -330,15 +336,15 @@ const UpsellShield = ({ tool }) => {
           {/* Your exit line — prominent */}
           {r.exit_line && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className="text-[10px] font-bold mb-1">{t('us_exitline_label')}</p>
+              <p className="text-xs font-bold mb-1">{t('us_exitline_label')}</p>
               <p className="text-sm font-bold leading-relaxed">{r.exit_line}</p>
             </div>
           )}
 
           {/* Watch For — prominent, not collapsible; this is the tool's main content now */}
           {r.watch_for?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>👀</span> {t('us_watchfor_title')}
               </h3>
               <div className="space-y-3">
@@ -346,9 +352,9 @@ const UpsellShield = ({ tool }) => {
                   <div key={i} className={`${c.cardAlt} rounded-xl p-4`}>
                     <h4 className={`text-xs font-bold ${c.text} mb-2`}>{i + 1}. {w.moment}</h4>
                     <p className={`text-xs ${c.textSecondary} mb-2`}><span className="font-bold">{t('us_mighthappen')}</span> {w.what_might_happen}</p>
-                    <p className={`text-xs ${c.textMuted} mb-2 italic`}><span className="font-bold">{t('us_whydifficult')}</span> {w.why_it_can_be_difficult}</p>
+                    <p className={`text-[13px] ${c.textMuted} mb-2 italic`}><span className="font-bold">{t('us_whydifficult')}</span> {w.why_it_can_be_difficult}</p>
                     <div className={`${c.success} border rounded-lg p-3`}>
-                      <p className="text-[10px] font-bold mb-0.5">{t('us_your_response')}</p>
+                      <p className="text-xs font-bold mb-0.5">{t('us_your_response')}</p>
                       <p className="text-xs font-medium">{w.your_response}</p>
                     </div>
                   </div>
@@ -360,17 +366,17 @@ const UpsellShield = ({ tool }) => {
           {/* Questions worth asking */}
           {r.questions_worth_asking?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('questions')}
+              <button data-print-heading aria-expanded={!!(expandedSections.questions)} onClick={() => toggleSection('questions')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>❓</span> {t('us_questions_title')}</h3>
-                <Caret open={expandedSections.questions} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>❓</span> {t('us_questions_title')}</h3>
+                <span data-print-hide><Caret open={expandedSections.questions} /></span>
               </button>
-              {expandedSections.questions && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.questions)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.questions_worth_asking.map((q, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>{q.question}</p>
-                      <p className={`text-xs ${c.textMuted} italic`}>{q.why_it_helps}</p>
+                      <p className={`text-[13px] ${c.textMuted} italic`}>{q.why_it_helps}</p>
                     </div>
                   ))}
                 </div>
@@ -381,13 +387,13 @@ const UpsellShield = ({ tool }) => {
           {/* Before you commit */}
           {r.before_you_commit?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('commit')}
+              <button data-print-heading aria-expanded={!!(expandedSections.commit)} onClick={() => toggleSection('commit')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('us_commit_title')}</h3>
-                <Caret open={expandedSections.commit} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('us_commit_title')}</h3>
+                <span data-print-hide><Caret open={expandedSections.commit} /></span>
               </button>
-              {expandedSections.commit && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-1.5`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.commit)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-1.5`}>
                   {r.before_you_commit.map((item, i) => (
                     <p key={i} className={`text-xs ${c.textSecondary}`}>☐ {item}</p>
                   ))}
@@ -399,13 +405,13 @@ const UpsellShield = ({ tool }) => {
           {/* If pressure continues */}
           {r.if_pressure_continues && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('pressure')}
+              <button data-print-heading aria-expanded={!!(expandedSections.pressure)} onClick={() => toggleSection('pressure')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🚪</span> {t('us_pressure_title')}</h3>
-                <Caret open={expandedSections.pressure} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>🚪</span> {t('us_pressure_title')}</h3>
+                <span data-print-hide><Caret open={expandedSections.pressure} /></span>
               </button>
-              {expandedSections.pressure && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.pressure)} className={`px-4 pb-4 border-t ${c.border} pt-3`}>
                   <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.if_pressure_continues}</p>
                 </div>
               )}
@@ -437,15 +443,15 @@ const UpsellShield = ({ tool }) => {
                 >
                   <p className={`text-xs font-semibold ${c.text} truncate`}>{s.situation}</p>
                   {(s.whatYouWant || s.budget) && (
-                    <p className={`text-[10px] ${c.textMuted} mt-0.5 truncate`}>
+                    <p className={`text-[13px] ${c.textMuted} mt-0.5 truncate`}>
                       {[s.whatYouWant, s.budget].filter(Boolean).join(' · ')}
                     </p>
                   )}
                   <div className="flex items-center justify-between mt-1">
                     {s.concerns ? (
-                      <p className={`text-[10px] ${c.textMuted} truncate`}>{t('us_q_concerns')}: {s.concerns}</p>
+                      <p className={`text-[13px] ${c.textMuted} truncate`}>{t('us_q_concerns')}: {s.concerns}</p>
                     ) : <span />}
-                    <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                    <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                   </div>
                 </button>
               ))}

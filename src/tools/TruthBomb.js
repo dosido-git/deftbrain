@@ -37,33 +37,30 @@ const TruthBomb = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    hook:          isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    hook:          isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     labelText:     isDark ? 'text-zinc-300' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // All useState / useRef before any useEffect
   const [whoItsAbout, setWhoItsAbout] = useState('');
@@ -165,12 +162,20 @@ const TruthBomb = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '💣'}</span>{tool?.tagline ?? t('tb_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -181,6 +186,7 @@ const TruthBomb = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         {/* Opening hook */}
@@ -245,7 +251,7 @@ const TruthBomb = ({ tool }) => {
           )}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('tb_disclaimer')}</p>
-          <p className={`text-xs text-center ${c.textMuted} mt-1`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted} mt-1`}>
             {t('tb_say_it_q')} <a href="/DifficultTalkCoach" className={linkStyle}>{t('tb_difficulttalk')}</a> {t('tb_say_it_after')}
           </p>
         </div>
@@ -263,11 +269,11 @@ const TruthBomb = ({ tool }) => {
                 <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.the_thing_examined?.what_its_really_about}</p>
               )}
               {results?.the_thing_examined?.why_its_hard_to_say && (
-                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('tb_why_hard')}</span> {results?.the_thing_examined?.why_its_hard_to_say}</p>
+                <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('tb_why_hard')}</span> {results?.the_thing_examined?.why_its_hard_to_say}</p>
               )}
               {results?.the_thing_examined?.what_hiding_it_costs && (
                 <div className={`p-3 rounded-xl border ${c.danger}`}>
-                  <p className="text-xs font-bold uppercase tracking-wide mb-1">{t('tb_hiding_costs')}</p>
+                  <p className="text-[13px] font-bold mb-1">{t('tb_hiding_costs')}</p>
                   <p className="text-sm">{results?.the_thing_examined?.what_hiding_it_costs}</p>
                 </div>
               )}
@@ -315,7 +321,7 @@ const TruthBomb = ({ tool }) => {
                         already say enough. */}
                     <p className={`text-xs font-black uppercase tracking-widest ${dcfg.text(isDark)}`}>{v.version}</p>
                     {v.when_to_use && (
-                      <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('tb_when')}</span> {v.when_to_use}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('tb_when')}</span> {v.when_to_use}</p>
                     )}
                     {v.the_words && (
                       <div className={`p-4 rounded-xl ${c.card} border ${c.border}`}>
@@ -325,7 +331,7 @@ const TruthBomb = ({ tool }) => {
                       </div>
                     )}
                     {(v.tradeoff || v.what_it_accomplishes) && (
-                      <p className={`text-xs ${c.textMuted}`}>{v.tradeoff || v.what_it_accomplishes}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{v.tradeoff || v.what_it_accomplishes}</p>
                     )}
                   </div>
                 );
@@ -336,12 +342,12 @@ const TruthBomb = ({ tool }) => {
           {/* Timing */}
           {results?.the_timing && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('timing')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 {t('tb_timing_title')}</p>
-                <Caret open={expanded.timing} />
+              <button data-print-heading aria-expanded={!!(expanded.timing)} onClick={() => toggle('timing')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>🕐 {t('tb_timing_title')}</p>
+                <span data-print-hide><Caret open={expanded.timing} /></span>
               </button>
-              {expanded.timing && (
-                <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
+              {(
+                <div data-sec-body hidden={!(expanded.timing)} className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
                   {[
                     { key: 'when_to_say_it', label: t('tb_best_moment') },
                     { key: 'what_to_avoid', label: t('tb_avoid') },
@@ -359,12 +365,12 @@ const TruthBomb = ({ tool }) => {
           {/* Permission to not say it */}
           {results?.permission_to_not_say_it && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('permission')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 {t('tb_permission_title')}</p>
-                <Caret open={expanded.permission} />
+              <button data-print-heading aria-expanded={!!(expanded.permission)} onClick={() => toggle('permission')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>🤫 {t('tb_permission_title')}</p>
+                <span data-print-hide><Caret open={expanded.permission} /></span>
               </button>
-              {expanded.permission && (
-                <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
+              {(
+                <div data-sec-body hidden={!(expanded.permission)} className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
                   {results?.permission_to_not_say_it?.when_silence_is_okay && (
                     <p className={`text-sm ${c.textSecondary}`}>
                       <span className={`font-semibold ${c.text}`}>{t('tb_silence_okay')}</span> {results?.permission_to_not_say_it?.when_silence_is_okay}
@@ -387,15 +393,15 @@ const TruthBomb = ({ tool }) => {
 
           {/* Conditional cross-ref — shown only when scripts are ready */}
           {results?.three_ways_to_say_it?.length > 0 && (
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${c.textMuted}`}>{t('tb_ready_to_say')}</p>
+            <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[13px] font-semibold mb-2 ${c.textMuted}`}>{t('tb_ready_to_say')}</p>
               <a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 {t('tb_magicmouth')}</a>
             </div>
           )}
 
           {/* Always-on related tools */}
-          <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('tb_related')}</p>
+          <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+            <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>{t('tb_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/Mend" className={`text-xs ${linkStyle}`}>🤝 {t('tb_apologycalibrator')}</a>
             </div>
@@ -412,9 +418,9 @@ const TruthBomb = ({ tool }) => {
               <div key={s.id} className={`py-1.5 border-b last:border-b-0 ${c.border}`}>
                 <div className="flex items-center justify-between gap-3">
                   <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.preview || t('tb_session')}</span>
-                  <span className={`text-[10px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
-                {s.takeaway && <p className={`text-[10px] ${c.textMuted} mt-0.5 line-clamp-2`}>{t('tb_uncertainty_remember')} {s.takeaway}</p>}
+                {s.takeaway && <p className={`text-[13px] ${c.textMuted} mt-0.5 line-clamp-2`}>{t('tb_uncertainty_remember')} {s.takeaway}</p>}
               </div>
             ))}
           </div>

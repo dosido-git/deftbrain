@@ -43,7 +43,7 @@ function EnergyPicker({ value, onChange, label, lowLabel, highLabel, isDark }) {
           <button key={n} type="button" onClick={() => onChange(n)}
             className={`w-11 h-11 rounded-full border-2 font-semibold transition-colors ${value === n
               ? 'border-cyan-600 bg-cyan-600 text-white'
-              : isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500' : 'border-gray-300 text-gray-600 hover:border-cyan-500'}`}
+              : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0]' : 'border-gray-300 text-gray-600 hover:border-[#142a43]'}`}
             aria-pressed={value === n}>{n}</button>
         ))}
       </div>
@@ -62,30 +62,27 @@ const SocialBatteryAdvisor = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [interaction, setInteraction] = useState('');
@@ -226,12 +223,20 @@ const SocialBatteryAdvisor = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{toolTagline(t('sea_tagline'))}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -245,14 +250,15 @@ const SocialBatteryAdvisor = ({ tool }) => {
             </div>
           </div>
         </div>
+        </div>
 
         {/* View toggle — the whole product is these two states. */}
         <div className="flex gap-2">
-          <button type="button" onClick={() => setView('log')}
+          <button aria-pressed={view === 'log'} type="button" onClick={() => setView('log')}
             className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors ${view === 'log' ? c.pillActive : c.pillInactive}`}>
             {t('sea_view_log')}
           </button>
-          <button type="button" onClick={() => setView('patterns')} disabled={!logs.length}
+          <button aria-pressed={view === 'patterns'} type="button" onClick={() => setView('patterns')} disabled={!logs.length}
             className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors disabled:opacity-40 ${view === 'patterns' ? c.pillActive : c.pillInactive}`}>
             {logs.length ? t('sea_view_patterns_count', { n: logs.length }) : t('sea_view_patterns')}
           </button>
@@ -261,7 +267,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
       {view === 'log' && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-6 space-y-5`}>
+          <div className={`border-t ${c.border} pt-5 space-y-5`}>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('sea_log_question')} <span className={c.required}>*</span>
@@ -269,7 +275,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
               <input value={interaction} onChange={e => setInteraction(e.target.value)}
                 placeholder={t('sea_log_ph')}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
-              <p className={`mt-1.5 text-xs ${c.textMuted}`}>{t('sea_log_hint')}</p>
+              <p className={`mt-1.5 text-[13px] ${c.textMuted}`}>{t('sea_log_hint')}</p>
             </div>
 
             <EnergyPicker value={before} onChange={setBefore} label={t('sea_energy_before')}
@@ -281,13 +287,13 @@ const SocialBatteryAdvisor = ({ tool }) => {
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('sea_onness_label')}</label>
               <div className="flex flex-wrap gap-2">
                 {ONNESS.map(o => (
-                  <button key={o.value} type="button" onClick={() => setOnness(o.value)}
+                  <button aria-pressed={onness === o.value} key={o.value} type="button" onClick={() => setOnness(o.value)}
                     className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${onness === o.value ? c.pillActive : c.pillInactive}`}>
                     {t(o.labelKey)}
                   </button>
                 ))}
               </div>
-              <p className={`mt-1.5 text-xs ${c.textMuted}`}>{t('sea_onness_hint')}</p>
+              <p className={`mt-1.5 text-[13px] ${c.textMuted}`}>{t('sea_onness_hint')}</p>
             </div>
 
             <div>
@@ -312,7 +318,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
               )}
             </button>
 
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('sea_xref_crash_q')} <a href="/BeforeTheCrash" className={linkStyle}>{t('sea_xref_crash')}</a>
             </p>
           </div>
@@ -320,7 +326,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
           {recent.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-center justify-between gap-3 mb-3">
-                <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('sea_recent_title')}</p>
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('sea_recent_title')}</p>
                 <button onClick={reviewPatterns} disabled={loading} className={`text-xs font-semibold ${c.accentTxt} disabled:opacity-50`}>
                   {loading ? t('sea_looking_for_patterns') : t('sea_see_patterns')}
                 </button>
@@ -348,11 +354,11 @@ const SocialBatteryAdvisor = ({ tool }) => {
       {view === 'patterns' && (
         <div className="space-y-4">
           {!logs.length ? (
-            <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary}`}>{t('sea_patterns_empty')}</p>
             </div>
           ) : !results ? (
-            <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-lg font-bold ${c.text}`}>{t('sea_patterns_history_title')}</p>
               <p className={`mt-2 text-sm ${c.textSecondary}`}>{tPlural('sea_patterns_history_body', logs.length, { n: logs.length })}</p>
               <button title={t('cmd_enter')} onClick={reviewPatterns} disabled={loading}
@@ -364,7 +370,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
             </div>
           ) : results && (
             <div ref={revealRef} className="scroll-mt-24 space-y-4">
-              <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <p className={`text-xl font-bold ${c.text}`}>{results.summary?.headline}</p>
                 <p className={`mt-2 text-sm ${c.textSecondary}`}>{results.summary?.body}</p>
                 {counts && (
@@ -377,7 +383,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                     ].map(([label, value]) => (
                       <div key={label} className={`${c.cardAlt} rounded-xl p-3 text-center`}>
                         <p className={`text-2xl font-black ${c.text}`}>{value}</p>
-                        <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{label}</p>
+                        <p className={`text-[13px] font-bold ${c.textMuted}`}>{label}</p>
                       </div>
                     ))}
                   </div>
@@ -385,7 +391,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
               </div>
 
               {results.handoff?.show_before_the_crash && (
-                <div className={`rounded-xl border p-4 ${c.warning}`}>
+                <div data-print-hide className={`rounded-xl border p-4 ${c.warning}`}>
                   <p className="text-sm font-semibold">{t('sea_handoff_title')}</p>
                   {results.handoff.reason && <p className="mt-1 text-sm">{results.handoff.reason}</p>}
                   <a href="/BeforeTheCrash" className={`mt-2 inline-block text-sm font-semibold underline underline-offset-2`}>{t('sea_xref_crash')} →</a>
@@ -393,8 +399,8 @@ const SocialBatteryAdvisor = ({ tool }) => {
               )}
 
               {results.worth_noticing?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('sea_worth_noticing_title')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('sea_worth_noticing_title')}</p>
                   <div className="space-y-4">
                     {results.worth_noticing.map((x, i) => (
                       <div key={i}>
@@ -408,8 +414,8 @@ const SocialBatteryAdvisor = ({ tool }) => {
               )}
 
               {results.contrasts?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('sea_contrasts_title')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('sea_contrasts_title')}</p>
                   <div className="space-y-3">
                     {results.contrasts.map((x, i) => (
                       <div key={i} className={`${c.cardAlt} rounded-xl p-4`}>
@@ -424,17 +430,17 @@ const SocialBatteryAdvisor = ({ tool }) => {
               )}
 
               {results.test_next?.experiment && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('sea_try_next_title')}</p>
-                  {results.test_next.observation && (<><p className={`mt-3 text-xs ${c.textMuted}`}>{t('sea_try_next_observed')}</p><p className={`text-sm ${c.textSecondary}`}>{results.test_next.observation}</p></>)}
-                  <p className={`mt-3 text-xs ${c.textMuted}`}>{t('sea_try_next_try')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('sea_try_next_title')}</p>
+                  {results.test_next.observation && (<><p className={`mt-3 text-[13px] ${c.textMuted}`}>{t('sea_try_next_observed')}</p><p className={`text-sm ${c.textSecondary}`}>{results.test_next.observation}</p></>)}
+                  <p className={`mt-3 text-[13px] ${c.textMuted}`}>{t('sea_try_next_try')}</p>
                   <p className={`font-semibold text-sm ${c.text}`}>{results.test_next.experiment}</p>
-                  {results.test_next.watch_for && (<><p className={`mt-3 text-xs ${c.textMuted}`}>{t('sea_try_next_watch')}</p><p className={`text-sm ${c.textSecondary}`}>{results.test_next.watch_for}</p></>)}
+                  {results.test_next.watch_for && (<><p className={`mt-3 text-[13px] ${c.textMuted}`}>{t('sea_try_next_watch')}</p><p className={`text-sm ${c.textSecondary}`}>{results.test_next.watch_for}</p></>)}
                 </div>
               )}
 
               {results.not_enough_to_tell?.length > 0 && (
-                <details className={`group ${c.card} border ${c.border} rounded-xl p-4`}>
+                <details className={`group border-t ${c.border} pt-5`}>
                   <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
                       {t('sea_not_enough_title')}
@@ -453,7 +459,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                 </button>
               </div>
 
-              <p className={`text-xs text-center ${c.textMuted}`}>
+              <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
                 {t('sea_xref_pep_q')} <a href="/PEP" className={linkStyle}>{t('sea_xref_pep')}</a>
               </p>
             </div>

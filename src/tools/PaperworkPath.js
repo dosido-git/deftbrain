@@ -30,22 +30,19 @@ const PaperworkPath = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -57,8 +54,7 @@ const PaperworkPath = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -66,9 +62,7 @@ const PaperworkPath = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [lifeEvent, setLifeEvent] = useState('');
@@ -187,12 +181,20 @@ const PaperworkPath = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ═══ INPUT CARD ═══ */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🗂️'}</span>{t('pwp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -210,6 +212,7 @@ const PaperworkPath = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
 
@@ -235,7 +238,7 @@ const PaperworkPath = ({ tool }) => {
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
               {EVENTS.map(ev => (
-                <button key={ev.value} onClick={() => setLifeEvent(ev.value)}
+                <button aria-pressed={lifeEvent === ev.value} key={ev.value} onClick={() => setLifeEvent(ev.value)}
                   className={`px-3 py-2 rounded-lg border text-xs font-medium transition-all ${lifeEvent === ev.value ? c.pillActive : c.pillInactive}`}>
                   <span className="me-1">{ev.emoji}</span>{t(ev.labelKey)}
                 </button>
@@ -268,7 +271,7 @@ const PaperworkPath = ({ tool }) => {
           </div>
 
           {/* Pre-result cross-ref (S5.5 — a tool link must be visible before submit) */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('pwp_xref_pre')} <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pwp_xref_deposit')}</a>.
           </p>
 
@@ -302,21 +305,21 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Summary */}
           {results?.situation_summary && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary}`}>{results.situation_summary}</p>
             </div>
           )}
 
           {/* Document checklist */}
           {results?.document_checklist?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🗂️ {t('pwp_checklist_title')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>🗂️ {t('pwp_checklist_title')}</h3>
               <div className="space-y-2">
                 {results.document_checklist.map((d, i) => (
                   <div key={i} className={`border rounded-lg p-3 ${priorityStyle(d.priority)}`}>
                     <div className="flex items-start justify-between gap-2">
                       <p className="text-sm font-semibold">{d.document}</p>
-                      <span className={`text-[10px] font-bold uppercase shrink-0 ${c.textMuted}`}>{d.priority}</span>
+                      <span className={`text-[13px] font-bold shrink-0 ${c.textMuted}`}>{d.priority}</span>
                     </div>
                     <p className={`text-xs mt-1 ${c.textSecondary}`}>{d.why}</p>
                     {d.where_to_get && <p className={`text-xs mt-1 ${c.textMuted}`}>📍 {d.where_to_get}</p>}
@@ -342,7 +345,7 @@ const PaperworkPath = ({ tool }) => {
             const totalCols = cols.length;
             // Distinct hues, ordered so similar ones (cyan/sky, amber/orange) never sit adjacent.
             const BARS = [
-              isDark ? 'bg-cyan-600'    : 'bg-cyan-500',
+              isDark ? 'bg-[#2f6fb0]' : 'bg-[#142a43]',
               isDark ? 'bg-amber-600'   : 'bg-amber-500',
               isDark ? 'bg-emerald-600' : 'bg-emerald-500',
               isDark ? 'bg-red-600'     : 'bg-red-500',
@@ -352,9 +355,9 @@ const PaperworkPath = ({ tool }) => {
             const eventLeftPct = (colOf(0) / totalCols) * 100;
             const weekLabel = (w) => w === 0 ? (results.event_label || t('pwp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
             return (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pwp_order_title')}</h3>
-                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pwp_cal_note_rel', { label: results.event_label || t('pwp_cal_event') })}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold ${c.text} mb-1`}>🗓️ {t('pwp_order_title')}</h3>
+                <p className={`text-[13px] ${c.textMuted} mb-4`}>{t('pwp_cal_note_rel', { label: results.event_label || t('pwp_cal_event') })}</p>
 
                 {/* Relative-week timeline (Gantt). Scrolls sideways on small screens. */}
                 <div className="overflow-x-auto -mx-1 px-1 mb-5">
@@ -367,7 +370,7 @@ const PaperworkPath = ({ tool }) => {
                     {/* Week axis */}
                     <div className="grid mb-1.5" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
                       {cols.map((w) => (
-                        <div key={w} className={`text-center text-[10px] font-bold pb-1 ${w === 0 ? c.warningTxt : c.textMuted} ${w === 0 ? 'border-b-2 ' + (isDark ? 'border-amber-500' : 'border-amber-400') : ''}`}>
+                        <div key={w} className={`text-center text-xs font-bold pb-1 ${w === 0 ? c.warningTxt : c.textMuted} ${w === 0 ? 'border-b-2 ' + (isDark ? 'border-amber-500' : 'border-amber-400') : ''}`}>
                           {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `${t('pwp_cal_week')} ${weekLabel(w)}`}
                         </div>
                       ))}
@@ -379,7 +382,7 @@ const PaperworkPath = ({ tool }) => {
                         return (
                           <div key={i} className="grid items-center" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
                             {/* event gridline behind the bar */}
-                            <div className={`h-6 rounded-md flex items-center px-1.5 text-white text-[11px] font-bold ${BARS[i % BARS.length]}`}
+                            <div className={`h-6 rounded-md flex items-center px-1.5 text-white text-[13px] font-bold ${BARS[i % BARS.length]}`}
                               style={{ gridColumn: `${colOf(st) + 1} / ${colOf(en) + 2}` }}
                               title={`${s.action} — ${s.timing}`}>
                               {s.order}
@@ -396,7 +399,7 @@ const PaperworkPath = ({ tool }) => {
                 <div className="space-y-2.5">
                   {steps.map((s, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-white text-[11px] font-bold ${BARS[i % BARS.length]}`}>{s.order}</span>
+                      <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-white text-[13px] font-bold ${BARS[i % BARS.length]}`}>{s.order}</span>
                       <div>
                         <p className={`text-sm font-medium ${c.text}`}>{s.action}</p>
                         <p className={`text-xs ${c.accentTxt}`}>{s.timing}</p>
@@ -412,7 +415,7 @@ const PaperworkPath = ({ tool }) => {
           {/* Watch-outs */}
           {results?.watch_outs?.length > 0 && (
             <div className={`${c.warning} border rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>⚠️ {t('pwp_watch_title')}</h3>
+              <h3 className={`text-base font-bold mb-3 ${c.warningTxt}`}>⚠️ {t('pwp_watch_title')}</h3>
               <ul className="space-y-1.5">
                 {results.watch_outs.map((w, i) => (
                   <li key={i} className="text-sm flex items-start gap-2"><span className="mt-0.5 shrink-0">•</span>{w}</li>
@@ -424,13 +427,13 @@ const PaperworkPath = ({ tool }) => {
           {/* Verify note */}
           {results?.verify_note && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs ${c.textMuted}`}>🧭 {results.verify_note}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>🧭 {results.verify_note}</p>
             </div>
           )}
 
           {/* Cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pwp_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('pwp_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pwp_xref_deposit')}</a>
               <a href="/BillRescue" className={`text-xs ${linkStyle}`}>💸 {t('pwp_xref_bill')}</a>

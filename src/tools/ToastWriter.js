@@ -47,36 +47,33 @@ const ToastWriter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [occasion, setOccasion] = useState('');
@@ -245,12 +242,20 @@ const ToastWriter = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (<div className={`space-y-4 ${c.text}`}>
 
-      {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🥂'}</span>{t('tst_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -261,6 +266,7 @@ const ToastWriter = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         {/* Person */} <div className="mb-4">
@@ -274,7 +280,7 @@ const ToastWriter = ({ tool }) => {
         {/* Occasion */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('tst_occasion')} <span className={c.required}>*</span></label>
           <div className="flex flex-wrap gap-1.5">
-            {OCCASIONS.map(o => (<button
+            {OCCASIONS.map(o => (<button aria-pressed={occasion === o.value}
                 key={o.value} onClick={() => setOccasion(occasion === o.value ? '' : o.value)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
                   occasion === o.value ? c.pillActive : c.pillInactive
                 }`} >
@@ -304,8 +310,8 @@ const ToastWriter = ({ tool }) => {
         {/* Tone */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('tst_tone')}</label>
           <div className="flex gap-2">
-            {TONES.map(tn => (<button
-                key={tn.value} onClick={() => setTone(tn.value)} className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
+            {TONES.map(tn => (<button aria-pressed={tone === tn.value}
+                key={tn.value} onClick={() => setTone(tn.value)} className={`flex-1 py-2.5 rounded-xl text-[13px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
                   tone === tn.value ? c.pillActive : c.pillInactive
                 }`} >
                 <span className="text-base">{tn.emoji}</span>
@@ -316,8 +322,8 @@ const ToastWriter = ({ tool }) => {
         {/* Duration */} <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('tst_length')}</label>
           <div className="flex gap-2">
-            {DURATIONS.map(d => (<button
-                key={d.value} onClick={() => setDuration(d.value)} className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+            {DURATIONS.map(d => (<button aria-pressed={duration === d.value}
+                key={d.value} onClick={() => setDuration(d.value)} className={`flex-1 py-2 rounded-xl text-[13px] font-bold border transition-colors min-h-[36px] ${
                   duration === d.value ? c.pillActive : c.pillInactive
                 }`} >
                 {d.emoji} {t('tst_len_min', { n: d.n })} </button>
@@ -334,8 +340,8 @@ const ToastWriter = ({ tool }) => {
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
-        {/* Actions */} <p className={`text-xs ${c.textMuted} mb-2`}>{t('tst_disclaimer')}</p>
-        <p className={`text-xs ${c.textMuted} mb-3`}>
+        {/* Actions */} <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('tst_disclaimer')}</p>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mb-3`}>
           {t('tst_rehearse_q')} <a href="/MagicMouth" className={linkStyle}>🎤 {t('tst_magicmouth')}</a> {t('tst_magicmouth_help')}
         </p>
         <div className="flex gap-3">
@@ -360,15 +366,15 @@ const ToastWriter = ({ tool }) => {
         </div>
       )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {results && (<div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
-          {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.occasion_read}</p>
             </div>
           )} {/* ── VERSION TABS ── */} {r.versions?.length > 1 && (<div className="flex gap-2">
-              {r.versions.map((v, idx) => (<button
+              {r.versions.map((v, idx) => (<button aria-pressed={activeVersion === idx}
                   key={idx} onClick={() => setActiveVersion(idx)} className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-colors min-h-[40px] ${
                     activeVersion === idx ? c.pillActive : c.pillInactive
                   }`} >
-                  {v.label} <span className={`block text-[9px] font-normal mt-0.5 ${activeVersion === idx ? 'opacity-80' : c.textMuted}`}>
+                  {v.label} <span className={`block text-xs font-normal mt-0.5 ${activeVersion === idx ? 'opacity-80' : c.textMuted}`}>
                     {v.style} </span>
                 </button>
               ))} </div>
@@ -378,14 +384,14 @@ const ToastWriter = ({ tool }) => {
                   <div>
                     <h3 className={`text-base font-bold ${c.text}`}>{activeV.label}</h3>
                     <div className="flex gap-2 mt-1">
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{activeV.style}</span>
-                      {activeV.estimated_time && (<span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>⏱️ {activeV.estimated_time}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{activeV.style}</span>
+                      {activeV.estimated_time && (<span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>⏱️ {activeV.estimated_time}</span>
                       )} </div>
                   </div>
                 </div>
 
                 {/* Opening line highlight */} {activeV.opening_line && (<div className={`${c.warning} border rounded-lg p-3 mb-4`}>
-                    <p className={`text-[10px] font-bold mb-1`}>🎯 {t('tst_opening_label')}</p>
+                    <p className={`text-xs font-bold mb-1`}>🎯 {t('tst_opening_label')}</p>
                     <p className={`text-sm font-bold leading-relaxed`}>"{activeV.opening_line}"</p>
                   </div>
                 )} {/* The speech */} <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
@@ -393,18 +399,18 @@ const ToastWriter = ({ tool }) => {
                 </div>
 
                 {/* Closing line highlight */} {activeV.closing_line && (<div className={`${c.success} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold mb-1`}>🎬 {t('tst_closing_label')}</p>
+                    <p className={`text-xs font-bold mb-1`}>🎬 {t('tst_closing_label')}</p>
                     <p className={`text-sm font-bold leading-relaxed`}>"{activeV.closing_line}"</p>
                   </div>
                 )} </div>
             </div>
-          )} {/* ── DELIVERY TIPS ── */} {r.delivery_tips?.length > 0 && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── DELIVERY TIPS ── */} {r.delivery_tips?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🎯 {t('tst_delivery_tips')}</p>
               <div className="space-y-2">
                 {r.delivery_tips.map((tip, i) => (<p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {tip}</p>
                 ))} </div>
             </div>
-          )} {/* ── COMMON MISTAKES ── */} {r.common_mistakes?.length > 0 && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── COMMON MISTAKES ── */} {r.common_mistakes?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 {t('tst_mistakes')}</p>
               <div className="space-y-2">
                 {r.common_mistakes.map((m, i) => (<p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
@@ -431,9 +437,9 @@ const ToastWriter = ({ tool }) => {
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className={`py-1.5 border-b last:border-b-0 ${c.border}`}>
                 <div className="flex items-center justify-between gap-3">
                   <span className={`text-xs font-semibold ${c.textSecondary} truncate`}>{s.preview || t('tst_session')}</span>
-                  <span className={`text-[10px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
-                {s.takeaway && <p className={`text-[10px] ${c.textMuted} mt-0.5 line-clamp-2`}>{s.takeaway}</p>}
+                {s.takeaway && <p className={`text-[13px] ${c.textMuted} mt-0.5 line-clamp-2`}>{s.takeaway}</p>}
               </div>
             ))} </div>
         </div>

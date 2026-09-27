@@ -51,31 +51,29 @@ const RutBuster = ({ tool }) => {
   const c = {
     card:            isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:         isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:           isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:           isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:            isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:   isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:       isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:       isDark ? 'text-zinc-200' : 'text-gray-700',
     required:        isDark ? 'text-amber-400' : 'text-amber-700',
-    accentTxt:       isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:      isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:       isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:      isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:    isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:          isDark ? 'border-zinc-700' : 'border-gray-200',
     success:         isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:         isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:          isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     textDanger:      isDark ? 'text-red-300' : 'text-red-700',
-    disruptionHero:  isDark ? 'border-cyan-700 bg-zinc-800' : 'border-cyan-400 bg-cyan-50',
-    disruptionHead:  isDark ? 'bg-cyan-900/30' : 'bg-cyan-100',
-    disruptionAccent: isDark ? 'text-cyan-400' : 'text-cyan-700',
+    disruptionHero:  isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#142a43] bg-[#eef3f8]',
+    disruptionHead:  isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]',
+    disruptionAccent: isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]',
     disruptionSub:   isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-100 border-slate-200',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [error,   setError]   = useState('');
@@ -197,14 +195,22 @@ const RutBuster = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input Card ── */}
-      <div className={`${c.card} rounded-xl shadow-sm px-5 pt-2.5 pb-5 border ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
 
         {/* Standard header — with reset top-right */}
-        <div className="mb-4 pb-3 border-b border-zinc-500">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🎰'}</span>{t('chp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -218,6 +224,7 @@ const RutBuster = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         <div className="space-y-4">
@@ -234,7 +241,7 @@ const RutBuster = ({ tool }) => {
               maxLength={800}
               className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none transition-colors ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>{t('chp_submit_hint')}</p>
+            <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('chp_submit_hint')}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -290,7 +297,7 @@ const RutBuster = ({ tool }) => {
           </button>
 
           {/* Pre-result cross-ref — below submit button */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('chp_xref_pre')}{' '}
             <a href="/SmallChangeBigDifference" className={linkStyle}>🎯 {t('chp_onepercenter')}</a> {t('chp_xref_pre_suffix')}
           </p>
@@ -300,7 +307,7 @@ const RutBuster = ({ tool }) => {
       {/* ── History panel ── */}
       {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('chp_recent')}</h3>
+          <h3 className={`text-base font-bold ${c.text} mb-3`}>🕐 {t('chp_recent')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button
@@ -342,7 +349,7 @@ const RutBuster = ({ tool }) => {
             )}
             {results?.pattern_diagnosis?.what_its_costing && (
               <div className={`mt-3 p-3 rounded-xl border ${c.danger}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textDanger}`}>{t('chp_costing_label')}</p>
+                <p className={`text-[13px] font-bold mb-1 ${c.textDanger}`}>{t('chp_costing_label')}</p>
                 <p className={`text-sm ${c.textDanger}`}>{results?.pattern_diagnosis?.what_its_costing}</p>
               </div>
             )}
@@ -366,13 +373,13 @@ const RutBuster = ({ tool }) => {
                 )}
                 {results?.the_disruption?.the_slight_discomfort && (
                   <div className={`p-3 rounded-xl border ${c.disruptionSub}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>😬 {t('chp_friction')}</p>
+                    <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>😬 {t('chp_friction')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.the_slight_discomfort}</p>
                   </div>
                 )}
                 {results?.the_disruption?.why_this_one && (
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>{t('chp_why_this_one')}</p>
+                    <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('chp_why_this_one')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.why_this_one}</p>
                   </div>
                 )}
@@ -392,7 +399,7 @@ const RutBuster = ({ tool }) => {
                 <div key={row.key} className="flex gap-3">
                   <span className="flex-shrink-0 text-lg">{row.icon}</span>
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${c.textMuted}`}>{row.label}</p>
+                    <p className={`text-[15px] font-semibold mb-0.5 ${c.labelText}`}>{row.label}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{results?.the_downstream_effect?.[row.key]}</p>
                   </div>
                 </div>
@@ -403,19 +410,19 @@ const RutBuster = ({ tool }) => {
           {/* Resistance */}
           {results?.if_they_resist && (
             <div className={`rounded-xl border p-4 ${c.warning}`}>
-              <p className="text-xs font-bold uppercase tracking-wider mb-2">🧠 {t('chp_skip_it')}</p>
+              <p className="text-[13px] font-boldr mb-2">🧠 {t('chp_skip_it')}</p>
               <p className="text-sm">{results?.if_they_resist}</p>
             </div>
           )}
 
           {/* Cross-refs — post-result */}
-          <div className={`${c.cardAlt} rounded-xl border ${c.border} p-4 space-y-2`}>
-            <p className={`text-xs ${c.textMuted} text-center`}>
+          <div data-print-hide className={`${c.cardAlt} rounded-xl border ${c.border} p-4 space-y-2`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
               {t('chp_xref_lasting_pre')}{' '}
               <a href="/AlternatePath" className={linkStyle}>🛤️ {t('chp_alternatepath')}</a>{' '}
               {t('chp_xref_lasting_suffix')}
             </p>
-            <p className={`text-xs ${c.textMuted} text-center`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
               {t('chp_xref_luck_pre')}{' '}
               <a href="/GetNoticed" className={linkStyle}>🍀 {t('chp_lucksurface')}</a>{' '}
               {t('chp_xref_luck_suffix')}
