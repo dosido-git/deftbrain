@@ -625,7 +625,7 @@ const FakeReviewDetective = ({ tool }) => {
           neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
         };
         return (
-          <details className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
+          <details data-print-hide className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
             <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40'}`}>
               <div>
                 <p className={`text-base font-black ${c.text}`}>{x.title}</p>

@@ -83,22 +83,19 @@ const WhichLife = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -122,16 +119,14 @@ const WhichLife = ({ tool }) => {
     pathBBar:       isDark ? 'bg-amber-500'        : 'bg-amber-600',
     pathBTabBorder: isDark ? 'border-amber-400'    : 'border-amber-600',
     // Tool-specific: timeframe pill states
-    chipActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-600 bg-cyan-50 text-cyan-800',
+    chipActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     chipInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     deleteTxt:     isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Session state ───
   const [error,          setError]          = useState('');
@@ -275,7 +270,7 @@ const WhichLife = ({ tool }) => {
     <div className={`${c.card} border ${c.border} rounded-2xl p-8 text-center space-y-3`}>
       <span className="animate-spin inline-block text-3xl">{tool?.icon ?? '🔮'}</span>
       <p className={`text-sm font-semibold ${c.text}`}>{t('cr_loading_title')}</p>
-      <p className={`text-xs ${c.textMuted}`}>{t('cr_loading_sub')}</p>
+      <p className={`text-[13px] ${c.textMuted}`}>{t('cr_loading_sub')}</p>
     </div>
   );
 
@@ -288,7 +283,7 @@ const WhichLife = ({ tool }) => {
         <div className="flex items-center gap-3">
           <div className={`w-1 h-8 rounded-full ${isA ? c.pathABar : c.pathBBar}`} />
           <div>
-            <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted}`}>
+            <p className={`text-[13px] font-semiboldr ${c.textMuted}`}>
               {t('cr_path_caps')} {side.toUpperCase()}
             </p>
             <h3 className={`text-lg font-bold ${c.text}`}>{path.label}</h3>
@@ -312,12 +307,20 @@ const WhichLife = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ─── Standard header card ─── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 mb-4 border-b border-zinc-500">
+      {/* Site style (2026-09-27): no card; prints only as a blank form (with a
+          result, the result prints). */}
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header: a pale band of the tool's color bleeding to the card edges, the
+            ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔮'}</span>{t('cr_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -337,11 +340,11 @@ const WhichLife = ({ tool }) => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className={`w-1 h-5 rounded-full ${c.pathABar}`} />
-              <label className={`text-sm font-semibold ${c.text}`}>
+              <label className={`text-[15px] font-semibold ${c.labelText}`}>
                 {t('cr_patha_label')} <span className={c.required}>*</span>
               </label>
             </div>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('cr_path_help')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('cr_path_help')}</p>
             <textarea
               value={pathA}
               onChange={e => setPathA(e.target.value)}
@@ -356,11 +359,11 @@ const WhichLife = ({ tool }) => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className={`w-1 h-5 rounded-full ${c.pathBBar}`} />
-              <label className={`text-sm font-semibold ${c.text}`}>
+              <label className={`text-[15px] font-semibold ${c.labelText}`}>
                 {t('cr_pathb_label')} <span className={c.required}>*</span>
               </label>
             </div>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('cr_path_help_b')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('cr_path_help_b')}</p>
             <textarea
               value={pathB}
               onChange={e => setPathB(e.target.value)}
@@ -373,11 +376,11 @@ const WhichLife = ({ tool }) => {
 
           {/* About you */}
           <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
+            <label className={`text-[15px] font-semibold ${c.labelText}`}>
               {t('cr_about_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('optional')}</span>
             </label>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('cr_about_help')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('cr_about_help')}</p>
             <textarea
               value={aboutYou}
               onChange={e => setAboutYou(e.target.value)}
@@ -390,11 +393,11 @@ const WhichLife = ({ tool }) => {
 
           {/* What's hard */}
           <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
+            <label className={`text-[15px] font-semibold ${c.labelText}`}>
               {t('cr_hard_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('optional')}</span>
             </label>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('cr_hard_help')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('cr_hard_help')}</p>
             <textarea
               value={whatsHard}
               onChange={e => setWhatsHard(e.target.value)}
@@ -407,7 +410,7 @@ const WhichLife = ({ tool }) => {
 
           {/* Timeframe */}
           <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
+            <label className={`text-[15px] font-semibold ${c.labelText}`}>
               <span className="me-1.5 text-xl">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
             </label>
             {/* The chips carried flex-1 with no flex parent, so they were plain
@@ -415,7 +418,7 @@ const WhichLife = ({ tool }) => {
                 of the label because space-y only spaces block siblings. */}
             <div className="flex gap-2">
               {TIMEFRAME_OPTIONS.map(opt => (
-                <button
+                <button aria-pressed={timeframe === opt.id}
                   key={opt.id}
                   onClick={() => setTimeframe(opt.id)}
                   className={`flex-1 border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150 ${timeframe === opt.id ? c.chipActive : c.chipInactive}`}>
@@ -450,7 +453,7 @@ const WhichLife = ({ tool }) => {
               front of an empty form is an exit ramp before the entrance; here it
               is found by somebody who has read the questions and recognised that
               theirs is the other problem. */}
-          <p className={`text-xs text-center ${c.textMuted} pt-1`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted} pt-1`}>
             {t('cr_xref_pre')}{' '}
             <a href="/DecisionCoach" className={linkStyle}>🧠 {t('cr_xref_decisioncoach')}</a>{' '}
             {t('cr_xref_decisioncoach_after')}
@@ -470,11 +473,11 @@ const WhichLife = ({ tool }) => {
           {/* Decision framed */}
           {results?.decision_framed && (
             <div className="text-center py-2">
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('cr_the_decision')}</p>
+              <p className={`text-[13px] font-semiboldr ${c.textMuted} mb-2`}>{t('cr_the_decision')}</p>
               <p className={`text-base font-medium italic ${c.text} max-w-md mx-auto`}>
                 "{results?.decision_framed}"
               </p>
-              <p className={`text-xs ${c.textMuted} mt-1`}>{t('cr_from_now', { tf: tfLabel(timeframe) })}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('cr_from_now', { tf: tfLabel(timeframe) })}</p>
             </div>
           )}
 
@@ -484,11 +487,12 @@ const WhichLife = ({ tool }) => {
               abstract choice, and the parts that feel WRONG are information
               too. Vividness without this line is just a confident guess. */}
           {results?.how_to_read && (
-            <p className={`text-xs ${c.textMuted} text-center max-w-md mx-auto`}>{results.how_to_read}</p>
+            <p className={`text-[13px] ${c.textMuted} text-center max-w-md mx-auto`}>{results.how_to_read}</p>
           )}
 
-          {/* Narrative tabs */}
-          <div className={`flex border-b ${c.border}`}>
+          {/* Narrative tabs. Screen shows one path at a time; print shows both
+              (data-sec-body is un-hidden by the handout print rules). */}
+          <div data-print-hide className={`flex border-b ${c.border}`}>
             <button
               onClick={() => setActiveNarrative('a')}
               className={`flex-1 py-3 text-sm font-medium text-center transition-all duration-150 flex items-center justify-center gap-2
@@ -511,8 +515,8 @@ const WhichLife = ({ tool }) => {
 
           {/* Active narrative */}
           <div>
-            {activeNarrative === 'a' && <NarrativeSection path={results?.path_a} side="a" />}
-            {activeNarrative === 'b' && <NarrativeSection path={results?.path_b} side="b" />}
+            <div data-sec-body hidden={activeNarrative !== 'a'}><NarrativeSection path={results?.path_a} side="a" /></div>
+            <div data-sec-body hidden={activeNarrative !== 'b'} className="print:mt-6"><NarrativeSection path={results?.path_b} side="b" /></div>
           </div>
 
           {/* What I noticed */}
@@ -520,13 +524,13 @@ const WhichLife = ({ tool }) => {
             <div className="space-y-4">
               <div className={`flex items-center gap-4 py-2`}>
                 <div className={`flex-1 border-t ${c.border}`} />
-                <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted}`}>{t('cr_what_notice')}</span>
+                <span className={`text-[13px] font-semiboldr ${c.textMuted}`}>{t('cr_what_notice')}</span>
                 <div className={`flex-1 border-t ${c.border}`} />
               </div>
 
               {results?.what_to_notice?.the_tradeoff && (
-                <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-                  <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[13px] font-semiboldr ${c.textMuted} mb-2 flex items-center gap-1.5`}>
                     <span>⚖️</span> {t('cr_the_tradeoff')}
                   </p>
                   <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_to_notice?.the_tradeoff}</p>
@@ -535,7 +539,7 @@ const WhichLife = ({ tool }) => {
 
               {results?.what_to_notice?.watch_your_reaction && (
                 <div className={`${c.cardAlt} rounded-2xl p-5`}>
-                  <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
+                  <p className={`text-[13px] font-semiboldr ${c.textMuted} mb-2 flex items-center gap-1.5`}>
                     <span>👀</span> {t('cr_watch_reaction')}
                   </p>
                   <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_to_notice?.watch_your_reaction}</p>
@@ -544,7 +548,7 @@ const WhichLife = ({ tool }) => {
 
               {results?.what_to_notice?.a_question_to_sit_with && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-6 text-center`}>
-                  <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-3`}>
+                  <p className={`text-[13px] font-semiboldr ${c.textMuted} mb-3`}>
                     {t('cr_question_sit_with')}
                   </p>
                   <p className={`text-base italic ${c.text} leading-relaxed max-w-md mx-auto`}>
@@ -556,8 +560,8 @@ const WhichLife = ({ tool }) => {
           )}
 
           {/* Cross-references */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('cr_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('cr_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('cr_xref_belief')}</a>
               <a href="/AlternatePath" className={`text-xs ${linkStyle}`}>🔀 {t('cr_xref_alternate')}</a>
@@ -566,19 +570,19 @@ const WhichLife = ({ tool }) => {
 
           {/* AI disclaimer */}
           <div className={`p-4 rounded-xl text-center ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuted}`}>🔮 {t('cr_disclaimer')}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>🔮 {t('cr_disclaimer')}</p>
           </div>
         </div>
       )}
 
       {/* ─── History ─── */}
       {sessionHistory.length > 0 && (
-        <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
+        <div data-print-hide className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-start flex-1">
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{t('cr_past_decisions')}</span>
-              <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
+              <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
               <Caret open={showHistory} />
             </button>
             {showHistory && (
@@ -601,7 +605,7 @@ const WhichLife = ({ tool }) => {
                     <div className={`text-xs ${c.text} truncate`}>
                       <span className={c.pathBAccent}>B:</span> {entry.pathB}
                     </div>
-                    <div className={`text-xs ${c.textMuted} mt-0.5`}>
+                    <div className={`text-[13px] ${c.textMuted} mt-0.5`}>
                       {(() => {
                         try {
                           const d = new Date(entry.date);

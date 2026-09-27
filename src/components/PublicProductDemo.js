@@ -19,7 +19,7 @@ const PublicProductDemo = ({ tool }) => {
   };
 
   return (
-    <details className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-2xl overflow-hidden mt-6`}>
+    <details data-print-hide className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-2xl overflow-hidden mt-6`}>
       <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40'}`}>
         <div><p className={`text-base font-black ${text}`}>{x.title}</p><p className={`text-sm mt-1 ${secondary}`}>{x.intro}</p></div>
         <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>

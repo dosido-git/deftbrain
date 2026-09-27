@@ -24,7 +24,8 @@ import './ToolPageSiteStyle.css';
 // a half-done rollout never leaves a tool without its color or its print.
 // Add a tool here in the same commit that converts its file.
 const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach', 'BillRescue',
-  'RoastMe', 'MarkupDetective', 'AlternatePath', 'WhatsThatMean']);
+  'RoastMe', 'MarkupDetective', 'AlternatePath', 'WhatsThatMean',
+  'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {

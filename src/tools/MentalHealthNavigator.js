@@ -97,27 +97,23 @@ function MentalHealthNavigator({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -130,9 +126,7 @@ function MentalHealthNavigator({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [situationAreas, setSituationAreas] = useState([]);
   const [freeform, setFreeform]             = useState('');
@@ -253,7 +247,9 @@ function MentalHealthNavigator({ tool }) {
   }, [loading]);
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
+    // Site style: no box; printed only as a blank form (renderInput isn't
+    // rendered once there's a result).
+    <div data-print-form className="space-y-5">
 
       {/* Warm intro note */}
       <div className={`${c.infoBox} border rounded-xl px-4 py-3`}>
@@ -266,12 +262,12 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Situation areas */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>
+        <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>
           {t('mhn_q_situation')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('mhn_select_all')}</span>
         </label>
         <div className="flex flex-wrap gap-2">
           {SITUATION_AREAS.map(s => (
-            <button key={s.id} onClick={() => toggle(setSituationAreas)(s.id)}
+            <button aria-pressed={situationAreas.includes(s.id)} key={s.id} onClick={() => toggle(setSituationAreas)(s.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${situationAreas.includes(s.id) ? c.pillActive : c.pillInactive}`}>
               <span className="me-1">{s.icon}</span>{t(s.labelKey)}
             </button>
@@ -281,7 +277,7 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Freeform */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
           {t('mhn_tell_more')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('mhn_tell_more_hint')}</span>
         </label>
         <textarea value={freeform} onChange={e => setFreeform(e.target.value)}
@@ -296,10 +292,10 @@ function MentalHealthNavigator({ tool }) {
       <>
       {/* What you've tried */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('mhn_q_tried')}</label>
+        <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('mhn_q_tried')}</label>
         <div className="flex flex-wrap gap-2">
           {TRIED_BEFORE.map(opt => (
-            <button key={opt.id} onClick={() => toggle(setTriedBefore)(opt.id)}
+            <button aria-pressed={triedBefore.includes(opt.id)} key={opt.id} onClick={() => toggle(setTriedBefore)(opt.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${triedBefore.includes(opt.id) ? c.pillActive : c.pillInactive}`}>
               {t(opt.labelKey)}
             </button>
@@ -309,10 +305,10 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Barriers */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('mhn_q_barriers')}</label>
+        <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('mhn_q_barriers')}</label>
         <div className="flex flex-wrap gap-2">
           {BARRIERS.map(b => (
-            <button key={b.id} onClick={() => toggle(setBarriers)(b.id)}
+            <button aria-pressed={barriers.includes(b.id)} key={b.id} onClick={() => toggle(setBarriers)(b.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${barriers.includes(b.id) ? c.pillActive : c.pillInactive}`}>
               {t(b.labelKey)}
             </button>
@@ -322,7 +318,7 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Country */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
           {t('mhn_country')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('mhn_country_hint')}</span>
         </label>
         <input type="text" value={country} onChange={e => setCountry(e.target.value)}
@@ -352,12 +348,12 @@ function MentalHealthNavigator({ tool }) {
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('mhn_prev_sessions')}</p>
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('mhn_clear')}</button>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>🕓 {t('mhn_prev_sessions')}</p>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('mhn_clear')}</button>
           </div>
           <ul className="space-y-1">
             {sessionHistory.map((h, i) => (
-              <li key={i} className={`text-xs ${c.textMuted}`}>{h.preview}</li>
+              <li key={i} className={`text-[13px] ${c.textMuted}`}>{h.preview}</li>
             ))}
           </ul>
         </div>
@@ -378,7 +374,7 @@ function MentalHealthNavigator({ tool }) {
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {results?._input && (results._input.freeform || results._input.situationAreas?.length > 0) && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('mhn_your_situation')}</p>
+            <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>📝 {t('mhn_your_situation')}</p>
             {results._input.freeform && <p className={`text-sm ${c.textSecondary}`}>{results._input.freeform}</p>}
             {results._input.situationAreas?.length > 0 && (
               <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results._input.situationAreas.map(id => { const a = SITUATION_AREAS.find(s => s.id === id); return a ? `${a.icon} ${t(a.labelKey)}` : id; }).join(' · ')}</p>
@@ -388,8 +384,8 @@ function MentalHealthNavigator({ tool }) {
 
         {/* What you described */}
         {results?.what_you_described && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🧭 {t('mhn_what_heard')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🧭 {t('mhn_what_heard')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{results?.what_you_described}</p>
           </div>
         )}
@@ -397,7 +393,7 @@ function MentalHealthNavigator({ tool }) {
         {/* Recommended support types */}
         {results?.recommended_support?.length > 0 && (
           <div className="space-y-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide px-1`}>💙 {t('mhn_recommended')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} px-1`}>💙 {t('mhn_recommended')}</p>
             {results?.recommended_support.map((s, i) => (
               <div key={i} className={`${c.card} border-s-4 ${i === 0 ? 'border-s-cyan-500' : `border-s-zinc-400`} border ${c.border} rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -405,21 +401,21 @@ function MentalHealthNavigator({ tool }) {
                   {(() => {
                     const KIND = { best_fit: 'mhn_best_fit', fastest: 'mhn_badge_fastest', lowest_cost: 'mhn_badge_cheapest' };
                     const key = KIND[s.badge] || (s.badge === undefined && i === 0 ? 'mhn_best_fit' : null);
-                    return key ? <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.infoBox} border`}>{t(key)}</span> : null;
+                    return key ? <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.infoBox} border`}>{t(key)}</span> : null;
                   })()}
                 </div>
                 <p className={`text-sm ${c.textSecondary}`}>{s.why}</p>
                 {s.what_to_expect && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('mhn_what_to_expect')}</span>{s.what_to_expect}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('mhn_what_to_expect')}</span>{s.what_to_expect}</p>
                 )}
                 {s.how_to_find && (
                   <p className={`text-xs ${c.infoBox} border rounded-lg px-3 py-2`}><span className="font-semibold">{t('mhn_how_to_find')}</span>{s.how_to_find}</p>
                 )}
                 {s.other_options && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('mhn_other_options')}</span>{Array.isArray(s.other_options) ? s.other_options.join(' · ') : s.other_options}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('mhn_other_options')}</span>{Array.isArray(s.other_options) ? s.other_options.join(' · ') : s.other_options}</p>
                 )}
                 {s.cost_note && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('mhn_cost')}</span>{s.cost_note}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('mhn_cost')}</span>{s.cost_note}</p>
                 )}
               </div>
             ))}
@@ -428,8 +424,8 @@ function MentalHealthNavigator({ tool }) {
 
         {/* What to say */}
         {results?.what_to_say?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>💬 {t('mhn_what_to_say')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>💬 {t('mhn_what_to_say')}</p>
             <ul className="space-y-2">
               {results?.what_to_say.map((s, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}>
@@ -442,8 +438,8 @@ function MentalHealthNavigator({ tool }) {
 
         {/* Barriers addressed */}
         {results?.barriers_addressed?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔓 {t('mhn_barriers_addressed')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔓 {t('mhn_barriers_addressed')}</p>
             <ul className="space-y-2">
               {results?.barriers_addressed.map((b, i) => (
                 <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2`}>{b}</li>
@@ -454,8 +450,8 @@ function MentalHealthNavigator({ tool }) {
 
         {/* Immediate steps */}
         {results?.immediate_steps?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>✅ {t('mhn_immediate_steps')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>✅ {t('mhn_immediate_steps')}</p>
             <ol className="space-y-2">
               {results?.immediate_steps.map((s, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}>
@@ -480,8 +476,8 @@ function MentalHealthNavigator({ tool }) {
             .filter(n => n.tool && n.why);
           if (!found.length) return null;
           return (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🧭 {t('mhn_next_title')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🧭 {t('mhn_next_title')}</p>
               <div className="space-y-2">
                 {found.map((n, i) => (
                   <p key={i} className="text-sm">
@@ -495,8 +491,8 @@ function MentalHealthNavigator({ tool }) {
         })()}
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mhn_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('mhn_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('mhn_rechargeradar')}</a>
           </div>
@@ -510,13 +506,20 @@ function MentalHealthNavigator({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+      {/* Header — site style (2026-09-27): a pale band of the tool's color
+          bleeding to the card edges, the ground the "Try an example" pill was
+          made for (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🧭'}</span>{t('mhn_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -531,7 +534,7 @@ function MentalHealthNavigator({ tool }) {
           </div>
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('mhn_sleep_note')} <a href="/SleepArchitect" className={linkStyle}>😴 {t('mhn_spiralstopper')}</a> {t('mhn_sleep_note_tail')}</p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('mhn_sleep_note')} <a href="/SleepArchitect" className={linkStyle}>😴 {t('mhn_spiralstopper')}</a> {t('mhn_sleep_note_tail')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>
