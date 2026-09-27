@@ -1107,7 +1107,7 @@ const Mend = ({ tool }) => {
           {/* Eight more features, arriving straight after five pages of
               building trust, read as a product interrupting a conversation.
               Last on the page now, and folded away until asked for. */}
-          <details className="group">
+          <details data-print-hide className="group">
             <summary className={`cursor-pointer text-[13px] font-bold ${c.textMuted} list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
               {t('apc_more_ways')} <Caret groupOpen />
             </summary>

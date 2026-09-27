@@ -857,7 +857,7 @@ const DateNight = ({ tool }) => {
           Calibrator. These are chosen by the model from the real catalog,
           against THIS evening. */}
       {nextHelp.length > 0 && (
-        <div className={`border-t ${c.border} pt-5 space-y-3`}>
+        <div data-print-hide className={`border-t ${c.border} pt-5 space-y-3`}>
           <p className={`text-sm font-bold ${c.text}`}>{t('dn_anything_else')}</p>
           {nextHelp.map((s) => (
             <a key={s.id} href={`/${s.id}`} className="block group">
@@ -874,7 +874,7 @@ const DateNight = ({ tool }) => {
           would get. A direction is a choice the reader understands before
           clicking. */}
       {results.itinerary?.length > 0 && (
-        <div className={`border-t ${c.border} pt-5 space-y-2`}>
+        <div data-print-hide className={`border-t ${c.border} pt-5 space-y-2`}>
           <p className={`text-sm font-bold ${c.text}`}>{t('dn_change_feel')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[['relaxed','dn_feel_relaxed','dn_feel_relaxed_d'],

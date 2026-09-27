@@ -1149,7 +1149,7 @@ const LaundroMat = ({ tool }) => {
 
     return (
       <div>
-        <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
+        <div data-print-form {...(adviceResults ? { 'data-print-hide': '' } : {})} className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
           <div className="mb-2">
             <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
               <span>👕</span> {t('lmt_adv_q_next')} <span className={c.required}>*</span>

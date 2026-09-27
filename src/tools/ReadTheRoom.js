@@ -185,8 +185,10 @@ const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection 
 
 // PF-31: every submit button carries the ⌘↵ chip, because the same global
 // keyboard handler covers every group/sub-action, not just a couple of them.
-const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, loading, tool, playbookLength, t }) => (
-  <div className={`border-t ${c.border} pt-5 space-y-4`}>
+// hasResult: the form prints blank until its mode has a result, then only the
+// result prints.
+const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, loading, tool, playbookLength, t, hasResult = false }) => (
+  <div data-print-form {...(hasResult ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
     <h3 className={`font-bold ${c.text}`}>{title}</h3>
     {subtitle && (
       <p className={`text-sm ${c.textMuted}`}>
@@ -819,7 +821,7 @@ const ReadTheRoom = ({ tool }) => {
               </React.Fragment>
             ))}
           </p>
-          <InputCard title={t('rr_event_title')} subtitle={t('rr_event_subtitle')} onSubmit={handlePrepareEvent}
+          <InputCard hasResult={!!eventResult} title={t('rr_event_title')} subtitle={t('rr_event_subtitle')} onSubmit={handlePrepareEvent}
             btnLabel={t('rr_event_btn')} btnIcon="🎉" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_type')}<Req c={c} /></p>
@@ -929,7 +931,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'prepare:person' && (
         <>
-          <InputCard title={t('rr_person_title')} subtitle={t('rr_person_subtitle')} onSubmit={handlePreparePerson}
+          <InputCard hasResult={!!personResult} title={t('rr_person_title')} subtitle={t('rr_person_subtitle')} onSubmit={handlePreparePerson}
             btnLabel={t('rr_person_btn')} btnIcon="👤" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <input value={personName} onChange={e => setPersonName(e.target.value)}
               placeholder={t('rr_ph_person_name')} className={`w-full ${inp}`} />
@@ -1058,7 +1060,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'prepare:group' && (
         <>
-          <InputCard title={t('rr_group_title')} subtitle={t('rr_group_subtitle')} onSubmit={handlePrepareGroup}
+          <InputCard hasResult={!!groupResult} title={t('rr_group_title')} subtitle={t('rr_group_subtitle')} onSubmit={handlePrepareGroup}
             btnLabel={t('rr_group_btn')} btnIcon="👥" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_group_describe')}<Req c={c} /></p>
@@ -1103,7 +1105,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'prepare:culture' && (
         <>
-          <InputCard title={t('rr_culture_title')} subtitle={t('rr_culture_subtitle')} onSubmit={handlePrepareCulture}
+          <InputCard hasResult={!!cultureResult} title={t('rr_culture_title')} subtitle={t('rr_culture_subtitle')} onSubmit={handlePrepareCulture}
             btnLabel={t('rr_culture_btn')} btnIcon="🌍" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_culture_background')}<Req c={c} /></p>
@@ -1149,7 +1151,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'now:say' && (
         <>
-          <InputCard title={t('rr_say_title')} subtitle={t('rr_say_subtitle')} onSubmit={() => handleNowSay(false)}
+          <InputCard hasResult={!!quickResult} title={t('rr_say_title')} subtitle={t('rr_say_subtitle')} onSubmit={() => handleNowSay(false)}
             btnLabel={t('rr_say_btn')} btnIcon="💬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_situation')}<Req c={c} /></p>
@@ -1202,7 +1204,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'now:stalled' && (
         <>
-          <InputCard title={t('rr_stalled_title')} subtitle={t('rr_stalled_subtitle')} onSubmit={handleNowStalled}
+          <InputCard hasResult={!!stalledResult} title={t('rr_stalled_title')} subtitle={t('rr_stalled_subtitle')} onSubmit={handleNowStalled}
             btnLabel={t('rr_stalled_btn')} btnIcon="⏸️" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_stalled_what')}<Req c={c} /></p>
@@ -1295,7 +1297,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'now:leave' && (
         <>
-          <InputCard title={t('rr_leave_title')} subtitle={t('rr_leave_subtitle')} onSubmit={handleNowLeave}
+          <InputCard hasResult={!!exitResult} title={t('rr_leave_title')} subtitle={t('rr_leave_subtitle')} onSubmit={handleNowLeave}
             btnLabel={t('rr_leave_btn')} btnIcon="🚪" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <textarea value={exitContext} onChange={e => setExitContext(e.target.value)}
               placeholder={t('rr_ph_leave_context')} rows={2} className={`w-full ${inp}`} />
@@ -1319,7 +1321,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'decode:meant' && (
         <>
-          <InputCard title={t('rr_meant_title')} subtitle={t('rr_meant_subtitle')} onSubmit={handleDecodeMeant}
+          <InputCard hasResult={!!decodeResult} title={t('rr_meant_title')} subtitle={t('rr_meant_subtitle')} onSubmit={handleDecodeMeant}
             btnLabel={t('rr_meant_btn')} btnIcon="🔎" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_meant_what')}<Req c={c} /></p>
@@ -1378,7 +1380,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'decode:depth' && (
         <>
-          <InputCard title={t('rr_depth_title')} subtitle={t('rr_depth_subtitle')} onSubmit={handleDecodeDepth}
+          <InputCard hasResult={!!depthResult} title={t('rr_depth_title')} subtitle={t('rr_depth_subtitle')} onSubmit={handleDecodeDepth}
             btnLabel={t('rr_depth_btn')} btnIcon="📶" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
               <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_depth_what')}<Req c={c} /></p>
@@ -1438,7 +1440,7 @@ const ReadTheRoom = ({ tool }) => {
         const isRepair = sub === 'badly';
         return (
         <>
-          <InputCard title={t(isRepair ? 'rr_badly_title' : 'rr_sense_title')} subtitle={t(isRepair ? 'rr_badly_subtitle' : 'rr_sense_subtitle')}
+          <InputCard hasResult={!!afterResult} title={t(isRepair ? 'rr_badly_title' : 'rr_sense_title')} subtitle={t(isRepair ? 'rr_badly_subtitle' : 'rr_sense_subtitle')}
             onSubmit={() => handleAfterMakeSense(isRepair ? 'repair' : 'neutral')}
             btnLabel={t(isRepair ? 'rr_badly_btn' : 'rr_sense_btn')} btnIcon={isRepair ? '😬' : '🧭'} c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <input value={afterEvent} onChange={e => setAfterEvent(e.target.value)} placeholder={t('rr_ph_after_event')} className={`w-full ${inp}`} />
@@ -1512,7 +1514,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'after:followup' && (
         <>
-          <InputCard title={t('rr_followup_title')} subtitle={t('rr_followup_subtitle')} onSubmit={handleAfterFollowup}
+          <InputCard hasResult={!!followUpResult} title={t('rr_followup_title')} subtitle={t('rr_followup_subtitle')} onSubmit={handleAfterFollowup}
             btnLabel={t('rr_followup_btn')} btnIcon="💌" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div className="grid grid-cols-2 gap-3">
               <div>

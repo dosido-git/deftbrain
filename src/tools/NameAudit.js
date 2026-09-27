@@ -1205,7 +1205,7 @@ const NameAudit = ({ tool }) => {
             </div>
 
             {/* Analyze Another — quick input */}
-            <div className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
+            <div data-print-hide className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
               <label className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>{t('nau_quick_audit')} <span className={c.required}>*</span>:</label>
               <input type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleQuickAnalyze(); }}

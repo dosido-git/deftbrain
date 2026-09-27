@@ -398,7 +398,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
     if (!status) {
       return (
-        <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
+        <div data-print-hide className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm font-bold ${c.text}`}>{t('cew_ready_to_send')}</p>

@@ -1100,7 +1100,7 @@ const MoneyDiplomat = ({ tool }) => {
           </div>
           </div>
         </div>
-        <div className="p-5 space-y-3">
+        <div data-print-hide className="p-5 space-y-3">
           <div className="flex flex-wrap gap-2">
             <button aria-pressed={showTracker} onClick={() => setShowTracker(!showTracker)} className={`text-xs px-3 py-1 rounded-full border ${showTracker ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               {debts.filter(d => !d.settled).length > 0 ? t('md_pill_tracker_count', { count: debts.filter(d => !d.settled).length }) : t('md_pill_tracker')}
