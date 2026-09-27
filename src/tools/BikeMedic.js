@@ -2330,12 +2330,17 @@ const BikeMedic = ({ tool }) => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
         {/* Tool Header — unified card with profile bar */}
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
-          <div className="pb-3 border-b border-zinc-500">
+        <div>
+          {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+              the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+          <div data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
             <div className="flex items-start justify-between">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>

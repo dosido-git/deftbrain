@@ -1410,7 +1410,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <style>{`
+      {/* hidden: keeps this tag out of space-y spacing (the band must sit flush). */}
+      <style hidden>{`
         .fsa-slider::-webkit-slider-runnable-track {
           background: ${c.sliderTrack};
           height: 6px; border-radius: 3px;

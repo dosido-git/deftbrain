@@ -575,8 +575,8 @@ function ScamRadar({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('scam_top_hint')} <a href="/FakeReviewDetective" className={linkStyle}>🕵️ {t('scam_fakereview')}</a>.</p>}
       {!results && renderInput()}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('scam_top_hint')} <a href="/FakeReviewDetective" className={linkStyle}>🕵️ {t('scam_fakereview')}</a>.</p>}
       {results ? (
         <div>
           {renderHeaderRow()}

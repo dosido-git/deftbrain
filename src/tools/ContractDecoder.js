@@ -463,8 +463,8 @@ function ContractDecoder({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('cd_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('cd_lease')}</a> {t('cd_xref_lease_tail')}</p>}
       {!results && renderInput()}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('cd_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('cd_lease')}</a> {t('cd_xref_lease_tail')}</p>}
       {results ? (
         <div>
           {renderHeaderRow()}
