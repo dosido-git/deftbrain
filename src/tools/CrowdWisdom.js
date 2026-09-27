@@ -38,22 +38,19 @@ const CrowdWisdom = ({ tool }) => {
   const c = {
     card:                isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:             isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:               isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:               isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:                isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:       isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:           isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:           isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:           isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:          isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                                : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:           isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:          isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:        isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:              isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -69,8 +66,7 @@ const CrowdWisdom = ({ tool }) => {
     successTxt:          isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:          isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:          isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:          isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                                : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:          isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:        isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                                 : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:            isDark ? 'text-amber-400' : 'text-amber-700',
@@ -87,9 +83,7 @@ const CrowdWisdom = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // ─── State ───
@@ -178,15 +172,23 @@ const CrowdWisdom = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2 text-xl">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{t('cw_tagline')}</p>
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                <span className="me-2 text-xl">{tool?.icon ?? '👥'}</span>{t('cw_tagline')}
+              </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {(results || question.trim()) && (
@@ -196,11 +198,12 @@ const CrowdWisdom = ({ tool }) => {
               )}
             </div>
           </div>
+          </div>
         </div>
       </div>
 
       {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <h3 className={`font-semibold text-sm ${c.text}`}>{tool?.icon ?? '👥'} {t('cw_your_question')}</h3>
           <p className={`text-xs ${c.textSecondary}`}>{t('cw_subtitle')}</p>
@@ -263,7 +266,7 @@ const CrowdWisdom = ({ tool }) => {
       {/* History panel */}
       {sessionHistory.length > 0 && !results && (
         <div className={`rounded-xl border p-4 space-y-2 ${c.card} ${c.border}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('cw_recent')}</p>
+          <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('cw_recent')}</p>
           {sessionHistory.map((h, i) => (
             <button
               key={i}
@@ -282,7 +285,7 @@ const CrowdWisdom = ({ tool }) => {
 
           {/* Question header */}
           <div className={`rounded-xl border p-5 ${c.card} ${c.border}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('cw_the_question')}</p>
+            <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('cw_the_question')}</p>
             <p className={`text-base font-semibold ${c.text}`}>"{question}"</p>
             {results.question_reframed && (
               <p className={`text-sm mt-2 italic ${c.textSecondary}`}>
@@ -297,7 +300,7 @@ const CrowdWisdom = ({ tool }) => {
             const cardKey = ARCHETYPE_KEY[voice.emoji] || 'archetypeContrarian';
             return (
               <div key={i} className={`rounded-xl overflow-hidden border ${c[cardKey]}`}>
-                <button onClick={() => toggle(i)} className="w-full text-start p-5">
+                <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggle(i)} className="w-full text-start p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{voice.emoji}</span>
@@ -306,28 +309,28 @@ const CrowdWisdom = ({ tool }) => {
                         <p className={`text-xs mt-0.5 ${c.textMuted}`}>{voice.profile}</p>
                       </div>
                     </div>
-                    <Caret open={isOpen} className="flex-shrink-0" />
+                    <span data-print-hide><Caret open={isOpen} className="flex-shrink-0" /></span>
                   </div>
                   {!isOpen && (
-                    <p className={`text-sm mt-3 leading-relaxed line-clamp-2 ${c.textSecondary}`}>
+                    <p data-print-hide className={`text-sm mt-3 leading-relaxed line-clamp-2 ${c.textSecondary}`}>
                       {voice.what_they_say}
                     </p>
                   )}
                 </button>
-                {isOpen && (
-                  <div className={`px-5 pb-5 space-y-3 border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(isOpen)} className={`px-5 pb-5 space-y-3 border-t ${c.border}`}>
                     <div className="pt-3">
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('cw_what_they_say')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('cw_what_they_say')}</p>
                       <p className={`text-sm leading-relaxed ${c.text}`}>{voice.what_they_say}</p>
                     </div>
                     {voice.core_belief && (
-                      <p className={`text-xs ${c.textMuted} italic`}><span className="font-semibold not-italic">{t('cw_core_belief')}</span> {voice.core_belief}</p>
+                      <p className={`text-[13px] ${c.textMuted} italic`}><span className="font-semibold not-italic">{t('cw_core_belief')}</span> {voice.core_belief}</p>
                     )}
                     <div className={`p-3 rounded-xl ${c.quoteInner}`}>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>🔦 {t('cw_only_see')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>🔦 {t('cw_only_see')}</p>
                       <p className={`text-sm ${c.textSecondary}`}>{voice.the_truth_only_they_see}</p>
                     </div>
-                    <div className={`text-xs ${c.textMuted} italic`}>
+                    <div className={`text-[13px] ${c.textMuted} italic`}>
                       <span className="font-semibold not-italic">{t('cw_blind_spot')}</span> {voice.the_thing_they_might_miss}
                     </div>
                   </div>
@@ -340,13 +343,13 @@ const CrowdWisdom = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {results.the_tension && (
               <div className={`rounded-xl border p-4 ${c.tensionBg}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.tensionLabel}`}>⚡ {t('cw_tension')}</p>
+                <p className={`text-[13px] font-boldr mb-2 ${c.tensionLabel}`}>⚡ {t('cw_tension')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results.the_tension}</p>
               </div>
             )}
             {results.the_question_nobody_asked && (
               <div className={`rounded-xl border p-4 ${c.card} ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>❓ {t('cw_nobody_asked')}</p>
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>❓ {t('cw_nobody_asked')}</p>
                 <p className={`text-sm italic ${c.textSecondary}`}>{results.the_question_nobody_asked}</p>
               </div>
             )}
@@ -358,8 +361,8 @@ const CrowdWisdom = ({ tool }) => {
           </p>
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('cw_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('cw_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('cw_decision_coach')}</a>
               <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('cw_belief')}</a>

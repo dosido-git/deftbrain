@@ -76,26 +76,25 @@ const WhatsMyVibe = ({ tool }) => {
   const c = {
     card:              isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:           isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:             isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:             isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:              isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:     isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:         isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    accentTxt:         isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:         isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:        isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:      isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:            isDark ? 'border-zinc-700' : 'border-gray-200',
     success:           isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-300' : 'bg-emerald-50 border-emerald-600 text-emerald-700',
     warning:           isDark ? 'bg-amber-900/20 border-amber-500 text-amber-300' : 'bg-amber-50 border-amber-500 text-amber-700',
     danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
-    pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:        isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Category panel tints — Crimson family (Read the Room)
     // Gold AI insight — all tools
@@ -216,8 +215,16 @@ const WhatsMyVibe = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (<div className={`space-y-4 ${c.text}`}>
-      {/* ── Input ── */} <div className={`${c.card} border rounded-xl p-5`}>
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30: the wrapper already prints the name as the page <h1>. */}
@@ -232,11 +239,12 @@ const WhatsMyVibe = ({ tool }) => {
             ) : null}
           </div>
         </div>
+        </div>
 
         {/* Source type */} <div className="mb-4">
-          <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>{t('wmv_src_label')}</p>
+          <p className={`text-[13px] font-bold ${c.labelText} mb-2`}>{t('wmv_src_label')}</p>
           <div className="flex flex-wrap gap-1.5">
-            {SOURCE_TYPES.map(s => (<button
+            {SOURCE_TYPES.map(s => (<button aria-pressed={sourceType === s.value}
                 key={s.value} onClick={() => setSourceType(s.value)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] flex items-center gap-1.5 ${
                   sourceType === s.value ? c.pillActive : c.pillInactive
                 }`} >
@@ -248,7 +256,7 @@ const WhatsMyVibe = ({ tool }) => {
           <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('wmv_samples_label')} <span className={c.required}>*</span></label>
           <textarea
             value={samples} onChange={e => setSamples(e.target.value)} placeholder={t('wmv_samples_ph')} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
-          <p className={`text-[10px] ${c.textMuted} mt-1`}>
+          <p className={`text-[13px] ${c.textMuted} mt-1`}>
             {samples.length > 0 ? `${wordCount} ${t('wmv_words')} — ${wordQuality}` : t('wmv_hint_empty')} </p>
         </div>
 
@@ -276,30 +284,30 @@ const WhatsMyVibe = ({ tool }) => {
               <span className="text-4xl block mb-3">✨</span>
               <p className={`text-2xl font-black ${c.text} mb-2`}>{results?.vibe_title}</p>
               {results?.vibe_summary && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results?.vibe_summary}</p>} </div>
-          )} {/* What you do */} {results?.what_you_do?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>✏️ {t('wmv_what_you_do')}</h3>
+          )} {/* What you do */} {results?.what_you_do?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>✏️ {t('wmv_what_you_do')}</h3>
               <div className="space-y-2">
                 {results?.what_you_do?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
                 ))} </div>
             </div>
-          )} {/* How it can land */} {results?.how_it_can_land?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>👀 {t('wmv_how_it_can_land')}</h3>
+          )} {/* How it can land */} {results?.how_it_can_land?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>👀 {t('wmv_how_it_can_land')}</h3>
               <div className="space-y-2">
                 {results?.how_it_can_land?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
                 ))} </div>
             </div>
-          )} {/* Signature moves */} {results?.signature_moves?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔍 {t('wmv_quirks')}</h3>
+          )} {/* Signature moves */} {results?.signature_moves?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>🔍 {t('wmv_quirks')}</h3>
               <div className="space-y-2">
                 {results?.signature_moves?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
                 ))} </div>
             </div>
           )} {/* Easy to misread */} {results?.easy_to_misread && (<div className={`${c.infoBox} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🤔 {t('wmv_easy_misread')}</p>
+              <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>🤔 {t('wmv_easy_misread')}</p>
               <p className={`text-sm ${c.text}`}>{results?.easy_to_misread}</p>
             </div>
-          )} {/* Vibe in one line */} {results?.vibe_one_line && (<div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 {t('wmv_shareline')}</p>
+          )} {/* Vibe in one line */} {results?.vibe_one_line && (<div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.labelText} mb-1`}>📸 {t('wmv_shareline')}</p>
               <p className={`text-sm font-bold ${c.text}`}>{results?.vibe_one_line}</p>
             </div>
           )}
@@ -313,10 +321,10 @@ const WhatsMyVibe = ({ tool }) => {
                     {t(SOURCE_TYPES.find(x => x.value === s.sourceType)?.labelKey) || t('wmv_session')} — {s.results?.vibe_title || t('wmv_session')}
                   </span>
                   {s.results?.pattern_tags?.length > 0 && (
-                    <span className={`block text-[10px] ${c.textMuted} truncate`}>{s.results.pattern_tags.slice(0, 3).join(' · ')}</span>
+                    <span className={`block text-[13px] ${c.textMuted} truncate`}>{s.results.pattern_tags.slice(0, 3).join(' · ')}</span>
                   )}
                 </span>
-                <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </button>
             ))} </div>
         </div>

@@ -28,7 +28,8 @@ const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'Le
   'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife',
   'SomeoneSaidItBetter', 'DecoderRing', 'MissingLink', 'AwkwardSilenceFiller',
   'HistoryToday', 'MiseEnPlace', 'TheDebrief', 'ArgueSmarter',
-  'WaitingModeLiberator', 'SixDegreesOfMe', 'NameStorm', 'FinalWish']);
+  'WaitingModeLiberator', 'SixDegreesOfMe', 'NameStorm', 'FinalWish',
+  'TaskAvalancheBreaker', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'ToolFinder', 'CrowdWisdom', 'BeforeHello', 'GetNoticed', 'VelvetHammer', 'TimeWarp', 'ColdOpenCraft', 'HecklerPrep']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {

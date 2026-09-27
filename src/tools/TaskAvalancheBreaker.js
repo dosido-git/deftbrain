@@ -47,9 +47,8 @@ const TaskAvalancheBreaker = ({ tool }) => {
     input: isDark
       ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500'
       : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-700 hover:bg-cyan-800 text-white',
-    btnIdle: isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                    : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-cyan-700 hover:bg-[#234568] text-white',
+    btnIdle: isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
     border: isDark ? 'border-zinc-700' : 'border-slate-200',
     pillActive: isDark ? 'border-emerald-500 bg-emerald-900/30 text-emerald-200' : 'border-emerald-600 bg-emerald-100 text-emerald-900',
@@ -62,9 +61,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [project, setProject] = useState('');
   const [reasons, setReasons] = useState([]);
@@ -157,11 +154,19 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`border rounded-2xl p-5 ${c.card} ${c.border}`}>
-        <div className="flex items-start justify-between gap-4">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-4">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '⛏️'}</span>{toolTagline(tool?.tagline ?? t('tab_tagline'))}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -169,6 +174,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
           {hasDraft && (
             <button onClick={handleReset} className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${c.btnSecondary}`}>↺ {t('start_over')}</button>
           )}
+        </div>
         </div>
       </div>
 
@@ -187,7 +193,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             <div className={`text-sm font-semibold ${c.text}`}>{t('tab_why_label')} <span className={`font-normal ${c.textMuted}`}>{t('tab_why_optional')}</span></div>
             <div className="mt-2 flex flex-wrap gap-2">
               {REASONS.map(r => (
-                <button
+                <button aria-pressed={reasons.includes(r.value)}
                   key={r.value}
                   type="button"
                   onClick={() => toggleReason(r.value)}
@@ -211,7 +217,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             )}
           </button>
 
-          <p className={`mt-4 text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`mt-4 text-xs text-center ${c.textMuted}`}>
             {t('tab_xref_q')} <a href="/BrainDumpBuddy" className={linkStyle}>{t('tab_xref_name')}</a> {t('tab_xref_tail')}
           </p>
         </section>
@@ -277,7 +283,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             </details>
           )}
 
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('tab_xref_q')} <a href="/BrainDumpBuddy" className={linkStyle}>{t('tab_xref_name')}</a> {t('tab_xref_tail')}
           </p>
         </div>

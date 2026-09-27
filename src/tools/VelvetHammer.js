@@ -78,20 +78,19 @@ const VelvetHammer = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -102,9 +101,7 @@ const VelvetHammer = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('colleague');
@@ -216,11 +213,19 @@ const VelvetHammer = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-        <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-center justify-between">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🔨'}</span>{t('vh_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
@@ -235,13 +240,14 @@ const VelvetHammer = ({ tool }) => {
             )}
           </div>
         </div>
+        </div>
 
         {/* Draft box */}
         <div>
           <label className={`text-sm font-semibold ${c.text} block mb-2`}>
             {t('vh_rage_label')} <span className={c.required}>*</span>
           </label>
-          <p className={`text-xs ${c.textMuted} mb-2`}>{t('vh_rage_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('vh_rage_hint')}</p>
           <textarea
             value={draft}
             onChange={e => setDraft(e.target.value)}
@@ -254,19 +260,19 @@ const VelvetHammer = ({ tool }) => {
         {/* Context row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_recipient')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_recipient')}</label>
             <select value={relationship} onChange={e => setRelationship(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.tKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_goal')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_goal')}</label>
             <select value={goal} onChange={e => setGoal(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {GOALS.map(g => <option key={g.value} value={g.value}>{t(g.tKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className={`text-xs font-semibold ${c.labelText} block mb-1.5`}>{t('vh_power')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_power')}</label>
             <select value={power} onChange={e => setPower(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {POWER.map(p => <option key={p.value} value={p.value}>{t(p.tKey)}</option>)}
             </select>
@@ -291,7 +297,7 @@ const VelvetHammer = ({ tool }) => {
         </button>
 
         <p className={`text-xs text-center ${c.textMuted}`}>{t('vh_disclaimer')}</p>
-        <p className={`text-xs text-center ${c.textMuted} mt-1`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted} mt-1`}>
           {t('vh_in_person_pre')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('vh_difficult_talk')}</a> {t('vh_in_person_post')}
         </p>
 
@@ -313,12 +319,12 @@ const VelvetHammer = ({ tool }) => {
           )}
 
           {results.variants?.map((variant, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div key={i} className={`border-t ${c.border} pt-5 space-y-3`}>
               <div className="flex items-center justify-between">
                 <div>
                   <span className={`text-sm font-bold ${toneColor(variant.tone)}`}>{variant.label}</span>
                   {variant.when_to_use && (
-                    <p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
                   )}
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full border font-medium ${toneBg(variant.tone)}`}>
@@ -336,7 +342,7 @@ const VelvetHammer = ({ tool }) => {
               DifficultTalkCoach for this tool (tag/category overlap), so
               linking either of those here duplicated it. TruthBomb isn't
               in that auto-picked pair. */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             <a href="/TruthBomb" className={linkStyle}>💣 {t('vh_truthbomb_link')}</a>
           </p>
         </div>
@@ -363,10 +369,10 @@ const VelvetHammer = ({ tool }) => {
                     {s.sessionLabel ? ` — ${s.sessionLabel}` : ''}
                   </p>
                   <div className="flex items-center justify-between mt-0.5">
-                    <p className={`text-[10px] ${c.textMuted} truncate`}>
+                    <p className={`text-[13px] ${c.textMuted} truncate`}>
                       {t(GOALS.find(g => g.value === s.goal)?.tKey || 'vh_goal_clarify')}
                     </p>
-                    <span className={`text-[10px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                    <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                   </div>
                 </button>
               ))}

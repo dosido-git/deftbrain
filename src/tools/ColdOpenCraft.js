@@ -33,27 +33,26 @@ const ColdOpenCraft = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.textMuteded = c.textMuted;
@@ -169,13 +168,21 @@ const ColdOpenCraft = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* Standard header */}
-        <div className="mb-4 pb-3 border-b border-zinc-500">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '📬'}</span>{t('coc_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -186,6 +193,7 @@ const ColdOpenCraft = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         <div className="space-y-4">
@@ -215,7 +223,7 @@ const ColdOpenCraft = ({ tool }) => {
               rows={2}
               className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none transition-colors resize-none ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('coc_ctrl_enter')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('coc_ctrl_enter')}</p>
           </div>
 
           {/* Channel */}
@@ -259,7 +267,7 @@ const ColdOpenCraft = ({ tool }) => {
             <label className={`text-sm font-bold ${c.text} block mb-1`}>
               {t('coc_bg_label')} <span className={`font-normal ${c.textMuteded}`}>{t('coc_bg_note')}</span>
             </label>
-            <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('coc_bg_hint')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mb-1.5`}>{t('coc_bg_hint')}</p>
             <input
               type="text"
               value={yourBackground}
@@ -301,7 +309,7 @@ const ColdOpenCraft = ({ tool }) => {
       {/* Collapsed: it was the next major block under the form, competing with
           the thing the visitor came to do. */}
       {sessionHistory.length > 0 && !results && (
-        <details className={`group ${c.card} rounded-xl border ${c.border} p-4`}>
+        <details data-print-hide className={`group ${c.card} rounded-xl border ${c.border} p-4`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
               🕐 {t('coc_recent')}
@@ -333,8 +341,8 @@ const ColdOpenCraft = ({ tool }) => {
 
           {/* Situation read */}
           {r.situation_read && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded} mb-2`}>🎯 {t('coc_situation_read')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>🎯 {t('coc_situation_read')}</p>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
@@ -342,7 +350,7 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Subject line */}
           {r.subject_line && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('coc_subject_line')}</p>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-0.5`}>{t('coc_subject_line')}</p>
               <p className={`text-sm font-bold ${c.text}`}>{r.subject_line}</p>
             </div>
           )}
@@ -353,7 +361,7 @@ const ColdOpenCraft = ({ tool }) => {
           {r.openers?.length > 0 && (
             <div className="space-y-3">
               {r.openers.map((opener, idx) => (
-                <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div key={idx} className={`border-t ${c.border} pt-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-2`}>{opener.label}</h4>
                   <div className={`${c.cardAlt} rounded-lg p-4`}>
                     <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}>{opener.message}</p>
@@ -379,13 +387,13 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Follow-up: a message they can send, and timing that does not
               pretend to know their recipient's calendar. */}
           {r.follow_up?.message && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-2`}>{t('coc_followup_plan')}</h4>
               <div className={`${c.cardAlt} rounded-lg p-4`}>
                 <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}>{r.follow_up.message}</p>
               </div>
               {r.follow_up.timing && (
-                <p className={`text-xs ${c.textMuteded} mt-2`}>{r.follow_up.timing}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-2`}>{r.follow_up.timing}</p>
               )}
               <div className="mt-3">
                 <CopyBtn exact quiet label={t('coc_copy')} content={r.follow_up.message + BRAND} />

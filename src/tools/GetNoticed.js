@@ -53,22 +53,19 @@ const GetNoticed = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-[rgb(42,38,35)]' : 'bg-white',
     cardAlt:       isDark ? 'bg-[rgb(51,46,42)]' : 'bg-[rgb(250,248,245)]',
-    input:         isDark ? 'bg-[rgb(26,24,22)] border-[rgb(61,54,48)] text-[rgb(240,238,234)] placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-[rgb(250,248,245)] border-[rgb(213,202,184)] text-[rgb(61,57,53)] placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-[rgb(26,24,22)] border-[rgb(61,54,48)] text-[rgb(240,238,234)] placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-[rgb(250,248,245)] border-[rgb(213,202,184)] text-[rgb(61,57,53)] placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-[rgb(240,238,234)]' : 'text-[rgb(61,57,53)]',
     textSecondary: isDark ? 'text-[rgb(200,195,185)]' : 'text-[rgb(90,84,74)]',
     textMuted:     isDark ? 'text-zinc-400' : 'text-[#6e675c]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-[rgb(51,46,42)] hover:bg-[rgb(61,54,48)] text-[rgb(200,195,185)] border border-[rgb(61,54,48)]'
                           : 'bg-[rgb(243,239,232)] hover:bg-[rgb(232,225,213)] text-[rgb(94,80,66)] border border-[rgb(213,202,184)]',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -84,9 +81,7 @@ const GetNoticed = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [description, setDescription] = useState('');
   const [goals, setGoals] = useState('');
@@ -175,12 +170,20 @@ const GetNoticed = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🧲'}</span>{tool?.tagline ?? t('lks_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -192,12 +195,13 @@ const GetNoticed = ({ tool }) => {
               </button>
             )}
           </div>
+          </div>
         </div>
       </div>
 
       {!results && (
           <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('lks_xref_pre')} <a href="/SixDegreesOfMe" className={linkStyle}>🔗 {t('lks_xref_sixdegrees')}</a> {t('lks_xref_post')}
             </p>
             <div>
@@ -245,7 +249,7 @@ const GetNoticed = ({ tool }) => {
             {/* Recap of what the user told us — anchors persisted results on revisits */}
             {results?._input?.description && (
               <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-                <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuteded}`}>📝 {t('lks_your_situation')}</p>
+                <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuteded}`}>📝 {t('lks_your_situation')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results._input.description}</p>
                 {results._input.goals && <p className={`text-xs mt-1.5 ${c.textMuteded}`}>🎯 {results._input.goals}</p>}
               </div>
@@ -304,7 +308,7 @@ const GetNoticed = ({ tool }) => {
                   const isOpen = expanded[i];
                   return (
                     <div key={i} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                      <button onClick={() => toggle(i)} className="w-full text-start p-5">
+                      <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggle(i)} className="w-full text-start p-5">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
                             <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black ${isDark ? 'bg-[rgb(44,74,110)] text-white' : 'bg-[rgb(232,238,245)] text-[rgb(44,74,110)]'}`}>{i + 1}</span>
@@ -313,21 +317,21 @@ const GetNoticed = ({ tool }) => {
                               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${mcfg.color(isDark)}`}>{mcfg.icon} {t(mcfg.labelKey)}</span>
                             </div>
                           </div>
-                          <Caret open={isOpen} className="flex-shrink-0" />
+                          <span data-print-hide><Caret open={isOpen} className="flex-shrink-0" /></span>
                         </div>
-                        {!isOpen && <p className={`text-sm mt-2 line-clamp-2 ${c.textMuteded}`}>{move.action}</p>}
+                        {!isOpen && <p data-print-hide className={`text-sm mt-2 line-clamp-2 ${c.textMuteded}`}>{move.action}</p>}
                       </button>
-                      {isOpen && (
-                        <div className={`px-5 pb-5 space-y-3 border-t ${c.border}`}>
+                      {(
+                        <div data-sec-body hidden={!(isOpen)} className={`px-5 pb-5 space-y-3 border-t ${c.border}`}>
                           <div className="pt-3">
-                            <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuteded}`}>{t('lks_l_action')}</p>
+                            <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('lks_l_action')}</p>
                             <p className={`text-sm ${c.text}`}>{move.action}</p>
                           </div>
                           {move.why_it_expands_opportunity && (
-                            <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('lks_l_why')}</span> {move.why_it_expands_opportunity}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}><span className="font-semibold">{t('lks_l_why')}</span> {move.why_it_expands_opportunity}</p>
                           )}
                           {move.first_step && (
-                            <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('lks_l_first')}</span> {move.first_step}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}><span className="font-semibold">{t('lks_l_first')}</span> {move.first_step}</p>
                           )}
                         </div>
                       )}
@@ -346,8 +350,8 @@ const GetNoticed = ({ tool }) => {
               </div>
             )}
 
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('lks_related')}</p>
+            <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[13px] font-semibold mb-3 ${c.textMuteded}`}>{t('lks_related')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'BeforeHello', icon: '🌀', label: t('lks_xref_gravitywell') },
@@ -366,7 +370,7 @@ const GetNoticed = ({ tool }) => {
 
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-[13px] ${c.textMuted}`}>
           {t('lks_disclaimer')}
         </p>
       </div>

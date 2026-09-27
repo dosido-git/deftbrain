@@ -35,32 +35,29 @@ const ToolFinder = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    cardHover:     isDark ? 'group-hover:border-cyan-600' : 'group-hover:border-cyan-400',
+    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
+    cardHover:     isDark ? 'group-hover:border-[#7fb3e0]' : 'group-hover:border-[#142a43]',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State ───
   const [error, setError] = useState('');
@@ -192,14 +189,22 @@ const ToolFinder = ({ tool }) => {
 
   return (<div className={`space-y-4 ${c.text}`}>
 
-      {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30: the wrapper already renders the name as the page h1, so
                   the icon moves onto the tagline. The tagline reads from the
                   locale rather than the catalog, which is English by design. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🧰'}</span>{t('tf_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -210,6 +215,7 @@ const ToolFinder = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         {/* ── PROBLEM INPUT ── */} <div className="mb-4">
@@ -250,14 +256,14 @@ const ToolFinder = ({ tool }) => {
         </div>
       )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {results && (<div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
-          {/* ── UNDERSTANDING ── */} {r.understanding && (<div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          {/* ── UNDERSTANDING ── */} {r.understanding && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
                 <span className={`font-bold ${c.text}`}>{t('tf_understanding_label')} </span>
                 {r.understanding} </p>
             </div>
           )} {/* ── RECOMMENDATIONS ── */} {r.recommendations && r.recommendations.length > 0 && (<div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className={`text-sm font-bold ${c.text}`}>
+                <h3 className={`text-base font-bold ${c.text}`}>
                   {t('tf_id_start_with', { title: r.recommendations[0]?.title || '' })} </h3>
 
               </div>
@@ -281,7 +287,7 @@ const ToolFinder = ({ tool }) => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className={`text-base font-bold ${c.text} group-hover:underline`}>
                             {rec.title} </h4>
-                          {idx > 0 && (<span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
+                          {idx > 0 && (<span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>
                               {t('tf_also')}
                             </span>
                           )}
@@ -294,13 +300,13 @@ const ToolFinder = ({ tool }) => {
                       {rec.why} </p>
 
                     {/* What to do */} {rec.what_to_do && (<div className={`${c.cardAlt} rounded-lg px-3 py-2 mt-2`}>
-                        <p className={`text-xs ${c.textMuted}`}>
+                        <p className={`text-[13px] ${c.textMuted}`}>
                           <span className="font-bold">{t('tf_when_you_get_there')}</span> {rec.what_to_do} </p>
                       </div>
                     )} </div>
                 </a>
               ))} </div>
-          )} {/* ── NO PERFECT FIT ── */} {r.no_perfect_fit && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          )} {/* ── NO PERFECT FIT ── */} {r.no_perfect_fit && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('tf_closest_note')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{r.no_perfect_fit}</p>
             </div>
@@ -330,12 +336,12 @@ const ToolFinder = ({ tool }) => {
           {/* Demand capture, and now unmistakably its own path: this one means
               DeftBrain has nothing, not that the first guess was poor. */}
           {!r.no_perfect_fit && <IdeaPrompt source="toolfinder-results" query={problem} compact />}
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p className={`text-[13px] ${c.textMuted} text-center`}>
             {t('tf_not_found')}{' '}
             <a href="/" className={`font-semibold underline ${linkStyle}`}>{t('tf_browse_all')}</a>
           </p>
         </div>
-      )} {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details className={`group ${c.cardAlt} border ${c.border} rounded-xl px-4 py-3 mt-4`}>
+      )} {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl px-4 py-3 mt-4`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <span className={`text-xs font-bold ${c.textMuted} flex items-center gap-2`}>
               {t('tf_recent')}
@@ -347,7 +353,7 @@ const ToolFinder = ({ tool }) => {
           <div className="space-y-1 mt-3">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('tf_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         </details>

@@ -44,26 +44,25 @@ const HecklerPrep = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
@@ -71,9 +70,7 @@ const HecklerPrep = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [audience, setAudience] = useState('');
   const [proposal, setProposal] = useState('');
@@ -190,11 +187,19 @@ const HecklerPrep = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className="mb-5 pb-4 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🎤'}</span>{t('hp_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -203,9 +208,10 @@ const HecklerPrep = ({ tool }) => {
             <button onClick={handleReset} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${c.btnSecondary}`}>↩ {t('start_over')}</button>
           )}
         </div>
+        </div>
 
         <div className="mb-4">
-          <p className={`text-xs ${c.textMuted} mb-2`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} mb-2`}>
             {t('hp_coldopen_q')} <a href="/ColdOpenCraft" className={linkStyle}>📬 {t('hp_coldopen_name')}</a> {t('hp_coldopen_rest')}
           </p>
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_topic_label')} <span className={c.required}>*</span></label>
@@ -239,18 +245,18 @@ const HecklerPrep = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('hp_stakes_label')}</label>
           <div className="flex gap-2">
           {STAKES_LEVELS.map(s => (
-            <button key={s.value} onClick={() => setStakes(s.value)}
-              className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+            <button aria-pressed={stakes === s.value} key={s.value} onClick={() => setStakes(s.value)}
+              className={`flex-1 py-2.5 rounded-xl text-[13px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
                 stakes === s.value ? c.pillActive : c.pillInactive
               }`}>
               <span className="text-base">{s.emoji}</span>
               <span>{s.label}</span>
-              <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
+              <span className={`font-normal text-xs ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
             </button>
           ))}
           </div>
           {stakes === 'high' && (
-            <p className={`text-[11px] mt-2 ${c.textMuteded}`}>{t('hp_high_note')}</p>
+            <p className={`text-[13px] mt-2 ${c.textMuteded}`}>{t('hp_high_note')}</p>
           )}
         </div>
 
@@ -266,8 +272,8 @@ const HecklerPrep = ({ tool }) => {
         </button>
 
         {!results && (
-          <div className={`mt-5 pt-4 border-t ${c.border}`}>
-            <p className={`text-xs ${c.textMuteded}`}>
+          <div data-print-hide className={`mt-5 pt-4 border-t ${c.border}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuteded}`}>
               {t('hp_velvet_q')} <a href="/VelvetHammer" className={linkStyle}>{t('hp_velvet_name')}</a> {t('hp_velvet_rest')}
             </p>
           </div>
@@ -283,7 +289,7 @@ const HecklerPrep = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
 {r.situation_read && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.situation_read}</p>
             </div>
           )}
@@ -302,12 +308,12 @@ const HecklerPrep = ({ tool }) => {
           {/* Questions */}
           {r.questions?.length > 0 && (
             <div className="space-y-3">
-              <h3 className={`text-sm font-bold ${c.text}`}>{t('hp_questions_title')}</h3>
+              <h3 className={`text-base font-bold ${c.text}`}>{t('hp_questions_title')}</h3>
               {r.questions.map((q, idx) => {
                 const isExpanded = expandedQ === idx;
                 return (
                   <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-                    <button onClick={() => setExpandedQ(isExpanded ? null : idx)}
+                    <button data-print-heading aria-expanded={!!(isExpanded)} onClick={() => setExpandedQ(isExpanded ? null : idx)}
                       className="w-full p-4 text-start">
                       <div className="flex items-start gap-3">
                         <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -318,35 +324,35 @@ const HecklerPrep = ({ tool }) => {
                         <div className="flex-1 min-w-0">
                           <p className={`text-sm font-bold ${c.text} leading-snug`}>"{q.question}"</p>
                           <div className="flex gap-1.5 mt-1">
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${difficultyBadge(q.difficulty)}`}>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${difficultyBadge(q.difficulty)}`}>
                               {difficultyEmoji(q.difficulty)} {q.difficulty}
                             </span>
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{q.type}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>{q.type}</span>
                           </div>
                         </div>
-                        <Caret open={isExpanded} className="flex-shrink-0" />
+                        <span data-print-hide><Caret open={isExpanded} className="flex-shrink-0" /></span>
                       </div>
                     </button>
 
-                    {isExpanded && (
-                      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+                    {(
+                      <div data-sec-body hidden={!(isExpanded)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hp_real_concern')}</p>
+                          <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('hp_real_concern')}</p>
                           <p className={`text-xs ${c.textSecondary} italic`}>{q.real_concern}</p>
                         </div>
                         <div className={`${c.cardAlt} rounded-lg p-4`}>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hp_model_answer')}</p>
+                          <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('hp_model_answer')}</p>
                           <p className={`text-xs ${c.text} leading-relaxed`}>{q.model_answer}</p>
                         </div>
                         {q.if_you_dont_know && (
                           <div className={`${c.cardAlt} rounded-lg p-4`}>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hp_if_dont_know')}</p>
+                            <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('hp_if_dont_know')}</p>
                             <p className={`text-xs ${c.text} leading-relaxed`}>{q.if_you_dont_know}</p>
                           </div>
                         )}
                         {q.dont_say && (
                           <div className={`${c.danger} border rounded-lg p-3`}>
-                            <p className="text-[10px] font-bold mb-0.5">{t('hp_dont_say')}</p>
+                            <p className="text-xs font-bold mb-0.5">{t('hp_dont_say')}</p>
                             <p className="text-xs">{q.dont_say}</p>
                           </div>
                         )}
@@ -378,8 +384,8 @@ const HecklerPrep = ({ tool }) => {
             </div>
           )}
 
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('hp_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('hp_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('hp_velvet_name')}</a>
               <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>🏆 {t('hp_brag_name')}</a>
@@ -398,12 +404,12 @@ const HecklerPrep = ({ tool }) => {
                   onClick={() => { setResults(s.result); scrollToResults(); }}
                   className={`w-full flex items-center justify-between text-start rounded-lg px-2 py-1 -mx-2 ${c.btnSecondary} border-0 hover:opacity-80 transition-opacity min-h-[32px]`}>
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hp_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </button>
               ) : (
                 <div key={s.id} className="flex items-center justify-between px-2 py-1 -mx-2 min-h-[32px]">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hp_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
               )
             ))}

@@ -50,7 +50,7 @@ const TimeWarp = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
@@ -58,14 +58,13 @@ const TimeWarp = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
     accentBox:     isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
@@ -76,9 +75,7 @@ const TimeWarp = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   // -v2 keys: a v1 result has era_context/historical_footnotes/
@@ -205,12 +202,20 @@ const TimeWarp = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Input */}
-      <div className={`${c.card} border rounded-xl px-5 pt-2.5 pb-5`}>
-        <div className="mb-4 pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⏰'}</span>{t('tw_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -223,20 +228,21 @@ const TimeWarp = ({ tool }) => {
             ) : null}
           </div>
         </div>
+        </div>
 
         {/* Quick combos */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <label className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('tw_quick_combos')}</label>
+            <label className={`text-[13px] font-bold ${c.labelText}`}>{t('tw_quick_combos')}</label>
             <button onClick={() => applyCombo(QUICK_COMBOS[Math.floor(Math.random() * QUICK_COMBOS.length)])}
-              className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[10px] font-bold`}>
+              className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-xs font-bold`}>
               {t('tw_shuffle')}
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_COMBOS.map((combo, i) => (
               <button key={i} onClick={() => applyCombo(combo)}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1`}>
+                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[13px] font-medium min-h-[32px] flex items-center gap-1`}>
                 <span>{combo.icon}</span> {combo.modernKey ? t(combo.modernKey) : combo.modern} × {t(combo.periodKey)}
               </button>
             ))}
@@ -244,23 +250,23 @@ const TimeWarp = ({ tool }) => {
         </div>
 
         {/* Inputs */}
-        <p className={`text-[10px] ${c.textMuted} mb-1.5`}>{t('tw_fill_hint')}</p>
+        <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('tw_fill_hint')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <div>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('tw_modern_label')} <span className={c.required}>*</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_modern_label')} <span className={c.required}>*</span></label>
             <input type="text" value={modernThing} onChange={e => setModernThing(e.target.value)}
               placeholder={t('tw_modern_ph')}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('tw_period_label')} <span className={c.required}>*</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_period_label')} <span className={c.required}>*</span></label>
             <input type="text" value={historicalPeriod} onChange={e => setHistoricalPeriod(e.target.value)}
               placeholder={t('tw_period_ph')}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
         </div>
 
-        <p className={`text-[11px] ${c.textMuted} mb-2 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mb-2 text-center`}>
           {t('tw_xref')} <a href="/WrongAnswersOnly" className={linkStyle}>🎭 {t('tw_xref_wao')}</a> {t('tw_xref_desc')}
         </p>
 
@@ -296,14 +302,14 @@ const TimeWarp = ({ tool }) => {
           )}
 
           {results?.main_content && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} whitespace-pre-line leading-relaxed`}>{results.main_content}</p>
             </div>
           )}
 
           {results?.warp_insight && (
             <div className={`${c.quoteBg} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-[10px] font-black ${c.accentTxt} uppercase tracking-widest mb-2`}>🌀 {t('tw_the_warp')}</p>
+              <p className={`text-xs font-black ${c.accentTxt} uppercase tracking-widest mb-2`}>🌀 {t('tw_the_warp')}</p>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.warp_insight}</p>
             </div>
           )}
@@ -312,7 +318,7 @@ const TimeWarp = ({ tool }) => {
               overreach into certifying the piece as researched because
               nothing in it is generated per-request. */}
           {results?.main_content && (
-            <p className={`text-[11px] ${c.textMuted} italic px-1`}>
+            <p className={`text-[13px] ${c.textMuted} italic px-1`}>
               🎭 {t('tw_fiction_note')}
             </p>
           )}
@@ -323,12 +329,12 @@ const TimeWarp = ({ tool }) => {
               disabled={loading}
               className={`w-full text-start ${c.cardAlt} border ${c.border} rounded-xl p-4 hover:brightness-105 transition disabled:opacity-40`}
             >
-              <p className={`text-[10px] font-black ${c.accentTxt} uppercase tracking-widest mb-1`}>↪️ {t('tw_one_more')}</p>
+              <p className={`text-xs font-black ${c.accentTxt} uppercase tracking-widest mb-1`}>↪️ {t('tw_one_more')}</p>
               <p className={`text-sm font-bold ${c.text}`}>
                 {results.next_collision.modernThing} × {results.next_collision.historicalPeriod}
               </p>
               {results.next_collision.teaser && (
-                <p className={`text-xs ${c.textMuted} mt-1 italic`}>{results.next_collision.teaser}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-1 italic`}>{results.next_collision.teaser}</p>
               )}
             </button>
           )}
@@ -342,7 +348,7 @@ const TimeWarp = ({ tool }) => {
               One More? → Same Combo → Recent Warps is the loop; a boxed
               navigation section here duplicates the site's own Related
               Tools section right below and interrupts that loop. */}
-          <p className={`text-[11px] ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             <a href="/WhichLife" className={linkStyle}>🤔 {t('tw_link_whatif')}</a>
           </p>
         </div>
@@ -364,11 +370,11 @@ const TimeWarp = ({ tool }) => {
                   className={`w-full text-start ${c.card} border ${c.border} rounded-lg px-3 py-2.5 hover:brightness-105 transition`}
                 >
                   <p className={`text-xs font-semibold ${c.text} truncate`}>{s.title}</p>
-                  <p className={`text-[10px] ${c.textMuted} mt-0.5 truncate`}>
+                  <p className={`text-[13px] ${c.textMuted} mt-0.5 truncate`}>
                     {s.modernThing} × {s.historicalPeriod}
                   </p>
                   {s.insight && (
-                    <p className={`text-[10px] ${c.textMuted} mt-1 line-clamp-2`}>{s.insight}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-1 line-clamp-2`}>{s.insight}</p>
                   )}
                 </button>
               ))}

@@ -63,20 +63,19 @@ const BeforeHello = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -87,9 +86,7 @@ const BeforeHello = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [targetType, setTargetType] = useState('');
   const [whyThemContext, setWhyThemContext] = useState('');
@@ -179,13 +176,21 @@ const BeforeHello = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the tool name as the page heading. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🌀'}</span>{t('bh_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -197,6 +202,7 @@ const BeforeHello = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -259,8 +265,8 @@ const BeforeHello = ({ tool }) => {
 
             <p className={`text-xs text-center ${c.textMuteded}`}>{t('bh_no_target_note')}</p>
 
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('bh_related')}</p>
+            <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('bh_related')}</p>
               <div className="flex flex-wrap gap-3">
                 <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('bh_xref_velvet')}</a>
                 <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>🎤 {t('bh_xref_heckler')}</a>
@@ -308,9 +314,9 @@ const BeforeHello = ({ tool }) => {
             )}
 
             {results.ready_to_say_hello && (
-              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-cyan-700 bg-cyan-900/10' : 'border-cyan-300 bg-cyan-50'}`}>
+              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]'}`}>
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>3 · {t('bh_ready_heading')}</p>
+                  <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>3 · {t('bh_ready_heading')}</p>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-black ${c.card} border ${c.border}`}>{t(`bh_status_${results.ready_to_say_hello.status}`)}</span>
                 </div>
                 <p className={`text-sm mb-2 ${c.text}`}>{results.ready_to_say_hello.why}</p>
@@ -324,7 +330,7 @@ const BeforeHello = ({ tool }) => {
 
             {results.first_contact && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>✉ {t('bh_first_contact')}</p>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>✉ {t('bh_first_contact')}</p>
                 <p className={`text-sm mb-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_when')}:</span> {results.first_contact.when_to_reach_out}</p>
                 <p className={`text-sm mb-3 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_frame')}:</span> {results.first_contact.the_frame}</p>
                 <div className={`p-3 rounded-xl border font-mono text-sm mb-2 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-gray-200'} ${c.textSecondary}`}>{results.first_contact.what_to_say}</div>
@@ -339,8 +345,8 @@ const BeforeHello = ({ tool }) => {
               </div>
             )}
 
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('bh_related')}</p>
+            <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('bh_related')}</p>
               <div className="flex flex-wrap gap-3">
                 <a href="/GetNoticed" className={`text-xs ${linkStyle}`}>🧲 {t('bh_xref_luck')}</a>
                 <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('bh_xref_velvet')}</a>
@@ -356,7 +362,7 @@ const BeforeHello = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('bh_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString(userLocale || undefined)}</span>
+                <span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString(userLocale || undefined)}</span>
               </div>
             ))}
           </div>
@@ -365,7 +371,7 @@ const BeforeHello = ({ tool }) => {
 
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-[13px] ${c.textMuted}`}>
           {t('bh_disclaimer')}
         </p>
       </div>
