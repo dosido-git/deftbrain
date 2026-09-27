@@ -20,6 +20,10 @@ const SITUATIONS = [
   { toolId: 'LeaseTrapDetector', problem: 'Something in my lease looks wrong.', body: 'Understand the risk and what to ask.' },
   { toolId: 'DoctorVisitPrep', problem: 'I have a doctor appointment coming up.', body: 'Walk in knowing what matters.' },
   { toolId: 'DifficultTalkCoach', problem: 'I need to have a difficult conversation.', body: 'Think it through before you say it.' },
+  // Fourth card is deliberately light (2026-09-27, owner): DeftBrain isn't
+  // only for problems — charter 4.11, curiosity and fun.
+  { toolId: 'WrongAnswersOnly', problem: 'I could use a laugh.', body: 'Get a confidently, beautifully wrong answer.' },
+  // Which Life? moves to lead the second set (first "Show other situations").
   { toolId: 'WhichLife', problem: 'I want to explore a different path.', body: 'See possibilities you haven’t considered.' },
   { toolId: 'BillRescue', problem: 'This bill doesn’t look right.', body: 'Figure out what to question and what to do next.' },
   { toolId: 'FakeReviewDetective', problem: 'Can I trust these reviews?', body: 'Look for the patterns that don’t add up.' },
@@ -71,7 +75,6 @@ const SITUATIONS = [
   { toolId: 'TheWholeStory', problem: 'I need to explain a messy chapter of my life.', body: 'Frame the real story — honest, but strategic.' },
   { toolId: 'VirtualBodyDouble', problem: 'I focus better with someone else in the room.', body: 'Work alongside a presence that keeps you on task.' },
   { toolId: 'WhatsThatMean', problem: 'I don’t know what that phrase actually means.', body: 'Get the plain explanation, not just the dictionary entry.' },
-  { toolId: 'WrongAnswersOnly', problem: 'I need something ridiculous to lighten the mood.', body: 'Get a confidently, beautifully wrong answer.' },
 ];
 const SITUATIONS_PER_SET = 4;
 
