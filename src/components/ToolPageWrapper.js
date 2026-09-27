@@ -8,7 +8,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
-import { headerGradient } from '../utils/headerGradient';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
 
@@ -16,29 +15,11 @@ import './ToolPageSiteStyle.css';
 // header (SiteHeader — brand + definition, nav, locale controls, light/dark
 // switch), navy serif title, 1200px width, warm neutrals in light mode.
 //
-// CONVERTED tools have also had their inside reworked (see DoctorVisitPrep,
-// WrongAnswersOnly and CONVENTIONS.md "House primary"): they draw their own
-// pale color band, so the wrapper gives them ONE FLAT CARD and prints them as
-// a handout (data-print-handout, printStyles). Everything not yet converted
-// keeps its colored frame around an inner card and the standard printout, so
-// a half-done rollout never leaves a tool without its color or its print.
-// Add a tool here in the same commit that converts its file.
-const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach', 'BillRescue',
-  'RoastMe', 'MarkupDetective', 'AlternatePath', 'WhatsThatMean',
-  'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife',
-  'SomeoneSaidItBetter', 'DecoderRing', 'MissingLink', 'AwkwardSilenceFiller',
-  'HistoryToday', 'MiseEnPlace', 'TheDebrief', 'ArgueSmarter',
-  'WaitingModeLiberator', 'SixDegreesOfMe', 'NameStorm', 'FinalWish',
-  'TaskAvalancheBreaker', 'WhatsMyVibe', 'WhereDidTheTimeGo', 'ToolFinder', 'CrowdWisdom', 'BeforeHello', 'GetNoticed', 'VelvetHammer', 'TimeWarp', 'ColdOpenCraft', 'HecklerPrep',
-  'TruthBomb', 'RutBuster', 'ToastWriter', 'GriefGuide', 'PaperworkPath', 'PEP', 'UpsellShield', 'SocialBatteryAdvisor', 'ComebackCooker', 'ConceptCoach',
-  'BreakMyPlan', 'SleepArchitect', 'CultureBriefing', 'HobbyMatch', 'FanTheory', 'Giftology', 'AnalogyEngine', 'NotSoFast', 'ProcedureProbe', 'FocusPocus',
-  'TicketTackler', 'ConflictCoach', 'PartyArchitect', 'TipOfTongue', 'DriveHome', 'DocumentDetective', 'BeforeTheCrash', 'PlotHoleFinder', 'PronounceItRight',
-  'FutureProof', 'JargonAssassin', 'CaptionMagic', 'SignalVsNoise', 'PetBehaviorDecoder', 'DecisionPrism', 'DreamPatternSpotter', 'GhostWriter', 'NameThatFeeling',
-  'MagicMouth', 'ResearchDecoder', 'FakeReviewDetective', 'HeartOfTheMatter', 'NerveCheck', 'RoommateCourt', 'BatchFlow', 'BrainStateDeejay', 'DoctorVisitTranslator', 'TripRecon', 'TheRunthrough',
-  'MicroAdventureMapper', 'MeetingHijackStopper', 'BrainDumpBuddy', 'RecipeChaosSolver', 'JustifyMyMeeting', 'LazyWorkoutAdapter', 'BrainRoulette', 'SafeWalk',
-  'BragSheetBuilder', 'RentersDepositSaver', 'ComplaintEscalationWriter', 'PlainTalk', 'ReadTheRoom', 'NameAudit', 'MoneyDiplomat', 'SkillGapMap',
-  'LaundroMat', 'FocusSoundArchitect', 'TheFinalWord', 'LayoverMaximizer', 'BikeMedic', 'Mend', 'BuyWise',
-  'BeliefStressTest', 'TheWholeStory', 'ContractDecoder', 'GratitudeDebtClearer', 'ScamRadar', 'Bookmark', 'SmallChangeBigDifference', 'EmailUrgencyTriager', 'QuoteCheck', 'GentlePushGenerator', 'FriendshipFadeAlerter', 'LeverageLogic', 'VirtualBodyDouble', 'DecisionCoach', 'PlantRescue', 'DateNight']);
+// Every tool's inside has been reworked too (step 2, finished 2026-09-27;
+// see DoctorVisitPrep, WrongAnswersOnly and CONVENTIONS.md "House primary"):
+// each draws its own pale color band, so the wrapper gives them ONE FLAT CARD
+// and prints them as a handout (data-print-handout, printStyles). The old
+// colored frame and standard printout are gone with the last opt-in list.
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -55,7 +36,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   // Cmd+P and the DeftBrain Print button share one stylesheet — see printStyles.js
   useEffect(() => { ensurePrintStyles(); }, []);
 
-  // Handout printing (converted tools): a closed <details> keeps its content
+  // Handout printing: a closed <details> keeps its content
   // off paper, and no CSS reliably opens one, so open them for the print and
   // put them back after. Only disclosures in the tool card that print at all.
   useEffect(() => {
@@ -127,7 +108,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
   // Theme-aware classes
   const isDark = theme === 'dark';
-  const converted = SITE_STYLE_CONVERTED.has(detectedTool?.id);
 
   // Bookmark toast
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
@@ -173,7 +153,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div data-print-wrapper data-site-style="home" data-print-handout={converted ? '' : undefined} className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
+    <div data-print-wrapper data-site-style="home" data-print-handout="" className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
       
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
@@ -240,17 +220,12 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               margins are narrower, so Chrome fragments and never showed it.
               Every number below is trimmed to buy back that page. */}
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'2px',paddingBottom:'8px',marginBottom:'10px',borderBottom:'2px solid #e5e7eb'}}>
-            {/* Handout (converted) pages open with the title alone; the brand
-                is the one-line attribution at the foot of the page. */}
-            {!converted && <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-              <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'32px',width:'auto'}} />
-              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold'}}><span style={{color:'#165b9a'}}>Deft</span><span style={{color:'#c8872e'}}>Brain</span></div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
-            </div>}
+            {/* Handout pages open with the title alone; the brand is the
+                one-line attribution at the foot of the page. */}
             {detectedTool && (
               <div style={{marginTop:'4px'}}>
                 {/* Printed the way the page shows it: navy serif. */}
                 <div style={{fontFamily:"'Playfair Display', Georgia, serif",fontSize:'24px',fontWeight:'700',lineHeight:'1.1',color:'#142a43'}}>{detectedTool.title}</div>
-                {!converted && <div style={{fontSize:'11px',color:'#4b5563',marginTop:'3px',lineHeight:'1.35',whiteSpace:'pre-line'}}>{detectedTool.description}</div>}
               </div>
             )}
           </div>
@@ -332,24 +307,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             instead of inherited — see the 2026-09-14 note above. */}
         <main data-print-main className="lg:col-span-8 mb-8 lg:mb-0">
           <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
-              // Two stops instead of one, and a derived value in dark mode
-              // rather than the light-mode hex. Same geometry as before —
-              // solid to 60px, gone by 220px — so nothing on the page moves.
-              // See src/utils/headerGradient.js for why each number is what
-              // it is. headerGradient returns null for a malformed hex, which
-              // falls through to the plain surface below.
-              ...(converted
-                // Pilot: one flat card. The tool's color is a pale band the
-                // tool's own intro draws across the card's top (see
-                // DoctorVisitPrep's header). Same section > div structure, so
-                // printStyles' frame rules (which zero this div's
-                // margin/padding) still apply.
-                ? { background: isDark ? '#27272a' : '#ffffff' }
-                : headerGradient(detectedTool?.headerColor, isDark)
-                  ? { background: headerGradient(detectedTool.headerColor, isDark) }
-                  : { background: isDark ? '#27272a' : '#ffffff' }),
+              // One flat card. The tool's color is a pale band the tool's own
+              // intro draws across the card's top (see DoctorVisitPrep's
+              // header). Same section > div structure, so printStyles' frame
+              // rules (which zero this div's margin/padding) still apply.
+              background: isDark ? '#27272a' : '#ffffff',
             }}>
-            <div className={converted ? `${colors.surface} p-4 sm:p-6 lg:p-8` : `${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
+            <div className={`${colors.surface} p-4 sm:p-6 lg:p-8`}>
               {children}
             </div>
           </section>
@@ -364,12 +328,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 every print-out (the print-only header above), so a second copy
                 28px from the bottom of the page was the same logo twice. The
                 URL line stays — a printed page should say where it came from. */}
-            {converted
-              // Handout pages: this line IS the attribution (no logo up top,
-              // no site footer), so it says so plainly and prints dark enough
-              // to read — the light grey version was near-invisible on paper.
-              ? <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#374151'}}>Produced by <span style={{color:'#142a43',fontWeight:'bold'}}>Deft</span><span style={{color:'#9c691c',fontWeight:'bold'}}>Brain</span>. DeftBrain.com</span>
-              : <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}>Deft<span style={{color:'#c8872e',fontWeight:'bold'}}>Brain</span> · deftbrain.com</span>}
+            {/* This line IS the attribution (no logo up top, no site footer),
+                so it says so plainly and prints dark enough to read. */}
+            <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#374151'}}>Produced by <span style={{color:'#142a43',fontWeight:'bold'}}>Deft</span><span style={{color:'#9c691c',fontWeight:'bold'}}>Brain</span>. DeftBrain.com</span>
           </div>
         </main>
 
