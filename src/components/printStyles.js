@@ -278,6 +278,10 @@ export const PRINT_CSS = `
         /* Outside a printed blank form, an input box is a control (a
            follow-up question, a search), not content — screen only. */
         [data-print-handout] [data-print-section] :is(input, textarea, select):not([data-print-form] *) { display: none !important; }
+        /* A disclosure's arrow means "click to open" — on paper it's already
+           open (ToolPageWrapper opens every <details> for the print). */
+        [data-print-handout] summary > span[aria-hidden="true"]:last-child { display: none !important; }
+        [data-print-handout] summary { list-style: none !important; }
         /* Collapsed sections still print. */
         [data-print-handout] [data-sec-body][hidden] { display: block !important; }
         /* Keep each label with what it labels. A heading never ends a page on

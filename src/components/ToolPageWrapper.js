@@ -23,7 +23,7 @@ import './ToolPageSiteStyle.css';
 // keeps its colored frame around an inner card and the standard printout, so
 // a half-done rollout never leaves a tool without its color or its print.
 // Add a tool here in the same commit that converts its file.
-const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach']);
+const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach', 'BillRescue']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -39,6 +39,23 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
   // Cmd+P and the DeftBrain Print button share one stylesheet — see printStyles.js
   useEffect(() => { ensurePrintStyles(); }, []);
+
+  // Handout printing (converted tools): a closed <details> keeps its content
+  // off paper, and no CSS reliably opens one, so open them for the print and
+  // put them back after. Only disclosures in the tool card that print at all.
+  useEffect(() => {
+    const opened = [];
+    const before = () => {
+      document.querySelectorAll('[data-print-handout] [data-print-section] details:not([open])').forEach(d => {
+        if (d.closest('[data-print-hide]')) return;
+        d.open = true; opened.push(d);
+      });
+    };
+    const after = () => { while (opened.length) opened.pop().open = false; };
+    window.addEventListener('beforeprint', before);
+    window.addEventListener('afterprint', after);
+    return () => { window.removeEventListener('beforeprint', before); window.removeEventListener('afterprint', after); };
+  }, []);
 
   // Auto-detect tool in priority order:
   let detectedTool = tool;

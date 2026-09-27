@@ -155,28 +155,30 @@ const BillRescue = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    // Site style (2026-09-27): navy for the main action, choices, views,
+    // focus and links — CONVENTIONS.md "House primary".
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-50' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
+    pillInactive:  isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'border-gray-300 text-gray-700 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Foreground text colors
     successFg:     isDark ? 'text-emerald-300' : 'text-emerald-700',
     warningFg:     isDark ? 'text-amber-300' : 'text-amber-700',
     dangerFg:      isDark ? 'text-red-300' : 'text-red-700',
     // Highlights & quotes
-    highlightBg:   isDark ? 'bg-cyan-900/30 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200',
-    highlightText: isDark ? 'text-cyan-200' : 'text-cyan-900',
+    highlightBg:   isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    highlightText: isDark ? 'text-zinc-100' : 'text-[#142a43]',
     quoteBg:       isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-slate-50 border-slate-200',
     badge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600',
     // Calendar cells
@@ -186,19 +188,19 @@ const BillRescue = ({ tool }) => {
     calendarResolved:     isDark ? 'bg-emerald-900/30 text-emerald-200 border-emerald-700' : 'bg-emerald-50 text-emerald-800 border-emerald-200',
     // Chat bubbles
     chatRep:       isDark ? 'bg-zinc-700/60 text-zinc-100' : 'bg-slate-100 text-slate-900',
-    chatUser:      isDark ? 'bg-cyan-900/30 text-cyan-100' : 'bg-cyan-50 text-cyan-900',
+    chatUser:      isDark ? 'bg-[#1f2530] text-zinc-100' : 'bg-[#eef3f8] text-[#142a43]',
     // Coach
-    coachBorder:        isDark ? 'border-cyan-700/50' : 'border-cyan-200',
+    coachBorder:        isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]',
     coachRatingGreat:   isDark ? 'text-emerald-300' : 'text-emerald-700',
     coachRatingGood:    isDark ? 'text-sky-300' : 'text-sky-700',
     coachRatingNeedsWork: isDark ? 'text-amber-300' : 'text-amber-700',
     coachRatingTryAgain:  isDark ? 'text-red-300' : 'text-red-700',
     // Misc bespoke
     dropzone:      isDark ? 'border-zinc-600 bg-zinc-900/40' : 'border-gray-300 bg-slate-50',
-    escalationNum: isDark ? 'text-cyan-300' : 'text-cyan-700',
+    escalationNum: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     hardModeBadge: isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-50 text-red-700 border-red-200',
     progressTrack: isDark ? 'bg-zinc-700' : 'bg-slate-200',
-    stepBorderL:   isDark ? 'border-s-cyan-600' : 'border-s-cyan-400',
+    stepBorderL:   isDark ? 'border-s-[#7fb3e0]' : 'border-s-[#142a43]',
     // Resolution outcomes
     resolvedAccepted: isDark ? 'text-emerald-300' : 'text-emerald-700',
     resolvedDenied:   isDark ? 'text-red-300' : 'text-red-700',
@@ -220,8 +222,8 @@ const BillRescue = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+    ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
+    : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   const billPhotoRef = useRef(null);
   const resultsRef = useRef(null);
@@ -868,7 +870,7 @@ const BillRescue = ({ tool }) => {
         { key: 'calendar', label: `📅 ${t('br_nav_calendar')}` },
         { key: 'victories', label: `🏆 ${t('br_nav_wins')}${victories.length ? ` (${totalSaved > 0 ? formatCurrency(totalSaved, userLocale, userCurrency) : victories.length})` : ''}` },
       ].map(tab => (
-        <button key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
+        <button aria-pressed={view === tab.key} key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
             view === tab.key ? c.pillActive : c.pillInactive
           }`}>{tab.label}</button>
@@ -881,15 +883,18 @@ const BillRescue = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderRescue = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      {/* The form: no box of its own (it sits right under the header band).
+          On paper it prints only as a blank form; with a result, the result
+          prints instead. */}
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* ── Tell me about the bill ── */}
-        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_about')}</p>
+        <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_about')}</p>
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_bill_type')} *</label>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type')} *</label>
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
-              <button key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border min-h-[32px] ${
+              <button aria-pressed={billType === bt.value} key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
+                className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold border min-h-[32px] ${
                   billType === bt.value ? c.pillActive : c.pillInactive}`}>
                 {bt.emoji} {t(bt.tkey)}
               </button>
@@ -898,24 +903,24 @@ const BillRescue = ({ tool }) => {
         </div>
 
         {/* ── How serious is it? — the two facts that set the verdict ── */}
-        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_serious')}</p>
+        <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_serious')}</p>
         <div className="mb-3">
           <div>
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_how_much')}</label>
+            <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_how_much')}</label>
             <div className="flex items-center gap-1">
               <span className={`text-xs font-bold ${c.textMuteded}`}>{currency}</span>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0"
-                className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`flex-1 px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
           </div>
         </div>
 
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_how_late')}</label>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_how_late')}</label>
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
-              <button key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border min-h-[28px] ${
+              <button aria-pressed={overdueStatus === os.value} key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
+                className={`px-2.5 py-1 rounded-lg text-[13px] font-bold border min-h-[28px] ${
                   overdueStatus === os.value ? c.pillActive : c.pillInactive}`}>
                 {os.emoji} {t(os.tkey)}
               </button>
@@ -928,13 +933,13 @@ const BillRescue = ({ tool }) => {
             are true changes the advice — "I'm disputing the charges" and "I'm
             scared to deal with it" lead somewhere different. It used to be a
             single choice, so the tool only ever heard one of them. */}
-        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-0.5`}>{t('br_sec_difficult')}</p>
-        <p className={`text-[10px] ${c.textMuteded} mb-1.5`}>{t('br_q_why_hard_hint')}</p>
+        <p className={`text-base font-bold ${c.text} mb-0.5`}>{t('br_sec_difficult')}</p>
+        <p className={`text-[13px] ${c.textMuteded} mb-1.5`}>{t('br_q_why_hard_hint')}</p>
         <div className="mb-5">
           <div className="flex flex-wrap gap-1.5">
             {REASONS.map(re => (
-              <button key={re.value} onClick={() => toggleReason(re.value)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border min-h-[28px] ${
+              <button aria-pressed={reason.includes(re.value)} key={re.value} onClick={() => toggleReason(re.value)}
+                className={`px-2.5 py-1 rounded-lg text-[13px] font-bold border min-h-[28px] ${
                   reason.includes(re.value) ? c.pillActive : c.pillInactive}`}>
                 {t(re.tkey)}
               </button>
@@ -953,19 +958,19 @@ const BillRescue = ({ tool }) => {
         {showMore && (
           <>
             <div className="mb-3">
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_anything_else')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_anything_else')}</label>
               <input type="text" value={details} onChange={e => setDetails(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && billType && !loading) analyze(); }}
                 placeholder={t('br_ph_details')}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div className="mb-3">
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_paste_bill')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_paste_bill')}</label>
               <textarea value={pastedBill} onChange={e => setPastedBill(e.target.value)}
                 placeholder={t('br_ph_paste_bill')}
                 rows={2}
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2 font-mono`} />
+                className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2 font-mono`} />
             </div>
           </>
         )}
@@ -973,7 +978,7 @@ const BillRescue = ({ tool }) => {
         {/* The photo stays in the open: it is the one optional input that makes
             the difference between generic advice and a line-by-line autopsy. */}
         <div className="mb-5">
-          <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_upload')}</label>
+          <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_upload')}</label>
           <input type="file" ref={billPhotoRef} accept="image/*,.heic,.heif,application/pdf" onChange={handleBillPhoto} className="hidden" />
           {billImagePreview ? (
             billImagePreview.startsWith('pdf:') ? (
@@ -981,17 +986,17 @@ const BillRescue = ({ tool }) => {
                 <span className="text-2xl flex-shrink-0">📄</span>
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-bold ${c.text} truncate`}>{billImagePreview.slice(4)}</p>
-                  <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_pdf_ready')}</p>
+                  <p className={`text-xs ${c.successFg} mt-0.5`}>✅ {t('br_pdf_ready')}</p>
                 </div>
                 <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                  className="bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center flex-shrink-0">✕</button>
+                  className="bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center flex-shrink-0">✕</button>
               </div>
             ) : (
               <div className="relative">
                 <img src={billImagePreview} alt={t('br_alt_bill')} className="w-full h-16 object-cover rounded-lg border" />
                 <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                  className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
-                <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
+                  className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">✕</button>
+                <p className={`text-xs ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
               </div>
             )
           ) : (
@@ -1002,15 +1007,15 @@ const BillRescue = ({ tool }) => {
           )}
         </div>
 
-        <p className={`text-[9px] ${c.textMuteded} mb-1`}>{t('br_privacy')}</p>
-        <p className={`text-[9px] ${c.textMuteded} mb-1`}>
+        <p className={`text-xs ${c.textMuteded} mb-1`}>{t('br_privacy')}</p>
+        <p className={`text-xs ${c.textMuteded} mb-1`}>
           {t('br_triage_hint_pre')}{' '}
-          <button onClick={() => setView('triage')} className={linkStyle + ' text-[9px]'}>{t('br_triage_hint_link')}</button>{' '}
+          <button onClick={() => setView('triage')} className={linkStyle + ' text-xs'}>{t('br_triage_hint_link')}</button>{' '}
           {t('br_triage_hint_post')}
         </p>
-        <p className={`text-[9px] ${c.textMuteded} mb-3`}>
+        <p className={`text-xs ${c.textMuteded} mb-3`}>
           {t('br_quick_hint_pre')}{' '}
-          <button onClick={() => { setView('quick'); setError(''); }} className={linkStyle + ' text-[9px]'}>{t('br_quick_hint_link')}</button>{' '}
+          <button onClick={() => { setView('quick'); setError(''); }} className={linkStyle + ' text-xs'}>{t('br_quick_hint_link')}</button>{' '}
           {t('br_quick_hint_post')}
         </p>
 
@@ -1096,7 +1101,7 @@ const BillRescue = ({ tool }) => {
         {/* Three sentences, and they know exactly where they stand. */}
         {r.recommendation?.headline && (
           <div className={`${c.highlightBg} border rounded-xl p-4`}>
-            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
+            <p className="text-xs font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
             <p className={`text-base font-black ${c.text} mb-2`}>{r.recommendation.headline}</p>
             {r.recommendation.steps?.length > 0 && (
               <ol className="space-y-1">
@@ -1120,7 +1125,7 @@ const BillRescue = ({ tool }) => {
             instruction on the page, with the words to say it one tap away. ── */}
         {r.todays_job?.action && (
           <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
-            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-1`}>🎯 {t('br_todays_job')}</p>
+            <p className={`text-[13px] font-bold ${c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-lg font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
             {r.todays_job.not_yet?.length > 0 && (
@@ -1166,7 +1171,7 @@ const BillRescue = ({ tool }) => {
                 )}
                 {r.bill_autopsy.flagged_charges?.length > 0 && (
                   <div className="space-y-2">
-                    <p className={`text-[10px] font-bold ${c.dangerFg} uppercase`}>{t('br_flagged_charges')}:</p>
+                    <p className={`text-xs font-bold ${c.dangerFg} uppercase`}>{t('br_flagged_charges')}:</p>
                     {r.bill_autopsy.flagged_charges.map((flag, i) => (
                       <div key={i} className={`${c.danger} border rounded-lg p-3`}>
                         <p className={`text-xs font-bold ${c.dangerFg}`}>{flag.charge}</p>
@@ -1189,7 +1194,7 @@ const BillRescue = ({ tool }) => {
                   {r.money_you_might_not_owe.map((right, i) => (
                     <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
-                      <p className="text-[10px] mt-1">{right.explanation}</p>
+                      <p className="text-xs mt-1">{right.explanation}</p>
                     </div>
                   ))}
                 </div>
@@ -1202,7 +1207,7 @@ const BillRescue = ({ tool }) => {
                   {r.know_your_rights.map((right, i) => (
                     <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.right}</p>
-                      <p className="text-[10px] mt-1">{right.explanation}</p>
+                      <p className="text-xs mt-1">{right.explanation}</p>
                     </div>
                   ))}
                 </div>
@@ -1219,7 +1224,7 @@ const BillRescue = ({ tool }) => {
                 <div className="space-y-4">
                   {groupByWhen(r.action_steps).map(([when, steps]) => (
                     <div key={when}>
-                      <p className={`text-[10px] font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
+                      <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
                       <div className="space-y-2">
                         {steps.map((step, i) => (
                           <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
@@ -1227,7 +1232,7 @@ const BillRescue = ({ tool }) => {
                             <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
                             {step.script && (
                               <details className="group mt-2">
-                                <summary className={`cursor-pointer text-[10px] font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
                                   {t('br_show_words')} <Caret groupOpen />
                                 </summary>
                                 <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
@@ -1252,16 +1257,16 @@ const BillRescue = ({ tool }) => {
                   <div className={`${c.success} border rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.successFg}`}>{t('br_offer')}: {r.payment_plan.offer_amount}</p>
                     {r.payment_plan.they_will_counter && (
-                      <p className="text-[10px] mt-1">{t('br_theyll_counter')}: {r.payment_plan.they_will_counter}</p>
+                      <p className="text-xs mt-1">{t('br_theyll_counter')}: {r.payment_plan.they_will_counter}</p>
                     )}
                     {r.payment_plan.accept_up_to && (
-                      <p className="text-[10px]">{t('br_accept_up_to')}: {r.payment_plan.accept_up_to}</p>
+                      <p className="text-xs">{t('br_accept_up_to')}: {r.payment_plan.accept_up_to}</p>
                     )}
                   </div>
                 )}
                 {r.payment_plan.script && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('br_propose_this')}:</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('br_propose_this')}:</p>
                     <p className={`text-xs ${c.text}`}>"{r.payment_plan.script}"</p>
                     <div className="mt-1.5"></div>
                   </div>
@@ -1274,14 +1279,14 @@ const BillRescue = ({ tool }) => {
               <Section icon="📞" title={t('br_sec_phone_script')} c={c}>
                 {r.phone_script.opening && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
+                    <p className={`text-xs font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
                     <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
                     <div className="mt-1.5"></div>
                   </div>
                 )}
                 {r.phone_script.key_phrases?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('br_magic_phrases')}:</p>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('br_magic_phrases')}:</p>
                     {r.phone_script.key_phrases.map((phrase, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1">
                         <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
@@ -1291,7 +1296,7 @@ const BillRescue = ({ tool }) => {
                 )}
                 {r.phone_script.if_they_say_no && (
                   <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.warningFg} mb-1`}>{t('br_if_they_say_no')}:</p>
+                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_say_no')}:</p>
                     <p className="text-xs">{r.phone_script.if_they_say_no}</p>
                   </div>
                 )}
@@ -1305,10 +1310,10 @@ const BillRescue = ({ tool }) => {
                 <div className="space-y-2">
                   {r.escalation_ladder.map((level, i) => (
                     <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${c.quoteBg}`}>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${c.escalationNum}`}>{i + 1}</div>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${c.escalationNum}`}>{i + 1}</div>
                       <div>
                         <p className={`text-xs font-bold ${c.text}`}>{level.who}</p>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{level.what_to_say}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{level.what_to_say}</p>
                       </div>
                     </div>
                   ))}
@@ -1322,7 +1327,7 @@ const BillRescue = ({ tool }) => {
                 <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
                 {r.collections_defense.validation_letter && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_validation_letter')}:</p>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_validation_letter')}:</p>
                     <div className={`${c.quoteBg} rounded-lg p-3 font-mono`}>
                       <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.collections_defense.validation_letter}</p>
                     </div>
@@ -1331,13 +1336,13 @@ const BillRescue = ({ tool }) => {
                 )}
                 {r.collections_defense.what_to_say_on_phone && (
                   <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.warningFg} mb-1`}>{t('br_if_they_call')}:</p>
+                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_call')}:</p>
                     <p className="text-xs">"{r.collections_defense.what_to_say_on_phone}"</p>
                   </div>
                 )}
                 {r.collections_defense.never_do?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.dangerFg} uppercase mb-1`}>{t('br_never_do')}:</p>
+                    <p className={`text-xs font-bold ${c.dangerFg} uppercase mb-1`}>{t('br_never_do')}:</p>
                     {r.collections_defense.never_do.map((item, i) => (
                       <p key={i} className={`text-xs ${c.textSecondary}`}>🚫 {item}</p>
                     ))}
@@ -1377,8 +1382,8 @@ const BillRescue = ({ tool }) => {
                   {r.assistance_programs.map((prog, i) => (
                     <div key={i} className={`${c.success} border rounded-lg p-3`}>
                       <p className={`text-xs font-bold ${c.successFg}`}>{prog.program}</p>
-                      <p className="text-[10px] mt-1">{t('br_who_qualifies')}: {prog.who_qualifies}</p>
-                      <p className="text-[10px]">{t('br_how_to_apply')}: {prog.how_to_apply}</p>
+                      <p className="text-xs mt-1">{t('br_who_qualifies')}: {prog.who_qualifies}</p>
+                      <p className="text-xs">{t('br_how_to_apply')}: {prog.how_to_apply}</p>
                     </div>
                   ))}
                 </div>
@@ -1416,7 +1421,7 @@ const BillRescue = ({ tool }) => {
               <Section icon="📅" title={t('br_sec_after_call')} c={c}>
                 {r.follow_up.document_this && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_document_now')}:</p>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_document_now')}:</p>
                     <p className={`text-xs ${c.textSecondary}`}>{r.follow_up.document_this}</p>
                   </div>
                 )}
@@ -1439,8 +1444,8 @@ const BillRescue = ({ tool }) => {
                 screens they open. These were nine pills across the top of the
                 form, before the visitor had a bill analysed or any reason to
                 want them. ── */}
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('br_next_actions')}</p>
+            <div data-print-hide className={`border-t ${c.border} pt-4`}>
+              <p className={`text-[15px] font-bold ${c.text} mb-2`}>{t('br_next_actions')}</p>
               <div className="flex flex-wrap gap-1.5">
                 <button onClick={savePlan} disabled={planSaved}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${planSaved ? c.success : c.pillInactive}`}>
@@ -1466,18 +1471,18 @@ const BillRescue = ({ tool }) => {
                 <dl className="space-y-1.5">
                   {r.todays_job?.action && (
                     <div>
-                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_today')}</dt>
+                      <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_today')}</dt>
                       <dd className={`text-xs ${c.text}`}>{r.todays_job.action}</dd>
                     </div>
                   )}
                   {nextAfterToday(r.action_steps) && (
                     <div>
-                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_next')}</dt>
+                      <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_next')}</dt>
                       <dd className={`text-xs ${c.text}`}>{nextAfterToday(r.action_steps)}</dd>
                     </div>
                   )}
                   <div>
-                    <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_remember')}</dt>
+                    <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_remember')}</dt>
                     <dd className={`text-xs ${c.text}`}>{t('br_end_remember_body')}</dd>
                   </div>
                 </dl>
@@ -1490,13 +1495,13 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
 
-            <p className={`text-[9px] ${c.textMuteded} text-center px-4`}>
+            <p className={`text-xs ${c.textMuteded} text-center px-4`}>
               {t('br_disclaimer_general')}
             </p>
 
-            {/* Post-result cross-ref */}
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('br_next_step')}</p>
+            {/* Post-result cross-ref — screen only. */}
+            <div data-print-hide className={`border-t ${c.border} pt-4`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('br_next_step')}</p>
               <div className={`flex flex-wrap gap-3 text-xs ${c.textSecondary}`}>
                 {CROSS_REFS.map(ref => (
                   <a key={ref.id} href={`/${ref.id}`} className={linkStyle}>
@@ -1515,7 +1520,7 @@ const BillRescue = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderTriage = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📊 {t('br_triage_title')}</h2>
           <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('br_triage_subtitle')}</p>
@@ -1531,23 +1536,23 @@ const BillRescue = ({ tool }) => {
             </div>
             <div className="grid grid-cols-3 gap-2">
               <select value={bill.type} onChange={e => updateTriageBill(idx, 'type', e.target.value)}
-                className={`px-2 py-1.5 border rounded-lg text-xs ${c.input}`}>
+                className={`px-2 py-1.5 border rounded-lg text-[15px] ${c.input}`}>
                 <option value="">{t('br_opt_type')}</option>
                 {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
               </select>
               <div className="flex items-center gap-0.5">
-                <span className={`text-[10px] ${c.textMuteded}`}>{currency}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{currency}</span>
                 <input ref={el => { triageBillsInputRefs.current[idx] = el; }} type="number" value={bill.amount} onChange={e => updateTriageBill(idx, 'amount', e.target.value)}
-                  placeholder={t('br_ph_amount')} className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none w-full`} />
+                  placeholder={t('br_ph_amount')} className={`flex-1 px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none w-full`} />
               </div>
               <select value={bill.overdue} onChange={e => updateTriageBill(idx, 'overdue', e.target.value)}
-                className={`px-2 py-1.5 border rounded-lg text-xs ${c.input}`}>
+                className={`px-2 py-1.5 border rounded-lg text-[15px] ${c.input}`}>
                 <option value="">{t('br_q_how_late')}</option>
                 {OVERDUE_STATUS.map(os => <option key={os.value} value={os.value}>{os.emoji} {t(os.tkey)}</option>)}
               </select>
             </div>
             <input type="text" value={bill.note} onChange={e => updateTriageBill(idx, 'note', e.target.value)}
-              placeholder={t('br_ph_notes')} className={`w-full px-2 py-1 border rounded-lg text-[10px] mt-1.5 ${c.input} outline-none`} />
+              placeholder={t('br_ph_notes')} className={`w-full px-2 py-1 border rounded-lg text-xs mt-1.5 ${c.input} outline-none`} />
           </div>
         ))}
 
@@ -1558,12 +1563,12 @@ const BillRescue = ({ tool }) => {
         )}
 
         <div className="mb-4">
-          <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_total_budget')}</label>
+          <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_total_budget')}</label>
           <div className="flex items-center gap-1">
             <span className={`text-xs font-bold ${c.textMuteded}`}>{currency}</span>
             <input type="number" value={triageBudget} onChange={e => setTriageBudget(e.target.value)}
               placeholder={t('br_ph_total_budget')}
-              className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+              className={`flex-1 px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
           </div>
         </div>
 
@@ -1593,7 +1598,7 @@ const BillRescue = ({ tool }) => {
               <div className="space-y-2">
                 <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>{t('br_priority_order')}:</p>
                 {r.priority_order.map((bill, i) => (
-                  <div key={i} className={`${c.card} border rounded-xl p-4`}>
+                  <div key={i} className={`border-t ${c.border} pt-4`}>
                     <div className="flex items-start gap-3">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${
                         bill.urgency === 'PAY NOW' ? c.urgencyNow :
@@ -1604,15 +1609,15 @@ const BillRescue = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className={`text-xs font-bold ${c.text}`}>{bill.bill}</span>
-                          <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                          <span className={`text-xs font-black px-1.5 py-0.5 rounded ${
                             bill.urgency === 'PAY NOW' ? c.danger :
                             bill.urgency === 'NEGOTIATE FIRST' ? c.warning :
                             bill.urgency === 'DISPUTE' ? c.highlightBg : c.success
                           }`}>{bill.urgency_emoji} {bill.urgency}</span>
                         </div>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{bill.why}</p>
-                        <p className={`text-[10px] font-bold ${c.highlightText} mt-1`}>→ {bill.recommended_action}</p>
-                        {bill.allocate && <p className={`text-[10px] ${c.textMuteded}`}>{t('br_budget')}: {bill.allocate}</p>}
+                        <p className={`text-xs ${c.textSecondary}`}>{bill.why}</p>
+                        <p className={`text-xs font-bold ${c.highlightText} mt-1`}>→ {bill.recommended_action}</p>
+                        {bill.allocate && <p className={`text-[13px] ${c.textMuteded}`}>{t('br_budget')}: {bill.allocate}</p>}
                       </div>
                     </div>
                   </div>
@@ -1623,13 +1628,13 @@ const BillRescue = ({ tool }) => {
             {/* Budget plan */}
             {r.budget_plan && (
               <div className={`${c.highlightBg} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('br_budget_allocation')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('br_budget_allocation')}</p>
                 <div className="grid grid-cols-3 gap-2 text-center mb-2">
-                  <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.total_monthly}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('br_budget')}</p></div>
-                  <div><p className={`text-xs font-bold ${c.highlightText}`}>{r.budget_plan.allocated}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('br_to_bills')}</p></div>
-                  <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.remaining}</p><p className={`text-[9px] ${c.textMuteded}`}>{t('br_remaining')}</p></div>
+                  <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.total_monthly}</p><p className={`text-xs ${c.textMuteded}`}>{t('br_budget')}</p></div>
+                  <div><p className={`text-xs font-bold ${c.highlightText}`}>{r.budget_plan.allocated}</p><p className={`text-xs ${c.textMuteded}`}>{t('br_to_bills')}</p></div>
+                  <div><p className={`text-xs font-bold ${c.text}`}>{r.budget_plan.remaining}</p><p className={`text-xs ${c.textMuteded}`}>{t('br_remaining')}</p></div>
                 </div>
-                {r.budget_plan.warning && <p className={`text-[10px] ${c.warningFg}`}>⚠️ {r.budget_plan.warning}</p>}
+                {r.budget_plan.warning && <p className={`text-xs ${c.warningFg}`}>⚠️ {r.budget_plan.warning}</p>}
               </div>
             )}
 
@@ -1646,7 +1651,7 @@ const BillRescue = ({ tool }) => {
             )}
 
             {r.strategy && (
-              <div className={`${c.card} border rounded-xl p-4`}>
+              <div className={`border-t ${c.border} pt-4`}>
                 <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_overall_strategy')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{r.strategy}</p>
               </div>
@@ -1657,7 +1662,7 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
 
-            <p className={`text-[9px] ${c.textMuteded} text-center px-4`}>
+            <p className={`text-xs ${c.textMuteded} text-center px-4`}>
               {t('br_disclaimer_counselor')}
             </p>
           </div>
@@ -1671,7 +1676,7 @@ const BillRescue = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderTracker = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📋 {t('br_tracker_title')}</h2>
           <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('br_tracker_subtitle')}</p>
@@ -1680,7 +1685,7 @@ const BillRescue = ({ tool }) => {
         {/* Upcoming follow-ups */}
         {upcomingFollowUps.length > 0 && (
           <div className={`${c.warning} border rounded-xl p-3 mb-4`}>
-            <p className={`text-[10px] font-bold ${c.warningFg} uppercase mb-1`}>{t('br_upcoming_followups')}</p>
+            <p className={`text-xs font-bold ${c.warningFg} uppercase mb-1`}>{t('br_upcoming_followups')}</p>
             {upcomingFollowUps.map((fu, i) => (
               <p key={i} className="text-xs">📅 {new Date(fu.nextFollowUp).toLocaleDateString()} — {fu.agreed || fu.notes || t('br_follow_up')}</p>
             ))}
@@ -1697,27 +1702,27 @@ const BillRescue = ({ tool }) => {
                       <span>{billTypeEmoji(plan.billType)}</span>
                       <span className={`text-xs font-bold ${c.text}`}>{billTypeLabel(plan.billType, t)}</span>
                       {plan.amount && <span className={`text-xs ${c.highlightText}`}>{plan.currency}{plan.amount}</span>}
-                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                      <span className={`text-xs font-black px-1.5 py-0.5 rounded ${
                         plan.status === 'resolved' ? c.success :
                         plan.status === 'in_progress' ? c.warning : c.highlightBg
                       }`}>{plan.status === 'resolved' ? `✅ ${t('br_status_resolved')}` : plan.status === 'in_progress' ? `🔄 ${t('br_status_in_progress')}` : <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🧾'}</span> {t('br_status_pending')}</>}</span>
                     </div>
-                    <p className={`text-[9px] ${c.textMuteded}`}>{new Date(plan.date).toLocaleDateString()}</p>
+                    <p className={`text-xs ${c.textMuteded}`}>{new Date(plan.date).toLocaleDateString()}</p>
                     {(plan.results?.todays_job?.action || plan.results?.shame_to_action?.micro_step) && (
-                      <p className={`text-[10px] ${c.textSecondary} mt-0.5 truncate`}>🎯 {plan.results.todays_job?.action || plan.results.shame_to_action.micro_step}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-0.5 truncate`}>🎯 {plan.results.todays_job?.action || plan.results.shame_to_action.micro_step}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     {plan.status !== 'resolved' && (
                       <select value={plan.status} onChange={e => updatePlanStatus(plan.id, e.target.value)}
-                        className={`px-1.5 py-0.5 border rounded text-[9px] ${c.input}`}>
+                        className={`px-1.5 py-0.5 border rounded text-xs ${c.input}`}>
                         <option value="pending">{t('br_status_pending')}</option>
                         <option value="in_progress">{t('br_status_in_progress')}</option>
                         <option value="resolved">{t('br_status_resolved')}</option>
                       </select>
                     )}
                     <button onClick={() => { setLogPlanId(plan.id); setView('log'); }}
-                      className={`${c.btnSecondary} px-2 py-1 rounded text-[9px] font-bold min-h-[24px]`}>📞 {t('br_nav_log')}</button>
+                      className={`${c.btnSecondary} px-2 py-1 rounded text-xs font-bold min-h-[24px]`}>📞 {t('br_nav_log')}</button>
                     <button onClick={() => removePlan(plan.id)} className={`text-xs ${c.dangerFg} min-h-[24px]`}>✕</button>
                   </div>
                 </div>
@@ -1758,7 +1763,7 @@ const BillRescue = ({ tool }) => {
     };
     return (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📞 {t('br_log_title')}</h2>
           <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('br_log_subtitle')}</p>
@@ -1766,7 +1771,7 @@ const BillRescue = ({ tool }) => {
 
         {/* Log form */}
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_what_happened')}</label>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_what_happened')}</label>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {[
               { value: 'accepted', label: `✅ ${t('br_oc_accepted')}` },
@@ -1777,8 +1782,8 @@ const BillRescue = ({ tool }) => {
               { value: 'callback', label: `📞 ${t('br_oc_callback')}` },
               { value: 'sent_letter', label: `📝 ${t('br_oc_sent_letter')}` },
             ].map(o => (
-              <button key={o.value} onClick={() => setLogOutcome(o.value === logOutcome ? '' : o.value)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border min-h-[28px] ${
+              <button aria-pressed={logOutcome === o.value} key={o.value} onClick={() => setLogOutcome(o.value === logOutcome ? '' : o.value)}
+                className={`px-2.5 py-1 rounded-lg text-[13px] font-bold border min-h-[28px] ${
                   logOutcome === o.value ? c.pillActive : c.pillInactive}`}>
                 {o.label}
               </button>
@@ -1787,35 +1792,35 @@ const BillRescue = ({ tool }) => {
 
           <div className="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_rep_name')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_rep_name')}</label>
               <input type="text" value={logRepName} onChange={e => setLogRepName(e.target.value)}
-                placeholder={t('br_ph_rep_name')} className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                placeholder={t('br_ph_rep_name')} className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_conf_num')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_conf_num')}</label>
               <input type="text" value={logConfNum} onChange={e => setLogConfNum(e.target.value)}
-                placeholder={t('br_ph_conf_num')} className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                placeholder={t('br_ph_conf_num')} className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
           </div>
 
           <div className="mb-2">
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_what_agreed')}</label>
+            <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_what_agreed')}</label>
             <input type="text" value={logAgreed} onChange={e => setLogAgreed(e.target.value)}
               placeholder={t('br_ph_agreed', { sym })}
-              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+              className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div>
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_notes')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_notes')}</label>
               <input type="text" value={logNotes} onChange={e => setLogNotes(e.target.value)}
                 placeholder={t('br_ph_log_notes')}
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_next_followup')}</label>
+              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_next_followup')}</label>
               <input type="date" value={logNextDate} onChange={e => setLogNextDate(e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
           </div>
 
@@ -1828,7 +1833,7 @@ const BillRescue = ({ tool }) => {
 
       {/* Past logs */}
       {callLogs.length > 0 && (
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-3`}>{t('br_past_calls')} ({callLogs.length})</p>
           <div className="space-y-2">
             {callLogs.map(log => (
@@ -1836,18 +1841,18 @@ const BillRescue = ({ tool }) => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                      <span className={`text-xs font-black px-1.5 py-0.5 rounded ${
                         log.outcome === 'accepted' || log.outcome === 'settled' ? c.success :
                         log.outcome === 'denied' ? c.danger : c.warning
                       }`}>{outcomeLabel(log.outcome)}</span>
-                      {log.repName && <span className={`text-[10px] ${c.textSecondary}`}>{t('br_with')} {log.repName}</span>}
+                      {log.repName && <span className={`text-xs ${c.textSecondary}`}>{t('br_with')} {log.repName}</span>}
                     </div>
                     {log.agreed && <p className={`text-xs ${c.text}`}>🤝 {log.agreed}</p>}
-                    {log.confirmationNumber && <p className={`text-[10px] ${c.highlightText}`}># {log.confirmationNumber}</p>}
-                    {log.notes && <p className={`text-[10px] ${c.textMuteded}`}>{log.notes}</p>}
+                    {log.confirmationNumber && <p className={`text-xs ${c.highlightText}`}># {log.confirmationNumber}</p>}
+                    {log.notes && <p className={`text-[13px] ${c.textMuteded}`}>{log.notes}</p>}
                     <div className="flex items-center gap-3 mt-0.5">
-                      <p className={`text-[9px] ${c.textMuteded}`}>{new Date(log.date).toLocaleDateString()}</p>
-                      {log.nextFollowUp && <p className={`text-[9px] ${c.warningFg}`}>📅 {t('br_follow_up')}: {new Date(log.nextFollowUp).toLocaleDateString()}</p>}
+                      <p className={`text-xs ${c.textMuteded}`}>{new Date(log.date).toLocaleDateString()}</p>
+                      {log.nextFollowUp && <p className={`text-xs ${c.warningFg}`}>📅 {t('br_follow_up')}: {new Date(log.nextFollowUp).toLocaleDateString()}</p>}
                     </div>
                   </div>
                   <button onClick={() => removeLog(log.id)} className={`text-xs ${c.dangerFg} flex-shrink-0 min-h-[24px]`}>✕</button>
@@ -1879,32 +1884,32 @@ const BillRescue = ({ tool }) => {
     };
     return (
       <div className="space-y-4">
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ {t('br_quick_title')}</h3>
           <p className={`text-xs ${c.textMuteded} mb-4`}>{t('br_quick_subtitle')}</p>
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_whats_charge')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_whats_charge')} <span className={c.required}>*</span></label>
               <input value={qcCharge} onChange={e => setQcCharge(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && qcCharge.trim() && !loading) runQuickCheck(); }}
                 placeholder={t('br_ph_charge', { sym })}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
                 <select value={qcType} onChange={e => setQcType(e.target.value)}
-                  className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                  className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_opt_any')}</option>
                   {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_amount')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
                 <input type="number" value={qcAmount} onChange={e => setQcAmount(e.target.value)} placeholder={t('br_opt_optional')}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                  className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
             </div>
 
@@ -1922,20 +1927,20 @@ const BillRescue = ({ tool }) => {
               <span className="text-2xl">{qcResults.verdict_emoji}</span>
               <span className="text-base font-black tracking-tight">{qcResults.verdict}</span>
               {qcResults.confidence && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.badge} font-bold`}>{qcResults.confidence} {t('br_confidence')}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded ${c.badge} font-bold`}>{qcResults.confidence} {t('br_confidence')}</span>
               )}
             </div>
             <p className="text-sm mb-3">{qcResults.why}</p>
 
             {qcResults.typical_range && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_typical_range')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_typical_range')}</p>
                 <p className="text-xs">{qcResults.typical_range}</p>
               </div>
             )}
             {qcResults.best_phrase && (
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_best_phrase')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_best_phrase')}</p>
                 <p className="text-xs font-bold italic">"{qcResults.best_phrase}"</p>
                 <div className="mt-2"></div>
               </div>
@@ -1965,31 +1970,31 @@ const BillRescue = ({ tool }) => {
     };
     return (
       <div className="space-y-4">
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>🎭 {t('br_rehearse_title')}</h3>
           <p className={`text-xs ${c.textMuteded} mb-4`}>{t('br_rehearse_subtitle')}</p>
 
           {!rhActive ? (
             <div className="space-y-3">
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_situation')} <span className={c.required}>*</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_situation')} <span className={c.required}>*</span></label>
                 <textarea rows={3} value={rhSituation} onChange={e => setRhSituation(e.target.value)}
                   placeholder={t('br_ph_situation', { sym })}
-                  className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                  className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
               </div>
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                  <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
                   <select value={rhType} onChange={e => setRhType(e.target.value)}
-                    className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                    className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                     <option value="">{t('br_opt_any')}</option>
                     {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_difficulty')}</label>
+                  <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_difficulty')}</label>
                   <select value={rhDifficulty} onChange={e => setRhDifficulty(e.target.value)}
-                    className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                    className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                     <option value="normal">{t('br_diff_normal')}</option>
                     <option value="hard">{t('br_diff_hard')}</option>
                   </select>
@@ -2000,7 +2005,7 @@ const BillRescue = ({ tool }) => {
                 <label htmlFor="br-rh-message" className="sr-only">{t('br_opening_line')}</label>
                 <input id="br-rh-message" value={rhMessage} onChange={e => setRhMessage(e.target.value)}
                   placeholder={t('br_ph_opening_line')}
-                  className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                  className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
               </div>
               <button onClick={startRehearsal} disabled={loading || !rhSituation.trim()}
                 className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -2012,7 +2017,7 @@ const BillRescue = ({ tool }) => {
             <div className="space-y-3">
               {/* Difficulty badge */}
               <div className="flex items-center justify-between">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${rhDifficulty === 'hard' ? c.hardModeBadge : c.badge}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${rhDifficulty === 'hard' ? c.hardModeBadge : c.badge}`}>
                   {rhDifficulty === 'hard' ? `🔥 ${t('br_hard_mode')}` : `📞 ${t('br_normal_mode')}`}
                 </span>
                 <button onClick={resetRehearsal} className={`text-xs ${c.textMuteded} underline min-h-[28px]`}>{t('br_end_call')}</button>
@@ -2024,7 +2029,7 @@ const BillRescue = ({ tool }) => {
                   <div key={i} className={`text-xs ${msg.role === 'user' ? 'text-end' : 'text-start'}`}>
                     {msg.role === 'user' ? (
                       <div className="inline-block">
-                        <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>{t('br_you')}:</span>
+                        <span className={`text-xs font-bold ${c.textSecondary} block mb-0.5`}>{t('br_you')}:</span>
                         <div className={`inline-block px-3 py-2 rounded-lg ${c.chatUser}`}>
                           {msg.content}
                         </div>
@@ -2032,13 +2037,13 @@ const BillRescue = ({ tool }) => {
                     ) : msg.parsed ? (
                       <div className="space-y-2">
                         <div>
-                          <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>{t('br_rep')} ({msg.parsed.rep_tone || 'neutral'}):</span>
+                          <span className={`text-xs font-bold ${c.textSecondary} block mb-0.5`}>{t('br_rep')} ({msg.parsed.rep_tone || 'neutral'}):</span>
                           <div className={`inline-block px-3 py-2 rounded-lg text-start ${c.chatRep}`}>
                             {msg.parsed.rep_response}
                           </div>
                         </div>
                         <div className={`border-s-2 ps-2 ${c.coachBorder}`}>
-                          <span className={`text-[10px] font-bold ${getRatingClass(msg.parsed.coach_rating)}`}>
+                          <span className={`text-xs font-bold ${getRatingClass(msg.parsed.coach_rating)}`}>
                             🎯 {t('br_coach')} ({msg.parsed.coach_rating}):
                           </span>
                           <p className={`text-xs ${c.textMuteded}`}>{msg.parsed.coach_feedback}</p>
@@ -2049,7 +2054,7 @@ const BillRescue = ({ tool }) => {
                           <div className={`flex-1 h-1.5 rounded ${c.progressTrack}`}>
                               <div className="h-full rounded bg-green-500 transition-all" style={{ width: `${msg.parsed.negotiation_progress}%` }} />
                             </div>
-                            <span className="text-[10px] font-bold">{msg.parsed.negotiation_progress}%</span>
+                            <span className="text-xs font-bold">{msg.parsed.negotiation_progress}%</span>
                           </div>
                         )}
                         {msg.parsed.is_resolved && (
@@ -2074,7 +2079,7 @@ const BillRescue = ({ tool }) => {
                   <input value={rhMessage} onChange={e => setRhMessage(e.target.value)}
                     placeholder={t('br_ph_what_say')}
                     onKeyDown={e => e.key === 'Enter' && !loading && rhMessage.trim() && continueRehearsal()}
-                    className={`flex-1 px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                    className={`flex-1 px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
                   <button onClick={continueRehearsal} disabled={loading || !rhMessage.trim()}
                     className={`${c.btnPrimary} disabled:opacity-40 px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
                     {t('br_send')}
@@ -2115,16 +2120,16 @@ const BillRescue = ({ tool }) => {
     ];
     return (
       <div className="space-y-4">
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>✉️ {t('br_letters_title')}</h3>
           <p className={`text-xs ${c.textMuteded} mb-4`}>{t('br_letters_subtitle')}</p>
 
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_letter_type')} *</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_letter_type')} *</label>
               <div className="grid grid-cols-1 gap-1.5">
                 {LETTER_TYPES.map(lt => (
-                  <button key={lt.value} onClick={() => setLtType(lt.value)}
+                  <button aria-pressed={ltType === lt.value} key={lt.value} onClick={() => setLtType(lt.value)}
                     className={`text-start px-3 py-2 rounded-lg border text-xs transition-colors min-h-[36px] ${
                       ltType === lt.value ? c.pillActive : c.pillInactive
                     }`}>
@@ -2137,34 +2142,34 @@ const BillRescue = ({ tool }) => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
                 <select value={ltBillType} onChange={e => setLtBillType(e.target.value)}
-                  className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                  className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_opt_any')}</option>
                   {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_amount')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
                 <input type="number" value={ltAmount} onChange={e => setLtAmount(e.target.value)} placeholder={t('br_opt_optional')}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                  className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_your_situation')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_your_situation')}</label>
               <textarea rows={3} value={ltSituation} onChange={e => setLtSituation(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && ltType && !loading) generateLetter(); }}
                 placeholder={t('br_ph_lt_situation')}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_additional_context')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_additional_context')}</label>
               <input value={ltContext} onChange={e => setLtContext(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && ltType && !loading) generateLetter(); }}
                 placeholder={t('br_ph_lt_context')}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <button onClick={generateLetter} disabled={loading || !ltType}
@@ -2176,7 +2181,7 @@ const BillRescue = ({ tool }) => {
         </div>
 
         {ltResults && (
-          <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold">{ltResults.letter_title}</h3>
             </div>
@@ -2184,7 +2189,7 @@ const BillRescue = ({ tool }) => {
 
             {ltResults.send_to && (
               <div className={`${c.highlightBg} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('br_send_to')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_send_to')}</p>
                 <p className="text-xs">{ltResults.send_to}</p>
                 {ltResults.send_via && <p className="text-xs mt-1">📨 {t('br_via')}: <strong>{ltResults.send_via}</strong></p>}
               </div>
@@ -2196,19 +2201,19 @@ const BillRescue = ({ tool }) => {
 
             {ltResults.important_notes?.length > 0 && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>⚠️ {t('br_before_send')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>⚠️ {t('br_before_send')}</p>
                 {ltResults.important_notes.map((n, i) => <p key={i} className="text-xs mb-1">• {n}</p>)}
               </div>
             )}
 
             {ltResults.follow_up && (
               <div className={`${c.card} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('br_after_sending')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>📅 {t('br_after_sending')}</p>
                 <p className="text-xs">{ltResults.follow_up}</p>
               </div>
             )}
 
-            <p className={`text-[9px] ${c.textMuteded} text-center`}>
+            <p className={`text-xs ${c.textMuteded} text-center`}>
               {t('br_disclaimer_lawyer')}
             </p>
           </div>
@@ -2244,7 +2249,7 @@ const BillRescue = ({ tool }) => {
 
     return (
       <div className="space-y-4">
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>📅 {t('br_calendar_title')}</h3>
           <p className={`text-xs ${c.textMuteded} mb-4`}>{t('br_calendar_subtitle')}</p>
 
@@ -2260,15 +2265,15 @@ const BillRescue = ({ tool }) => {
               <div className="flex gap-3">
                 <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarOverdue}`}>
                   <p className="text-lg font-black">{overdueItems.length}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{t('br_overdue')}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{t('br_overdue')}</p>
                 </div>
                 <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarUpcoming}`}>
                   <p className="text-lg font-black">{upcomingItems.length}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{t('br_upcoming')}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{t('br_upcoming')}</p>
                 </div>
                 <div className={`flex-1 text-center py-3 rounded-lg border ${c.calendarResolved}`}>
                   <p className="text-lg font-black">{savedPlans.filter(p => p.status === 'resolved').length}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{t('br_status_resolved')}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{t('br_status_resolved')}</p>
                 </div>
               </div>
 
@@ -2280,7 +2285,7 @@ const BillRescue = ({ tool }) => {
                     <div key={it.id} className="flex items-center gap-2 text-xs mb-1.5">
                       <span>{it.type === 'followup' ? '📞' : '⚠️'}</span>
                       <span className="flex-1">{it.label}</span>
-                      <span className={`${c.textMuteded} text-[10px]`}>{formatDate(it.date)}</span>
+                      <span className={`${c.textMuteded} text-xs`}>{formatDate(it.date)}</span>
                     </div>
                   ))}
                 </div>
@@ -2289,14 +2294,14 @@ const BillRescue = ({ tool }) => {
               {/* Upcoming */}
               {upcomingItems.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('br_upcoming')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('br_upcoming')}</p>
                   <div className="space-y-1.5">
                     {upcomingItems.map(it => (
                       <div key={it.id} className={`${c.card} border rounded-lg px-3 py-2 flex items-center gap-2 text-xs`}>
                         <span>{it.type === 'followup' ? '📞' : '📄'}</span>
                         <span className="flex-1">{it.label}</span>
-                        <span className={`${c.textMuteded} text-[10px]`}>{formatDate(it.date)}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                        <span className={`${c.textMuteded} text-xs`}>{formatDate(it.date)}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${
                           it.status === 'resolved' ? c.statusResolved
                           : it.status === 'in_progress' ? c.statusInProgress
                           : c.badge
@@ -2312,8 +2317,8 @@ const BillRescue = ({ tool }) => {
 
         {/* Monthly total */}
         {savedPlans.length > 0 && (
-          <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('br_monthly_obligations')}</p>
+          <div className={`border-t ${c.border} pt-4`}>
+            <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('br_monthly_obligations')}</p>
             <p className="text-xl font-black">
               {formatCurrency(savedPlans.reduce((sum, p) => sum + (Number(p.amount) || 0), 0), userLocale, userCurrency)}
             </p>
@@ -2352,7 +2357,7 @@ const BillRescue = ({ tool }) => {
     return (
       <div className="space-y-4">
         {/* Hero stat */}
-        <div className={`${c.card} border rounded-xl p-5 text-center`}>
+        <div className={`border-t ${c.border} pt-5 text-center`}>
           <p className="text-3xl mb-1">🏆</p>
           <p className={`text-3xl font-black ${c.text}`}>{totalSaved > 0 ? formatCurrency(totalSaved, userLocale, userCurrency) : victories.length > 0 ? t('br_wins_count', { count: victories.length }) : t('br_no_wins_yet')}</p>
           <p className={`text-xs ${c.textMuteded} mt-1`}>{totalSaved > 0 ? t('br_saved_across', { count: victories.length }) : t('br_start_fighting')}</p>
@@ -2364,7 +2369,7 @@ const BillRescue = ({ tool }) => {
         </div>
 
         {/* Add a win */}
-        <div className={`${c.card} border rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('br_log_a_win')}</h3>
           <div className="space-y-3">
             <div>
@@ -2372,18 +2377,18 @@ const BillRescue = ({ tool }) => {
               <label htmlFor="br-victory-text" className="sr-only">{t('br_win_description')}</label>
               <input id="br-victory-text" value={vicText} onChange={e => setVicText(e.target.value)}
                 placeholder={t('br_ph_victory', { sym })}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+                className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_saved_label')} ({currency})</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_saved_label')} ({currency})</label>
                 <input type="number" value={vicAmount} onChange={e => setVicAmount(e.target.value)} placeholder="0"
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                  className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_type')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_type')}</label>
                 <select value={vicType} onChange={e => setVicType(e.target.value)}
-                  className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
+                  className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_pick_one')}</option>
                   {WIN_TYPES.map(wt => <option key={wt.value} value={wt.value}>{wt.emoji} {wt.label}</option>)}
                 </select>
@@ -2398,8 +2403,8 @@ const BillRescue = ({ tool }) => {
 
         {/* Win list */}
         {victories.length > 0 && (
-          <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>{t('br_your_victories')}</p>
+          <div className={`border-t ${c.border} pt-4`}>
+            <p className={`text-[13px] font-bold ${c.textSecondary} mb-3`}>{t('br_your_victories')}</p>
             <div className="space-y-2">
               {victories.map(v => (
                 <div key={v.id} className={`flex items-start gap-2 px-3 py-2 rounded-lg border ${c.card} text-xs`}>
@@ -2411,7 +2416,7 @@ const BillRescue = ({ tool }) => {
                       <span className={c.textMuteded}>{new Date(v.date).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  <button onClick={() => removeVictory(v.id)} className={`${c.dangerFg} text-[10px] min-h-[24px]`}>✕</button>
+                  <button onClick={() => removeVictory(v.id)} className={`${c.dangerFg} text-xs min-h-[24px]`}>✕</button>
                 </div>
               ))}
             </div>
@@ -2431,14 +2436,23 @@ const BillRescue = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── Tool header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      {/* Site style (2026-09-27): no card of its own. It bleeds to the edges
+          of the page's tool card on a pale band of the tool's color (negative
+          margins = the wrapper's padding; the card clips the corners), the
+          pale ground the "Try an example" pill was designed for (PF-17c).
+          Holds the view tabs too. Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-4"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="pb-3">
           <div className="flex items-start justify-between">
             {/* PF-30: the wrapper already renders the tool's name as the page
                 <h1>, so an <h2> repeating it made the visitor read it twice
                 before reaching an input. The icon moves onto the tagline. */}
             <div className="min-w-0">
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
               </p>
               {!results && (
@@ -2478,7 +2492,7 @@ const BillRescue = ({ tool }) => {
           the visitor and the form. Sitting above the inputs it read as a
           suggestion to leave before they had done anything. */}
       {view === 'rescue' && !results && (
-        <p className={`text-xs text-center ${c.textMuted} mt-3`}>
+        <p data-print-hide className={`text-[13px] text-center ${c.textMuted} mt-3`}>
           {t('br_subsweep_pre')}{' '}
           <a href="/MarkupDetective" className={linkStyle}>🏷️ {t('br_xref_subsweep')}</a>{' '}
           {t('br_subsweep_post')}
@@ -2506,17 +2520,20 @@ BillRescue.displayName = 'BillRescue';
 function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
   const ui = (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
+    // Site style: a heading over a rule, not a card (the page's tool card is
+    // the box). Prints whether open or closed (data-print-heading /
+    // data-sec-body, printStyles).
+    <div className={`border-t ${c.border}`}>
+      <button data-print-heading onClick={() => setOpen(p => !p)}
+        className="w-full py-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
-          {icon && <span className="text-sm">{icon}</span>}
-          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.highlightBg}`}>{badge}</span>}
+          {icon && <span className="text-base">{icon}</span>}
+          <h3 className={`text-base font-bold ${c.text}`}>{title}</h3>
+          {badge && <span className={`text-xs font-black px-2 py-0.5 rounded ${badgeColor || c.highlightBg}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
+      <div data-sec-body hidden={!open} className="pb-5 space-y-3">{children}</div>
     </div>
   );
   return ui;
