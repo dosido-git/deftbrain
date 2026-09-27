@@ -323,7 +323,7 @@ const buildC = (isDark) => ({
   border:        isDark ? 'border-zinc-700' : 'border-gray-200',
   borderWarm:    isDark ? 'border-amber-700/40' : 'border-amber-200',
   input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-amber-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-amber-500',
-  btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+  btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
   btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
   tag:           isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
   success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -341,7 +341,7 @@ const buildC = (isDark) => ({
 
   warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
   labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-  accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+  accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
   required:      isDark ? 'text-amber-400' : 'text-amber-700',
   deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   cardAltInset:  isDark ? 'bg-zinc-700/30' : 'bg-slate-50',
@@ -1286,7 +1286,7 @@ async function decrypt(){
         {CHAPTERS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= currentChapter ? c.progressDone : c.progressPend}`} />)}
       </div>
       <div className="flex items-center gap-3 mt-3">
-        <span className={`text-xs ${c.textMuteded}`}>{t('fws_auto_saved')}</span>
+        <span className={`text-[13px] ${c.textMuteded}`}>{t('fws_auto_saved')}</span>
         <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
           className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_ai_interview_nav')}</button>
       </div>
@@ -1332,12 +1332,19 @@ async function decrypt(){
   // SCREEN: WELCOME
   // ══════════════════════════════════════════
   const renderWelcome = () => (
-    <div className={`space-y-4 ${c.text}`}>
+    <div data-print-form className={`space-y-4 ${c.text}`}>
       {renderToasts()}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
-        <div className="pb-3 border-b border-zinc-500">
+      {/* Site style (2026-09-27): a pale band of the tool's color bleeding to
+          the card edges, the ground the "Try an example" pill was made for
+          (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
           </p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1364,16 +1371,16 @@ async function decrypt(){
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_your_name')}</label>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_your_name')}</label>
           <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder={t('fws_ph_your_name')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_primary_person')} <span className={c.required}>*</span></label>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_primary_person')} <span className={c.required}>*</span></label>
           <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
             placeholder={t('fws_ph_primary_person')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
-          <p className={`text-xs ${c.textMuteded} mt-1.5`}>{t('fws_primary_person_hint')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>{t('fws_primary_person_hint')}</p>
         </div>
         {trustedPeople.filter(p => p.role !== 'primary').map(tp => (
           <div key={tp.id} className="flex gap-2">
@@ -1383,7 +1390,7 @@ async function decrypt(){
           </div>
         ))}
         <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_another_person')}</button>
-        {trustedPeople.length > 1 && <p className={`text-xs ${c.textMuteded}`}>{t('fws_multiple_people_hint')}</p>}
+        {trustedPeople.length > 1 && <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_multiple_people_hint')}</p>}
       </div>
 
       <div className="flex justify-center mb-4">
@@ -1396,7 +1403,7 @@ async function decrypt(){
           as a preview rather than a lock. */}
       {!trustedPerson.trim() ? (
         <div className={`mb-4 p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-          <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>{t('fws_preview_title')}</p>
+          <p className={`text-[13px] font-bold ${c.textSecondary} mb-3`}>{t('fws_preview_title')}</p>
           <ul className={`space-y-2 text-sm ${c.text}`}>
             {CHAPTERS.filter(ch => ch.previewKey).map(ch => (
               <li key={ch.id} className="flex items-start gap-2.5">
@@ -1404,7 +1411,7 @@ async function decrypt(){
               </li>
             ))}
           </ul>
-          <p className={`text-xs ${c.textMuteded} mt-4`}>{t('fws_preview_cta')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-4`}>{t('fws_preview_cta')}</p>
         </div>
       ) : null}
 
@@ -1412,7 +1419,7 @@ async function decrypt(){
         <button title={t('cmd_enter')} onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
           className={`group relative p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_guide_title')}</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_guide_desc')}</p>
+          <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_guide_desc')}</p>
           {trustedPerson.trim() && (
             <kbd aria-hidden="true"
               className={`hidden sm:flex items-center absolute end-3 top-3 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide ${c.border} ${c.textMuteded}`}>
@@ -1423,36 +1430,36 @@ async function decrypt(){
         <button onClick={() => { setScreen('interview'); askNextQuestion(); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🧠</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_interview_title')}</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_interview_desc')}</p>
+          <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_interview_desc')}</p>
         </button>
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>✏️</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_know_title')}</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_know_desc')}</p>
+          <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_know_desc')}</p>
         </button>
         <button onClick={() => setScreen('emergency')} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_emergency_title')}</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
+          <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
       </div>
-      <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
+      <div data-print-hide className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between">
-          <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_annual_review_title')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_annual_review_desc')}</p></div>
+          <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_annual_review_title')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('fws_annual_review_desc')}</p></div>
           <label className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>{t('fws_import_backup')}
             <input ref={fileInputRef} type="file" accept=".json" onChange={importJSON} className="hidden" />
           </label>
         </div>
       </div>
 
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fws_related_tools')}</p>
+      <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('fws_related_tools')}</p>
         <div className="flex flex-wrap gap-3">
           <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>
           <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>{t('fws_xref_decision_coach')}</a>
         </div>
       </div>
-      <p className={`text-xs ${c.textMuteded} mt-6 text-center`}>{t('fws_not_legal')}</p>
+      <p className={`text-[13px] ${c.textMuteded} mt-6 text-center`}>{t('fws_not_legal')}</p>
     </div>
   );
 
@@ -1472,8 +1479,8 @@ async function decrypt(){
       {/* Interview progress */}
       <div className={`flex items-center gap-3 mb-5 p-3 rounded-xl ${c.cardAltInset}`}>
         <span className={`text-xs font-bold ${c.textSecondary}`}>{t('fws_questions_answered', { n: interviewHistory.length })}</span>
-        <span className={`text-xs ${c.textMuteded}`}>·</span>
-        <span className={`text-xs ${c.textMuteded}`}>{t('fws_interview_stats', { accounts: accounts.length, financial: financialAccounts.length, messages: messages.filter(m => m.hasDraft).length })}</span>
+        <span className={`text-[13px] ${c.textMuteded}`}>·</span>
+        <span className={`text-[13px] ${c.textMuteded}`}>{t('fws_interview_stats', { accounts: accounts.length, financial: financialAccounts.length, messages: messages.filter(m => m.hasDraft).length })}</span>
       </div>
 
       {/* History */}
@@ -1481,7 +1488,7 @@ async function decrypt(){
         <div className="space-y-3 mb-5">
           {interviewHistory.slice(-5).map((h, i) => (
             <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
-              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('fws_interview_q_prefix', { question: h.question })}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('fws_interview_q_prefix', { question: h.question })}</p>
               <p className={`text-sm ${c.text}`}>{h.answer}</p>
             </div>
           ))}
@@ -1493,7 +1500,7 @@ async function decrypt(){
       {currentInterviewQ && (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <label htmlFor="fw-interview-answer" className={`block text-sm font-semibold ${c.textWarm} mb-1`}>{currentInterviewQ.question} <span className={c.required}>*</span></label>
-          {currentInterviewQ.reasoning && <p className={`text-xs ${c.textMuteded} mb-3`}>{currentInterviewQ.reasoning}</p>}
+          {currentInterviewQ.reasoning && <p className={`text-[13px] ${c.textMuteded} mb-3`}>{currentInterviewQ.reasoning}</p>}
           <textarea id="fw-interview-answer" value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
             placeholder={t('fws_ph_your_answer')} rows={3}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
@@ -1533,7 +1540,7 @@ async function decrypt(){
         <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_emergency_intro', { name: tp })}</p>
 
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-          <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>{t('fws_emergency_critical_heading')}</h3>
+          <h3 className={`text-base font-bold ${c.textWarm} mb-2`}>{t('fws_emergency_critical_heading')}</h3>
           <label htmlFor="fw-emergency-dump" className={`block text-xs ${c.textWarm} mb-1.5`}>{t('fws_emergency_list_label', { name: tp })} <span className={c.required}>*</span></label>
           <textarea id="fw-emergency-dump" value={emergencyDump} onChange={e => setEmergencyDump(e.target.value)}
             placeholder={t('fws_ph_emergency_dump')}
@@ -1553,7 +1560,7 @@ async function decrypt(){
             <div className="mt-3 space-y-1">
               {accounts.map(a => (
                 <div key={a.id} className={`flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border}`}>
-                  <span className={`text-sm ${c.text}`}>{a.name}</span><span className={`text-xs ${c.textMuteded}`}>{a.accessNotes}</span>
+                  <span className={`text-sm ${c.text}`}>{a.name}</span><span className={`text-[13px] ${c.textMuteded}`}>{a.accessNotes}</span>
                 </div>
               ))}
             </div>
@@ -1561,9 +1568,9 @@ async function decrypt(){
         </div>
 
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
-          <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('fws_emergency_contacts')}</h3>
+          <div className="flex items-center justify-between mb-3"><h3 className={`text-base font-bold ${c.text}`}>{t('fws_emergency_contacts')}</h3>
             <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_add')}</button></div>
-          {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded}`}>{t('fws_add_key_contacts')}</p>}
+          {emergencyContacts.length === 0 && <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_add_key_contacts')}</p>}
           {emergencyContacts.map((ec, i) => (
             <div key={ec.id} className="flex gap-2 mb-2">
               <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder={t('fws_ph_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
@@ -1574,7 +1581,7 @@ async function decrypt(){
         </div>
 
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('fws_emergency_message_heading', { name: tp })}</h3>
+          <h3 className={`text-base font-bold ${c.text} mb-2`}>{t('fws_emergency_message_heading', { name: tp })}</h3>
           <textarea value={emergencyMessage} onChange={e => setEmergencyMessage(e.target.value)}
             placeholder={t('fws_ph_emergency_message', { name: tp })} rows={4}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`}
@@ -1710,7 +1717,7 @@ async function decrypt(){
           })}
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_documents_extra_label', { name: tp })}</label>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_documents_extra_label', { name: tp })}</label>
           <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder={t('fws_ph_doc_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderNavButtons()}
@@ -1727,7 +1734,7 @@ async function decrypt(){
       <div>
         <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_financial_heading')}</h3>
         <p className={`text-sm ${c.textSecondary} mb-2`}>{t('fws_financial_intro')}</p>
-        <p className={`text-xs ${c.textMuteded} mb-5`}>{t('fws_financial_subintro', { name: tp })}</p>
+        <p className={`text-[13px] ${c.textMuteded} mb-5`}>{t('fws_financial_subintro', { name: tp })}</p>
         {financialAccounts.length === 0 && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <label htmlFor="fw-financial-dump" className={`block text-sm ${c.textWarm} mb-3`}>{t('fws_financial_prompt')} <span className={c.required}>*</span></label>
@@ -1768,7 +1775,7 @@ async function decrypt(){
           </div>
         )}
         <div className="mt-4">
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_recurring_bills_label')}</label>
+          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_recurring_bills_label')}</label>
           <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder={t('fws_ph_recurring_bills')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderError()}
@@ -1793,7 +1800,7 @@ async function decrypt(){
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{msg.hasDraft ? '✉️' : '📝'}</span>
                   <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{msg.recipientName}</span>
-                    {msg.relationship && <span className={`block text-xs ${c.textMuteded}`}>{msg.relationship}</span>}
+                    {msg.relationship && <span className={`block text-[13px] ${c.textMuteded}`}>{msg.relationship}</span>}
                     {msg.translatedLang && <span className={`block text-xs ${c.textSecondary}`}>🌍 {msg.translatedLang}</span>}
                   </div>
                   {msg.hasDraft && <span className="text-emerald-500">✅</span>}
@@ -1804,14 +1811,14 @@ async function decrypt(){
           </div>
         )}
         <div className={`p-4 rounded-xl border-2 border-dashed ${c.border}`}>
-          <label htmlFor="fw-message-recipient" className={`block text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_add_recipient_label')} <span className={c.required}>*</span></label>
+          <label htmlFor="fw-message-recipient" className={`block text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('fws_add_recipient_label')} <span className={c.required}>*</span></label>
           <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder={t('fws_ph_recipient_name')} onKeyDown={e => e.key === 'Enter' && startNewMessage()}
             className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
         </div>
         {messages.length > 0 && (
-          <div className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
-            <p className={`text-xs ${c.textMuted}`}>{t('fws_messages_xref').split('{{link}}').map((part, i, arr) => (
+          <div data-print-hide className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>{t('fws_messages_xref').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
                 {i < arr.length - 1 && <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>}
@@ -1847,7 +1854,7 @@ async function decrypt(){
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{t('fws_msg_memories_label')} <span className={`font-normal ${c.textMuteded}`}>{t('fws_optional')}</span></p>
           <textarea value={msg.memories} onChange={e => updateMessageField(idx, 'memories', e.target.value)} placeholder={t('fws_ph_memories')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-4`} />
-          <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_tone_label')}</p>
+          <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('fws_tone_label')}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {[{ value: 'warm', labelKey: 'fws_tone_warm' }, { value: 'funny', labelKey: 'fws_tone_funny' }, { value: 'heartfelt', labelKey: 'fws_tone_heartfelt' }, { value: 'direct', labelKey: 'fws_tone_direct' }, { value: 'pep talk', labelKey: 'fws_tone_pep_talk' }].map(toneOpt => (
               <button key={toneOpt.value} onClick={() => updateMessageField(idx, 'tone', toneOpt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === toneOpt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t(toneOpt.labelKey)}</button>
@@ -1855,7 +1862,7 @@ async function decrypt(){
           </div>
           {allPeopleNames.length > 1 && (
             <div className="mb-4">
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_visible_to_label')}</p>
+              <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('fws_visible_to_label')}</p>
               <select value={msg.visibleTo || 'all'} onChange={e => updateMessageField(idx, 'visibleTo', e.target.value)} className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}>
                 {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -1872,7 +1879,7 @@ async function decrypt(){
         <div>
           <div className={`p-6 rounded-2xl border-2 ${c.letterBg} mb-4`}>
             <div className="flex items-center justify-between mb-4">
-              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>{t('fws_msg_to', { name: msg.recipientName })}</h4><p className={`text-xs ${c.textMuteded}`}>{msg.relationship}</p></div>
+              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>{t('fws_msg_to', { name: msg.recipientName })}</h4><p className={`text-[13px] ${c.textMuteded}`}>{msg.relationship}</p></div>
               <button onClick={() => setEditingDraft(!editingDraft)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>✏️ {editingDraft ? t('fws_preview') : t('fws_edit')}</button>
             </div>
             {editingDraft ? (
@@ -1883,7 +1890,7 @@ async function decrypt(){
             {/* Translated version */}
             {msg.translatedDraft && !editingDraft && (
               <div className="mt-4 pt-4" style={{ borderTop: '1px dashed #e7e5e4' }}>
-                <p className={`text-xs ${c.textMuteded} mb-2`}>🌍 {msg.translatedLang}</p>
+                <p className={`text-[13px] ${c.textMuteded} mb-2`}>🌍 {msg.translatedLang}</p>
                 <div className={`text-sm leading-relaxed ${c.letterText} whitespace-pre-wrap`} style={{ fontFamily: "'Georgia',serif", lineHeight: '1.8' }}>{msg.translatedDraft}</div>
               </div>
             )}
@@ -1944,7 +1951,7 @@ async function decrypt(){
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text} flex items-center gap-2`}>{t('fws_emergency_contacts')}</span>
           <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add')}</button></div>
-        {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_wishes_contacts_hint')}</p>}
+        {emergencyContacts.length === 0 && <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('fws_wishes_contacts_hint')}</p>}
         {emergencyContacts.map((ec, i) => (
           <div key={ec.id} className="flex gap-2 mb-2">
             <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder={t('fws_ph_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
@@ -1958,7 +1965,7 @@ async function decrypt(){
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text}`}>{t('fws_pets_heading')}</span>
           <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_pet')}</button></div>
-        {pets.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_no_pets')}</p>}
+        {pets.length === 0 && <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('fws_no_pets')}</p>}
         {pets.map((pet, i) => (
           <div key={pet.id} className={`p-4 rounded-xl border ${c.border} ${c.card} mb-3`}>
             <div className="flex items-start gap-3">
@@ -1981,12 +1988,12 @@ async function decrypt(){
         <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder={t('fws_ph_device_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
         <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
-          <Caret open={showMemorial} /> {t('fws_memorial_label')} <span className={`text-xs ${c.textMuteded}`}>{t('fws_optional')}</span>
+          <Caret open={showMemorial} /> {t('fws_memorial_label')} <span className={`text-[13px] ${c.textMuteded}`}>{t('fws_optional')}</span>
         </button>
         {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder={t('fws_ph_memorial')} rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
       </div>
       <div className="mb-4"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_special_requests_label')}</label>
-        <p className={`text-xs ${c.textMuteded} mb-2`}>{t('fws_special_requests_hint')}</p>
+        <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('fws_special_requests_hint')}</p>
         <textarea value={specialRequests} onChange={e => setSpecialRequests(e.target.value)} placeholder={t('fws_ph_special_requests')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       {renderNavButtons()}
     </div>
@@ -2015,13 +2022,13 @@ async function decrypt(){
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center gap-3 mb-4">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${totalFilled >= 4 ? c.success : c.cardAltInset}`}>{t('fws_count_of_5', { n: totalFilled })}</div>
-            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? t('fws_status_thorough') : totalFilled >= 2 ? t('fws_status_good') : t('fws_status_starting')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_sections_completed')}</p></div>
+            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? t('fws_status_thorough') : totalFilled >= 2 ? t('fws_status_good') : t('fws_status_starting')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('fws_sections_completed')}</p></div>
           </div>
           <div className="space-y-2">
             {sections.map((s, i) => (
               <div key={i} className="flex items-center justify-between">
                 <span className={`text-sm ${s.count > 0 ? c.text : c.textMuteded}`}>{s.count > 0 ? '✅ ' : '  '}{t(s.labelKey)}</span>
-                <div className="flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{s.count > 0 ? t('fws_count_unit', { n: s.count, unit: t(s.unitKey) }) : t('fws_skipped')}</span>
+                <div className="flex items-center gap-2"><span className={`text-[13px] ${c.textMuteded}`}>{s.count > 0 ? t('fws_count_unit', { n: s.count, unit: t(s.unitKey) }) : t('fws_skipped')}</span>
                   <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondary}`}>{s.count > 0 ? t('fws_edit_btn') : t('fws_add_btn')}</button></div>
               </div>
             ))}
@@ -2031,7 +2038,7 @@ async function decrypt(){
         {/* v3: SMART GAPS */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center justify-between mb-2">
-            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_gap_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_gap_desc')}</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_gap_heading')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('fws_gap_desc')}</p></div>
             <button onClick={runSmartGaps} disabled={gapsLoading} className={`px-4 py-2 rounded-xl text-xs font-bold ${!gapsLoading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
               {gapsLoading ? <span><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📜'}</span></span> : t('fws_scan_document')}
             </button>
@@ -2040,13 +2047,13 @@ async function decrypt(){
             <div className="mt-3 space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-sm font-bold ${c.text}`}>{t('fws_gap_score', { score: smartGaps.overallScore })}</span>
-                <span className={`text-xs ${c.textMuteded}`}>{smartGaps.summary}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{smartGaps.summary}</span>
               </div>
               {smartGaps.gaps?.map((gap, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${gap.severity === 'critical' ? c.danger : gap.severity === 'important' ? c.diffChg : c.cardAltInset}`}>
                   <div className="flex items-start gap-2">
                     <span className="text-sm flex-shrink-0">{gap.severity === 'critical' ? '🔴' : gap.severity === 'important' ? '🟡' : '🟢'}</span>
-                    <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-xs ${c.textMuteded} mt-1`}>💡 {gap.suggestion}</p>
+                    <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-[13px] ${c.textMuteded} mt-1`}>💡 {gap.suggestion}</p>
                       <button onClick={() => goToChapter(CHAPTERS.findIndex(ch => ch.id === gap.section) >= 0 ? CHAPTERS.findIndex(ch => ch.id === gap.section) : 0)}
                         className={`text-xs font-semibold ${c.textSecondary} mt-1`}>{t('fws_fix_this')}</button></div>
                   </div>
@@ -2059,7 +2066,7 @@ async function decrypt(){
         {/* Filter for multiple people */}
         {allPeopleNames.length > 1 && (
           <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
-            <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_export_for_person')}</p>
+            <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('fws_export_for_person')}</p>
             <select value={exportFilter} onChange={e => setExportFilter(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`}>
               {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -2073,7 +2080,7 @@ async function decrypt(){
               className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${encryptionEnabled ? 'bg-cyan-500 border-cyan-500 text-white' : c.border}`}>
               {encryptionEnabled && <span className="text-xs">✓</span>}
             </button>
-            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_encryption_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_encryption_desc')}</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_encryption_heading')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('fws_encryption_desc')}</p></div>
           </div>
           {encryptionEnabled && (
             <div className="mt-3 space-y-2">
@@ -2081,11 +2088,11 @@ async function decrypt(){
                 <label htmlFor="fw-passphrase" className="sr-only">{t('fws_passphrase_sr_label')} <span className={c.required}>*</span></label>
                 <input id="fw-passphrase" type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder={t('fws_ph_passphrase')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pe-12`} />
-                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute end-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
+                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute end-3 top-1/2 -translate-y-1/2 text-[13px] ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
               </div>
               <input type="text" value={passphraseHint} onChange={e => setPassphraseHint(e.target.value)} placeholder={t('fws_ph_passphrase_hint')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-              <p className={`text-xs ${c.textMuteded}`}>{t('fws_passphrase_share_note')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_passphrase_share_note')}</p>
             </div>
           )}
         </div>
@@ -2111,7 +2118,7 @@ async function decrypt(){
         {/* v3: DELIVERY INSTRUCTIONS */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
           <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('fws_delivery_heading')}</p>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_delivery_desc', { name: tp })}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('fws_delivery_desc', { name: tp })}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             {DELIVERY_LOCATIONS.map(loc => (
               <button key={loc.id} onClick={() => setDeliveryLocation(loc.id)}
@@ -2126,7 +2133,7 @@ async function decrypt(){
         {/* v3: QR ACCESS CARD */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
           <div className="flex items-center justify-between">
-            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_card_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_card_desc')}</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_card_heading')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('fws_card_desc')}</p></div>
             <button onClick={generateQRCard} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('fws_print_card')}</button>
           </div>
         </div>
@@ -2134,7 +2141,7 @@ async function decrypt(){
         {/* JSON backup */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-6`}>
           <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('fws_backup_heading')}</p>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_backup_desc')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('fws_backup_desc')}</p>
           <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('fws_export_backup')}</button>
           <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>{t('fws_import_previous')}
             <input type="file" accept=".json" onChange={importJSON} className="hidden" /></label>
@@ -2146,8 +2153,8 @@ async function decrypt(){
           </p>
         </div>
 
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fws_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('fws_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('fws_xref_difficult_talk')}</a>
@@ -2230,11 +2237,15 @@ async function decrypt(){
   return (
     <div ref={topRef} className={`space-y-4 scroll-mt-24 ${c.text}`}>
       {renderToasts()}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 py-3`}>
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
             </p>
           </div>
@@ -2244,11 +2255,12 @@ async function decrypt(){
           ) : null}
         </div>
       </div>
-      {renderProgressBar()}
-      {renderCurrentChapter()}
+      <div data-print-hide>{renderProgressBar()}</div>
+      {/* Prints as filled in: the visitor chose to print their own draft. */}
+      <div data-print-form>{renderCurrentChapter()}</div>
 
       {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>
           {t('fws_footer_xref').split('{{link}}').map((part, i, arr) => (
             <React.Fragment key={i}>
               {part}
