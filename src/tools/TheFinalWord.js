@@ -145,20 +145,19 @@ const TheFinalWord = ({ tool }) => {
   const c = {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-slate-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-slate-700',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     accentTxt: isDark ? 'text-amber-400' : 'text-amber-600',
     border: isDark ? 'border-zinc-700' : 'border-slate-200',
@@ -171,9 +170,7 @@ const TheFinalWord = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Localized display label for a trivia-category id (rename .find param to avoid shadowing t).
   const optCatLabel = (id) => {
@@ -935,8 +932,8 @@ const TheFinalWord = ({ tool }) => {
     return (
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_confidence')}</span>
-          <span className={`text-xs font-bold uppercase tracking-wider ${style.text}`}>{confidence}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('tfw_confidence')}</span>
+          <span className={`text-[13px] font-boldr ${style.text}`}>{confidence}</span>
         </div>
         <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>
           <div className={`h-full rounded-full transition-all duration-700 ${confBarColor(confidence)}`} style={{ width: style.width }} />
@@ -949,7 +946,7 @@ const TheFinalWord = ({ tool }) => {
     if (!sources?.length) return null;
     return (
       <div className={`mt-3 p-3 rounded-xl border ${c.cardAlt}`}>
-        <p className={`text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_sources')}</p>
+        <p className={`text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_sources')}</p>
         <div className="flex flex-wrap gap-2">
           {sources.map((src, i) => (
             <span key={i} className={`text-xs px-2 py-1 rounded-lg ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-slate-100 text-slate-700'}`}>{src}</span>
@@ -998,7 +995,7 @@ const TheFinalWord = ({ tool }) => {
       else if (isSelected && !isCorrect) optionStyle = isDark ? 'border-red-500 bg-red-900/20 text-red-300' : 'border-red-400 bg-red-50 text-red-800';
       else optionStyle = isDark ? 'border-zinc-700 bg-zinc-800/50 opacity-50' : 'border-slate-200 bg-slate-50 opacity-50';
     } else if (isSelected) {
-      optionStyle = isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50';
+      optionStyle = isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]';
     }
     return (
       <button key={idx} onClick={onClick} disabled={disabled} className={`w-full text-start px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all flex items-center gap-3 ${optionStyle}`}>
@@ -1029,12 +1026,20 @@ const TheFinalWord = ({ tool }) => {
           renders the tool name as the page <h1>) — icon moves onto the
           tagline line instead. px-5 pt-2.5, not p-5: 20px of top padding
           reads as a blank line above the tagline. */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{t('tfw_tagline')}
                 </p>
                 {mode !== 'trivia' && (
@@ -1053,6 +1058,7 @@ const TheFinalWord = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
           {!result && !triviaQuestion && !triviaFinished && !mpMode && (sessionHistory.length > 0 || stats.totalVerdicts > 0) && (
             <div className="flex items-center gap-2 pt-3">
@@ -1074,29 +1080,29 @@ const TheFinalWord = ({ tool }) => {
         {/* ═══════ STATS DASHBOARD ═══════ */}
         {showStats && !result && !triviaQuestion && (
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
-            <h3 className={`text-sm font-bold ${c.text}`}>📊 {t('tfw_stats_title')}</h3>
+            <h3 className={`text-base font-bold ${c.text}`}>📊 {t('tfw_stats_title')}</h3>
 
             {/* Overview row */}
             <div className="grid grid-cols-3 gap-3">
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
                 <p className={`text-2xl font-black ${c.accentTxt}`}>{stats.totalVerdicts || 0}</p>
-                <p className={`text-xs ${c.textMuted}`}>{t('tfw_stats_total_verdicts')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_stats_total_verdicts')}</p>
               </div>
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
                 <p className={`text-2xl font-black ${c.accentTxt}`}>{stats.trivia?.totalQuestions || 0}</p>
-                <p className={`text-xs ${c.textMuted}`}>{t('tfw_stats_trivia_qs')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_stats_trivia_qs')}</p>
               </div>
               <div className={`p-3 rounded-xl border text-center ${c.cardAlt}`}>
                 <p className={`text-2xl font-black ${c.accentTxt}`}>
                   {stats.trivia?.totalQuestions ? `${Math.round((stats.trivia.totalCorrect / stats.trivia.totalQuestions) * 100)}%` : '—'}
                 </p>
-                <p className={`text-xs ${c.textMuted}`}>{t('tfw_stats_trivia_accuracy')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_stats_trivia_accuracy')}</p>
               </div>
             </div>
 
             {/* Mode breakdown */}
             <div>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_stats_by_mode')}</p>
+              <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_stats_by_mode')}</p>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(stats.byMode || {}).filter(([,v]) => v > 0).map(([m, count]) => {
                   const md = MODES.find(mode => mode.id === m);
@@ -1112,7 +1118,7 @@ const TheFinalWord = ({ tool }) => {
             {/* Trivia categories */}
             {stats.trivia?.byCategory && Object.keys(stats.trivia.byCategory).length > 0 && (
               <div>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_stats_trivia_by_category')}</p>
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_stats_trivia_by_category')}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(stats.trivia.byCategory).sort(([,a],[,b]) => b.total - a.total).map(([cat, data]) => (
                     <div key={cat} className={`p-2 rounded-lg border text-center ${c.cardAlt}`}>
@@ -1129,7 +1135,7 @@ const TheFinalWord = ({ tool }) => {
             {/* Fact-check rulings */}
             {stats.factChecks?.total > 0 && (
               <div>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_stats_factcheck_rulings')}</p>
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_stats_factcheck_rulings')}</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(stats.factChecks.rulings || {}).map(([ruling, count]) => (
                     <span key={ruling} className={`text-xs px-2 py-1 rounded-lg font-semibold ${getRulingStyle(ruling)}`}>
@@ -1141,7 +1147,7 @@ const TheFinalWord = ({ tool }) => {
             )}
 
             {stats.trivia?.bestStreak > 0 && (
-              <p className={`text-xs ${c.textMuted}`}>{t('tfw_stats_longest_streak', { streak: stats.trivia.bestStreak })}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_stats_longest_streak', { streak: stats.trivia.bestStreak })}</p>
             )}
 
             <button onClick={() => { setStats(EMPTY_STATS); setShowStats(false); }} className={`text-xs font-semibold px-2 py-1 rounded-lg transition-all ${c.btnSecondary}`}>
@@ -1154,7 +1160,7 @@ const TheFinalWord = ({ tool }) => {
         {showHistory && !result && !triviaQuestion && (
           <div className={`rounded-2xl border p-5 space-y-3 ${c.card}`}>
             <div className="flex items-center justify-between">
-              <h3 className={`text-sm font-bold ${c.text}`}>📜 {t('tfw_history_title')}</h3>
+              <h3 className={`text-base font-bold ${c.text}`}>📜 {t('tfw_history_title')}</h3>
               <button onClick={() => setSessionHistory([])} className={`text-xs font-semibold px-2 py-1 rounded-lg transition-all ${c.btnSecondary}`}>{t('tfw_history_clear_all')}</button>
             </div>
             <div className="space-y-2 max-h-80 overflow-y-auto">
@@ -1168,8 +1174,8 @@ const TheFinalWord = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm">{modeIcon}</span>
-                          <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{modeLabel}</span>
-                          <span className={`text-xs ${c.textMuted}`}>· {getTimeAgo(entry.timestamp, t)}</span>
+                          <span className={`text-[15px] font-semibold ${c.labelText}`}>{modeLabel}</span>
+                          <span className={`text-[13px] ${c.textMuted}`}>· {getTimeAgo(entry.timestamp, t)}</span>
                         </div>
                         <p className={`text-sm font-semibold truncate ${c.text}`}>{entry.result?.answer || entry.result?.verdict_headline || entry.result?.ruling_display || entry.input}</p>
                         <p className={`text-xs truncate ${c.textSecondary}`}>{entry.input}</p>
@@ -1221,7 +1227,7 @@ const TheFinalWord = ({ tool }) => {
               <div className={`p-3 rounded-lg border-2 border-red-500/30 ${isDark ? 'bg-red-900/10' : 'bg-red-50'}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('tfw_listening')}</span>
+                  <span className={`text-[13px] font-boldr ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('tfw_listening')}</span>
                 </div>
                 {voiceTranscript && <p className={`text-sm italic ${c.textSecondary}`}>"{voiceTranscript}"</p>}
               </div>
@@ -1230,7 +1236,7 @@ const TheFinalWord = ({ tool }) => {
             {/* ════ QUICK QUESTION ════ */}
             {mode === 'question' && (
               <div className="space-y-3">
-                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_q_label')} <span className={c.required}>*</span></label>
+                <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('tfw_q_label')} <span className={c.required}>*</span></label>
                 <div className="flex gap-2">
                   <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleSubmit()} placeholder={t('tfw_q_ph')} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                   <VoiceButton />
@@ -1254,7 +1260,7 @@ const TheFinalWord = ({ tool }) => {
                 <div className={`p-3 rounded-xl border ${c.cardAlt} flex items-center justify-between`}>
                   <div>
                     <p className={`text-xs font-bold ${c.text}`}>{t('tfw_da_title')}</p>
-                    <p className={`text-xs ${c.textMuted}`}>{t('tfw_da_subtitle')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_da_subtitle')}</p>
                   </div>
                   <button
                     onClick={() => setDevilsAdvocate(!devilsAdvocate)}
@@ -1268,11 +1274,11 @@ const TheFinalWord = ({ tool }) => {
                   /* Devil's Advocate Input */
                   <div className="space-y-3">
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_da_topic_label')}</label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_topic_label')}</label>
                       <input value={daTopic} onChange={(e) => setDaTopic(e.target.value)} placeholder={t('tfw_da_topic_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_da_position_label')} <span className={c.required}>*</span></label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_position_label')} <span className={c.required}>*</span></label>
                       <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder={t('tfw_da_position_ph')} rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
@@ -1284,16 +1290,16 @@ const TheFinalWord = ({ tool }) => {
                   <>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_name_label')}</label>
+                        <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
                         <input value={personA} onChange={(e) => setPersonA(e.target.value)} placeholder={t('tfw_dispute_person_a')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                       </div>
                       <div>
-                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_name_label')}</label>
+                        <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
                         <input value={personB} onChange={(e) => setPersonB(e.target.value)} placeholder={t('tfw_dispute_person_b')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                       </div>
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_says', { name: personA || t('tfw_dispute_person_a') })} <span className={c.required}>*</span></label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_says', { name: personA || t('tfw_dispute_person_a') })} <span className={c.required}>*</span></label>
                       <div className="flex gap-2">
                         <textarea value={claimA} onChange={(e) => setClaimA(e.target.value)} placeholder={t('tfw_dispute_claim_a_ph')} rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                         <VoiceButton />
@@ -1303,14 +1309,14 @@ const TheFinalWord = ({ tool }) => {
                       <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700'}`}>{t('tfw_dispute_vs')}</div>
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_says', { name: personB || t('tfw_dispute_person_b') })} <span className={c.required}>*</span></label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_says', { name: personB || t('tfw_dispute_person_b') })} <span className={c.required}>*</span></label>
                       <div className="flex gap-2">
                         <textarea value={claimB} onChange={(e) => setClaimB(e.target.value)} placeholder={t('tfw_dispute_claim_b_ph')} rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                         <VoiceButton />
                       </div>
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_context_label')}</label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_context_label')}</label>
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
@@ -1330,7 +1336,7 @@ const TheFinalWord = ({ tool }) => {
             {/* ════ FACT CHECK ════ */}
             {mode === 'factcheck' && (
               <div className="space-y-3">
-                <label className={`block text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_fc_label')} <span className={c.required}>*</span></label>
+                <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('tfw_fc_label')} <span className={c.required}>*</span></label>
                 <div className="flex gap-2">
                   <textarea ref={claimTextareaRef} value={claim} onChange={(e) => setClaim(e.target.value)} placeholder={t('tfw_fc_ph')} rows={2} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                   <VoiceButton />
@@ -1347,7 +1353,7 @@ const TheFinalWord = ({ tool }) => {
                   </button>
                 </div>
                 {dissectMode && (
-                  <p className={`text-xs ${c.textMuted}`}>{t('tfw_fc_dissect_hint')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_fc_dissect_hint')}</p>
                 )}
                 <button onClick={() => (dissectMode ? handleDissect() : handleSubmit())} disabled={loading || !claim.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                   {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>{dissectMode ? '🔬' : '🛡️'}</span>}
@@ -1361,11 +1367,11 @@ const TheFinalWord = ({ tool }) => {
               <div className="space-y-4">
                 {/* Team Setup */}
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_setup_players')} <span className={c.required}>*</span></label>
+                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_setup_players')} <span className={c.required}>*</span></label>
                   <div className="space-y-2">
                     {teams.map((team, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{idx + 1}</div>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{idx + 1}</div>
                         <input ref={el => { teamsInputRefs.current[idx] = el; }} value={team.name} onChange={(e) => updateTeamName(idx, e.target.value)} placeholder={t('tfw_setup_player_ph', { n: idx + 1 })} className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                         {teams.length > 1 && <button onClick={() => removeTeam(idx)} className={`p-1.5 rounded-lg transition-all ${c.deleteHover2}`}><span className="text-sm">✕</span></button>}
                       </div>
@@ -1376,20 +1382,20 @@ const TheFinalWord = ({ tool }) => {
 
                 {/* Rounds */}
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_setup_rounds')}</label>
+                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_setup_rounds')}</label>
                   <div className="flex gap-2">
                     {ROUND_OPTIONS.map(n => (
-                      <button key={n} onClick={() => setRoundLimit(n)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all border ${roundLimit === n ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{n}</button>
+                      <button key={n} onClick={() => setRoundLimit(n)} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all border ${roundLimit === n ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{n}</button>
                     ))}
                   </div>
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_setup_category')}</label>
+                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_setup_category')}</label>
                   <div className="flex flex-wrap gap-2">
                     {TRIVIA_CATEGORIES.map(cat => (
-                      <button key={cat.id} onClick={() => setTriviaCategory(cat.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${triviaCategory === cat.id ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                      <button key={cat.id} onClick={() => setTriviaCategory(cat.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${triviaCategory === cat.id ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                         {cat.emoji} {t(cat.labelKey)}
                       </button>
                     ))}
@@ -1398,25 +1404,25 @@ const TheFinalWord = ({ tool }) => {
 
                 {/* Difficulty */}
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_setup_difficulty')}</label>
+                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_setup_difficulty')}</label>
                   <div className="flex gap-2">
                     {[['easy', 'tfw_diff_easy'], ['medium', 'tfw_diff_medium'], ['hard', 'tfw_diff_hard']].map(([d, dKey]) => (
-                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${triviaDifficulty === d ? isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{t(dKey)}</button>
+                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-[13px] font-boldr transition-all border ${triviaDifficulty === d ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]' : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{t(dKey)}</button>
                     ))}
                   </div>
                 </div>
 
                 {/* Start buttons */}
-                <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(team => !team.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+                <button onClick={() => { setTriviaSetup(false); handleTrivia(); }} disabled={loading || teams.every(team => !team.name.trim())} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'}`}>
                   {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>⚡</span>} {loading ? t('tfw_setup_generating') : t('tfw_setup_start_local')}
                 </button>
 
                 {/* Multiplayer buttons */}
                 <div className="flex gap-2">
-                  <button onClick={() => setMpMode('host')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                  <button onClick={() => setMpMode('host')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                     {t('tfw_setup_host')}
                   </button>
-                  <button onClick={() => setMpMode('join')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                  <button onClick={() => setMpMode('join')} className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-2 ${isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                     {t('tfw_setup_join')}
                   </button>
                 </div>
@@ -1427,7 +1433,7 @@ const TheFinalWord = ({ tool }) => {
             {error && <div className={`p-3 rounded-xl border flex items-start gap-2 ${isDark ? 'bg-red-900/20 border-red-800 text-red-300' : 'bg-red-50 border-red-200 text-red-700'}`}><span className="flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p></div>}
 
             {/* Pre-result cross-ref + disclaimer */}
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('tfw_xref_drafting').split('{{link}}').map((part, i, arr) => (
                 <React.Fragment key={i}>
                   {part}
@@ -1441,11 +1447,11 @@ const TheFinalWord = ({ tool }) => {
         {/* ═══════ MULTIPLAYER SETUP ═══════ */}
         {mpMode === 'host' && !roomCode && (
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
-            <h3 className={`text-sm font-bold ${c.text}`}>{t('tfw_mp_host_title')}</h3>
+            <h3 className={`text-base font-bold ${c.text}`}>{t('tfw_mp_host_title')}</h3>
             <input value={mpName} onChange={(e) => setMpName(e.target.value)} placeholder={t('tfw_mp_name_ph')} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
-              <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+              <button onClick={handleCreateRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'}`}>
                 {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_create_room')}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>{t('tfw_mp_cancel')}</button>
@@ -1455,12 +1461,12 @@ const TheFinalWord = ({ tool }) => {
 
         {mpMode === 'join' && !roomCode && (
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
-            <h3 className={`text-sm font-bold ${c.text}`}>{t('tfw_mp_join_title')}</h3>
+            <h3 className={`text-base font-bold ${c.text}`}>{t('tfw_mp_join_title')}</h3>
             <input value={mpName} onChange={(e) => setMpName(e.target.value)} placeholder={t('tfw_mp_name_ph')} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder={t('tfw_mp_code_ph')} maxLength={4} className={`w-full px-4 py-3 rounded-xl border-2 text-sm text-center font-black tracking-[0.3em] uppercase transition-all focus:outline-none focus:ring-2 ${c.input}`} />
             {mpError && <p className={`text-xs ${c.danger}`}>{mpError}</p>}
             <div className="flex gap-2">
-              <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+              <button onClick={handleJoinRoom} disabled={mpLoading} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'}`}>
                 {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_join_room')}
               </button>
               <button onClick={() => setMpMode(null)} className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${c.btnSecondary}`}>{t('tfw_mp_cancel')}</button>
@@ -1472,13 +1478,13 @@ const TheFinalWord = ({ tool }) => {
         {mpMode === 'lobby' && roomState && (
           <div className={`rounded-2xl border p-5 space-y-4 ${c.card}`}>
             <div className="text-center">
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_mp_room_code')}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('tfw_mp_room_code')}</p>
               <p className={`text-4xl font-black tracking-[0.3em] ${c.accentTxt}`}>{roomCode}</p>
               <p className={`text-xs mt-1 ${c.textMuted}`}>{t('tfw_mp_share_code')}</p>
             </div>
 
             <div>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_mp_players_count', { count: roomState.players?.length || 0 })}</p>
+              <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_mp_players_count', { count: roomState.players?.length || 0 })}</p>
               <div className="space-y-1.5">
                 {roomState.players?.map((p) => (
                   <div key={p.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.cardAlt} border`}>
@@ -1497,7 +1503,7 @@ const TheFinalWord = ({ tool }) => {
             </div>
 
             {isHost ? (
-              <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}>
+              <button onClick={handleMpStartGame} disabled={mpLoading || (roomState.players?.length || 0) < 2} className={`w-full py-3 rounded-xl font-bold text-sm transition-all disabled:opacity-40 ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'}`}>
                 {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : t('tfw_mp_start_game', { count: roomState.players?.length || 0 })}
               </button>
             ) : (
@@ -1513,10 +1519,10 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ MULTIPLAYER GAME ═══════ */}
         {(mpMode === 'lobby' || mpMode === 'playing') && roomState?.started && roomState?.currentQuestion && !roomState?.finished && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-4 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white'}`}>
+            <div className={`px-6 py-4 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{roomState.currentQuestion.category_label || t('tfw_mp_trivia_fallback')}</span>
+                <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{roomState.currentQuestion.category_label || t('tfw_mp_trivia_fallback')}</span>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{t('tfw_mp_q_progress', { num: roomState.questionNumber, total: roomState.settings?.rounds, code: roomCode })}</span>
               </div>
               <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
@@ -1527,7 +1533,7 @@ const TheFinalWord = ({ tool }) => {
             {/* Scoreboard */}
             <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>
               {roomState.players?.map(p => (
-                <div key={p.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${p.id === mpPlayerId ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}>
+                <div key={p.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${p.id === mpPlayerId ? isDark ? 'bg-[#1f2530] border border-[#2c3a4a] text-[#a9cdef]' : 'bg-[#eef3f8] border border-[#d4dde8] text-[#142a43]' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}>
                   <span>{p.name}</span>
                   <span className={`font-black ${c.accentTxt}`}>{p.score}</span>
                   {p.answered && !roomState.revealed && <span>✓</span>}
@@ -1555,7 +1561,7 @@ const TheFinalWord = ({ tool }) => {
 
               {roomState.revealed && roomState.currentQuestion.explanation && (
                 <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>
+                  <p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>
                     {roomState.myAnswer === roomState.currentQuestion.correct_index ? t('tfw_mp_got_it') : t('tfw_mp_not_quite')}
                   </p>
                   <p className={`text-sm ${c.textSecondary}`}>{roomState.currentQuestion.explanation}</p>
@@ -1565,17 +1571,17 @@ const TheFinalWord = ({ tool }) => {
 
             {/* MP Actions */}
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
-              <span className={`text-xs ${c.textMuted}`}>
+              <span className={`text-[13px] ${c.textMuted}`}>
                 {roomState.revealed ? '' : t('tfw_mp_answered_count', { answered: roomState.players?.filter(p => p.answered).length, total: roomState.players?.length })}
               </span>
               {isHost && (
                 <div className="flex gap-2">
                   {!roomState.revealed ? (
-                    <button onClick={handleMpReveal} disabled={!roomState.allAnswered && !roomState.revealed} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} ${!roomState.allAnswered ? 'opacity-60' : ''}`}>
+                    <button onClick={handleMpReveal} disabled={!roomState.allAnswered && !roomState.revealed} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'} ${!roomState.allAnswered ? 'opacity-60' : ''}`}>
                       {roomState.allAnswered ? t('tfw_mp_reveal') : t('tfw_mp_reveal_early')}
                     </button>
                   ) : (
-                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
+                    <button onClick={handleMpNext} disabled={mpLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'} disabled:opacity-40`}>
                       {mpLoading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : '→'} {roomState.questionNumber >= (roomState.settings?.rounds || 10) ? t('tfw_mp_see_results') : t('tfw_mp_next_question')}
                     </button>
                   )}
@@ -1587,10 +1593,10 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ MULTIPLAYER FINISHED ═══════ */}
         {roomState?.finished && (mpMode === 'lobby' || mpMode === 'playing') && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-[#1f2530]' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('tfw_mp_finished_header', { code: roomCode })}</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('tfw_mp_finished_header', { code: roomCode })}</p>
               {(() => {
                 const sorted = [...(roomState.players || [])].sort((a, b) => b.score - a.score);
                 const isTie = sorted.length > 1 && sorted[0].score === sorted[1].score;
@@ -1599,12 +1605,12 @@ const TheFinalWord = ({ tool }) => {
             </div>
             <div className={`px-6 py-4 border-t ${c.border} space-y-3`}>
               {[...(roomState.players || [])].sort((a, b) => b.score - a.score).map((p, rank) => (
-                <div key={p.id} className={`p-3 rounded-xl border ${rank === 0 ? isDark ? 'bg-cyan-900/10 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200' : c.cardAlt}`}>
+                <div key={p.id} className={`p-3 rounded-xl border ${rank === 0 ? isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]' : c.cardAlt}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : ''}</span>
                       <span className={`text-sm font-bold ${c.text}`}>{p.name}</span>
-                      {p.id === mpPlayerId && <span className={`text-xs ${c.textMuted}`}>{t('tfw_you')}</span>}
+                      {p.id === mpPlayerId && <span className={`text-[13px] ${c.textMuted}`}>{t('tfw_you')}</span>}
                     </div>
                     <span className={`text-xl font-black ${rank === 0 ? c.accentTxt : c.textSecondary}`}>{p.score}</span>
                   </div>
@@ -1634,8 +1640,8 @@ const TheFinalWord = ({ tool }) => {
               <h2 className={`text-xl font-black leading-snug mb-4 ${c.text}`}>{result.answer}</h2>
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed mb-4 ${c.textSecondary}`}>{result.explanation}</p>
-              {result.supporting_facts?.length > 0 && <div className={`p-3 rounded-xl border ${c.cardAlt} mb-3`}><p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('tfw_result_key_facts')}</p>{result.supporting_facts.map((f, i) => <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {f}</p>)}</div>}
-              {result.common_misconception && <div className={`p-3 rounded-xl border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{t('tfw_result_misconception')}</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
+              {result.supporting_facts?.length > 0 && <div className={`p-3 rounded-xl border ${c.cardAlt} mb-3`}><p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_result_key_facts')}</p>{result.supporting_facts.map((f, i) => <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {f}</p>)}</div>}
+              {result.common_misconception && <div className={`p-3 rounded-xl border ${isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_result_misconception')}</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
               {result.fun_extra && <div className={`mt-3 p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold mb-1 ${c.accentTxt}`}>{t('tfw_result_bonus')}</p><p className={`text-sm ${c.textSecondary}`}>{result.fun_extra}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
@@ -1661,7 +1667,7 @@ const TheFinalWord = ({ tool }) => {
                       <div className="flex items-center gap-2 mb-2">{isWinner && <span>🏆</span>}<p className={`text-sm font-bold ${c.text}`}>{person?.name}</p></div>
                       <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(person?.support)}`}>{getSupportLabel(person?.support)}</div>
                       {person?.what_they_got_right && <p className={`text-xs mb-1 ${c.textSecondary}`}><span className={c.success}>✓</span> {person.what_they_got_right}</p>}
-                      {person?.what_they_got_wrong && <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {person.what_they_got_wrong}</p>}
+                      {person?.what_they_got_wrong && <p className={`text-[13px] ${c.textMuted}`}><span className={c.danger}>✗</span> {person.what_they_got_wrong}</p>}
                     </div>
                   );
                 })}
@@ -1669,9 +1675,9 @@ const TheFinalWord = ({ tool }) => {
             )}
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{t('tfw_actual_answer')}</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
-              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${isDark ? 'bg-sky-900/10 border-sky-800/50' : 'bg-sky-50 border-sky-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('tfw_verify_live')}</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{result.how_to_verify}</p></div>}
-              {result.settlement_suggestion && <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-sm italic ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🤝 {result.settlement_suggestion}</p></div>}
+              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_actual_answer')}</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
+              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${isDark ? 'bg-sky-900/10 border-sky-800/50' : 'bg-sky-50 border-sky-200'}`}><p className={`text-[13px] font-boldr mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('tfw_verify_live')}</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{result.how_to_verify}</p></div>}
+              {result.settlement_suggestion && <div className={`p-3 rounded-xl ${isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]'}`}><p className={`text-sm italic ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>🤝 {result.settlement_suggestion}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
             <ShareLinkDisplay />
@@ -1690,21 +1696,21 @@ const TheFinalWord = ({ tool }) => {
             <div className="px-6 py-4 space-y-3">
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{t('tfw_whats_true')}</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
-              {result.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_the_nuance')}</p><p className={`text-sm ${c.textSecondary}`}>{result.the_nuance}</p></div>}
-              {result.origin_of_myth && <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('tfw_myth_started')}</p><p className={`text-sm ${isDark ? 'text-cyan-200' : 'text-cyan-700'}`}>{result.origin_of_myth}</p></div>}
+              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_whats_true')}</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
+              {result.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('tfw_the_nuance')}</p><p className={`text-sm ${c.textSecondary}`}>{result.the_nuance}</p></div>}
+              {result.origin_of_myth && <div className={`p-3 rounded-xl ${isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]'}`}><p className={`text-[13px] font-boldr mb-1 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('tfw_myth_started')}</p><p className={`text-sm ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{result.origin_of_myth}</p></div>}
               <SourcesList sources={result.sources} />
 
               {/* ═══ FACT-CHECK CHAINS ═══ */}
               {result.related_claims?.length > 0 && (
                 <div className={`p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
+                  <p className={`text-[13px] font-boldr mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
                   <div className="space-y-2">
                     {result.related_claims.map((rc, i) => (
                       <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-start px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700'}`}>
                         <span className="flex-shrink-0">🛡️</span>
                         <span className="flex-1">{rc}</span>
-                        <span className={`text-xs ${c.textMuted}`}>{t('tfw_check_arrow')}</span>
+                        <span className={`text-[13px] ${c.textMuted}`}>{t('tfw_check_arrow')}</span>
                       </button>
                     ))}
                   </div>
@@ -1739,7 +1745,7 @@ const TheFinalWord = ({ tool }) => {
               {/* Component verdicts */}
               {dissectResult.components?.length > 0 && (
                 <div className="space-y-2">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_dissect_breaking_down')}</p>
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('tfw_dissect_breaking_down')}</p>
                   {dissectResult.components.map((comp, i) => {
                     const verdictColors = {
                       true:            isDark ? 'border-s-emerald-500 bg-emerald-900/10' : 'border-s-emerald-500 bg-emerald-50',
@@ -1748,7 +1754,7 @@ const TheFinalWord = ({ tool }) => {
                       missing_context: isDark ? 'border-s-sky-500 bg-sky-900/10'       : 'border-s-sky-500 bg-sky-50',
                       exaggerated:     isDark ? 'border-s-orange-500 bg-amber-900/10'   : 'border-s-orange-500 bg-orange-50',
                       unverifiable:    isDark ? 'border-s-zinc-500 bg-zinc-700/30'       : 'border-s-slate-400 bg-slate-50',
-                      opinion:         isDark ? 'border-s-cyan-500 bg-cyan-900/10'   : 'border-s-cyan-500 bg-cyan-50',
+                      opinion:         isDark ? 'border-s-[#7fb3e0] bg-[#1f2530]' : 'border-s-[#142a43] bg-[#eef3f8]',
                     };
                     const labelColors = {
                       true:            isDark ? 'text-emerald-400' : 'text-emerald-700',
@@ -1757,7 +1763,7 @@ const TheFinalWord = ({ tool }) => {
                       missing_context: isDark ? 'text-sky-400'    : 'text-sky-700',
                       exaggerated:     isDark ? 'text-amber-400'  : 'text-amber-700',
                       unverifiable:    isDark ? 'text-zinc-400'    : 'text-slate-500',
-                      opinion:         isDark ? 'text-cyan-400'  : 'text-cyan-700',
+                      opinion:         isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]',
                     };
                     const colorClass = verdictColors[comp.verdict] || verdictColors.unverifiable;
                     const labelClass = labelColors[comp.verdict] || labelColors.unverifiable;
@@ -1780,7 +1786,7 @@ const TheFinalWord = ({ tool }) => {
               {/* What it gets right */}
               {dissectResult.what_the_claim_gets_right && (
                 <div className={`p-3 rounded-xl border ${isDark ? 'bg-emerald-900/10 border-emerald-800/40' : 'bg-emerald-50 border-emerald-200'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('tfw_dissect_gets_right')}</p>
+                  <p className={`text-[13px] font-boldr mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('tfw_dissect_gets_right')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_the_claim_gets_right}</p>
                 </div>
               )}
@@ -1788,23 +1794,23 @@ const TheFinalWord = ({ tool }) => {
               {/* What changes the picture */}
               {dissectResult.what_changes_the_picture && (
                 <div className={`p-3 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{t('tfw_dissect_changes_picture')}</p>
+                  <p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_dissect_changes_picture')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_changes_the_picture}</p>
                 </div>
               )}
 
               {/* How it spread */}
               {dissectResult.how_it_spread && (
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-cyan-900/10 border border-cyan-800/50' : 'bg-cyan-50 border border-cyan-200'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('tfw_dissect_why_spreads')}</p>
-                  <p className={`text-sm ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{dissectResult.how_it_spread}</p>
+                <div className={`p-3 rounded-xl ${isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]'}`}>
+                  <p className={`text-[13px] font-boldr mb-1 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('tfw_dissect_why_spreads')}</p>
+                  <p className={`text-sm ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{dissectResult.how_it_spread}</p>
                 </div>
               )}
 
               {/* Accurate version */}
               {dissectResult.the_accurate_version && (
                 <div className={`p-4 rounded-xl border-2 ${isDark ? 'border-amber-700/60 bg-amber-900/10' : 'border-amber-300 bg-amber-50'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('tfw_dissect_accurate_version')}</p>
+                  <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('tfw_dissect_accurate_version')}</p>
                   <p className={`text-sm leading-relaxed italic ${c.text}`}>{dissectResult.the_accurate_version}</p>
                   <div className="mt-3">
                   </div>
@@ -1835,7 +1841,7 @@ const TheFinalWord = ({ tool }) => {
 
             {/* Counter-argument */}
             <div className={`px-6 py-4 border-b ${c.border}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('tfw_da_counter_arg')}</p>
+              <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('tfw_da_counter_arg')}</p>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>{daResult.counter_position}</p>
               {daResult.counter_supporting_facts?.map((f, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>• {f}</p>)}
             </div>
@@ -1843,23 +1849,23 @@ const TheFinalWord = ({ tool }) => {
             {/* Scores */}
             <div className="grid grid-cols-2 gap-0 border-b" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
               <div className={`p-4 border-e ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_your_position')}</p>
+                <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('tfw_da_your_position')}</p>
                 <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(daResult.user_score?.support)}`}>{getSupportLabel(daResult.user_score?.support)}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.user_score?.strengths}</p>
-                <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.user_score?.weaknesses}</p>
+                <p className={`text-[13px] ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.user_score?.weaknesses}</p>
               </div>
               <div className="p-4">
-                <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_counter')}</p>
+                <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('tfw_da_counter')}</p>
                 <div className={`text-xl font-black mb-2 uppercase tracking-wide ${getSupportColor(daResult.counter_score?.support)}`}>{getSupportLabel(daResult.counter_score?.support)}</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.counter_score?.strengths}</p>
-                <p className={`text-xs ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.counter_score?.weaknesses}</p>
+                <p className={`text-[13px] ${c.textMuted}`}><span className={c.danger}>✗</span> {daResult.counter_score?.weaknesses}</p>
               </div>
             </div>
 
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{daResult.explanation}</p>
-              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{t('tfw_da_key_insight')}</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
-              {daResult.recommendation && <div className={`p-3 rounded-xl ${isDark ? 'bg-sky-900/10 border border-sky-800/50' : 'bg-sky-50 border border-sky-200'}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('tfw_da_what_consider')}</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{daResult.recommendation}</p></div>}
+              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_da_key_insight')}</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
+              {daResult.recommendation && <div className={`p-3 rounded-xl ${isDark ? 'bg-sky-900/10 border border-sky-800/50' : 'bg-sky-50 border border-sky-200'}`}><p className={`text-[13px] font-boldr mb-1 ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('tfw_da_what_consider')}</p><p className={`text-sm ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{daResult.recommendation}</p></div>}
               <SourcesList sources={daResult.sources} />
             </div>
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
@@ -1870,22 +1876,22 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ LOCAL TRIVIA QUESTION ═══════ */}
         {triviaQuestion && !triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-4 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white'}`}>
+            <div className={`px-6 py-4 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('tfw_trivia_night')}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-cyan-100 text-cyan-500'}`}>{triviaQuestion.category_label || t('tfw_cat_general_short')}</span>
+                  <span className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('tfw_trivia_night')}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-[#eef3f8] text-[#165b9a]'}`}>{triviaQuestion.category_label || t('tfw_cat_general_short')}</span>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{t('tfw_trivia_q_progress', { num: questionCount + (triviaRevealed ? 0 : 1), total: roundLimit, difficulty: triviaQuestion.difficulty_actual || triviaDifficulty })}</span>
               </div>
               <div className={`h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-200'}`}>
                 <div className="h-full rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${(questionCount / roundLimit) * 100}%` }} />
               </div>
-              {teams.length > 1 && <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg mt-2 ${isDark ? 'bg-cyan-900/30' : 'bg-cyan-100'}`}><span>👥</span><span className={`text-sm font-bold ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{t('tfw_trivia_turn', { name: teams[activeTeamIdx]?.name })}</span></div>}
-              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak, t); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{fb.text}</span><span className={`ms-auto text-xs font-bold ${c.accentTxt}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
+              {teams.length > 1 && <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg mt-2 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'}`}><span>👥</span><span className={`text-sm font-bold ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{t('tfw_trivia_turn', { name: teams[activeTeamIdx]?.name })}</span></div>}
+              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak, t); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{fb.text}</span><span className={`ms-auto text-xs font-bold ${c.accentTxt}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
             </div>
-            {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accentTxt}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
+            {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-[#1f2530] border border-[#2c3a4a] text-[#a9cdef]' : 'bg-[#eef3f8] border border-[#d4dde8] text-[#142a43]' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accentTxt}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
             <div className="px-6 py-5">
               <h3 ref={questionHeadingRef} tabIndex={-1} className={`text-lg font-bold mb-5 ${c.text} focus:outline-none`}>{triviaQuestion.question}</h3>
               <div className="space-y-2">
@@ -1893,14 +1899,14 @@ const TheFinalWord = ({ tool }) => {
                   <TriviaOption key={idx} option={option} idx={idx} isSelected={selectedAnswer === idx} isCorrect={idx === triviaQuestion.correct_index} revealed={triviaRevealed} onClick={() => handleTriviaAnswer(idx)} disabled={triviaRevealed} />
                 ))}
               </div>
-              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.accentTxt}`}>{selectedAnswer === triviaQuestion.correct_index ? (teams[activeTeamIdx]?.name ? t('tfw_trivia_got_it', { name: teams[activeTeamIdx].name }) : t('tfw_trivia_got_it_you')) : (teams.length > 1 ? t('tfw_trivia_not_quite_named', { name: teams[activeTeamIdx]?.name }) : t('tfw_trivia_not_quite'))}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
+              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{selectedAnswer === triviaQuestion.correct_index ? (teams[activeTeamIdx]?.name ? t('tfw_trivia_got_it', { name: teams[activeTeamIdx].name }) : t('tfw_trivia_got_it_you')) : (teams.length > 1 ? t('tfw_trivia_not_quite_named', { name: teams[activeTeamIdx]?.name }) : t('tfw_trivia_not_quite'))}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
             </div>
             {triviaRevealed && (
               <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
-                <div className="flex items-center gap-3">{teams.length === 1 ? <span className={`text-sm font-bold ${c.text}`}>{teams[0].score}/{questionCount}</span> : <span className={`text-xs ${c.textMuted}`}>{teams.map(team => `${team.name}: ${team.score}`).join(' · ')}</span>}</div>
+                <div className="flex items-center gap-3">{teams.length === 1 ? <span className={`text-sm font-bold ${c.text}`}>{teams[0].score}/{questionCount}</span> : <span className={`text-[13px] ${c.textMuted}`}>{teams.map(team => `${team.name}: ${team.score}`).join(' · ')}</span>}</div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowChallenge(!showChallenge)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>💬</span> {t('tfw_actually')}</button>
-                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} disabled:opacity-40`}>
+                  <button onClick={advanceTrivia} disabled={loading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'} disabled:opacity-40`}>
                     {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>→</span>} {questionCount >= roundLimit ? t('tfw_trivia_see_results') : teams.length > 1 ? t('tfw_trivia_turn', { name: teams[(activeTeamIdx + 1) % teams.length]?.name }) : t('tfw_trivia_next')}
                   </button>
                 </div>
@@ -1911,10 +1917,10 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ LOCAL TRIVIA ENDGAME ═══════ */}
         {triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-cyan-700/50 bg-zinc-800' : 'border-cyan-300 bg-white'}`}>
-            <div className={`px-6 py-8 text-center ${isDark ? 'bg-cyan-900/20' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white'}`}>
+            <div className={`px-6 py-8 text-center ${isDark ? 'bg-[#1f2530]' : 'bg-gradient-to-b from-fuchsia-50 to-white'}`}>
               <span className="text-5xl block mb-3">🏆</span>
-              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('tfw_trivia_champion')}</p>
+              <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('tfw_trivia_champion')}</p>
               {(() => { const sorted = [...teams].sort((a, b) => b.score - a.score); const isTie = sorted.length > 1 && sorted[0].score === sorted[1].score; return <h2 className={`text-2xl font-black ${c.text}`}>{isTie ? t('tfw_tie') : t('tfw_wins', { name: sorted[0].name })}</h2>; })()}
               <p className={`text-sm mt-1 ${c.textMuted}`}>{t('tfw_trivia_summary', { rounds: questionCount, category: optCatLabel(triviaCategory), difficulty: triviaDifficulty })}</p>
             </div>
@@ -1923,7 +1929,7 @@ const TheFinalWord = ({ tool }) => {
                 const total = teams.length > 1 ? Math.ceil(questionCount / teams.length) : questionCount;
                 const pct = total > 0 ? Math.round((team.score / total) * 100) : 0;
                 return (
-                  <div key={team.name} className={`p-4 rounded-xl border ${rank === 0 ? isDark ? 'bg-cyan-900/10 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200' : c.cardAlt}`}>
+                  <div key={team.name} className={`p-4 rounded-xl border ${rank === 0 ? isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]' : c.cardAlt}`}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2"><span className="text-lg">{rank === 0 ? '🥇' : rank === 1 ? '🥈' : '🥉'}</span><span className={`text-sm font-bold ${c.text}`}>{team.name}</span></div>
                       <span className={`text-2xl font-black ${rank === 0 ? c.accentTxt : c.textSecondary}`}>{team.score}/{total}</span>
@@ -1934,11 +1940,11 @@ const TheFinalWord = ({ tool }) => {
                 );
               })}
             </div>
-            {Object.keys(categoryBreakdown).length > 0 && <div className={`px-6 py-4 border-t ${c.border}`}><p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('tfw_trivia_by_category')}</p><div className="grid grid-cols-2 gap-2">{Object.entries(categoryBreakdown).map(([cat, data]) => <div key={cat} className={`p-2.5 rounded-lg border text-center ${c.cardAlt}`}><p className={`text-xs font-semibold ${c.text}`}>{cat}</p><p className={`text-lg font-black ${data.correct === data.total ? c.success : c.textSecondary}`}>{data.correct}/{data.total}</p></div>)}</div></div>}
+            {Object.keys(categoryBreakdown).length > 0 && <div className={`px-6 py-4 border-t ${c.border}`}><p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('tfw_trivia_by_category')}</p><div className="grid grid-cols-2 gap-2">{Object.entries(categoryBreakdown).map(([cat, data]) => <div key={cat} className={`p-2.5 rounded-lg border text-center ${c.cardAlt}`}><p className={`text-xs font-semibold ${c.text}`}>{cat}</p><p className={`text-lg font-black ${data.correct === data.total ? c.success : c.textSecondary}`}>{data.correct}/{data.total}</p></div>)}</div></div>}
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
               <div className="flex gap-1.5"><ShareBtn content={buildTriviaShareText()} title={t('tfw_share_trivia_title')} /></div>
               <div className="flex gap-2">
-                <button onClick={() => { setTriviaFinished(false); setTeams(prev => prev.map(team => ({ ...team, score: 0, streak: 0, bestStreak: 0 }))); setQuestionCount(0); setActiveTeamIdx(0); setPreviousQuestions([]); setCategoryBreakdown({}); setTriviaSetup(false); handleTrivia(); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'}`}><span>🔄</span> {t('tfw_trivia_rematch')}</button>
+                <button onClick={() => { setTriviaFinished(false); setTeams(prev => prev.map(team => ({ ...team, score: 0, streak: 0, bestStreak: 0 }))); setQuestionCount(0); setActiveTeamIdx(0); setPreviousQuestions([]); setCategoryBreakdown({}); setTriviaSetup(false); handleTrivia(); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'}`}><span>🔄</span> {t('tfw_trivia_rematch')}</button>
                 <button onClick={resetTrivia} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}><span>⚡</span> {t('tfw_trivia_new_game')}</button>
               </div>
             </div>
@@ -1988,7 +1994,7 @@ const TheFinalWord = ({ tool }) => {
                     {Object.values(appealResult.updated_scores).map((p, i) => (
                       <div key={i} className={`p-2 rounded-lg border text-center ${c.cardAlt}`}>
                         <p className={`text-xs font-bold ${c.text}`}>{p.name}</p>
-                        <p className={`text-xs ${c.textMuted}`}>{p.original_accuracy}% → <span className="font-bold">{p.revised_accuracy}%</span></p>
+                        <p className={`text-[13px] ${c.textMuted}`}>{p.original_accuracy}% → <span className="font-bold">{p.revised_accuracy}%</span></p>
                       </div>
                     ))}
                   </div>
@@ -2003,7 +2009,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ POST-RESULT CROSS-REF ═══════ */}
         {result && (
-          <p className={`text-xs ${c.textMuted} px-1 mt-8`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} px-1 mt-8`}>
             {t('tfw_xref_simmering').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
@@ -2052,8 +2058,8 @@ const TheFinalWord = ({ tool }) => {
 
         {/* Cross-references — post-result + AI disclaimer */}
         {(result || daResult) && (
-          <div className={`py-3 space-y-1.5`}>
-            <p className={`text-xs ${c.textSecondary}`}>
+          <div data-print-hide className={`py-3 space-y-1.5`}>
+            <p data-print-hide className={`text-xs ${c.textSecondary}`}>
               {t('tfw_xref_brainroulette').split('{{link}}').map((part, i, arr) => (
                 <React.Fragment key={i}>
                   {part}
@@ -2061,7 +2067,7 @@ const TheFinalWord = ({ tool }) => {
                 </React.Fragment>
               ))}
             </p>
-            <p className={`text-xs ${c.textMuted}`}>{t('tfw_disclaimer_post')}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_disclaimer_post')}</p>
           </div>
         )}
         </div>{/* end resultsRef wrapper */}

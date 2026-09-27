@@ -280,9 +280,10 @@ const LaundroMat = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700'     : 'bg-gray-100',
     text:          isDark ? 'text-zinc-50'    : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-400'   : 'text-gray-600',
+    labelText:     isDark ? 'text-zinc-200'   : 'text-gray-700',
     textMuted:     isDark ? 'text-zinc-400'   : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-sky-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-sky-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-gray-500 hover:text-gray-800',
     btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
@@ -291,8 +292,7 @@ const LaundroMat = ({ tool }) => {
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/30 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
@@ -316,9 +316,7 @@ const LaundroMat = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // Tabs
@@ -787,7 +785,7 @@ const LaundroMat = ({ tool }) => {
               ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
             {t(tab.labelKey)}
             {tab.badge > 0 && (
-              <span className={`ms-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
+              <span className={`ms-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-black
                 ${activeTab === tab.id ? 'bg-white/20' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
                 {tab.badge}
               </span>
@@ -918,7 +916,7 @@ const LaundroMat = ({ tool }) => {
 
         {/* ── Quick Add Presets ── */}
         <div className={`p-4 rounded-2xl border ${c.border} ${c.card} mb-4`}>
-          <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>{t('lmt_quick_add')}</span>
+          <span className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>{t('lmt_quick_add')}</span>
           <div className="grid grid-cols-2 gap-2 mb-2">
             {[
               { type: 'washer', min: 30, icon: '🫧' },
@@ -935,27 +933,27 @@ const LaundroMat = ({ tool }) => {
               </button>
             ))}
           </div>
-          <p className={`text-[11px] ${c.textMuted} text-center`}>{t('lmt_quick_add_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} text-center`}>{t('lmt_quick_add_hint')}</p>
         </div>
 
         {/* ── Custom Timer (collapsible) ── */}
         <div className={`rounded-2xl border ${c.border} ${c.card} mb-5 overflow-hidden`}>
-          <button onClick={() => setShowCustomTimer(!showCustomTimer)}
+          <button data-print-heading aria-expanded={!!(showCustomTimer)} onClick={() => setShowCustomTimer(!showCustomTimer)}
             className={`w-full flex items-center gap-2 p-4 text-start`}>
             <span>⏱️</span>
-            <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide flex-1`}>{t('lmt_timer_options')}</span>
-            {<Caret open={showCustomTimer} />}
+            <span className={`text-[13px] font-bold ${c.textSecondary} flex-1`}>{t('lmt_timer_options')}</span>
+            {<span data-print-hide><Caret open={showCustomTimer} /></span>}
           </button>
-          {showCustomTimer && (
-            <div className="px-5 pb-5">
+          {(
+            <div data-sec-body hidden={!(showCustomTimer)} className="px-5 pb-5">
               <input type="text" value={newLabel} onChange={e => setNewLabel(e.target.value)}
                 placeholder={t('lmt_label_placeholder')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
 
-              <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_duration')}</span>
+              <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_duration')}</span>
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {DURATION_PRESETS.map(p => (
-                  <button key={p.min} onClick={() => { setNewDuration(p.min); setCustomDuration(''); }}
+                  <button aria-pressed={!customDuration && newDuration === p.min} key={p.min} onClick={() => { setNewDuration(p.min); setCustomDuration(''); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${!customDuration && newDuration === p.min ? c.pillActive : c.pillInactive}`}>
                     {p.label}
                   </button>
@@ -965,20 +963,20 @@ const LaundroMat = ({ tool }) => {
                   className={`w-20 px-2 py-1.5 rounded-lg border text-xs text-center ${c.input} outline-none`} />
               </div>
 
-              <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_sound_label')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_sound_hint')}</span></span>
+              <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_sound_label')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_sound_hint')}</span></span>
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {SOUND_OPTIONS.map(s => (
-                  <button key={s.id} onClick={() => { setNewSound(s.id); initAudio(); playSound(s.id, true); }}
+                  <button aria-pressed={newSound === s.id} key={s.id} onClick={() => { setNewSound(s.id); initAudio(); playSound(s.id, true); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${newSound === s.id ? c.pillActive : c.pillInactive}`}>
                     {s.icon} {t(s.labelKey)}
                   </button>
                 ))}
               </div>
 
-              <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_alert_before')}</span>
+              <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_alert_before')}</span>
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {ALERT_PRESETS.map(p => (
-                  <button key={p.min} onClick={() => setAlertBefore(p.min)}
+                  <button aria-pressed={alertBefore === p.min} key={p.min} onClick={() => setAlertBefore(p.min)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${alertBefore === p.min ? c.pillActive : c.pillInactive}`}>
                     {p.label}
                   </button>
@@ -996,7 +994,7 @@ const LaundroMat = ({ tool }) => {
         {/* Active timers */}
         {timers.length > 0 && (
           <div>
-            <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>
+            <span className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>
               {t('lmt_active_timers', { n: timers.filter(tm => !tm.dismissed).length })}
             </span>
             {timers.filter(tm => !tm.dismissed).map(renderTimerCard)}
@@ -1062,13 +1060,13 @@ const LaundroMat = ({ tool }) => {
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 {r.recommended_settings.cycle && (
-                  <div><span className={`text-xs ${c.textMuted}`}>{t('lmt_res_cycle')}</span><p className={`text-sm font-semibold ${c.text}`}>{r.recommended_settings.cycle}</p></div>
+                  <div><span className={`text-[13px] ${c.textMuted}`}>{t('lmt_res_cycle')}</span><p className={`text-sm font-semibold ${c.text}`}>{r.recommended_settings.cycle}</p></div>
                 )}
                 {r.recommended_settings.temperature && (
-                  <div><span className={`text-xs ${c.textMuted}`}>{t('lmt_res_temperature')}</span><p className={`text-sm font-semibold ${c.text}`}><span>🌡️</span>{r.recommended_settings.temperature}</p></div>
+                  <div><span className={`text-[13px] ${c.textMuted}`}>{t('lmt_res_temperature')}</span><p className={`text-sm font-semibold ${c.text}`}><span>🌡️</span>{r.recommended_settings.temperature}</p></div>
                 )}
                 {r.recommended_settings.spin && (
-                  <div><span className={`text-xs ${c.textMuted}`}>{t('lmt_res_spin')}</span><p className={`text-sm font-semibold ${c.text}`}>{r.recommended_settings.spin}</p></div>
+                  <div><span className={`text-[13px] ${c.textMuted}`}>{t('lmt_res_spin')}</span><p className={`text-sm font-semibold ${c.text}`}>{r.recommended_settings.spin}</p></div>
                 )}
               </div>
               {r.recommended_settings.detergent_notes && (
@@ -1153,7 +1151,7 @@ const LaundroMat = ({ tool }) => {
       <div>
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
           <div className="mb-2">
-            <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+            <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
               <span>👕</span> {t('lmt_adv_q_next')} <span className={c.required}>*</span>
             </h3>
           </div>
@@ -1163,7 +1161,7 @@ const LaundroMat = ({ tool }) => {
             {LOAD_CHIPS.map(chip => {
               const active = selectedChips.includes(chip.id);
               return (
-                <button key={chip.id} onClick={() => {
+                <button aria-pressed={active} key={chip.id} onClick={() => {
                   const next = active
                     ? selectedChips.filter(id => id !== chip.id)
                     : [...selectedChips, chip.id];
@@ -1208,12 +1206,12 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           {/* Machine type */}
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_machine_type_next')}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_machine_type_next')}</span>
           <div className="flex gap-1.5 mb-4">
             {[
               { v: 'home', lk: 'lmt_machine_home' }, { v: 'laundromat', lk: 'lmt_machine_laundromat' }, { v: 'handwash', lk: 'lmt_machine_handwash' },
             ].map(m => (
-              <button key={m.v} onClick={() => setMachineType(m.v)}
+              <button aria-pressed={machineType === m.v} key={m.v} onClick={() => setMachineType(m.v)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all flex-1 ${machineType === m.v ? c.pillActive : c.pillInactive}`}>
                 {t(m.lk)}
               </button>
@@ -1335,14 +1333,14 @@ const LaundroMat = ({ tool }) => {
     return (
       <div>
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
+          <h3 className={`text-base font-bold ${c.text} mb-3 flex items-center gap-2`}>
             <span>💧</span> {t('lmt_stain_q')}
           </h3>
 
           {/* Quick-select stains */}
           <div className="flex flex-wrap gap-1.5 mb-3">
             {STAIN_TYPES.map(s => (
-              <button key={s.id} onClick={() => { setStainType(s.id); setStainCustom(''); }}
+              <button aria-pressed={stainType === s.id} key={s.id} onClick={() => { setStainType(s.id); setStainCustom(''); }}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${stainType === s.id ? c.pillActive : c.pillInactive}`}>
                 {t(s.labelKey)}
@@ -1356,10 +1354,10 @@ const LaundroMat = ({ tool }) => {
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
 
           {/* Fabric */}
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_fabric')}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_fabric')}</span>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {FABRIC_TYPES.map(f => (
-              <button key={f.value} onClick={() => setFabric(f.value)}
+              <button aria-pressed={fabric === f.value} key={f.value} onClick={() => setFabric(f.value)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${fabric === f.value ? c.pillActive : c.pillInactive}`}>
                 {t(f.labelKey)}
               </button>
@@ -1367,10 +1365,10 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           {/* Stain age */}
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_stain_state_q')}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_stain_state_q')}</span>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {STAIN_AGES.map(a => (
-              <button key={a.value} onClick={() => setStainAge(a.value)}
+              <button aria-pressed={stainAge === a.value} key={a.value} onClick={() => setStainAge(a.value)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${stainAge === a.value ? c.pillActive : c.pillInactive}`}>
                 {t(a.labelKey)}
               </button>
@@ -1378,7 +1376,7 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           <div className="mb-3">
-            <label className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_stain_tried_q')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_stain_tried_q')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></label>
             <input type="text" value={stainTreatment} onChange={e => setStainTreatment(e.target.value)}
               placeholder={t('lmt_stain_tried_ph')}
               className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -1465,10 +1463,10 @@ const LaundroMat = ({ tool }) => {
               <p className={`text-xs ${c.textSecondary}`}>{t('lmt_rescue_intro_next')}</p>
             </div>
 
-            <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               {/* What happened */}
               <div>
-                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('lmt_rescue_what_happened')}</p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('lmt_rescue_what_happened')}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {DISASTER_TYPES.map(d => (
                     <button key={d.id} onClick={() => setDisasterType(disasterType === d.id ? '' : d.id)}
@@ -1481,7 +1479,7 @@ const LaundroMat = ({ tool }) => {
 
               {/* Item description */}
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmt_rescue_what_is_it')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_what_is_it_hint')}</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmt_rescue_what_is_it')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_what_is_it_hint')}</span></label>
                 <input value={rescueItem} onChange={e => setRescueItem(e.target.value)}
                   placeholder={t('lmt_rescue_item_placeholder')}
                   className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -1489,7 +1487,7 @@ const LaundroMat = ({ tool }) => {
 
               {/* Material */}
               <div>
-                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('lmt_rescue_material')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('lmt_rescue_material')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></p>
                 <div className="flex flex-wrap gap-1.5">
                   {MATERIALS.map(m => (
                     <button key={m.id} onClick={() => setRescueMaterial(rescueMaterial === m.id ? '' : m.id)}
@@ -1502,7 +1500,7 @@ const LaundroMat = ({ tool }) => {
 
               {/* When */}
               <div>
-                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('lmt_rescue_state_q')}</p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('lmt_rescue_state_q')}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {TIME_AGO.map(item => (
                     <button key={item.id} onClick={() => setRescueTimeAgo(rescueTimeAgo === item.id ? '' : item.id)}
@@ -1515,7 +1513,7 @@ const LaundroMat = ({ tool }) => {
 
               {/* Photo */}
               <div>
-                <p className={`text-xs font-bold ${c.textSecondary} mb-1.5`}>{t('lmt_rescue_photo')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_photo_hint')}</span></p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('lmt_rescue_photo')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_photo_hint')}</span></p>
                 <input ref={rescuePhotoRef} type="file" accept="image/*" onChange={handleRescuePhoto} className="hidden" />
                 {rescuePreview ? (
                   <div className="relative inline-block">
@@ -1565,7 +1563,7 @@ const LaundroMat = ({ tool }) => {
 
             {/* Rescue steps */}
             {rescueResults.rescue_steps?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <p className={`text-sm font-bold ${c.text} mb-3`}>{t('lmt_rescue_steps_title')}</p>
                 <ol className="space-y-2">
                   {rescueResults.rescue_steps.map((step, i) => (
@@ -1580,7 +1578,7 @@ const LaundroMat = ({ tool }) => {
 
             {/* Do not */}
             {rescueResults.do_not?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lmt_rescue_do_not')}</p>
                 <ul className="space-y-1">
                   {rescueResults.do_not.map((d, i) => <li key={i} className={`text-sm ${c.textSecondary} flex items-start gap-1.5`}><span className="text-red-500 flex-shrink-0">✗</span>{d}</li>)}
@@ -1590,7 +1588,7 @@ const LaundroMat = ({ tool }) => {
 
             {/* If not working + when to stop */}
             {(rescueResults.if_not_working || rescueResults.when_to_stop) && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+              <div className={`border-t ${c.border} pt-5 space-y-2`}>
                 {rescueResults.if_not_working && (
                   <p className={`text-sm ${c.textSecondary}`}><span className="font-bold">{t('lmt_rescue_if_not_working')}</span> {rescueResults.if_not_working}</p>
                 )}
@@ -1608,8 +1606,8 @@ const LaundroMat = ({ tool }) => {
             )}
 
             {/* Cross-ref */}
-            <div className={`${c.card} border ${c.border} rounded-xl p-3`}>
-              <p className={`text-xs ${c.textSecondary}`}>{t('lmt_xref_rescue_prefix')}<a href="/BuyWise" className={linkStyle}>{t('lmt_xref_buywise')}</a>{t('lmt_xref_rescue_suffix')}</p>
+            <div data-print-hide className={`${c.card} border ${c.border} rounded-xl p-3`}>
+              <p data-print-hide className={`text-xs ${c.textSecondary}`}>{t('lmt_xref_rescue_prefix')}<a href="/BuyWise" className={linkStyle}>{t('lmt_xref_buywise')}</a>{t('lmt_xref_rescue_suffix')}</p>
             </div>
 
             <button onClick={() => { setRescueResults(null); setDisasterType(''); setRescueItem(''); setRescueMaterial(''); setRescueTimeAgo(''); setRescueSeverity(''); setRescueImage(null); setRescuePreview(null); }}
@@ -1655,7 +1653,7 @@ const LaundroMat = ({ tool }) => {
         </div>
 
         {r?.care_symbols?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div>
               <p className={`text-sm font-bold ${c.text}`}>{t('lmt_label_result_title')}</p>
               {r.load_assessment && <p className={`text-sm ${c.textSecondary} mt-1`}>{r.load_assessment}</p>}
@@ -1692,7 +1690,7 @@ const LaundroMat = ({ tool }) => {
         {showSymbolReference && <div className="space-y-5">
           {categories.map(cat => (
             <div key={cat}>
-              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-2`}>{t(CARE_SYMBOLS.find(s => s.category === cat).categoryKey)}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t(CARE_SYMBOLS.find(s => s.category === cat).categoryKey)}</p>
               <div className="space-y-2">
                 {CARE_SYMBOLS.filter(s => s.category === cat).map(sym => (
                   <div key={sym.code} className={`flex items-start gap-3 p-3.5 rounded-xl border ${sym.caution ? (isDark ? 'bg-red-900/15 border-red-700/50' : 'bg-red-50 border-red-200') : `${c.card} ${c.border}`}`}>
@@ -1742,12 +1740,20 @@ const LaundroMat = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-center justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🧺'}</span>{tool?.tagline ?? t('lmt_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1755,6 +1761,7 @@ const LaundroMat = ({ tool }) => {
             {hasAnything && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('lmt_start_over')}</button>
             )}
+          </div>
           </div>
         </div>
         <div className="px-5 py-4">
@@ -1782,16 +1789,16 @@ const LaundroMat = ({ tool }) => {
           at the end after one — the two placements the convention allows, and
           the post-result one is what S5.5 checks for. */}
       {(() => { const results = adviceResults || stainResults || rescueResults; return results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmt_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('lmt_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/PEP" className={`text-xs ${linkStyle}`}>{t('lmt_xref_pep')}</a>
           </div>
         </div>
       ); })()}
       {!(adviceResults || stainResults || rescueResults) && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmt_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('lmt_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/PEP" className={`text-xs ${linkStyle}`}>{t('lmt_xref_pep')}</a>
           </div>

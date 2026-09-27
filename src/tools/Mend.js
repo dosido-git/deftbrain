@@ -180,10 +180,10 @@ const Mend = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-50 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnDanger: isDark ? 'bg-red-700 hover:bg-red-600 text-white' : 'bg-red-100 hover:bg-red-200 text-red-700',
-    tabActive: isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-600 text-white',
+    tabActive: isDark ? 'bg-[#2f6fb0] text-white' : 'bg-[#142a43] text-white',
     tabInactive: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
     badge: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
     success: isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -198,7 +198,7 @@ const Mend = ({ tool }) => {
     flagBg: isDark ? 'bg-red-900/30 border-red-600' : 'bg-red-50 border-red-200',
     goodBg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-200',
     rewriteBg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-200',
-    cyanBg:    isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-200',
+    cyanBg:    isDark ? 'bg-[#1f2530] border-[#7fb3e0]' : 'bg-[#eef3f8] border-[#d4dde8]',
     amberBg: isDark ? 'bg-amber-900/30 border-amber-600' : 'bg-amber-50 border-amber-200',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -210,9 +210,7 @@ const Mend = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const levelColor = (lvl) => c[`level${lvl}`] || c.level3;
 
@@ -830,7 +828,7 @@ const Mend = ({ tool }) => {
           itself is worth keeping, so it prints as text instead. */}
       {calResults && (
         <div data-print-show className={`hidden rounded-xl p-4 ${c.cardInner}`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1`}>{t('apc_print_what_happened')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('apc_print_what_happened')}</p>
           <p className="text-sm">{calForm.whatHappened}</p>
           {calForm.relationship && <p className={`text-xs ${c.textSecondary} mt-1`}>{calForm.relationship}</p>}
         </div>
@@ -845,7 +843,7 @@ const Mend = ({ tool }) => {
         {/* "Describe the situation" invited a story. The tool is actually after
             three things: what happened, who it landed on, and what has happened
             since — so the field asks for those. */}
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('apc_cal_what_happened_hint')}</p>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('apc_cal_what_happened_hint')}</p>
         <textarea value={calForm.whatHappened} onChange={e => setCalForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_cal_ph_what_happened')}
           className={`w-full h-32 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
@@ -924,13 +922,13 @@ const Mend = ({ tool }) => {
 
           {calResults.todays_job?.action && (
             <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
-              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-1`}>🎯 {t('apc_todays_job')}</p>
+              <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>🎯 {t('apc_todays_job')}</p>
               <p className={`text-lg font-black ${c.text}`}>{calResults.todays_job.action}</p>
               {calResults.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{calResults.todays_job.why}</p>}
               {calResults.todays_job.not_yet?.length > 0 && (
                 <div className="mt-3 space-y-0.5">
                   {calResults.todays_job.not_yet.map((x, i) => (
-                    <p key={i} className={`text-xs ${c.textMuted}`}>✕ {x}</p>
+                    <p key={i} className={`text-[13px] ${c.textMuted}`}>✕ {x}</p>
                   ))}
                 </div>
               )}
@@ -1047,7 +1045,7 @@ const Mend = ({ tool }) => {
               <div className="space-y-3">
                 {groupRoadmap(calResults.roadmap).map(([when, steps]) => (
                   <div key={when}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1`}>{when}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{when}</p>
                     {steps.map((st, i) => (
                       <p key={i} className={`text-sm ${c.textSecondary}`}>✓ {st}</p>
                     ))}
@@ -1110,7 +1108,7 @@ const Mend = ({ tool }) => {
               building trust, read as a product interrupting a conversation.
               Last on the page now, and folded away until asked for. */}
           <details className="group">
-            <summary className={`cursor-pointer text-xs font-bold ${c.textMuted} uppercase tracking-wide list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
+            <summary className={`cursor-pointer text-[13px] font-bold ${c.textMuted} list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
               {t('apc_more_ways')} <Caret groupOpen />
             </summary>
             <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-2`}>
@@ -1146,7 +1144,7 @@ const Mend = ({ tool }) => {
       {/* History panel */}
       {calHistory.length > 0 && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('apc_cal_recent')}</h3>
+          <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('apc_cal_recent')}</h3>
           <div className="space-y-1.5">
             {calHistory.map(entry => (
               <button key={entry.id}
@@ -1559,7 +1557,7 @@ const Mend = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium ${c.text}`}>{sa.situation}</p>
                       <p className={`text-sm ${c.textMuteded}`}>{sa.one_line}</p>
-                      {sa.their_response && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('apc_aud_their_response', { val: sa.their_response })}</p>}
+                      {sa.their_response && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('apc_aud_their_response', { val: sa.their_response })}</p>}
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${c.badge}`}>{t('apc_aud_level_badge', { level: sa.warranted_level })}</span>
                   </div>
@@ -1890,8 +1888,8 @@ const Mend = ({ tool }) => {
           {/* Emotional validation */}
           {decodeResults.emotional_validation && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">💜</span>{t('apc_dec_validation')}</h3>
-              <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{decodeResults.emotional_validation}</p>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">💜</span>{t('apc_dec_validation')}</h3>
+              <p className={isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}>{decodeResults.emotional_validation}</p>
             </div>
           )}
 
@@ -1962,7 +1960,7 @@ const Mend = ({ tool }) => {
             {/* Scene setting (first response) */}
             {practiceResults?.scene_setting && practiceHistory.length === 0 && (
               <div className={`rounded-lg p-4 border-2 ${c.cyanBg} mb-4`}>
-                <p className={`text-sm italic ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{practiceResults.scene_setting}</p>
+                <p className={`text-sm italic ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{practiceResults.scene_setting}</p>
               </div>
             )}
 
@@ -2116,9 +2114,9 @@ const Mend = ({ tool }) => {
           {/* Situation read & validation */}
           {forgiveResults.situation_read && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <p className={`${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{forgiveResults.situation_read}</p>
+              <p className={`${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{forgiveResults.situation_read}</p>
               {forgiveResults.emotional_validation && (
-                <p className={`mt-3 font-medium ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}>{forgiveResults.emotional_validation}</p>
+                <p className={`mt-3 font-medium ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{forgiveResults.emotional_validation}</p>
               )}
             </div>
           )}
@@ -2207,16 +2205,16 @@ const Mend = ({ tool }) => {
           {/* If not ready */}
           {forgiveResults.if_youre_not_ready && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">💜</span>{t('apc_for_not_ready')}</h3>
-              <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{forgiveResults.if_youre_not_ready}</p>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">💜</span>{t('apc_for_not_ready')}</h3>
+              <p className={isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}>{forgiveResults.if_youre_not_ready}</p>
             </div>
           )}
 
           {/* Reflection */}
           {forgiveResults.one_thing_to_sit_with && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">🪷</span>{t('apc_for_sit_with')}</h3>
-              <p className={`italic ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>{forgiveResults.one_thing_to_sit_with}</p>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">🪷</span>{t('apc_for_sit_with')}</h3>
+              <p className={`italic ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{forgiveResults.one_thing_to_sit_with}</p>
             </div>
           )}
 
@@ -2459,7 +2457,7 @@ const Mend = ({ tool }) => {
           {/* Approach */}
           {letterResults.letter_approach && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <p className={isDark ? 'text-cyan-200' : 'text-cyan-800'}>{letterResults.letter_approach}</p>
+              <p className={isDark ? 'text-zinc-100' : 'text-[#142a43]'}>{letterResults.letter_approach}</p>
             </div>
           )}
 
@@ -2487,7 +2485,7 @@ const Mend = ({ tool }) => {
                       <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
                         {v.tone_label}
                       </h3>
-                      <p className={`text-xs ${c.textMuteded}`}>{t('apc_let_word_count', { best: v.best_for, n: v.word_count })}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{t('apc_let_word_count', { best: v.best_for, n: v.word_count })}</p>
                     </div>
                   </div>
                   <div className={`whitespace-pre-wrap text-sm leading-relaxed ${isDark ? 'text-emerald-100' : 'text-emerald-900'}`}>
@@ -2631,12 +2629,12 @@ const Mend = ({ tool }) => {
             </div>
 
             <div className={`rounded-lg p-3 border ${c.cyanBg}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('apc_fix_trying_to_do')}</p>
+              <p className={`text-[13px] font-semibold mb-1 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('apc_fix_trying_to_do')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis?.what_they_were_trying_to_do}</p>
             </div>
             {fixResults.diagnosis?.why_it_backfired && (
               <div className={`rounded-lg p-3 border ${c.flagBg} mt-3`}>
-                <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_backfired')}</p>
+                <p className={`text-[13px] font-semibold mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_backfired')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis.why_it_backfired}</p>
               </div>
             )}
@@ -2648,7 +2646,7 @@ const Mend = ({ tool }) => {
             <p className={`text-sm mb-4 ${c.textMuteded}`}>{fixResults.the_fix?.approach}</p>
 
             <div className={`rounded-lg p-4 border ${c.goodBg} mb-4`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_fix_rebuilt')}</p>
+              <p className={`text-[13px] font-semibold mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_fix_rebuilt')}</p>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.text}`}>{fixResults.the_fix?.rebuilt_apology}</p>
               <div className="mt-3">
               </div>
@@ -2656,7 +2654,7 @@ const Mend = ({ tool }) => {
 
             {fixResults.the_fix?.what_changed?.length > 0 && (
               <div className="space-y-2">
-                <p className={`text-xs font-semibold uppercase tracking-wide ${c.textMuteded}`}>{t('apc_fix_what_changed')}</p>
+                <p className={`text-[13px] font-semibold ${c.textMuteded}`}>{t('apc_fix_what_changed')}</p>
                 {fixResults.the_fix.what_changed.map((w, i) => (
                   <div key={i} className={`rounded-lg p-3 border text-sm grid grid-cols-1 sm:grid-cols-2 gap-2 ${c.cardInner}`}>
                     <div>
@@ -2667,7 +2665,7 @@ const Mend = ({ tool }) => {
                       <span className={`text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('apc_fix_after')}</span>
                       <p className={`mt-0.5 ${c.textSecondary}`}>{w.replaced_with}</p>
                     </div>
-                    <div className={`sm:col-span-2 text-xs ${c.textMuteded}`}>{w.why_better}</div>
+                    <div className={`sm:col-span-2 text-[13px] ${c.textMuteded}`}>{w.why_better}</div>
                   </div>
                 ))}
               </div>
@@ -2677,7 +2675,7 @@ const Mend = ({ tool }) => {
           {/* Delivery + Fallback */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className={`rounded-xl p-4 border ${c.card}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('apc_fix_delivery')}</p>
+              <p className={`text-[13px] font-semibold mb-3 ${c.textMuteded}`}>{t('apc_fix_delivery')}</p>
               {fixResults.delivery_note && (
                 <div className="space-y-2 text-sm">
                   <p><span className={`font-medium ${c.text}`}>{t('apc_fix_timing')}</span> <span className={c.textSecondary}>{fixResults.delivery_note.timing}</span></p>
@@ -2689,7 +2687,7 @@ const Mend = ({ tool }) => {
               )}
             </div>
             <div className={`rounded-xl p-4 border ${c.card}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('apc_fix_if_still')}</p>
+              <p className={`text-[13px] font-semibold mb-3 ${c.textMuteded}`}>{t('apc_fix_if_still')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.if_they_still_dont_accept_it}</p>
             </div>
           </div>
@@ -2781,7 +2779,7 @@ const Mend = ({ tool }) => {
               <div key={s.key} className={`rounded-xl p-3 text-center ${c.card}`}>
                 <span>{s.emoji}</span>
                 <p className={`text-xl font-bold ${c.text}`}>{s.count}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{s.label}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -2868,14 +2866,22 @@ const Mend = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Header card with tabs — unified */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between">
             {/* PF-30: the wrapper already renders the tool's name as the page
                 <h1>. PF-17c: dark ink in both themes, on the tool's own pale
                 headerColor. */}
             <div className="min-w-0">
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
               </p>
               <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -2886,6 +2892,7 @@ const Mend = ({ tool }) => {
               </button>
             ) : null}
           </div>
+        </div>
         </div>
         {/* Twelve tabs above a box that says "what happened?" are eleven
             answers to questions nobody has asked yet. They come back under the
@@ -2919,15 +2926,15 @@ const Mend = ({ tool }) => {
         </div>
 
       {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
           {t('apc_xref_pre_prompt')}<a href="/ConflictCoach" className={linkStyle}>{t('apc_xref_conflict_coach')}</a>{t('apc_xref_pre_suffix')}
         </p>
       )}
       {/* Cross-references — shown after any result */}
       {results && (
         <div className={`rounded-xl p-4 border ${c.border} ${c.card}`}>
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_xref_related')}</p>
-          <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('apc_xref_related')}</p>
+          <div data-print-hide className={`space-y-1.5 text-xs ${c.textSecondary}`}>
             <p>{t('apc_xref_difficult_prompt')}<a href="/DifficultTalkCoach" className={linkStyle}>{t('apc_xref_difficult_link')}</a>{t('apc_xref_difficult_suffix')}</p>
             <p>{t('apc_xref_velvet_prompt')}<a href="/VelvetHammer" className={linkStyle}>{t('apc_xref_velvet_link')}</a>{t('apc_xref_velvet_suffix')}</p>
           </div>

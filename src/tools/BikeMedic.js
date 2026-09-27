@@ -927,15 +927,13 @@ const BikeMedic = ({ tool }) => {
     border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-zinc-400'
                           : 'bg-white border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     success:       isDark ? 'bg-green-900/30 border-green-700 text-green-200'
@@ -990,16 +988,14 @@ const BikeMedic = ({ tool }) => {
       ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
       : (isDark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700'),
     deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
-    accentTxt:    isDark ? 'text-cyan-400' : 'text-cyan-600',
+    accentTxt:    isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     btnPrimarySuccess: isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white',
     cardAltHover: isDark ? 'hover:bg-zinc-700/40' : 'hover:bg-slate-50',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Core state
   // eslint-disable-next-line no-unused-vars
@@ -1542,12 +1538,17 @@ const BikeMedic = ({ tool }) => {
   );
 
   const renderPersistentHeader = (screenLabel) => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
-      <div className="pb-3 border-b border-zinc-500">
+    <div>
+      {/* Site style (2026-09-27): pale header band, screen only (PF-17c). */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div>
         <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🚲'}</span>{tool?.tagline ?? t('bmd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1560,9 +1561,10 @@ const BikeMedic = ({ tool }) => {
           </div>
         </div>
       </div>
+      </div>
       {screenLabel && (
         <div className="pt-3">
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>{screenLabel}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted}`}>{screenLabel}</p>
         </div>
       )}
     </div>
@@ -1577,14 +1579,14 @@ const BikeMedic = ({ tool }) => {
           <button key={key} onClick={() => { setActiveQuickCheck(key); setCheckedItems({}); }}
             className={`group flex items-center gap-3 p-4 rounded-xl border-2 ${c.border} ${c.borderHover} ${c.card} ${c.cardAltHover} transition-all text-start`}>
             <span className="text-2xl">{check.icon}</span>
-            <div><span className={`text-sm font-bold ${c.text}`}>{t(check.titleKey)}</span><span className={`block text-xs ${c.textMuted}`}>{t('bmd_quick_items_count', { n: check.items.length })}</span></div>
+            <div><span className={`text-sm font-bold ${c.text}`}>{t(check.titleKey)}</span><span className={`block text-[13px] ${c.textMuted}`}>{t('bmd_quick_items_count', { n: check.items.length })}</span></div>
             <span className={`ms-auto ${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
           </button>
         ))}
         <button onClick={() => { setActiveQuickCheck('custom'); setCheckedItems({}); setCustomCheckResult(null); }}
           className={`group flex items-center gap-3 p-4 rounded-xl border-2 border-dashed ${c.border} ${c.borderHover} ${c.card} ${c.cardAltHover} transition-all text-start`}>
           <span className="text-2xl">✏️</span>
-          <div><span className={`text-sm font-bold ${c.text}`}>{t('bmd_other_situation')}</span><span className={`block text-xs ${c.textMuted}`}>{t('bmd_ai_generated_scenario')}</span></div>
+          <div><span className={`text-sm font-bold ${c.text}`}>{t('bmd_other_situation')}</span><span className={`block text-[13px] ${c.textMuted}`}>{t('bmd_ai_generated_scenario')}</span></div>
           <span className={`ms-auto ${c.textMuted} group-hover:translate-x-1 transition-transform`}>→</span>
         </button>
       </div>
@@ -1625,7 +1627,7 @@ const BikeMedic = ({ tool }) => {
             <span>{tab.icon}</span>
             <span>{t(tab.labelKey)}</span>
             {tab.badge > 0 && (
-              <span className={`ms-0.5 px-1 py-0.5 ${c.navBadgeZinc} text-[9px] font-bold rounded-full leading-none`}>
+              <span className={`ms-0.5 px-1 py-0.5 ${c.navBadgeZinc} text-xs font-bold rounded-full leading-none`}>
                 {tab.badge}
               </span>
             )}
@@ -1725,12 +1727,12 @@ const BikeMedic = ({ tool }) => {
         </ol></div>)}
         {data.related_issues?.length > 0 && (<div className={`mb-4 p-3 rounded-lg ${c.cardAlt} border`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('bmd_also_check')}</p>{data.related_issues.map((issue, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {issue}</p>)}</div>)}
         {data.suggested_first_question && (<div className={`mb-4 p-3 rounded-lg ${c.cardAlt} border`}><p className={`text-xs font-bold mb-1`}>{t('bmd_diagnostic_question')}</p><p className={`text-xs ${c.textSecondary}`}>{data.suggested_first_question}</p></div>)}
-        {data.prevention && (<div className={`text-xs ${c.textMuteded} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>{t('bmd_prevention_label')}</strong> {data.prevention}</div>)}
+        {data.prevention && (<div className={`text-[13px] ${c.textMuteded} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>{t('bmd_prevention_label')}</strong> {data.prevention}</div>)}
         {data.shop_visit && (<div className={`mt-4 ${c.shopVisit} border border-s-4 rounded-e-xl p-4`}><p className="text-sm"><strong>{t('bmd_when_shop_label')}</strong> {data.shop_visit}</p></div>)}
 
 
 
-        <p className={`mt-3 text-xs ${c.textMuteded} border-t ${c.border} pt-2`}>{t('bmd_ai_disclaimer')}</p>
+        <p className={`mt-3 text-[13px] ${c.textMuteded} border-t ${c.border} pt-2`}>{t('bmd_ai_disclaimer')}</p>
       </div>
 
     </div>
@@ -1747,7 +1749,7 @@ const BikeMedic = ({ tool }) => {
         {garage.length > 0 && !isEditing && (
           <div className="space-y-3 mb-6">
             {garage.length > 1 && (
-              <p className={`text-xs ${c.textMuteded} mb-2`}>{t('bmd_garage_tap_active')}</p>
+              <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('bmd_garage_tap_active')}</p>
             )}
             {garage.map(bike => (
               <div key={bike.id}
@@ -1760,7 +1762,7 @@ const BikeMedic = ({ tool }) => {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-bold ${c.text}`}>{bike.name || bike.bikeType}</div>
-                  <div className={`text-xs ${c.textMuteded} flex flex-wrap gap-1 mt-0.5`}>
+                  <div className={`text-[13px] ${c.textMuteded} flex flex-wrap gap-1 mt-0.5`}>
                     {[bike.bikeType, bike.brakeType?.replace('_', ' '), bike.shiftType].filter(Boolean).map((l, i) => (
                       <span key={i} className="capitalize">{l}{i < 2 ? ' ·' : ''}</span>
                     ))}
@@ -1784,14 +1786,14 @@ const BikeMedic = ({ tool }) => {
           <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4`}>{editingBikeId ? t('bmd_garage_edit_bike') : t('bmd_garage_add_new_bike')}</h4>
             <div className="mb-5">
-              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bmd_garage_bike_name')}</label>
+              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bmd_garage_bike_name')}</label>
               <input value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
                 onKeyDown={e => { if (e.key === 'Enter' && tempProfile.bikeType) saveBike(tempProfile); }}
                 placeholder={t('bmd_garage_name_ph')}
                 className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
             </div>
             <div className="mb-5">
-              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bmd_garage_photo')}</label>
+              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bmd_garage_photo')}</label>
               <div className="flex flex-col gap-3">
                 {tempProfile.photo ? (
                   <img src={tempProfile.photo} alt={t('bmd_default_bike')} className={`w-full max-h-64 rounded-xl object-cover border-2 ${c.border}`} />
@@ -1812,14 +1814,14 @@ const BikeMedic = ({ tool }) => {
                   </label>
                   {tempProfile.photo && (
                     <button onClick={() => setTempProfile(prev => ({ ...prev, photo: null }))}
-                      className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>{t('bmd_garage_remove')}</button>
+                      className={`text-[13px] ${c.textMuteded} ${c.deleteHover}`}>{t('bmd_garage_remove')}</button>
                   )}
                 </div>
               </div>
             </div>
             {Object.entries(GARAGE_OPTS).map(([key, options]) => (
               <div key={key} className="mb-5">
-                <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t(GARAGE_LABELS[key])}{key === 'bikeType' && <span className={c.required}> *</span>}</label>
+                <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t(GARAGE_LABELS[key])}{key === 'bikeType' && <span className={c.required}> *</span>}</label>
                 <div className="flex flex-wrap gap-2">
                   {options.map(o => (
                     <button key={o.v} onClick={() => setTempProfile(prev => ({ ...prev, [key]: prev[key] === o.v ? undefined : o.v }))}
@@ -1879,9 +1881,9 @@ const BikeMedic = ({ tool }) => {
             );
           })}
         </div>
-        <div className={`text-center text-xs ${c.textMuteded}`}>{t('bmd_toolbox_owned_count', { owned: myTools.length, total: ALL_TOOLS.length })}</div>
+        <div className={`text-center text-[13px] ${c.textMuteded}`}>{t('bmd_toolbox_owned_count', { owned: myTools.length, total: ALL_TOOLS.length })}</div>
         {myTools.length > 0 && (
-          <button onClick={() => { setMyTools([]); showToast(t('bmd_toolbox_cleared')); }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover} block mx-auto`}>{t('bmd_clear_all')}</button>
+          <button onClick={() => { setMyTools([]); showToast(t('bmd_toolbox_cleared')); }} className={`mt-3 text-[13px] ${c.textMuteded} ${c.deleteHover} block mx-auto`}>{t('bmd_clear_all')}</button>
         )}
     </div>
   );
@@ -1907,7 +1909,7 @@ const BikeMedic = ({ tool }) => {
           {bikeProfile && !seasonalResult && !loading && (
             <>
               <div className="mb-3">
-                <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('bmd_season_label')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('bmd_season_label')}</p>
                 <div className="flex flex-wrap gap-2">
                   {SEASONS.map(s => {
                     const isSelected = selectedSeason === s.key;
@@ -1917,7 +1919,7 @@ const BikeMedic = ({ tool }) => {
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all ${isSelected ? c.profileSelected : `${c.border} ${c.textSecondary} ${c.cardAltHover}`}`}>
                         <span>{s.icon}</span>
                         <span>{t(s.labelKey)}</span>
-                        {isCurrent && <span className={`text-[10px] ${isSelected ? '' : c.textMuteded}`}>{t('bmd_season_now')}</span>}
+                        {isCurrent && <span className={`text-xs ${isSelected ? '' : c.textMuteded}`}>{t('bmd_season_now')}</span>}
                       </button>
                     );
                   })}
@@ -1944,7 +1946,7 @@ const BikeMedic = ({ tool }) => {
                 {t('bmd_regenerate')}
               </button>
             </div>
-            <p className={`text-xs ${c.textMuteded} mb-4`}>{seasonalResult.summary}</p>
+            <p className={`text-[13px] ${c.textMuteded} mb-4`}>{seasonalResult.summary}</p>
             {selectedSeason !== currentSeason && (
               <p className={`text-xs ${c.amberText} mb-3`}>
                 {t('bmd_planning_ahead', { selected: seasonLabel(selectedSeason), current: seasonLabel(currentSeason) })}
@@ -1955,7 +1957,7 @@ const BikeMedic = ({ tool }) => {
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill(task.priority)}`}>{task.priority}</span>
                 <div className="flex-1">
                   <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{task.reason}</div>
+                  <div className={`text-[13px] ${c.textMuteded} mt-0.5`}>{task.reason}</div>
                   {task.fix_ref && FIXES[task.fix_ref] && (
                     <button onClick={() => startFixDirect(task.fix_ref)} className={`text-xs ${c.amberLink} mt-1`}>{t('bmd_view_guide')}</button>
                   )}
@@ -1969,7 +1971,7 @@ const BikeMedic = ({ tool }) => {
                   <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
                 </div>
                 <button onClick={() => setCustomSeasonalTasks(prev => prev.filter((_, j) => j !== i))}
-                  className={`text-xs ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
+                  className={`text-[13px] ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
               </div>
             ))}
             <div className="flex gap-2 mt-3">
@@ -2035,7 +2037,7 @@ const BikeMedic = ({ tool }) => {
                       <span className="text-lg">{task.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className={`text-sm font-semibold ${c.text}`}>{t(task.labelKey)}</div>
-                        <div className={`text-xs ${c.textMuteded}`}>
+                        <div className={`text-[13px] ${c.textMuteded}`}>
                           {lastDone ? t('bmd_maint_days_ago', { n: daysSince }) : t('bmd_maint_never_done')}
                           {milesSince !== null && <> · {t('bmd_miles_short', { n: Math.round(milesSince) })}</>}
                           {task.intervalMiles ? t('bmd_maint_every_days_miles', { days: task.intervalDays, miles: task.intervalMiles }) : t('bmd_maint_every_days', { days: task.intervalDays })}
@@ -2046,7 +2048,7 @@ const BikeMedic = ({ tool }) => {
                       <button onClick={() => markMaintDone(taskId)} disabled={!overdue}
                         title={overdue ? t('bmd_maint_done_title') : t('bmd_maint_not_due_title', { n: daysUntilDue })}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-opacity ${overdue ? c.btnPrimary : `${c.btnSecondary} opacity-40 cursor-not-allowed`}`}>{t('bmd_maint_done_btn')}</button>
-                      {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-xs ${c.textMuteded} hover:underline`}>{t('bmd_maint_guide')}</button>}
+                      {task.fixRef && <button onClick={() => startFixDirect(task.fixRef)} className={`text-[13px] ${c.textMuteded} hover:underline`}>{t('bmd_maint_guide')}</button>}
                     </div>
                   );
                 })}
@@ -2061,7 +2063,7 @@ const BikeMedic = ({ tool }) => {
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill('medium')}`}>{t('bmd_priority_custom')}</span>
                   <div className={`flex-1 text-sm ${c.text}`}>{task.task}</div>
                   <button onClick={() => setCustomMaintTasks(prev => prev.filter((_, j) => j !== i))}
-                    className={`text-xs ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
+                    className={`text-[13px] ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
                 </div>
               ))}
               <div className="flex gap-2 mt-2">
@@ -2083,7 +2085,7 @@ const BikeMedic = ({ tool }) => {
                     <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.card}`}>
                       <div className="flex-1 min-w-0">
                         <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.title}</div>
-                        <div className={`text-xs ${c.textMuteded}`}>{fmtDate(entry.date)}</div>
+                        <div className={`text-[13px] ${c.textMuteded}`}>{fmtDate(entry.date)}</div>
                       </div>
                     </div>
                   ))}
@@ -2116,7 +2118,7 @@ const BikeMedic = ({ tool }) => {
           <div className={`mb-6 p-5 rounded-xl border-2 ${c.greenBanner} text-center`}>
             <span className="text-3xl block mb-1">💰</span>
             <div className={`text-2xl font-black ${c.greenText}`}>{sym}{bikeTotalSaved}</div>
-            <div className={`text-xs ${c.textMuteded} mt-1`}>
+            <div className={`text-[13px] ${c.textMuteded} mt-1`}>
               {t(bikeRepairHistory.length === 1 ? 'bmd_hub_saved_by_diy_one' : 'bmd_hub_saved_by_diy', { n: bikeRepairHistory.length })}
               {activeBikeId && bikeProfile && <>{t('bmd_hub_on_bike', { name: bikeProfile.name || bikeProfile.bikeType })}</>}
             </div>
@@ -2130,13 +2132,13 @@ const BikeMedic = ({ tool }) => {
               <span>🚴</span>
               <div className="flex-1">
                 <span className={`text-sm font-bold ${c.text}`}>{t('bmd_hub_mileage_tracker')}</span>
-                <span className={`block text-xs ${c.textMuted}`}>{t('bmd_hub_miles_trigger')}</span>
+                <span className={`block text-[13px] ${c.textMuted}`}>{t('bmd_hub_miles_trigger')}</span>
               </div>
-              <span className={`text-xs ${c.textMuted}`}>{t('bmd_hub_miles_total', { n: Math.round(getBikeMiles(activeBikeId)) })}</span>
+              <span className={`text-[13px] ${c.textMuted}`}>{t('bmd_hub_miles_total', { n: Math.round(getBikeMiles(activeBikeId)) })}</span>
             </div>
             <div className="flex gap-2 items-end">
               <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1`}>{t('bmd_hub_distance_label')} <span className={c.required}>*</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('bmd_hub_distance_label')} <span className={c.required}>*</span></label>
                 <input type="number" value={rideDistance} onChange={e => setRideDistance(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && parseFloat(rideDistance) > 0) logRide(); }}
                   placeholder={t('bmd_hub_distance_ph')}
@@ -2160,7 +2162,7 @@ const BikeMedic = ({ tool }) => {
               </button>
             </div>
             {bikeRides.length > 0 && (
-              <div className={`mt-3 max-h-24 overflow-y-auto text-xs ${c.textMuteded} space-y-1`}>
+              <div className={`mt-3 max-h-24 overflow-y-auto text-[13px] ${c.textMuteded} space-y-1`}>
                 {bikeRides.slice(0, 5).map(r => (
                   <div key={r.id} className="flex justify-between">
                     <span>{fmtDate(r.date)}</span>
@@ -2205,14 +2207,14 @@ const BikeMedic = ({ tool }) => {
                 <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex-1 min-w-0">
                     <button onClick={() => startFixDirect(entry.fixId)} className={`text-sm font-semibold ${c.text} hover:underline truncate block`}>{entry.title}</button>
-                    <div className={`text-xs ${c.textMuteded}`}>
+                    <div className={`text-[13px] ${c.textMuteded}`}>
                       {fmtDate(entry.date)}
                       {entry.shopCost > 0 && <span className={c.greenInline}>{t('bmd_hub_saved_amount', { sym, amount: entry.shopCost })}</span>}
                     </div>
                   </div>
                 </div>
               ))}
-              {bikeRepairHistory.length > 20 && <p className={`text-xs ${c.textMuteded} text-center`}>{t('bmd_hub_showing_of', { n: bikeRepairHistory.length })}</p>}
+              {bikeRepairHistory.length > 20 && <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('bmd_hub_showing_of', { n: bikeRepairHistory.length })}</p>}
             </div>
           )}
           {bikeRepairHistory.length > 0 && (
@@ -2224,7 +2226,7 @@ const BikeMedic = ({ tool }) => {
                 setRepairHistory(prev => prev.filter(e => e.bikeId));
                 showToast(t('bmd_hub_orphaned_cleared'));
               }
-            }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover}`}>{(activeBikeId && bikeProfile) ? t('bmd_hub_clear_history_for', { name: bikeProfile.name || bikeProfile.bikeType }) : t('bmd_hub_clear_history')}</button>
+            }} className={`mt-3 text-[13px] ${c.textMuteded} ${c.deleteHover}`}>{(activeBikeId && bikeProfile) ? t('bmd_hub_clear_history_for', { name: bikeProfile.name || bikeProfile.bikeType }) : t('bmd_hub_clear_history')}</button>
           )}
         </div>
       </div>
@@ -2259,13 +2261,13 @@ const BikeMedic = ({ tool }) => {
         {customCheckResult && !loading && (
           <div ref={customCheckRef} className={`scroll-mt-24 ${c.card} rounded-xl border-2 ${c.border} p-6 mt-4`}>
             <h4 className={`text-sm font-bold ${c.text} mb-1`}>{customCheckResult.title || t('bmd_tailored_checklist')}</h4>
-            <p className={`text-xs ${c.textMuteded} mb-4`}>{customCheckResult.summary}</p>
+            <p className={`text-[13px] ${c.textMuteded} mb-4`}>{customCheckResult.summary}</p>
             {customCheckResult.tasks?.map((task, i) => (
               <div key={i} className={`flex items-start gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill(task.priority)}`}>{task.priority}</span>
                 <div className="flex-1">
                   <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{task.reason}</div>
+                  <div className={`text-[13px] ${c.textMuteded} mt-0.5`}>{task.reason}</div>
                   {task.fix_ref && FIXES[task.fix_ref] && (
                     <button onClick={() => startFixDirect(task.fix_ref)} className={`text-xs ${c.amberLink} mt-1`}>{t('bmd_view_guide')}</button>
                   )}
@@ -2274,7 +2276,7 @@ const BikeMedic = ({ tool }) => {
             ))}
           </div>
         )}
-        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+        <p data-print-hide className={`mt-4 text-xs text-center ${c.textMuteded}`}>
           {t('bmd_xref_related_label')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_dot_sep')}<a href="/DecisionCoach" className={linkStyle}>{t('bmd_xref_decision_coach')}</a>
         </p>
       </div>
@@ -2310,9 +2312,9 @@ const BikeMedic = ({ tool }) => {
               </div>
             ))}
           </div>
-          <div className={`mt-4 text-center text-xs ${c.textMuteded}`}>{t('bmd_quick_checked_count', { done: numChecked, total: check.items.length })}</div>
+          <div className={`mt-4 text-center text-[13px] ${c.textMuteded}`}>{t('bmd_quick_checked_count', { done: numChecked, total: check.items.length })}</div>
         </div>
-        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+        <p data-print-hide className={`mt-4 text-xs text-center ${c.textMuteded}`}>
           {t('bmd_xref_related_label')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_dot_sep')}<a href="/DecisionCoach" className={linkStyle}>{t('bmd_xref_decision_coach')}</a>
         </p>
       </div>
@@ -2350,7 +2352,7 @@ const BikeMedic = ({ tool }) => {
           {activeSection === null && renderBikeProfileBar()}
           {activeSection === null && !bikeProfile && (
             <div className="px-0 pt-2">
-              <p className={`text-xs ${c.textMuted}`}>
+              <p className={`text-[13px] ${c.textMuted}`}>
                 <button onClick={() => setActiveSection('garage')} className={`${c.accentTxt} font-semibold hover:underline`}>{t('bmd_add_your_bike')}</button>{t('bmd_add_bike_suffix')}
               </p>
             </div>
@@ -2375,7 +2377,7 @@ const BikeMedic = ({ tool }) => {
             <span className={`text-sm font-bold ${c.amberLabel}`}>
               {t(maintAlerts.length === 1 ? 'bmd_maint_due_count_one' : 'bmd_maint_due_count', { n: maintAlerts.length })}
             </span>
-            <span className={`ms-auto text-xs ${c.textMuteded}`}>{t('bmd_view_arrow')}</span>
+            <span className={`ms-auto text-[13px] ${c.textMuteded}`}>{t('bmd_view_arrow')}</span>
           </button>
         )}
 
@@ -2384,7 +2386,7 @@ const BikeMedic = ({ tool }) => {
           <div className={`mb-4 flex items-center gap-3 p-3 rounded-xl border ${c.greenBanner}`}>
             <span>💰</span>
             <span className={`text-sm font-bold ${c.greenText}`}>{t('bmd_saved_by_diy_banner', { sym, amount: getTotalSavings() })}</span>
-            <button onClick={() => setActiveSection('hub')} className={`ms-auto text-xs ${c.textMuteded} hover:underline`}>{t('bmd_details_arrow')}</button>
+            <button onClick={() => setActiveSection('hub')} className={`ms-auto text-[13px] ${c.textMuteded} hover:underline`}>{t('bmd_details_arrow')}</button>
           </div>
         )}
 
@@ -2393,7 +2395,7 @@ const BikeMedic = ({ tool }) => {
             {/* Favorites quick access */}
             {favorites.length > 0 && (
               <div className="mb-5">
-                <div className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>{t('bmd_quick_access')}</div>
+                <div className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('bmd_quick_access')}</div>
                 <div className="flex flex-wrap gap-2">
                   {favorites.slice(0, 5).map(fId => {
                     const f = FIXES[fId]; if (!f) return null;
@@ -2405,13 +2407,13 @@ const BikeMedic = ({ tool }) => {
 
             {/* AI Symptom interpreter */}
             <div className={`mb-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
-              <button onClick={() => setShowInterpreter(!showInterpreter)} className="w-full flex items-center gap-3 text-start">
+              <button data-print-heading aria-expanded={!!(showInterpreter)} onClick={() => setShowInterpreter(!showInterpreter)} className="w-full flex items-center gap-3 text-start">
                 <span className={`text-lg flex-shrink-0`}>🔍</span>
-                <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{t('bmd_describe_happening')}</span><span className={`block text-xs ${c.textMuteded}`}>{t('bmd_ai_suggests_category')}</span></div>
-                <Caret open={showInterpreter} />
+                <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{t('bmd_describe_happening')}</span><span className={`block text-[13px] ${c.textMuteded}`}>{t('bmd_ai_suggests_category')}</span></div>
+                <span data-print-hide><Caret open={showInterpreter} /></span>
               </button>
-              {showInterpreter && (
-                <div className="mt-4">
+              {(
+                <div data-sec-body hidden={!(showInterpreter)} className="mt-4">
                   {/* Editing the description invalidates the recommendation and
                       brings Analyze back — otherwise a reworded symptom has no
                       way to be re-read. */}
@@ -2449,7 +2451,7 @@ const BikeMedic = ({ tool }) => {
                       })()}
                       {aiRoute.alternative_categories?.length > 0 && (
                         <div className="mt-2 flex gap-2 flex-wrap">
-                          <span className={`text-xs ${c.textMuteded}`}>{t('bmd_also')}</span>
+                          <span className={`text-[13px] ${c.textMuteded}`}>{t('bmd_also')}</span>
                           {aiRoute.alternative_categories.map(alt => { const p = PROBLEMS.find(x => x.id === alt); return p ? (
                             <button key={alt} onClick={() => { setShowInterpreter(false); setAiRoute(null); startProblem(alt); }}
                               className={`text-xs ${c.tag} px-2 py-1 rounded-md hover:opacity-80`}>{p.icon} {t(p.labelKey)}</button>
@@ -2476,7 +2478,7 @@ const BikeMedic = ({ tool }) => {
 
             {/* Direct free-text input */}
             <div className={`mt-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
-              <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>{t('bmd_something_different')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('bmd_something_different')}</p>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -2501,9 +2503,9 @@ const BikeMedic = ({ tool }) => {
         )}
 
         {/* Shared cross-refs — visible on every tab */}
-        <div className={`mt-5 p-3 rounded-xl border ${c.border} ${c.card}`}>
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('bmd_related_tools')}</p>
-          <div className={`space-y-1 text-xs ${c.textSecondary}`}>
+        <div data-print-hide className={`mt-5 p-3 rounded-xl border ${c.border} ${c.card}`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('bmd_related_tools')}</p>
+          <div data-print-hide className={`space-y-1 text-xs ${c.textSecondary}`}>
             <p>{t('bmd_xref_buy_part_prefix')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_buy_part_suffix')}</p>
             <p>{t('bmd_xref_diy_prefix')}<a href="/DecisionCoach" className={linkStyle}>{t('bmd_xref_decision_coach')}</a>{t('bmd_xref_diy_suffix')}</p>
           </div>
@@ -2545,7 +2547,7 @@ const BikeMedic = ({ tool }) => {
             {photoData && (
               <div className="flex items-center gap-2">
                 <img src={photoData} alt={t('bmd_ask_attached_alt')} className="w-10 h-10 rounded-lg object-cover border" />
-                <button onClick={() => setPhotoData(null)} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>{t('bmd_ask_remove')}</button>
+                <button onClick={() => setPhotoData(null)} className={`text-[13px] ${c.textMuteded} ${c.deleteHover}`}>{t('bmd_ask_remove')}</button>
               </div>
             )}
           </div>
@@ -2564,7 +2566,7 @@ const BikeMedic = ({ tool }) => {
           )}
         </div>
         {aiDiagnosis && !loading && renderAIDiagnosis(aiDiagnosis)}
-        <p className={`mt-4 text-xs text-center ${c.textMuteded}`}>
+        <p data-print-hide className={`mt-4 text-xs text-center ${c.textMuteded}`}>
           {t('bmd_xref_related_label')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_dot_sep')}<a href="/DecisionCoach" className={linkStyle}>{t('bmd_xref_decision_coach')}</a>
         </p>
       </div>
@@ -2591,7 +2593,7 @@ const BikeMedic = ({ tool }) => {
             {SHOP_COSTS[currentFix] > 0 && (
               <div className={`mt-3 inline-block px-4 py-2 rounded-xl ${c.greenPill}`}>
                 <span className={`text-lg font-black ${c.greenText}`}>{t('bmd_fix_saved_amount', { sym, amount: SHOP_COSTS[currentFix] })}</span>
-                {getTotalSavings() > 0 && <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t('bmd_fix_lifetime_total', { sym, amount: getTotalSavings() + SHOP_COSTS[currentFix] })}</div>}
+                {getTotalSavings() > 0 && <div className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('bmd_fix_lifetime_total', { sym, amount: getTotalSavings() + SHOP_COSTS[currentFix] })}</div>}
               </div>
             )}
             <div className="flex justify-center gap-3 mt-4">
@@ -2712,21 +2714,21 @@ const BikeMedic = ({ tool }) => {
             {/* Parts reference */}
             {fix.parts?.length > 0 && (
               <div className="mb-6">
-                <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondary} text-sm font-semibold transition-colors`}>
+                <button data-print-heading aria-expanded={!!(showParts)} onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondary} text-sm font-semibold transition-colors`}>
                   <span>🛒</span> {t('bmd_fix_parts_shopping')}
-                  <Caret open={showParts} className="ms-auto" />
+                  <span data-print-hide><Caret open={showParts} className="ms-auto" /></span>
                 </button>
-                {showParts && (
-                  <div className={`mt-2 border-2 ${c.border} rounded-xl overflow-hidden`}>
+                {(
+                  <div data-sec-body hidden={!(showParts)} className={`mt-2 border-2 ${c.border} rounded-xl overflow-hidden`}>
                     {fix.parts.map((part, i) => (
                       <div key={i} className={`p-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <div className={`font-semibold text-sm ${c.text}`}>{t(part.nameKey)}</div>
-                        {part.exampleKey && <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t('bmd_fix_eg', { val: t(part.exampleKey) })}</div>}
+                        {part.exampleKey && <div className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('bmd_fix_eg', { val: t(part.exampleKey) })}</div>}
                         {part.priceKey && <div className="text-xs font-bold mt-1" style={{ color: accent }}>{t(part.priceKey)}</div>}
                       </div>
                     ))}
                     {/* Cross-ref */}
-                    <div className={`p-3 border-t ${c.border} text-xs ${c.textMuteded}`}>
+                    <div className={`p-3 border-t ${c.border} text-[13px] ${c.textMuteded}`}>
 
                     </div>
                   </div>
@@ -2757,7 +2759,7 @@ const BikeMedic = ({ tool }) => {
                   <span className={c.amberText}>✨</span>
                   <h4 className={`font-bold text-sm ${c.text}`}>{t('bmd_fix_still_stuck')}</h4>
                 </div>
-                <p className={`text-xs ${c.textMuteded} mb-3`}>{t('bmd_fix_you_tried', { title: t(fix.titleKey) })}</p>
+                <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('bmd_fix_you_tried', { title: t(fix.titleKey) })}</p>
                 <textarea value={followUpText} onChange={e => setFollowUpText(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && followUpText.trim() && !loading) askFollowUp(); }}
                   placeholder={t('bmd_fix_followup_ph')}
@@ -2769,12 +2771,12 @@ const BikeMedic = ({ tool }) => {
                 {/* Shop handoff */}
                 <div className={`mt-3 pt-3 border-t ${c.border} flex gap-2`}>
                 </div>
-                <p className={`text-xs ${c.textMuteded} mt-2`}>{t('bmd_fix_shop_handoff')}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('bmd_fix_shop_handoff')}</p>
               </div>
             )}
 
             {/* Cross-refs + disclaimer */}
-            <div className={`mt-6 pt-4 border-t ${c.border} space-y-2 text-xs ${c.textMuteded}`}>
+            <div data-print-hide className={`mt-6 pt-4 border-t ${c.border} space-y-2 text-[13px] ${c.textMuteded}`}>
               <p>{t('bmd_xref_related_label')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_fix_buywise_suffix')}{t('bmd_xref_dot_sep')}<a href="/DecisionCoach" className={linkStyle}>{t('bmd_xref_decision_coach')}</a>{t('bmd_xref_fix_decision_suffix')}
               </p>
               <p className={`pt-2 border-t ${c.border}`}>{t('bmd_fix_safety_disclaimer')}</p>
@@ -2794,7 +2796,7 @@ const BikeMedic = ({ tool }) => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
         {renderPersistentHeader(null)}
         {renderBikeProfileBar()}
-        <div className={`flex items-center gap-2 mb-4 text-xs ${c.textMuted} font-medium`}>
+        <div className={`flex items-center gap-2 mb-4 text-[13px] ${c.textMuted} font-medium`}>
           <span style={{ color: accent }} className="font-bold">{activeProblem?.icon} {activeProblem ? t(activeProblem.labelKey) : ''}</span>
           <span>→</span>
           <span>{t('bmd_tree_step', { n: treePath.length })}</span>
@@ -2817,7 +2819,7 @@ const BikeMedic = ({ tool }) => {
         </div>
 
         {results && (
-          <p className={`mt-4 text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`mt-4 text-xs text-center ${c.textMuted}`}>
             {t('bmd_xref_shopping_prefix')}<a href="/BuyWise" className={linkStyle}>{t('bmd_xref_buywise')}</a>{t('bmd_xref_shopping_suffix')}
           </p>
         )}

@@ -128,13 +128,13 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className={`${c.card} ${c.border} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-start min-h-[44px]">
+      <button data-print-heading aria-expanded={!!(open)} onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-start min-h-[44px]">
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
-        {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
-        <Caret open={open} />
+        {badge && <span className={`text-xs font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={`px-4 pb-4 border-t ${c.border} pt-3`}>{children}</div>}
     </div>
   );
 }
@@ -208,7 +208,7 @@ const LayoverMaximizer = ({ tool }) => {
       : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:ring-sky-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     skyText: isDark ? 'text-sky-400' : 'text-sky-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
@@ -228,9 +228,7 @@ const LayoverMaximizer = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── View ──
   const resultsRef = React.useRef(null);
@@ -714,7 +712,7 @@ const LayoverMaximizer = ({ tool }) => {
       }[key]);
     };
     const pill = key => (
-      <button key={key} onClick={() => { setView(key); setError(''); }}
+      <button aria-pressed={view === key} key={key} onClick={() => { setView(key); setError(''); }}
         className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
           view === key ? c.pillActive : c.pillInactive
         }`}>{label(key)}</button>
@@ -724,7 +722,7 @@ const LayoverMaximizer = ({ tool }) => {
       <div className="space-y-2 mb-5">
         {NAV_GROUPS.map(g => (
           <div key={g.labelKey} className="flex flex-wrap items-center gap-1.5">
-            <span className={`basis-full sm:basis-auto text-[10px] font-bold uppercase tracking-wide ${c.textMuted} me-1`}>{t(g.labelKey)}</span>
+            <span className={`basis-full sm:basis-auto text-[13px] font-bold ${c.textMuted} me-1`}>{t(g.labelKey)}</span>
             {g.keys.map(pill)}
           </div>
         ))}
@@ -749,23 +747,23 @@ const LayoverMaximizer = ({ tool }) => {
   const renderPlan = () => {
     return (
       <div className="space-y-4">
-        <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
+        <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`${c.card} ${c.border} border rounded-xl p-5`}>
           <div className="space-y-3">
             {/* ── Step 1 · Tell me about your connection ──
                 One question at a time, in the order a person sitting next to
                 you would ask them. Where, how long, and are you there yet —
                 nothing else can be answered until these three are. */}
-            <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_step1_title')}</p>
+            <p className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_step1_title')}</p>
 
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
               <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
                 placeholder={t('lmx_ph_airport_main')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {POPULAR_AIRPORTS.slice(0, 6).map(ap => (
-                  <button key={ap.code} onClick={() => setAirport(ap.code)}
-                    className={`text-[9px] px-1.5 py-0.5 rounded border ${airport === ap.code ? c.pillActive : c.pillInactive} min-h-[22px]`}>
+                  <button aria-pressed={airport === ap.code} key={ap.code} onClick={() => setAirport(ap.code)}
+                    className={`text-xs px-1.5 py-0.5 rounded border ${airport === ap.code ? c.pillActive : c.pillInactive} min-h-[22px]`}>
                     {ap.code}
                   </button>
                 ))}
@@ -776,7 +774,7 @@ const LayoverMaximizer = ({ tool }) => {
                 question, so only one of the two fields is ever on screen. */}
             {!isLiveMode ? (
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
                 <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
                   onChange={e => setLayoverHours(e.target.value)}
                   placeholder={t('lmx_ph_duration')}
@@ -784,7 +782,7 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
             ) : (
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_live_departure')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_live_departure')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
                 <div className="flex items-center gap-2">
                   <input type="time" value={departureTime} onChange={e => setDepartureTime(e.target.value)}
                     className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -800,10 +798,10 @@ const LayoverMaximizer = ({ tool }) => {
             {/* An unchecked box is not an answer. Asked outright, with a default
                 that is true for most visitors, it becomes one. */}
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_at_airport')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_at_airport')}</label>
               <div className="flex flex-wrap gap-1.5">
                 {[[false, t('lmx_no')], [true, t('lmx_yes')]].map(([val, label]) => (
-                  <button key={String(val)} onClick={() => setIsLiveMode(val)}
+                  <button aria-pressed={isLiveMode === val} key={String(val)} onClick={() => setIsLiveMode(val)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
                       isLiveMode === val ? c.pillActive : c.pillInactive
                     }`}>{label}</button>
@@ -815,7 +813,7 @@ const LayoverMaximizer = ({ tool }) => {
                 the terminal displays, the countdown below it is wrong, and the
                 traveller is the only one who can see both. */}
             {isLiveMode && nowMinutes !== null && (
-              <p className={`text-[10px] ${c.textMuteded}`}>
+              <p className={`text-[13px] ${c.textMuteded}`}>
                 {airportZone?.timezone
                   ? t('lmx_live_clock_airport', { time: minutesToHhmm(nowMinutes), code: airportZone.airport_code || airport.trim() })
                   : zoneLoading
@@ -837,10 +835,10 @@ const LayoverMaximizer = ({ tool }) => {
 
             {/* ── Step 2 · What would make this worthwhile? ── */}
             <div className={`border-t ${c.border} pt-3`}>
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('lmx_step2_title')}</p>
+              <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('lmx_step2_title')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {TRAVEL_STYLES.map(ts => (
-                  <button key={ts.value} onClick={() => setTravelStyle(travelStyle === ts.value ? '' : ts.value)}
+                  <button aria-pressed={travelStyle === ts.value} key={ts.value} onClick={() => setTravelStyle(travelStyle === ts.value ? '' : ts.value)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
                       travelStyle === ts.value ? c.pillActive : c.pillInactive
                     }`}>{ts.emoji} {t(ts.labelKey)}</button>
@@ -856,18 +854,18 @@ const LayoverMaximizer = ({ tool }) => {
                 (do you re-clear security), then the one field that buys an
                 exact time to be back by. */}
             <div ref={detailsRef} className={`scroll-mt-24 border-t ${c.border} pt-3`}>
-              <button onClick={() => setShowDetails(!showDetails)}
+              <button data-print-heading aria-expanded={!!(showDetails)} onClick={() => setShowDetails(!showDetails)}
                 className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
-                🛡️ {t('lmx_details_toggle')} <Caret open={showDetails} />
+                🛡️ {t('lmx_details_toggle')} <span data-print-hide><Caret open={showDetails} /></span>
               </button>
               {!showDetails && ![nationality, arrivalTerminal, connectionTerminal, arrivalTime].some(v => String(v || '').trim()) && (
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_details_why')}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('lmx_details_why')}</p>
               )}
 
-              {showDetails && (
-                <div className="mt-3 space-y-3">
+              {(
+                <div data-sec-body hidden={!(showDetails)} className="mt-3 space-y-3">
                   <div>
-                    <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_nationality')}</label>
+                    <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_nationality')}</label>
                     <input value={nationality} onChange={e => setNationality(e.target.value)}
                       placeholder={t('lmx_ph_nationality')}
                       className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -881,13 +879,13 @@ const LayoverMaximizer = ({ tool }) => {
 
                   <div className="flex flex-wrap gap-2">
                     <div className="flex-1 min-w-[120px]">
-                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
+                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
                       <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
                         placeholder={t('lmx_ph_arrival_terminal')}
                         className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
                     </div>
                     <div className="flex-1 min-w-[120px]">
-                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
+                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
                       <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
                         placeholder={t('lmx_ph_departure_terminal')}
                         className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -904,10 +902,10 @@ const LayoverMaximizer = ({ tool }) => {
                       only field that can produce a clock time to be back by. */}
                   {!isLiveMode && (
                     <div>
-                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_return_time')}</label>
+                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_return_time')}</label>
                       <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
                         className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
-                      <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('lmx_field_landing_time')}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('lmx_field_landing_time')}</p>
                     </div>
                   )}
                 </div>
@@ -962,7 +960,7 @@ const LayoverMaximizer = ({ tool }) => {
                   verdict second. Durations are for planning; these are moments. */}
               {isLiveMode && liveMinutesRemaining !== null && (
                 <div className={`${c.highlight} border rounded-xl p-4`}>
-                  <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">{t('lmx_live_until_departure')}</p>
+                  <p className="text-[13px] font-bold opacity-80">{t('lmx_live_until_departure')}</p>
                   <p className={`text-2xl font-black ${c.text}`}>
                     {t('lmx_unit_hm', { h: Math.floor(liveMinutesRemaining / 60), m: liveMinutesRemaining % 60 })}
                   </p>
@@ -979,7 +977,7 @@ const LayoverMaximizer = ({ tool }) => {
                           <div key={i} className="flex items-baseline gap-2">
                             <span className={`text-xs font-black tabular-nums ${passed ? c.textMuteded : c.text}`}>{d.at_time}</span>
                             <span className={`text-xs flex-1 ${passed ? c.textMuteded : ''} ${next ? 'font-bold' : ''}`}>{d.what}</span>
-                            <span className={`text-[10px] flex-shrink-0 ${passed ? c.textMuteded : c.skyText}`}>
+                            <span className={`text-xs flex-shrink-0 ${passed ? c.textMuteded : c.skyText}`}>
                               {passed
                                 ? t('lmx_live_passed')
                                 : left >= 60
@@ -989,7 +987,7 @@ const LayoverMaximizer = ({ tool }) => {
                           </div>
                         );
                       })}
-                      <p className={`text-[10px] ${c.textMuteded} pt-1`}>{t('lmx_live_deadlines_note')}</p>
+                      <p className={`text-[13px] ${c.textMuteded} pt-1`}>{t('lmx_live_deadlines_note')}</p>
                     </div>
                   )}
                 </div>
@@ -1038,7 +1036,7 @@ const LayoverMaximizer = ({ tool }) => {
                       </span>
                     </div>
                     {hasUnknownDeduction && (
-                      <p className={`text-[10px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
+                      <p className={`text-[13px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
                     )}
                   </div>
                   {/* Every figure above used to carry the same authority. They are
@@ -1049,17 +1047,17 @@ const LayoverMaximizer = ({ tool }) => {
                   {r.time_math.provenance && (
                     <div className={`mt-3 pt-2 border-t ${c.border} space-y-0.5`}>
                       {(r.time_math.provenance.told_us || []).map((x, i) => (
-                        <p key={`t${i}`} className={`text-[10px] ${c.textMuteded}`}>
+                        <p key={`t${i}`} className={`text-[13px] ${c.textMuteded}`}>
                           <span className="font-bold me-1" aria-hidden="true">✓</span>{x} — {t('lmx_prov_told')}
                         </p>
                       ))}
                       {(r.time_math.provenance.estimated || []).map((x, i) => (
-                        <p key={`e${i}`} className={`text-[10px] ${c.textMuteded}`}>
+                        <p key={`e${i}`} className={`text-[13px] ${c.textMuteded}`}>
                           <span className="font-bold me-1" aria-hidden="true">≈</span>{x} — {t('lmx_prov_estimated')}
                         </p>
                       ))}
                       {(r.time_math.provenance.unknown || []).map((x, i) => (
-                        <p key={`u${i}`} className={`text-[10px] font-bold ${c.danger}`}>
+                        <p key={`u${i}`} className={`text-xs font-bold ${c.danger}`}>
                           <span className="me-1" aria-hidden="true">?</span>{x}
                         </p>
                       ))}
@@ -1089,7 +1087,7 @@ const LayoverMaximizer = ({ tool }) => {
                   {r.need_to_know.map((n, i) => (
                     <div key={i} className="mb-2 last:mb-0">
                       <p className={`text-sm font-bold ${c.text}`}>{n.question}</p>
-                      {n.why && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
+                      {n.why && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
                     </div>
                   ))}
                   <button
@@ -1121,7 +1119,7 @@ const LayoverMaximizer = ({ tool }) => {
                   to argue with it. */}
               {r.best_plan?.headline && (
                 <div className={`${c.highlight} border rounded-xl p-4`}>
-                  <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('lmx_best_plan')}</p>
+                  <p className="text-[13px] font-bold mb-1 opacity-80">{t('lmx_best_plan')}</p>
                   <p className={`text-sm font-bold ${c.text} mb-2`}>{r.best_plan.headline}</p>
                   {r.best_plan.steps?.length > 0 && (
                     <ol className="space-y-1.5 mb-2">
@@ -1130,7 +1128,7 @@ const LayoverMaximizer = ({ tool }) => {
                           <span className={`text-xs font-black ${c.skyText} flex-shrink-0`}>{i + 1}.</span>
                           <span className="text-xs font-bold">{st.do}</span>
                           {/^\d{1,2}:\d{2}/.test(String(st.when || '').trim()) && (
-                            <span className={`text-[10px] ${c.textMuteded} ms-auto flex-shrink-0`}>{st.when}</span>
+                            <span className={`text-[13px] ${c.textMuteded} ms-auto flex-shrink-0`}>{st.when}</span>
                           )}
                         </li>
                       ))}
@@ -1141,7 +1139,7 @@ const LayoverMaximizer = ({ tool }) => {
                   )}
                   {r.best_plan.why && (
                     <details className="group mt-2">
-                      <summary className={`cursor-pointer text-[10px] font-bold uppercase tracking-wide ${c.textSecondary} list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                      <summary className={`cursor-pointer text-[13px] font-bold ${c.textSecondary} list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
                         {t('lmx_why_this')} <Caret groupOpen />
                       </summary>
                       <p className="text-xs opacity-90 mt-1.5">{r.best_plan.why}</p>
@@ -1153,8 +1151,8 @@ const LayoverMaximizer = ({ tool }) => {
               {/* The other modes, phrased as the things that go wrong rather
                   than as the screens they open. A traveller does not want
                   "Gate-to-Gate"; they want the gate that just changed. */}
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('lmx_plans_changed')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('lmx_plans_changed')}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {[['gate', t('lmx_act_gate')], ['delay', t('lmx_act_delayed')],
                     ['risk', t('lmx_act_miss')], ['lounge', t('lmx_act_lounge')]].map(([key, label]) => (
@@ -1177,7 +1175,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Visa info */}
                     {r.leave_the_airport.visa_info && (
                       <div className={`${c.highlight} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_explore_visa')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_explore_visa')}</p>
                         <p className="text-xs">{r.leave_the_airport.visa_info}</p>
                       </div>
                     )}
@@ -1185,14 +1183,14 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Transit options */}
                     {r.leave_the_airport.transit_options?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('lmx_explore_getting')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('lmx_explore_getting')}</p>
                         {r.leave_the_airport.transit_options.map((tr, i) => (
                           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-1.5`}>
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold">{tr.mode}: {tr.name}</span>
-                              <span className={`text-xs ${c.textMuteded}`}>{t('lmx_unit_min', { n: tr.time_minutes })} • {tr.cost_estimate}</span>
+                              <span className={`text-[13px] ${c.textMuteded}`}>{t('lmx_unit_min', { n: tr.time_minutes })} • {tr.cost_estimate}</span>
                             </div>
-                            {tr.notes && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{tr.notes}</p>}
+                            {tr.notes && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{tr.notes}</p>}
                           </div>
                         ))}
                       </div>
@@ -1204,17 +1202,17 @@ const LayoverMaximizer = ({ tool }) => {
                       <div className="space-y-2">
                         {r.leave_the_airport.explore_itinerary.stops.map((stop, i) => (
                           <div key={i} className={`flex gap-3 ${c.quoteBg} rounded-lg p-3`}>
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${c.pillActive}`}>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${c.pillActive}`}>
                               {i + 1}
                             </div>
                             <div>
                               <p className="text-xs font-bold">{stop.name}</p>
-                              <p className={`text-xs ${c.textMuteded}`}>{stop.what}</p>
+                              <p className={`text-[13px] ${c.textMuteded}`}>{stop.what}</p>
                               <div className="flex gap-3 mt-0.5">
-                                <span className={`text-[10px] ${c.textMuteded}`}>⏱ {stop.time_needed}</span>
-                                {stop.distance_from_previous && <span className={`text-[10px] ${c.textMuteded}`}>🚶 {stop.distance_from_previous}</span>}
+                                <span className={`text-[13px] ${c.textMuteded}`}>⏱ {stop.time_needed}</span>
+                                {stop.distance_from_previous && <span className={`text-[13px] ${c.textMuteded}`}>🚶 {stop.distance_from_previous}</span>}
                               </div>
-                              {stop.tip && <p className={`text-[10px] italic ${c.skyText} mt-0.5`}>💡 {stop.tip}</p>}
+                              {stop.tip && <p className={`text-xs italic ${c.skyText} mt-0.5`}>💡 {stop.tip}</p>}
                             </div>
                           </div>
                         ))}
@@ -1229,7 +1227,7 @@ const LayoverMaximizer = ({ tool }) => {
 
                     {r.leave_the_airport.warnings?.length > 0 && (
                       <div className={`${c.warning} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.warning} uppercase mb-1`}>{t('lmx_explore_warnings')}</p>
+                        <p className={`text-[13px] font-bold ${c.warning} mb-1`}>{t('lmx_explore_warnings')}</p>
                         {r.leave_the_airport.warnings.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}
                       </div>
                     )}
@@ -1242,28 +1240,28 @@ const LayoverMaximizer = ({ tool }) => {
                 <Section icon="🏢" title={t('lmx_sec_stay')} defaultOpen={r.verdict !== 'YES'} c={c}>
                   <div className="space-y-4">
                     {r.stay_in_airport.terminal_info && (
-                      <p className={`text-xs ${c.textMuteded}`}>📍 {r.stay_in_airport.terminal_info}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>📍 {r.stay_in_airport.terminal_info}</p>
                     )}
 
                     {/* Advice and reference were interleaved: where to eat sat
                         beside where the sockets are. One is a recommendation,
                         the other is a map legend, and they now say which. */}
                     {(r.stay_in_airport.food?.length > 0 || r.stay_in_airport.lounges?.length > 0 || r.stay_in_airport.sleep_spots) && (
-                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_recommended_for_you')}</p>
+                      <p className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_recommended_for_you')}</p>
                     )}
 
                     {r.stay_in_airport.food?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('lmx_stay_food')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('lmx_stay_food')}</p>
                         <div className="space-y-1.5">
                           {r.stay_in_airport.food.map((f, i) => (
                             <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold">{f.name}</span>
-                                <span className={`text-[10px] ${c.textMuteded}`}>{f.terminal} • {f.price_range}</span>
+                                <span className={`text-[13px] ${c.textMuteded}`}>{f.terminal} • {f.price_range}</span>
                               </div>
-                              <p className={`text-xs ${c.textMuteded}`}>{f.type}</p>
-                              {f.tip && <p className={`text-[10px] italic ${c.skyText}`}>💡 {f.tip}</p>}
+                              <p className={`text-[13px] ${c.textMuteded}`}>{f.type}</p>
+                              {f.tip && <p className={`text-xs italic ${c.skyText}`}>💡 {f.tip}</p>}
                             </div>
                           ))}
                         </div>
@@ -1273,18 +1271,18 @@ const LayoverMaximizer = ({ tool }) => {
                     {/* Lounges summary */}
                     {r.stay_in_airport.lounges?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('lmx_stay_lounges')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('lmx_stay_lounges')}</p>
                         {r.stay_in_airport.lounges.map((l, i) => (
                           <div key={i} className={`${c.quoteBg} rounded-lg p-3 mb-1.5`}>
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold">{l.name}</span>
-                              <span className={`text-[10px] ${l.worth_it ? c.success : c.textMuteded}`}>
+                              <span className={`text-xs ${l.worth_it ? c.success : c.textMuteded}`}>
                                 {l.worth_it ? t('lmx_stay_worth_it') : t('lmx_stay_maybe')}
                               </span>
                             </div>
-                            <p className={`text-xs ${c.textMuteded}`}>{l.access} • {l.terminal}</p>
-                            {l.highlights && <p className={`text-[10px] ${c.text}`}>{l.highlights}</p>}
-                            <p className={`text-[10px] ${c.textMuteded} italic mt-0.5`}>{t('lmx_confirm_access')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{l.access} • {l.terminal}</p>
+                            {l.highlights && <p className={`text-xs ${c.text}`}>{l.highlights}</p>}
+                            <p className={`text-[13px] ${c.textMuteded} italic mt-0.5`}>{t('lmx_confirm_access')}</p>
                           </div>
                         ))}
                         <button onClick={() => { setLoungeAirport(r.airport_code || airport); setView('lounge'); }}
@@ -1294,45 +1292,45 @@ const LayoverMaximizer = ({ tool }) => {
 
                     {r.stay_in_airport.sleep_spots && (
                       <div className={`${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_stay_rest_spots')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_stay_rest_spots')}</p>
                         <p className="text-xs">{r.stay_in_airport.sleep_spots}</p>
                       </div>
                     )}
 
                     {r.stay_in_airport.practical && Object.values(r.stay_in_airport.practical).some(Boolean) && (
-                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide pt-1`}>{t('lmx_useful_while_here')}</p>
+                      <p className={`text-[13px] font-bold ${c.textSecondary} pt-1`}>{t('lmx_useful_while_here')}</p>
                     )}
 
                     {r.stay_in_airport.practical && (
                       <div className="grid grid-cols-2 gap-2">
                         {r.stay_in_airport.practical.wifi && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_stay_wifi')}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.wifi}</p>
+                            <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_stay_wifi')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{r.stay_in_airport.practical.wifi}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.charging && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_stay_charging')}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.charging}</p>
+                            <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_stay_charging')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{r.stay_in_airport.practical.charging}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.showers && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_stay_showers')}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.showers}</p>
+                            <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_stay_showers')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{r.stay_in_airport.practical.showers}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.walking_path && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_stay_walking')}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.walking_path}</p>
+                            <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_stay_walking')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{r.stay_in_airport.practical.walking_path}</p>
                           </div>
                         )}
                         {r.stay_in_airport.practical.kids_area && (
                           <div className={`${c.quoteBg} rounded-lg p-2`}>
-                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_stay_kids')}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.kids_area}</p>
+                            <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_stay_kids')}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{r.stay_in_airport.practical.kids_area}</p>
                           </div>
                         )}
                       </div>
@@ -1357,7 +1355,7 @@ const LayoverMaximizer = ({ tool }) => {
                   <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lmx_youre_set')}</p>
                   <dl className="space-y-1.5">
                     <div>
-                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_plan')}</dt>
+                      <dt className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_end_plan')}</dt>
                       <dd className={`text-xs ${c.text}`}>
                         {r.verdict === 'YES' && r.leave_the_airport?.explore_itinerary?.theme
                           ? r.leave_the_airport.explore_itinerary.theme
@@ -1369,7 +1367,7 @@ const LayoverMaximizer = ({ tool }) => {
                         next physical action is an ending. */}
                     {r.best_plan?.steps?.[0]?.do && (
                       <div>
-                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_next')}</dt>
+                        <dt className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_end_next')}</dt>
                         <dd className={`text-xs ${c.text}`}>{r.best_plan.steps[0].do}</dd>
                       </div>
                     )}
@@ -1377,7 +1375,7 @@ const LayoverMaximizer = ({ tool }) => {
                         is the thing that could overturn everything above it. */}
                     {r.need_to_know?.[0]?.question && (
                       <div>
-                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_keep_in_mind')}</dt>
+                        <dt className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_end_keep_in_mind')}</dt>
                         <dd className={`text-xs ${c.text}`}>{r.need_to_know[0].question}</dd>
                       </div>
                     )}
@@ -1385,18 +1383,18 @@ const LayoverMaximizer = ({ tool }) => {
                         quoting its gate time here would contradict the excursion. */}
                     {r.verdict !== 'YES' && r.best_plan?.leave_for_gate && (
                       <div>
-                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_gate')}</dt>
+                        <dt className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_end_gate')}</dt>
                         <dd className={`text-xs ${c.text}`}>{r.best_plan.leave_for_gate}</dd>
                       </div>
                     )}
                   </dl>
-                  <p className={`text-xs ${c.textMuteded} mt-2`}>{t('lmx_end_recalc')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('lmx_end_recalc')}</p>
                 </div>
               )}
 
               {/* Everything else, once the recommendation is complete. */}
               <div>
-                <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1.5`}>{t('lmx_more_help')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-1.5`}>{t('lmx_more_help')}</p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
                   {/* Saved and Recent are not here: they live under the submit
                       button, in the same place in every tool. Two homes for one
@@ -1427,36 +1425,36 @@ const LayoverMaximizer = ({ tool }) => {
   const renderLounge = () => (
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_lounge_title')}</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_lounge_subtitle')}</p>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_lounge_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_lounge_subtitle')}</p>
 
         <div className="space-y-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
             <input value={loungeAirport} onChange={e => setLoungeAirport(e.target.value)}
               placeholder={t('lmx_airport_code_or_name')}
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_lounge_field_terminal')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_terminal')}</label>
             <input value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
               placeholder={t('lmx_optional')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_lounge_field_airline')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_airline')}</label>
             <input value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
               placeholder={t('lmx_optional')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_lounge_field_cards')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_cards')}</label>
             <input value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
               placeholder={t('lmx_ph_lounge_cards')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_lounge_field_status')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_status')}</label>
             <input value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
               placeholder={t('lmx_ph_lounge_status')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
@@ -1474,19 +1472,19 @@ const LayoverMaximizer = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {loungeResults.best_overall && (
               <div className={`${c.success} border rounded-lg p-3 text-center`}>
-                <p className={`text-[10px] font-bold ${c.success} uppercase`}>{t('lmx_lounge_best_overall')}</p>
+                <p className={`text-[13px] font-bold ${c.success}`}>{t('lmx_lounge_best_overall')}</p>
                 <p className="text-xs font-bold mt-0.5">{loungeResults.best_overall}</p>
               </div>
             )}
             {loungeResults.best_value && (
               <div className={`${c.highlight} border rounded-lg p-3 text-center`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>{t('lmx_lounge_best_value')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_lounge_best_value')}</p>
                 <p className="text-xs font-bold mt-0.5">{loungeResults.best_value}</p>
               </div>
             )}
             {loungeResults.best_for_sleep && (
               <div className={`${c.card} ${c.border} border rounded-lg p-3 text-center`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>{t('lmx_lounge_best_sleep')}</p>
+                <p className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_lounge_best_sleep')}</p>
                 <p className="text-xs font-bold mt-0.5">{loungeResults.best_for_sleep}</p>
               </div>
             )}
@@ -1499,15 +1497,15 @@ const LayoverMaximizer = ({ tool }) => {
               defaultOpen={i === 0} c={c}>
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-2">
-                  <span className={`text-[10px] px-2 py-0.5 rounded ${c.badge} font-bold`}>{lounge.terminal}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded ${c.badge} font-bold`}>{lounge.network}</span>
-                  {lounge.has_showers && <span className={`text-[10px] px-2 py-0.5 rounded ${c.success} font-bold`}>{t('lmx_lounge_showers')}</span>}
-                  {lounge.has_sleeping && <span className={`text-[10px] px-2 py-0.5 rounded ${c.success} font-bold`}>{t('lmx_lounge_sleep')}</span>}
+                  <span className={`text-xs px-2 py-0.5 rounded ${c.badge} font-bold`}>{lounge.terminal}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${c.badge} font-bold`}>{lounge.network}</span>
+                  {lounge.has_showers && <span className={`text-xs px-2 py-0.5 rounded ${c.success} font-bold`}>{t('lmx_lounge_showers')}</span>}
+                  {lounge.has_sleeping && <span className={`text-xs px-2 py-0.5 rounded ${c.success} font-bold`}>{t('lmx_lounge_sleep')}</span>}
                 </div>
 
                 {lounge.access_methods?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_lounge_access')}</p>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_lounge_access')}</p>
                     {lounge.access_methods.map((am, ai) => (
                       <div key={ai} className="flex items-center gap-2 text-xs mb-0.5">
                         <span>{am.eligible ? '✅' : '❌'}</span>
@@ -1515,13 +1513,13 @@ const LayoverMaximizer = ({ tool }) => {
                         <span className={c.textMuteded}>{am.cost}</span>
                       </div>
                     ))}
-                    <p className={`text-[10px] ${c.textMuteded} italic mt-1`}>{t('lmx_confirm_access')}</p>
+                    <p className={`text-[13px] ${c.textMuteded} italic mt-1`}>{t('lmx_confirm_access')}</p>
                   </div>
                 )}
 
                 {lounge.food_quality && <p className="text-xs">🍽️ {lounge.food_quality}</p>}
                 {lounge.drinks && <p className="text-xs">🍷 {lounge.drinks}</p>}
-                {lounge.crowding && <p className={`text-xs ${c.textMuteded}`}>👥 {lounge.crowding}</p>}
+                {lounge.crowding && <p className={`text-[13px] ${c.textMuteded}`}>👥 {lounge.crowding}</p>}
                 {lounge.best_feature && <p className={`text-xs ${c.success}`}>{t('lmx_lounge_best_prefix', { text: lounge.best_feature })}</p>}
                 {lounge.worst_feature && <p className={`text-xs ${c.danger}`}>{t('lmx_lounge_worst_prefix', { text: lounge.worst_feature })}</p>}
                 {lounge.tip && <p className={`text-xs italic ${c.skyText}`}>💡 {lounge.tip}</p>}
@@ -1537,7 +1535,7 @@ const LayoverMaximizer = ({ tool }) => {
 
           {loungeResults.no_lounge_alternative && (
             <div className={`${c.highlight} border rounded-lg p-3`}>
-              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_lounge_no_lounge')}</p>
+              <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_lounge_no_lounge')}</p>
               <p className="text-xs">{loungeResults.no_lounge_alternative}</p>
             </div>
           )}
@@ -1560,35 +1558,35 @@ const LayoverMaximizer = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_risk_title')}</h3>
-          <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_risk_subtitle')}</p>
+          <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_risk_title')}</h3>
+          <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_risk_subtitle')}</p>
 
           <div className="space-y-3">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
               <input value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
                 placeholder={t('lmx_airport_code')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
               <input value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
                 placeholder={t('lmx_optional')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_risk_field_layover_hours')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_layover_hours')}</label>
               <input type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_risk_field_current_delay')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_current_delay')}</label>
               <input type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
                 placeholder="0"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_risk_field_worried')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_worried')}</label>
               <input value={riskScenario} onChange={e => setRiskScenario(e.target.value)}
                 placeholder={t('lmx_ph_risk_scenario')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1621,7 +1619,7 @@ const LayoverMaximizer = ({ tool }) => {
                   <div className="space-y-2">
                     {r.if_you_miss_it.next_flight_likely && (
                       <div className={`${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_risk_next_flight')}</p>
+                        <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_risk_next_flight')}</p>
                         <p className="text-xs">{r.if_you_miss_it.next_flight_likely}</p>
                       </div>
                     )}
@@ -1657,8 +1655,8 @@ const LayoverMaximizer = ({ tool }) => {
                     {r.mitigation.map((m, i) => (
                       <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                         <p className="text-xs font-bold">{m.action}</p>
-                        <p className={`text-[10px] ${c.textMuteded}`}>{m.why}</p>
-                        {m.when && <p className={`text-[10px] ${c.skyText}`}>⏰ {m.when}</p>}
+                        <p className={`text-[13px] ${c.textMuteded}`}>{m.why}</p>
+                        {m.when && <p className={`text-xs ${c.skyText}`}>⏰ {m.when}</p>}
                       </div>
                     ))}
                   </div>
@@ -1668,7 +1666,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Worst case */}
               {r.worst_case_timeline && (
                 <div className={`${c.danger} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.danger} uppercase mb-1`}>{t('lmx_risk_worst_case')}</p>
+                  <p className={`text-[13px] font-bold ${c.danger} mb-1`}>{t('lmx_risk_worst_case')}</p>
                   <p className="text-xs">{r.worst_case_timeline}</p>
                 </div>
               )}
@@ -1676,7 +1674,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Gamble verdict */}
               {r.gamble_verdict && (
                 <div className={`${c.card} ${c.border} border-2 rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_risk_verdict_label')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_risk_verdict_label')}</p>
                   <p className="text-sm font-bold">{r.gamble_verdict}</p>
                 </div>
               )}
@@ -1705,12 +1703,12 @@ const LayoverMaximizer = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_hist_title')}</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>{t('lmx_hist_subtitle')}</p>
+          <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_hist_title')}</h3>
+          <p className={`text-[13px] ${c.textMuted} mb-4`}>{t('lmx_hist_subtitle')}</p>
           {layoverHistory.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">🕐</p>
-              <p className={`text-xs ${c.textMuted}`}>{t('lmx_hist_empty')}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t('lmx_hist_empty')}</p>
               <button onClick={() => setView('plan')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>{t('lmx_btn_plan_layover')}</button>
             </div>
           ) : (
@@ -1720,11 +1718,11 @@ const LayoverMaximizer = ({ tool }) => {
                   onClick={() => { setAirport(h.airport); setLayoverHours(String(h.hours)); setView('plan'); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border} text-start min-h-[44px]`}>
                   {h.verdict && (
-                    <span className={`text-[9px] font-black px-2 py-0.5 rounded flex-shrink-0 ${VERDICT_PILL[h.verdict] || c.badge}`}>{h.verdict}</span>
+                    <span className={`text-xs font-black px-2 py-0.5 rounded flex-shrink-0 ${VERDICT_PILL[h.verdict] || c.badge}`}>{h.verdict}</span>
                   )}
                   <span className={`text-xs font-bold ${c.text} flex-1`}>{h.airportName || h.airport}</span>
-                  <span className={`text-xs ${c.textMuted}`}>{t('lmx_unit_hours_short', { n: h.hours })}</span>
-                  <span className={`text-[10px] ${c.textMuted} ms-1`}>{new Date(h.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted}`}>{t('lmx_unit_hours_short', { n: h.hours })}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-1`}>{new Date(h.date).toLocaleDateString()}</span>
                 </button>
               ))}
               <button onClick={() => { if (window.confirm(t('lmx_hist_clear_confirm'))) setLayoverHistory([]); }}
@@ -1742,13 +1740,13 @@ const LayoverMaximizer = ({ tool }) => {
   const renderSaved = () => (
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_saved_title')}</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_saved_subtitle')}</p>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_saved_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_saved_subtitle')}</p>
 
         {savedLayovers.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-2xl mb-2">📌</p>
-            <p className={`text-xs ${c.textMuteded}`}>{t('lmx_saved_empty')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_saved_empty')}</p>
             <button onClick={() => setView('plan')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>{t('lmx_btn_plan_layover')}</button>
           </div>
         ) : (
@@ -1757,14 +1755,14 @@ const LayoverMaximizer = ({ tool }) => {
               const verdictColor = lay.verdict === 'YES' ? c.success : lay.verdict === 'NO' ? c.danger : c.warning;
               return (
                 <div key={lay.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border}`}>
-                  <span className={`text-[9px] font-black px-2 py-0.5 rounded ${verdictColor}`}>{lay.verdict}</span>
+                  <span className={`text-xs font-black px-2 py-0.5 rounded ${verdictColor}`}>{lay.verdict}</span>
                   <button onClick={() => { setAirport(lay.airport); setLayoverHours(String(lay.hours)); setView('plan'); }}
                     className={`flex-1 text-start min-h-[28px]`}>
                     <span className={`text-xs font-bold ${c.text}`}>{lay.airportName || lay.airport}</span>
-                    <span className={`text-xs ${c.textMuteded} ms-2`}>{t('lmx_unit_hours_short', { n: lay.hours })}</span>
-                    {lay.city && <span className={`text-xs ${c.textMuteded} ms-1`}>• {lay.city}</span>}
+                    <span className={`text-[13px] ${c.textMuteded} ms-2`}>{t('lmx_unit_hours_short', { n: lay.hours })}</span>
+                    {lay.city && <span className={`text-[13px] ${c.textMuteded} ms-1`}>• {lay.city}</span>}
                   </button>
-                  <span className={`text-[10px] ${c.textMuteded}`}>{new Date(lay.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuteded}`}>{new Date(lay.date).toLocaleDateString()}</span>
                   <button onClick={() => removeSaved(lay.id)} className={`text-xs ${c.danger} min-h-[24px]`}>✕</button>
                 </div>
               );
@@ -1794,26 +1792,26 @@ const LayoverMaximizer = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_gate_title')}</h3>
-          <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_gate_subtitle')}</p>
+          <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_gate_title')}</h3>
+          <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_gate_subtitle')}</p>
           <div className="space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
               <input value={g2gAirport} onChange={e => setG2gAirport(e.target.value)} placeholder={t('lmx_airport_code_or_name')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_gate_field_arriving')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_arriving')}</label>
               <input value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder={t('lmx_ph_gate_arriving')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_gate_field_departing')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_departing')}</label>
               <input value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder={t('lmx_ph_gate_departing')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_gate_field_minutes')}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_minutes')}</label>
               <input type="number" value={g2gMinutes} onChange={e => setG2gMinutes(e.target.value)} placeholder={t('lmx_optional')}
                 className={`w-32 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
@@ -1837,23 +1835,23 @@ const LayoverMaximizer = ({ tool }) => {
 
               {r.fastest_route && (
                 <div className={`${c.highlight} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_gate_fastest')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_gate_fastest')}</p>
                   <p className="text-xs">{r.fastest_route}</p>
                 </div>
               )}
 
               {r.steps?.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>{t('lmx_gate_step_by_step')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-3`}>{t('lmx_gate_step_by_step')}</p>
                   <div className="space-y-2">
                     {r.steps.map((step, i) => (
                       <div key={i} className="flex gap-3">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black ${c.pillActive}`}>{step.step || i + 1}</div>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${c.pillActive}`}>{step.step || i + 1}</div>
                         <div className="flex-1">
                           <p className="text-xs">{step.instruction}</p>
                           <div className="flex gap-2 mt-0.5">
-                            <span className={`text-[10px] ${c.textMuteded}`}>⏱ {t('lmx_unit_min', { n: step.time_minutes })}</span>
-                            {step.tip && <span className={`text-[10px] italic ${c.skyText}`}>💡 {step.tip}</span>}
+                            <span className={`text-[13px] ${c.textMuteded}`}>⏱ {t('lmx_unit_min', { n: step.time_minutes })}</span>
+                            {step.tip && <span className={`text-xs italic ${c.skyText}`}>💡 {step.tip}</span>}
                           </div>
                         </div>
                       </div>
@@ -1868,15 +1866,15 @@ const LayoverMaximizer = ({ tool }) => {
                   <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
                     {t('lmx_gate_every', { frequency: r.shuttle_or_train.frequency, travel_time: r.shuttle_or_train.travel_time })}
                   </p>
-                  {r.shuttle_or_train.where_to_catch && <p className={`text-[10px] ${c.textMuteded}`}>📍 {r.shuttle_or_train.where_to_catch}</p>}
+                  {r.shuttle_or_train.where_to_catch && <p className={`text-[13px] ${c.textMuteded}`}>📍 {r.shuttle_or_train.where_to_catch}</p>}
                 </div>
               )}
 
-              {r.security_info && <p className={`text-xs ${c.textMuteded}`}>🛡️ {r.security_info}</p>}
+              {r.security_info && <p className={`text-[13px] ${c.textMuteded}`}>🛡️ {r.security_info}</p>}
 
               {r.tight_connection_tips?.length > 0 && (
                 <div className={`${c.warning} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.warning} uppercase mb-1`}>{t('lmx_gate_tight_tips')}</p>
+                  <p className={`text-[13px] font-bold ${c.warning} mb-1`}>{t('lmx_gate_tight_tips')}</p>
                   {r.tight_connection_tips.map((tip, i) => <p key={i} className="text-xs">• {tip}</p>)}
                 </div>
               )}
@@ -1901,24 +1899,24 @@ const LayoverMaximizer = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_delay_title')}</h3>
-          <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_delay_subtitle')}</p>
+          <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_delay_title')}</h3>
+          <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_delay_subtitle')}</p>
 
           {!results ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">⏰</p>
-              <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_empty')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_delay_empty')}</p>
               <button onClick={() => setView('plan')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>{t('lmx_btn_plan_first')}</button>
             </div>
           ) : (
             <div className="space-y-4">
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_current_plan')} <strong>{results.airport_name}</strong> — {results.verdict_emoji} {results.verdict}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_available')} <strong>{t('lmx_unit_hm', { h: Math.floor((timeBudget?.availableMin || 0) / 60), m: (timeBudget?.availableMin || 0) % 60 })}</strong>{timeBudget?.provisional ? ` — ${t('lmx_tm_before_unknowns')}` : ''}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_delay_current_plan')} <strong>{results.airport_name}</strong> — {results.verdict_emoji} {results.verdict}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_delay_available')} <strong>{t('lmx_unit_hm', { h: Math.floor((timeBudget?.availableMin || 0) / 60), m: (timeBudget?.availableMin || 0) % 60 })}</strong>{timeBudget?.provisional ? ` — ${t('lmx_tm_before_unknowns')}` : ''}</p>
               </div>
 
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_delay_field_minutes')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_delay_field_minutes')}</label>
                 <input type="number" value={delayMinutes} onChange={e => { setDelayMinutes(e.target.value); setDelayResults(null); }}
                   placeholder={t('lmx_ph_delay_minutes')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -1927,10 +1925,10 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Which flight is late decides the sign, and the tool never asked:
                   a late arrival eats the layover, a late departure hands time back. */}
               <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_delay_which_flight')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_delay_which_flight')}</label>
                 <div className="flex flex-wrap gap-1.5">
                   {[['inbound', t('lmx_delay_inbound')], ['outbound', t('lmx_delay_outbound')]].map(([key, label]) => (
-                    <button key={key} onClick={() => { setDelayedFlight(key); setDelayResults(null); }}
+                    <button aria-pressed={delayedFlight === key} key={key} onClick={() => { setDelayedFlight(key); setDelayResults(null); }}
                       className={`text-xs px-3 py-1.5 rounded-lg border ${delayedFlight === key ? c.pillActive : c.pillInactive} min-h-[32px]`}>
                       {label}
                     </button>
@@ -1961,11 +1959,11 @@ const LayoverMaximizer = ({ tool }) => {
                       <p className="text-2xl font-black">
                         {t('lmx_delay_remaining', { h: Math.floor(delayImpact.newMinutes / 60), m: delayImpact.newMinutes % 60 })}
                       </p>
-                      <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_delay_lost', { n: delayImpact.lost })}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('lmx_delay_lost', { n: delayImpact.lost })}</p>
                     </>
                   )}
                   {delayImpact.provisional && (
-                    <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('lmx_tm_before_unknowns')}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('lmx_tm_before_unknowns')}</p>
                   )}
                 </div>
               )}
@@ -1993,7 +1991,7 @@ const LayoverMaximizer = ({ tool }) => {
 
                   {delayResults.time_math && (
                     <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('lmx_sec_time_math')}</p>
+                      <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('lmx_sec_time_math')}</p>
                       <p className={`text-xs ${c.text} mb-2`}>{delayResults.time_math.breakdown_explanation}</p>
                       <div className={`flex items-center justify-between text-sm font-black border-t ${c.border} pt-2`}>
                         <span className={c.text}>{t('lmx_tm_available')}</span>
@@ -2002,7 +2000,7 @@ const LayoverMaximizer = ({ tool }) => {
                         </span>
                       </div>
                       {replanBudget?.provisional && (
-                        <p className={`text-[10px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
+                        <p className={`text-[13px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
                       )}
                       {delayResults.time_math.return_by_time && (
                         <p className={`text-xs font-bold ${c.text} mt-2`}>{t('lmx_tm_be_back')} {delayResults.time_math.return_by_time}</p>
@@ -2012,7 +2010,7 @@ const LayoverMaximizer = ({ tool }) => {
 
                   {delayResults.revised_plan?.headline && (
                     <div className={`${c.highlight} border rounded-xl p-4`}>
-                      <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('lmx_replan_now')}</p>
+                      <p className="text-[13px] font-bold mb-1 opacity-80">{t('lmx_replan_now')}</p>
                       <p className={`text-sm font-bold ${c.text} mb-2`}>{delayResults.revised_plan.headline}</p>
                       {delayResults.revised_plan.steps?.length > 0 && (
                         <div className="space-y-1.5 mb-2">
@@ -2033,14 +2031,14 @@ const LayoverMaximizer = ({ tool }) => {
 
                   {delayResults.off_the_table?.length > 0 && (
                     <div className={`${c.warning} border rounded-xl p-4`}>
-                      <p className={`text-[10px] font-bold uppercase mb-1.5`}>{t('lmx_replan_off_table')}</p>
+                      <p className={`text-[13px] font-bold mb-1.5`}>{t('lmx_replan_off_table')}</p>
                       {delayResults.off_the_table.map((x, i) => <p key={i} className="text-xs mb-1 last:mb-0">• {x}</p>)}
                     </div>
                   )}
 
                   {delayResults.now_possible?.length > 0 && (
                     <div className={`${c.success} border rounded-xl p-4`}>
-                      <p className={`text-[10px] font-bold uppercase mb-1.5`}>{t('lmx_replan_now_possible')}</p>
+                      <p className={`text-[13px] font-bold mb-1.5`}>{t('lmx_replan_now_possible')}</p>
                       {delayResults.now_possible.map((x, i) => <p key={i} className="text-xs mb-1 last:mb-0">• {x}</p>)}
                     </div>
                   )}
@@ -2051,7 +2049,7 @@ const LayoverMaximizer = ({ tool }) => {
                       {delayResults.need_to_know.map((n, i) => (
                         <div key={i} className="mb-2 last:mb-0">
                           <p className={`text-sm font-bold ${c.text}`}>{n.question}</p>
-                          {n.why && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
+                          {n.why && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
                         </div>
                       ))}
                     </div>
@@ -2062,7 +2060,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* Threshold scale */}
               {thresholds.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>{t('lmx_delay_impact_scale')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-3`}>{t('lmx_delay_impact_scale')}</p>
                   <div className="space-y-2">
                     {thresholds.map((row, i) => {
                       const verdict = row.available < 30 ? 'NO' : row.available < 90 ? 'RISKY' : 'YES';
@@ -2078,14 +2076,14 @@ const LayoverMaximizer = ({ tool }) => {
                           <span className={`text-xs font-bold ${verdict === 'YES' ? c.success : verdict === 'RISKY' ? c.warning : c.danger}`}>
                             {row.available > 0 ? t('lmx_unit_hm_short', { h: Math.floor(row.available / 60), m: row.available % 60 }) : '—'}
                           </span>
-                          <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                          <span className={`text-xs font-black px-1.5 py-0.5 rounded ${
                             verdict === 'YES' ? c.success : verdict === 'RISKY' ? c.warning : c.danger
                           }`}>{verdict}</span>
                         </div>
                       );
                     })}
                   </div>
-                  <p className={`text-[10px] ${c.textMuteded} mt-2`}>
+                  <p className={`text-[13px] ${c.textMuteded} mt-2`}>
                     {thresholds.find(row => row.available < 30)
                       ? t('lmx_delay_at_threshold', { n: thresholds.find(row => row.available < 30).delay })
                       : t('lmx_delay_can_absorb')}
@@ -2105,8 +2103,8 @@ const LayoverMaximizer = ({ tool }) => {
   const renderCompare = () => (
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_cmp_title')}</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_cmp_subtitle')}</p>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_cmp_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_cmp_subtitle')}</p>
         <div className="space-y-3">
           {cmpOptions.map((opt, i) => (
             <div key={i} className={`flex gap-2 p-3 rounded-lg border ${c.card} ${c.border}`}>
@@ -2148,7 +2146,7 @@ const LayoverMaximizer = ({ tool }) => {
               <p className="text-2xl mb-1">🏆</p>
               <p className={`text-lg font-black ${c.success}`}>{t('lmx_cmp_wins', { winner: cmpResults.winner })}</p>
               <p className="text-sm mt-1">{cmpResults.winner_reason}</p>
-              {cmpResults.runner_up_case && <p className={`text-xs ${c.textMuteded} mt-2 italic`}>{t('lmx_cmp_but', { text: cmpResults.runner_up_case })}</p>}
+              {cmpResults.runner_up_case && <p className={`text-[13px] ${c.textMuteded} mt-2 italic`}>{t('lmx_cmp_but', { text: cmpResults.runner_up_case })}</p>}
             </div>
           )}
 
@@ -2162,7 +2160,7 @@ const LayoverMaximizer = ({ tool }) => {
                     <div className="flex items-center gap-2 mb-3">
                       {isWinner && <span className="text-sm">🏆</span>}
                       <span className={`text-sm font-black ${c.text}`}>{opt.airport_name || opt.airport}</span>
-                      <span className={`text-xs ${c.textMuteded}`}>{t('lmx_unit_hours_short', { n: opt.hours })}</span>
+                      <span className={`text-[13px] ${c.textMuteded}`}>{t('lmx_unit_hours_short', { n: opt.hours })}</span>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
@@ -2183,14 +2181,14 @@ const LayoverMaximizer = ({ tool }) => {
                         <span className={c.textMuteded}>{t('lmx_cmp_food')}</span>
                         <span>{'⭐'.repeat(Math.min(Number(opt.food_rating) || 0, 5))}</span>
                       </div>
-                      {opt.best_thing && <p className={`text-[10px] ${c.success}`}>✓ {opt.best_thing}</p>}
-                      {opt.worst_thing && <p className={`text-[10px] ${c.danger}`}>✕ {opt.worst_thing}</p>}
-                      {opt.explore_highlight && <p className={`text-[10px] ${c.textMuteded}`}>🌍 {opt.explore_highlight}</p>}
-                      {opt.stay_highlight && <p className={`text-[10px] ${c.textMuteded}`}>🏢 {opt.stay_highlight}</p>}
-                      {opt.lounge_options && <p className={`text-[10px] ${c.textMuteded}`}>🛋️ {opt.lounge_options}</p>}
+                      {opt.best_thing && <p className={`text-xs ${c.success}`}>✓ {opt.best_thing}</p>}
+                      {opt.worst_thing && <p className={`text-xs ${c.danger}`}>✕ {opt.worst_thing}</p>}
+                      {opt.explore_highlight && <p className={`text-[13px] ${c.textMuteded}`}>🌍 {opt.explore_highlight}</p>}
+                      {opt.stay_highlight && <p className={`text-[13px] ${c.textMuteded}`}>🏢 {opt.stay_highlight}</p>}
+                      {opt.lounge_options && <p className={`text-[13px] ${c.textMuteded}`}>🛋️ {opt.lounge_options}</p>}
                       <div className="text-center pt-2">
                         <span className={`text-lg font-black ${c.skyText}`}>{opt.overall_score}</span>
-                        <span className={`text-[10px] ${c.textMuteded}`}>{t('lmx_cmp_out_of_100')}</span>
+                        <span className={`text-[13px] ${c.textMuteded}`}>{t('lmx_cmp_out_of_100')}</span>
                       </div>
                     </div>
                   </div>
@@ -2200,7 +2198,7 @@ const LayoverMaximizer = ({ tool }) => {
           )}
 
           {cmpResults.travel_hack && (
-            <div className={`${isDark ? 'bg-cyan-600/20 border-cyan-800' : 'bg-cyan-600 border-cyan-200'} border rounded-lg p-3`}>
+            <div className={`${isDark ? 'bg-cyan-600/20 border-[#2c3a4a]' : 'bg-[#142a43] border-[#d4dde8]'} border rounded-lg p-3`}>
               <p className="text-xs font-bold">{t('lmx_cmp_travel_hack', { text: cmpResults.travel_hack })}</p>
             </div>
           )}
@@ -2215,8 +2213,8 @@ const LayoverMaximizer = ({ tool }) => {
   const renderPacking = () => (
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_pack_title')}</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_pack_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-4`}>
           {results ? t('lmx_pack_subtitle_with', { airport: results.airport_name })
             : t('lmx_pack_subtitle_empty')}
         </p>
@@ -2237,7 +2235,7 @@ const LayoverMaximizer = ({ tool }) => {
         <div className="space-y-4">
           {/* Grab list */}
           <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-3`}>{t('lmx_pack_grab')}</p>
+            <p className={`text-[13px] font-bold ${c.textSecondary} mb-3`}>{t('lmx_pack_grab')}</p>
             <div className="space-y-2">
               {(packResults.grab_before_deplaning || []).map((item, i) => (
                 <div key={i} className={`flex items-start gap-2 text-xs px-3 py-2 rounded-lg ${
@@ -2259,26 +2257,26 @@ const LayoverMaximizer = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {packResults.weather_note && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_pack_weather')}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{packResults.weather_note}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_pack_weather')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{packResults.weather_note}</p>
               </div>
             )}
             {packResults.currency_tip && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_pack_currency')}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{packResults.currency_tip}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_pack_currency')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{packResults.currency_tip}</p>
               </div>
             )}
             {packResults.phone_tip && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_pack_phone')}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{packResults.phone_tip}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_pack_phone')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{packResults.phone_tip}</p>
               </div>
             )}
             {packResults.cultural_note && (
               <div className={`${c.quoteBg} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_pack_culture')}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{packResults.cultural_note}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_pack_culture')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{packResults.cultural_note}</p>
               </div>
             )}
           </div>
@@ -2290,8 +2288,8 @@ const LayoverMaximizer = ({ tool }) => {
           )}
           {packResults.leave_in_bag?.length > 0 && (
             <div className={`${c.quoteBg} rounded-lg p-3`}>
-              <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_pack_leave_in_bag')}</p>
-              {packResults.leave_in_bag.map((item, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {item}</p>)}
+              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('lmx_pack_leave_in_bag')}</p>
+              {packResults.leave_in_bag.map((item, i) => <p key={i} className={`text-[13px] ${c.textMuteded}`}>• {item}</p>)}
             </div>
           )}
 
@@ -2306,21 +2304,21 @@ const LayoverMaximizer = ({ tool }) => {
   const renderSurvivalKit = () => (
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_kit_title')}</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>{t('lmx_kit_subtitle')}</p>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('lmx_kit_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_kit_subtitle')}</p>
         <div className="space-y-3">
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
             <input value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
               placeholder={t('lmx_airport_code')} className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
             <input value={kitAirline} onChange={e => setKitAirline(e.target.value)}
               placeholder={t('lmx_optional')} className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_kit_field_hours')}</label>
+            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_kit_field_hours')}</label>
             <input type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
@@ -2341,10 +2339,10 @@ const LayoverMaximizer = ({ tool }) => {
               {/* WiFi */}
               {r.wifi && (
                 <div className={`${c.highlight} border rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_kit_wifi')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_kit_wifi')}</p>
                   <p className="text-xs font-bold">{r.wifi.network_name}</p>
-                  {r.wifi.password && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_kit_password', { password: r.wifi.password })}</p>}
-                  {r.wifi.how_to_connect && <p className={`text-[10px] ${c.textMuteded}`}>{r.wifi.how_to_connect}</p>}
+                  {r.wifi.password && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_kit_password', { password: r.wifi.password })}</p>}
+                  {r.wifi.how_to_connect && <p className={`text-[13px] ${c.textMuteded}`}>{r.wifi.how_to_connect}</p>}
                 </div>
               )}
 
@@ -2352,68 +2350,68 @@ const LayoverMaximizer = ({ tool }) => {
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {r.time_zone && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_time_zone')}</p>
+                    <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_time_zone')}</p>
                     <p className="text-xs">{r.time_zone}</p>
                   </div>
                 )}
                 {r.currency && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_currency')}</p>
+                    <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_currency')}</p>
                     <p className="text-xs">{r.currency.local_currency}</p>
-                    {r.currency.exchange_rate_approx && <p className={`text-[10px] ${c.textMuteded}`}>{r.currency.exchange_rate_approx}</p>}
-                    {r.currency.atm_locations && <p className={`text-[10px] ${c.textMuteded}`}>{t('lmx_kit_atm', { locations: r.currency.atm_locations })}</p>}
-                    {r.currency.card_acceptance && <p className={`text-[10px] ${c.textMuteded}`}>{t('lmx_kit_cards', { acceptance: r.currency.card_acceptance })}</p>}
+                    {r.currency.exchange_rate_approx && <p className={`text-[13px] ${c.textMuteded}`}>{r.currency.exchange_rate_approx}</p>}
+                    {r.currency.atm_locations && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_kit_atm', { locations: r.currency.atm_locations })}</p>}
+                    {r.currency.card_acceptance && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_kit_cards', { acceptance: r.currency.card_acceptance })}</p>}
                   </div>
                 )}
                 {r.power_outlets && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_outlets')}</p>
+                    <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_outlets')}</p>
                     <p className="text-xs">{r.power_outlets}</p>
                   </div>
                 )}
                 {r.emergency_numbers && (
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_emergency')}</p>
+                    <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_emergency')}</p>
                     <p className="text-xs">{r.emergency_numbers.local_emergency}</p>
-                    {r.emergency_numbers.airport_info && <p className={`text-[10px] ${c.textMuteded}`}>{t('lmx_kit_airport_info', { info: r.emergency_numbers.airport_info })}</p>}
+                    {r.emergency_numbers.airport_info && <p className={`text-[13px] ${c.textMuteded}`}>{t('lmx_kit_airport_info', { info: r.emergency_numbers.airport_info })}</p>}
                   </div>
                 )}
               </div>
 
               {r.airline_desk && (
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_airline_desk')}</p>
+                  <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_airline_desk')}</p>
                   <p className="text-xs">{r.airline_desk}</p>
                 </div>
               )}
 
               {r.quick_contacts && (r.quick_contacts.airline_phone || r.quick_contacts.embassy_note) && (
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_quick_contacts')}</p>
+                  <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_quick_contacts')}</p>
                   {r.quick_contacts.airline_phone && <p className="text-xs">{t('lmx_kit_airline', { phone: r.quick_contacts.airline_phone })}</p>}
-                  {r.quick_contacts.embassy_note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{r.quick_contacts.embassy_note}</p>}
+                  {r.quick_contacts.embassy_note && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{r.quick_contacts.embassy_note}</p>}
                 </div>
               )}
 
               {r.transport_from_airport && (
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('lmx_kit_getting_city')}</p>
+                  <p className={`text-xs font-bold ${c.textSecondary}`}>{t('lmx_kit_getting_city')}</p>
                   <p className="text-xs">{r.transport_from_airport.to_city}</p>
-                  {r.transport_from_airport.taxi_tip && <p className={`text-[10px] ${c.warning}`}>⚠️ {r.transport_from_airport.taxi_tip}</p>}
+                  {r.transport_from_airport.taxi_tip && <p className={`text-xs ${c.warning}`}>⚠️ {r.transport_from_airport.taxi_tip}</p>}
                 </div>
               )}
 
               {/* Key phrases */}
               {r.key_phrases?.length > 0 && (
                 <div className="mb-3">
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('lmx_kit_key_phrases')}</p>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('lmx_kit_key_phrases')}</p>
                   <div className="space-y-1">
                     {r.key_phrases.map((p, i) => (
                       <div key={i} className={`${c.quoteBg} rounded px-3 py-1.5 flex items-center justify-between text-xs`}>
                         <span className={c.textMuteded}>{p.english}</span>
                         <div className="text-end">
                           <span className="font-bold block">{p.local}</span>
-                          {p.pronunciation && <span className={`text-[10px] ${c.textMuteded}`}>{p.pronunciation}</span>}
+                          {p.pronunciation && <span className={`text-[13px] ${c.textMuteded}`}>{p.pronunciation}</span>}
                         </div>
                       </div>
                     ))}
@@ -2422,8 +2420,8 @@ const LayoverMaximizer = ({ tool }) => {
               )}
 
               {r.one_thing_to_know && (
-                <div className={`${isDark ? 'bg-cyan-600/20 border-cyan-800' : 'bg-cyan-600 border-cyan-200'} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_kit_one_thing')}</p>
+                <div className={`${isDark ? 'bg-cyan-600/20 border-[#2c3a4a]' : 'bg-[#142a43] border-[#d4dde8]'} border rounded-lg p-3`}>
+                  <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('lmx_kit_one_thing')}</p>
                   <p className="text-xs font-bold">{r.one_thing_to_know}</p>
                 </div>
               )}
@@ -2441,12 +2439,20 @@ const LayoverMaximizer = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Persistent header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '✈️'}</span>{t('lmx_tagline')}
                 </p>
                 {/* Dark ink in BOTH themes: the pill sits on the tool's own
@@ -2467,6 +2473,7 @@ const LayoverMaximizer = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
         <div className="px-5 py-3">
@@ -2495,8 +2502,8 @@ const LayoverMaximizer = ({ tool }) => {
       {view === 'risk' && renderRisk()}
       {view === 'saved' && renderSaved()}
       {view === 'history' && renderHistory()}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmx_related_tools')}</p>
+      <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('lmx_related_tools')}</p>
         <div className="flex flex-wrap gap-3">
           <a href="/DateNight" className={`text-xs ${linkStyle}`}>{t('lmx_xref_datenight')}</a>
           <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>{t('lmx_xref_mam')}</a>
@@ -2504,7 +2511,7 @@ const LayoverMaximizer = ({ tool }) => {
       </div>
 
       {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>
           {t('lmx_footer_prefix')}<a href="/MicroAdventureMapper" className={linkStyle}>{t('lmx_xref_mam')}</a>{t('lmx_footer_suffix')}
         </p>
       )}
