@@ -778,7 +778,7 @@ const TheRunthrough = ({ tool }) => {
         </div>
 
         {/* Mode description */}
-        <p className={`text-[13px] ${c.textMuted} italic`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} italic`}>
           {t(MODES.find(m => m.id === mode)?.descKey)}
         </p>
 
@@ -788,7 +788,7 @@ const TheRunthrough = ({ tool }) => {
         </p>
 
         {/* Input card */}
-        <div ref={inputCardRef} className={`${c.card} ${c.border} border rounded-2xl p-5 shadow-sm space-y-4`}>
+        <div ref={inputCardRef} data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`${c.card} ${c.border} border rounded-2xl p-5 shadow-sm space-y-4`}>
 
           {/* Content textarea (all modes) */}
           <div className="space-y-2">
@@ -983,7 +983,7 @@ const TheRunthrough = ({ tool }) => {
         const validSessions = sessionHistory.filter(s => s.data && s.input);
         if (!validSessions.length) return null;
         return (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-3`}>📋 {t('trt_recent_sessions')}</p>
             <div className="space-y-2">
               {validSessions.map(s => {

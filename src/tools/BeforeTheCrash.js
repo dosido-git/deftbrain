@@ -353,7 +353,7 @@ export default function BeforeTheCrash() {
         </div>
       </div>
 
-      <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+      <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
         <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
           <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
             {t('cpv2_how_title')}

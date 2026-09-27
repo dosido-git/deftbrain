@@ -253,7 +253,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
         </div>
 
         {/* View toggle — the whole product is these two states. */}
-        <div className="flex gap-2">
+        <div data-print-hide className="flex gap-2">
           <button aria-pressed={view === 'log'} type="button" onClick={() => setView('log')}
             className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors ${view === 'log' ? c.pillActive : c.pillInactive}`}>
             {t('sea_view_log')}

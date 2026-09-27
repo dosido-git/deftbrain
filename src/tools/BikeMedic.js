@@ -2356,7 +2356,7 @@ const BikeMedic = ({ tool }) => {
           </div>
           {activeSection === null && renderBikeProfileBar()}
           {activeSection === null && !bikeProfile && (
-            <div className="px-0 pt-2">
+            <div data-print-hide className="px-0 pt-2">
               <p className={`text-[13px] ${c.textMuted}`}>
                 <button onClick={() => setActiveSection('garage')} className={`${c.accentTxt} font-semibold hover:underline`}>{t('bmd_add_your_bike')}</button>{t('bmd_add_bike_suffix')}
               </p>
@@ -2469,7 +2469,7 @@ const BikeMedic = ({ tool }) => {
               )}
             </div>
 
-            <p className={`${c.textSecondary} mb-4 text-sm`}>{t('bmd_or_select_problem')}</p>
+            <p data-print-hide className={`${c.textSecondary} mb-4 text-sm`}>{t('bmd_or_select_problem')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {PROBLEMS.map(p => (
                 <button key={p.id} onClick={() => startProblem(p.id)}
@@ -2482,7 +2482,7 @@ const BikeMedic = ({ tool }) => {
             </div>
 
             {/* Direct free-text input */}
-            <div className={`mt-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
+            <div data-print-hide className={`mt-5 p-4 rounded-xl border-2 ${c.border} ${c.card}`}>
               <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('bmd_something_different')}</p>
               <div className="flex gap-2">
                 <input

@@ -985,6 +985,7 @@ const RentersDepositSaver = ({ tool }) => {
                 {rooms[activeRoom].checkpoints.map((cp, cpIdx) => (
                   <div
                     key={cpIdx}
+                    data-print-form
                     className={`rounded-xl border p-3 transition-colors ${
                       readCondition(cp.condition) === 'damage'
                         ? isDark ? 'border-red-800 bg-red-900/20' : 'border-red-200 bg-red-50/50'
@@ -1015,6 +1016,7 @@ const RentersDepositSaver = ({ tool }) => {
                       {CONDITION_OPTIONS.map(opt => (
                         <button
                           key={opt.value}
+                          aria-pressed={readCondition(cp.condition) === opt.value}
                           onClick={() => updateCheckpoint(activeRoom, cpIdx, 'condition', opt.value)}
                           className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
                             readCondition(cp.condition) === opt.value
