@@ -653,7 +653,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     <div className="flex-1 min-w-0">{row}</div>
                   </label>
                 ) : (
-                  <button key={p.id} onClick={() => openPerson(p.id)}
+                  <button data-print-heading key={p.id} onClick={() => openPerson(p.id)}
                     className={`w-full text-start rounded-2xl border p-5 transition hover:-translate-y-0.5 ${tone}`}>
                     {row}
                   </button>
@@ -773,7 +773,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                         <div className={`text-xs font-bold uppercase ${c.accentTxt}`}>{t(labelKey)}</div>
                         <div className="mt-2">{a.message}</div>
                         {a.why && <div className={`text-xs mt-2 ${c.textMuted}`}>{a.why}</div>}
-                        <div className="mt-3 flex flex-wrap gap-2">
+                        <div data-print-hide className="mt-3 flex flex-wrap gap-2">
                           {/* `exact` so the copy is only the message. The shared
                               button otherwise prepends a DeftBrain header, which
                               would go out to the friend along with the text. */}
