@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
+import AutoGrowTextarea from '../components/AutoGrowTextarea';
 
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -85,24 +86,26 @@ const DifficultTalkCoach = ({ tool }) => {
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:ring-cyan-500 focus:border-cyan-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-cyan-500 focus:border-cyan-500',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Site style (2026-09-27): navy for the main action, choices, tabs, focus
+    // and links — CONVENTIONS.md "House primary".
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:ring-[#7fb3e0] focus:border-[#7fb3e0]' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-[#142a43]/30 focus:border-[#142a43]',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     // Bespoke tool-specific keys
-    chipActive: isDark ? 'bg-cyan-900/40 border-cyan-500 text-cyan-200' : 'bg-cyan-50 border-cyan-500 text-cyan-800',
-    chipInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-600 hover:border-gray-300',
-    tabActive: isDark ? 'border-cyan-500 text-cyan-300' : 'border-cyan-600 text-cyan-700',
+    chipActive: isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-50' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]',
+    chipInactive: isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'border-gray-300 text-gray-700 hover:border-gray-400',
+    tabActive: isDark ? 'border-[#7fb3e0] text-zinc-50' : 'border-[#142a43] text-[#142a43]',
     tabInactive: isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-gray-400 hover:text-gray-600',
-    highlight: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
-    simUser: isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    highlight: isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
+    simUser: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     simThem: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-gray-100 border-gray-200',
     simCoach:      isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     resReceptive:  isDark ? 'text-green-400' : 'text-green-600',
     resOpen:       isDark ? 'text-emerald-400' : 'text-emerald-600',
     resDefensive:  isDark ? 'text-amber-400' : 'text-amber-600',
@@ -116,8 +119,8 @@ const DifficultTalkCoach = ({ tool }) => {
   const chip = (active) => active ? c.chipActive : c.chipInactive;
 
   const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+    ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
+    : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Input State ───
   const [relationship, setRelationship] = useState('');
@@ -536,7 +539,7 @@ const DifficultTalkCoach = ({ tool }) => {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: rgb(124,58,237);
+          background: rgb(20,42,67);
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 1px 3px rgba(0,0,0,0.3);
@@ -546,19 +549,27 @@ const DifficultTalkCoach = ({ tool }) => {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: rgb(124,58,237);
+          background: rgb(20,42,67);
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
       `}</style>
     <div className={`space-y-4 ${c.text}`}>
-      {/* Header */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
+      {/* Header — site style (2026-09-27): no card of its own. It bleeds to
+          the edges of the page's tool card on a pale band of the tool's color
+          (negative margins = the wrapper's padding; the card clips the
+          corners), the pale ground the "Try an example" pill was designed for
+          (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="flex items-center justify-between">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🗣️'}</span>{t('dtc_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -575,26 +586,26 @@ const DifficultTalkCoach = ({ tool }) => {
 
       {/* ═══════════════ INPUT VIEW ═══════════════ */}
       {!results && (
-        <div className="space-y-5">
+        <div className="space-y-6" data-print-form>
 
           {/* Topic */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-2`}>{t('dtc_topic_label')} <span className={c.required}>*</span></label>
-            <textarea
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('dtc_topic_label')} <span className={c.required}>*</span></label>
+            <AutoGrowTextarea
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder={t('dtc_topic_ph')}
-              rows={4}
-              className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-cyan-500 ${c.input}`}
+              minHeight={112}
+              className={`w-full p-4 border rounded-xl outline-none text-[15px] resize-none focus:ring-2 ${c.input}`}
             />
           </div>
 
           {/* Relationship */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-3`}>{t('dtc_who_label')} <span className={c.required}>*</span></label>
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-3`}>{t('dtc_who_label')} <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {relationships.map(r => (
-                <button key={r.value} onClick={() => setRelationship(r.value)}
+                <button key={r.value} onClick={() => setRelationship(r.value)} aria-pressed={relationship === r.value}
                   className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chip(relationship === r.value)}`}>
                   {r.icon} {t(r.labelKey)}
                 </button>
@@ -603,11 +614,11 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Goals */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-3`}>{t('dtc_goals_label')} <span className={c.required}>*</span></label>
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-3`}>{t('dtc_goals_label')} <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {goalOptions.map(g => (
-                <button key={g.key} onClick={() => toggleGoal(g.key)}
+                <button key={g.key} onClick={() => toggleGoal(g.key)} aria-pressed={goals.includes(g.key)}
                   className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chip(goals.includes(g.key))}`}>
                   {g.icon} {t(g.labelKey)}
                 </button>
@@ -619,25 +630,25 @@ const DifficultTalkCoach = ({ tool }) => {
               optional block and above the resistance slider. This is the real
               subject of the tool: people rarely avoid a conversation because
               they cannot find the words. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-1`}>{t('dtc_worried_label')}</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>{t('dtc_worried_help')}</p>
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_worried_label')}</label>
+            <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('dtc_worried_help')}</p>
             <div className="flex flex-wrap gap-2 mb-3">
               {FEARS.map(fear => (
-                <button key={fear.id} onClick={() => toggleFear(fear.id)}
-                  className={`px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${chip(fears.includes(fear.id))}`}>
+                <button key={fear.id} onClick={() => toggleFear(fear.id)} aria-pressed={fears.includes(fear.id)}
+                  className={`px-3 py-2 rounded-lg border text-[13px] font-semibold transition-all ${chip(fears.includes(fear.id))}`}>
                   {t(fear.labelKey)}
                 </button>
               ))}
             </div>
             <input type="text" value={biggestFear} onChange={(e) => setBiggestFear(e.target.value)}
               placeholder={t('dtc_biggest_fear_ph')}
-              className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
+              className={`w-full p-3 border rounded-xl outline-none text-[15px] focus:ring-2 ${c.input}`} />
           </div>
 
           {/* 5. How resistant will they be? */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-1`}>
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
               {t('dtc_resistance_label')} <span className={`font-normal text-sm ${resistanceClass(resistanceLevel)}`}>{t(getResistanceInfo(resistanceLevel).labelKey)} ({resistanceLevel}%)</span>
             </label>
             <input type="range" min="0" max="100" value={resistanceLevel} onChange={(e) => setResistanceLevel(parseInt(e.target.value))}
@@ -645,7 +656,7 @@ const DifficultTalkCoach = ({ tool }) => {
               style={{
                 WebkitAppearance: 'none',
                 appearance: 'none',
-                background: `linear-gradient(to right, rgb(124,58,237) ${resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${resistanceLevel}%)`,
+                background: `linear-gradient(to right, ${isDark ? '#7fb3e0' : '#142a43'} ${resistanceLevel}%, ${isDark ? '#3f3f46' : '#e2e8f0'} ${resistanceLevel}%)`,
                 borderRadius: '8px',
               }} />
             <div className={`flex justify-between text-xs ${c.textMuted} mt-1`}>
@@ -654,28 +665,28 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* 6 + 7. Their side, and whether this has come up before. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dtc_optional_header')}</p>
+          <div className="space-y-4">
+            <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('dtc_optional_header')}</p>
             <div>
-              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>{t('dtc_their_side_label')}</label>
+              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_their_side_label')}</label>
               <input type="text" value={theirPerspective} onChange={(e) => setTheirPerspective(e.target.value)}
                 placeholder={t('dtc_their_side_ph')}
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-[15px] focus:ring-2 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>{t('dtc_tried_label')}</label>
+              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_tried_label')}</label>
               <input type="text" value={previousAttempts} onChange={(e) => setPreviousAttempts(e.target.value)}
                 placeholder={t('dtc_tried_ph')}
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-[15px] focus:ring-2 ${c.input}`} />
             </div>
           </div>
 
           {/* 8. Preferred style. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-2`}>{t('dtc_style_label')}</label>
+          <div>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('dtc_style_label')}</label>
             <div className="flex flex-wrap gap-2">
               {styleOptions.map(s => (
-                <button key={s.value} onClick={() => setCommunicationStyle(s.value)}
+                <button key={s.value} onClick={() => setCommunicationStyle(s.value)} aria-pressed={communicationStyle === s.value}
                   className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${chip(communicationStyle === s.value)}`}>
                   {s.icon} {t(s.labelKey)}
                 </button>
@@ -704,8 +715,8 @@ const DifficultTalkCoach = ({ tool }) => {
           )}
 
           {/* Pre-result cross-ref */}
-          <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
-            <p className={`text-xs ${c.textMuted}`}>
+          <div data-print-hide>
+            <p className={`text-[13px] ${c.textMuted} text-center`}>
               {t('dtc_xref_conflict_q')}{' '}<a href="/ConflictCoach" className={linkStyle}>{t('dtc_xref_conflict_name')}</a>{' '}
               {t('dtc_xref_conflict_tail')}
             </p>
@@ -714,7 +725,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* PF-32 — returning-visitor furniture lives under the submit button,
               not in the header card, where it competed with the tagline. */}
           {strategyHistory.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div data-print-hide className={`border-t ${c.border} pt-5`}>
               <button onClick={() => toggleSection('history')} className="w-full flex items-center gap-2 text-start">
                 <span className="text-base">📁</span>
                 <span className={`text-sm font-bold ${c.text} flex-1`}>{t('dtc_past_strategies')}</span>
@@ -764,12 +775,12 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <span className={`text-sm font-semibold ${c.text}`}>{t('dtc_strategy_prefix')} {topic.substring(0, 50)}{topic.length > 50 ? '…' : ''}</span>
           </div>
 
           {/* Tabs */}
-          <div className={`flex border-b ${c.border} gap-0 overflow-x-auto`}>
+          <div data-print-hide className={`flex border-b ${c.border} gap-0 overflow-x-auto`}>
             {[
               { key: 'prepare', label: t('dtc_tab_prepare') },
               { key: 'quickRef', label: t('dtc_tab_quickref') },
@@ -808,10 +819,10 @@ const DifficultTalkCoach = ({ tool }) => {
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0 mt-0.5">🛡️</span>
                     <div>
-                      <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>
+                      <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>
                         {t('dtc_expect_title')}
                       </h3>
-                      <p className={`text-sm ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{results.reality_check}</p>
+                      <p className={`text-sm ${isDark ? 'text-zinc-200' : 'text-[#1e3a58]'}`}>{results.reality_check}</p>
                     </div>
                   </div>
                 </div>
@@ -819,7 +830,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Situation Reading */}
               {results.situation_reading && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                <div className={`${c.card} border ${c.border} rounded-xl p-6 border-s-4 ${isDark ? 'border-s-[#7fb3e0]' : 'border-s-[#142a43]'}`}>
                   <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className="text-lg">👁️</span> {t('dtc_situation_reading')}
                   </h3>
@@ -849,15 +860,15 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Emotional Landmines */}
               {results.emotional_landmines?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-                  <button onClick={() => toggleSection('landmines')} className={`w-full flex items-center justify-between ${c.text}`}>
-                    <h3 className="font-bold flex items-center gap-2">
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading onClick={() => toggleSection('landmines')} className={`w-full flex items-center justify-between ${c.text}`}>
+                    <h3 className="text-base font-bold flex items-center gap-2">
                       <span className="text-lg">💥</span> {t('dtc_landmines', { count: results.emotional_landmines.length })}
                     </h3>
-                    {<Caret open={expandedSections.landmines} />}
+                    <span data-print-hide><Caret open={expandedSections.landmines} /></span>
                   </button>
-                  {(expandedSections.landmines !== false) && (
-                    <div className="space-y-4 mt-4">
+                  {(
+                    <div data-sec-body hidden={expandedSections.landmines === false} className="space-y-4 mt-4">
                       {results.emotional_landmines.map((lm, idx) => (
                         <div key={idx} className={`p-4 rounded-xl border ${c.border} space-y-3`}>
                           <div className={`p-3 rounded-lg ${c.danger} border`}>
@@ -888,7 +899,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Conversation Approaches */}
               {results.conversation_approaches?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                     <span className="text-lg">💬</span> {t('dtc_scripts')}
                   </h3>
@@ -913,8 +924,8 @@ const DifficultTalkCoach = ({ tool }) => {
                         </div>
 
                         {/* Opening */}
-                        <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
-                          <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>{t('dtc_opening')}</p>
+                        <div className={`p-4 rounded-xl ${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border`}>
+                          <p className={`text-xs font-bold ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mb-2`}>{t('dtc_opening')}</p>
                           <p className={`text-sm ${c.text} leading-relaxed font-medium`}>"{approach.script.opening}"</p>
                         </div>
 
@@ -923,7 +934,7 @@ const DifficultTalkCoach = ({ tool }) => {
                           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('dtc_main_points')}</p>
                           {approach.script.main_points.map((point, i) => (
                             <div key={i} className={`flex items-start gap-3 mb-2`}>
-                              <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{i + 1}</span>
+                              <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{i + 1}</span>
                               <p className={`text-sm ${c.textSecondary} pt-0.5`}>{point}</p>
                             </div>
                           ))}
@@ -948,12 +959,12 @@ const DifficultTalkCoach = ({ tool }) => {
                         {/* Anticipated Responses */}
                         {approach.anticipated_responses?.length > 0 && (
                           <div>
-                            <button onClick={() => toggleSection(`responses-${idx}`)} className={`flex items-center gap-2 w-full ${c.text}`}>
+                            <button data-print-heading onClick={() => toggleSection(`responses-${idx}`)} className={`flex items-center gap-2 w-full ${c.text}`}>
                               <p className="text-xs font-bold">{t('dtc_what_they_might', { count: approach.anticipated_responses.length })}</p>
-                              <Caret open={expandedSections[`responses-${idx}`]} />
+                              <span data-print-hide><Caret open={expandedSections[`responses-${idx}`]} /></span>
                             </button>
-                            {expandedSections[`responses-${idx}`] && (
-                              <div className="space-y-3 mt-3">
+                            {(
+                              <div data-sec-body hidden={!expandedSections[`responses-${idx}`]} className="space-y-3 mt-3">
                                 {approach.anticipated_responses.map((ar, i) => (
                                   <div key={i} className={`p-3 rounded-lg border ${c.border} space-y-2`}>
                                     <p className={`text-sm font-medium ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('dtc_them')} "{ar.they_might_say}"</p>
@@ -982,7 +993,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* ── Firmness Messages ── */}
               {results.firmness_messages?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                     <span className="text-lg">📋</span> {t('dtc_copypaste_title')}
                   </h3>
@@ -1006,7 +1017,7 @@ const DifficultTalkCoach = ({ tool }) => {
                               <span className="text-lg">{lc.emoji}</span>
                               <h4 className={`text-sm font-bold ${lc.accent}`}>{msg.label}</h4>
                               {isRecommended && (
-                                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-600 text-white'}`}>
+                                <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${isDark ? 'bg-[#2f6fb0] text-white' : 'bg-[#142a43] text-white'}`}>
                                   {t('dtc_recommended')}
                                 </span>
                               )}
@@ -1022,9 +1033,9 @@ const DifficultTalkCoach = ({ tool }) => {
                           )}
                           {msg.removes?.length > 0 && (
                             <div className="mt-2 flex flex-wrap gap-1.5">
-                              <span className={`text-[10px] font-bold ${c.textMuted}`}>{t('dtc_removes')}</span>
+                              <span className={`text-xs font-bold ${c.textMuted}`}>{t('dtc_removes')}</span>
                               {msg.removes.map((r, i) => (
-                                <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded line-through ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-500'}`}>
+                                <span key={i} className={`text-xs px-1.5 py-0.5 rounded line-through ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-500'}`}>
                                   {r}
                                 </span>
                               ))}
@@ -1039,7 +1050,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* ── Pushback Scripts ── */}
               {results.pushback_scripts && Object.keys(results.pushback_scripts).length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm overflow-hidden`}>
+                <div className={`border-t ${c.border} pt-5 overflow-hidden`}>
                   <button
                     onClick={() => setExpandedPushback(p => !p)}
                     className={`w-full p-5 flex items-center justify-between text-start`}
@@ -1047,7 +1058,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <div className="flex items-center gap-2">
                       <span className="text-lg">🛡️</span>
                       <h3 className={`font-bold ${c.text}`}>{t('dtc_pushback_title')}</h3>
-                      <span className={`text-[10px] ${c.textMuted}`}>{t('dtc_pushback_sub')}</span>
+                      <span className={`text-xs ${c.textMuted}`}>{t('dtc_pushback_sub')}</span>
                     </div>
                     {<Caret open={expandedPushback} />}
                   </button>
@@ -1092,15 +1103,15 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Body Language */}
               {results.body_language_guidance && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-                  <button onClick={() => toggleSection('body')} className={`w-full flex items-center justify-between ${c.text}`}>
-                    <h3 className="font-bold flex items-center gap-2">
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading onClick={() => toggleSection('body')} className={`w-full flex items-center justify-between ${c.text}`}>
+                    <h3 className="text-base font-bold flex items-center gap-2">
                       <span className="text-lg">⚡</span> {t('dtc_body_language')}
                     </h3>
-                    {<Caret open={expandedSections.body} />}
+                    <span data-print-hide><Caret open={expandedSections.body} /></span>
                   </button>
-                  {expandedSections.body && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                  {(
+                    <div data-sec-body hidden={!expandedSections.body} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                       {Object.entries(results.body_language_guidance).map(([key, val]) => (
                         <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                           <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
@@ -1114,15 +1125,15 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* De-escalation */}
               {results.deescalation_toolkit && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-                  <button onClick={() => toggleSection('deescalation')} className={`w-full flex items-center justify-between ${c.text}`}>
-                    <h3 className="font-bold flex items-center gap-2">
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading onClick={() => toggleSection('deescalation')} className={`w-full flex items-center justify-between ${c.text}`}>
+                    <h3 className="text-base font-bold flex items-center gap-2">
                       <span className="text-lg">🛡️</span> {t('dtc_deescalation')}
                     </h3>
-                    {<Caret open={expandedSections.deescalation} />}
+                    <span data-print-hide><Caret open={expandedSections.deescalation} /></span>
                   </button>
-                  {expandedSections.deescalation && (
-                    <div className="space-y-3 mt-4">
+                  {(
+                    <div data-sec-body hidden={!expandedSections.deescalation} className="space-y-3 mt-4">
                       {(results.deescalation_toolkit.for_common_reactions ?? results.deescalation_toolkit.for_their_likely_defense) && (
                         <div className={`p-4 rounded-lg ${c.highlight} border`}>
                           <p className="text-xs font-bold mb-1">{t('dtc_for_defense')}</p>
@@ -1162,15 +1173,15 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Preparation Plan */}
               {results.preparation_plan && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-                  <button onClick={() => toggleSection('prep')} className={`w-full flex items-center justify-between ${c.text}`}>
-                    <h3 className="font-bold flex items-center gap-2">
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading onClick={() => toggleSection('prep')} className={`w-full flex items-center justify-between ${c.text}`}>
+                    <h3 className="text-base font-bold flex items-center gap-2">
                       <span className="text-lg">🕐</span> {t('dtc_prep_plan')}
                     </h3>
-                    {<Caret open={expandedSections.prep} />}
+                    <span data-print-hide><Caret open={expandedSections.prep} /></span>
                   </button>
-                  {expandedSections.prep && (
-                    <div className="space-y-3 mt-4">
+                  {(
+                    <div data-sec-body hidden={!expandedSections.prep} className="space-y-3 mt-4">
                       {['one_hour_before', 'setting_the_stage', 'grounding_technique'].map(key => (
                         results.preparation_plan[key] && (
                           <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -1207,7 +1218,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Follow-Up Plan (generated but previously not rendered) */}
               {results.follow_up_plan && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                     <span className="text-lg">📅</span> {t('dtc_whats_next')}
                   </h3>
@@ -1238,16 +1249,16 @@ const DifficultTalkCoach = ({ tool }) => {
               {results.reassurance_badges?.length > 0 && (
                 <div className="flex flex-wrap gap-2 justify-center">
                   {results.reassurance_badges.map((badge, i) => (
-                    <span key={i} className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${c.success}`}>
+                    <span key={i} className={`text-xs font-bold px-2.5 py-1 rounded-full border ${c.success}`}>
                       ✓ {badge}
                     </span>
                   ))}
                 </div>
               )}
 
-              {/* Cross-references */}
-              <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'} mt-2`}>
-                <p className={`text-xs ${c.textMuted}`}>
+              {/* Cross-references — a line, not a box; screen only. */}
+              <div data-print-hide className="mt-2">
+                <p className={`text-[13px] ${c.textMuted} text-center`}>
                   {t('dtc_xref_words_q')}{' '}<a href="/VelvetHammer" className={linkStyle}>{t('dtc_xref_velvet')}</a>{' '}
                   {t('dtc_xref_velvet_tail')}{' '}<a href="/Mend" className={linkStyle}>{t('dtc_xref_apology')}</a>{' '}
                   {t('dtc_xref_apology_tail')}
@@ -1264,7 +1275,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: QUICK REFERENCE CARD ══════ */}
           {activeTab === 'quickRef' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                     <span className="text-lg">📋</span> {t('dtc_quickref_title')}
@@ -1284,15 +1295,15 @@ const DifficultTalkCoach = ({ tool }) => {
                   return (
                     <div className="space-y-4">
                       {/* Approach name */}
-                      <div className={`text-center py-2 px-4 rounded-lg ${isDark ? 'bg-cyan-900/30 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
-                        <p className={`text-xs font-bold uppercase tracking-wide ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                      <div className={`text-center py-2 px-4 rounded-lg ${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border`}>
+                        <p className={`text-xs font-bold uppercase tracking-wide ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>
                           {t('dtc_using')} {approach.approach_name}
                         </p>
                       </div>
 
                       {/* Opening Line */}
-                      <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border`}>
-                        <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>{t('dtc_opening_line')}</p>
+                      <div className={`p-4 rounded-xl ${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border`}>
+                        <p className={`text-xs font-bold ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mb-2`}>{t('dtc_opening_line')}</p>
                         <p className={`text-base ${c.text} font-medium leading-relaxed`}>"{approach.script.opening}"</p>
                       </div>
 
@@ -1374,7 +1385,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: PRACTICE ══════ */}
           {activeTab === 'practice' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                   <span className="text-lg">▶️</span> {t('dtc_practice_mode')}
                 </h3>
@@ -1439,7 +1450,7 @@ const DifficultTalkCoach = ({ tool }) => {
                         {results?.conversation_approaches?.[expandedApproach]?.script?.opening && (
                           <button
                             onClick={() => setSimInput(results.conversation_approaches[expandedApproach].script.opening)}
-                            className={`mt-3 text-xs ${isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'} underline underline-offset-2`}
+                            className={`mt-3 text-xs ${isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef]' : 'text-[#165b9a] hover:text-[#142a43]'} underline underline-offset-2`}
                           >
                             {t('dtc_use_prepared', { name: results.conversation_approaches[expandedApproach].approach_name })}
                           </button>
@@ -1452,7 +1463,7 @@ const DifficultTalkCoach = ({ tool }) => {
                         {msg.role === 'user' && (
                           <div className="flex justify-end">
                             <div className={`max-w-[80%] p-3 rounded-xl ${c.simUser} border`}>
-                              <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mb-1`}>{t('dtc_label_you')}</p>
+                              <p className={`text-xs font-bold ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mb-1`}>{t('dtc_label_you')}</p>
                               <p className={`text-sm ${c.text}`}>{msg.content}</p>
                             </div>
                           </div>
@@ -1466,15 +1477,15 @@ const DifficultTalkCoach = ({ tool }) => {
                                   {msg.emotionalState && <span className={`text-xs ${c.textMuted}`}>({msg.emotionalState})</span>}
                                   {msg.health && <span className={`text-xs font-bold ${healthColors[msg.health] || c.textMuted}`}>• {msg.health.replace('_', ' ')}</span>}
                                   {msg.openness_shift != null && msg.openness_shift !== 0 && (
-                                    <span className={`text-[10px] font-bold ${msg.openness_shift > 0 ? (isDark ? 'text-green-400' : 'text-green-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
+                                    <span className={`text-xs font-bold ${msg.openness_shift > 0 ? (isDark ? 'text-green-400' : 'text-green-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
                                       {msg.openness_shift > 0 ? '↑' : '↓'}{Math.abs(msg.openness_shift)}
                                     </span>
                                   )}
                                 </div>
                                 <p className={`text-sm ${c.text}`}>{msg.content}</p>
-                                {msg._corrected && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('dtc_corrected_by_you')}</p>}
+                                {msg._corrected && <p className={`text-xs ${c.textMuted} mt-1`}>{t('dtc_corrected_by_you')}</p>}
                                 {msg.technique_used && msg.technique_used !== 'none detected' && (
-                                  <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-1`}>🎯 {msg.technique_used}</p>
+                                  <p className={`text-xs ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mt-1`}>🎯 {msg.technique_used}</p>
                                 )}
                               </div>
                             </div>
@@ -1483,7 +1494,7 @@ const DifficultTalkCoach = ({ tool }) => {
                                 <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-0.5`}>{t('dtc_coach')}</p>
                                 <p className={`text-xs ${c.textSecondary}`}>{msg.coaching}</p>
                                 {msg.suggestion && <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'} mt-1`}>{t('dtc_try_inline')} "{msg.suggestion}"</p>}
-                                {msg.openness_reason && <p className={`text-[10px] ${c.textMuted} mt-1`}>{msg.openness_reason}</p>}
+                                {msg.openness_reason && <p className={`text-xs ${c.textMuted} mt-1`}>{msg.openness_reason}</p>}
                               </div>
                             )}
                             {/* Correction mechanism */}
@@ -1496,13 +1507,13 @@ const DifficultTalkCoach = ({ tool }) => {
                                       placeholder={t('dtc_correction_ph')}
                                       className={`w-full p-2 border rounded-lg text-xs outline-none ${c.input}`} />
                                     <button onClick={() => handleCorrection(idx)}
-                                      className={`px-2 py-1 rounded text-[10px] font-bold ${c.btnPrimary}`}>{t('dtc_replace')}</button>
+                                      className={`px-2 py-1 rounded text-xs font-bold ${c.btnPrimary}`}>{t('dtc_replace')}</button>
                                     <button onClick={() => { setShowCorrection(null); setCorrectionText(''); }}
-                                      className={`text-[10px] ${c.textMuted}`}>{t('dtc_cancel')}</button>
+                                      className={`text-xs ${c.textMuted}`}>{t('dtc_cancel')}</button>
                                   </div>
                                 ) : (
                                   <button onClick={() => setShowCorrection(idx)}
-                                    className={`text-[10px] ${c.textMuted} hover:${isDark ? 'text-zinc-300' : 'text-gray-600'}`}>
+                                    className={`text-xs ${c.textMuted} hover:${isDark ? 'text-zinc-300' : 'text-gray-600'}`}>
                                     {t('dtc_wouldnt_say')}
                                   </button>
                                 )}
@@ -1537,7 +1548,7 @@ const DifficultTalkCoach = ({ tool }) => {
                       onChange={(e) => setSimInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSimSend()}
                       placeholder={t('dtc_sim_input_ph')}
-                      className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-500 ${c.input}`}
+                      className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 ${c.input}`}
                     />
                     <button onClick={handleSimSend} disabled={!simInput.trim() || simLoading}
                       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${c.btnPrimary} disabled:opacity-40`}>
@@ -1573,7 +1584,7 @@ const DifficultTalkCoach = ({ tool }) => {
               {practiceSummary && (
                 <div className="space-y-4">
                   {/* Readiness Score */}
-                  <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${
+                  <div className={`${c.card} border ${c.border} rounded-xl p-6 border-s-4 ${
                     practiceSummary.readiness_score >= 7 ? (isDark ? 'border-green-500' : 'border-green-400')
                       : practiceSummary.readiness_score >= 5 ? (isDark ? 'border-amber-500' : 'border-amber-400')
                       : (isDark ? 'border-red-500' : 'border-red-400')
@@ -1601,7 +1612,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Readiness Breakdown */}
                   {practiceSummary.readiness_breakdown && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>{t('dtc_skill_breakdown')}</h4>
                       <div className="space-y-2">
                         {Object.entries(practiceSummary.readiness_breakdown).map(([key, score]) => (
@@ -1625,7 +1636,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Strategy Adherence */}
                   {practiceSummary.strategy_adherence && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>{t('dtc_strategy_adherence')}</h4>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{practiceSummary.strategy_adherence.adherence_note}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
@@ -1653,7 +1664,7 @@ const DifficultTalkCoach = ({ tool }) => {
                           <p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'} mb-1`}>{t('dtc_phrases_you_used')}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {practiceSummary.strategy_adherence.key_phrases_used.map((p, i) => (
-                              <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] ${c.success} border`}>"{p}"</span>
+                              <span key={i} className={`px-2 py-0.5 rounded-full text-xs ${c.success} border`}>"{p}"</span>
                             ))}
                           </div>
                         </div>
@@ -1663,7 +1674,7 @@ const DifficultTalkCoach = ({ tool }) => {
                           <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'} mb-1`}>{t('dtc_phrases_you_missed')}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {practiceSummary.strategy_adherence.key_phrases_missed.map((p, i) => (
-                              <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] ${c.warning} border`}>"{p}"</span>
+                              <span key={i} className={`px-2 py-0.5 rounded-full text-xs ${c.warning} border`}>"{p}"</span>
                             ))}
                           </div>
                         </div>
@@ -1673,7 +1684,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Strengths */}
                   {practiceSummary.strengths?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_what_you_nailed')}</h4>
                       {practiceSummary.strengths.map((s, i) => (
                         <div key={i} className={`p-3 rounded-lg ${c.success} border mb-2`}>
@@ -1686,13 +1697,13 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Stumbles */}
                   {practiceSummary.stumbles?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_where_improve')}</h4>
                       {practiceSummary.stumbles.map((s, i) => (
                         <div key={i} className={`p-3 rounded-lg border ${c.border} mb-2`}>
                           <div className="flex items-start justify-between">
                             <p className={`text-sm font-semibold ${c.text}`}>{s.moment}</p>
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${
                               s.severity === 'significant' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-600')
                                 : s.severity === 'moderate' ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-600')
                                 : (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500')
@@ -1707,7 +1718,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Landmine Navigation */}
                   {practiceSummary.landmine_navigation?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_landmine_nav')}</h4>
                       {practiceSummary.landmine_navigation.map((lm, i) => lm.landmine && (
                         <div key={i} className={`p-3 rounded-lg border ${lm.navigated ? c.success : c.danger} mb-2`}>
@@ -1720,7 +1731,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Conversation Arc */}
                   {practiceSummary.conversation_arc && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>{t('dtc_conversation_arc')}</h4>
                       <div className="grid grid-cols-4 gap-2">
                         {['opening', 'middle', 'closing', 'health_trajectory'].map(key => {
@@ -1733,7 +1744,7 @@ const DifficultTalkCoach = ({ tool }) => {
                                 : isBad ? (isDark ? 'bg-red-900/15' : 'bg-red-50')
                                 : c.cardAlt
                             }`}>
-                              <p className={`text-[10px] font-bold ${c.textMuted}`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
+                              <p className={`text-xs font-bold ${c.textMuted}`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
                               <p className={`text-xs font-bold ${
                                 isGood ? (isDark ? 'text-green-400' : 'text-green-600')
                                   : isBad ? (isDark ? 'text-red-400' : 'text-red-600')
@@ -1748,7 +1759,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Retry suggestions */}
                   {practiceSummary.retry_suggestions && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🔁</span> {t('dtc_try_again_q')}</h4>
                       <div className="space-y-3">
                         <div className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -1777,7 +1788,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Techniques */}
                   {(practiceSummary.techniques_demonstrated?.length > 0 || practiceSummary.techniques_to_practice?.length > 0) && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>{t('dtc_techniques')}</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {practiceSummary.techniques_demonstrated?.length > 0 && (
@@ -1785,7 +1796,7 @@ const DifficultTalkCoach = ({ tool }) => {
                             <p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'} mb-1`}>{t('dtc_demonstrated')}</p>
                             <div className="flex flex-wrap gap-1">
                               {practiceSummary.techniques_demonstrated.map((tech, i) => (
-                                <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${c.success} border`}>{tech}</span>
+                                <span key={i} className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.success} border`}>{tech}</span>
                               ))}
                             </div>
                           </div>
@@ -1795,7 +1806,7 @@ const DifficultTalkCoach = ({ tool }) => {
                             <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'} mb-1`}>{t('dtc_work_on')}</p>
                             <div className="flex flex-wrap gap-1">
                               {practiceSummary.techniques_to_practice.map((tech, i) => (
-                                <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${c.warning} border`}>{tech}</span>
+                                <span key={i} className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.warning} border`}>{tech}</span>
                               ))}
                             </div>
                           </div>
@@ -1811,7 +1822,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: DEBRIEF ══════ */}
           {activeTab === 'debrief' && (
             <div className="space-y-5">
-              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                   <span className="text-lg">💗</span> {t('dtc_post_debrief')}
                 </h3>
@@ -1842,7 +1853,7 @@ const DifficultTalkCoach = ({ tool }) => {
                       onChange={(e) => setHowItWent(e.target.value)}
                       placeholder={t('dtc_what_happened_ph')}
                       rows={5}
-                      className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-cyan-500 ${c.input}`}
+                      className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 ${c.input}`}
                     />
                     <button onClick={handleDebrief} disabled={debriefLoading || !howItWent.trim()}
                       className={`mt-3 px-6 py-2.5 rounded-lg font-semibold text-sm transition-all ${c.btnPrimary} disabled:opacity-40 flex items-center gap-2`}>
@@ -1875,20 +1886,20 @@ const DifficultTalkCoach = ({ tool }) => {
                 <div className="space-y-4">
 
                   {debriefResults.overall_assessment && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                    <div className={`${c.card} border ${c.border} rounded-xl p-6 border-s-4 ${isDark ? 'border-s-[#7fb3e0]' : 'border-s-[#142a43]'}`}>
                       <p className={`font-semibold ${c.text}`}>{debriefResults.overall_assessment}</p>
                     </div>
                   )}
 
                   {debriefResults.plan_vs_reality && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}><span className="text-base">🗺️</span> {t('dtc_plan_vs_reality')}</h4>
                       <p className={`text-sm ${c.textSecondary}`}>{debriefResults.plan_vs_reality}</p>
                     </div>
                   )}
 
                   {debriefResults.what_went_well?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_went_well')}</h4>
                       {debriefResults.what_went_well.map((item, idx) => (
                         <div key={idx} className={`p-3 rounded-lg ${c.success} border mb-2`}>
@@ -1900,14 +1911,14 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.growth_areas?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_growth_areas')}</h4>
                       {debriefResults.growth_areas.map((item, idx) => (
                         <div key={idx} className={`p-3 rounded-lg border ${c.border} mb-2`}>
                           <div className="flex items-start justify-between">
                             <p className={`text-sm font-semibold ${c.text}`}>{item.moment}</p>
                             {item.difficulty && (
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
                                 item.difficulty === 'easy' ? (isDark ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700')
                                 : item.difficulty === 'advanced' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
                                 : (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700')
@@ -1922,7 +1933,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.their_patterns && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}><span className="text-base">👁️</span> {t('dtc_pattern_noticed')}</h4>
                       <p className={`text-sm ${c.textSecondary}`}>{debriefResults.their_patterns}</p>
                     </div>
@@ -1935,7 +1946,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.follow_up && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('dtc_follow_up')}</h4>
                       {debriefResults.follow_up.timing && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>{t('dtc_follow_when')}</strong> {debriefResults.follow_up.timing}</p>}
                       {debriefResults.follow_up.what_to_say && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>{t('dtc_follow_say')}</strong> "{debriefResults.follow_up.what_to_say}"</p>}
@@ -1944,7 +1955,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.next_time?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-2`}>{t('dtc_next_time')}</h4>
                       {debriefResults.next_time.map((item, idx) => (
                         <p key={idx} className={`text-sm ${c.textSecondary} mb-1`}>• {item}</p>
