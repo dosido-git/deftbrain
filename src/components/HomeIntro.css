@@ -1,8 +1,8 @@
 /* Homepage-only styles; tool pages retain their existing UI. */
 .db-home {
-  --home-navy: #142a43;
-  --home-muted: #655f56;
-  --home-border: #e4ddd2;
+  --home-navy: var(--h-navy);
+  --home-muted: var(--h-muted);
+  --home-border: var(--h-border);
   color: var(--home-navy);
   font-size: 16px;
   line-height: 1.5;
@@ -18,26 +18,26 @@
 .db-home h3 { font-size: 19px; line-height: 1.25; margin: 0; }
 .db-home a:focus-visible, .db-home button:focus-visible,
 .db-home summary:focus-visible, .db-home-header :is(a, button, summary):focus-visible {
-  outline: 3px solid #165b9a; outline-offset: 4px;
+  outline: 3px solid var(--h-focus); outline-offset: 4px;
 }
-.db-home-hero { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px solid var(--home-border); border-radius: 16px; overflow: hidden; background: #fffdf9; }
+.db-home-hero { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px solid var(--home-border); border-radius: 16px; overflow: hidden; background: var(--h-surface); }
 .db-home-hero-copy { padding: 32px; }
 .db-home-description { margin: 18px 0 0; font-size: 17px; }
 .db-home-reassurance { margin: 18px 0 0; font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .db-home-reassurance a, .db-home-guide-intro a { text-decoration: underline; text-underline-offset: 3px; }
-.db-home-hero-art { position: relative; min-width: 0; background: #eee8df; }
+.db-home-hero-art { position: relative; min-width: 0; background: var(--h-art-bg); }
 .db-home-hero-art img { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.db-home-finder { padding: 22px 24px; margin: 20px 0 0; background: #fff1e4; border: 1px solid #dfbfa0; border-radius: 14px; }
+.db-home-finder { padding: 22px 24px; margin: 20px 0 0; background: var(--h-finder-bg); border: 1px solid var(--h-finder-border); border-radius: 14px; }
 .db-home-finder label { display: block; font-size: 22px; margin-bottom: 10px; }
 .db-home-finder-controls { display: flex; gap: 12px; }
 .db-home-finder-field { position: relative; flex: 1; min-width: 0; display: flex; }
-.db-home-finder-kbd { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; color: #655f56; background: #f6f1ea; border: 1px solid #d8cfc3; border-radius: 5px; padding: 4px 7px; display: none; }
+.db-home-finder-kbd { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; color: var(--h-muted); background: var(--h-kbd-bg); border: 1px solid var(--h-kbd-border); border-radius: 5px; padding: 4px 7px; display: none; }
 @media (hover: hover) and (min-width: 540px) { .db-home-finder-kbd { display: block; } .db-home-finder .db-home-finder-field input { padding-inline-end: 72px; } }
-.db-home-finder input { min-width: 0; flex: 1; width: 100%; border: 1px solid #a49b90; border-radius: 8px; padding: 13px 16px; background: #fff; color: #142a43; font: inherit; font-size: 16px; }
-.db-home-finder input::placeholder { color: #655f56; opacity: 1; }
-.db-home-finder input:focus-visible { outline: 3px solid #165b9a; outline-offset: 2px; }
-.db-home-finder button, .db-home-primary-link { display: inline-flex; align-items: center; justify-content: center; gap: 16px; min-height: 48px; padding: 12px 24px; border: 1px solid #142a43; border-radius: 8px; background: #142a43; color: white; font-size: 16px; font-weight: 700; text-decoration: none !important; cursor: pointer; }
-.db-home-finder button:hover, .db-home-primary-link:hover { background: #234568; }
+.db-home-finder input { min-width: 0; flex: 1; width: 100%; border: 1px solid var(--h-input-border); border-radius: 8px; padding: 13px 16px; background: var(--h-input-bg); color: var(--h-input-text); font: inherit; font-size: 16px; }
+.db-home-finder input::placeholder { color: var(--h-placeholder); opacity: 1; }
+.db-home-finder input:focus-visible { outline: 3px solid var(--h-focus); outline-offset: 2px; }
+.db-home-finder button, .db-home-primary-link { display: inline-flex; align-items: center; justify-content: center; gap: 16px; min-height: 48px; padding: 12px 24px; border: 1px solid var(--h-btn-bg); border-radius: 8px; background: var(--h-btn-bg); color: var(--h-btn-text); font-size: 16px; font-weight: 700; text-decoration: none !important; cursor: pointer; }
+.db-home-finder button:hover, .db-home-primary-link:hover { background: var(--h-btn-hover); }
 .db-home-finder p { margin: 12px 0 0; font-size: 14px; }
 .db-home-section { margin-top: 32px; }
 .db-home-section-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
@@ -45,13 +45,13 @@
 button.db-home-text-link { background: none; border: 0; cursor: pointer; font-family: inherit; color: inherit; }
 .db-home-text-link { font-size: 14px; font-weight: 600; text-decoration: underline !important; text-underline-offset: 4px; padding-block: 8px; }
 .db-home-situations { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.db-home-situation { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--home-border); border-radius: 12px; background: #fffdf9; text-decoration: none !important; color: inherit; }
-.db-home-situation:hover { border-color: #142a43; box-shadow: 0 5px 16px #142a4312; }
+.db-home-situation { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--home-border); border-radius: 12px; background: var(--h-surface); text-decoration: none !important; color: inherit; }
+.db-home-situation:hover { border-color: var(--h-navy); box-shadow: 0 5px 16px var(--h-shadow); }
 .db-home-situation > img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
 .db-home-situation-copy { position: relative; flex: 1; padding: 18px 18px 24px; }
 .db-home-situation p { margin-block: 10px 0; margin-inline: 0 16px; font-size: 15px; }
 .db-home-card-arrow { position: absolute; inset-inline-end: 12px; bottom: 12px; font-size: 24px; }
-.db-home-demo { padding: 24px 28px 28px; border: 1px solid #d9d1e8; border-radius: 16px; background: #f0ebf7; }
+.db-home-demo { padding: 24px 28px 28px; border: 1px solid var(--h-demo-border); border-radius: 16px; background: var(--h-demo-bg); }
 .db-home-demo-intro { margin: 6px 0 18px; }
 .db-home-demo-steps { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; list-style: none; padding: 0; margin: 0; }
 .db-home-demo-steps > li { min-width: 0; display: flex; flex-direction: column; }
@@ -61,33 +61,33 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
 .db-home-demo-cta-inline { margin-top: auto; align-self: flex-start; }
 .db-home-demo-cta-after { display: none !important; }
 .db-home-demo-steps h3 { display: flex; gap: 8px; align-items: center; line-height: 1.4; font-family: inherit; font-size: 16px; margin-bottom: 10px; }
-.db-home-demo-steps h3 > span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 50%; background: #d6c7ef; }
+.db-home-demo-steps h3 > span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 50%; background: var(--h-step-dot); }
 .db-home-demo-steps p { font-size: 15px; margin: 10px 0; }
-.db-home-demo-steps .db-home-example { background: #fffdfd; border: 1px solid #d9d1e8; border-radius: 8px; padding: 14px; }
+.db-home-demo-steps .db-home-example { background: var(--h-example-bg); border: 1px solid var(--h-demo-border); border-radius: 8px; padding: 14px; }
 .db-home-example small { display: block; font-size: 13px; color: var(--home-muted); margin-top: 4px; }
-.db-home-result-preview { display: block; position: relative; height: 240px; overflow: hidden; border: 1px solid #d9d1e8; border-radius: 8px; background: white; }
+.db-home-result-preview { display: block; position: relative; height: 240px; overflow: hidden; border: 1px solid var(--h-demo-border); border-radius: 8px; background: white; }
 .db-home-result-preview > img { width: 100%; height: auto; }
 .db-home-result-preview > span { position: absolute; inset-inline: 0; bottom: 0; padding: 26px 8px 8px; text-align: center; font-size: 12px; color: #142a43; font-weight: 600; background: linear-gradient(transparent, white 55%); }
 .db-home-demo-steps .db-home-result-caption { font-size: 13px; color: var(--home-muted); }
 .db-home-categories { scroll-margin-top: 24px; }
 .db-home-category-list { display: flex; flex-wrap: wrap; gap: 10px; }
-.db-home-category-list a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid #c6bfb5; border-radius: 24px; background: #fffdf9; color: #142a43; font-size: 14px; text-decoration: none !important; }
-.db-home-category-list a:hover { background: #f0ebf7; border-color: #142a43; }
+.db-home-category-list a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--h-pill-border); border-radius: 24px; background: var(--h-surface); color: var(--h-navy); font-size: 14px; text-decoration: none !important; }
+.db-home-category-list a:hover { background: var(--h-pill-hover); border-color: var(--h-navy); }
 .db-home-category-count { color: var(--home-muted); font-size: 12px; }
 .db-home-guide-intro { font-size: 15px; color: var(--home-muted); margin: 20px 0 0; }
-.db-home-guide-intro a { color: #142a43; font-weight: 600; }
+.db-home-guide-intro a { color: var(--h-navy); font-weight: 600; }
 /* overflow-x: clip, not hidden — the Tool Scramble's hover previews hang off
    tiles near the edge and, though invisible until hover, widened the page
    (820px viewport → 847px, sideways scroll). clip trims only the sideways
    overhang; previews still drop below a tile, since clip doesn't make the
    other axis scroll the way overflow:hidden would. */
 .db-home-explore { margin-top: 36px; overflow-x: clip; }
-.db-home-mobile-menu { display: none; position: relative; color: #142a43; }
+.db-home-mobile-menu { display: none; position: relative; color: var(--h-navy); }
 .db-home-mobile-menu summary { cursor: pointer; list-style: none; min-width: 44px; min-height: 44px; display: grid; place-items: center; font-size: 25px; }
 .db-home-mobile-menu summary::-webkit-details-marker { display: none; }
-.db-home-mobile-menu nav { position: absolute; inset-inline-end: 0; top: 100%; z-index: 40; min-width: 180px; background: #fffdf9; border: 1px solid #e4ddd2; border-radius: 10px; box-shadow: 0 8px 30px #142a4320; padding: 6px; }
+.db-home-mobile-menu nav { position: absolute; inset-inline-end: 0; top: 100%; z-index: 40; min-width: 180px; background: var(--h-surface); border: 1px solid var(--h-border); border-radius: 10px; box-shadow: 0 8px 30px #142a4320; padding: 6px; }
 .db-home-mobile-menu nav > * { display: block; width: 100%; text-align: start; padding: 12px; font-size: 16px; text-decoration: none !important; }
-.db-home-mobile-menu nav > *:hover { background: #f0ebf7; border-radius: 6px; }
+.db-home-mobile-menu nav > *:hover { background: var(--h-pill-hover); border-radius: 6px; }
 @media (max-width: 1023px) {
   .db-home-hero { grid-template-columns: 1.35fr 1fr; }
   .db-home-hero-copy { padding: 26px; }

@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Caret from './Caret';
 import { CATEGORY_META } from '../data/categoryMeta';
 import './HomeIntro.css';
 
-const NAVY = '#142a43';
-const MUTED = '#655f56';
-const BORDER = '#e4ddd2';
+// Theme variables from HomeTheme.css (light values unchanged; dark set added).
+const NAVY = 'var(--h-navy)';
+const MUTED = 'var(--h-muted)';
+const BORDER = 'var(--h-border)';
 const SERIF = "'Playfair Display', Georgia, serif";
 
 // Stable entry points: visitors can finish reading before choosing a tool.
@@ -105,7 +106,9 @@ function ToolScramble({ allTools, onBrowse }) {
   if (eligible.length === 0) return null;
 
   return (
-    <section className="my-7 relative rounded-2xl border" style={{borderColor:BORDER}}>
+    // db-home-light: this pastel panel stays light in dark mode (see
+    // HomeTheme.css) — its tile colors were picked for the pastel.
+    <section className="db-home-light my-7 relative rounded-2xl border" style={{borderColor:BORDER}}>
       {/* Background is its own absolutely-positioned, overflow-hidden layer
           (not on the section itself) so a hover-preview image popping above
           or below a tile near the top/bottom edge isn't clipped by the
@@ -220,6 +223,13 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
     }));
     return counts;
   }, [allTools]);
+  // /#categories (the site header's Categories link on other pages) lands on
+  // the categories section rather than the top of the home page.
+  useEffect(() => {
+    if (window.location.hash === '#categories') {
+      window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ block: 'start' }), 60);
+    }
+  }, []);
   const allSituations = useMemo(() => SITUATIONS.filter(item => byId.has(item.toolId)), [byId]);
   const [situationSet, setSituationSet] = useState(0);
   // Wraps around the list, so every set is a full four (55 situations don't

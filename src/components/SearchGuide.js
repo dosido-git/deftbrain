@@ -18,17 +18,20 @@ import { Link } from 'react-router-dom';
 import { useLocale } from '../hooks/useLocale';
 import { track } from '../utils/analytics';
 
+// Same palette as DashBoard, as HomeTheme.css variables (follows light/dark).
 const CLR = {
-  sand100: '#f3efe8',
-  sand200: '#e8e1d5',
-  sand300: '#d5cab8',
-  navy500: '#165b9a',
-  navy700: '#1e2a3a',
-  gold100: '#f9edd8',
-  gold500: '#c8872e',
-  gold700: '#9c691c',
-  warm500: '#6e6659',
-  warm700: '#5a544a',
+  sand100: 'var(--db-sand100)',
+  sand200: 'var(--db-sand200)',
+  sand300: 'var(--db-sand300)',
+  navy500: 'var(--db-navy500)',
+  navy700: 'var(--db-navy700)',
+  gold100: 'var(--db-gold100)',
+  gold500: 'var(--db-gold500)',
+  gold700: 'var(--db-gold700)',
+  warm500: 'var(--db-warm500)',
+  warm700: 'var(--db-warm700)',
+  surface:  'var(--db-surface)',
+  navyBand: 'var(--db-navy-band)',
 };
 
 const SETTLE_MS = 900;
@@ -99,7 +102,7 @@ export default function SearchGuide({ problem }) {
   if (state.status === 'error' || state.status === 'idle') return null;
 
   const box = {
-    background: '#fff',
+    background: CLR.surface,
     border: `1.5px solid ${CLR.sand200}`,
     borderInlineStart: `4px solid ${CLR.gold500}`,
     borderRadius: 12,
@@ -156,9 +159,9 @@ export default function SearchGuide({ problem }) {
             <label htmlFor="search-guide-refine" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>What's different about your situation</label>
             <input id="search-guide-refine" autoFocus value={refinement} onChange={e => setRefinement(e.target.value)} maxLength={400}
               placeholder="e.g. I've already moved out and they're keeping it"
-              style={{ flex: '1 1 240px', minWidth: 0, padding: '8px 12px', borderRadius: 8, border: `1px solid ${CLR.sand300}`, fontSize: 13, background: '#fff', color: CLR.navy700 }} />
+              style={{ flex: '1 1 240px', minWidth: 0, padding: '8px 12px', borderRadius: 8, border: `1px solid ${CLR.sand300}`, fontSize: 13, background: CLR.surface, color: CLR.navy700 }} />
             <button type="submit" disabled={!refinement.trim()}
-              style={{ padding: '8px 16px', borderRadius: 8, border: 0, background: CLR.navy700, color: '#fff', fontSize: 13, fontWeight: 600, cursor: refinement.trim() ? 'pointer' : 'default', opacity: refinement.trim() ? 1 : 0.5 }}>
+              style={{ padding: '8px 16px', borderRadius: 8, border: 0, background: CLR.navyBand, color: '#fff', fontSize: 13, fontWeight: 600, cursor: refinement.trim() ? 'pointer' : 'default', opacity: refinement.trim() ? 1 : 0.5 }}>
               Try again
             </button>
           </form>

@@ -4,11 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
+import { useTheme } from '../hooks/useTheme';
 import HomeIntro from './HomeIntro';
 import ToolFinderWizard from './ToolFinderWizard';
 import SearchGuide, { isSentenceQuery } from './SearchGuide';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
 import GuideMatches from './GuideMatches';
+import './HomeTheme.css';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import { CATEGORY_META } from '../data/categoryMeta';
 import IdeaPrompt from './IdeaPrompt';
@@ -28,29 +30,36 @@ function isoWeekTag() {
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
 // ════════════════════════════════════════════════════════════
+// Values live in HomeTheme.css as CSS variables (light values unchanged, plus
+// a dark set), so every style={{…CLR.x…}} below follows the theme.
 const CLR = {
-  sand50:  '#faf8f5',
-  sand100: '#f3efe8',
-  sand200: '#e8e1d5',
-  sand300: '#d5cab8',
-  navy50:  '#f0f3f7',
-  navy100: '#d4dde8',
-  navy200: '#85afd6',
-  navy400: '#4a6a8a',
-  navy500: '#165b9a',
-  navy600: '#1e3a58',
-  navy700: '#1e2a3a',
-  gold100: '#f9edd8',
-  gold300: '#e8be7a',
-  gold500: '#c8872e',
+  sand50: 'var(--db-sand50)',
+  sand100: 'var(--db-sand100)',
+  sand200: 'var(--db-sand200)',
+  sand300: 'var(--db-sand300)',
+  navy50: 'var(--db-navy50)',
+  navy100: 'var(--db-navy100)',
+  navy200: 'var(--db-navy200)',
+  navy400: 'var(--db-navy400)',
+  navy500: 'var(--db-navy500)',
+  navy600: 'var(--db-navy600)',
+  navy700: 'var(--db-navy700)',
+  gold100: 'var(--db-gold100)',
+  gold300: 'var(--db-gold300)',
+  gold500: 'var(--db-gold500)',
   // warm500 is the muted-label ink. It was #8a8275 (3.6:1 on sand — failed
   // WCAG for the 10-11px labels it paints); retoned darker, same warmth.
-  warm500: '#6e6659',
-  warm700: '#5a544a',
-  warm800: '#3d3935',
+  warm500: 'var(--db-warm500)',
+  warm700: 'var(--db-warm700)',
+  warm800: 'var(--db-warm800)',
   // gold500 on light backgrounds fails contrast for small text (2.9:1) —
   // gold700 is the readable ink version for links/CTAs on cream.
-  gold700: '#9c691c',
+  gold700: 'var(--db-gold700)',
+  // Role tokens (2026-09-27) — surfaces that were a literal '#fff', the navy
+  // category band (navy in both themes), and ink on a gold pill.
+  surface:  'var(--db-surface)',
+  navyBand: 'var(--db-navy-band)',
+  onGold:   'var(--db-on-gold)',
 };
 
 // ════════════════════════════════════════════════════════════
@@ -140,6 +149,9 @@ const SHORTCUT_LABEL = typeof navigator !== 'undefined'
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
+  // Home follows the same light/dark setting as the tool pages (HomeTheme.css
+  // does the colors; this only feeds the components that take an isDark prop).
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
@@ -419,7 +431,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const activeMeta   = CATEGORY_META.find(c => c.name === activeCategory);
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
+    <div className="db-root w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
       <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}
         /* PRINT. Measured three ways before settling here.
@@ -463,7 +475,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               search/catalog state; backToHome does exactly that (same
               function the "← Back" button during a search already uses)
               and additionally scrolls to top. */}
-          <BrandMark direction="left" size="sm" isDark={false} showTagline={false} onClick={backToHome} />
+          <BrandMark direction="left" size="sm" isDark={isDark} showTagline={false} onClick={backToHome} />
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>
@@ -496,7 +508,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <a href="/guides" className="!no-underline hover:!underline underline-offset-4">Guides</a>
               <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
             </nav>
-            <LocaleSelectors dark={false} showCurrency={false} />
+            <LocaleSelectors dark={isDark} showCurrency={false} />
             <details className="db-home-mobile-menu">
               <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
               <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
@@ -598,7 +610,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           {recentTools.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1.5" style={{
               border: `1.5px solid ${CLR.sand300}`,
-              background: '#ffffff',
+              background: CLR.surface,
               borderRadius: 14,
               padding: '9px 12px',
             }}>
@@ -627,7 +639,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                     color: CLR.navy600,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = CLR.gold500;
-                                       e.currentTarget.style.background = '#ffffff'; }}
+                                       e.currentTarget.style.background = CLR.surface; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = CLR.sand300;
                                        e.currentTarget.style.background = CLR.sand50; }}
                 >
@@ -808,7 +820,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <p className="text-xs mt-1 mb-6" style={{ color: CLR.warm500 }}>
             {isSearching ? 'Try different words' : 'Nothing in this category yet'}
           </p>
-          {isSearching && <GuideMatches query={searchTerm} colors={{ muted: CLR.warm500, border: CLR.sand200, text: CLR.warm800, bg: '#ffffff', link: CLR.navy500 }} />}
+          {isSearching && <GuideMatches query={searchTerm} colors={{ muted: CLR.warm500, border: CLR.sand200, text: CLR.warm800, bg: CLR.surface, link: CLR.navy500 }} />}
           {isSearching && <IdeaPrompt source="search-zero" query={searchTerm.trim()} />}
         </div>
       )}
@@ -823,7 +835,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                 title={`Filter by ${group.name}`}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = CLR.gold500;
-                  e.currentTarget.style.background = '#ffffff';
+                  e.currentTarget.style.background = CLR.surface;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = CLR.sand300;
@@ -924,7 +936,7 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
           width: searchTerm ? 320 : 160,
           border: `1.5px solid ${CLR.sand300}`,
           borderRadius: 8,
-          background: '#fff',
+          background: CLR.surface,
           color: CLR.warm800,
           fontSize: 12,
           fontWeight: 600,
@@ -1002,7 +1014,7 @@ function SortBtn({ sortMode, setSortMode, hasRecents }) {
       role="radiogroup"
       aria-label="Sort tools"
       className="flex items-center rounded-lg overflow-hidden flex-shrink-0"
-      style={{ border: `1px solid ${CLR.sand200}`, background: '#fff' }}
+      style={{ border: `1px solid ${CLR.sand200}`, background: CLR.surface }}
     >
       {SORT_OPTIONS.map((o, i) => {
         const active = sortMode === o.id;
@@ -1022,7 +1034,7 @@ function SortBtn({ sortMode, setSortMode, hasRecents }) {
             title={disabled ? 'Nothing opened yet on this device' : o.hint}
             className="px-2.5 py-1.5 text-[11px] font-semibold transition-colors"
             style={{
-              background: active ? CLR.navy600 : 'transparent',
+              background: active ? CLR.navyBand : 'transparent',
               color: active ? '#fff' : disabled ? CLR.sand300 : CLR.warm700,
               cursor: disabled ? 'default' : 'pointer',
               borderInlineStart: i ? `1px solid ${CLR.sand200}` : 'none',
@@ -1046,8 +1058,8 @@ function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, h
       title={title || label}
       className="flex flex-col justify-center px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
       style={{
-        background: isActive ? CLR.gold300   : CLR.navy600,
-        color:      isActive ? CLR.navy700   : 'rgba(255,255,255,0.85)',
+        background: isActive ? CLR.gold300   : CLR.navyBand,
+        color:      isActive ? CLR.onGold    : 'rgba(255,255,255,0.85)',
         border:     `1.5px solid ${isActive ? CLR.gold500 : highlight ? CLR.gold500 : 'rgba(255,255,255,0.08)'}`,
       }}
     >

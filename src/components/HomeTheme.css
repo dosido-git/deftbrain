@@ -1,0 +1,70 @@
+/* Home page color tokens — light and dark (2026-09-27).
+ *
+ * The home page (DashBoard + HomeIntro) used to hard-code its light palette,
+ * so it stayed light for visitors whose device or saved choice was dark, and
+ * the first click into a tool jumped from warm light to near-black. These
+ * tokens keep the light values EXACTLY as they were (light mode is unchanged)
+ * and add dark values, switched by the same html[data-theme] the tool pages
+ * already follow (src/hooks/useTheme.js sets it).
+ *
+ * Dark values sit on the tool pages' own dark surfaces (zinc-900 page,
+ * zinc-800 cards) so moving between home and a tool stays in one palette.
+ *
+ *   --db-*  DashBoard's CLR palette (header, search results, catalog)
+ *   --h-*   HomeIntro's sections (hero, finder, cards, demo, categories)
+ */
+:root {
+  --db-sand50: #faf8f5;  --db-sand100: #f3efe8;  --db-sand200: #e8e1d5;  --db-sand300: #d5cab8;
+  --db-navy50: #f0f3f7;  --db-navy100: #d4dde8;  --db-navy200: #85afd6;  --db-navy400: #4a6a8a;
+  --db-navy500: #165b9a; --db-navy600: #1e3a58;  --db-navy700: #1e2a3a;
+  --db-gold100: #f9edd8; --db-gold300: #e8be7a;  --db-gold500: #c8872e;  --db-gold700: #9c691c;
+  --db-warm500: #6e6659; --db-warm700: #5a544a;  --db-warm800: #3d3935;
+  --db-surface: #ffffff;
+  /* Role tokens that must NOT invert: the category strip is a navy band in
+     both themes, and text sitting on a gold pill stays dark. */
+  --db-navy-band: #1e3a58;
+  --db-on-gold: #1e2a3a;
+
+  --h-navy: #142a43;     --h-muted: #655f56;     --h-border: #e4ddd2;
+  --h-surface: #fffdf9;  --h-art-bg: #eee8df;
+  --h-finder-bg: #fff1e4; --h-finder-border: #dfbfa0;
+  --h-input-bg: #ffffff; --h-input-border: #a49b90; --h-input-text: #142a43; --h-placeholder: #655f56;
+  --h-btn-bg: #142a43;   --h-btn-hover: #234568;  --h-btn-text: #ffffff;
+  --h-focus: #165b9a;
+  --h-demo-bg: #f0ebf7;  --h-demo-border: #d9d1e8; --h-step-dot: #d6c7ef; --h-example-bg: #fffdfd;
+  --h-pill-border: #c6bfb5; --h-pill-hover: #f0ebf7;
+  --h-kbd-bg: #f6f1ea;   --h-kbd-border: #d8cfc3;
+  --h-shadow: #142a4312;
+}
+
+:root[data-theme="dark"] {
+  --db-sand50: #18181b;  --db-sand100: #232326;  --db-sand200: #3f3f46;  --db-sand300: #52525b;
+  --db-navy50: #1f2530;  --db-navy100: #2c3a4a;  --db-navy200: #85afd6;  --db-navy400: #9db4cc;
+  --db-navy500: #7fb3e0; --db-navy600: #e4e4e7;  --db-navy700: #f4f4f5;
+  --db-gold100: #3a2e1c; --db-gold300: #e8be7a;  --db-gold500: #c8872e;  --db-gold700: #e0b872;
+  --db-warm500: #a8a29e; --db-warm700: #d6d3d1;  --db-warm800: #e7e5e4;
+  --db-surface: #232326;
+
+  --h-navy: #efeae3;     --h-muted: #a8a29e;     --h-border: #3f3f46;
+  --h-surface: #232326;  --h-art-bg: #27272a;
+  --h-finder-bg: #2a221d; --h-finder-border: #5c4636;
+  --h-input-bg: #18181b; --h-input-border: #71717a; --h-input-text: #f4f4f5; --h-placeholder: #a1a1aa;
+  --h-btn-bg: #2f6fb0;   --h-btn-hover: #3a7cc0;  --h-btn-text: #ffffff;
+  --h-focus: #7fb3e0;
+  --h-demo-bg: #221f2b;  --h-demo-border: #3b3548; --h-step-dot: #4a3f66; --h-example-bg: #18181b;
+  --h-pill-border: #52525b; --h-pill-hover: #2a2733;
+  --h-kbd-bg: #27272a;   --h-kbd-border: #52525b;
+  --h-shadow: #00000040;
+}
+/* Native controls (inputs, scrollbars) follow — scoped to the home page so
+   tool pages' own controls are untouched by this file. */
+:root[data-theme="dark"] .db-root { color-scheme: dark; }
+
+/* The Tool Scramble keeps its pastel panel in dark mode — a deliberate light
+   island. Its tile colors were chosen for that pastel and several would be
+   unreadable on a dark background, so it re-declares the light tokens. */
+:root[data-theme="dark"] .db-home-light {
+  --h-navy: #142a43; --h-muted: #655f56; --h-border: #e4ddd2;
+  --h-btn-bg: #142a43; --h-btn-hover: #234568; --h-btn-text: #ffffff;
+  color-scheme: light;
+}
