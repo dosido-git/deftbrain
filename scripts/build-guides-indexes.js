@@ -283,9 +283,9 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
   <meta name="twitter:title"       content="${escHtml(title)}">
   <meta name="twitter:description" content="${escHtml(description)}">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <!-- Self-hosted fonts (no third-party request) — see public/fonts/ -->
+  <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
+  <link rel="stylesheet" href="/fonts/dm-sans/dm-sans.css">
 
   <link rel="stylesheet" href="/guides/guide.css">
 
