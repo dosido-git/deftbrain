@@ -796,7 +796,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </div>
             )}
 
-            <div className={`mt-6 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
+            <div data-print-hide className={`mt-6 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
               <div className="font-bold" id="ffa-setaside-label">{t('ffa_busy')}</div>
               <p className={`text-sm mt-1 ${c.textSecondary}`}>{t('ffa_pause_hint')}</p>
               <div className="flex flex-wrap gap-2 mt-3 items-center">
