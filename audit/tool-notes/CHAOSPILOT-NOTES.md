@@ -1,5 +1,12 @@
 # ChaosPilot — architecture & lock notes (`chaospilot-v1`)
 
+> **Name trap (2026-09-27).** Since the rename in `07c03851` (Crisis Prioritizer → Chaos Pilot,
+> Chaos Pilot → Rut Buster), this file and `audit/chaos-pilot-golden-sample.json` describe the
+> **Rut Buster** tool (`src/tools/RutBuster.js`), which still calls `/api/chaos-pilot`. They keep the
+> route's name because `golden-for-push.js` pairs goldens with route file names. The tool now
+> *displayed* as Chaos Pilot (`src/tools/ChaosPilot.js`) calls `/api/crisis-prioritizer`; its
+> golden is `audit/crisis-prioritizer-golden-sample.json` (current v2 shape, passing 2026-09-27).
+
 Diagnoses the invisible behavioral rut producing someone's stagnation, then designs **one** precise, specific, slightly-uncomfortable disruption to break it (no money/equipment/major time). **Frontend:** `src/tools/ChaosPilot.js`. **Backend:** `backend/routes/chaos-pilot.js` (1 endpoint). **Golden:** `audit/chaos-pilot-golden-sample.json` (2 cases: en, de). Verify: `npm run check:golden chaos-pilot` (needs local backend; sonnet ~25–35s/case).
 
 ## Shape
