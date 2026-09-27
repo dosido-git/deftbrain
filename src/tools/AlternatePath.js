@@ -66,33 +66,29 @@ const AlternatePath = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800'      : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50'     : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400'    : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200'    : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400'    : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
+    pillActive:    isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
     required:      isDark ? 'text-amber-400'   : 'text-amber-700',
     // divergence banner — cyan-themed accent box for the "what if" statement
-    divergenceBg:  isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
-    divergenceTxt: isDark ? 'text-cyan-200'    : 'text-cyan-900',
+    divergenceBg:  isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    divergenceTxt: isDark ? 'text-zinc-100' : 'text-[#142a43]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State ───
   const [yearOrContext, setYearOrContext] = useState('');
@@ -216,15 +212,22 @@ const AlternatePath = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ── Input Card ── */}
-      <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-2.5 pb-5 shadow-sm space-y-4`}>
+      {/* ── Input — site style (2026-09-27): no card; prints only as a blank
+          form (with a result, the result prints). ── */}
+      <div className="space-y-5" data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
 
-        {/* Header — tagline + Try an example on the left, Start over opposite */}
-        <div className="flex items-start justify-between gap-3 pb-4 border-b border-zinc-500">
+        {/* Header — tagline + Try an example on the left, Start over opposite.
+            A pale band of the tool's color bleeding to the card edges (the
+            ground the example pill was made for, PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 flex items-start justify-between gap-3"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints "Alternate Path" as the page
                 <h1>. The tagline asks the question the title only names. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🌀'}</span>{t('ap_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
@@ -244,14 +247,14 @@ const AlternatePath = ({ tool }) => {
         {/* Quick prompts — pre-result only */}
         {!results && (
           <div>
-            <label className={`block text-xs font-bold ${c.textMuteded} uppercase tracking-wider mb-2`}>{t('ap_try_one')}</label>
+            <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('ap_try_one')}</label>
             <div className="flex flex-wrap gap-1.5">
               {QUICK_PROMPTS.map((q, i) => (
                 <button
                   key={i}
                   onClick={() => handleQuickPrompt(q)}
                   disabled={loading}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border min-h-[32px] transition-colors ${c.pillInactive} disabled:opacity-40`}
+                  className={`px-3 py-2 rounded-lg text-[13px] font-medium border min-h-[32px] transition-colors ${c.pillInactive} disabled:opacity-40`}
                 >
                   {q}
                 </button>
@@ -262,7 +265,7 @@ const AlternatePath = ({ tool }) => {
 
         {/* What if — REQUIRED */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
             {t('ap_whatif_label')} <span className={c.required}>*</span>
           </label>
           <input
@@ -270,17 +273,17 @@ const AlternatePath = ({ tool }) => {
             value={whatIf}
             onChange={e => setWhatIf(e.target.value)}
             placeholder={t('ap_whatif_ph')}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+            className={`w-full p-3 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`}
           />
           {/* Permission to play. This is the only required field, and the
               thing that stops people typing in it is the suspicion that
               their idea is too silly to submit. */}
-          <p className={`text-xs ${c.textMuteded} mt-1.5`}>{t('ap_whatif_hint')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>{t('ap_whatif_hint')}</p>
         </div>
 
         {/* Set the scene */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
             {t('ap_year_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ap_optional')}</span>
           </label>
           <input
@@ -288,16 +291,16 @@ const AlternatePath = ({ tool }) => {
             value={yearOrContext}
             onChange={e => setYearOrContext(e.target.value)}
             placeholder={t('ap_year_ph')}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+            className={`w-full p-3 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`}
           />
         </div>
 
         {/* How far — scope */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ap_reach_label')}</label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('ap_reach_label')}</label>
           <div className="grid grid-cols-2 gap-2">
             {REACHES.map(r => (
-              <button
+              <button aria-pressed={reach === r.value}
                 key={r.value}
                 onClick={() => setReach(r.value)}
                 className={`py-2.5 px-2 rounded-xl border text-center min-h-[64px] transition-colors ${
@@ -305,7 +308,7 @@ const AlternatePath = ({ tool }) => {
                 }`}
               >
                 <span className="text-sm font-bold block">{r.icon} {r.label}</span>
-                <span className={`text-[10px] block mt-0.5 ${reach === r.value ? 'opacity-80' : c.textMuteded}`}>{r.desc}</span>
+                <span className={`text-xs block mt-0.5 ${reach === r.value ? 'opacity-80' : c.textMuteded}`}>{r.desc}</span>
               </button>
             ))}
           </div>
@@ -313,10 +316,10 @@ const AlternatePath = ({ tool }) => {
 
         {/* How realistic — the other half of the old Depth control */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ap_tone_label')}</label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('ap_tone_label')}</label>
           <div className="grid grid-cols-2 gap-2">
             {TONES.map(o => (
-              <button
+              <button aria-pressed={tone === o.value}
                 key={o.value}
                 onClick={() => setTone(o.value)}
                 className={`py-2.5 px-2 rounded-xl border text-center min-h-[64px] transition-colors ${
@@ -324,7 +327,7 @@ const AlternatePath = ({ tool }) => {
                 }`}
               >
                 <span className="text-sm font-bold block">{o.icon} {o.label}</span>
-                <span className={`text-[10px] block mt-0.5 ${tone === o.value ? 'opacity-80' : c.textMuteded}`}>{o.desc}</span>
+                <span className={`text-xs block mt-0.5 ${tone === o.value ? 'opacity-80' : c.textMuteded}`}>{o.desc}</span>
               </button>
             ))}
           </div>
@@ -359,7 +362,7 @@ const AlternatePath = ({ tool }) => {
             asked to leave this link alone and it stays word for word; it moved
             one element down so it reads as an offer, not an exit sign. */}
         {!results && (
-          <p className={`text-xs text-center ${c.textMuteded}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
             {t('ap_xref_fiction')}{' '}
             <a href="/FanTheory" className={linkStyle}>🎬 {t('ap_fantheory')}</a>{' '}
             {t('ap_xref_fiction_after')}
@@ -384,7 +387,7 @@ const AlternatePath = ({ tool }) => {
             <span className="text-3xl block mb-2">🌀</span>
             <p className={`text-lg font-black ${c.divergenceTxt} mb-2 leading-snug`}>{results?.divergence_point}</p>
             {results?.real_history && (
-              <p className={`text-xs ${c.textMuteded} italic`}>📜 {t('ap_reality')} {results?.real_history}</p>
+              <p className={`text-[13px] ${c.textMuteded} italic`}>📜 {t('ap_reality')} {results?.real_history}</p>
             )}
             {plausInt(results?.plausibility) != null && (
               <p className={`text-xs ${c.textSecondary} mt-2`}>
@@ -395,17 +398,17 @@ const AlternatePath = ({ tool }) => {
 
           {/* Timeline */}
           {results?.timeline?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3 uppercase tracking-wider`}>📅 {t('ap_timeline')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>📅 {t('ap_timeline')}</h3>
               <div className="space-y-2">
                 {results?.timeline?.map((row, i) => (
-                  <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-s-4 border-cyan-500`}>
+                  <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-s-4 ${isDark ? 'border-s-[#7fb3e0]' : 'border-s-[#142a43]'}`}>
                     <div className="flex items-start gap-2">
                       <span className={`text-xs font-black ${c.accentTxt} whitespace-nowrap`}>{row.year_range}</span>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-medium ${c.text}`}>{row.event}</p>
-                        {row.because && <p className={`text-xs ${c.textMuteded} mt-1`}>↳ {row.because}</p>}
-                        {row.real_world_contrast && <p className={`text-xs ${c.textMuteded} italic mt-1`}>{t('ap_reality')} {row.real_world_contrast}</p>}
+                        {row.because && <p className={`text-[13px] ${c.textMuteded} mt-1`}>↳ {row.because}</p>}
+                        {row.real_world_contrast && <p className={`text-[13px] ${c.textMuteded} italic mt-1`}>{t('ap_reality')} {row.real_world_contrast}</p>}
                       </div>
                     </div>
                   </div>
@@ -417,7 +420,7 @@ const AlternatePath = ({ tool }) => {
           {/* Today in this timeline */}
           {results?.today_looks_like && (
             <div className={`${c.success} border rounded-2xl p-4`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-1`}>🌍 {t('ap_today_title')}</p>
+              <p className={`text-[13px] font-boldr mb-1`}>🌍 {t('ap_today_title')}</p>
               <p className="text-sm leading-relaxed">{results?.today_looks_like}</p>
             </div>
           )}
@@ -426,13 +429,13 @@ const AlternatePath = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {results?.biggest_surprise && (
               <div className={`${c.warning} border rounded-2xl p-4`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-1`}>💡 {t('ap_surprise')}</p>
+                <p className={`text-[13px] font-boldr mb-1`}>💡 {t('ap_surprise')}</p>
                 <p className="text-sm leading-relaxed">{results?.biggest_surprise}</p>
               </div>
             )}
             {results?.butterfly_moment && (
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wider mb-1`}>🦋 {t('ap_butterfly')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded}r mb-1`}>🦋 {t('ap_butterfly')}</p>
                 <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.butterfly_moment}</p>
               </div>
             )}
@@ -449,7 +452,7 @@ const AlternatePath = ({ tool }) => {
 
           {/* Conditional cross-ref: low plausibility */}
           {plausInt(results?.plausibility) != null && plausInt(results?.plausibility) < 4 && (
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('ap_xref_lowplaus')}{' '}
               <a href="/BrainRoulette" className={linkStyle}>🎲 {t('ap_brainroulette')}</a>{' '}
               {t('ap_xref_lowplaus_after')}
@@ -457,8 +460,8 @@ const AlternatePath = ({ tool }) => {
           )}
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-[13px] font-semibold ${c.textMuteded}r`}>
               {t('ap_keep_exploring')}
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
@@ -476,7 +479,7 @@ const AlternatePath = ({ tool }) => {
           label, so a returning visitor sees one quiet line rather than six
           buttons under an invitation to imagine something. */}
       {sessionHistory?.length > 0 && (
-        <details className={`group ${c.card} border ${c.border} rounded-xl p-4`}>
+        <details data-print-hide className={`group border-t ${c.border} pt-5`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
               🕐 {t('ap_recent_count', { n: sessionHistory.length })}

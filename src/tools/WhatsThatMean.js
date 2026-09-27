@@ -79,13 +79,11 @@ const WhatsThatMean = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     required: isDark ? 'text-amber-400' : 'text-amber-700',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-600 focus:ring-cyan-100',
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-700 hover:bg-cyan-800 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-cyan-700 hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100 border-zinc-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200',
-    highlight: isDark ? 'bg-cyan-950/40 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
+    highlight: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     warning: isDark ? 'bg-amber-950/35 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900',
     success: isDark ? 'bg-emerald-950/35 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     danger: isDark ? 'bg-red-950/35 border-red-700 text-red-100' : 'bg-red-50 border-red-300 text-red-900',
@@ -95,9 +93,7 @@ const WhatsThatMean = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [phrase, setPhrase] = useState('');
   const [context, setContext] = useState('');
@@ -269,13 +265,23 @@ const WhatsThatMean = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl p-4 sm:p-5`}>
+      {/* Input — site style (2026-09-27): no card; prints only as a blank form
+          (with a result, the result prints). */}
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header: a pale band of the tool's color bleeding to the card edges,
+            the ground the "Try an example" pill was made for (PF-17c).
+            Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-lg font-bold"><span className="me-2 text-xl">{tool?.icon ?? '💬'}</span>{tr('syw_tagline', 'What did they really mean.')}</div>
-            <p className={`mt-1 text-sm ${c.textSecondary}`}>
-              {tr('syw_intro', "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? identifies what kind of expression it is and explains what it means in plain language and in your context.")}
-            </p>
+            {/* The intro paragraph that stood here repeated the page description
+                directly above the card, nearly word for word (site style,
+                2026-09-27: one title, one explanation). */}
           </div>
           {(phrase || decoded) && (
             <button onClick={startOver} className={`${c.btnSecondary} border px-3 py-2 rounded-lg text-xs font-bold min-h-[40px] shrink-0`}>
@@ -289,10 +295,11 @@ const WhatsThatMean = ({ tool }) => {
           className="mt-4 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
           ✨ {tr('syw_try_example', 'Try an example')}
         </button>
+        </div>
 
-        <div className={`mt-5 pt-5 border-t ${c.border} space-y-4`}>
+        <div className="pt-5 space-y-5">
           <label className="block">
-            <span className="text-sm font-bold">{tr('syw_phrase_label', 'What did they say?')} <span className={c.required}>*</span></span>
+            <span className={`text-[15px] font-semibold ${c.labelText}`}>{tr('syw_phrase_label', 'What did they say?')} <span className={c.required}>*</span></span>
             <textarea
               value={phrase}
               onChange={e => { setPhrase(e.target.value); resetResultOnly(); }}
@@ -303,14 +310,14 @@ const WhatsThatMean = ({ tool }) => {
           </label>
 
           <label className="block">
-            <span className="text-sm font-bold">{tr('syw_context_label', 'Where did you hear or read it?')} <span className={`font-normal ${c.textMuted}`}>{tr('syw_optional', 'optional')}</span></span>
-            <span className={`block text-xs mt-1 ${c.textMuted}`}>{tr('syw_context_help', 'Paste the sentence or a little of the conversation. Context can change the meaning.')}</span>
+            <span className={`text-[15px] font-semibold ${c.labelText}`}>{tr('syw_context_label', 'Where did you hear or read it?')} <span className={`font-normal ${c.textMuted}`}>{tr('syw_optional', 'optional')}</span></span>
+            <span className={`block text-[13px] mt-1 ${c.textMuted}`}>{tr('syw_context_help', 'Paste the sentence or a little of the conversation. Context can change the meaning.')}</span>
             <textarea
               value={context}
               onChange={e => { setContext(e.target.value); resetResultOnly(); }}
               rows={3}
               placeholder={tr('syw_context_placeholder', 'e.g. “My manager said this while we were deciding what to include in the first release.”')}
-              className={`mt-2 w-full rounded-xl border p-3 text-sm ${c.input}`}
+              className={`mt-2 w-full rounded-xl border p-3 text-base ${c.input}`}
             />
           </label>
 
@@ -336,20 +343,20 @@ const WhatsThatMean = ({ tool }) => {
       </div>
 
       {!results && (
-        <p className={`text-xs ${c.textMuted} text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
           {tr('syw_xref_pre', 'Need a whole document explained, not just one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
         </p>
       )}
 
       {results && (
         <div ref={resultsRef} className="space-y-4 scroll-mt-24">
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <div className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{tr('syw_what_they_said', 'What they said')}</div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className={`text-[15px] font-semibold ${c.labelText}`}>{tr('syw_what_they_said', 'What they said')}</div>
             <div className="text-xl sm:text-2xl font-bold mt-1">“{phrase}”</div>
           </div>
 
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <div className="font-bold">🏷️ {tr('syw_kind', 'What kind of phrase is it?')}</div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className="text-base font-bold">🏷️ {tr('syw_kind', 'What kind of phrase is it?')}</div>
             {decoded.classification_status === 'UNCLEAR' || ambiguous ? (
               <div className={`${c.warning} border rounded-lg p-3 mt-3 font-semibold`}>
                 {tr('syw_unclear', 'Unclear / needs context')}
@@ -368,36 +375,36 @@ const WhatsThatMean = ({ tool }) => {
 
           {decoded.plain_meaning && (
             <div className={`${c.highlight} border rounded-xl p-5`}>
-              <div className="font-bold">💡 {tr('syw_plain_meaning', 'Plain meaning')}</div>
+              <div className="text-base font-bold">💡 {tr('syw_plain_meaning', 'Plain meaning')}</div>
               <div className="mt-2 text-base leading-relaxed">{decoded.plain_meaning}</div>
             </div>
           )}
 
           {decoded.contextual_meaning?.available && decoded.contextual_meaning?.meaning && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <div className="font-bold">💬 {tr('syw_here', 'What it means here')}</div>
+            <div className={`border-t ${c.border} pt-5`}>
+              <div className="text-base font-bold">💬 {tr('syw_here', 'What it means here')}</div>
               <div className={`mt-2 leading-relaxed ${c.textSecondary}`}>{decoded.contextual_meaning.meaning}</div>
             </div>
           )}
 
           {decoded.tone?.available && decoded.tone?.description && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <div className="font-bold">🎭 {tr('syw_tone', 'The tone')}</div>
+            <div className={`border-t ${c.border} pt-5`}>
+              <div className="text-base font-bold">🎭 {tr('syw_tone', 'The tone')}</div>
               <div className={`mt-2 ${c.textSecondary}`}>{decoded.tone.description}</div>
-              {decoded.tone.depends_on_delivery && <div className={`mt-2 text-xs ${c.textMuted}`}>{tr('syw_delivery_note', 'Delivery and surrounding context can change the tone.')}</div>}
+              {decoded.tone.depends_on_delivery && <div className={`mt-2 text-[13px] ${c.textMuted}`}>{tr('syw_delivery_note', 'Delivery and surrounding context can change the tone.')}</div>}
             </div>
           )}
 
           {decoded.say_it_plainly && (
             <div className={`${c.success} border rounded-xl p-5`}>
-              <div className="font-bold">📝 {tr('syw_say_plainly', 'Say it plainly')}</div>
+              <div className="text-base font-bold">📝 {tr('syw_say_plainly', 'Say it plainly')}</div>
               <div className="mt-2 text-base">“{decoded.say_it_plainly}”</div>
             </div>
           )}
 
           {ambiguous && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <div className="font-bold">🤔 {tr('syw_possible_readings', 'Possible readings')}</div>
+            <div className={`border-t ${c.border} pt-5`}>
+              <div className="text-base font-bold">🤔 {tr('syw_possible_readings', 'Possible readings')}</div>
               <div className="mt-3 space-y-3">
                 {(decoded.ambiguity?.possible_readings || []).map((r, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
@@ -470,7 +477,7 @@ const WhatsThatMean = ({ tool }) => {
                 <div className={`border-t ${c.border} p-4 space-y-3`}>
                   {responseOptions.map((r, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                      {r.label && <div className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{r.label}</div>}
+                      {r.label && <div className={`text-[15px] font-semibold ${c.labelText}`}>{r.label}</div>}
                       <div className="mt-1">“{r.text}”</div>
                     </div>
                   ))}
@@ -479,8 +486,8 @@ const WhatsThatMean = ({ tool }) => {
             </div>
           )}
 
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <div className="font-bold">➕ {tr('syw_whole_sentence', 'What about the whole sentence?')}</div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className="text-base font-bold">➕ {tr('syw_whole_sentence', 'What about the whole sentence?')}</div>
             <div className={`text-xs mt-1 ${c.textMuted}`}>{tr('syw_refine_help', "Add more of the sentence or conversation. What's That Mean? will re-evaluate the contextual meaning without treating its earlier interpretation as fact.")}</div>
             <textarea value={refineContext} onChange={e => setRefineContext(e.target.value)} rows={3} className={`mt-3 w-full rounded-xl border p-3 text-sm ${c.input}`} placeholder={tr('syw_refine_placeholder', 'Add the surrounding sentence or a little more context…')} />
             <button onClick={runRefinedContext} disabled={!refineContext.trim() || loading} className={`${c.btnSecondary} border mt-2 rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40`}>
@@ -488,7 +495,7 @@ const WhatsThatMean = ({ tool }) => {
             </button>
           </div>
 
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {tr('syw_xref_post', 'Got a whole document full of unfamiliar language instead of one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
           </p>
         </div>

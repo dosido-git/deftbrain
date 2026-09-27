@@ -49,23 +49,20 @@ const RoastMe = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -76,8 +73,7 @@ const RoastMe = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // RoastMe extensions
@@ -90,9 +86,7 @@ const RoastMe = ({ tool }) => {
   c.textMuteded   = c.textMuted;
   c.label         = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [content, setContent] = useState('');
@@ -187,16 +181,21 @@ const RoastMe = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ── Input card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      {/* ── Input ── site style (2026-09-27): no card; prints only as a blank
+          form (with a result, the result prints). */}
+      <div className="space-y-5" data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
 
-        {/* Header — inset border-b */}
-        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+        {/* Header — PF-30: no in-card title (the page's <h1> names the tool);
+            the icon rides the tagline. A pale band of the tool's color bleeding
+            to the card edges, the ground the "Try an example" pill was made
+            for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 flex items-start justify-between gap-3"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex-1 min-w-0">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2 text-xl">{tool?.icon ?? '🔥'}</span>{tool?.title ?? 'Roast Me'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{t('rm_tagline')}</p>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🔥'}</span>{t('rm_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {(results || content.trim()) ? (
@@ -207,19 +206,19 @@ const RoastMe = ({ tool }) => {
         {/* Content type */}
         <div>
           <div className={`mb-4 rounded-xl border ${c.border} ${c.cardAlt || ''} p-3`}>
-            <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1.5`}>{t('rm_every_roast')}</p>
-            <ul className={`text-xs ${c.textSecondary} space-y-0.5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1.5`}>{t('rm_every_roast')}</p>
+            <ul className={`text-[13px] ${c.textSecondary} space-y-0.5`}>
               <li>🔥 {t('rm_inc_jokes')}</li>
               <li>❤️ {t('rm_inc_nice')}</li>
               <li>📸 {t('rm_inc_share')}</li>
             </ul>
           </div>
 
-          <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('rm_what_is_this')}</label>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>{t('rm_what_is_this')}</label>
           <div className="flex flex-wrap gap-1.5">
             {CONTENT_TYPES.map(ct => (
-              <button key={ct.value} onClick={() => setContentType(ct.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px]
+              <button aria-pressed={contentType === ct.value} key={ct.value} onClick={() => setContentType(ct.value)}
+                className={`px-3 py-2 rounded-lg text-[13px] font-bold border transition-colors min-h-[32px]
                   ${contentType === ct.value ? c.pillActive : c.pillInactive}`}>
                 <span className="me-1">{ct.icon}</span>{ct.label}
               </button>
@@ -229,7 +228,7 @@ const RoastMe = ({ tool }) => {
 
         {/* Content */}
         <div>
-          <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>
             {t('rm_paste_label')} <span className={c.required}>*</span>
           </label>
           <textarea
@@ -237,24 +236,24 @@ const RoastMe = ({ tool }) => {
             onChange={e => setContent(e.target.value)}
             placeholder={t('rm_ph')}
             rows={8}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`}
+            className={`w-full p-3 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2 resize-y`}
           />
-          <p className={`text-[10px] ${c.textMuted} mt-1 text-end`}>{content.length}/3000</p>
+          <p className={`text-xs ${c.textMuted} mt-1 text-end`}>{content.length}/3000</p>
         </div>
 
         {/* Heat level */}
         <div>
-          <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('rm_heat_label')}</label>
+          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>{t('rm_heat_label')}</label>
           <div className="flex gap-2">
             {HEAT_LEVELS.map(h => {
               const hc = h.value === 'gentle' ? c.heatGentle : h.value === 'scorched' ? c.heatScorched : c.heatMedium;
               return (
-                <button key={h.value} onClick={() => setHeatLevel(h.value)}
+                <button key={h.value} aria-pressed={heatLevel === h.value} onClick={() => setHeatLevel(h.value)}
                   className={`flex-1 py-3 rounded-xl border-2 text-center transition-colors min-h-[60px]
                     ${heatLevel === h.value ? `${hc} border-current` : c.pillInactive}`}>
                   <span className="text-xl block">{h.icon}</span>
-                  <span className="text-xs font-bold block">{h.label}</span>
-                  <span className={`text-[9px] ${c.textMuted} block`}>{h.desc}</span>
+                  <span className="text-[13px] font-bold block">{h.label}</span>
+                  <span className={`text-xs ${c.textMuted} block`}>{h.desc}</span>
                 </button>
               );
             })}
@@ -276,7 +275,7 @@ const RoastMe = ({ tool }) => {
         </button>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-[13px] text-center ${c.textMuted}`}>
           {t('rm_xref_q')}{' '}
           <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>📋 {t('rm_brag_sheet')}</a> {t('rm_xref_rewrites')}
         </p>
@@ -298,24 +297,24 @@ const RoastMe = ({ tool }) => {
           {results?.first_impression && (
             <div className={`${heatColor} border-2 rounded-xl p-5 text-center`}>
               <span className="text-3xl block mb-2">💀</span>
-              <p className="text-sm font-bold">{results?.first_impression}</p>
+              <p className="text-[15px] font-bold">{results?.first_impression}</p>
               {results?.content_type_detected && (
-                <p className={`text-[10px] ${c.textMuted} mt-2`}>{t('rm_detected')} {results?.content_type_detected}</p>
+                <p className={`text-xs ${c.textMuted} mt-2`}>{t('rm_detected')} {results?.content_type_detected}</p>
               )}
             </div>
           )}
 
           {/* Roast lines */}
           {results?.roasts?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎤 {t('rm_the_roast')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>🎤 {t('rm_the_roast')}</h3>
               <div className="space-y-3">
                 {results?.roasts?.map((r, i) => (
-                  <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-sm ${c.text} font-medium mb-1`}>"{r.line}"</p>
+                  <div key={i} data-print-keep className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-[15px] ${c.text} font-medium mb-1`}>"{r.line}"</p>
                     <div className="flex items-start gap-2">
-                      {r.target && <span className={`text-[9px] ${c.textMuted}`}>🎯 {r.target}</span>}
-                      {r.why_it_hurts && <span className={`text-[9px] ${c.textMuted}`}>· 💉 {r.why_it_hurts}</span>}
+                      {r.target && <span className={`text-xs ${c.textMuted}`}>🎯 {r.target}</span>}
+                      {r.why_it_hurts && <span className={`text-xs ${c.textMuted}`}>· 💉 {r.why_it_hurts}</span>}
                     </div>
                   </div>
                 ))}
@@ -326,8 +325,8 @@ const RoastMe = ({ tool }) => {
           {/* Summary roast */}
           {results?.summary_roast && (
             <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>{t('rm_mic_drop')}</p>
-              <p className={`text-sm font-bold ${c.text}`}>🎤 {results?.summary_roast}</p>
+              <p className={`text-[13px] font-bold ${c.labelText} mb-2`}>{t('rm_mic_drop')}</p>
+              <p className={`text-[15px] font-bold ${c.text}`}>🎤 {results?.summary_roast}</p>
             </div>
           )}
 
@@ -335,13 +334,13 @@ const RoastMe = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {results?.one_nice_thing && (
               <div className={`${c.niceBg} border rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>😇 {t('rm_one_nice_thing')}</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results?.one_nice_thing}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>😇 {t('rm_one_nice_thing')}</p>
+                <p className={`text-[15px] ${c.textSecondary}`}>{results?.one_nice_thing}</p>
               </div>
             )}
             {results?.share_line && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>📸 {t('rm_screenshot_this')}</p>
+                <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>📸 {t('rm_screenshot_this')}</p>
                 <p className={`text-sm font-bold ${c.text}`}>"{results?.share_line}"</p>
               </div>
             )}
@@ -360,11 +359,11 @@ const RoastMe = ({ tool }) => {
           </button>
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {t('rm_related')}</p>
+          <div data-print-hide>
+            <p className={`text-[13px] font-semibold mb-2 ${c.textMuted}`}>🔗 {t('rm_related')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/VelvetHammer"    className={`text-xs ${linkStyle}`}>🔨 {t('rm_velvet_hammer')}</a>
-              <a href="/NotSoFast" className={`text-xs ${linkStyle}`}>🚪 {t('rm_rulebook_breaker')}</a>
+              <a href="/VelvetHammer"    className={`text-sm ${linkStyle}`}>🔨 {t('rm_velvet_hammer')}</a>
+              <a href="/NotSoFast" className={`text-sm ${linkStyle}`}>🚪 {t('rm_rulebook_breaker')}</a>
             </div>
           </div>
         </div>
