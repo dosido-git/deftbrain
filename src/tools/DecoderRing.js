@@ -80,8 +80,8 @@ const DecoderRing = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
-    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0]' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
@@ -91,14 +91,14 @@ const DecoderRing = ({ tool }) => {
     // Bespoke tool-specific keys
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
     btnGhostDel:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-600 bg-cyan-50 text-cyan-800',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-400',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-50 text-cyan-800',
+    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     inset:         isDark ? 'bg-zinc-900/40' : 'bg-slate-50',
     // Decoded layers
     surfaceBg:     isDark ? 'bg-zinc-700/50' : 'bg-slate-100',
-    subtextBg:     isDark ? 'bg-cyan-900/15 border-cyan-700/30' : 'bg-cyan-50/40 border-cyan-200/50',
-    subtextText:   isDark ? 'text-cyan-300' : 'text-cyan-800',
+    subtextBg:     isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    subtextText:   isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     // Worth noticing. Amber, not red: "red flag" now means abuse, dishonesty,
     // toxicity — a far stronger claim than "a communication dynamic worth a
     // second look", which is what this section actually holds. Green stays,
@@ -126,15 +126,13 @@ const DecoderRing = ({ tool }) => {
     transText:     isDark ? 'text-amber-300' : 'text-amber-800',
     // History
     histBg:        isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
-    histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-700',
+    histAccent:    isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Persistent
   const [showHistory, setShowHistory] = useState(false);
@@ -262,7 +260,7 @@ const DecoderRing = ({ tool }) => {
   // RENDER: Pills
   // ══════════════════════════════════════════
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
+    <button aria-pressed={active} onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}
       {children}
@@ -271,16 +269,17 @@ const DecoderRing = ({ tool }) => {
 
   // Collapsible
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80 transition-opacity">
+    <div className={`border-t ${c.border}`}>
+      <button data-print-heading aria-expanded={open} onClick={onToggle} className="w-full flex items-center justify-between py-4 text-start hover:opacity-80 transition-opacity">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
+      {/* Collapsed on screen, always printed (data-sec-body). */}
+      <div data-sec-body hidden={!open} className="pb-5">{children}</div>
     </div>
   );
 
@@ -329,9 +328,9 @@ const DecoderRing = ({ tool }) => {
   // RENDER: Input
   // ══════════════════════════════════════════
   const renderInput = () => (
-    <div className="space-y-4">
+    <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
       {/* Message */}
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center justify-between mb-1">
           <label className={`text-base font-bold ${c.text}`}>{t('dr_paste_label')} <span className={c.required}>*</span></label>
 
@@ -340,12 +339,12 @@ const DecoderRing = ({ tool }) => {
         <textarea value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && message.trim()) decode(); }}
           placeholder={t('dr_paste_ph')}
           className={`w-full h-32 p-4 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-none text-base`} />
-        <span className={`text-xs ${c.textMuted} mt-2 block`}>{t('dr_char_count', { count: message.length })}</span>
+        <span className={`text-[13px] ${c.textMuted} mt-2 block`}>{t('dr_char_count', { count: message.length })}</span>
       </div>
 
       {/* Relationship */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dr_who_label')}</label>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dr_who_label')}</label>
         <div className="flex flex-wrap gap-1.5">
           {RELATIONSHIP_OPTIONS.map(opt => (
             <Pill key={opt.value} active={relationship === opt.value}
@@ -357,8 +356,8 @@ const DecoderRing = ({ tool }) => {
       </div>
 
       {/* Source */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dr_source_label')}</label>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dr_source_label')}</label>
         <div className="flex flex-wrap gap-1.5">
           {SOURCE_OPTIONS.map(opt => (
             <Pill key={opt.value} active={source === opt.value}
@@ -370,9 +369,9 @@ const DecoderRing = ({ tool }) => {
       </div>
 
       {/* Context */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dr_backstory_label')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('dr_backstory_help')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('dr_backstory_label')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dr_backstory_help')}</p>
         <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && message.trim()) decode(); }}
           placeholder={t('dr_backstory_ph')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -380,9 +379,9 @@ const DecoderRing = ({ tool }) => {
 
       {/* What's confusing — the visitor's own question, which is usually
           sharper than anything the tool would infer on its own. */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label htmlFor="dr-confusing" className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dr_confusing_label')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('dr_confusing_help')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label htmlFor="dr-confusing" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('dr_confusing_label')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dr_confusing_help')}</p>
         <input id="dr-confusing" type="text" value={whatsConfusing} onChange={e => setWhatsConfusing(e.target.value)}
           placeholder={t('dr_confusing_ph')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -472,8 +471,8 @@ const DecoderRing = ({ tool }) => {
 
         {/* Tone radar */}
         {results?.tone_rating && (
-          <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('dr_tone_analysis')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('dr_tone_analysis')}</p>
             <div className="space-y-2">
               {/* Four axes, and every one of them measures the MESSAGE.
                   Sincerity was the last survivor that did not: "do they mean
@@ -487,7 +486,7 @@ const DecoderRing = ({ tool }) => {
             {/* Turns the bar into advice. A high ambiguity score is the tool
                 telling you how loosely to hold everything above it. */}
             {results?.tone_rating?.ambiguity >= 7 && (
-              <p className={`text-xs ${c.textMuted} mt-3`}>{t('dr_ambiguity_high')}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-3`}>{t('dr_ambiguity_high')}</p>
             )}
           </div>
         )}
@@ -507,14 +506,14 @@ const DecoderRing = ({ tool }) => {
                     <div className="flex items-start gap-2">
                       <span className="text-xs mt-0.5">📝</span>
                       <div>
-                        <span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('dr_surface_label')}</span>
+                        <span className={`text-[13px] font-bold ${c.textMuted}`}>{t('dr_surface_label')}</span>
                         <p className={`text-sm ${c.textSecondary}`}>{layer.surface}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-xs mt-0.5">🔍</span>
                       <div>
-                        <span className={`text-[10px] font-bold uppercase ${c.subtextText}`}>{t('dr_subtext_label')}</span>
+                        <span className={`text-[13px] font-bold ${c.subtextText}`}>{t('dr_subtext_label')}</span>
                         <p className={`text-sm font-medium ${c.subtextText}`}>{layer.subtext}</p>
                       </div>
                     </div>
@@ -523,7 +522,7 @@ const DecoderRing = ({ tool }) => {
                         {TECHNIQUE_EMOJIS[layer.technique_key] || '🔮'} {layer.technique}
                       </span>
                       {layer.confidence && (
-                        <span className={`text-[10px] ${c.textMuted}`}>{t('dr_confidence')} {layer.confidence}</span>
+                        <span className={`text-[13px] ${c.textMuted}`}>{t('dr_confidence')} {layer.confidence}</span>
                       )}
                     </div>
                   </div>
@@ -569,13 +568,13 @@ const DecoderRing = ({ tool }) => {
                 <div key={idx} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-sm font-bold ${c.text}`}>{strat.approach}</span>
-                    <span className={`text-xs ${c.textMuted}`}>{strat.goal}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>{strat.goal}</span>
                   </div>
                   <div className={`p-3 rounded-lg ${c.inset} mb-2`}>
                     <p className={`text-sm ${c.text} whitespace-pre-wrap`}>{strat.example}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs ${c.textMuted}`}>{t('dr_risk')} {strat.risk}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>{t('dr_risk')} {strat.risk}</span>
                   </div>
                 </div>
               ))}
@@ -584,12 +583,12 @@ const DecoderRing = ({ tool }) => {
         )}
 
         {/* Disclaimer */}
-        <p className={`text-xs ${c.textMuted} text-center`}>{t('dr_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuted} text-center`}>{t('dr_disclaimer')}</p>
 
 
         {/* Cross-references */}
-        <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
-          <p className={`text-xs ${c.textMuted}`}>
+        <div data-print-hide className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
             {renderXref(t('dr_xref_results'), {
               vh: <a key="vh" href="/VelvetHammer" className={linkStyle}>{t('dr_velvet_hammer')}</a>,
               cc: <a key="cc" href="/ContextCollapse" className={linkStyle}>{t('dr_context_collapse')}</a>,
@@ -617,11 +616,11 @@ const DecoderRing = ({ tool }) => {
     };
 
     return (
-      <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
+      <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🔍</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('dr_history_title')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
           <Caret open={showHistory} />
         </button>
         {showHistory && (
@@ -630,7 +629,7 @@ const DecoderRing = ({ tool }) => {
               <div key={entry.id} className={`rounded-xl border ${c.card} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>"{entry.preview}..."</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.emotion ? ` · ${entry.emotion}` : ''}</div>
+                  <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.emotion ? ` · ${entry.emotion}` : ''}</div>
                 </div>
                 <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('dr_view')}</button>
                 <button onClick={() => setSessionHistory(prev => prev.filter(h => h.id !== entry.id))}
@@ -652,12 +651,21 @@ const DecoderRing = ({ tool }) => {
   // ══════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      {/* Header — site style (2026-09-27): no card of its own. It bleeds to
+          the edges of the page's tool card on a pale band of the tool's color
+          (negative margins = the wrapper's padding; the card clips the
+          corners), the pale ground the "Try an example" pill was designed for
+          (PF-17c). Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="">
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔍'}</span>{t('dr_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -671,7 +679,7 @@ const DecoderRing = ({ tool }) => {
         </div>
       </div>
       {renderInput()}
-      <p className={`text-sm ${c.textMuted} text-center`}>
+      <p data-print-hide className={`text-sm ${c.textMuted} text-center`}>
         {renderXref(t('dr_xref_input'), {
           cc: <a key="cc" href="/ContextCollapse" className={linkStyle}>{t('dr_context_collapse')}</a>,
         })}

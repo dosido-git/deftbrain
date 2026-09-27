@@ -63,14 +63,12 @@ const MissingLink = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
@@ -80,8 +78,7 @@ const MissingLink = ({ tool }) => {
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
                           : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -94,13 +91,12 @@ const MissingLink = ({ tool }) => {
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific extras
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
     histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
@@ -114,9 +110,7 @@ const MissingLink = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // useState — all together first
   const [showHistory, setShowHistory] = useState(false);
@@ -249,7 +243,7 @@ const MissingLink = ({ tool }) => {
   useRegisterActions(buildCopy(), tool?.title || 'Missing Link');
 
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
+    <button onClick={onClick} aria-pressed={active} className={'px-3 py-1.5 rounded-lg border text-[13px] font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
@@ -260,12 +254,18 @@ const MissingLink = ({ tool }) => {
   // The title row, shared by both phases. It used to live only inside
   // renderInput, which unmounts the moment a result exists — so with the
   // output on screen there was no way to start over at all.
+  // Site style (2026-09-27): a pale band of the tool's color bleeding to the
+  // card edges, the ground the "Try an example" pill was made for (PF-17c).
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div
+      data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '⛓️'}</span>{tool?.tagline ?? t('tg_tagline')}
           </p>
           {!results && (
@@ -283,23 +283,23 @@ const MissingLink = ({ tool }) => {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {renderHeaderRow()}
 
       <div>
         <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>{t('tg_concept_label')} <span className={c.required}>*</span></label>
-        <p className={'text-xs ' + c.textMuted + ' mb-3'}>{t('tg_concept_help')}</p>
+        <p className={'text-[13px] ' + c.textMuted + ' mb-3'}>{t('tg_concept_help')}</p>
         <input type="text" value={concept} onChange={e => setConcept(e.target.value)}
           placeholder={t('tg_concept_ph')}
           className={'w-full px-4 py-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 text-sm'}
           onKeyDown={e => { if (e.key === 'Enter' && concept.trim()) trace(); }} />
       </div>
 
-      <p className={'text-xs leading-relaxed ' + c.textSecondary}>{t('tg_reassure')}</p>
+      <p className={'text-[13px] leading-relaxed ' + c.textSecondary}>{t('tg_reassure')}</p>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_subject_auto')}</label>
+          <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_subject_auto')}</label>
           {showSubject ? (
             <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
               placeholder={t('tg_subject_ph')}
@@ -311,20 +311,20 @@ const MissingLink = ({ tool }) => {
           )}
         </div>
         <div>
-          <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('tg_level_label')}</label>
+          <label className={'text-[15px] font-semibold ' + c.text + ' mb-2 block'}>{t('tg_level_label')}</label>
           <div className="flex flex-wrap gap-1">
             {LEVELS.map(l => <Pill key={l.value} active={level === l.value} onClick={() => setLevel(l.value)}>{l.label}</Pill>)}
           </div>
         </div>
       </div>
       <div>
-        <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_know_label')}</label>
+        <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_know_label')}</label>
         <input type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
           placeholder={t('tg_know_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>
       <div>
-        <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_broke_label')}</label>
+        <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_broke_label')}</label>
         <input type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
           placeholder={t('tg_broke_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -342,7 +342,7 @@ const MissingLink = ({ tool }) => {
       )}
       </button>
       <p className={'text-xs text-center ' + c.textMuted}>{t('tg_ai_disclaimer')}</p>
-      <p className={'text-xs ' + c.textMuted}>
+      <p data-print-hide className={'text-[13px] ' + c.textMuted}>
         {t('tg_braindump_q')} <a href="/HeartOfTheMatter" className={linkStyle}>🎯 {t('tg_braindump_link')}</a> {t('tg_braindump_rest')}
       </p>
     </div>
@@ -382,28 +382,29 @@ const MissingLink = ({ tool }) => {
             const expanded = expandedNodes[idx];
             return (
               <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + gs.bg}>
-                <button onClick={() => toggleNode(idx)} className="w-full text-start p-4">
+                <button data-print-heading aria-expanded={!!expanded} onClick={() => toggleNode(idx)} className="w-full text-start p-4">
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col items-center">
                       <span className="text-base">{gs.emoji}</span>
-                      <span className={'text-[9px] font-bold ' + gs.text}>{t('tg_level_short')}{node.level_in_chain}</span>
+                      <span className={'text-xs font-bold ' + gs.text}>{t('tg_level_short')}{node.level_in_chain}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={'text-sm font-bold ' + c.text}>{node.concept}</p>
                       <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{node.why_needed}</p>
                     </div>
-                    <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' + c.badge}>
+                    <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>
                       {node.gap_likelihood} {t('tg_risk_suffix')}
                     </span>
                   </div>
                 </button>
-                {expanded && (
-                  <div className={'px-4 pb-4 border-t ' + c.border}>
+                {/* Collapsed on screen; printed open, so the quick tests travel. */}
+                {(
+                  <div data-sec-body hidden={!expanded} className={'px-4 pb-4 border-t ' + c.border}>
                     <div className={'mt-3 p-3 rounded-lg ' + c.cardAlt}>
                       <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>{t('tg_quick_test')}</p>
                       <p className={'text-sm ' + c.text + ' italic'}>{node.quick_test}</p>
                     </div>
-                    <div className="flex gap-1.5 mt-3">
+                    <div data-print-hide className="flex gap-1.5 mt-3">
                       <button onClick={() => dig(node.concept, 'failed')}
                         className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive + ' hover:border-red-400'}>
                         {t('tg_cant_answer')}
@@ -431,7 +432,7 @@ const MissingLink = ({ tool }) => {
               <span className="text-xl">🎯</span>
               <div>
                 {results?.subject_detected && (
-                  <p className={'text-[10px] font-bold uppercase tracking-wide mb-0.5 ' + c.textMuted}>
+                  <p className={'text-[13px] font-bold mb-0.5 ' + c.textMuted}>
                     {t('tg_subject_detected', { val: results.subject_detected })}
                   </p>
                 )}
@@ -453,7 +454,7 @@ const MissingLink = ({ tool }) => {
                 </p>
                 {gap.confidence_reasons?.length > 0 && (
                   <>
-                    <p className={'text-[10px] font-bold uppercase tracking-wide mt-2 mb-1 ' + c.textMuted}>{t('tg_confidence_why')}</p>
+                    <p className={'text-[13px] font-bold mt-2 mb-1 ' + c.textMuted}>{t('tg_confidence_why')}</p>
                     <ul className="space-y-1">
                       {gap.confidence_reasons.map((r, i) => (
                         <li key={i} className={'text-xs leading-relaxed ' + c.textSecondary + ' flex gap-2'}>
@@ -570,9 +571,9 @@ const MissingLink = ({ tool }) => {
                 {results?.if_thats_not_it?.map((alt, i) => (
                   <div key={i} className={'p-3 rounded-lg border ' + c.cardAlt}>
                     <p className={'text-xs font-bold ' + c.text}>{alt.alternative_gap}</p>
-                    <p className={'text-[10px] ' + c.textSecondary + ' mt-0.5'}>{t('tg_alt_symptom')} {alt.symptom}</p>
+                    <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{t('tg_alt_symptom')} {alt.symptom}</p>
                     <button onClick={() => dig(alt.alternative_gap, 'failed')}
-                      className={'mt-2 text-[10px] font-bold ' + linkStyle}>{t('tg_alt_dig')}</button>
+                      className={'mt-2 text-xs font-bold ' + linkStyle}>{t('tg_alt_dig')}</button>
                   </div>
                 ))}
               </div>
@@ -647,11 +648,11 @@ const MissingLink = ({ tool }) => {
             {r.practice_problems.map((pp, i) => (
               <div key={i} className={c.card + ' border rounded-xl p-3'}>
                 <p className={'text-xs font-semibold ' + c.text + ' mb-1'}>{t('tg_problem')} {i + 1}: {pp.problem}</p>
-                <details className="mt-1">
-                  <summary className={'text-[10px] font-bold cursor-pointer ' + linkStyle}>{t('tg_show_hint')}</summary>
+                <details data-print-hide className="mt-1">
+                  <summary className={'text-xs font-bold cursor-pointer ' + linkStyle}>{t('tg_show_hint')}</summary>
                   <div className="mt-2 space-y-1">
-                    {pp.hint && <p className={'text-[10px] ' + c.tipText}>{t('tg_hint')} {pp.hint}</p>}
-                    <p className={'text-[10px] ' + c.successTxt}>✅ {pp.answer}</p>
+                    {pp.hint && <p className={'text-xs ' + c.tipText}>{t('tg_hint')} {pp.hint}</p>}
+                    <p className={'text-xs ' + c.successTxt}>✅ {pp.answer}</p>
                   </div>
                 </details>
               </div>
@@ -663,7 +664,7 @@ const MissingLink = ({ tool }) => {
           <div className="space-y-1 mb-3">
             {r.common_mistakes.map((m, i) => (
               <div key={i} className={'p-2 rounded-lg ' + c.warningBox}>
-                <p className={'text-[10px] ' + c.warningTxt}>⚠️ {m}</p>
+                <p className={'text-xs ' + c.warningTxt}>⚠️ {m}</p>
               </div>
             ))}
           </div>
@@ -684,7 +685,7 @@ const MissingLink = ({ tool }) => {
     if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('tg_today') : diff === 1 ? t('tg_yesterday') : diff < 7 ? t('tg_days_ago', { count: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
-      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+      <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>📝</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tg_past_gaps')}</span>
@@ -714,13 +715,13 @@ const MissingLink = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       {!results && renderInput()}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}
       {results && renderResults()}
       {results && (
-        <div className={'p-4 rounded-2xl border ' + c.card}>
+        <div data-print-hide className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('tg_related_tools')}</p>
           <p className={'text-xs ' + c.textSecondary}>{t('tg_related_text')} <a href="/AnalogyEngine" className={linkStyle}>🔀 {t('tg_recall_link')}</a> {t('tg_related_rest')}</p>
         </div>

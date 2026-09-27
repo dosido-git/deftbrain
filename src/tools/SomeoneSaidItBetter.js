@@ -76,36 +76,33 @@ const SomeoneSaidItBetter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     quoteBg:       isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-[#faf8f5] border-[#e8e1d5]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [situation, setSituation] = useState('');
@@ -433,12 +430,20 @@ const SomeoneSaidItBetter = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      {/* Site style (2026-09-27): no card; prints only as a blank form (with a
+          result, the result prints). */}
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header: a pale band of the tool's color bleeding to the card edges, the
+            ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '📚'}</span>{tool?.tagline ?? t('ssib_tagline')}
               </p>
               <button onClick={loadExample} disabled={busy} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -470,7 +475,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('ssib_need_label')}</label>
               <div className="flex flex-wrap gap-2">
                 {NEEDS.map(n => (
-                  <button key={n.value} onClick={() => setNeed(n.value)}
+                  <button aria-pressed={need === n.value} key={n.value} onClick={() => setNeed(n.value)}
                     className={`px-3 py-1.5 rounded-full border text-sm font-medium transition-colors ${need === n.value ? c.pillActive : c.pillInactive}`}>
                     {t(n.key)}
                   </button>
@@ -482,7 +487,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('ssib_voice_label')}</label>
               <div className="flex flex-wrap gap-2">
                 {VOICES.map(v => (
-                  <button key={v.value} onClick={() => setVoice(v.value)}
+                  <button aria-pressed={voice === v.value} key={v.value} onClick={() => setVoice(v.value)}
                     className={`px-3 py-1.5 rounded-full border text-sm font-medium transition-colors ${voice === v.value ? c.pillActive : c.pillInactive}`}>
                     {t(v.key)}
                   </button>
@@ -490,7 +495,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
               </div>
             </div>
 
-            <p className={`text-xs ${c.textMuted}`}>{t('ssib_source_rule')}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>{t('ssib_source_rule')}</p>
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
@@ -499,7 +504,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                 worse, a "try again" error for a search that was seconds from
                 landing. Same pattern as Signal vs. Noise. */}
             {busy && (
-              <p className={`text-xs ${c.textMuted}`}>
+              <p className={`text-[13px] ${c.textMuted}`}>
                 {phase === 'research' && t('ssib_research_warming')}
                 {phase === 'synthesis' && (preview ? t('ssib_research_synthesizing', { n: preview }) : t('ssib_processing'))}
                 {phase === 'idle' && t('ssib_processing')}
@@ -519,7 +524,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
               )}
             </button>
 
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('ssib_xref_own_words_q')} <a href="/TruthBomb" className={linkStyle}>{t('ssib_xref_own_words')}</a>
             </p>
           </div>
@@ -531,15 +536,15 @@ const SomeoneSaidItBetter = ({ tool }) => {
         <div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
 
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>{t('ssib_your_situation')}</p>
               {foundLabel && (
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className={`text-[10px] ${c.textMuted}`}>{t('ssib_found_on', { date: foundLabel })}</span>
+                  <span className={`text-[13px] ${c.textMuted}`}>{t('ssib_found_on', { date: foundLabel })}</span>
                   {(restoredFind || !foundToday) && (
                     <button onClick={handleFindDifferentWords} disabled={busy}
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/30' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                       {t('ssib_find_different_words')}
                     </button>
                   )}
@@ -570,7 +575,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                   {p.quote.date ? ` · ${p.quote.date}` : ''}
                 </div>
                 <div className="mt-5">
-                  <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('ssib_why_this_one')}</p>
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('ssib_why_this_one')}</p>
                   <p className={`mt-1 text-sm leading-relaxed ${c.textSecondary}`}>{p.why_this_one}</p>
                 </div>
                 <a href={p.quote.url} target="_blank" rel="noreferrer" className={`mt-5 inline-block text-sm ${linkStyle}`}>
@@ -580,7 +585,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
             );
           })}
 
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('ssib_xref_toast_q')} <a href="/ToastWriter" className={linkStyle}>{t('ssib_xref_toast')}</a>
           </p>
         </div>
@@ -592,7 +597,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
           cached result at no API cost. */}
       {savedFinds.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('ssib_recent_finds')}</p>
+          <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('ssib_recent_finds')}</p>
           <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
             {(showAllFinds ? savedFinds : savedFinds.slice(0, FINDS_VISIBLE)).map(e => {
               const primary = (e.quotes || []).find(q => q.role === 'one_to_keep') || e.quotes?.[0];
@@ -602,7 +607,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                   className={`w-full text-start py-3 group ${busy ? 'opacity-60' : ''}`}>
                   <p className={`text-sm italic leading-snug ${c.text}`}>"{primary.text}"</p>
                   <p className={`text-xs mt-0.5 ${c.textSecondary}`}>— {primary.author}</p>
-                  <p className={`text-[11px] mt-1 flex items-center gap-1 ${c.textMuted}`}>
+                  <p className={`text-[13px] mt-1 flex items-center gap-1 ${c.textMuted}`}>
                     <span className="truncate">{e.situationLabel}</span>
                     <span className="whitespace-nowrap">· {relativeDay(e.createdAt)}</span>
                     {e.visits > 1 && <span className="whitespace-nowrap">· {tPlural('ssib_visits_n', e.visits, { n: e.visits })}</span>}
@@ -624,16 +629,16 @@ const SomeoneSaidItBetter = ({ tool }) => {
           chosen to remember, independent of which situation surfaced them. */}
       {keptQuotes.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>❤️ {t('ssib_kept_title')}</p>
+          <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>❤️ {t('ssib_kept_title')}</p>
           <div className={`divide-y ${isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
             {(showAllKept ? keptQuotes : keptQuotes.slice(0, KEPT_VISIBLE)).map(k => (
               <div key={`${k.findId}:${k.quoteId}`} className="py-3 flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className={`text-sm italic leading-snug ${c.text}`}>"{k.text}"</p>
                   <p className={`text-xs mt-0.5 ${c.textSecondary}`}>— {k.author}{k.work ? `, ${k.work}` : ''}</p>
-                  {k.situationLabel && <p className={`text-[11px] mt-1 truncate ${c.textMuted}`}>{k.situationLabel}</p>}
+                  {k.situationLabel && <p className={`text-[13px] mt-1 truncate ${c.textMuted}`}>{k.situationLabel}</p>}
                   {k.url && (
-                    <a href={k.url} target="_blank" rel="noreferrer" className={`text-[11px] ${linkStyle}`}>
+                    <a href={k.url} target="_blank" rel="noreferrer" className={`text-[13px] ${linkStyle}`}>
                       ↗ {t('ssib_verify_link')}
                     </a>
                   )}

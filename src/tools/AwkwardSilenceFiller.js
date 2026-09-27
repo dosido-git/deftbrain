@@ -98,17 +98,15 @@ const AwkwardSilenceFiller = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-400'    : 'text-slate-600',
     textMuted:     isDark ? 'text-zinc-400'    : 'text-slate-500',
     label:         isDark ? 'text-zinc-300'    : 'text-slate-700',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnPanic:      isDark ? 'bg-red-600 hover:bg-red-500 text-white'      : 'bg-red-600 hover:bg-red-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-slate-100 hover:bg-slate-200 text-slate-800',
     border:        isDark ? 'border-zinc-700'  : 'border-slate-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200'   : 'bg-amber-50 border-amber-200 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700/50 text-red-200'         : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'       : 'bg-cyan-600 border-cyan-600 text-white',
+    pillActive:    isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
     quoteBg:       isDark ? 'bg-zinc-900/60'   : 'bg-slate-50',
     chainBg:       isDark ? 'bg-zinc-900/40 border-zinc-700' : 'bg-emerald-50/50 border-emerald-100',
@@ -117,9 +115,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
   // Alias for common typo
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('');
@@ -295,13 +291,21 @@ const AwkwardSilenceFiller = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+      {/* Site style (2026-09-27): no card; prints only as a blank form (with a
+          result, the result prints). */}
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
 
         {/* Standard header */}
-        <div className="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-zinc-500">
+        {/* Header: a pale band of the tool's color bleeding to the card edges, the
+            ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💬'}</span>{t('asf_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
@@ -331,23 +335,23 @@ const AwkwardSilenceFiller = ({ tool }) => {
               <>{t('asf_panic_btn')}</>
             )}
           </button>
-          <p className={`text-[10px] ${c.textMuteded} text-center mt-1`}>{t('asf_panic_hint')}</p>
+          <p className={`text-[13px] ${c.textMuteded} text-center mt-1`}>{t('asf_panic_hint')}</p>
         </div>
 
         {/* ── PANIC RESULT ── */}
         {panicResult && (
           <div className={`mb-5 p-5 rounded-xl border-2 ${isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300'}`}>
-            <p className={`text-[10px] font-bold uppercase ${c.success} mb-2`}>{t('asf_panic_say_now')}</p>
+            <p className={`text-[13px] font-bold ${c.success} mb-2`}>{t('asf_panic_say_now')}</p>
             <p className={`text-lg font-bold ${c.text} mb-3`}>"{panicResult.line}"</p>
             {panicResult.they_say && (
               <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-white/70'} rounded-lg p-3 mb-2`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('asf_panic_they_say')}</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('asf_panic_they_say')}</p>
                 <p className={`text-xs ${c.textSecondary} italic`}>"{panicResult.they_say}"</p>
               </div>
             )}
             {panicResult.follow_up && (
               <div className={`${c.chainBg} border rounded-lg p-3 mb-2`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('asf_panic_then_you')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('asf_panic_then_you')}</p>
                 <p className={`text-sm font-semibold ${c.text}`}>"{panicResult.follow_up}"</p>
               </div>
             )}
@@ -364,7 +368,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <label className={`text-sm font-bold ${c.label} block mb-2`}>{t('asf_quick_scenario')}</label>
           <div className="flex flex-wrap gap-1.5">
             {SCENARIOS.map(s => (
-              <button
+              <button aria-pressed={scenario === s.value}
                 key={s.value}
                 onClick={() => { setScenario(s.value === scenario ? '' : s.value); setCustomContext(''); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -382,7 +386,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <label className={`text-sm font-bold ${c.label} block mb-2`}>{t('asf_who_label')}</label>
           <div className="flex flex-wrap gap-1.5">
             {RELATIONSHIPS.map(rel => (
-              <button
+              <button aria-pressed={relationship === rel.value}
                 key={rel.value}
                 onClick={() => setRelationship(rel.value === relationship ? '' : rel.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -400,10 +404,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <label className={`text-sm font-bold ${c.label} block mb-2`}>{t('asf_feeling_label')}</label>
           <div className="flex gap-2">
             {COMFORT_LEVELS.map(cl => (
-              <button
+              <button aria-pressed={comfort === cl.value}
                 key={cl.value}
                 onClick={() => setComfort(cl.value)}
-                className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
+                className={`flex-1 py-2.5 rounded-lg text-[13px] font-bold border transition-colors min-h-[40px] flex flex-col items-center gap-0.5 ${
                   comfort === cl.value ? c.pillActive : c.pillInactive
                 }`}
               >
@@ -480,7 +484,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             results and the cross-refs. One home, under the primary action,
             collapsed with its count. */}
         {sessionHistory?.length > 0 && !results && (
-          <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3 mt-3`}>
+          <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3 mt-3`}>
             <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
                 🕐 {t('asf_recent_sessions', { n: sessionHistory.length })}
@@ -504,7 +508,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
         {/* PF-33 — an offer belongs after the ask */}
         {!results && (
-          <p className={`text-xs text-center ${c.textMuteded} mt-3`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded} mt-3`}>
             {t('asf_pre_xref_q')}{' '}
             <a href="/DateNight" className={linkStyle}>{t('asf_xref_datenight')}</a>{' '}
             {t('asf_pre_xref_tail')}
@@ -553,7 +557,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             <div className={`${c.cardAlt} border rounded-xl p-5 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5 text-lg">🔇</span>
               <div>
-                <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('asf_reframe_title')}</h3>
+                <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('asf_reframe_title')}</h3>
                 <p className={`text-sm ${c.textSecondary}`}>{r.silence_reframe}</p>
               </div>
             </div>
@@ -561,7 +565,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
           {/* ── READ THE ROOM ── */}
           {r.read_the_room && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-start gap-2.5">
                 <span className="flex-shrink-0 mt-0.5">👥</span>
                 <div>
@@ -575,7 +579,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           {/* ── CONVERSATION CHAINS ── */}
           {r.conversation_chains && r.conversation_chains.length > 0 && (
             <div className="space-y-3">
-              <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+              <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
                 <span>💬</span> {t('asf_starters_title')}
               </h3>
               {r.conversation_chains.map((chain, idx) => {
@@ -585,9 +589,9 @@ const AwkwardSilenceFiller = ({ tool }) => {
                     {/* Header */}
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-1">
-                        <span className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{chain.category}</span>
+                        <span className={`text-[13px] font-bold ${c.textMuteded}`}>{chain.category}</span>
                         {chain.risk_level && (
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                             chain.risk_level === 'low' ? c.success
                               : chain.risk_level === 'high' ? c.danger
                               : c.warning
@@ -600,7 +604,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                       {/* YOUR OPENER */}
                       <div className="flex items-start gap-2 mt-2">
                         <div className={`flex-1 ${c.quoteBg} rounded-lg p-3`}>
-                          <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('asf_you_say')}</p>
+                          <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('asf_you_say')}</p>
                           <p className={`text-sm font-semibold ${c.text}`}>"{chain.opener}"</p>
                         </div>
                       </div>
@@ -609,7 +613,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                       {(chain.likely_response || chain.your_follow_up) && (
                         <button
                           onClick={() => toggleSection(`chain-${idx}`)}
-                          className={`mt-2 text-[10px] font-bold ${c.textSecondary} flex items-center gap-1`}
+                          className={`mt-2 text-xs font-bold ${c.textSecondary} flex items-center gap-1`}
                         >
                           <Caret open={expanded} />
                           {expanded ? t('asf_hide_flow') : t('asf_see_flow')}
@@ -622,7 +626,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                       <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                         {chain.likely_response && (
                           <div className={`${isDark ? 'bg-zinc-700/50' : 'bg-gray-100'} rounded-lg p-3`}>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('asf_they_say_like')}</p>
+                            <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('asf_they_say_like')}</p>
                             <p className={`text-xs ${c.textSecondary} italic`}>"{chain.likely_response}"</p>
                           </div>
                         )}
@@ -632,13 +636,13 @@ const AwkwardSilenceFiller = ({ tool }) => {
                         {chain.your_follow_up && (
                           <div className="flex items-start gap-2">
                             <div className={`flex-1 ${c.chainBg} border rounded-lg p-3`}>
-                              <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('asf_then_you_say')}</p>
+                              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('asf_then_you_say')}</p>
                               <p className={`text-xs font-semibold ${c.text}`}>"{chain.your_follow_up}"</p>
                             </div>
                           </div>
                         )}
                         {chain.where_it_leads && (
-                          <p className={`text-[10px] ${c.textMuteded}`}>→ {chain.where_it_leads}</p>
+                          <p className={`text-[13px] ${c.textMuteded}`}>→ {chain.where_it_leads}</p>
                         )}
                       </div>
                     )}
@@ -655,7 +659,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 onClick={() => toggleSection('body')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
               >
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
                   <span>🛡️</span> {t('asf_body_title')}
                 </h3>
                 <Caret open={expandedSections.body} />
@@ -677,7 +681,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 onClick={() => toggleSection('exit')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
               >
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
                   <span>🚪</span> {t('asf_exits_title')}
                 </h3>
                 <Caret open={expandedSections.exit} />
@@ -687,7 +691,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                   {r.exit_strategies.map((exit, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className={`flex-1 ${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{exit.scenario}</p>
+                        <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{exit.scenario}</p>
                         <p className={`text-xs ${c.text}`}>"{exit.script}"</p>
                       </div>
                     </div>
@@ -704,7 +708,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 onClick={() => toggleSection('avoid')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
               >
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
                   <span>🚫</span> {t('asf_not_to_say_title')}
                 </h3>
                 <Caret open={expandedSections.avoid} />
@@ -729,20 +733,20 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
           {/* Conditional cross-ref: panicking comfort → Argument Simulator for practice */}
           {comfort === 'panicking' && (
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('asf_panic_xref_q')}{' '}
               <a href="/ArgueSmarter" className={linkStyle}>{t('asf_xref_argsim')}</a>{' '}
               {t('asf_panic_xref_tail')}
             </p>
           )}
 
-          <p className={`text-[10px] ${c.textMuteded} text-center px-4`}>
+          <p className={`text-[13px] ${c.textMuteded} text-center px-4`}>
             {t('asf_footer_note')}
           </p>
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>{t('asf_also_like')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+            <p className={`text-[13px] font-semibold ${c.textMuteded}r`}>{t('asf_also_like')}</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 {t('asf_xref_datenight')}</a>
               <a href="/PronounceItRight" className={`text-xs ${linkStyle}`}>🗣️ {t('asf_xref_pronounce')}</a>

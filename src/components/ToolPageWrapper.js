@@ -25,7 +25,8 @@ import './ToolPageSiteStyle.css';
 // Add a tool here in the same commit that converts its file.
 const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach', 'BillRescue',
   'RoastMe', 'MarkupDetective', 'AlternatePath', 'WhatsThatMean',
-  'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife']);
+  'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife',
+  'SomeoneSaidItBetter', 'DecoderRing', 'MissingLink', 'AwkwardSilenceFiller']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
