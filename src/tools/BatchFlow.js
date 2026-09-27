@@ -66,15 +66,13 @@ const BatchFlow = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -90,16 +88,14 @@ const BatchFlow = ({ tool }) => {
     jt:            isDark ? 'text-amber-400' : 'text-amber-700',
     // Chip helper: active vs inactive pill style (cyan active / zinc inactive)
     chip:          (active) => active
-                     ? (isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900')
+                     ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
                      : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400'),
   };
   // Always include these two alias lines immediately after the closing brace:
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const modeStyle = (mode) => { const m = MODE_COLORS[mode] || MODE_COLORS.mechanical; return isDark ? `${m.bg}900/25 ${m.border}700 ${m.text}300` : `${m.bg}50 ${m.border}300 ${m.text}800`; };
   const modeInfo = (mode) => MODE_COLORS[mode] || MODE_COLORS.mechanical;
@@ -584,15 +580,15 @@ const BatchFlow = ({ tool }) => {
     const hours = []; for (let h = 8; h <= 20; h++) hours.push(h);
     const hourMap = {}; data.forEach(d => { hourMap[d.hour] = d; });
     const intensityOpacity = { high: 1.0, medium: 0.65, low: 0.3 };
-    return <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-      <h3 className={`font-bold text-sm ${c.text}`}>🗓️ {t('bf_hbh_title')}</h3>
-      <p className={`text-xs ${c.textMuteded} mb-3`}>{t('bf_hbh_desc')}</p>
+    return <div className={`border-t ${c.border} pt-5`}>
+      <h3 className={`text-base font-bold ${c.text}`}>🗓️ {t('bf_hbh_title')}</h3>
+      <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('bf_hbh_desc')}</p>
       <div className="flex gap-0.5 items-end">{hours.map(h => {
         const d = hourMap[h]; const opacity = d ? (intensityOpacity[d.intensity] || 0.5) : 0.12;
         const color = d ? modeBarColor(d.mode) : (isDark ? 'rgb(63,63,70)' : 'rgb(229,231,235)');
         return <div key={h} className="flex-1 flex flex-col items-center group relative">
           <div className="w-full h-8 rounded" style={{ backgroundColor: color, opacity, transition: 'all 0.3s' }} />
-          <span className={`text-xs ${c.textMuteded} mt-1`}>{h > 12 ? h - 12 + 'p' : h + 'a'}</span>
+          <span className={`text-[13px] ${c.textMuteded} mt-1`}>{h > 12 ? h - 12 + 'p' : h + 'a'}</span>
           {d && <div className={`absolute bottom-full mb-2 px-2 py-1 rounded text-xs font-bold ${c.card} ${c.border} border shadow-sm hidden group-hover:block whitespace-nowrap z-10`}>{modeInfo(d.mode).emoji} {d.label} · {d.intensity}</div>}
         </div>;
       })}</div>
@@ -606,11 +602,19 @@ const BatchFlow = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('bf_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
@@ -623,44 +627,45 @@ const BatchFlow = ({ tool }) => {
             <button onClick={handleReset} className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}>↺ {t('start_over')}</button>
           ) : null}
         </div>
+        </div>
       </div>
 
       {/* Nav */}
       <div className="flex flex-wrap gap-2">
         {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.jt}`}>📔 {t('bf_nav_history', { count: journal.length })}</button>}
-        {journal.length >= 3 && <button onClick={handleInsights} disabled={insightsLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}><Spin on={insightsLoading} icon="📊">{t('bf_nav_insights')}</Spin></button>}
-        {templates.length > 0 && <button onClick={() => setShowTemplates(!showTemplates)} className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-600'}`}>📋 {t('bf_nav_templates', { count: templates.length })}</button>}
+        {journal.length >= 3 && <button onClick={handleInsights} disabled={insightsLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]'}`}><Spin on={insightsLoading} icon="📊">{t('bf_nav_insights')}</Spin></button>}
+        {templates.length > 0 && <button onClick={() => setShowTemplates(!showTemplates)} className={`text-xs font-bold ${isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]'}`}>📋 {t('bf_nav_templates', { count: templates.length })}</button>}
         <button onClick={() => setShowWeekly(!showWeekly)} className={`text-xs font-bold ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>📅 {t('bf_nav_weekly')}</button>
         {deferredList.length >= 1 && <button onClick={handleResistanceCheck} disabled={resistLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-600'}`}><Spin on={resistLoading} icon="⚠️">{t('bf_nav_stuck', { count: deferredList.length })}</Spin></button>}
         {timeHistory.length >= 3 && <button onClick={handleCalibrate} disabled={calibLoading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}><Spin on={calibLoading} icon="⏱️">{t('bf_nav_calibration')}</Spin></button>}
       </div>
 
       {/* Insights / Resistance / Calibration panels */}
-      {insightsResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📊 {t('bf_insights_title')}</h4><button onClick={() => setInsightsResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{insightsResult.pattern_summary}</p><div className="grid grid-cols-2 gap-2"><p className="text-xs">⏱️ {t('bf_insights_saved', { val: insightsResult.total_time_saved })}</p><p className="text-xs">✅ {insightsResult.completion_rate}</p><p className="text-xs">{modeInfo(insightsResult.favorite_mode).emoji} {t('bf_insights_fave', { val: modeLabel(insightsResult.favorite_mode) })}</p><p className="text-xs">🚫 {t('bf_insights_avoid', { val: modeLabel(insightsResult.avoided_mode) })}</p></div><p className="text-xs font-bold">💡 {insightsResult.best_insight}</p><p className={`text-xs italic ${c.textSecondary}`}>{insightsResult.encouragement}</p></div>}
+      {insightsResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📊 {t('bf_insights_title')}</h4><button onClick={() => setInsightsResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><p className="text-sm">{insightsResult.pattern_summary}</p><div className="grid grid-cols-2 gap-2"><p className="text-xs">⏱️ {t('bf_insights_saved', { val: insightsResult.total_time_saved })}</p><p className="text-xs">✅ {insightsResult.completion_rate}</p><p className="text-xs">{modeInfo(insightsResult.favorite_mode).emoji} {t('bf_insights_fave', { val: modeLabel(insightsResult.favorite_mode) })}</p><p className="text-xs">🚫 {t('bf_insights_avoid', { val: modeLabel(insightsResult.avoided_mode) })}</p></div><p className="text-xs font-bold">💡 {insightsResult.best_insight}</p><p className={`text-xs italic ${c.textSecondary}`}>{insightsResult.encouragement}</p></div>}
 
-      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ {t('bf_resist_title')}</h4><button onClick={() => setResistResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((rt, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{rt.task} <span className="text-xs font-normal">{t('bf_resist_deferred', { count: rt.defer_count })}</span></p><p className={`text-xs ${c.textSecondary}`}>{rt.diagnosis}</p>{rt.resistance_type && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{rt.resistance_type?.replace(/_/g, ' ')}</span>}<p className="text-xs font-bold mt-1">{t('bf_resist_fix', { val: rt.fix })}</p>{rt.if_you_keep_deferring && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>⚠️ {t('bf_resist_keep', { val: rt.if_you_keep_deferring })}</p>}</div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-xs ${c.textMuteded}`}>{t('bf_resist_clear')}</button></div>}
+      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ {t('bf_resist_title')}</h4><button onClick={() => setResistResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((rt, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{rt.task} <span className="text-xs font-normal">{t('bf_resist_deferred', { count: rt.defer_count })}</span></p><p className={`text-xs ${c.textSecondary}`}>{rt.diagnosis}</p>{rt.resistance_type && <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{rt.resistance_type?.replace(/_/g, ' ')}</span>}<p className="text-xs font-bold mt-1">{t('bf_resist_fix', { val: rt.fix })}</p>{rt.if_you_keep_deferring && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>⚠️ {t('bf_resist_keep', { val: rt.if_you_keep_deferring })}</p>}</div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-[13px] ${c.textMuteded}`}>{t('bf_resist_clear')}</button></div>}
 
-      {calibResult && <div className={`${c.warning} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⏱️ {t('bf_calib_title')}</h4><button onClick={() => setCalibResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{calibResult.overall_accuracy}</p><div className="grid grid-cols-2 gap-2">{(calibResult.mode_breakdown || []).map((m, i) => <p key={i} className="text-xs">{modeInfo(m.mode).emoji} {modeLabel(m.mode)}: {m.avg_error}</p>)}</div><p className="text-xs font-bold">💡 {calibResult.calibration_tip}</p><p className={`text-xs italic ${c.textSecondary}`}>{calibResult.fun_stat}</p>{calibResult.adjustment_factor && <p className="text-xs">🔧 {t('bf_calib_multiplier')} <b>×{calibResult.adjustment_factor}</b></p>}</div>}
+      {calibResult && <div className={`${c.warning} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⏱️ {t('bf_calib_title')}</h4><button onClick={() => setCalibResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><p className="text-sm">{calibResult.overall_accuracy}</p><div className="grid grid-cols-2 gap-2">{(calibResult.mode_breakdown || []).map((m, i) => <p key={i} className="text-xs">{modeInfo(m.mode).emoji} {modeLabel(m.mode)}: {m.avg_error}</p>)}</div><p className="text-xs font-bold">💡 {calibResult.calibration_tip}</p><p className={`text-xs italic ${c.textSecondary}`}>{calibResult.fun_stat}</p>{calibResult.adjustment_factor && <p className="text-xs">🔧 {t('bf_calib_multiplier')} <b>×{calibResult.adjustment_factor}</b></p>}</div>}
 
       {/* Weekly Rhythm */}
-      {showWeekly && <div ref={weeklyPanelRef} className={`scroll-mt-24 ${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📅 {t('bf_weekly_title')}</h4><button onClick={() => setShowWeekly(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{t('bf_weekly_intro')}</p>
+      {showWeekly && <div ref={weeklyPanelRef} className={`scroll-mt-24 ${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📅 {t('bf_weekly_title')}</h4><button onClick={() => setShowWeekly(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{t('bf_weekly_intro')}</p>
         {weeklyTasks.map((wt, i) => <div key={i} className="flex gap-2"><input ref={el => { weeklyTaskInputRefs.current[i] = el; }} value={wt.task} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], task: e.target.value }; setWeeklyTasks(u); }} placeholder={t('bf_weekly_task_ph')} className={`flex-1 p-2 border rounded-lg text-sm ${c.input}`} /><input value={wt.duration} onChange={e => { const u = [...weeklyTasks]; u[i] = { ...u[i], duration: e.target.value }; setWeeklyTasks(u); }} placeholder={t('bf_weekly_dur_ph')} className={`w-20 p-2 border rounded-lg text-xs ${c.input}`} />{weeklyTasks.length > 1 && <button onClick={() => setWeeklyTasks(p => p.filter((_,idx) => idx !== i))} className={`px-2 rounded ${c.btnSecondary}`}>✕</button>}</div>)}
-        <button onClick={addWeeklyTask} className={`text-xs ${c.textMuteded}`}>{t('bf_weekly_add')}</button>
+        <button onClick={addWeeklyTask} className={`text-[13px] ${c.textMuteded}`}>{t('bf_weekly_add')}</button>
         <button onClick={handleWeeklyRhythm} disabled={weeklyLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={weeklyLoading} icon="📅">{t('bf_weekly_build')}</Spin></button>
         {weeklyResult && <div className="space-y-3"><p className={`text-sm font-bold ${c.text}`}>{weeklyResult.rhythm_name}</p><p className={`text-xs ${c.textSecondary}`}>{weeklyResult.overview}</p>
           {(weeklyResult.days || []).map((d, di) => <div key={di} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{d.day}</span><div className="flex gap-1">{d.theme && <span className={`text-xs px-2 py-0.5 rounded-full ${c.success} border`}>{d.theme}</span>}{d.energy_profile && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{d.energy_profile}</span>}</div></div>
             {(d.batches || []).map((b, bi) => <div key={bi} className={`text-xs ${c.textSecondary} ms-2`}>{modeInfo(b.cognitive_mode).emoji} {b.batch_name} ({b.suggested_time}) — {b.tasks?.join(', ')}</div>)}
-            {d.buffer_time && <p className={`text-xs ${c.textMuteded} mt-1`}>⏸ {t('bf_weekly_buffer', { val: d.buffer_time })}</p>}
+            {d.buffer_time && <p className={`text-[13px] ${c.textMuteded} mt-1`}>⏸ {t('bf_weekly_buffer', { val: d.buffer_time })}</p>}
             {d.day_note && <p className={`text-xs italic ${c.textMuteded} mt-1`}>{d.day_note}</p>}
           </div>)}
           {weeklyResult.weekly_balance && (
             <div className={`${c.cardAlt} border rounded-lg p-3`}>
-              <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('bf_weekly_balance')}</p>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('bf_weekly_balance')}</p>
               <div className="grid grid-cols-3 gap-1">
                 {Object.entries(weeklyResult.weekly_balance).map(([k, v]) => v ? (
                   <div key={k} className="text-center">
                     <p className={`text-xs font-bold ${c.text}`}>{v}</p>
-                    <p className={`text-[9px] ${c.textMuteded}`}>{k.replace('_hours', '').replace('_', ' ')}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{k.replace('_hours', '').replace('_', ' ')}</p>
                   </div>
                 ) : null)}
               </div>
@@ -671,10 +676,10 @@ const BatchFlow = ({ tool }) => {
       </div>}
 
       {/* Templates / Journal */}
-      {showTemplates && <div className={`${c.cardAlt} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className="font-bold text-sm">📋 {t('bf_templates_title')}</h4><button onClick={() => setShowTemplates(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div>{templates.map(tpl => <div key={tpl.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between items-center`}><div><p className={`text-sm font-bold ${c.text}`}>{tpl.template_name}</p><p className={`text-xs ${c.textMuteded}`}>{tpl.description}</p></div><div className="flex gap-2"><button onClick={() => { if (tpl.day_type) setDayType(tpl.day_type); if (tpl.energy_curve) setEnergyCurve(tpl.energy_curve); setShowTemplates(false); }} className={`text-xs font-bold px-2 py-1 rounded ${c.btnSecondary}`}>{t('bf_templates_use')}</button><button onClick={() => setTemplates(p => p.filter(x => x.id !== tpl.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div></div>)}</div>}
+      {showTemplates && <div className={`${c.cardAlt} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className="font-bold text-sm">📋 {t('bf_templates_title')}</h4><button onClick={() => setShowTemplates(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>{templates.map(tpl => <div key={tpl.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between items-center`}><div><p className={`text-sm font-bold ${c.text}`}>{tpl.template_name}</p><p className={`text-[13px] ${c.textMuteded}`}>{tpl.description}</p></div><div className="flex gap-2"><button onClick={() => { if (tpl.day_type) setDayType(tpl.day_type); if (tpl.energy_curve) setEnergyCurve(tpl.energy_curve); setShowTemplates(false); }} className={`text-xs font-bold px-2 py-1 rounded ${c.btnSecondary}`}>{t('bf_templates_use')}</button><button onClick={() => setTemplates(p => p.filter(x => x.id !== tpl.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button></div></div>)}</div>}
 
 
-      {showJournal && <div className={`${c.jnl} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className={`font-bold text-sm ${c.jt}`}>📔 {t('bf_journal_title')}</h4><button onClick={() => setShowJournal(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div>{journal.map(e => <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between`}><span className={`text-xs ${c.textSecondary}`}>{(() => { try { const d = Math.floor((Date.now() - new Date(e.date)) / 86400000); return d === 0 ? t('bf_journal_today') : d === 1 ? t('bf_journal_yesterday') : t('bf_journal_days_ago', { count: d }); } catch { return ''; } })()} · {t('bf_journal_summary', { tasks: e.totalTasks, batches: e.batchCount, saved: e.timeSaved })}</span><button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}</div>}
+      {showJournal && <div className={`${c.jnl} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className={`font-bold text-sm ${c.jt}`}>📔 {t('bf_journal_title')}</h4><button onClick={() => setShowJournal(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>{journal.map(e => <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between`}><span className={`text-xs ${c.textSecondary}`}>{(() => { try { const d = Math.floor((Date.now() - new Date(e.date)) / 86400000); return d === 0 ? t('bf_journal_today') : d === 1 ? t('bf_journal_yesterday') : t('bf_journal_days_ago', { count: d }); } catch { return ''; } })()} · {t('bf_journal_summary', { tasks: e.totalTasks, batches: e.batchCount, saved: e.timeSaved })}</span><button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button></div>)}</div>}
 
       {/* ═══ INPUT VIEW ═══ */}
       {!results && !abResult && !locationResult && <div className="space-y-5">
@@ -690,17 +695,17 @@ const BatchFlow = ({ tool }) => {
         </>}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_time_label')}</label><Pill options={TIME_OPTS} value={timeAvail} setter={setTimeAvail} /></div>
-          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_energy_label')}</label><Pill options={ENERGY_OPTS} value={energyCurve} setter={setEnergyCurve} /></div>
+          <div className={`border-t ${c.border} pt-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_time_label')}</label><Pill options={TIME_OPTS} value={timeAvail} setter={setTimeAvail} /></div>
+          <div className={`border-t ${c.border} pt-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_energy_label')}</label><Pill options={ENERGY_OPTS} value={energyCurve} setter={setEnergyCurve} /></div>
         </div>
 
-        <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_day_label')}</label><div className="flex flex-wrap gap-2">{DAY_OPTS.map(o => <button key={o.v} onClick={() => setDayType(o.v === dayType ? 'mixed' : o.v)} className={`px-3 py-2 rounded-lg border text-xs font-semibold ${c.chip(dayType === o.v)}`}><span className="block">{o.l}</span><span className={`block text-xs font-normal ${c.textMuteded}`}>{o.d}</span></button>)}</div></div>
+        <div className={`border-t ${c.border} pt-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{t('bf_day_label')}</label><div className="flex flex-wrap gap-2">{DAY_OPTS.map(o => <button key={o.v} onClick={() => setDayType(o.v === dayType ? 'mixed' : o.v)} className={`px-3 py-2 rounded-lg border text-xs font-semibold ${c.chip(dayType === o.v)}`}><span className="block">{o.l}</span><span className={`block text-xs font-normal ${c.textMuteded}`}>{o.d}</span></button>)}</div></div>
 
         {/* ── More options ────────────────────────────────────────────
             Paste-a-list, location mode and fixed times are power-user
             features. As three chips above the task box they made the first
             screen read as a settings panel rather than a question. */}
-        <details className={`group ${c.card} rounded-xl shadow-sm p-4`}>
+        <details className={`group border-t ${c.border} pt-5`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
               {t('bf_more_options')}
@@ -715,13 +720,13 @@ const BatchFlow = ({ tool }) => {
             <button onClick={() => setShowCommitments(!showCommitments)} className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${commitments.length ? c.chip(true) : c.chip(false)}`}>{t('bf_toggle_fixed')} {commitments.length ? `(${commitments.length})` : ''}</button>
           </div>
           {/* Fixed commitments */}
-          {showCommitments && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
+          {showCommitments && <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-bold ${c.text}`}>🔒 {t('bf_fixed_title')}</p>
-            <p className={`text-xs ${c.textMuteded}`}>{t('bf_fixed_intro')}</p>
-            {commitments.map((cm, i) => <div key={i} className={`flex items-center gap-2 text-sm ${c.textSecondary}`}><span className="font-bold">{cm.time}</span> — {cm.label}<button onClick={() => setCommitments(p => p.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>✕</button></div>)}
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('bf_fixed_intro')}</p>
+            {commitments.map((cm, i) => <div key={i} className={`flex items-center gap-2 text-sm ${c.textSecondary}`}><span className="font-bold">{cm.time}</span> — {cm.label}<button onClick={() => setCommitments(p => p.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>)}
           </div>}
           {/* Quick dump */}
-          {dumpMode && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}><label htmlFor="bf-dump-text" className={`block text-sm font-bold ${c.text}`}>{t('bf_dump_label')} <span className={c.required}>*</span></label><textarea id="bf-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder={t('bf_dump_ph')} rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} /><button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}><Spin on={dumpLoading} icon="⚡">{dumpLoading ? t('bf_dump_extracting') : t('bf_dump_extract')}</Spin></button></div>}
+          {dumpMode && <div className={`border-t ${c.border} pt-5 space-y-3`}><label htmlFor="bf-dump-text" className={`block text-sm font-bold ${c.text}`}>{t('bf_dump_label')} <span className={c.required}>*</span></label><textarea id="bf-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder={t('bf_dump_ph')} rows={6} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} /><button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}><Spin on={dumpLoading} icon="⚡">{dumpLoading ? t('bf_dump_extracting') : t('bf_dump_extract')}</Spin></button></div>}
           </div>
         </details>
 
@@ -739,7 +744,7 @@ const BatchFlow = ({ tool }) => {
             {filledTasks.length >= 2 && <button onClick={handleLocationBatch} disabled={locationLoading} className={`disabled:opacity-40 flex-1 min-w-[140px] px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={locationLoading} icon="🗺️">{t('bf_route_errands')}</Spin></button>}
           </div>
           {sessionHistory.length > 0 && (
-            <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+            <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
               <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
                   🕐 {t('bf_recent_title', { n: sessionHistory.length })}
@@ -761,7 +766,7 @@ const BatchFlow = ({ tool }) => {
             </details>
           )}
 
-          <p className={`text-xs text-center ${c.textMuteded} mt-1`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded} mt-1`}>
             {t('bf_xref_avalanche_pre')}{' '}
             <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('bf_xref_avalanche_name')}</a>{' '}
             {t('bf_xref_avalanche_post')}
@@ -772,7 +777,7 @@ const BatchFlow = ({ tool }) => {
 
       {/* ═══ A/B COMPARE VIEW ═══ */}
       {abResult && !results && <div className="space-y-5">
-        <div className={`${c.card} rounded-xl shadow-sm p-5 text-center`}>
+        <div className={`border-t ${c.border} pt-5 text-center`}>
           <h3 className={`text-lg font-bold ${c.text} mb-2`}>⚖️ {t('bf_ab_title')}</h3>
           <p className={`text-sm ${c.textSecondary}`}>{abResult.comparison?.recommendation}</p>
         </div>
@@ -789,30 +794,30 @@ const BatchFlow = ({ tool }) => {
           </div>; })}
         </div>
         <div className="text-center"><p className={`text-xs ${c.textSecondary}`}>{abResult.comparison?.time_difference} · {abResult.comparison?.energy_difference}</p></div>
-        <button onClick={() => setAbResult(null)} className={`text-xs ${c.textMuteded}`}>{t('bf_back_input')}</button>
+        <button onClick={() => setAbResult(null)} className={`text-[13px] ${c.textMuteded}`}>{t('bf_back_input')}</button>
       </div>}
 
       {/* ═══ LOCATION ROUTE VIEW ═══ */}
       {locationResult && !results && <div className="space-y-5">
-        <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-lg font-bold ${c.text} mb-2`}>🗺️ {t('bf_loc_title')}</h3>
           {locationResult.route_overview && <p className={`text-sm ${c.textSecondary}`}>{locationResult.route_overview}</p>}
           <div className="flex flex-wrap gap-6 mt-3">
-            {locationResult.total_travel_time && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{locationResult.total_travel_time}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_loc_travel_time')}</div></div>}
-            {locationResult.route_efficiency && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{locationResult.route_efficiency}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_loc_efficiency')}</div></div>}
+            {locationResult.total_travel_time && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{locationResult.total_travel_time}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_loc_travel_time')}</div></div>}
+            {locationResult.route_efficiency && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{locationResult.route_efficiency}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_loc_efficiency')}</div></div>}
           </div>
         </div>
         {(locationResult.location_batches || []).map((b, i) => <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'} space-y-2`}>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h4 className={`font-bold text-sm ${c.text}`}>📍 {b.batch_name}{b.location ? ` — ${b.location}` : ''}</h4>
-            {b.total_time_at_location && <span className={`text-xs ${c.textMuteded}`}>{b.total_time_at_location}</span>}
+            {b.total_time_at_location && <span className={`text-[13px] ${c.textMuteded}`}>{b.total_time_at_location}</span>}
           </div>
           {b.travel_from_previous && <p className={`text-xs ${c.textSecondary}`}>🚗 {b.travel_from_previous}</p>}
-          <div className="space-y-1">{(b.tasks || []).map((tk, ti) => <p key={ti} className={`text-sm ${c.textSecondary}`}>• {tk.task}{tk.specific_location ? <span className={`text-xs ${c.textMuteded}`}> @ {tk.specific_location}</span> : ''}{tk.time_estimate ? <span className={`text-xs ${c.textMuteded}`}> ({tk.time_estimate})</span> : ''}</p>)}</div>
+          <div className="space-y-1">{(b.tasks || []).map((tk, ti) => <p key={ti} className={`text-sm ${c.textSecondary}`}>• {tk.task}{tk.specific_location ? <span className={`text-[13px] ${c.textMuteded}`}> @ {tk.specific_location}</span> : ''}{tk.time_estimate ? <span className={`text-[13px] ${c.textMuteded}`}> ({tk.time_estimate})</span> : ''}</p>)}</div>
           {b.tip && <p className={`text-xs italic ${c.textMuteded}`}>💡 {b.tip}</p>}
         </div>)}
         {locationResult.mobile_tasks?.length > 0 && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('bf_loc_mobile')}</p>{locationResult.mobile_tasks.map((mt, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {mt}</p>)}</div>}
-        <button onClick={() => setLocationResult(null)} className={`text-xs ${c.textMuteded}`}>{t('bf_back_input')}</button>
+        <button onClick={() => setLocationResult(null)} className={`text-[13px] ${c.textMuteded}`}>{t('bf_back_input')}</button>
       </div>}
 
       {/* ═══ RESULTS VIEW ═══ */}
@@ -850,14 +855,14 @@ const BatchFlow = ({ tool }) => {
         </div>
 
         {rebatchResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-2`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">♻️ {t('bf_reoptimized_title')}</h4><button onClick={() => setRebatchResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">♻️ {t('bf_reoptimized_title')}</h4><button onClick={() => setRebatchResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
           {rebatchResult.assessment && <p className="text-sm">{rebatchResult.assessment}</p>}
           {rebatchResult.suggestion && <p className={`text-xs ${c.textSecondary} italic`}>💡 {rebatchResult.suggestion}</p>}
         </div>}
 
         {/* Share / Template / Progress panels */}
-        {showShare && <div ref={sharePanelRef} className={`scroll-mt-24 ${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 {t('bf_share_title')}</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{t('bf_share_intro')}</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">{t('bf_share_generate')}</Spin></button>{shareResult && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p>{shareResult.check_in_time && <p className={`text-xs ${c.textMuteded}`}>⏰ {t('bf_share_checkin', { val: shareResult.check_in_time })}</p>}{shareResult.tone_note && <p className={`text-xs ${c.textMuteded} italic`}>{shareResult.tone_note}</p>}</div>}</div>}
-        {showSaveTemplate && <div ref={savePanelRef} className={`scroll-mt-24 ${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">💾 {t('bf_save_title')}</h4><button onClick={() => setShowSaveTemplate(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div><input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('bf_save_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /><button onClick={handleSaveTemplate} disabled={saveTemplateLoading || !templateName.trim()} className={`w-full py-2 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={saveTemplateLoading} icon="💾">{t('bf_save_btn')}</Spin></button></div>}
+        {showShare && <div ref={sharePanelRef} className={`scroll-mt-24 ${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 {t('bf_share_title')}</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{t('bf_share_intro')}</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">{t('bf_share_generate')}</Spin></button>{shareResult && <div className={`border-t ${c.border} pt-5 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p>{shareResult.check_in_time && <p className={`text-[13px] ${c.textMuteded}`}>⏰ {t('bf_share_checkin', { val: shareResult.check_in_time })}</p>}{shareResult.tone_note && <p className={`text-[13px] ${c.textMuteded} italic`}>{shareResult.tone_note}</p>}</div>}</div>}
+        {showSaveTemplate && <div ref={savePanelRef} className={`scroll-mt-24 ${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">💾 {t('bf_save_title')}</h4><button onClick={() => setShowSaveTemplate(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div><input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('bf_save_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /><button onClick={handleSaveTemplate} disabled={saveTemplateLoading || !templateName.trim()} className={`w-full py-2 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={saveTemplateLoading} icon="💾">{t('bf_save_btn')}</Spin></button></div>}
         {/* "What's next?" can only say something once a batch is ticked
             off, so it lives here rather than in the action bar. */}
         {(results.batches || []).some((_, bi) => isBatchDone(bi)) && !progressResult && !progressLoading && (
@@ -868,7 +873,7 @@ const BatchFlow = ({ tool }) => {
         )}
 
         {(progressResult || progressLoading) && <div ref={progressPanelRef} className={`scroll-mt-24 ${c.cardAlt} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 {t('bf_progress_title')}</h4>{!progressLoading && <button onClick={() => setProgressResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button>}</div>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 {t('bf_progress_title')}</h4>{!progressLoading && <button onClick={() => setProgressResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button>}</div>
           {progressLoading ? (
             <p className={`text-sm ${c.textSecondary} flex items-center gap-2`}><span /*tool?.icon*/ className="animate-spin inline-block">🔄</span> {t('bf_progress_checking')}</p>
           ) : progressResult && (
@@ -895,12 +900,12 @@ const BatchFlow = ({ tool }) => {
         <div className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>⚡ {t('bf_efficiency_title')}</h3>
           <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.overview}</p>
-          {results.extraction_note && <p className={`text-xs ${c.textMuteded} italic mb-3`}>🔍 {results.extraction_note}</p>}
+          {results.extraction_note && <p className={`text-[13px] ${c.textMuteded} italic mb-3`}>🔍 {results.extraction_note}</p>}
           <div className="flex flex-wrap gap-6">
-            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>{results.switch_cost_before}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_stat_before')}</div></div>
-            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results.switch_cost_after}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_stat_after')}</div></div>
-            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{results.time_saved_estimate}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_stat_saved')}</div></div>
-            {results.total_estimated_time && <div className="text-center"><div className={`text-2xl font-bold ${c.text}`}>{results.total_estimated_time}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_stat_total')}</div></div>}
+            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>{results.switch_cost_before}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_stat_before')}</div></div>
+            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results.switch_cost_after}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_stat_after')}</div></div>
+            <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{results.time_saved_estimate}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_stat_saved')}</div></div>
+            {results.total_estimated_time && <div className="text-center"><div className={`text-2xl font-bold ${c.text}`}>{results.total_estimated_time}</div><div className={`text-[13px] ${c.textMuteded}`}>{t('bf_stat_total')}</div></div>}
           </div>
         </div>
 
@@ -931,7 +936,7 @@ const BatchFlow = ({ tool }) => {
             </div>}
 
             {batch.why_batched && <p className={`text-xs italic ${c.textSecondary} mb-3`}>{batch.why_batched}</p>}
-            <div className="space-y-2 mb-3">{(batch.tasks || []).map((task, ti) => <div key={ti} className="flex items-center gap-3"><input type="checkbox" checked={!!checked[`b${bi}-${ti}`]} onChange={() => toggleCheck(`b${bi}-${ti}`)} className="w-4 h-4 rounded accent-emerald-500 flex-shrink-0" /><span className={`text-sm flex-1 ${checked[`b${bi}-${ti}`] ? 'line-through opacity-60' : ''} ${c.textSecondary}`}>{task.task}{task.time_estimate && <span className={`text-xs ${c.textMuteded}`}> ({task.time_estimate})</span>}</span><button onClick={() => setMovingTask(movingTask?.task === task.task ? null : { task, fromBatchId: batch.batch_id })} className={`text-xs ${c.textMuteded}`}>{movingTask?.task === task.task ? `📌 ${t('bf_moving')}` : t('bf_move')}</button></div>)}</div>
+            <div className="space-y-2 mb-3">{(batch.tasks || []).map((task, ti) => <div key={ti} className="flex items-center gap-3"><input type="checkbox" checked={!!checked[`b${bi}-${ti}`]} onChange={() => toggleCheck(`b${bi}-${ti}`)} className="w-4 h-4 rounded accent-emerald-500 flex-shrink-0" /><span className={`text-sm flex-1 ${checked[`b${bi}-${ti}`] ? 'line-through opacity-60' : ''} ${c.textSecondary}`}>{task.task}{task.time_estimate && <span className={`text-[13px] ${c.textMuteded}`}> ({task.time_estimate})</span>}</span><button onClick={() => setMovingTask(movingTask?.task === task.task ? null : { task, fromBatchId: batch.batch_id })} className={`text-[13px] ${c.textMuteded}`}>{movingTask?.task === task.task ? `📌 ${t('bf_moving')}` : t('bf_move')}</button></div>)}</div>
 
             {movingTask && movingTask.fromBatchId !== batch.batch_id && <button onClick={() => handleMoveTask(movingTask.task, movingTask.fromBatchId, batch.batch_id)} className={`w-full py-2 rounded-lg border-2 border-dashed text-xs font-bold ${isDark ? 'border-emerald-600 text-emerald-400' : 'border-emerald-400 text-emerald-600'}`}>📥 {t('bf_move_here')}</button>}
 
@@ -949,8 +954,8 @@ const BatchFlow = ({ tool }) => {
                   </div>
                 </summary>
                 <div className="space-y-1.5 mt-3">
-                  {batch.tools_needed?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>🔧 {batch.tools_needed.join(', ')}</p>}
-                  {batch.environment_tip && <p className={`text-xs ${c.textMuteded}`}>🎯 {batch.environment_tip}</p>}
+                  {batch.tools_needed?.length > 0 && <p className={`text-[13px] ${c.textMuteded}`}>🔧 {batch.tools_needed.join(', ')}</p>}
+                  {batch.environment_tip && <p className={`text-[13px] ${c.textMuteded}`}>🎯 {batch.environment_tip}</p>}
                   {batch.break_after && <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>☕ {batch.break_after}</p>}
                   {batch.focus_preset && <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
                   <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🔔</span> {batch.focus_preset.notifications}</div>
@@ -964,19 +969,19 @@ const BatchFlow = ({ tool }) => {
               </details>
             )}
 
-            {expandResult && expandedBatch === batch.batch_id && <div className={`mt-4 ${c.cardAlt} rounded-lg p-4 border ${c.border} space-y-3`}><p className={`text-xs font-bold uppercase ${c.textMuteded}`}>{t('bf_step_by_step')}</p>{expandResult.prep_steps?.length > 0 && <div>{expandResult.prep_steps.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {s}</p>)}</div>}{(expandResult.execution_plan || []).map((step, si) => <div key={si} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-semibold ${c.text}`}>{si + 1}. {step.task}</p><p className={`text-xs ${c.textSecondary}`}>→ {step.first_action}</p>{step.momentum_tip && <p className={`text-xs italic ${c.textMuteded}`}>💡 {step.momentum_tip}</p>}<p className={`text-xs ${c.textMuteded}`}>✓ {step.done_signal} · ⏱️ {step.time_estimate}</p></div>)}{expandResult.batch_complete_reward && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>🎁 {expandResult.batch_complete_reward}</p>}<button onClick={() => { setExpandedBatch(null); setExpandResult(null); }} className={`text-xs font-bold ${c.textMuteded}`}>{t('bf_close')}</button></div>}
+            {expandResult && expandedBatch === batch.batch_id && <div className={`mt-4 ${c.cardAlt} rounded-lg p-4 border ${c.border} space-y-3`}><p className={`text-xs font-bold uppercase ${c.textMuteded}`}>{t('bf_step_by_step')}</p>{expandResult.prep_steps?.length > 0 && <div>{expandResult.prep_steps.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {s}</p>)}</div>}{(expandResult.execution_plan || []).map((step, si) => <div key={si} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-semibold ${c.text}`}>{si + 1}. {step.task}</p><p className={`text-xs ${c.textSecondary}`}>→ {step.first_action}</p>{step.momentum_tip && <p className={`text-xs italic ${c.textMuteded}`}>💡 {step.momentum_tip}</p>}<p className={`text-[13px] ${c.textMuteded}`}>✓ {step.done_signal} · ⏱️ {step.time_estimate}</p></div>)}{expandResult.batch_complete_reward && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>🎁 {expandResult.batch_complete_reward}</p>}<button onClick={() => { setExpandedBatch(null); setExpandResult(null); }} className={`text-xs font-bold ${c.textMuteded}`}>{t('bf_close')}</button></div>}
           </div>;
         })}
 
         {results.unbatchable?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">🔀 {t('bf_unbatchable')}</p>{results.unbatchable.map((ub, i) => <p key={i} className="text-xs">• {ub}</p>)}</div>}
 
         <div className="space-y-2">
-          <p className={`text-xs text-center ${c.textMuteded}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
             {t('bf_xref_focus_pre')}{' '}
             <a href="/FocusPocus" className={linkStyle}>{t('bf_xref_focuspocus')}</a> {t('bf_xref_focus_post')}
           </p>
           {batchProgress.pct === 100 && (
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('bf_xref_crisis_pre')}{' '}
               <a href="/ChaosPilot" className={linkStyle}>{t('bf_xref_crisis_name')}</a>{' '}
               {t('bf_xref_crisis_post')}

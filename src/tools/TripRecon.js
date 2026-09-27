@@ -78,14 +78,14 @@ function TripRecon({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
@@ -96,9 +96,7 @@ function TripRecon({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── View ──
   const [view, setView] = useState('form'); // form | results | route (place-prep is the landing screen; route is a tab, not a separate page)
@@ -435,23 +433,32 @@ function TripRecon({ tool }) {
   // ═══════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Trip Recon'}
-              </h2>
-              {/* i18n key, not tool?.tagline — the catalog tagline keeps its
-                  leading emoji (toolTagline() convention), which would
-                  double against the icon span just above it. */}
-              <p className={`text-sm ${c.textSecondary}`}>{t('smm_tagline')}</p>
+              {/* PF-30 — the wrapper already prints the name as the page <h1>.
+                  i18n key, not tool?.tagline — the catalog tagline keeps its
+                  leading emoji (toolTagline() convention), which would double
+                  against the icon span. */}
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{t('smm_tagline')}
+              </p>
               {view === 'form' && (
                 <button onClick={loadExample} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap" style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}>✨ {t('try_example')}</button>
               )}
             </div>
             <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('smm_start_over')}</button>
           </div>
+        </div>
         </div>
       </div>
 
@@ -481,19 +488,19 @@ function TripRecon({ tool }) {
                   <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                     <div className="flex items-center justify-between mb-2 gap-3">
                       <div>
-                        <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
-                        <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
+                        <p className={`text-[13px] font-boldr ${c.textMuteded}`}>👤 {t('smm_your_profiles')}</p>
+                        <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('smm_profiles_hint')}</p>
                       </div>
                       <button onClick={() => setShowProfileForm(true)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary} whitespace-nowrap flex-shrink-0`}>{t('smm_new')}</button>
                     </div>
                     {profiles.length === 0 ? (
-                      <p className={`text-xs ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{t('smm_profiles_empty')}</p>
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {profiles.map(p => (
                           <div key={p.id} className="flex items-center gap-1">
                             <button onClick={() => loadProfile(p)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${c.btnSecondary}`}>{p.name}</button>
-                            <button onClick={() => deleteProfile(p.id)} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
+                            <button onClick={() => deleteProfile(p.id)} className={`text-[13px] ${c.textMuteded} hover:text-zinc-400`}>✕</button>
                           </div>
                         ))}
                       </div>
@@ -505,15 +512,15 @@ function TripRecon({ tool }) {
                       Hidden entirely with no history. */}
                   {recentPlaces.length > 0 && (
                     <div>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
+                      <p className={`text-[13px] font-boldr mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
                       <div className="space-y-2">
                         {(showAllRecent ? recentPlaces : recentPlaces.slice(0, 3)).map(rec => (
                           <button key={rec.id} onClick={() => pickRecentPlace(rec)}
-                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecent?.id === rec.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecent?.id === rec.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                             <div className="flex items-center justify-between gap-2">
                               <div className="min-w-0">
                                 <p className={`text-sm font-bold truncate ${c.text}`}>{placeTypeIcon(rec.placeType)} {rec.location}</p>
-                                <p className={`text-[10px] ${c.textMuteded}`}>{t('smm_last_visit', { date: new Date(rec.lastVisit).toLocaleDateString() })}</p>
+                                <p className={`text-[13px] ${c.textMuteded}`}>{t('smm_last_visit', { date: new Date(rec.lastVisit).toLocaleDateString() })}</p>
                                 {rec.concerns?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-0.5 truncate`}>{rec.concerns.map(k => concernLabel(k)).join(' · ')}</p>}
                               </div>
                               <span className={`text-xs font-bold ${c.accentTxt} flex-shrink-0`}>{t('smm_use_again')} →</span>
@@ -529,7 +536,7 @@ function TripRecon({ tool }) {
 
                   {selectedRecent && (
                     <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
+                      <p className={`text-[13px] font-boldr ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
                       {selectedRecent.knownInfo && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.knownInfo}”</p>}
                       {selectedRecent.specificNotes && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecent.specificNotes}”</p>}
                       <p className={`text-xs font-bold ${c.text}`}>{t('smm_still_relevant')}</p>
@@ -541,7 +548,7 @@ function TripRecon({ tool }) {
                   )}
 
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
                     <input type="text" value={location}
                       onChange={e => { setLocation(e.target.value); if (selectedRecent && e.target.value !== selectedRecent.location) setSelectedRecent(null); }}
                       placeholder={t('smm_where_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
@@ -549,11 +556,11 @@ function TripRecon({ tool }) {
                   </div>
 
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_care_about')} <span className={c.required}>*</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_care_about')} <span className={c.required}>*</span></label>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                       {CONCERNS.map(con => (
                         <button key={con.key} onClick={() => toggleConcern(con.key)}
-                          className={`p-3 rounded-xl border text-center transition-all ${concerns[con.key] ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                          className={`p-3 rounded-xl border text-center transition-all ${concerns[con.key] ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                           <span className="text-xl block">{con.icon}</span>
                           <span className={`text-xs font-bold ${c.text}`}>{t(con.labelKey)}</span>
                         </button>
@@ -562,12 +569,12 @@ function TripRecon({ tool }) {
                   </div>
 
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                     <textarea value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                   </div>
 
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                     <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                   </div>
 
@@ -577,20 +584,20 @@ function TripRecon({ tool }) {
                       neither blocks the one required question (concerns). */}
                   <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                      <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>
+                      <div className={`flex items-center gap-2 text-[15px] font-semibold ${c.labelText}`}>
                         + {t('smm_add_trip_details')}
                         <Caret groupOpen className="ms-auto" />
                       </div>
                     </summary>
                     <div className="space-y-4 mt-4">
                       <div>
-                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                        <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_type_of_place')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                           {PLACE_TYPES.map(pt => (
                             <button key={pt.value} onClick={() => setPlaceType(placeType === pt.value ? '' : pt.value)}
-                              className={`p-2 rounded-xl border text-center transition-all ${placeType === pt.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                              className={`p-2 rounded-xl border text-center transition-all ${placeType === pt.value ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                               <span className="text-lg block">{pt.icon}</span>
-                              <span className={`text-[10px] font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
+                              <span className={`text-xs font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
                             </button>
                           ))}
                         </div>
@@ -598,11 +605,11 @@ function TripRecon({ tool }) {
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                           <input type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                         </div>
                         <div>
-                          <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                           <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                         </div>
                       </div>
@@ -648,15 +655,15 @@ function TripRecon({ tool }) {
                 <>
                   {recentRoutes.length > 0 && (
                     <div>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
+                      <p className={`text-[13px] font-boldr mb-1.5 ${c.textMuteded}`}>{t('smm_recent')}</p>
                       <div className="space-y-2">
                         {(showAllRecentRoutes ? recentRoutes : recentRoutes.slice(0, 3)).map(rec => (
                           <button key={rec.id} onClick={() => pickRecentRoute(rec)}
-                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecentRoute?.id === rec.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                            className={`w-full text-start p-3 rounded-xl border transition-all ${selectedRecentRoute?.id === rec.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                             <div className="flex items-center justify-between gap-2">
                               <div className="min-w-0">
                                 <p className={`text-sm font-bold truncate ${c.text}`}>{travelModeIcon(rec.travelMode)} {rec.routeStart} → {rec.routeDestination}</p>
-                                <p className={`text-[10px] ${c.textMuteded}`}>{t('smm_last_used', { date: new Date(rec.lastVisit).toLocaleDateString() })} · {travelModeLabel(rec.travelMode)}</p>
+                                <p className={`text-[13px] ${c.textMuteded}`}>{t('smm_last_used', { date: new Date(rec.lastVisit).toLocaleDateString() })} · {travelModeLabel(rec.travelMode)}</p>
                                 {rec.concerns?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-0.5 truncate`}>{rec.concerns.map(k => concernLabel(k)).join(' · ')}</p>}
                               </div>
                               <span className={`text-xs font-bold ${c.accentTxt} flex-shrink-0`}>{t('smm_use_again')} →</span>
@@ -672,7 +679,7 @@ function TripRecon({ tool }) {
 
                   {selectedRecentRoute && (
                     <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
+                      <p className={`text-[13px] font-boldr ${c.accentTxt}`}>{t('smm_last_time_told_us')}</p>
                       {selectedRecentRoute.knownInfo && <p className={`text-xs ${c.textSecondary}`}>“{selectedRecentRoute.knownInfo}”</p>}
                       <p className={`text-xs font-bold ${c.text}`}>{t('smm_still_relevant')}</p>
                       <div className="flex gap-2">
@@ -684,36 +691,36 @@ function TripRecon({ tool }) {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
                       <input type="text" value={routeStart}
                         onChange={e => { setRouteStart(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeStart) setSelectedRecentRoute(null); }}
                         className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
+                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
                       <input type="text" value={routeDestination}
                         onChange={e => { setRouteDestination(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeDestination) setSelectedRecentRoute(null); }}
                         className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_traveling')} <span className={c.required}>*</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_traveling')} <span className={c.required}>*</span></label>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                       {TRAVEL_MODES.map(tm => (
                         <button key={tm.value} onClick={() => setTravelMode(tm.value)}
-                          className={`p-2 rounded-xl border text-center transition-all ${travelMode === tm.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                          className={`p-2 rounded-xl border text-center transition-all ${travelMode === tm.value ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                           <div className="text-lg">{tm.icon}</div>
-                          <div className={`text-[10px] font-semibold mt-0.5 ${c.textSecondary}`}>{t(tm.labelKey)}</div>
+                          <div className={`text-xs font-semibold mt-0.5 ${c.textSecondary}`}>{t(tm.labelKey)}</div>
                         </button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                     <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_care_about')}</label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_care_about')}</label>
                     <div className="flex flex-wrap gap-2">
                       {CONCERNS.map(con => (
                         <button key={con.key} onClick={() => toggleConcern(con.key)} className={`px-3 py-1.5 rounded-full text-xs font-bold ${concerns[con.key] ? c.btnPrimary : c.btnSecondary}`}>{con.icon} {t(con.labelKey)}</button>
@@ -724,7 +731,7 @@ function TripRecon({ tool }) {
                     {/* Own key, distinct from smm_known_label (used by the main
                         "Prepare for a Place" form) — reusing that key here said
                         "the place" on a screen asking about a route. */}
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
                     <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                   </div>
                   <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
@@ -747,42 +754,42 @@ function TripRecon({ tool }) {
         {view === 'results' && results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
             <div className={`${c.card} border-2 border-cyan-600/40 rounded-2xl p-5`}>
-              <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${c.accentTxt}`}>🗺️ {t('smm_your_plan')}</p>
+              <p className={`text-[13px] font-boldst mb-1 ${c.accentTxt}`}>🗺️ {t('smm_your_plan')}</p>
               <h2 className={`text-xl font-black ${c.text}`}>{results.summary?.heading || results.location}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{results.summary?.one_liner}</p>
             </div>
 
             {results.what_you_know?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accentTxt}`}>📌 {t('smm_what_you_know')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[13px] font-boldr mb-2 ${c.accentTxt}`}>📌 {t('smm_what_you_know')}</p>
                 {results.what_you_know.map((k, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {k}</p>)}
               </div>
             )}
 
             {results.worth_preparing_for?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-2xl p-5 space-y-4`}>
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>🧭 {t('smm_worth_preparing')}</p>
+              <div className={`border-t ${c.border} pt-5 space-y-4`}>
+                <p className={`text-[13px] font-boldr ${c.accentTxt}`}>🧭 {t('smm_worth_preparing')}</p>
                 {results.worth_preparing_for.map((f, i) => (
                   <div key={i} className={`${c.cardAlt} border rounded-xl p-4`}>
                     <p className={`text-sm font-black ${c.text} mb-1`}>{f.factor}</p>
                     <p className={`text-xs ${c.textSecondary} mb-2`}>{f.what_might_matter}</p>
-                    {f.prepare?.map((p, pi) => <p key={pi} className={`text-xs ${c.textMuteded}`}>💡 {p}</p>)}
+                    {f.prepare?.map((p, pi) => <p key={pi} className={`text-[13px] ${c.textMuteded}`}>💡 {p}</p>)}
                   </div>
                 ))}
               </div>
             )}
 
             {(results.before_you_go?.length > 0 || results.while_youre_there?.length > 0) && (
-              <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 {results.before_you_go?.length > 0 && (
                   <div className="mb-3">
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-1.5`}>🎒 {t('smm_before_you_go')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>🎒 {t('smm_before_you_go')}</p>
                     {results.before_you_go.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>✓ {s}</p>)}
                   </div>
                 )}
                 {results.while_youre_there?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-1.5`}>{t('smm_while_there')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>{t('smm_while_there')}</p>
                     {results.while_youre_there.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>✓ {s}</p>)}
                   </div>
                 )}
@@ -790,11 +797,11 @@ function TripRecon({ tool }) {
             )}
 
             {results.things_you_could_ask?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>💬 {t('smm_what_to_say')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[13px] font-boldr mb-3 ${c.accentTxt}`}>💬 {t('smm_what_to_say')}</p>
                 {results.things_you_could_ask.map((s, i) => (
                   <div key={i} className={`${c.cardAlt} border rounded-xl p-3 mb-2`}>
-                    <p className={`text-xs ${c.textMuteded} mb-1`}>{s.situation}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mb-1`}>{s.situation}</p>
                     <p className={`text-sm italic ${c.text}`}>“{s.script}”</p>
                   </div>
                 ))}
@@ -810,8 +817,8 @@ function TripRecon({ tool }) {
 
             {results.unknowns_that_matter?.length > 0 && (
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>❓ {t('smm_unknowns')}</p>
-                {results.unknowns_that_matter.map((u, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {u}</p>)}
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>❓ {t('smm_unknowns')}</p>
+                {results.unknowns_that_matter.map((u, i) => <p key={i} className={`text-[13px] ${c.textMuteded}`}>• {u}</p>)}
               </div>
             )}
 
@@ -828,8 +835,8 @@ function TripRecon({ tool }) {
             {/* ── Conditions Changed panel ── */}
             {showPanel === 'rescan' && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>🔄 {t('smm_conditions_changed')}</p>
-                <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-2`}>{t('smm_what_changed')}</p>
+                <p className={`text-[13px] font-boldr mb-3 ${c.accentTxt}`}>🔄 {t('smm_conditions_changed')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('smm_what_changed')}</p>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {CHANGE_OPTIONS.map(opt => (
                     <button key={opt.key} onClick={() => setRescanChanged(prev => ({ ...prev, [opt.key]: !prev[opt.key] }))}
@@ -848,14 +855,14 @@ function TripRecon({ tool }) {
                     {rescanResult.adjusted_plan?.map((a, i) => <p key={i} className={`text-xs font-bold ${c.text}`}>{i + 1}. {a}</p>)}
                     {rescanResult.still_applies_from_before?.length > 0 && (
                       <div className="mt-1">
-                        <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('smm_still_applies')}</p>
+                        <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('smm_still_applies')}</p>
                         {rescanResult.still_applies_from_before.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {a}</p>)}
                       </div>
                     )}
                     {rescanResult.if_still_hard && <p className={`text-xs mt-1 ${c.warningTxt}`}>🛡️ {rescanResult.if_still_hard}</p>}
                     {/* Quick check — fixed, non-generated questions (not model output) */}
                     <div className={`mt-3 p-3 rounded-xl ${c.cardAlt} border`}>
-                      <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-1.5`}>{t('smm_quick_check')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>{t('smm_quick_check')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>• {t('smm_check_1')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>• {t('smm_check_2')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>• {t('smm_check_3')}</p>
@@ -868,8 +875,8 @@ function TripRecon({ tool }) {
 
             {/* ── Comfort Kit panel ── */}
             {showPanel === 'kit' && comfortKit && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>🎒 {t('smm_comfort_kit')}</p>
+              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
+                <p className={`text-[13px] font-boldr mb-3 ${c.accentTxt}`}>🎒 {t('smm_comfort_kit')}</p>
                 {comfortKit.quick_note && <p className={`text-xs ${c.textSecondary} mb-3`}>💡 {comfortKit.quick_note}</p>}
                 {[
                   { key: 'essentials', label: t('smm_kit_essentials'), items: comfortKit.essentials },
@@ -877,7 +884,7 @@ function TripRecon({ tool }) {
                   { key: 'just_in_case', label: t('smm_kit_just_in_case'), items: comfortKit.just_in_case },
                 ].filter(g => g.items?.length > 0).map(group => (
                   <div key={group.key} className="mb-3">
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>{group.label}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>{group.label}</p>
                     {group.items.map((item, i) => {
                       const checkKey = `${group.key}-${i}`;
                       return (
@@ -886,7 +893,7 @@ function TripRecon({ tool }) {
                           <span className={`text-sm ${kitChecked[checkKey] ? '' : 'opacity-30'}`}>{kitChecked[checkKey] ? '✅' : '⬜'}</span>
                           <div className="flex-1 min-w-0">
                             <p className={`text-xs font-bold ${kitChecked[checkKey] ? (isDark ? 'text-emerald-400 line-through' : 'text-emerald-700 line-through') : c.text}`}>{item.item}</p>
-                            <p className={`text-[10px] ${c.textMuteded}`}>{item.why}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}>{item.why}</p>
                           </div>
                           {item.priority === 'must_have' && <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}>{t('smm_kit_must')}</span>}
                         </button>
@@ -899,8 +906,8 @@ function TripRecon({ tool }) {
 
             {/* ── Help Me Ask panel ── */}
             {showPanel === 'ask' && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>💬 {t('smm_help_me_ask')}</p>
+              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
+                <p className={`text-[13px] font-boldr mb-3 ${c.accentTxt}`}>💬 {t('smm_help_me_ask')}</p>
                 <label htmlFor="smm-ask-need" className="sr-only">{t('smm_ask_need_sr')}</label>
                 <textarea id="smm-ask-need" value={askNeed} onChange={e => setAskNeed(e.target.value)} placeholder={t('smm_ask_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
                 <button onClick={fetchAskScript} disabled={askLoading || !askNeed.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>
@@ -908,7 +915,7 @@ function TripRecon({ tool }) {
                 </button>
                 {askResult && (
                   <div className={`${c.cardAlt} border rounded-xl p-3`}>
-                    <p className={`text-xs ${c.textMuteded} mb-1`}>{askResult.situation}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mb-1`}>{askResult.situation}</p>
                     <p className={`text-sm italic ${c.text}`}>“{askResult.script}”</p>
                   </div>
                 )}
@@ -918,14 +925,14 @@ function TripRecon({ tool }) {
             {/* ── Rate this visit panel ── */}
             {showPanel === 'rate' && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>⭐ {t('smm_what_actually')}</p>
+                <p className={`text-[13px] font-boldr mb-3 ${c.accentTxt}`}>⭐ {t('smm_what_actually')}</p>
                 {(results.concerns || selectedConcerns).map(key => (
                   <div key={key} className="mb-3">
                     <p className={`text-xs font-bold ${c.text} mb-1.5`}>{concernLabel(key)}</p>
                     <div className="flex gap-2">
                       {['lower', 'about', 'higher'].map(opt => (
                         <button key={opt} onClick={() => setRatePerFactor(prev => ({ ...prev, [key]: opt }))}
-                          className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold ${ratePerFactor[key] === opt ? c.btnPrimary : c.btnSecondary}`}>
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold ${ratePerFactor[key] === opt ? c.btnPrimary : c.btnSecondary}`}>
                           {t(`smm_rate_${opt}`)}
                         </button>
                       ))}
@@ -950,21 +957,21 @@ function TripRecon({ tool }) {
                   <p className={`text-sm ${c.textSecondary}`}>{routeResults.route_summary?.one_liner}</p>
                 </div>
                 {routeResults.stops?.map((stop, i) => (
-                  <div key={i} className={`${c.card} border ${c.border} rounded-2xl p-4`}>
+                  <div key={i} className={`border-t ${c.border} pt-5`}>
                     <p className={`text-sm font-black ${c.text} mb-2`}>{stop.stop}</p>
                     {stop.what_you_know?.map((k, ki) => <p key={ki} className={`text-xs ${c.textSecondary}`}>📌 {k}</p>)}
                     {stop.worth_preparing_for?.map((f, fi) => (
                       <div key={fi} className={`${c.cardAlt} border rounded-lg p-2.5 mt-2`}>
                         <p className={`text-xs font-bold ${c.text}`}>{f.factor}</p>
                         <p className={`text-xs ${c.textSecondary}`}>{f.what_might_matter}</p>
-                        {f.prepare?.map((p, pi) => <p key={pi} className={`text-[10px] ${c.textMuteded}`}>💡 {p}</p>)}
+                        {f.prepare?.map((p, pi) => <p key={pi} className={`text-[13px] ${c.textMuteded}`}>💡 {p}</p>)}
                       </div>
                     ))}
                   </div>
                 ))}
                 {routeResults.before_you_leave?.length > 0 && (
-                  <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuteded} mb-1.5`}>🎒 {t('smm_before_you_go')}</p>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>🎒 {t('smm_before_you_go')}</p>
                     {routeResults.before_you_leave.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>✓ {s}</p>)}
                   </div>
                 )}
@@ -977,7 +984,7 @@ function TripRecon({ tool }) {
                 {routeResults.unknowns_that_matter?.length > 0 && (
                   <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                     <p className={`text-xs font-bold uppercase ${c.textMuteded} mb-1.5`}>❓ {t('smm_unknowns')}</p>
-                    {routeResults.unknowns_that_matter.map((u, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {u}</p>)}
+                    {routeResults.unknowns_that_matter.map((u, i) => <p key={i} className={`text-[13px] ${c.textMuteded}`}>• {u}</p>)}
                   </div>
                 )}
               </div>
@@ -994,7 +1001,7 @@ function TripRecon({ tool }) {
               {sessionHistory.map(s => (
                 <div key={s.id} className="flex items-center justify-between">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('smm_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>
@@ -1003,8 +1010,8 @@ function TripRecon({ tool }) {
 
         {/* Pre-result cross-ref — at the foot, never above the form. */}
         {!results && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('smm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
             </div>
@@ -1013,8 +1020,8 @@ function TripRecon({ tool }) {
 
         {/* Post-result cross-ref. */}
         {results && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('smm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('smm_xref_decisioncoach')}</a>
             </div>

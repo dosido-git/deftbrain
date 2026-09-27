@@ -61,23 +61,20 @@ const HeartOfTheMatter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -87,12 +84,11 @@ const HeartOfTheMatter = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    tipBg:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    tipText:       isDark ? 'text-cyan-300' : 'text-cyan-700',
+    tipBg:         isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    tipText:       isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     inset:         isDark ? 'bg-zinc-700/60' : 'bg-slate-100',
     badge:         isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-zinc-100 text-zinc-600',
     defBg:         isDark ? 'bg-fuchsia-900/30 text-fuchsia-300' : 'bg-fuchsia-50 text-fuchsia-700',
@@ -106,9 +102,7 @@ const HeartOfTheMatter = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [mode, setMode]             = useState('distill');
@@ -426,7 +420,7 @@ const HeartOfTheMatter = ({ tool }) => {
 
   // ── Shared sub-components ──
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
+    <button aria-pressed={active} onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
@@ -436,15 +430,15 @@ const HeartOfTheMatter = ({ tool }) => {
     const open = expandedSections[sKey] ?? defaultOpen;
     return (
       <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
+        <button data-print-heading aria-expanded={!!(open)} onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
           <div className="flex items-center gap-2">
             <span className="text-base">{emoji}</span>
             <span className={`text-sm font-semibold ${c.text}`}>{title}</span>
             {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
           </div>
-          <Caret open={open} />
+          <span data-print-hide><Caret open={open} /></span>
         </button>
-        {open && <div className={`px-4 pb-4 border-t ${c.border}`}>{children}</div>}
+        {<div data-sec-body hidden={!(open)} className={`px-4 pb-4 border-t ${c.border}`}>{children}</div>}
       </div>
     );
   };
@@ -466,7 +460,7 @@ const HeartOfTheMatter = ({ tool }) => {
             <span className="text-lg">{m.emoji}</span>
             <div className="text-start">
               <p className={`text-xs font-bold ${mode === m.value ? '' : c.textMuted}`}>{m.label}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{m.desc}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{m.desc}</p>
             </div>
           </button>
         ))}
@@ -474,7 +468,7 @@ const HeartOfTheMatter = ({ tool }) => {
 
       {/* Transcript — all modes except Connect */}
       {mode !== 'connect' ? (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="flex items-start justify-between gap-3 mb-1">
             <label className={`text-base font-bold ${c.text} block`}>{t('rec_input_label')} <span className={c.required}>*</span></label>
             <button type="button" onClick={() => triggerUpload(null)} disabled={extracting}
@@ -482,7 +476,7 @@ const HeartOfTheMatter = ({ tool }) => {
               📎 {t('rec_upload_file')}
             </button>
           </div>
-          <p className={`text-xs ${c.textMuted} mb-3`}>{t('rec_input_help')} {t('rec_upload_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('rec_input_help')} {t('rec_upload_hint')}</p>
           {extracting ? (
             <div className={`w-full h-40 flex items-center justify-center gap-2 border-2 border-dashed rounded-xl ${c.border} ${c.textMuted} text-sm`}>
               <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span> {t('rec_extracting')}
@@ -493,7 +487,7 @@ const HeartOfTheMatter = ({ tool }) => {
               className={`w-full min-h-[10rem] p-4 border-2 rounded-xl ${c.input} outline-none focus:ring-2 resize-y text-sm font-mono`} />
           )}
           {charCount > 0 && (
-            <p className={`text-xs ${c.textMuted} mt-1`}>
+            <p className={`text-[13px] ${c.textMuted} mt-1`}>
               {t('rec_chars_minutes', { chars: charCount.toLocaleString(), min: Math.round(charCount / 750) })}
             </p>
           )}
@@ -501,7 +495,7 @@ const HeartOfTheMatter = ({ tool }) => {
       ) : (
         <div className="space-y-3">
           {lectures.map((lec, idx) => (
-            <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div key={idx} className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-xs font-bold ${c.badge} px-2 py-0.5 rounded-full`}>{t('rec_lecture_n', { n: idx + 1 })}</span>
                 <input ref={el => { lecturesInputRefs.current[idx] = el; }} type="text" value={lec.title} onChange={e => updateLecture(idx, 'title', e.target.value)}
@@ -531,7 +525,7 @@ const HeartOfTheMatter = ({ tool }) => {
             </button>
           )}
           {charCount > 0 && (
-            <p className={`text-xs ${c.textMuted}`}>
+            <p className={`text-[13px] ${c.textMuted}`}>
               {t('rec_chars_across', { chars: charCount.toLocaleString(), count: lectures.filter(l => l.transcript?.trim()).length })}
             </p>
           )}
@@ -539,17 +533,17 @@ const HeartOfTheMatter = ({ tool }) => {
       )}
 
       {/* Context + mode options */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+      <div className={`border-t ${c.border} pt-5 space-y-3`}>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('rec_subject_label')}</label>
+            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_subject_label')}</label>
             <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
               placeholder={t('rec_subject_ph')}
               className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           {mode !== 'connect' && (
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('rec_topic_label')}</label>
+              <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_topic_label')}</label>
               <input type="text" value={lectureTitle} onChange={e => setLectureTitle(e.target.value)}
                 placeholder={t('rec_topic_ph')}
                 className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -560,12 +554,12 @@ const HeartOfTheMatter = ({ tool }) => {
         {mode === 'distill' && (
           <>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('rec_bullets_label', { count: bulletCount })}</label>
+              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('rec_bullets_label', { count: bulletCount })}</label>
               <input type="range" min={5} max={20} value={bulletCount} onChange={e => setBulletCount(Number(e.target.value))}
                 className="w-full accent-cyan-600" />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('rec_priority_label')}</label>
+              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('rec_priority_label')}</label>
               <div className="flex flex-wrap gap-1.5">
                 {PRIORITIES.map(p => <Pill key={p.value} active={priority === p.value} onClick={() => setPriority(p.value)}>{p.label}</Pill>)}
               </div>
@@ -591,7 +585,7 @@ const HeartOfTheMatter = ({ tool }) => {
         )}
         </button>
       </div>
-      <p className={`text-xs text-center ${c.textMuted}`}>
+      <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
         {t('rec_pre_xref')}{' '}
         <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('rec_braindump')}</a>
         {' '}{t('rec_pre_xref_after')}
@@ -612,14 +606,14 @@ const HeartOfTheMatter = ({ tool }) => {
         </div>
         <div className="space-y-2">
           {results.bullets.map((b, idx) => (
-            <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div key={idx} className={`border-t ${c.border} pt-5`}>
               <div className="flex items-start gap-3">
                 <span className={`text-lg font-black ${idx < 3 ? c.tipText : c.textMuted}`}>{b.rank}</span>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm ${c.text} mb-1.5`}>{b.point}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {b.type && TYPE_LABELS[b.type] && (
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                         b.type === 'definition' ? c.defBg : b.type === 'process' || b.type === 'formula' ? c.procBg : c.factBg}`}>
                         {TYPE_LABELS[b.type]}
                       </span>
@@ -681,7 +675,7 @@ const HeartOfTheMatter = ({ tool }) => {
                 <div key={i} className={`p-3 rounded-lg ${c.inset}`}>
                   <p className={`text-xs font-bold ${c.text}`}>{d.term}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{d.definition}</p>
-                  {d.distinguish_from && <p className={`text-[10px] ${c.tipText} mt-0.5`}>{t('rec_dont_confuse', { val: d.distinguish_from })}</p>}
+                  {d.distinguish_from && <p className={`text-xs ${c.tipText} mt-0.5`}>{t('rec_dont_confuse', { val: d.distinguish_from })}</p>}
                 </div>
               ))}
             </div>
@@ -695,8 +689,8 @@ const HeartOfTheMatter = ({ tool }) => {
                 <div key={i} className={`p-3 rounded-lg border ${c.cardAlt}`}>
                   <p className={`text-xs font-bold ${c.text} mb-1`}>{p.name}</p>
                   <p className={`text-xs ${c.textSecondary} mb-1`}>{p.steps_or_formula}</p>
-                  {p.when_to_use && <p className={`text-[10px] ${c.cardAltText}`}>{t('rec_when_to_use', { val: p.when_to_use })}</p>}
-                  {p.common_mistake && <p className={`text-[10px] ${c.warnText} mt-0.5`}>{t('rec_common_mistake', { val: p.common_mistake })}</p>}
+                  {p.when_to_use && <p className={`text-xs ${c.cardAltText}`}>{t('rec_when_to_use', { val: p.when_to_use })}</p>}
+                  {p.common_mistake && <p className={`text-xs ${c.warnText} mt-0.5`}>{t('rec_common_mistake', { val: p.common_mistake })}</p>}
                 </div>
               ))}
             </div>
@@ -708,7 +702,7 @@ const HeartOfTheMatter = ({ tool }) => {
             <div className="space-y-2 mt-3">
               {results.relationships.map((r, i) => (
                 <div key={i} className={`p-2 rounded-lg ${c.inset} flex items-center gap-2`}>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{r.type?.replace('_', ' ')}</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{r.type?.replace('_', ' ')}</span>
                   <p className={`text-xs ${c.text}`}>{r.relationship}</p>
                 </div>
               ))}
@@ -741,8 +735,8 @@ const HeartOfTheMatter = ({ tool }) => {
               {results.recurring_themes.map((theme, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${c.cardAlt}`}>
                   <p className={`text-xs font-bold ${c.text} mb-1`}>{theme.theme}</p>
-                  {theme.appearances?.map((a, ai) => <p key={ai} className={`text-[10px] ${c.textSecondary} mb-0.5`}>• {a}</p>)}
-                  <p className={`text-[10px] ${c.tipText} mt-1 italic`}>📋 {theme.why_recurring}</p>
+                  {theme.appearances?.map((a, ai) => <p key={ai} className={`text-xs ${c.textSecondary} mb-0.5`}>• {a}</p>)}
+                  <p className={`text-xs ${c.tipText} mt-1 italic`}>📋 {theme.why_recurring}</p>
                 </div>
               ))}
             </div>
@@ -807,15 +801,15 @@ const HeartOfTheMatter = ({ tool }) => {
     // selectable.
     const eligibleForConnect = (entry) => !!(entry.transcript?.trim() || entry.lectures?.length);
     return (
-      <div className={`p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={`p-4 rounded-2xl border ${c.histBg}`}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className="text-xl">{tool?.icon ?? '🎯'}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('rec_past_sessions')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{validHistory.length}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuted}`}>{validHistory.length}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {validHistory.map(entry => {
               const selected = selectedHistoryIds.includes(entry.id);
               const canSelect = eligibleForConnect(entry);
@@ -837,7 +831,7 @@ const HeartOfTheMatter = ({ tool }) => {
                   <span className="text-lg flex-shrink-0">{modeEmoji(entry.mode)}</span>
                   <div className="flex-1 min-w-0">
                     <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.title}</div>
-                    <div className={`text-xs ${c.textMuted} mt-0.5`}>{metaParts.join(' · ')}</div>
+                    <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{metaParts.join(' · ')}</div>
                     {takeaway && <p className={`text-xs ${c.textSecondary} mt-1 leading-snug`}>{takeaway}</p>}
                   </div>
                 </div>
@@ -863,18 +857,26 @@ const HeartOfTheMatter = ({ tool }) => {
 
       {/* ── Input phase: unified card (header + input) ── */}
       {!results && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-          <div className="pb-3 border-b border-zinc-500">
+        <div className="space-y-4">
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{toolTagline(tool?.tagline ?? t('rec_tagline'))}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 {/* Scope chips — signal the breadth of accepted inputs (non-interactive) */}
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <span className={`text-xs ${c.textMuted}`}>{t('rec_scope_label')}</span>
+                  <span className={`text-[13px] ${c.textMuted}`}>{t('rec_scope_label')}</span>
                   {t('rec_scope_items').split(' · ').map((item) => (
                     <span key={item} className={`px-2 py-0.5 rounded-full text-xs ${c.badge}`}>{item}</span>
                   ))}
@@ -888,14 +890,19 @@ const HeartOfTheMatter = ({ tool }) => {
               ) : null}
             </div>
           </div>
+          </div>
           {renderInput()}
         </div>
       )}
 
       {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+          <div className="">
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
@@ -928,8 +935,8 @@ const HeartOfTheMatter = ({ tool }) => {
           </button>
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {t('rec_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>🔗 {t('rec_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 {t('rec_braindump')}</a>
               <a href="/MissingLink"          className={`text-xs ${linkStyle}`}>⛓️ {t('rec_missinglink')}</a>

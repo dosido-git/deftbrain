@@ -149,17 +149,14 @@ const BrainStateDeejay = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300': 'text-slate-600',
     textMuted:     isDark ? 'text-zinc-400': 'text-slate-500',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
-      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0]' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#142a43]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     border:        isDark ? 'border-zinc-700' : 'border-slate-200',
     success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -167,12 +164,12 @@ const BrainStateDeejay = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
     // ── Tool-specific ──
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-slate-500 hover:text-slate-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300' : 'border-cyan-400 bg-cyan-100 text-cyan-700',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-400',
     heroBg:        isDark ? 'bg-gradient-to-r from-zinc-800 to-cyan-900' : 'bg-gradient-to-r from-cyan-700 to-sky-600',
     heroText:      'text-white',
-    heroSub:       isDark ? 'text-cyan-200' : 'text-cyan-100',
-    genrePill:     isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+    heroSub:       isDark ? 'text-zinc-100' : 'text-[#165b9a]',
+    genrePill:     isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     bpmBadge:      isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
     spotifyBg:     isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     spotifyText:   isDark ? 'text-emerald-400' : 'text-emerald-700',
@@ -181,10 +178,10 @@ const BrainStateDeejay = ({ tool }) => {
     audioBg:       isDark ? 'bg-sky-900/15 border-sky-700/30' : 'bg-sky-50 border-sky-200',
     audioTitle:    isDark ? 'text-sky-300' : 'text-sky-700',
     audioText:     isDark ? 'text-sky-400' : 'text-sky-600',
-    histBg:        isDark ? 'bg-cyan-900/10 border-cyan-700/30' : 'bg-cyan-50/30 border-cyan-200',
-    histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-600',
+    histBg:        isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    histAccent:    isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     timelineBg:    isDark ? 'bg-zinc-700' : 'bg-slate-100',
-    timelineFill:  isDark ? 'bg-cyan-600' : 'bg-cyan-500',
+    timelineFill:  isDark ? 'bg-[#2f6fb0]' : 'bg-[#142a43]',
     timelineGold:  isDark ? 'bg-amber-500' : 'bg-amber-400',
     // ── Semantic tokens ──
     required:  isDark ? 'text-amber-400' : 'text-amber-700',
@@ -194,9 +191,7 @@ const BrainStateDeejay = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'font-semibold underline text-cyan-400 hover:text-cyan-300'
-    : 'font-semibold underline text-cyan-600 hover:text-cyan-700';
+  const linkStyle = isDark ? 'font-semibold underline text-[#7fb3e0] hover:text-[#a9cdef]' : 'font-semibold underline text-[#165b9a] hover:text-[#142a43]';
 
   // ── State ──
   const [showHistory, setShowHistory] = useState(false);
@@ -513,7 +508,7 @@ const BrainStateDeejay = ({ tool }) => {
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
         return (
-          <button key={opt.value}
+          <button aria-pressed={active} key={opt.value}
             onClick={() => setter(opt.value)}
             className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
             {active && <span className="me-1">✓</span>}
@@ -553,27 +548,27 @@ const BrainStateDeejay = ({ tool }) => {
   // RENDER: Input Form
   // ══════════════════════════════════════════
   const renderInputForm = () => (
-    <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+    <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
+      <div className={`border-t ${c.border} pt-5`}>
         {renderWinningSuggestion()}
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_current')} <span className={c.required}>*</span></label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bsd_q_current')} <span className={c.required}>*</span></label>
         {renderCards(CURRENT_STATES, currentState, setCurrentState)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_desired')} <span className={c.required}>*</span></label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bsd_q_desired')} <span className={c.required}>*</span></label>
         {renderCards(DESIRED_STATES, desiredState, setDesiredState)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('bsd_q_task')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('bsd_q_task_hint')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('bsd_q_task')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('bsd_q_task_hint')}</p>
         {renderCards(TASK_OPTIONS, task, setTask, 3)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('bsd_q_music')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('bsd_q_music_hint')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('bsd_q_music')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('bsd_q_music_hint')}</p>
         {renderPills(GENRE_PREFS, genres, toggleGenre, true)}
         <input type="text" value={musicTaste} onChange={e => setMusicTaste(e.target.value)}
           placeholder={t('bsd_music_taste_ph')}
@@ -581,17 +576,17 @@ const BrainStateDeejay = ({ tool }) => {
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <button onClick={() => setShowSensitivities(!showSensitivities)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
-          <Caret open={showSensitivities} />
+        <button data-print-heading aria-expanded={!!(showSensitivities)} onClick={() => setShowSensitivities(!showSensitivities)}
+          className={`flex items-center gap-2 text-[13px] font-bold ${c.textSecondary}`}>
+          <span data-print-hide><Caret open={showSensitivities} /></span>
           {t('bsd_sensitivities')}
-          {sensitivities.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{sensitivities.length}</span>}
+          {sensitivities.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-xs ${c.pillActive}`}>{sensitivities.length}</span>}
         </button>
-        <p className={`text-xs ${c.textMuted} mt-1`}>{t('bsd_sensitivities_hint')}</p>
-        {showSensitivities && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+        <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('bsd_sensitivities_hint')}</p>
+        {(
+          <div data-sec-body hidden={!(showSensitivities)} className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
             {SENSITIVITY_OPTIONS.map(opt => (
-              <button key={opt.value} onClick={() => toggleSensitivity(opt.value)}
+              <button aria-pressed={sensitivities.includes(opt.value)} key={opt.value} onClick={() => toggleSensitivity(opt.value)}
                 className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${sensitivities.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
                 {sensitivities.includes(opt.value) && <span className="me-1">✓</span>}
                 {t(opt.labelKey)}
@@ -617,7 +612,7 @@ const BrainStateDeejay = ({ tool }) => {
         </kbd>
       )}
       </button>
-      <p className={`text-center text-xs ${c.textMuted}`}>
+      <p data-print-hide className={`text-center text-[13px] ${c.textMuted}`}>
         {t('bsd_xref_name_pre')}{' '}
         <a href="/NameThatFeeling" className={linkStyle}>🎭 {t('bsd_namethatfeeling')}</a>{' '}
         {t('bsd_xref_name_post')}
@@ -640,7 +635,7 @@ const BrainStateDeejay = ({ tool }) => {
     const lastIdx = phases.length - 1;
     return (
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-        <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('bsd_listening_arc')}</p>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('bsd_listening_arc')}</p>
         <div className={`flex rounded-full overflow-hidden h-3 ${c.timelineBg}`}>
           {phases.map((phase, idx) => (
             <div key={idx}
@@ -653,8 +648,8 @@ const BrainStateDeejay = ({ tool }) => {
         <div className="flex justify-between mt-2">
           {phases.map((phase, idx) => (
             <div key={idx} className="text-center" style={{ width: `${(durations[idx] / total) * 100}%` }}>
-              <p className={`text-[10px] font-bold ${c.textMuted} truncate`}>{phase.phase}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{phase.duration}</p>
+              <p className={`text-xs font-bold ${c.textMuted} truncate`}>{phase.phase}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{phase.duration}</p>
             </div>
           ))}
         </div>
@@ -674,9 +669,9 @@ const BrainStateDeejay = ({ tool }) => {
 
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-        <button onClick={() => setShowInputs(!showInputs)}
+        <button data-print-heading aria-expanded={!!(showInputs)} onClick={() => setShowInputs(!showInputs)}
           className={`flex items-center gap-2 text-xs font-semibold ${c.btnGhost}`}>
-          <Caret open={showInputs} />
+          <span data-print-hide><Caret open={showInputs} /></span>
           {showInputs ? t('bsd_hide_settings') : t('bsd_show_settings')}
         </button>
 
@@ -699,11 +694,11 @@ const BrainStateDeejay = ({ tool }) => {
         {phases.map((phase, idx) => (
           <div key={idx} className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <h3 className={`text-sm font-bold ${c.text}`}>🎵 {phase.phase}</h3>
+              <h3 className={`text-base font-bold ${c.text}`}>🎵 {phase.phase}</h3>
               <div className="flex items-center gap-2">
                 {phase.tempo_feel && (
                   <span title={phase.tempo_hint || undefined}
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.bpmBadge}`}>
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.bpmBadge}`}>
                     {phase.tempo_feel}
                   </span>
                 )}
@@ -714,7 +709,7 @@ const BrainStateDeejay = ({ tool }) => {
 
             {phase.genre_suggestions?.length > 0 && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('bsd_genres_label')}</div>
+                <div className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('bsd_genres_label')}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {phase.genre_suggestions.map((g, i) => (
                     <span key={i} className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.genrePill}`}>{g}</span>
@@ -725,7 +720,7 @@ const BrainStateDeejay = ({ tool }) => {
 
             {phase.example_artists?.length > 0 && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.textSecondary} mb-1`}>{t('bsd_example_artists')}</div>
+                <div className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('bsd_example_artists')}</div>
                 <p className={`text-xs ${c.textSecondary}`}>{phase.example_artists.join(', ')}</p>
               </div>
             )}
@@ -737,7 +732,7 @@ const BrainStateDeejay = ({ tool }) => {
                 track list can. */}
             {phase.search_recipe && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('bsd_search_for')}</div>
+                <div className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('bsd_search_for')}</div>
                 <div className={`px-3 py-2 rounded-lg border text-xs ${c.trackBg}`}>
                   <span className={`font-medium ${c.trackText}`}>{phase.search_recipe}</span>
                 </div>
@@ -762,12 +757,12 @@ const BrainStateDeejay = ({ tool }) => {
                   ))}
                   {preferredService && !showAllServices && (
                     <button onClick={() => setShowAllServices(true)}
-                      className={`text-[11px] ${c.textMuted} hover:underline`}>
+                      className={`text-[13px] ${c.textMuted} hover:underline`}>
                       {t('bsd_other_services')}
                     </button>
                   )}
                 </div>
-                <p className={`text-[10px] ${c.textMuted} mt-1.5`}>{t('bsd_search_note')}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-1.5`}>{t('bsd_search_note')}</p>
               </div>
             )}
           </div>
@@ -778,7 +773,7 @@ const BrainStateDeejay = ({ tool }) => {
           <div className={`p-5 rounded-2xl border ${c.audioBg}`}>
             <div className="flex items-center gap-2 mb-3">
               <span className={`text-base ${c.audioTitle}`}>🔊</span>
-              <h3 className={`text-sm font-bold ${c.audioTitle}`}>{t('bsd_audio_settings')}</h3>
+              <h3 className={`text-base font-bold ${c.audioTitle}`}>{t('bsd_audio_settings')}</h3>
             </div>
             <div className={`space-y-1.5 text-sm ${c.audioText}`}>
               {audio.recommended_volume && <p><strong>{t('bsd_volume')}</strong> {audio.recommended_volume}</p>}
@@ -791,13 +786,13 @@ const BrainStateDeejay = ({ tool }) => {
         {/* Alternatives */}
         {alts.length > 0 && (
           <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-            <h3 className={`text-sm font-bold mb-3 ${c.text}`}>{t('bsd_alts_title')}</h3>
+            <h3 className={`text-base font-bold mb-3 ${c.text}`}>{t('bsd_alts_title')}</h3>
             <div className="space-y-2">
               {alts.map((alt, idx) => (
                 <div key={idx} className={`p-3 rounded-xl border ${c.cardAlt}`}>
                   <div className={`text-xs font-bold mb-1 ${c.text}`}>{alt.name}</div>
                   <p className={`text-xs ${c.textSecondary}`}><strong>{t('bsd_alt_change')}</strong> {alt.change}</p>
-                  <p className={`text-xs ${c.textMuted} mb-2`}><strong>{t('bsd_alt_when')}</strong> {alt.when}</p>
+                  <p className={`text-[13px] ${c.textMuted} mb-2`}><strong>{t('bsd_alt_when')}</strong> {alt.when}</p>
                   <button onClick={() => submitAdjustment(alt.name)}
                     disabled={adjusting}
                     className={`text-xs font-semibold ${linkStyle} disabled:opacity-40`}>
@@ -814,12 +809,12 @@ const BrainStateDeejay = ({ tool }) => {
             explains is how a page gets long. */}
         {results.why_this_may_help && (
           <div className={`p-5 rounded-2xl border ${c.cardAlt}`}>
-            <button type="button" onClick={() => setShowWhy(!showWhy)}
+            <button data-print-heading aria-expanded={!!(showWhy)} type="button" onClick={() => setShowWhy(!showWhy)}
               className="flex items-center gap-2 w-full text-start">
-              <Caret open={showWhy} />
+              <span data-print-hide><Caret open={showWhy} /></span>
               <span className={`text-sm font-bold ${c.text}`}>{t('bsd_science_title')}</span>
             </button>
-            {showWhy && <p className={`text-sm ${c.textSecondary} mt-2`}>{results.why_this_may_help}</p>}
+            {<p data-sec-body hidden={!showWhy} className={`text-sm ${c.textSecondary} mt-2`}>{results.why_this_may_help}</p>}
           </div>
         )}
 
@@ -891,33 +886,33 @@ const BrainStateDeejay = ({ tool }) => {
     };
 
     return (
-      <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)}
+      <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
           className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('bsd_past_playlists')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
 
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => {
               const isExp = expandedHistId === entry.id;
               return (
                 <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
-                  <button onClick={() => setExpandedHistId(isExp ? null : entry.id)}
+                  <button data-print-heading aria-expanded={!!(isExp)} onClick={() => setExpandedHistId(isExp ? null : entry.id)}
                     className="w-full flex items-center gap-3 p-3 text-start">
                     <div className="flex-1 min-w-0">
                       <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.from} → {entry.to}</div>
-                      <div className={`text-xs ${c.textMuted} mt-0.5`}>
+                      <div className={`text-[13px] ${c.textMuted} mt-0.5`}>
                         {formatDate(entry.date)} · {entry.strategy} · {t('bsd_hist_phases', { count: entry.phases })}
                       </div>
                     </div>
-                    <Caret open={isExp} className="flex-shrink-0" />
+                    <span data-print-hide><Caret open={isExp} className="flex-shrink-0" /></span>
                   </button>
-                  {isExp && (
-                    <div className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>
+                  {(
+                    <div data-sec-body hidden={!(isExp)} className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>
                       <button onClick={() => loadFromHistory(entry)}
                         className={`w-full mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
                         {t('bsd_view_again')}
@@ -949,12 +944,20 @@ const BrainStateDeejay = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Persistent header — single reset always in same position */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🎧'}</span>{t('bsd_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -966,6 +969,7 @@ const BrainStateDeejay = ({ tool }) => {
             )}
           </div>
         </div>
+        </div>
       </div>
       {(!results || showInputs) && renderInputForm()}
       {results && renderResults()}
@@ -974,15 +978,15 @@ const BrainStateDeejay = ({ tool }) => {
           see S5.5). The bsd_xref_spiral_* / bsd_spiralstopper key names are
           stale but harmless; their VALUES were repointed to PEP. */}
       {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
           {t('bsd_xref_spiral_pre')}{' '}
           <a href="/PEP" className={linkStyle}>✨ {t('bsd_spiralstopper')}</a>{' '}
           {t('bsd_xref_spiral_post')}
         </p>
       )}
       {results && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs ${c.textMuted} text-center`}>
+        <div data-print-hide className={`border-t ${c.border} pt-5`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('bsd_xref_name2_pre')}{' '}
             <a href="/NameThatFeeling" className={linkStyle}>🎭 {t('bsd_namethatfeeling')}</a>{' '}
             {t('bsd_xref_name2_post')}

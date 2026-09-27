@@ -130,18 +130,15 @@ const RoommateCourt = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -151,14 +148,13 @@ const RoommateCourt = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     cardAltCard:   isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
     cardAltInset:  isDark ? 'bg-zinc-800/80' : 'bg-white',
     barColors:     ['bg-cyan-500', 'bg-amber-500', 'bg-emerald-500', 'bg-cyan-500', 'bg-red-500'],
-    tabActive:     isDark ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-cyan-600 text-white border-cyan-600',
+    tabActive:     isDark ? 'bg-[#2f6fb0] text-white border-[#7fb3e0]' : 'bg-[#142a43] text-white border-[#142a43]',
     tabInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200',
     verdictBg:     isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     verdictText:   isDark ? 'text-amber-200' : 'text-amber-900',
@@ -167,9 +163,7 @@ const RoommateCourt = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [activeTab, setActiveTab] = useState('dispute');
@@ -418,7 +412,7 @@ const RoommateCourt = ({ tool }) => {
   const renderPillRow = (options, value, setter) => (
     <div className="flex flex-wrap gap-1.5 mb-3">
       {options.map(opt => (
-        <button key={opt.id} onClick={() => setter(value === opt.id ? '' : opt.id)}
+        <button aria-pressed={value === opt.id} key={opt.id} onClick={() => setter(value === opt.id ? '' : opt.id)}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
             ${value === opt.id ? c.pillActive : c.pillInactive}`}>
           {opt.icon ? `${opt.icon} ` : ''}{t(opt.labelKey)}
@@ -516,7 +510,7 @@ const RoommateCourt = ({ tool }) => {
             <div className="space-y-2">
               {r.conversation.if_they_push_back.map((p, i) => (
                 <div key={i} className={`${c.cardAltInset} rounded-lg p-3`}>
-                  <p className={`text-xs ${c.textMuted} italic`}>{tr('rc_if_they_say', 'If they respond along the lines of')}: "{p.possible_response}"</p>
+                  <p className={`text-[13px] ${c.textMuted} italic`}>{tr('rc_if_they_say', 'If they respond along the lines of')}: "{p.possible_response}"</p>
                   <p className={`text-sm ${c.text} mt-1`}>{p.you_could_say}</p>
                 </div>
               ))}
@@ -528,23 +522,23 @@ const RoommateCourt = ({ tool }) => {
           <div className={`p-4 rounded-xl border-2 ${c.verdictBg}`}>
             <span className={`text-xs font-bold ${c.verdictText} uppercase block mb-1`}>📌 {tr('rc_proposal', 'A Concrete Proposal')}</span>
             <p className={`text-sm ${c.text}`}>{r.conversation.proposal}</p>
-            <p className={`text-xs ${c.textMuted} mt-1`}>{tr('rc_proposal_note', 'A proposal to make — not something already agreed to.')}</p>
+            <p className={`text-[13px] ${c.textMuted} mt-1`}>{tr('rc_proposal_note', 'A proposal to make — not something already agreed to.')}</p>
           </div>
         )}
 
         {r.if_that_doesnt_work?.length > 0 && (
           <div className={`rounded-xl border ${c.border} ${c.cardAltCard} overflow-hidden`}>
-            <button onClick={() => setShowEscalation(v => !v)} className="w-full flex items-center gap-2 p-4 text-start">
+            <button data-print-heading aria-expanded={!!(showEscalation)} onClick={() => setShowEscalation(v => !v)} className="w-full flex items-center gap-2 p-4 text-start">
               <span>🚪</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{tr('rc_if_doesnt_work', "If That Doesn't Work")}</span>
-              <Caret open={showEscalation} />
+              <span data-print-hide><Caret open={showEscalation} /></span>
             </button>
-            {showEscalation && (
-              <div className="px-4 pb-4 space-y-2">
+            {(
+              <div data-sec-body hidden={!(showEscalation)} className="px-4 pb-4 space-y-2">
                 {r.if_that_doesnt_work.map((step, i) => (
                   <div key={i} className={`${c.cardAltInset} rounded-lg p-3`}>
                     <p className={`text-sm font-semibold ${c.text}`}>{step.next_step}</p>
-                    {step.when_it_makes_sense && <p className={`text-xs ${c.textMuted} mt-0.5`}>{step.when_it_makes_sense}</p>}
+                    {step.when_it_makes_sense && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{step.when_it_makes_sense}</p>}
                   </div>
                 ))}
               </div>
@@ -566,33 +560,33 @@ const RoommateCourt = ({ tool }) => {
   const renderDisputeForm = () => (
     <div className="mt-4">
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAltCard} mb-4`}>
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{tr('rc_q_dispute', "What's going on?")} <span className={c.required}>*</span></span>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{tr('rc_q_dispute', "What's going on?")} <span className={c.required}>*</span></span>
         <textarea value={dispute} onChange={e => setDispute(e.target.value)}
           placeholder={tr('rc_ph_dispute', 'Describe the problem…')}
           rows={3}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3 resize-none`} />
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1 block`}>{tr('rc_q_your_side', "What's your side?")} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
-        <p className={`text-xs ${c.textMuted} mb-1.5`}>{tr('rc_help_your_side', 'What bothers you about it? What would you like to change?')}</p>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1 block`}>{tr('rc_q_your_side', "What's your side?")} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
+        <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{tr('rc_help_your_side', 'What bothers you about it? What would you like to change?')}</p>
         <textarea value={yourSide} onChange={e => setYourSide(e.target.value)}
           placeholder={tr('rc_ph_your_side', '…')}
           rows={2}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3 resize-none`} />
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1 block`}>{tr('rc_q_their_side', 'What would they say?')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
-        <p className={`text-xs ${c.textMuted} mb-1.5`}>{tr('rc_help_their_side', "If you know, describe their perspective in their own terms. Don't guess just to fill this in.")}</p>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1 block`}>{tr('rc_q_their_side', 'What would they say?')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
+        <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{tr('rc_help_their_side', "If you know, describe their perspective in their own terms. Don't guess just to fill this in.")}</p>
         <textarea value={theirSide} onChange={e => setTheirSide(e.target.value)}
           placeholder={tr('rc_ph_their_side', '…')}
           rows={2}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3 resize-none`} />
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{tr('rc_q_duration', 'How long has this been happening?')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{tr('rc_q_duration', 'How long has this been happening?')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
         {renderPillRow(DURATION_OPTIONS, duration, setDuration)}
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{tr('rc_q_talked', "What have you already tried?")} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{tr('rc_q_talked', "What have you already tried?")} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
         {renderPillRow(COMM_OPTIONS, priorComm, setPriorComm)}
 
-        <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{tr('rc_q_living', 'Living situation')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
+        <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{tr('rc_q_living', 'Living situation')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></span>
         {renderPillRow(LIVING_OPTIONS, livingSituation, setLivingSituation)}
       </div>
 
@@ -608,7 +602,7 @@ const RoommateCourt = ({ tool }) => {
           </kbd>
         )}
       </button>
-      <p className={`text-xs text-center mt-3 ${c.textMuted}`}>
+      <p data-print-hide className={`text-xs text-center mt-3 ${c.textMuted}`}>
         {tr('rc_write_first', 'Need to write the message, not just plan the talk?')}{' '}
         <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {tr('rc_velvet_hammer', 'Velvet Hammer')}</a> {tr('rc_drafts_it', 'drafts it.')}
       </p>
@@ -624,7 +618,7 @@ const RoommateCourt = ({ tool }) => {
     return (
       <div className="scroll-mt-24 space-y-4 mt-4" ref={resultsRef}>
         <div className={`p-4 rounded-xl border ${c.border} ${c.cardAltCard}`}>
-          <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>🎰 {tr('rc_this_round', 'This Round')}</span>
+          <span className={`text-[13px] font-bold ${c.textSecondary}`}>🎰 {tr('rc_this_round', 'This Round')}</span>
         </div>
 
         {r.assignments.map((a, idx) => (
@@ -634,7 +628,7 @@ const RoommateCourt = ({ tool }) => {
                 {a.roommate.charAt(0).toUpperCase()}
               </span>
               <span className={`text-sm font-bold ${c.text}`}>{a.roommate}</span>
-              <span className={`text-xs ${c.textMuted} ms-auto`}>
+              <span className={`text-[13px] ${c.textMuted} ms-auto`}>
                 {loadTotals?.[a.roommate] != null
                   ? tr('rc_load_points', '{{n}} load points').replace('{{n}}', loadTotals[a.roommate])
                   : tr('rc_chore_count', '{{n}} chore(s)').replace('{{n}}', a.chores.length)}
@@ -656,7 +650,7 @@ const RoommateCourt = ({ tool }) => {
                     </div>
                     <span className={`flex-1 text-sm ${done ? `line-through ${c.textMuted}` : c.text}`}>{ch.name}</span>
                     {ch.load && ch.load !== 'UNSPECIFIED' && (
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.pillInactive}`}>
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${c.pillInactive}`}>
                         {tr(LOAD_LABEL_KEY[ch.load], ch.load)}
                       </span>
                     )}
@@ -674,7 +668,7 @@ const RoommateCourt = ({ tool }) => {
               <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{tr('rc_why_assignments', 'Why These Assignments')}</span>
             </div>
             <p className={`text-sm ${c.textSecondary}`}>{r.why_these_assignments}</p>
-            {r.rotation_note && <p className={`text-xs ${c.textMuted} mt-2`}>{r.rotation_note}</p>}
+            {r.rotation_note && <p className={`text-[13px] ${c.textMuted} mt-2`}>{r.rotation_note}</p>}
           </div>
         )}
 
@@ -709,7 +703,7 @@ const RoommateCourt = ({ tool }) => {
                       {rebalanceResult.adjustment_needed ? tr('rc_assignment_updated', 'Assignment updated') : tr('rc_no_change_needed', "No change needed")}
                     </span>
                   </div>
-                  {rebalanceResult.what_changed && <p className={`text-xs ${c.textMuted} mb-1`}>{rebalanceResult.what_changed}</p>}
+                  {rebalanceResult.what_changed && <p className={`text-[13px] ${c.textMuted} mb-1`}>{rebalanceResult.what_changed}</p>}
                   <p className={`text-sm ${c.textSecondary}`}>{rebalanceResult.explanation}</p>
                 </div>
               )}
@@ -734,7 +728,7 @@ const RoommateCourt = ({ tool }) => {
     <div className={`p-8 rounded-2xl border ${c.border} ${c.cardAltCard} mt-4 text-center`}>
       <span className="text-3xl block mb-2 animate-spin inline-block">{tool?.icon ?? '⚖️'}</span>
       <p className={`text-sm font-bold ${c.text} mb-1`}>{tr('rc_spinning_wheel', 'Spinning the wheel…')}</p>
-      <p className={`text-xs ${c.textMuted}`}>{tr('rc_balancing', 'Dividing the chores…')}</p>
+      <p className={`text-[13px] ${c.textMuted}`}>{tr('rc_balancing', 'Dividing the chores…')}</p>
     </div>
   );
 
@@ -742,13 +736,13 @@ const RoommateCourt = ({ tool }) => {
     if (assignHistory.length === 0) return null;
     return (
       <div className={`mt-5 rounded-xl border ${c.border} ${c.cardAltCard} overflow-hidden`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
           <span className={`text-sm font-bold ${c.text} flex-1`}>📋 {tr('rc_history', 'Rotation History')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{tr('rc_rounds', '{{n}} round(s)').replace('{{n}}', assignHistory.length)}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuted}`}>{tr('rc_rounds', '{{n}} round(s)').replace('{{n}}', assignHistory.length)}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="px-4 pb-4 space-y-3">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="px-4 pb-4 space-y-3">
             {assignHistory.slice(0, 6).map((round, ri) => (
               <div key={round.id || ri} className={`p-3 rounded-lg border ${c.border}`}>
                 <span className={`text-xs font-bold ${c.textSecondary}`}>{round.date}</span>
@@ -777,7 +771,7 @@ const RoommateCourt = ({ tool }) => {
       <div className="mt-4">
         {/* Household roster */}
         <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAltCard} mb-4`}>
-          <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>
+          <span className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>
             👥 {tr('rc_household', "Who's In?")}
           </span>
           <div className="flex gap-2 mb-3">
@@ -794,7 +788,7 @@ const RoommateCourt = ({ tool }) => {
             <div className="flex flex-wrap gap-1.5">
               {roommates.map((name, i) => (
                 <span key={name} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold ${c.pillActive}`}>
-                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black text-white ${c.barColors[i % c.barColors.length]}`}>
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-black text-white ${c.barColors[i % c.barColors.length]}`}>
                     {name.charAt(0).toUpperCase()}
                   </span>
                   {name}
@@ -803,13 +797,13 @@ const RoommateCourt = ({ tool }) => {
               ))}
             </div>
           ) : (
-            <p className={`text-xs ${c.textMuted} text-center py-2`}>{tr('rc_need_two', 'Add at least 2 people.')}</p>
+            <p className={`text-[13px] ${c.textMuted} text-center py-2`}>{tr('rc_need_two', 'Add at least 2 people.')}</p>
           )}
         </div>
 
         {/* Chore list */}
         <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAltCard} mb-4`}>
-          <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>{tr('rc_chores_label', "What Needs Doing?")}</span>
+          <span className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>{tr('rc_chores_label', "What Needs Doing?")}</span>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {COMMON_CHORES.filter(ch => !choreList.includes(ch.id)).map(ch => (
               <button key={ch.id} onClick={() => addChore(ch.id)}
@@ -841,15 +835,15 @@ const RoommateCourt = ({ tool }) => {
               })}
             </div>
           ) : (
-            <p className={`text-xs ${c.textMuted} text-center py-2`}>{tr('rc_what_doing', 'Add the chores that need doing.')}</p>
+            <p className={`text-[13px] ${c.textMuted} text-center py-2`}>{tr('rc_what_doing', 'Add the chores that need doing.')}</p>
           )}
         </div>
 
         {/* Optional: adjust the load */}
         {choreList.length > 0 && (
           <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAltCard} mb-4`}>
-            <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{tr('rc_adjust_load', 'Optional: Adjust the Load')}</span>
-            <p className={`text-xs ${c.textMuted} mb-3`}>{tr('rc_adjust_load_help', 'Left unset, chores are treated as unweighted — nothing decides how burdensome a chore is on your behalf.')}</p>
+            <span className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{tr('rc_adjust_load', 'Optional: Adjust the Load')}</span>
+            <p className={`text-[13px] ${c.textMuted} mb-3`}>{tr('rc_adjust_load_help', 'Left unset, chores are treated as unweighted — nothing decides how burdensome a chore is on your behalf.')}</p>
             <div className="space-y-2">
               {choreList.map(ch => {
                 const common = COMMON_CHORES.find(cc => cc.id === ch);
@@ -859,8 +853,8 @@ const RoommateCourt = ({ tool }) => {
                     <span className={`text-sm ${c.text}`}>{label}</span>
                     <div className="flex gap-1.5">
                       {LOAD_OPTIONS.map(opt => (
-                        <button key={opt} onClick={() => setChoreLoad(ch, choreLoads[ch] === opt ? null : opt)}
-                          className={`px-2 py-1 rounded-md text-[11px] font-semibold border transition-all
+                        <button aria-pressed={choreLoads[ch] === opt} key={opt} onClick={() => setChoreLoad(ch, choreLoads[ch] === opt ? null : opt)}
+                          className={`px-2 py-1 rounded-md text-[13px] font-semibold border transition-all
                             ${choreLoads[ch] === opt ? c.pillActive : c.pillInactive}`}>
                           {tr(LOAD_LABEL_KEY[opt], opt)}
                         </button>
@@ -893,7 +887,7 @@ const RoommateCourt = ({ tool }) => {
           <div className={`p-6 rounded-2xl border border-dashed ${c.border} text-center`}>
             <span className="text-3xl block mb-2">⚖️</span>
             <p className={`text-sm ${c.textMuted}`}>{tr('rc_empty_add', 'Add roommates and chores above to get started.')}</p>
-            <p className={`text-xs ${c.textMuted} mt-1`}>{tr('rc_empty_balances', "We'll divide the chores and use saved rounds to help rotate them over time.")}</p>
+            <p className={`text-[13px] ${c.textMuted} mt-1`}>{tr('rc_empty_balances', "We'll divide the chores and use saved rounds to help rotate them over time.")}</p>
           </div>
         )}
 
@@ -917,11 +911,19 @@ const RoommateCourt = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? tr('rc_tagline', 'Work it out without making it worse.')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -931,6 +933,7 @@ const RoommateCourt = ({ tool }) => {
                 ↺ {t('start_over')}
               </button>
             )}
+          </div>
           </div>
         </div>
 
@@ -944,7 +947,7 @@ const RoommateCourt = ({ tool }) => {
                 ${activeTab === tab.id ? c.tabActive : `${c.tabInactive}`}`}>
               {tab.label}
               {tab.badge > 0 && (
-                <span className={`ms-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
+                <span className={`ms-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-black
                   ${activeTab === tab.id ? 'bg-white/20 text-white' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
                   {tab.badge}
                 </span>
@@ -968,7 +971,7 @@ const RoommateCourt = ({ tool }) => {
 
       {(disputeResult || assignResult) && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {tr('rc_related', 'Related')}</p>
+          <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>🔗 {tr('rc_related', 'Related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer"       className={`text-xs ${linkStyle}`}>🔨 {tr('rc_velvet_hammer', 'Velvet Hammer')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {tr('rc_difficult_talk', 'Difficult Talk Coach')}</a>
@@ -977,12 +980,12 @@ const RoommateCourt = ({ tool }) => {
       )}
 
       {results && (
-        <p className={`text-xs ${c.textMuted} text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
           {tr('rc_deliver_verdict', 'Need to put it in writing instead?')} <a href="/VelvetHammer" className={linkStyle}>🔨 {tr('rc_velvet_hammer', 'Velvet Hammer')}</a> {tr('rc_writes_message', 'writes the message.')}
         </p>
       )}
 
-      <p className={`text-xs ${c.textMuted} text-center`}>{tr('rc_disclaimer', "Roommate Court has heard one side of this. Treat it as a starting point for a conversation, not a ruling.")}</p>
+      <p className={`text-[13px] ${c.textMuted} text-center`}>{tr('rc_disclaimer', "Roommate Court has heard one side of this. Treat it as a starting point for a conversation, not a ruling.")}</p>
     </div>
   );
 };

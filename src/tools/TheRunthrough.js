@@ -88,28 +88,27 @@ const TheRunthrough = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    tabActive:     isDark ? 'text-cyan-300 border-b-2 border-cyan-400' : 'text-cyan-700 border-b-2 border-cyan-600',
+    tabActive:     isDark ? 'text-[#a9cdef] border-b-2 border-cyan-400' : 'text-[#142a43] border-b-2 border-[#142a43]',
     tabInactive:   isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600',
-    chipActive:    isDark ? 'bg-cyan-900/40 border-cyan-500 text-cyan-200' : 'bg-cyan-100 border-cyan-600 text-cyan-900',
+    chipActive:    isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-100' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]',
     chipInactive:  isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300',
     accentBox:     isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     accentTxt:     isDark ? 'text-sky-300' : 'text-sky-700',
@@ -119,9 +118,7 @@ const TheRunthrough = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const DIFFICULTY_COLORS = {
     hard:      { badge: isDark ? 'bg-amber-900/20 text-amber-400' : 'bg-amber-100 text-amber-800', labelKey: 'trt_diff_hard' },
@@ -463,9 +460,9 @@ const TheRunthrough = ({ tool }) => {
       <div className={`grid ${stats.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
         {stats.map((s, i) => (
           <div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-3 text-center`}>
-            <p className={`text-xs ${c.textMuted} uppercase font-semibold`}>{s.label}</p>
+            <p className={`text-[13px] ${c.textMuted} uppercase font-semibold`}>{s.label}</p>
             <p className={`text-lg font-bold ${c.text}`}>{s.value}</p>
-            <p className={`text-xs ${c.textMuted}`}>{s.sub}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>{s.sub}</p>
           </div>
         ))}
       </div>
@@ -490,20 +487,20 @@ const TheRunthrough = ({ tool }) => {
       {/* What was cut */}
       {d.what_was_cut?.length > 0 && (
         <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-          <button onClick={() => toggleSection('cuts')} className="w-full flex items-center justify-between">
+          <button data-print-heading aria-expanded={!!(expandedSections['cuts'] !== false)} onClick={() => toggleSection('cuts')} className="w-full flex items-center justify-between">
             <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
               <span>🗑️</span> {t('trt_what_was_cut')} ({d.what_was_cut.length})
             </h3>
-            <Caret open={expandedSections['cuts'] !== false} />
+            <span data-print-hide><Caret open={expandedSections['cuts'] !== false} /></span>
           </button>
-          {expandedSections['cuts'] !== false && (
-            <div className="mt-3 space-y-2">
+          {(
+            <div data-sec-body hidden={!(expandedSections['cuts'] !== false)} className="mt-3 space-y-2">
               {d.what_was_cut.map((cut, i) => (
                 <div key={i} className={`${c.danger} rounded-xl p-3 flex items-start gap-2`}>
                   <span className="text-sm flex-shrink-0">✕</span>
                   <div>
                     <p className={`text-sm font-medium ${c.text}`}>{cut.section}</p>
-                    <p className={`text-xs ${c.textMuted} mt-0.5`}>{cut.reason}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{cut.reason}</p>
                   </div>
                 </div>
               ))}
@@ -541,7 +538,7 @@ const TheRunthrough = ({ tool }) => {
       {/* Summary */}
       {d.presentation_summary && (
         <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-4 text-center`}>
-          <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('trt_arg_summary')}</p>
+          <p className={`text-[13px] font-semiboldr ${c.textMuted} mb-1`}>{t('trt_arg_summary')}</p>
           <p className={`text-sm font-medium italic ${c.text}`}>"{d.presentation_summary}"</p>
         </div>
       )}
@@ -581,19 +578,19 @@ const TheRunthrough = ({ tool }) => {
             const diff = DIFFICULTY_COLORS[q.difficulty] || DIFFICULTY_COLORS.hard;
             return (
               <div key={i} className={`${c.card} ${c.border} border rounded-2xl overflow-hidden transition-all`}>
-                <button onClick={() => toggleSection(`q-${i}`)} className="w-full p-4 flex items-start gap-3 text-start">
+                <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(`q-${i}`)} className="w-full p-4 flex items-start gap-3 text-start">
                   <span className={`text-sm font-bold ${c.accentTxt} mt-0.5 flex-shrink-0`}>{i + 1}.</span>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-semibold ${c.text} leading-snug`}>{q.question}</p>
-                    <p className={`text-xs ${c.textMuted} mt-1`}>{q.why_they_ask}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-1`}>{q.why_they_ask}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${diff.badge}`}>{t(diff.labelKey)}</span>
-                    <Caret open={isOpen} />
+                    <span data-print-hide><Caret open={isOpen} /></span>
                   </div>
                 </button>
-                {isOpen && (
-                  <div className={`px-4 pb-4 pt-0 ms-7 space-y-3 border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(isOpen)} className={`px-4 pb-4 pt-0 ms-7 space-y-3 border-t ${c.border}`}>
                     <div className={`${c.success} rounded-xl p-3 mt-3`}>
                       <p className={`text-xs font-semibold uppercase ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>{t('trt_draft_answer')}</p>
                       <p className={`text-sm ${c.text} leading-relaxed`}>{q.draft_answer}</p>
@@ -646,12 +643,12 @@ const TheRunthrough = ({ tool }) => {
             <div className={`${c.danger} rounded-xl p-3`}>
               <p className={`text-xs font-semibold uppercase ${isDark ? 'text-red-300' : 'text-red-800'} mb-1`}>{t('trt_current_opening')}</p>
               <p className={`text-sm ${c.text} mb-1`}>{d.diagnosis.current_opening}</p>
-              <p className={`text-xs ${c.textMuted} italic`}>{d.diagnosis.opening_problem}</p>
+              <p className={`text-[13px] ${c.textMuted} italic`}>{d.diagnosis.opening_problem}</p>
             </div>
             <div className={`${c.danger} rounded-xl p-3`}>
               <p className={`text-xs font-semibold uppercase ${isDark ? 'text-red-300' : 'text-red-800'} mb-1`}>{t('trt_current_closing')}</p>
               <p className={`text-sm ${c.text} mb-1`}>{d.diagnosis.current_closing}</p>
-              <p className={`text-xs ${c.textMuted} italic`}>{d.diagnosis.closing_problem}</p>
+              <p className={`text-[13px] ${c.textMuted} italic`}>{d.diagnosis.closing_problem}</p>
             </div>
           </div>
         </div>
@@ -669,7 +666,7 @@ const TheRunthrough = ({ tool }) => {
             {d.new_opening.technique}
           </span>
           <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>{d.new_opening.text}</p>
-          <p className={`text-xs ${c.textMuted} mt-2 italic`}>{d.new_opening.why_it_works}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-2 italic`}>{d.new_opening.why_it_works}</p>
         </div>
       )}
 
@@ -685,7 +682,7 @@ const TheRunthrough = ({ tool }) => {
             {d.new_closing.technique}
           </span>
           <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>{d.new_closing.text}</p>
-          <p className={`text-xs ${c.textMuted} mt-2 italic`}>{d.new_closing.why_it_works}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-2 italic`}>{d.new_closing.why_it_works}</p>
         </div>
       )}
 
@@ -703,7 +700,7 @@ const TheRunthrough = ({ tool }) => {
                   <p className={`text-sm ${c.textMuted} line-through mb-1`}>{tr.original}</p>
                 )}
                 <p className={`text-sm font-medium ${c.text} leading-relaxed`}>"{tr.rewritten}"</p>
-                <p className={`text-xs ${c.textMuted} mt-1 italic`}>{tr.why}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-1 italic`}>{tr.why}</p>
               </div>
             ))}
           </div>
@@ -728,8 +725,16 @@ const TheRunthrough = ({ tool }) => {
       <div className="space-y-6">
 
         {/* Header */}
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 {/* PF-30 — the wrapper already prints the name as the page <h1>.
@@ -742,7 +747,7 @@ const TheRunthrough = ({ tool }) => {
                     header already carries the tool's name/description), and
                     printing it added height that pushed a printout of this
                     tool into a large blank gap on the page before. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🎙️'}</span>{tool?.tagline ?? t('trt_tagline')}
                 </p>
                 <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -753,6 +758,7 @@ const TheRunthrough = ({ tool }) => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </div>
 
@@ -772,12 +778,12 @@ const TheRunthrough = ({ tool }) => {
         </div>
 
         {/* Mode description */}
-        <p className={`text-xs ${c.textMuted} italic`}>
+        <p className={`text-[13px] ${c.textMuted} italic`}>
           {t(MODES.find(m => m.id === mode)?.descKey)}
         </p>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs ${c.textMuted}`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
           {t('trt_xref_heckler_pre')} <a href="/HecklerPrep" className={linkStyle}>🎤 {t('trt_heckler')}</a> {t('trt_xref_heckler_pre_tail')}
         </p>
 
@@ -796,7 +802,7 @@ const TheRunthrough = ({ tool }) => {
               rows={6}
               className={`w-full px-4 py-3 rounded-xl text-base ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`}
             />
-            <p className={`text-xs ${c.textMuted} text-end`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.max(1, Math.round(content.split(/\s+/).filter(Boolean).length / 130)) }) : ''}</p>
+            <p className={`text-[13px] ${c.textMuted} text-end`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.max(1, Math.round(content.split(/\s+/).filter(Boolean).length / 130)) }) : ''}</p>
           </div>
 
           {/* Mode-specific inputs */}
@@ -841,7 +847,7 @@ const TheRunthrough = ({ tool }) => {
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {AUDIENCE_OPTIONS.map(a => (
-                    <button
+                    <button aria-pressed={audience === a.id}
                       key={a.id}
                       onClick={() => setAudience(a.id)}
                       className={`${audience === a.id ? c.chipActive : c.chipInactive} border rounded-xl px-2 py-2.5 text-center transition-all duration-150`}
@@ -875,7 +881,7 @@ const TheRunthrough = ({ tool }) => {
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {TONE_OPTIONS.map(to => (
-                    <button
+                    <button aria-pressed={tone === to.id}
                       key={to.id}
                       onClick={() => setTone(to.id)}
                       className={`${tone === to.id ? c.chipActive : c.chipInactive} border rounded-xl px-3 py-2.5 text-start transition-all duration-150`}
@@ -884,7 +890,7 @@ const TheRunthrough = ({ tool }) => {
                         <span className="text-lg">{to.icon}</span>
                         <div>
                           <p className="text-sm font-medium leading-tight">{t(to.labelKey)}</p>
-                          <p className={`text-xs ${c.textMuted} leading-tight mt-0.5`}>{t(to.descKey)}</p>
+                          <p className={`text-[13px] ${c.textMuted} leading-tight mt-0.5`}>{t(to.descKey)}</p>
                         </div>
                       </div>
                     </button>
@@ -956,8 +962,8 @@ const TheRunthrough = ({ tool }) => {
             {results.mode === 'hook' && <HookResults data={results.data} />}
 
             {/* Cross-references */}
-            <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider`}>
+            <div data-print-hide className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
+              <p className={`text-[13px] font-semibold ${c.textMuted}r`}>
                 {t('trt_related_tools')}
               </p>
               <div className="space-y-1.5 text-xs">
@@ -995,7 +1001,7 @@ const TheRunthrough = ({ tool }) => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <p className={`text-sm font-semibold ${c.text} truncate`}>{sum.title}</p>
-                        <p className={`text-xs ${c.textMuted} mt-0.5`}>
+                        <p className={`text-[13px] ${c.textMuted} mt-0.5`}>
                           <span className="me-1">{modeInfo?.icon}</span>{t(modeInfo?.labelKey)}{sum.chip ? ` · ${sum.chip}` : ''}
                         </p>
                       </div>
@@ -1009,7 +1015,7 @@ const TheRunthrough = ({ tool }) => {
                       </div>
                     </div>
                     <p className={`text-xs ${c.textSecondary} mt-2`}>{sum.statsLine}</p>
-                    {sum.takeaway && <p className={`text-xs ${c.textMuted} mt-1 leading-relaxed`}>{sum.takeaway}</p>}
+                    {sum.takeaway && <p className={`text-[13px] ${c.textMuted} mt-1 leading-relaxed`}>{sum.takeaway}</p>}
                     <button
                       onClick={(e) => { e.stopPropagation(); continuePrep(s); }}
                       className={`text-xs font-semibold ${c.accentTxt} mt-2 hover:underline`}

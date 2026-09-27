@@ -156,17 +156,14 @@ const ResearchDecoder = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -181,8 +178,7 @@ const ResearchDecoder = ({ tool }) => {
     successBox:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -190,9 +186,7 @@ const ResearchDecoder = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Mode ───
   const [mode, setMode] = useState('decode');
@@ -466,17 +460,17 @@ const ResearchDecoder = ({ tool }) => {
     const isOpen = expandedSections[id] ?? defaultOpen;
     return (
       <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-        <button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between">
+        <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between">
           <h3 className={`font-bold ${c.text}`}>{title}</h3>
-          <Caret open={isOpen} />
+          <span data-print-hide><Caret open={isOpen} /></span>
         </button>
-        {isOpen && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}
+        {<div data-sec-body hidden={!(isOpen)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}
       </div>
     );
   };
 
   const BasedOnBadge = ({ scope }) => (
-    <span className={`inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full ${c.cardAlt} border ${c.border} ${c.textMuted}`}>
+    <span className={`inline-block text-[13px] font-bold px-2 py-1 rounded-full ${c.cardAlt} border ${c.border} ${c.textMuted}`}>
       {t('rd_based_on')}: {scope === 'ABSTRACT_OR_EXCERPT' ? t('rd_based_abstract') : t('rd_based_text')}
     </span>
   );
@@ -489,12 +483,20 @@ const ResearchDecoder = ({ tool }) => {
   return (
     <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
       {/* ─── Persistent Header Card ─── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '📄'}</span>{toolTagline(tool?.tagline ?? t('rd_tagline'))}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -504,22 +506,23 @@ const ResearchDecoder = ({ tool }) => {
               ) : null}
             </div>
           </div>
+          </div>
         </div>
         <div className="px-5 pb-5 pt-3">
           <div className="flex flex-wrap gap-1.5">
-            {MODES.map(m => <button key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="me-1">{m.icon}</span> {m.label}</button>)}
-            <button onClick={() => setMode('recent')} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === 'recent' ? c.pillActive : c.pillInactive}`}><span className="me-1">🕘</span> {t('rd_mode_recent')}{recentLog.length ? ` (${recentLog.length})` : ''}</button>
+            {MODES.map(m => <button aria-pressed={mode === m.id} key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="me-1">{m.icon}</span> {m.label}</button>)}
+            <button aria-pressed={mode === 'recent'} onClick={() => setMode('recent')} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === 'recent' ? c.pillActive : c.pillInactive}`}><span className="me-1">🕘</span> {t('rd_mode_recent')}{recentLog.length ? ` (${recentLog.length})` : ''}</button>
           </div>
         </div>
       </div>
 
       {/* ═══ DECODE MODE ═══ */}
       {mode === 'decode' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📄 {t('rd_decode_card_title')}</h3>
           <div>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paste_label')} <span className={c.required}>*</span></label>
-            <p className={`text-xs ${c.textMuted} mb-2`}>{t('rd_paste_hint')}</p>
+            <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('rd_paste_hint')}</p>
 
             {pdfBase64 ? (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3 mb-2`}>
@@ -530,7 +533,7 @@ const ResearchDecoder = ({ tool }) => {
             ) : (
               <div className="flex items-center gap-3 mb-2">
                 <button type="button" onClick={() => fileInputRef.current?.click()} className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>📎 {t('rd_upload')}</button>
-                <span className={`text-xs ${c.textMuted}`}>{t('rd_upload_hint')}</span>
+                <span className={`text-[13px] ${c.textMuted}`}>{t('rd_upload_hint')}</span>
                 <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf" className="hidden" onChange={e => handleFile(e.target.files?.[0])} />
               </div>
             )}
@@ -566,7 +569,7 @@ const ResearchDecoder = ({ tool }) => {
         </div>
 
         {!results && (
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('rd_xref_pre')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a>
           </p>
         )}
@@ -580,7 +583,7 @@ const ResearchDecoder = ({ tool }) => {
             </div>
 
             {r.what_they_did && (r.what_they_did.study_design || r.what_they_did.population_or_subjects || r.what_they_did.measurement_or_intervention || r.what_they_did.comparison || r.what_they_did.timeframe) && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🔬 {t('rd_what_they_did')}</h3>
                 {r.what_they_did.study_design && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>{t('rd_study_design')}</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.study_design}</p></div>}
                 {r.what_they_did.population_or_subjects && <div className={`${c.cardAlt} rounded-lg p-3`}><span className={`text-xs font-bold ${c.accentTxt}`}>{t('rd_population')}</span><p className={`text-sm ${c.text} mt-0.5`}>{r.what_they_did.population_or_subjects}</p></div>}
@@ -591,28 +594,28 @@ const ResearchDecoder = ({ tool }) => {
             )}
 
             {r.key_numbers?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🔢 {t('rd_numbers_mean')}</h3>
                 {r.key_numbers.map((n, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
                     {n.reported && <p className={`text-sm font-semibold ${c.text}`}>{n.reported}</p>}
                     {n.plain_meaning && <p className={`text-sm ${c.textSecondary}`}>{n.plain_meaning}</p>}
-                    {n.important_caveat && <p className={`text-xs ${c.textMuted}`}>⚠️ {n.important_caveat}</p>}
+                    {n.important_caveat && <p className={`text-[13px] ${c.textMuted}`}>⚠️ {n.important_caveat}</p>}
                   </div>
                 ))}
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {r.what_this_study_supports?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">✅ {t('rd_supports')}</h3>{r.what_this_study_supports.map((s, i) => <p key={i} className="text-sm mt-1">• {s}</p>)}</div>}
-              {r.what_it_doesnt_establish?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><h3 className="font-bold text-sm">🚧 {t('rd_doesnt_establish')}</h3>{r.what_it_doesnt_establish.map((s, i) => <p key={i} className="text-sm mt-1">• {s}</p>)}</div>}
+              {r.what_this_study_supports?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">✅ {t('rd_supports')}</h3>{r.what_this_study_supports.map((s, i) => <p key={i} className="text-sm mt-1">• {s}</p>)}</div>}
+              {r.what_it_doesnt_establish?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">🚧 {t('rd_doesnt_establish')}</h3>{r.what_it_doesnt_establish.map((s, i) => <p key={i} className="text-sm mt-1">• {s}</p>)}</div>}
             </div>
 
             {(r.limitations?.reported_in_source?.length > 0 || r.limitations?.design_limits?.length > 0) && (
               <Section id="limits" title={`🧱 ${t('rd_limitations')}`}>
                 {r.limitations.reported_in_source?.length > 0 && <div><p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('rd_limits_reported')}</p>{r.limitations.reported_in_source.map((l, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {l}</p>)}</div>}
                 {r.limitations.design_limits?.length > 0 && <div className="mt-2"><p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('rd_limits_design')}</p>{r.limitations.design_limits.map((l, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {l}</p>)}</div>}
-                {r.limitations.may_be_missing_from_excerpt && <p className={`text-xs ${c.textMuted} mt-2`}>{t('rd_limits_may_be_more')}</p>}
+                {r.limitations.may_be_missing_from_excerpt && <p className={`text-[13px] ${c.textMuted} mt-2`}>{t('rd_limits_may_be_more')}</p>}
               </Section>
             )}
 
@@ -622,19 +625,19 @@ const ResearchDecoder = ({ tool }) => {
                   <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                     <p className={`text-sm font-bold ${c.text}`}>{j.term}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{j.plain_meaning}</p>
-                    {j.why_it_matters_here && <p className={`text-xs ${c.textMuteded}`}>{j.why_it_matters_here}</p>}
+                    {j.why_it_matters_here && <p className={`text-[13px] ${c.textMuteded}`}>{j.why_it_matters_here}</p>}
                   </div>
                 ))}
               </Section>
             )}
 
             <div className={`${c.success} border rounded-xl p-5 space-y-2`}>
-              <h3 className="font-bold">🎯 {t('rd_bottom_line')}</h3>
+              <h3 className="text-base font-bold">🎯 {t('rd_bottom_line')}</h3>
               <p className={`text-sm font-medium ${c.successTxt}`}>{r.bottom_line}</p>
               {r.important_unknowns?.length > 0 && (
                 <div className="pt-2">
                   <p className={`text-xs font-bold ${c.textMuted}`}>{t('rd_still_unknown')}</p>
-                  {r.important_unknowns.map((u, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {u}</p>)}
+                  {r.important_unknowns.map((u, i) => <p key={i} className={`text-[13px] ${c.textMuted}`}>• {u}</p>)}
                 </div>
               )}
             </div>
@@ -646,7 +649,7 @@ const ResearchDecoder = ({ tool }) => {
 
             {/* ─── Personal Relevance (progressive disclosure) ─── */}
             {showRelevance && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🎯 {t('rd_means_for_me')}</h3>
                 <div>
                   <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_rel_wonder_label')} <span className={c.required}>*</span></label>
@@ -666,8 +669,8 @@ const ResearchDecoder = ({ tool }) => {
                     <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('rd_outcome_match')}</p><p className={`text-sm ${c.textSecondary} mt-1`}>{relResult.outcome_match?.explanation}</p></div>
                     <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('rd_decision_support')}</p><p className={`text-sm ${c.textSecondary} mt-1`}>{relResult.decision_support?.explanation}</p></div>
                     {relResult.what_you_can_take_from_it && <div className={`${c.success} border rounded-lg p-3`}><p className={`text-sm font-medium ${c.successTxt}`}>{relResult.what_you_can_take_from_it}</p></div>}
-                    {relResult.what_it_cannot_tell_you_personally?.length > 0 && <div><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rd_cannot_tell_you')}</p>{relResult.what_it_cannot_tell_you_personally.map((x, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {x}</p>)}</div>}
-                    {relResult.questions_worth_asking?.length > 0 && <div><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rd_questions_worth_asking')}</p>{relResult.questions_worth_asking.map((x, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {x}</p>)}</div>}
+                    {relResult.what_it_cannot_tell_you_personally?.length > 0 && <div><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rd_cannot_tell_you')}</p>{relResult.what_it_cannot_tell_you_personally.map((x, i) => <p key={i} className={`text-[13px] ${c.textMuted}`}>• {x}</p>)}</div>}
+                    {relResult.questions_worth_asking?.length > 0 && <div><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rd_questions_worth_asking')}</p>{relResult.questions_worth_asking.map((x, i) => <p key={i} className={`text-[13px] ${c.textMuted}`}>• {x}</p>)}</div>}
                   </div>
                 )}
               </div>
@@ -678,7 +681,7 @@ const ResearchDecoder = ({ tool }) => {
 
       {/* ═══ HEADLINE CHECK MODE ═══ */}
       {mode === 'headline' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📰 {t('rd_headline_card_title')}</h3>
           <div>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_research_text_label')} <span className={c.required}>*</span></label>
@@ -710,32 +713,32 @@ const ResearchDecoder = ({ tool }) => {
         </div>
 
         {!results && (
-          <p className={`text-xs ${c.textMuted} text-center`}>{t('rd_xref_headline_pre')}</p>
+          <p className={`text-[13px] ${c.textMuted} text-center`}>{t('rd_xref_headline_pre')}</p>
         )}
 
         {hlResult && (() => { const r = hlResult; return (
           <div className="space-y-4">
             <div className={`${c[ASSESSMENT_TONE[r.assessment] || 'infoBox']} border rounded-xl p-5`}>
-              <h3 className="font-bold text-sm">{t(`rd_assess_${(r.assessment || '').toLowerCase()}`)}</h3>
+              <h3 className="text-base font-bold text-sm">{t(`rd_assess_${(r.assessment || '').toLowerCase()}`)}</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {r.research_says && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">🔬 {t('rd_research_says')}</h3><p className="text-sm mt-1">{r.research_says}</p></div>}
-              {r.headline_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📰 {t('rd_headline_says')}</h3><p className={`text-sm mt-1 ${c.textSecondary}`}>{r.headline_says}</p></div>}
+              {r.research_says && <div className={`${c.success} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">🔬 {t('rd_research_says')}</h3><p className="text-sm mt-1">{r.research_says}</p></div>}
+              {r.headline_says && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`text-base font-bold ${c.text}`}>📰 {t('rd_headline_says')}</h3><p className={`text-sm mt-1 ${c.textSecondary}`}>{r.headline_says}</p></div>}
             </div>
             {r.differences?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🔍 {t('rd_differences')}</h3>
                 {r.differences.map((d, i) => (
                   <div key={i} className={`${c.warning} border rounded-lg p-3 space-y-1`}>
                     <p className="text-sm"><strong>{t('rd_label_headline')}</strong> {d.headline_claim}</p>
                     <p className="text-sm"><strong>{t('rd_label_research')}</strong> {d.research_supports}</p>
-                    {d.difference && <p className={`text-xs ${c.textMuteded}`}>{d.difference}</p>}
-                    {d.why_it_matters && <p className={`text-xs ${c.textMuteded}`}>{d.why_it_matters}</p>}
+                    {d.difference && <p className={`text-[13px] ${c.textMuteded}`}>{d.difference}</p>}
+                    {d.why_it_matters && <p className={`text-[13px] ${c.textMuteded}`}>{d.why_it_matters}</p>}
                   </div>
                 ))}
               </div>
             )}
-            {r.what_it_got_right?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="font-bold text-sm">✅ {t('rd_got_right')}</h3>{r.what_it_got_right.map((g, i) => <p key={i} className="text-sm mt-1">• {g}</p>)}</div>}
+            {r.what_it_got_right?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">✅ {t('rd_got_right')}</h3>{r.what_it_got_right.map((g, i) => <p key={i} className="text-sm mt-1">• {g}</p>)}</div>}
             {r.more_accurate_version && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>📝 {t('rd_more_accurate')}</h3><p className={`text-sm ${c.text} mt-1`}>{r.more_accurate_version}</p></div>}
           </div>
         ); })()}
@@ -743,7 +746,7 @@ const ResearchDecoder = ({ tool }) => {
 
       {/* ═══ COMPARE MODE ═══ */}
       {mode === 'compare' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>⚖️ {t('rd_compare_card_title')}</h3>
           <div>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper1_label')} <span className={c.required}>*</span></label>
@@ -764,12 +767,12 @@ const ResearchDecoder = ({ tool }) => {
 
         {cmpResult && (() => { const r = cmpResult; return (
           <div className="space-y-4">
-            {r.same_question && <div className={`${c[ASSESSMENT_TONE[r.same_question.assessment] || 'infoBox']} border rounded-xl p-4`}><h3 className="font-bold text-sm">{t(`rd_same_q_${(r.same_question.assessment || '').toLowerCase()}`)}</h3>{r.same_question.explanation && <p className="text-sm mt-1">{r.same_question.explanation}</p>}</div>}
+            {r.same_question && <div className={`${c[ASSESSMENT_TONE[r.same_question.assessment] || 'infoBox']} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">{t(`rd_same_q_${(r.same_question.assessment || '').toLowerCase()}`)}</h3>{r.same_question.explanation && <p className="text-sm mt-1">{r.same_question.explanation}</p>}</div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 {t('rd_paper1')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper_1?.finding}</p></div>
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 {t('rd_paper2')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper_2?.finding}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`text-base font-bold ${c.text}`}>📄 {t('rd_paper1')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper_1?.finding}</p></div>
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`text-base font-bold ${c.text}`}>📄 {t('rd_paper2')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper_2?.finding}</p></div>
             </div>
-            {r.relationship && <div className={`${c[ASSESSMENT_TONE[r.relationship] || 'infoBox']} border rounded-xl p-5`}><h3 className="font-bold text-lg">{t(`rd_rel_${(r.relationship || '').toLowerCase()}`)}</h3></div>}
+            {r.relationship && <div className={`${c[ASSESSMENT_TONE[r.relationship] || 'infoBox']} border rounded-xl p-5`}><h3 className="text-base font-bold text-lg">{t(`rd_rel_${(r.relationship || '').toLowerCase()}`)}</h3></div>}
             {r.material_differences?.length > 0 && (
               <Section id="matdiff" title={`🔍 ${t('rd_material_differences')}`}>
                 {r.material_differences.map((d, i) => (
@@ -777,7 +780,7 @@ const ResearchDecoder = ({ tool }) => {
                     {d.dimension && <p className={`text-xs font-bold ${c.accentTxt}`}>{d.dimension}</p>}
                     <p className={`text-sm ${c.textSecondary}`}><strong>{t('rd_paper1')}:</strong> {d.paper_1}</p>
                     <p className={`text-sm ${c.textSecondary}`}><strong>{t('rd_paper2')}:</strong> {d.paper_2}</p>
-                    {d.why_it_matters && <p className={`text-xs ${c.textMuteded}`}>{d.why_it_matters}</p>}
+                    {d.why_it_matters && <p className={`text-[13px] ${c.textMuteded}`}>{d.why_it_matters}</p>}
                   </div>
                 ))}
               </Section>
@@ -786,14 +789,14 @@ const ResearchDecoder = ({ tool }) => {
               <Section id="whydiff" title={`🤔 ${t('rd_what_may_explain')}`}>
                 {r.possible_explanations.map((p, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary}`}>
-                    <span className={`text-[10px] font-bold uppercase me-1 ${c.textMuted}`}>{p.status === 'OBSERVED_DIFFERENCE' ? t('rd_observed') : t('rd_possibility')}</span>
+                    <span className={`text-[13px] font-bold me-1 ${c.textMuted}`}>{p.status === 'OBSERVED_DIFFERENCE' ? t('rd_observed') : t('rd_possibility')}</span>
                     {p.explanation}
                   </p>
                 ))}
               </Section>
             )}
             {r.what_each_can_tell_you && (r.what_each_can_tell_you.paper_1 || r.what_each_can_tell_you.paper_2) && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+              <div className={`border-t ${c.border} pt-5 space-y-2`}>
                 <h3 className={`font-bold ${c.text}`}>🔎 {t('rd_what_each_can_tell')}</h3>
                 {r.what_each_can_tell_you.paper_1 && <p className={`text-sm ${c.textSecondary}`}><strong>{t('rd_paper1')}:</strong> {r.what_each_can_tell_you.paper_1}</p>}
                 {r.what_each_can_tell_you.paper_2 && <p className={`text-sm ${c.textSecondary}`}><strong>{t('rd_paper2')}:</strong> {r.what_each_can_tell_you.paper_2}</p>}
@@ -807,7 +810,7 @@ const ResearchDecoder = ({ tool }) => {
 
       {/* ═══ EXPLAIN A TERM MODE ═══ */}
       {mode === 'term' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🔤 {t('rd_term_card_title')}</h3>
           <div>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_label')} <span className={c.required}>*</span></label>
@@ -827,12 +830,12 @@ const ResearchDecoder = ({ tool }) => {
         </div>
 
         {termResult && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+          <div className={`border-t ${c.border} pt-5 space-y-2`}>
             <h3 className={`font-bold ${c.text}`}>{termText}</h3>
             <p className={`text-sm ${c.textSecondary}`}>{termResult.plain_meaning}</p>
             {termResult.what_it_means_here && <div className={`${c.cardAlt} rounded-lg p-3 mt-2`}><span className={`text-xs font-bold ${c.accentTxt}`}>{t('rd_here')}</span><p className={`text-sm ${c.text} mt-0.5`}>{termResult.what_it_means_here}</p></div>}
             {termResult.why_it_matters_here && <p className={`text-sm ${c.textMuteded}`}>💡 {termResult.why_it_matters_here}</p>}
-            {termResult.example && <p className={`text-xs ${c.textMuteded}`}>📝 {termResult.example}</p>}
+            {termResult.example && <p className={`text-[13px] ${c.textMuteded}`}>📝 {termResult.example}</p>}
             {termResult.common_confusion && <div className={`${c.warning} border rounded-lg p-3 mt-2`}><p className="text-xs">⚠️ {termResult.common_confusion}</p></div>}
           </div>
         )}
@@ -840,7 +843,7 @@ const ResearchDecoder = ({ tool }) => {
 
       {/* ═══ RECENT MODE ═══ */}
       {mode === 'recent' && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>🕘 {t('rd_recent_title')}</h3>
           {recentLog.length === 0 ? (
             <p className={`text-sm ${c.textMuteded}`}>{t('rd_recent_empty')}</p>
@@ -849,12 +852,12 @@ const ResearchDecoder = ({ tool }) => {
               <div className="min-w-0">
                 <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{t(`rd_mode_${entry.mode}`)}</p>
                 <p className={`text-sm font-semibold ${c.text} truncate`}>{entry.title || t('rd_untitled')}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{new Date(entry.timestamp).toLocaleDateString()}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{new Date(entry.timestamp).toLocaleDateString()}</p>
               </div>
               <div className="flex gap-2 shrink-0">
                 <button onClick={() => viewRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_view')}</button>
                 <button onClick={() => revisitRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_revisit')}</button>
-                <button onClick={() => setRecentLog(prev => prev.filter(x => x.id !== entry.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
+                <button onClick={() => setRecentLog(prev => prev.filter(x => x.id !== entry.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button>
               </div>
             </div>
           ))}
@@ -862,7 +865,7 @@ const ResearchDecoder = ({ tool }) => {
       )}
 
       {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>
           {t('rd_xref_signal_q')} <a href="/SignalVsNoise" className={linkStyle}>📡 {t('rd_signal_noise')}</a>
         </p>
       )}

@@ -53,17 +53,17 @@ const SYMPTOM_PRESETS = [
 // ════════════════════════════════════════════════════════════
 function Sec({ icon, title, badge, open, onToggle, children, c, actions }) {
   return (
-    <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+    <div className={`border-t ${c.border} pt-5`}>
       <div className="flex items-center gap-2 w-full">
-        <button onClick={onToggle} className="flex items-center gap-2 flex-1 text-start">
+        <button data-print-heading aria-expanded={!!(open)} onClick={onToggle} className="flex items-center gap-2 flex-1 text-start">
           <span className="text-lg">{icon}</span>
-          <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
-          {badge && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
-          <Caret open={open} />
+          <h3 className={`text-base font-bold ${c.text} flex-1`}>{title}</h3>
+          {badge && <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
+          <span data-print-hide><Caret open={open} /></span>
         </button>
         {actions}
       </div>
-      {open && <div className="mt-4">{children}</div>}
+      {<div data-sec-body hidden={!(open)} className="mt-4">{children}</div>}
     </div>
   );
 }
@@ -128,14 +128,14 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
             FORBID_ATTR: ['onload', 'onerror', 'onclick', 'onmouseover'],
           }) }} />
         </div>
-        <button onClick={generate} className={`text-[10px] ${c.textMuted} mt-1 hover:underline`}>{t('dvt_regenerate')}</button>
+        <button onClick={generate} className={`text-[13px] ${c.textMuted} mt-1 hover:underline`}>{t('dvt_regenerate')}</button>
       </div>
     );
   }
 
   return (
     <div className="mt-2">
-      {state === 'error' && <p className="text-[10px] text-red-500 mb-1">{err}</p>}
+      {state === 'error' && <p className="text-xs text-red-500 mb-1">{err}</p>}
       <button
         onClick={generate}
         disabled={state === 'loading'}
@@ -162,27 +162,25 @@ const DoctorVisitTranslator = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
-    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#142a43]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     // Bespoke tool-specific keys
-    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    highlight:     isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     pillGray:      isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-zinc-100 text-zinc-500 border-zinc-200',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── useState (all first per PF-14) ──
   // MODE: input | results | journal | health | sessionHistory | prep
@@ -474,11 +472,19 @@ const DoctorVisitTranslator = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '👩‍⚕️'}</span>{tool?.tagline ?? t('dvt_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap" title={t('dvt_try_example_title')}>✨ {t('try_example')}</button>
@@ -492,10 +498,11 @@ const DoctorVisitTranslator = ({ tool }) => {
             </button>
           )}
         </div>
+        </div>
       </div>
 
       {/* MODE TABS */}
-      <div className={`${c.card} border rounded-xl p-4`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className="grid grid-cols-6 gap-2">
           {[
             { id: 'input', icon: '✏️', label: t('dvt_tab_translate') },
@@ -506,9 +513,9 @@ const DoctorVisitTranslator = ({ tool }) => {
             { id: 'prep', icon: '📝', label: t('dvt_tab_prep') },
           ].map(m => (
             <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
-              className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-gray-200 hover:border-gray-300')}`}>
+              className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-gray-200 hover:border-gray-300')}`}>
               <span className="text-lg block">{m.icon}</span>
-              <p className={`text-[10px] font-semibold ${c.text}`}>{m.label}</p>
+              <p className={`text-xs font-semibold ${c.text}`}>{m.label}</p>
             </button>
           ))}
         </div>
@@ -533,7 +540,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* ══════════ INPUT MODE ══════════ */}
       {mode === 'input' && (
-        <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
+        <div className={`border-t ${c.border} pt-5 space-y-5`}>
           <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
             <span>⚠️</span>
             <div><h4 className="font-bold text-sm mb-0.5">{t('dvt_disclaimer_title')}</h4><p className="text-xs">{t('dvt_disclaimer_body')}</p></div>
@@ -544,8 +551,8 @@ const DoctorVisitTranslator = ({ tool }) => {
             <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvt_what_translating')}</label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
               <button key={dt.id} onClick={() => setDocumentType(dt.id)}
-                className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
-                <p className={`text-[10px] font-semibold ${c.text}`}>{t(dt.labelKey)}</p>
+                className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
+                <p className={`text-xs font-semibold ${c.text}`}>{t(dt.labelKey)}</p>
               </button>
             ))}</div>
           </div>
@@ -553,7 +560,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           <div>
             <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
               {t(DOC_TYPES.find(d => d.id === documentType)?.labelKey || 'dvt_notes_label')}
-              {pdfFile ? <span className={`ms-1 text-[10px] font-normal ${c.textMuted}`}>{t('dvt_pdf_optional')}</span> : <span className={c.required}>*</span>}
+              {pdfFile ? <span className={`ms-1 text-xs font-normal ${c.textMuted}`}>{t('dvt_pdf_optional')}</span> : <span className={c.required}>*</span>}
             </label>
 
             {/* PDF upload zone */}
@@ -563,10 +570,10 @@ const DoctorVisitTranslator = ({ tool }) => {
                   <span>📄</span>
                   <div>
                     <p className="text-xs font-semibold">{pdfFile.name}</p>
-                    <p className="text-[10px]">{t('dvt_pdf_uploaded_name')}</p>
+                    <p className="text-xs">{t('dvt_pdf_uploaded_name')}</p>
                   </div>
                 </div>
-                <button onClick={clearPdf} className={`text-xs ${c.textMuted} ${c.deleteHover} ms-2`} title={t('dvt_remove_pdf')}>✕</button>
+                <button onClick={clearPdf} className={`text-[13px] ${c.textMuted} ${c.deleteHover} ms-2`} title={t('dvt_remove_pdf')}>✕</button>
               </div>
             ) : (
               <div
@@ -576,11 +583,11 @@ const DoctorVisitTranslator = ({ tool }) => {
                 onClick={() => fileInputRef.current?.click()}
                 className={`w-full mb-2 border-2 border-dashed rounded-lg p-3 text-center cursor-pointer transition-colors ${
                   pdfDragging
-                    ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50')
+                    ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')
                     : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-300 hover:border-gray-400')
                 }`}>
-                <p className={`text-xs ${c.textMuted}`}>{t('dvt_drop_pdf')} <span className={`text-cyan-500 underline`}>{t('dvt_browse')}</span></p>
-                <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{t('dvt_pdf_hint')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_drop_pdf')} <span className={`text-cyan-500 underline`}>{t('dvt_browse')}</span></p>
+                <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{t('dvt_pdf_hint')}</p>
                 <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden"
                   onChange={e => handlePdfSelect(e.target.files[0])} />
               </div>
@@ -595,7 +602,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               real question under "what does mild degenerative changes mean?" —
               so it sits directly under the document instead of below the fold. */}
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_concerns')} <span className={`text-[10px] ${c.textMuted}`}>({t('optional')})</span></label>
+            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_concerns')} <span className={`text-[13px] ${c.textMuted}`}>({t('optional')})</span></label>
             <textarea value={concerns} onChange={e => setConcerns(e.target.value)} placeholder={t('dvt_ph_concerns')}
               className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`} />
           </div>
@@ -606,12 +613,12 @@ const DoctorVisitTranslator = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_medications')} <span className={`text-[10px] ${c.textMuted}`}>({t('optional')})</span></label>
+            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_medications')} <span className={`text-[13px] ${c.textMuted}`}>({t('optional')})</span></label>
             {activeMeds.length > 0 && (
               <div className={`${c.success} border rounded-lg p-3 mb-2`}>
-                <p className="text-[10px] font-bold mb-1">{t('dvt_auto_included', { count: activeMeds.length })}</p>
+                <p className="text-xs font-bold mb-1">{t('dvt_auto_included', { count: activeMeds.length })}</p>
                 <p className="text-xs">{activeMeds.map(m => m.name).join(', ')}</p>
-                <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('dvt_checked_interactions')}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('dvt_checked_interactions')}</p>
               </div>
             )}
             <textarea value={currentMedications} onChange={e => setCurrentMedications(e.target.value)} placeholder={t('dvt_ph_meds')}
@@ -634,7 +641,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
           {/* Pre-result cross-ref (S5.5) */}
-          <p className={`text-xs ${c.textMuted} text-center pt-2`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-2`}>
             {t('dvt_xref_procedure_q')}{' '}
             <a href="/ProcedureProbe" className={linkStyle}>🔬 {t('dvt_procedure_probe')}</a>.
           </p>
@@ -672,7 +679,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           {results.medication_safety?.known_med_interactions && !results.medication_safety.known_med_interactions.toLowerCase().includes('no significant') && (
             <div className={`${c.highlight} border rounded-xl p-4 flex items-start gap-2`}>
               <span>💊</span>
-              <div><p className="text-sm font-bold">{t('dvt_interaction_title')}</p><p className="text-xs mt-1">{results.medication_safety.known_med_interactions}</p><p className={`text-[10px] ${c.textMuted} mt-1`}>{t('dvt_discuss_doctor')}</p></div>
+              <div><p className="text-sm font-bold">{t('dvt_interaction_title')}</p><p className="text-xs mt-1">{results.medication_safety.known_med_interactions}</p><p className={`text-[13px] ${c.textMuted} mt-1`}>{t('dvt_discuss_doctor')}</p></div>
             </div>
           )}
 
@@ -682,32 +689,32 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div className="space-y-3">
                 {comparisonEntry.results?.plain_english_summary?.diagnosis && results.plain_english_summary?.diagnosis && (
                   <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('dvt_lbl_diagnosis')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dvt_lbl_diagnosis')}</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><p className={`text-[9px] ${c.textMuted}`}>{comparisonEntry.date}</p><p className={`text-xs ${c.textSecondary}`}>{comparisonEntry.results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
-                      <div><p className={`text-[9px] ${c.textSecondary}`}>{t('dvt_today')}</p><p className={`text-xs ${c.text} font-semibold`}>{results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
+                      <div><p className={`text-[13px] ${c.textMuted}`}>{comparisonEntry.date}</p><p className={`text-xs ${c.textSecondary}`}>{comparisonEntry.results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
+                      <div><p className={`text-xs ${c.textSecondary}`}>{t('dvt_today')}</p><p className={`text-xs ${c.text} font-semibold`}>{results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
                     </div>
                   </div>
                 )}
                 {comparisonEntry.results?.test_results_explained?.length > 0 && results.test_results_explained?.length > 0 && (
                   <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-2`}>{t('dvt_lbl_tests')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('dvt_lbl_tests')}</p>
                     {results.test_results_explained.map((tt, i) => {
                       const prev = comparisonEntry.results.test_results_explained?.find(p => p.test?.toLowerCase() === tt.test?.toLowerCase());
                       if (!prev) return null;
-                      return <div key={i} className="flex items-center gap-2 mb-1"><span className={`text-xs ${c.text} w-24 truncate`}>{tt.test}</span><span className={`text-xs ${c.textMuted}`}>{prev.your_result}</span><span className="text-xs">{parseFloat(tt.your_result) < parseFloat(prev.your_result) ? '📉' : parseFloat(tt.your_result) > parseFloat(prev.your_result) ? '📈' : '➡️'}</span><span className={`text-xs font-semibold ${c.text}`}>{tt.your_result}</span></div>;
+                      return <div key={i} className="flex items-center gap-2 mb-1"><span className={`text-xs ${c.text} w-24 truncate`}>{tt.test}</span><span className={`text-[13px] ${c.textMuted}`}>{prev.your_result}</span><span className="text-xs">{parseFloat(tt.your_result) < parseFloat(prev.your_result) ? '📉' : parseFloat(tt.your_result) > parseFloat(prev.your_result) ? '📈' : '➡️'}</span><span className={`text-xs font-semibold ${c.text}`}>{tt.your_result}</span></div>;
                     })}
                   </div>
                 )}
                 {comparisonEntry.results?.medications?.length > 0 && results.medications?.length > 0 && (
                   <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('dvt_lbl_med_changes')}</p>
+                    <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dvt_lbl_med_changes')}</p>
                     {(() => {
                       const prevN = new Set(comparisonEntry.results.medications.map(m => m.name.toLowerCase()));
                       const currN = new Set(results.medications.map(m => m.name.toLowerCase()));
                       const added = results.medications.filter(m => !prevN.has(m.name.toLowerCase()));
                       const removed = comparisonEntry.results.medications.filter(m => !currN.has(m.name.toLowerCase()));
-                      return <>{added.map((m, i) => <p key={`a${i}`} className="text-xs text-emerald-500">➕ {m.name}</p>)}{removed.map((m, i) => <p key={`r${i}`} className="text-xs text-red-400">➖ {m.name}</p>)}{!added.length && !removed.length && <p className={`text-xs ${c.textMuted}`}>{t('dvt_no_changes')}</p>}</>;
+                      return <>{added.map((m, i) => <p key={`a${i}`} className="text-xs text-emerald-500">➕ {m.name}</p>)}{removed.map((m, i) => <p key={`r${i}`} className="text-xs text-red-400">➖ {m.name}</p>)}{!added.length && !removed.length && <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_no_changes')}</p>}</>;
                     })()}
                   </div>
                 )}
@@ -721,10 +728,10 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div className="space-y-3">{results.medical_terms_explained.map((tm, i) => (
                 <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                   <h4 className={`font-bold text-sm ${c.text} mb-1`}>{tm.term}</h4><p className={`text-sm ${c.textSecondary} mb-2`}>{tm.definition}</p>
-                  <div className={`${c.highlight} border rounded p-3`}><p className="text-[10px] font-bold mb-0.5">{t('dvt_for_you')}</p><p className="text-xs">{tm.what_it_means_for_you}</p></div>
+                  <div className={`${c.highlight} border rounded p-3`}><p className="text-xs font-bold mb-0.5">{t('dvt_for_you')}</p><p className="text-xs">{tm.what_it_means_for_you}</p></div>
                   {tm.visual_aid_suggestion && (
                     <div className="mt-2">
-                      <p className={`text-[10px] ${c.textMuted}`}>🖼️ {tm.visual_aid_suggestion}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>🖼️ {tm.visual_aid_suggestion}</p>
                       <DiagramBtn description={tm.visual_aid_suggestion} diagramType="anatomy" isDark={isDark} c={c} />
                     </div>
                   )}
@@ -751,8 +758,8 @@ const DoctorVisitTranslator = ({ tool }) => {
             <Sec icon="☑️" title={t('dvt_sec_actions')} badge={`${results.action_checklist.length}`} open={secs.actions} onToggle={() => tog('actions')} c={c}>
               <div className="space-y-3">{results.action_checklist.map((a, i) => (
                 <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
-                  <div className="flex items-center gap-2 mb-2"><span>☑️</span><h4 className={`font-bold text-sm ${c.text} flex-1`}><BiText text={a.action} c={c} /></h4><span className={`text-[10px] px-2 py-0.5 rounded font-bold ${priorityColor(a.priority, isDark)}`}>{a.priority}</span></div>
-                  <div className="space-y-1 ms-7"><p className={`text-xs ${c.textMuted}`}>{t('dvt_why')} {a.why}</p><p className={`text-xs ${c.textMuted}`}>{t('dvt_when')} {a.when}</p><p className={`text-sm ${c.textSecondary}`}>{t('dvt_how')} <BiText text={a.how} c={c} /></p>{a.what_if_you_dont && <p className={`text-xs ${c.textMuted} italic`}>{t('dvt_if_skipped')} {a.what_if_you_dont}</p>}</div>
+                  <div className="flex items-center gap-2 mb-2"><span>☑️</span><h4 className={`font-bold text-sm ${c.text} flex-1`}><BiText text={a.action} c={c} /></h4><span className={`text-xs px-2 py-0.5 rounded font-bold ${priorityColor(a.priority, isDark)}`}>{a.priority}</span></div>
+                  <div className="space-y-1 ms-7"><p className={`text-[13px] ${c.textMuted}`}>{t('dvt_why')} {a.why}</p><p className={`text-[13px] ${c.textMuted}`}>{t('dvt_when')} {a.when}</p><p className={`text-sm ${c.textSecondary}`}>{t('dvt_how')} <BiText text={a.how} c={c} /></p>{a.what_if_you_dont && <p className={`text-[13px] ${c.textMuted} italic`}>{t('dvt_if_skipped')} {a.what_if_you_dont}</p>}</div>
                 </div>
               ))}</div>
             </Sec>
@@ -765,12 +772,12 @@ const DoctorVisitTranslator = ({ tool }) => {
                 <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                   <h4 className={`font-bold text-sm ${c.text} mb-2`}>💊 {m.name}</h4>
                   <div className="space-y-2">
-                    <div><p className={`text-[10px] font-bold ${c.textMuted}`}>{t('dvt_purpose')}</p><p className={`text-sm ${c.textSecondary}`}><BiText text={m.purpose} c={c} /></p></div>
-                    <div><p className={`text-[10px] font-bold ${c.textMuted}`}>{t('dvt_how_caps')}</p><p className={`text-sm ${c.textSecondary}`}><BiText text={m.how_to_take} c={c} /></p></div>
-                    {m.generic_available && <p className={`text-xs ${c.textMuted}`}>💰 {m.generic_available}</p>}
-                    {m.cost_considerations && <p className={`text-xs ${c.textMuted}`}>💵 {m.cost_considerations}</p>}
-                    {m.side_effects_to_watch?.length > 0 && <div className={`${c.warning} border rounded p-3`}><p className="text-[10px] font-bold mb-1">{t('dvt_watch')}</p>{m.side_effects_to_watch.map((e, j) => <p key={j} className="text-xs">• {e}</p>)}</div>}
-                    {m.questions_to_ask_pharmacist?.length > 0 && <div className={`${c.highlight} border rounded p-3`}><p className="text-[10px] font-bold mb-1">{t('dvt_ask')}</p>{m.questions_to_ask_pharmacist.map((q, j) => <p key={j} className="text-xs">• {q}</p>)}</div>}
+                    <div><p className={`text-xs font-bold ${c.textMuted}`}>{t('dvt_purpose')}</p><p className={`text-sm ${c.textSecondary}`}><BiText text={m.purpose} c={c} /></p></div>
+                    <div><p className={`text-xs font-bold ${c.textMuted}`}>{t('dvt_how_caps')}</p><p className={`text-sm ${c.textSecondary}`}><BiText text={m.how_to_take} c={c} /></p></div>
+                    {m.generic_available && <p className={`text-[13px] ${c.textMuted}`}>💰 {m.generic_available}</p>}
+                    {m.cost_considerations && <p className={`text-[13px] ${c.textMuted}`}>💵 {m.cost_considerations}</p>}
+                    {m.side_effects_to_watch?.length > 0 && <div className={`${c.warning} border rounded p-3`}><p className="text-xs font-bold mb-1">{t('dvt_watch')}</p>{m.side_effects_to_watch.map((e, j) => <p key={j} className="text-xs">• {e}</p>)}</div>}
+                    {m.questions_to_ask_pharmacist?.length > 0 && <div className={`${c.highlight} border rounded p-3`}><p className="text-xs font-bold mb-1">{t('dvt_ask')}</p>{m.questions_to_ask_pharmacist.map((q, j) => <p key={j} className="text-xs">• {q}</p>)}</div>}
                   </div>
                 </div>
               ))}</div>
@@ -797,10 +804,10 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div className="space-y-3">{results.test_results_explained.map((tt, i) => (
                 <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                   <h4 className={`font-bold text-sm ${c.text} mb-2`}>{tt.test}</h4>
-                  <div className="grid grid-cols-2 gap-3 mb-2"><div><p className={`text-[10px] ${c.textMuted}`}>{t('dvt_yours')}</p><p className={`text-sm font-semibold ${c.text}`}>{tt.your_result}</p></div><div><p className={`text-[10px] ${c.textMuted}`}>{t('dvt_normal')}</p><p className={`text-sm ${c.textSecondary}`}>{tt.normal_range}</p></div></div>
-                  {tt.trend && <p className={`text-xs ${c.textMuted} mb-1`}>{tt.trend === 'improving' ? '📉' : tt.trend === 'worsening' ? '📈' : '➡️'} {tt.trend === 'improving' ? t('dvt_trend_improving') : tt.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</p>}
-                  <div className={`${c.highlight} border rounded p-3`}><p className="text-[10px] font-bold mb-0.5">{t('dvt_meaning')}</p><p className="text-xs">{tt.what_it_means}</p></div>
-                  {tt.next_steps && <p className={`text-xs ${c.textMuted} mt-1`}>→ {tt.next_steps}</p>}
+                  <div className="grid grid-cols-2 gap-3 mb-2"><div><p className={`text-[13px] ${c.textMuted}`}>{t('dvt_yours')}</p><p className={`text-sm font-semibold ${c.text}`}>{tt.your_result}</p></div><div><p className={`text-[13px] ${c.textMuted}`}>{t('dvt_normal')}</p><p className={`text-sm ${c.textSecondary}`}>{tt.normal_range}</p></div></div>
+                  {tt.trend && <p className={`text-[13px] ${c.textMuted} mb-1`}>{tt.trend === 'improving' ? '📉' : tt.trend === 'worsening' ? '📈' : '➡️'} {tt.trend === 'improving' ? t('dvt_trend_improving') : tt.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</p>}
+                  <div className={`${c.highlight} border rounded p-3`}><p className="text-xs font-bold mb-0.5">{t('dvt_meaning')}</p><p className="text-xs">{tt.what_it_means}</p></div>
+                  {tt.next_steps && <p className={`text-[13px] ${c.textMuted} mt-1`}>→ {tt.next_steps}</p>}
                 </div>
               ))}</div>
             </Sec>
@@ -871,7 +878,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-xs"><strong>{t('dvt_remember')}</strong> {t('dvt_remember_body')}</p></div>
 
           {/* Cross-references */}
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('dvt_xref_bill_q')}{' '}<a href="/BillRescue" className={linkStyle}>🏥 {t('dvt_bill_rescue')}</a>{' '}
             {t('dvt_xref_bill_body')}
           </p>
@@ -881,52 +888,52 @@ const DoctorVisitTranslator = ({ tool }) => {
       {/* ══════════ F1: SYMPTOM JOURNAL ══════════ */}
       {mode === 'journal' && (
         <div className="space-y-4">
-          <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
-            <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📓</span> {t('dvt_log_symptom')}</h3>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
+            <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>📓</span> {t('dvt_log_symptom')}</h3>
             <div>
-              <label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>{t('dvt_symptom')}<span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('dvt_symptom')}<span className={c.required}>*</span></label>
               <div className="flex flex-wrap gap-1 mb-2">{SYMPTOM_PRESETS.map(s => (
                 <button key={s.id} onClick={() => setJournalEntry(p => ({ ...p, symptom: t(s.k) }))}
-                  className={`text-[10px] px-2 py-1 rounded border transition-colors ${journalEntry.symptom === t(s.k) ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : `${c.pillGray} border`}`}>{t(s.k)}</button>
+                  className={`text-xs px-2 py-1 rounded border transition-colors ${journalEntry.symptom === t(s.k) ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : `${c.pillGray} border`}`}>{t(s.k)}</button>
               ))}</div>
               <input value={journalEntry.symptom} onChange={e => setJournalEntry(p => ({ ...p, symptom: e.target.value }))} placeholder={t('dvt_ph_symptom')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} />
             </div>
             <div>
-              <label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>{t('dvt_severity_n', { count: journalEntry.severity })}</label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('dvt_severity_n', { count: journalEntry.severity })}</label>
               <input type="range" min="1" max="10" value={journalEntry.severity} onChange={e => setJournalEntry(p => ({ ...p, severity: Number(e.target.value) }))} className="w-full" />
-              <div className="flex justify-between text-[9px]"><span className={c.textMuted}>{t('dvt_mild')}</span><span className={c.textMuted}>{t('dvt_moderate')}</span><span className={c.textMuted}>{t('dvt_severe')}</span></div>
+              <div className="flex justify-between text-xs"><span className={c.textMuted}>{t('dvt_mild')}</span><span className={c.textMuted}>{t('dvt_moderate')}</span><span className={c.textMuted}>{t('dvt_severe')}</span></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>{t('dvt_triggers')}</label><input value={journalEntry.triggers} onChange={e => setJournalEntry(p => ({ ...p, triggers: e.target.value }))} placeholder={t('dvt_ph_triggers')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} /></div>
-              <div><label className={`text-xs font-semibold ${c.textSecondary} block mb-1`}>{t('dvt_notes_short')}</label><input value={journalEntry.notes} onChange={e => setJournalEntry(p => ({ ...p, notes: e.target.value }))} placeholder={t('dvt_ph_notes')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} /></div>
+              <div><label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('dvt_triggers')}</label><input value={journalEntry.triggers} onChange={e => setJournalEntry(p => ({ ...p, triggers: e.target.value }))} placeholder={t('dvt_ph_triggers')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} /></div>
+              <div><label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('dvt_notes_short')}</label><input value={journalEntry.notes} onChange={e => setJournalEntry(p => ({ ...p, notes: e.target.value }))} placeholder={t('dvt_ph_notes')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} /></div>
             </div>
             <button onClick={addJournalEntry} disabled={!journalEntry.symptom.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 py-2 rounded-lg text-sm font-semibold`}>{t('dvt_log')}</button>
           </div>
 
           {symptomTrends?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
-              <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('dvt_trends')}</h3></div>
+            <div className={`border-t ${c.border} pt-5`}>
+              <div className="flex items-center justify-between mb-3"><h3 className={`text-base font-bold ${c.text}`}>{t('dvt_trends')}</h3></div>
               <div className="space-y-2">{symptomTrends.map(tr => (
                 <div key={tr.name} className={`${c.cardAlt} border rounded-lg p-3`}>
-                  <div className="flex items-center justify-between mb-1"><span className={`text-sm font-semibold ${c.text}`}>{tr.name}</span><span className={`${tr.trend === 'improving' ? c.success : tr.trend === 'worsening' ? c.danger : c.pillGray} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{tr.trend === 'improving' ? t('dvt_better') : tr.trend === 'worsening' ? t('dvt_worse') : t('dvt_stable')}</span></div>
-                  <div className="flex items-center gap-2"><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-xs ${c.textMuted} w-14 text-end`}>{tr.recentAvg}/10</span></div>
-                  <p className={`text-[10px] ${c.textMuted} mt-1`}>{tr.count}× · {t('dvt_avg')} {tr.avg}/10 · {tr.last.date}</p>
+                  <div className="flex items-center justify-between mb-1"><span className={`text-sm font-semibold ${c.text}`}>{tr.name}</span><span className={`${tr.trend === 'improving' ? c.success : tr.trend === 'worsening' ? c.danger : c.pillGray} border text-xs font-bold px-1.5 py-0.5 rounded`}>{tr.trend === 'improving' ? t('dvt_better') : tr.trend === 'worsening' ? t('dvt_worse') : t('dvt_stable')}</span></div>
+                  <div className="flex items-center gap-2"><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted} w-14 text-end`}>{tr.recentAvg}/10</span></div>
+                  <p className={`text-[13px] ${c.textMuted} mt-1`}>{tr.count}× · {t('dvt_avg')} {tr.avg}/10 · {tr.last.date}</p>
                 </div>
               ))}</div>
             </div>
           )}
 
-          <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('dvt_recent_n', { count: journal.length })}</h3>{journal.length > 0 && <button onClick={() => { if (window.confirm(t('dvt_confirm_clear_journal'))) setJournal([]); }} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>{t('dvt_clear')}</button>}</div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className="flex items-center justify-between mb-3"><h3 className={`text-base font-bold ${c.text}`}>{t('dvt_recent_n', { count: journal.length })}</h3>{journal.length > 0 && <button onClick={() => { if (window.confirm(t('dvt_confirm_clear_journal'))) setJournal([]); }} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>{t('dvt_clear')}</button>}</div>
             {journal.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>{t('dvt_log_to_track')}</p>
             : <div className="space-y-1.5 max-h-72 overflow-y-auto">{journal.slice(0, 6).map(e => (
               <div key={e.id} className="flex items-center gap-2">
-                <span className={`w-16 text-[10px] ${c.textMuted}`}>{e.date}</span>
+                <span className={`w-16 text-[13px] ${c.textMuted}`}>{e.date}</span>
                 <span className={`text-xs font-semibold ${c.text} w-24 truncate`}>{e.symptom}</span>
                 <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${e.severity >= 7 ? 'bg-red-500' : e.severity >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${e.severity * 10}%` }} /></div>
-                <span className={`w-6 text-end text-[10px] font-bold ${c.textMuted}`}>{e.severity}</span>
-                {e.triggers && <span className={`${c.pillGray} border text-[9px] px-1 py-0.5 rounded truncate max-w-[60px]`}>{e.triggers}</span>}
-                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-[10px] ${c.textMuted} ${c.deleteHover}`}>✕</button>
+                <span className={`w-6 text-end text-xs font-bold ${c.textMuted}`}>{e.severity}</span>
+                {e.triggers && <span className={`${c.pillGray} border text-xs px-1 py-0.5 rounded truncate max-w-[60px]`}>{e.triggers}</span>}
+                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>✕</button>
               </div>
             ))}</div>}
           </div>
@@ -937,30 +944,30 @@ const DoctorVisitTranslator = ({ tool }) => {
       {mode === 'health' && (
         <div className="space-y-4">
           {/* F5: Reminders */}
-          <div className={`${c.card} border rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dvt_tasks_n', { count: reminders.filter(r => r.status === 'pending').length })}</h3>
+          <div className={`border-t ${c.border} pt-5`}>
+            <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_tasks_n', { count: reminders.filter(r => r.status === 'pending').length })}</h3>
             {reminders.filter(r => r.status === 'pending').length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-3`}>{t('dvt_save_to_gen_tasks')}</p>
             : <div className="space-y-2">{reminders.filter(r => r.status === 'pending').sort((a, b) => a.dueDate.localeCompare(b.dueDate)).map(r => {
               const overdue = r.dueDate < new Date().toISOString().split('T')[0];
               return <div key={r.id} className={`${overdue ? c.danger : c.cardAlt} border rounded-lg p-3`}>
-                <div className="flex items-start justify-between"><div className="flex-1"><p className={`text-sm font-semibold ${c.text}`}>{r.action}</p><div className="flex gap-1 mt-1"><span className={`${overdue ? c.danger : c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{overdue ? '🔴 ' : ''}{t('dvt_due_prefix', { date: r.dueDate })}</span><span className={`${r.priority === 'high' ? c.danger : c.warning} border text-[9px] px-1.5 py-0.5 rounded`}>{r.priority}</span></div>{r.why && <p className={`text-[10px] ${c.textMuted} mt-1`}>{r.why}</p>}</div><div className="flex gap-1 ms-2"><button onClick={() => setReminders(p => p.map(rr => rr.id === r.id ? { ...rr, status: 'done' } : rr))} className={`text-xs ${c.textSecondary}`}>✅</button><button onClick={() => setReminders(p => p.filter(rr => rr.id !== r.id))} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>🗑️</button></div></div>
+                <div className="flex items-start justify-between"><div className="flex-1"><p className={`text-sm font-semibold ${c.text}`}>{r.action}</p><div className="flex gap-1 mt-1"><span className={`${overdue ? c.danger : c.pillGray} border text-xs px-1.5 py-0.5 rounded`}>{overdue ? '🔴 ' : ''}{t('dvt_due_prefix', { date: r.dueDate })}</span><span className={`${r.priority === 'high' ? c.danger : c.warning} border text-xs px-1.5 py-0.5 rounded`}>{r.priority}</span></div>{r.why && <p className={`text-[13px] ${c.textMuted} mt-1`}>{r.why}</p>}</div><div className="flex gap-1 ms-2"><button onClick={() => setReminders(p => p.map(rr => rr.id === r.id ? { ...rr, status: 'done' } : rr))} className={`text-xs ${c.textSecondary}`}>✅</button><button onClick={() => setReminders(p => p.filter(rr => rr.id !== r.id))} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>🗑️</button></div></div>
               </div>;
             })}</div>}
-            {reminders.filter(r => r.status === 'done').length > 0 && <div className="mt-3"><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('dvt_done_n', { count: reminders.filter(r => r.status === 'done').length })}</p>{reminders.filter(r => r.status === 'done').slice(0, 5).map(r => <p key={r.id} className={`text-xs ${c.textMuted} line-through`}>✅ {r.action}</p>)}<button onClick={() => setReminders(p => p.filter(r => r.status !== 'done'))} className={`text-[10px] ${c.textMuted} ${c.deleteHover} mt-1`}>{t('dvt_clear_done')}</button></div>}
+            {reminders.filter(r => r.status === 'done').length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dvt_done_n', { count: reminders.filter(r => r.status === 'done').length })}</p>{reminders.filter(r => r.status === 'done').slice(0, 5).map(r => <p key={r.id} className={`text-[13px] ${c.textMuted} line-through`}>✅ {r.action}</p>)}<button onClick={() => setReminders(p => p.filter(r => r.status !== 'done'))} className={`text-[13px] ${c.textMuted} ${c.deleteHover} mt-1`}>{t('dvt_clear_done')}</button></div>}
           </div>
 
           {/* Meds */}
-          <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('dvt_meds_n', { count: medStats.active })}</h3></div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className="flex items-center justify-between mb-3"><h3 className={`text-base font-bold ${c.text}`}>{t('dvt_meds_n', { count: medStats.active })}</h3></div>
             {medList.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-3`}>{t('dvt_meds_auto_add')}</p>
             : <>{activeMeds.length > 0 && <div className="space-y-2 mb-3">{activeMeds.map(m => (
               <div key={m.id} className={`${c.cardAlt} border rounded-lg p-3`}>
-                <div className="flex items-start justify-between"><h4 className={`font-bold text-sm ${c.text}`}>💊 {m.name}</h4><button onClick={() => setMedList(p => p.map(mm => mm.id === m.id ? { ...mm, active: false } : mm))} className={`text-[10px] ${c.textMuted}`}>{t('dvt_stop')}</button></div>
-                <p className={`text-xs ${c.textSecondary}`}>{m.purpose}</p><p className={`text-xs ${c.textMuted}`}>📋 {m.howToTake}</p>
-                {m.sideEffects?.length > 0 && <p className={`text-[10px] ${c.textMuted} mt-1`}>⚠️ {m.sideEffects.slice(0, 2).join(', ')}</p>}
-                <div className="flex gap-1 mt-1"><span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{t('dvt_since', { date: m.prescribedDate })}</span>{m.doctor !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {m.doctor}</span>}</div>
+                <div className="flex items-start justify-between"><h4 className={`font-bold text-sm ${c.text}`}>💊 {m.name}</h4><button onClick={() => setMedList(p => p.map(mm => mm.id === m.id ? { ...mm, active: false } : mm))} className={`text-[13px] ${c.textMuted}`}>{t('dvt_stop')}</button></div>
+                <p className={`text-xs ${c.textSecondary}`}>{m.purpose}</p><p className={`text-[13px] ${c.textMuted}`}>📋 {m.howToTake}</p>
+                {m.sideEffects?.length > 0 && <p className={`text-[13px] ${c.textMuted} mt-1`}>⚠️ {m.sideEffects.slice(0, 2).join(', ')}</p>}
+                <div className="flex gap-1 mt-1"><span className={`${c.pillGray} border text-xs px-1.5 py-0.5 rounded`}>{t('dvt_since', { date: m.prescribedDate })}</span>{m.doctor !== 'Unknown' && <span className={`${c.pillGray} border text-xs px-1.5 py-0.5 rounded`}>🩺 {m.doctor}</span>}</div>
               </div>
-            ))}</div>}{medList.filter(m => !m.active).length > 0 && <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('dvt_past')}</p>{medList.filter(m => !m.active).map(m => <div key={m.id} className="flex items-center justify-between opacity-60 mb-0.5"><span className={`text-xs ${c.text}`}>{m.name} <span className={`text-[10px] ${c.textMuted}`}>{m.prescribedDate}</span></span><div className="flex gap-1"><button onClick={() => setMedList(p => p.map(mm => mm.id === m.id ? { ...mm, active: true } : mm))} className={`text-[10px] ${c.textSecondary}`}>{t('dvt_reactivate')}</button><button onClick={() => setMedList(p => p.filter(mm => mm.id !== m.id))} className={`text-[10px] ${c.textMuted} ${c.deleteHover}`}>🗑️</button></div></div>)}</div>}</>}
+            ))}</div>}{medList.filter(m => !m.active).length > 0 && <div><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dvt_past')}</p>{medList.filter(m => !m.active).map(m => <div key={m.id} className="flex items-center justify-between opacity-60 mb-0.5"><span className={`text-xs ${c.text}`}>{m.name} <span className={`text-[13px] ${c.textMuted}`}>{m.prescribedDate}</span></span><div className="flex gap-1"><button onClick={() => setMedList(p => p.map(mm => mm.id === m.id ? { ...mm, active: true } : mm))} className={`text-xs ${c.textSecondary}`}>{t('dvt_reactivate')}</button><button onClick={() => setMedList(p => p.filter(mm => mm.id !== m.id))} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>🗑️</button></div></div>)}</div>}</>}
           </div>
         </div>
       )}
@@ -969,29 +976,29 @@ const DoctorVisitTranslator = ({ tool }) => {
       {/* ══════════ HISTORY MODE ══════════ */}
       {mode === 'history' && (
         <div className="space-y-4">
-          <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('dvt_visits_n', { count: sessionHistory.length })}</h3>{sessionHistory.length > 0 && <button onClick={() => { if (window.confirm(t('dvt_confirm_clear'))) setSessionHistory([]); }} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>{t('dvt_clear')}</button>}</div>
+          <div className={`border-t ${c.border} pt-5`}>
+            <div className="flex items-center justify-between mb-3"><h3 className={`text-base font-bold ${c.text}`}>{t('dvt_visits_n', { count: sessionHistory.length })}</h3>{sessionHistory.length > 0 && <button onClick={() => { if (window.confirm(t('dvt_confirm_clear'))) setSessionHistory([]); }} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>{t('dvt_clear')}</button>}</div>
             {sessionHistory.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>{t('dvt_no_visits')}</p>
             : <div className="space-y-2 max-h-[32rem] overflow-y-auto">{sessionHistory.map(e => (
               <div key={e.id} className={`${c.cardAlt} border rounded-lg p-3`}>
-                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName && e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{(t(DOC_TYPES.find(d => d.id === e.documentType)?.labelKey || 'dvt_doc_visit') || '').split(' ')[0]}</span>}</div>
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-xs font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName && e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-xs px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-xs px-1.5 py-0.5 rounded`}>{(t(DOC_TYPES.find(d => d.id === e.documentType)?.labelKey || 'dvt_doc_visit') || '').split(' ')[0]}</span>}</div>
                 <p className={`text-xs ${c.text} line-clamp-1`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || e.doctorNotes.slice(0, 60)}</p>
-                {e.results?.medications?.length > 0 && <div className="flex flex-wrap gap-1 mt-0.5">{e.results.medications.slice(0, 3).map((m, i) => <span key={i} className={`${c.warning} border text-[9px] px-1 py-0.5 rounded`}>💊 {m.name.split(' ')[0]}</span>)}</div>}
-                <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>{t('dvt_view')}</button><button onClick={() => setSessionHistory(p => p.filter(h => h.id !== e.id))} className={`text-xs ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>
+                {e.results?.medications?.length > 0 && <div className="flex flex-wrap gap-1 mt-0.5">{e.results.medications.slice(0, 3).map((m, i) => <span key={i} className={`${c.warning} border text-xs px-1 py-0.5 rounded`}>💊 {m.name.split(' ')[0]}</span>)}</div>}
+                <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>{t('dvt_view')}</button><button onClick={() => setSessionHistory(p => p.filter(h => h.id !== e.id))} className={`text-[13px] ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>
               </div>
             ))}</div>}
           </div>
 
           {sessionHistory.length >= 2 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dvt_timeline')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_timeline')}</h3>
               <div className={`relative ps-4 border-s-2 space-y-2 ${isDark ? 'border-zinc-700' : 'border-gray-300'}`}>
                 {sessionHistory.slice(0, 6).map(e => (
                   <div key={e.id} className="relative">
                     <div className="absolute -start-[21px] w-3 h-3 rounded-full bg-cyan-500" />
-                    <p className={`text-[10px] font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p>
+                    <p className={`text-xs font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p>
                     <p className={`text-xs ${c.text}`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || t('dvt_visit_word')}</p>
-                    {e.results?.medications?.length > 0 && <p className={`text-[10px] ${c.textSecondary}`}>💊 {e.results.medications.map(m => m.name.split(' ')[0]).join(', ')}</p>}
+                    {e.results?.medications?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>💊 {e.results.medications.map(m => m.name.split(' ')[0]).join(', ')}</p>}
                   </div>
                 ))}
               </div>
@@ -1003,7 +1010,7 @@ const DoctorVisitTranslator = ({ tool }) => {
       {/* ══════════ PREP MODE ══════════ */}
       {mode === 'prep' && (
         <div className="space-y-4">
-          <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
+          <div className={`border-t ${c.border} pt-5 space-y-5`}>
             <div className={`${c.highlight} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}><span>📝</span><div><h4 className="font-bold text-sm mb-0.5">{t('dvt_prep_title')}</h4><p className="text-xs">{t('dvt_prep_intro')}</p></div></div>
             <div className="grid grid-cols-2 gap-4"><div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_type')}</label><select value={visitType} onChange={e => setVisitType(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{VISIT_TYPES.map(vt => <option key={vt.id} value={vt.id}>{t(vt.k)}</option>)}</select></div><div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_doctor')}</label><input value={doctorName} onChange={e => setDoctorName(e.target.value)} placeholder={t('dvt_ph_doctor')} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} /></div></div>
             <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_symptoms')}</label><textarea value={prepData.symptoms} onChange={e => setPrepData(p => ({ ...p, symptoms: e.target.value }))} placeholder={t('dvt_ph_symptoms')} className={`w-full h-20 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`} /></div>
@@ -1011,13 +1018,13 @@ const DoctorVisitTranslator = ({ tool }) => {
             <div><div className="flex items-center justify-between mb-1.5"><label className={`text-sm font-semibold ${c.textSecondary}`}>{t('dvt_questions')}</label><button onClick={() => setPrepData(p => ({ ...p, questions: [...p.questions, ''] }))} className={`text-xs ${c.textSecondary}`}>➕</button></div><div className="space-y-1.5">{prepData.questions.map((q, i) => <div key={i} className="flex gap-2"><span className={c.textMuted}>❓</span><input value={q} onChange={e => setPrepData(p => ({ ...p, questions: p.questions.map((qq, j) => j === i ? e.target.value : qq) }))} placeholder={t('dvt_ph_question_n', { count: i + 1 })} className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />{prepData.questions.length > 1 && <button onClick={() => setPrepData(p => ({ ...p, questions: p.questions.filter((_, j) => j !== i) }))} className={`${c.textMuted} ${c.deleteHover}`}>🗑️</button>}</div>)}</div></div>
           </div>
 
-          {symptomTrends?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dvt_journal_trends')}</h3><p className={`text-xs ${c.textMuted} mb-2`}>{t('dvt_show_doctor')}</p>{symptomTrends.map(tr => <div key={tr.name} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-semibold ${c.text} w-24`}>{tr.name}</span><div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[10px] ${c.textMuted}`}>{tr.recentAvg}/10 · {tr.trend === 'improving' ? t('dvt_trend_improving') : tr.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</span></div>)}</div>}
+          {symptomTrends?.length > 0 && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_journal_trends')}</h3><p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dvt_show_doctor')}</p>{symptomTrends.map(tr => <div key={tr.name} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-semibold ${c.text} w-24`}>{tr.name}</span><div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted}`}>{tr.recentAvg}/10 · {tr.trend === 'improving' ? t('dvt_trend_improving') : tr.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</span></div>)}</div>}
 
-          {sessionHistory.some(e => e.results?.questions_for_next_visit?.length) && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dvt_past_questions')}</h3>{sessionHistory.filter(e => e.results?.questions_for_next_visit?.length).slice(0, 3).flatMap(e => e.results.questions_for_next_visit.map((q, i) => <div key={`${e.id}-${i}`} className="flex items-start gap-2 mb-1"><span className={c.textMuted}>❓</span><div><p className={`text-xs ${c.textSecondary}`}>{q}</p><p className={`text-[9px] ${c.textMuted}`}>{e.date}</p></div></div>))}</div>}
+          {sessionHistory.some(e => e.results?.questions_for_next_visit?.length) && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_past_questions')}</h3>{sessionHistory.filter(e => e.results?.questions_for_next_visit?.length).slice(0, 3).flatMap(e => e.results.questions_for_next_visit.map((q, i) => <div key={`${e.id}-${i}`} className="flex items-start gap-2 mb-1"><span className={c.textMuted}>❓</span><div><p className={`text-xs ${c.textSecondary}`}>{q}</p><p className={`text-[13px] ${c.textMuted}`}>{e.date}</p></div></div>))}</div>}
 
-          {activeMeds.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('dvt_med_list')}</h3>{activeMeds.map(m => <div key={m.id} className="flex gap-2 mb-0.5"><span>💊</span><span className={`text-xs ${c.text}`}>{m.name}</span><span className={`text-[10px] ${c.textMuted}`}>— {m.howToTake}</span></div>)}</div>}
+          {activeMeds.length > 0 && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-2`}>{t('dvt_med_list')}</h3>{activeMeds.map(m => <div key={m.id} className="flex gap-2 mb-0.5"><span>💊</span><span className={`text-xs ${c.text}`}>{m.name}</span><span className={`text-[13px] ${c.textMuted}`}>— {m.howToTake}</span></div>)}</div>}
 
-          <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('dvt_bring_title')}</h3>{[t('dvt_bring_insurance'), t('dvt_bring_meds'), t('dvt_bring_sheet'), t('dvt_bring_notebook'), t('dvt_bring_test_results'), t('dvt_bring_questions')].map((item, i) => <div key={i} className="flex items-start gap-2 mb-0.5"><span>☑️</span><p className={`text-xs ${c.textSecondary}`}>{item}</p></div>)}</div>
+          <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-2`}>{t('dvt_bring_title')}</h3>{[t('dvt_bring_insurance'), t('dvt_bring_meds'), t('dvt_bring_sheet'), t('dvt_bring_notebook'), t('dvt_bring_test_results'), t('dvt_bring_questions')].map((item, i) => <div key={i} className="flex items-start gap-2 mb-0.5"><span>☑️</span><p className={`text-xs ${c.textSecondary}`}>{item}</p></div>)}</div>
 
         </div>
       )}

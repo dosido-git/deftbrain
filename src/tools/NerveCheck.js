@@ -49,22 +49,19 @@ const NerveCheck = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -80,9 +77,7 @@ const NerveCheck = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Refs (always-fresh pattern for the keyboard shortcut) ──
   const resultsRef = useRef(null);
@@ -476,11 +471,19 @@ const NerveCheck = ({ tool }) => {
     <div ref={containerRef} className={`space-y-4 ${c.text}`}>
 
       {/* ═══ Header row ═══ */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '💪'}</span>{tool?.tagline ?? t('nck_tagline')}
               </p>
               {view === 'form' && (
@@ -492,6 +495,7 @@ const NerveCheck = ({ tool }) => {
                 ↺ {t('start_over')}
               </button>
             )}
+          </div>
           </div>
         </div>
 
@@ -516,7 +520,7 @@ const NerveCheck = ({ tool }) => {
               <div className="grid grid-cols-4 gap-1.5">
                 {SIT_TYPES.map(s => (
                   <button key={s.value} onClick={() => setSituationType(situationType === s.value ? '' : s.value)}
-                    className={`px-2 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center gap-0.5 ${situationType === s.value ? c.btnPrimary : c.btnSecondary}`}>
+                    className={`px-2 py-2 rounded-lg text-[13px] font-medium flex flex-col items-center gap-0.5 ${situationType === s.value ? c.btnPrimary : c.btnSecondary}`}>
                     <span className="text-base">{s.icon}</span>{t(s.tkey)}
                   </button>
                 ))}
@@ -526,7 +530,7 @@ const NerveCheck = ({ tool }) => {
             <div>
               <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now')}
                 <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessLevel}/10</span>
-                {readinessLabel(readinessLevel) && <span className={`ms-1.5 text-xs ${c.textMuted}`}>{readinessLabel(readinessLevel)}</span>}
+                {readinessLabel(readinessLevel) && <span className={`ms-1.5 text-[13px] ${c.textMuted}`}>{readinessLabel(readinessLevel)}</span>}
               </label>
               <input type="range" min="1" max="10" value={readinessLevel} onChange={e => setReadinessLevel(Number(e.target.value))} className="w-full accent-cyan-600" />
             </div>
@@ -563,7 +567,7 @@ const NerveCheck = ({ tool }) => {
               )}
             </button>
 
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('nck_rehearse_hint')} <a href="/DifficultTalkCoach" className={linkStyle}>{t('nck_xref_dtc')}</a> {t('nck_rehearse_hint_end')}
             </p>
 
@@ -583,23 +587,23 @@ const NerveCheck = ({ tool }) => {
             {results?.opening && <p className={`text-sm ${c.textSecondary}`}>{results?.opening}</p>}
 
             {results?.what_youre_worried_about && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-                <h3 className={`text-sm font-bold ${c.text}`}>🎯 {t('nck_worried_about')}</h3>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
+                <h3 className={`text-base font-bold ${c.text}`}>🎯 {t('nck_worried_about')}</h3>
                 {results?.what_youre_worried_about.established?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_you_know')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_what_you_know')}</p>
                     <ul className="space-y-1">{results?.what_youre_worried_about.established.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                   </div>
                 )}
                 {results?.what_youre_worried_about.possible?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_could_happen')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_what_could_happen')}</p>
                     <ul className="space-y-1">{results?.what_youre_worried_about.possible.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                   </div>
                 )}
                 {results?.what_youre_worried_about.unknown?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_what_cant_know')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_what_cant_know')}</p>
                     <ul className="space-y-1">{results?.what_youre_worried_about.unknown.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                   </div>
                 )}
@@ -607,13 +611,13 @@ const NerveCheck = ({ tool }) => {
             )}
 
             {results?.what_you_can_prepare?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold ${c.text} mb-2`}>📋 {t('nck_have_ready')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>📋 {t('nck_have_ready')}</h3>
                 <div className="space-y-3">
                   {results?.what_you_can_prepare.map((p, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-sm font-semibold ${c.text}`}>{i + 1}. {p.action}</p>
-                      {p.why_it_helps_here && <p className={`text-xs ${c.textMuted} mt-1`}>{t('nck_why_helps')} {p.why_it_helps_here}</p>}
+                      {p.why_it_helps_here && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('nck_why_helps')} {p.why_it_helps_here}</p>}
                     </div>
                   ))}
                 </div>
@@ -621,12 +625,12 @@ const NerveCheck = ({ tool }) => {
             )}
 
             {results?.words_if_you_need_them?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold ${c.text} mb-2`}>🗣️ {t('nck_words_need')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>🗣️ {t('nck_words_need')}</h3>
                 <div className="space-y-2">
                   {results?.words_if_you_need_them.map((w, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{w.moment}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{w.moment}</p>
                       <p className={`text-sm ${c.textSecondary} italic`}>"{w.script}"</p>
                     </div>
                   ))}
@@ -636,29 +640,29 @@ const NerveCheck = ({ tool }) => {
 
             {results?.if_the_moment_gets_awkward?.action && (
               <div className={`${c.warning} border rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold mb-1`}>😬 {t('nck_gets_awkward')}</h3>
+                <h3 className={`text-base font-bold mb-1`}>😬 {t('nck_gets_awkward')}</h3>
                 <p className="text-sm">{results?.if_the_moment_gets_awkward.action}</p>
                 {results?.if_the_moment_gets_awkward.script && <p className="text-sm italic mt-1">"{results?.if_the_moment_gets_awkward.script}"</p>}
               </div>
             )}
 
             {results?.settle_yourself?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold ${c.text} mb-2`}>🫁 {t('nck_settle')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>🫁 {t('nck_settle')}</h3>
                 <ul className="space-y-1">{results?.settle_yourself.map((s, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {s}</li>)}</ul>
               </div>
             )}
 
             {results?.remember && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>📌 {t('nck_remember')}</h3>
+                <h3 className={`text-[13px] font-bold ${c.textMuted} mb-1`}>📌 {t('nck_remember')}</h3>
                 <p className={`text-sm ${c.text}`}>{results?.remember}</p>
               </div>
             )}
 
             {results?.do_this_next && (
               <div className={`${c.success} border rounded-xl p-4`}>
-                <h3 className={`text-[10px] font-bold uppercase mb-1`}>➡️ {t('nck_do_next')}</h3>
+                <h3 className={`text-[13px] font-bold mb-1`}>➡️ {t('nck_do_next')}</h3>
                 <p className="text-sm font-medium">{results?.do_this_next}</p>
               </div>
             )}
@@ -705,17 +709,17 @@ const NerveCheck = ({ tool }) => {
                   <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-semibold">{liveResults?.first}</p></div>
                 )}
                 {liveResults?.settle?.instruction && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                    <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>🫁 {t('nck_focus_settle')}</h3>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <h3 className={`text-[13px] font-bold ${c.textMuted} mb-1`}>🫁 {t('nck_focus_settle')}</h3>
                     <p className={`text-sm ${c.textSecondary}`}>{liveResults?.settle.instruction}</p>
                   </div>
                 )}
                 {(liveResults?.words?.to_yourself || liveResults?.words?.opening || liveResults?.words?.if_you_need_a_moment) && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
-                    <h3 className={`text-sm font-bold ${c.text}`}>🎬 {t('nck_your_lines')}</h3>
-                    {liveResults?.words.to_yourself && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_tell_yourself')}: </span>{liveResults?.words.to_yourself}</p>}
-                    {liveResults?.words.opening && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_first_thing_say')}: </span>"{liveResults?.words.opening}"</p>}
-                    {liveResults?.words.if_you_need_a_moment && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('nck_if_panic')}: </span>"{liveResults?.words.if_you_need_a_moment}"</p>}
+                  <div className={`border-t ${c.border} pt-5 space-y-2`}>
+                    <h3 className={`text-base font-bold ${c.text}`}>🎬 {t('nck_your_lines')}</h3>
+                    {liveResults?.words.to_yourself && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[13px] font-bold ${c.textMuted}`}>{t('nck_tell_yourself')}: </span>{liveResults?.words.to_yourself}</p>}
+                    {liveResults?.words.opening && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[13px] font-bold ${c.textMuted}`}>{t('nck_first_thing_say')}: </span>"{liveResults?.words.opening}"</p>}
+                    {liveResults?.words.if_you_need_a_moment && <p className={`text-sm ${c.textSecondary}`}><span className={`text-[13px] font-bold ${c.textMuted}`}>{t('nck_if_panic')}: </span>"{liveResults?.words.if_you_need_a_moment}"</p>}
                   </div>
                 )}
                 {liveResults?.remember && <p className={`text-sm ${c.textSecondary} italic`}>{liveResults?.remember}</p>}
@@ -734,11 +738,11 @@ const NerveCheck = ({ tool }) => {
         {/* ── FOCUS MODE ── */}
         {view === 'focus' && focusCards.length > 0 && (
           <div className="flex flex-col items-center justify-center text-center py-8 space-y-6 min-h-[300px]">
-            <p className={`text-[10px] font-bold uppercase tracking-wide ${c.accentTxt}`}>{focusCards[focusStep].label}</p>
+            <p className={`text-[13px] font-bold ${c.accentTxt}`}>{focusCards[focusStep].label}</p>
             <p className={`text-2xl sm:text-3xl font-black ${c.text} max-w-md`}>{focusCards[focusStep].text}</p>
             <div className="flex items-center gap-3">
               <button onClick={() => setFocusStep(s => Math.max(0, s - 1))} disabled={focusStep === 0} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-30`}>←</button>
-              <span className={`text-xs ${c.textMuted}`}>{focusStep + 1}/{focusCards.length}</span>
+              <span className={`text-[13px] ${c.textMuted}`}>{focusStep + 1}/{focusCards.length}</span>
               {focusStep < focusCards.length - 1 ? (
                 <button onClick={() => setFocusStep(s => Math.min(focusCards.length - 1, s + 1))} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-sm font-bold`}>→</button>
               ) : (
@@ -787,45 +791,45 @@ const NerveCheck = ({ tool }) => {
               </div>
             )}
 
-            <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-              <h3 className={`text-sm font-bold ${c.text}`}>🧾 {t('nck_what_happened_header')}</h3>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
+              <h3 className={`text-base font-bold ${c.text}`}>🧾 {t('nck_what_happened_header')}</h3>
               {debriefResults?.what_you_expected?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_expected')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_expected')}</p>
                   <ul className="space-y-1">{debriefResults?.what_you_expected.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                 </div>
               )}
               {debriefResults?.what_happened?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_actually_happened')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_actually_happened')}</p>
                   <ul className="space-y-1">{debriefResults?.what_happened.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                 </div>
               )}
               {debriefResults?.what_was_different?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_the_difference')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_the_difference')}</p>
                   <ul className="space-y-1">{debriefResults?.what_was_different.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                 </div>
               )}
             </div>
 
             {debriefResults?.useful_evidence_for_next_time?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold ${c.text} mb-2`}>✅ {t('nck_evidence_next_time')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>✅ {t('nck_evidence_next_time')}</h3>
                 <ul className="space-y-1">{debriefResults?.useful_evidence_for_next_time.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
               </div>
             )}
 
             {debriefResults?.what_you_might_change?.length > 0 && (
               <div className={`${c.warning} border rounded-xl p-4`}>
-                <h3 className={`text-sm font-bold mb-2`}>🔧 {t('nck_might_change')}</h3>
+                <h3 className={`text-base font-bold mb-2`}>🔧 {t('nck_might_change')}</h3>
                 <ul className="space-y-1">{debriefResults?.what_you_might_change.map((x, i) => <li key={i} className="text-sm">• {x}</li>)}</ul>
               </div>
             )}
 
             {debriefResults?.save_this && (
               <div className={`${c.success} border rounded-xl p-4`}>
-                <h3 className={`text-[10px] font-bold uppercase mb-1`}>📌 {t('nck_save_next')}</h3>
+                <h3 className={`text-[13px] font-bold mb-1`}>📌 {t('nck_save_next')}</h3>
                 <p className="text-sm font-medium italic">"{debriefResults?.save_this}"</p>
               </div>
             )}
@@ -874,26 +878,26 @@ const NerveCheck = ({ tool }) => {
             ) : (
               <div ref={resultsRef} className="scroll-mt-24 space-y-3">
                 {coachResults?.what_to_say && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                    <h3 className={`text-sm font-bold ${c.text} mb-1`}>💬 {t('nck_say_this_title')}</h3>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <h3 className={`text-base font-bold ${c.text} mb-1`}>💬 {t('nck_say_this_title')}</h3>
                     <p className={`text-sm ${c.textSecondary}`}>{coachResults?.what_to_say}</p>
                   </div>
                 )}
                 {coachResults?.what_not_to_push && (
                   <div className={`${c.warning} border rounded-xl p-4`}>
-                    <h3 className={`text-sm font-bold mb-1`}>🚫 {t('nck_not_to_push')}</h3>
+                    <h3 className={`text-base font-bold mb-1`}>🚫 {t('nck_not_to_push')}</h3>
                     <p className="text-sm">{coachResults?.what_not_to_push}</p>
                   </div>
                 )}
                 {coachResults?.practical_help_you_could_offer?.length > 0 && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                    <h3 className={`text-sm font-bold ${c.text} mb-2`}>🤲 {t('nck_do_this')}</h3>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <h3 className={`text-base font-bold ${c.text} mb-2`}>🤲 {t('nck_do_this')}</h3>
                     <ul className="space-y-1">{coachResults?.practical_help_you_could_offer.map((x, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>)}</ul>
                   </div>
                 )}
                 {coachResults?.if_they_dont_want_help && (
                   <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                    <h3 className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('nck_if_no_help')}</h3>
+                    <h3 className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('nck_if_no_help')}</h3>
                     <p className={`text-sm ${c.textSecondary}`}>{coachResults?.if_they_dont_want_help}</p>
                   </div>
                 )}
@@ -916,13 +920,13 @@ const NerveCheck = ({ tool }) => {
                     <button onClick={() => openHistoryEntry(entry)} className={`flex-1 min-w-0 flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg ${c.cardAlt} hover:brightness-95 dark:hover:brightness-125 transition text-start`}>
                       <span className="min-w-0 flex-1">
                         <span className={`text-sm font-semibold ${c.text} truncate block`}>{entry.preview || entry.situation}</span>
-                        <span className={`text-[11px] ${c.textMuted} truncate block`}>
+                        <span className={`text-[13px] ${c.textMuted} truncate block`}>
                           {t('nck_before')} {entry.readinessBefore}
                           {entry.readinessAfter != null && ` · ${t('nck_after')} ${entry.readinessAfter}`}
                           {entry.quote && ` — "${entry.quote}"`}
                         </span>
                       </span>
-                      <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(entry.date).toLocaleDateString()}</span>
+                      <span className={`text-[13px] ${c.textMuted} flex-shrink-0`}>{new Date(entry.date).toLocaleDateString()}</span>
                     </button>
                     <button onClick={() => removeHistoryEntry(entry.id)} aria-label={t('nck_remove')} title={t('nck_remove')}
                       className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-sm ${c.textMuted} opacity-60 hover:opacity-100 transition`}>✕</button>
@@ -938,8 +942,8 @@ const NerveCheck = ({ tool }) => {
 
       {/* ── Related tools (results screens only) ── */}
       {(view === 'results' || view === 'debrief-results') && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('nck_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('nck_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('nck_xref_dtc_short')}</a>
             {situationType === 'medical' && <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>{t('nck_xref_dvt')}</a>}
