@@ -41,14 +41,13 @@ const JargonAssassin = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300'   : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400'   : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
@@ -57,16 +56,14 @@ const JargonAssassin = ({ tool }) => {
     pillOn:        isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white',
     pillOff:       isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
     accentCard:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
-    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    highlight:     isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // ─── State ───
@@ -347,12 +344,20 @@ const JargonAssassin = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🗡️'}</span>{tool?.tagline ?? t('jarg_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -364,11 +369,12 @@ const JargonAssassin = ({ tool }) => {
               </button>
             )}
           </div>
+          </div>
         </div>
-        <p className={`text-xs ${c.textMuteded} px-5 pt-3`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuteded} px-5 pt-3`}>
           {t('jarg_pretool_q')} <a href="/VelvetHammer" className={linkStyle}>🔨 {t('jarg_xref_velvet')}</a>.
         </p>
-        <p className={`text-xs ${c.textMuteded} px-5 pt-1`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuteded} px-5 pt-1`}>
           {t('jarg_xref_phrase_q')} <a href="/WhatsThatMean" className={linkStyle}>💬 {t('jarg_xref_phrase')}</a>.
         </p>
         <div className="px-5 py-4">
@@ -387,7 +393,7 @@ const JargonAssassin = ({ tool }) => {
       {/* Saved */}
       {showSaved && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 {t('jarg_saved_title')}</h3>
-        {savedDocs.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_saved_empty')}</p> : savedDocs.map((s, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p></div><p className={`text-xs ${c.textMuteded}`}>{(() => { const dt = DOC_TYPES.find(d => d.id === s.docType); return dt ? `${dt.icon} ${t(dt.labelKey)}` : s.docType; })()} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}
+        {savedDocs.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_saved_empty')}</p> : savedDocs.map((s, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p></div><p className={`text-[13px] ${c.textMuteded}`}>{(() => { const dt = DOC_TYPES.find(d => d.id === s.docType); return dt ? `${dt.icon} ${t(dt.labelKey)}` : s.docType; })()} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button></div>)}
       </div>}
 
       {/* ═══ INPUT ═══ */}
@@ -404,7 +410,7 @@ const JargonAssassin = ({ tool }) => {
               <span className="text-2xl">{fileMediaType === 'application/pdf' ? '📑' : fileMediaType?.startsWith('image') ? '🖼️' : '📄'}</span>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-semibold truncate ${c.text}`}>{fileName}</p>
-                <p className={`text-xs ${c.textMuted}`}>{fileBase64 ? (fileMediaType === 'application/pdf' ? t('jarg_file_pdf_ready') : t('jarg_file_img_ready')) : t('jarg_file_text_loaded')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{fileBase64 ? (fileMediaType === 'application/pdf' ? t('jarg_file_pdf_ready') : t('jarg_file_img_ready')) : t('jarg_file_text_loaded')}</p>
               </div>
               <label htmlFor="ja-f" className={`px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${c.btnSecondary} flex-shrink-0`}>{t('jarg_change')}</label>
             </div>
@@ -412,7 +418,7 @@ const JargonAssassin = ({ tool }) => {
             <label htmlFor="ja-f" className={`flex flex-col items-center gap-2 p-5 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${isDark ? 'border-zinc-600 bg-zinc-800/50 hover:border-sky-500' : 'border-gray-300 bg-gray-50 hover:border-sky-400'}`}>
               <div className="flex gap-3 text-2xl">📄📑🖼️</div>
               <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('jarg_upload_file')} <span className={c.textMuted}>{t('jarg_or_paste')}</span></p>
-              <p className={`text-[10px] ${c.textMuted}`}>{t('jarg_file_types')}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t('jarg_file_types')}</p>
             </label>
           )}
         </div>
@@ -425,7 +431,7 @@ const JargonAssassin = ({ tool }) => {
           className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`}
         />
         <div className="flex justify-between">
-          <span className={`text-xs ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>
+          <span className={`text-[13px] ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>
           {docText.length > 40000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ {t('jarg_may_truncate')}</span>}
         </div>
 
@@ -438,7 +444,7 @@ const JargonAssassin = ({ tool }) => {
 
         <div>
           <label className={`block text-xs font-bold ${c.text} mb-1`}>{t('jarg_goal_label')} <span className={`font-normal ${c.textMuted}`}>{t('jarg_optional')}</span></label>
-          <p className={`text-xs ${c.textMuted} mb-2`}>{t('jarg_goal_help')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('jarg_goal_help')}</p>
           <textarea value={userGoal} onChange={e => setUserGoal(e.target.value)} placeholder={t('jarg_goal_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
         </div>
 
@@ -504,7 +510,7 @@ const JargonAssassin = ({ tool }) => {
 
         {/* Translation */}
         {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 {t('jarg_translation')}</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
-          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 {t('jarg_jargon_replaced')} ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>🔤 {t('jarg_jargon_replaced')} ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
           <button onClick={() => setActiveTab('qa')} className={`mt-3 w-full ${c.highlight} border rounded-xl p-3 text-sm font-medium text-start`}>❓ {t('jarg_qa_callout')} →</button>
         </div>}
 
@@ -512,7 +518,7 @@ const JargonAssassin = ({ tool }) => {
         {activeTab === 'personalize' && <div className="space-y-4">
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}>
             <h3 className={`font-bold ${c.text}`}>🎯 {t('jarg_personalize_title')}</h3>
-            <p className={`text-xs ${c.textMuteded}`}>{t('jarg_personalize_sub')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_personalize_sub')}</p>
             <label htmlFor="ja-situation" className="sr-only">{t('jarg_personalize_title')}</label><textarea id="ja-situation" value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('jarg_personalize_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             <button onClick={handlePersonalize} disabled={loading || !situation.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1'>{persData ? '✅' : '🎯'}</span> {t('jarg_personalize_btn')}</>}</button>
           </div>
@@ -526,11 +532,11 @@ const JargonAssassin = ({ tool }) => {
             </div>)}</div>}
             {persData.already_covered?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold mb-2">✅ {t('jarg_personalize_covered')}</p>{persData.already_covered.map((a, i) => <p key={i} className="text-sm">• {a}</p>)}</div>}
             {persData.questions_for_your_situation?.length > 0 && <div className={`${c.highlight} border rounded-xl p-5`}>
-              <h3 className="font-bold text-sm mb-3">❓ {t('jarg_personalize_questions')}</h3>
+              <h3 className="text-base font-bold text-sm mb-3">❓ {t('jarg_personalize_questions')}</h3>
               {persData.questions_for_your_situation.map((q, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mb-2`}>
                 <p className="text-sm font-medium">{q.question}</p>
                 {q.why && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{q.why}</p>}
-                {q.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
+                {q.who_to_ask && <p className={`text-[13px] ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
               </div>)}
             </div>}
           </div>}
@@ -538,8 +544,8 @@ const JargonAssassin = ({ tool }) => {
 
         {/* Side-by-Side */}
         {activeTab === 'side-by-side' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>{t('jarg_original')}</h3><div className={`${c.cardAlt} rounded-lg p-3 max-h-96 overflow-y-auto`}>{docText ? <pre className={`whitespace-pre-wrap font-sans ${c.textSecondary}`}>{docText}</pre> : <p className={`text-xs ${c.textMuted} italic text-center py-4`}>{fileName ? `📑 ${fileName} — ${t('jarg_file_no_side')}` : t('jarg_original_na')}</p>}</div></div>
-          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text} mb-2`}>{t('jarg_translated')}</h3><div className={`${c.accentCard} border rounded-lg p-3 max-h-96 overflow-y-auto`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`text-base font-bold ${c.text} mb-2`}>{t('jarg_original')}</h3><div className={`${c.cardAlt} rounded-lg p-3 max-h-96 overflow-y-auto`}>{docText ? <pre className={`whitespace-pre-wrap font-sans ${c.textSecondary}`}>{docText}</pre> : <p className={`text-[13px] ${c.textMuted} italic text-center py-4`}>{fileName ? `📑 ${fileName} — ${t('jarg_file_no_side')}` : t('jarg_original_na')}</p>}</div></div>
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4`}><h3 className={`text-base font-bold ${c.text} mb-2`}>{t('jarg_translated')}</h3><div className={`${c.accentCard} border rounded-lg p-3 max-h-96 overflow-y-auto`}><p className={`${c.text} whitespace-pre-wrap`}>{results.translation}</p></div></div>
         </div>}
 
         {/* Key Sections */}
@@ -554,19 +560,19 @@ const JargonAssassin = ({ tool }) => {
         })}</div>}
 
         {/* Glossary */}
-        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 {t('jarg_glossary')}</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_no_terms')}</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondary}`}>{g.definition}</p>{g.context && <p className={`text-xs ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
+        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 {t('jarg_glossary')}</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_no_terms')}</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondary}`}>{g.definition}</p>{g.context && <p className={`text-[13px] ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
 
         {/* Q&A */}
         {activeTab === 'qa' && <div className="space-y-4">
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}><h3 className={`font-bold ${c.text}`}>❓ {t('jarg_qa_title')}</h3><div className="flex gap-2"><label htmlFor="ja-question" className="sr-only">{t('jarg_qa_title')}</label><input id="ja-question" value={question} onChange={e => setQuestion(e.target.value)} placeholder={t('jarg_qa_ph')} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAsk(); }} /><button onClick={handleAsk} disabled={loading || !question.trim()} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('jarg_ask')}</button></div></div>
-          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.accentCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondary}`}>{qa.a.answer}</p>{qa.a.found_in_document && <p className={`text-xs ${c.textMuteded} italic`}>📍 {qa.a.found_in_document}{qa.a.relevant_section ? ` — ${qa.a.relevant_section}` : ''}</p>}{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 {t('jarg_ask_who')} {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
+          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.accentCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondary}`}>{qa.a.answer}</p>{qa.a.found_in_document && <p className={`text-[13px] ${c.textMuteded} italic`}>📍 {qa.a.found_in_document}{qa.a.relevant_section ? ` — ${qa.a.relevant_section}` : ''}</p>}{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-[13px] ${c.textMuteded}`}>👤 {t('jarg_ask_who')} {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
         </div>}
 
         {/* Explain To */}
         {activeTab === 'explain' && <div className="space-y-4">
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}>
             <h3 className={`font-bold ${c.text}`}>🗣️ {t('jarg_explain_title')}</h3>
-            <p className={`text-xs ${c.textMuteded}`}>{t('jarg_explain_sub')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_explain_sub')}</p>
             <input value={expAudience} onChange={e => setExpAudience(e.target.value)} placeholder={t('jarg_explain_ph_who')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             <textarea value={expSection} onChange={e => setExpSection(e.target.value)} placeholder={t('jarg_explain_ph_section')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             <button onClick={handleExplainTo} disabled={loading} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1 text-xl'>{tool?.icon ?? '🗡️'}</span> {t('jarg_reframe')}</>}</button>
@@ -582,15 +588,15 @@ const JargonAssassin = ({ tool }) => {
         </div>}
 
         {/* Checklist */}
-        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ {results.checklist_title || t('jarg_before_sign')}</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
+        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="text-base font-bold text-sm mb-3">⚠️ {results.checklist_title || t('jarg_before_sign')}</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
         {results.suggested_questions?.length > 0 && activeTab === 'translation' && (
           <div className={`${c.highlight} border rounded-xl p-5`}>
-            <h3 className="font-bold text-sm mb-3">❓ {t('jarg_questions_to_ask')}</h3>
+            <h3 className="text-base font-bold text-sm mb-3">❓ {t('jarg_questions_to_ask')}</h3>
             {results.suggested_questions.map((q, i) => (
               <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mb-2`}>
                 <p className="text-sm font-medium">{q.question}</p>
                 {q.why && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{q.why}</p>}
-                {q.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
+                {q.who_to_ask && <p className={`text-[13px] ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
               </div>
             ))}
           </div>
@@ -599,7 +605,7 @@ const JargonAssassin = ({ tool }) => {
         {/* Suggested Questions */}
         {sugData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🤔 {t('jarg_sug_title')}</h3>
           {sugData.must_ask?.map((q, i) => <div key={i} className={`${c.danger} border rounded-lg p-3`}><p className="text-sm font-medium">{q.question}</p><p className="text-xs">{q.why} · 👤 {q.who_to_ask}</p>{q.what_good_looks_like && <p className={`text-xs ${c.textSecondary}`}>✅ {t('jarg_good_answer')} {q.what_good_looks_like}</p>}</div>)}
-          {sugData.negotiate?.map((n, i) => <div key={i} className={`${c.highlight} border rounded-lg p-3`}><p className="text-sm font-medium">💪 {n.point}</p><p className="text-xs">{t('jarg_now')} {n.current} → {t('jarg_ask_for')} {n.better}</p><p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{t('jarg_how')} {n.how_to_ask}</p></div>)}
+          {sugData.negotiate?.map((n, i) => <div key={i} className={`${c.highlight} border rounded-lg p-3`}><p className="text-sm font-medium">💪 {n.point}</p><p className="text-xs">{t('jarg_now')} {n.current} → {t('jarg_ask_for')} {n.better}</p><p className={`text-xs ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{t('jarg_how')} {n.how_to_ask}</p></div>)}
           {sugData.overall_advice && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-sm ${c.textSecondary}`}>☕ {sugData.overall_advice}</p></div>}
         </div>}
 
@@ -609,11 +615,11 @@ const JargonAssassin = ({ tool }) => {
           <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚖️ {t('jarg_redline_disclaimer')}</p>
           {rlData.overview && <p className={`text-sm ${c.textSecondary}`}>{rlData.overview}</p>}
           {rlData.redlines?.map((r, i) => <div key={i} className={`${PRI_COLORS[r.priority] || c.highlight} border rounded-lg p-3 space-y-1`}>
-            <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span>{r.clause && <span className={`text-xs ${c.textMuteded}`}>{r.clause}</span>}</div>
+            <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span>{r.clause && <span className={`text-[13px] ${c.textMuteded}`}>{r.clause}</span>}</div>
             <p className="text-sm font-medium">{r.problem}</p>
             <p className={`text-xs ${c.textSecondary}`}>{t('jarg_current')} {r.current_text}</p>
             <div className={`${c.success} border rounded p-2`}><p className="text-xs">✏️ {t('jarg_change_to')} {r.suggested_change}</p></div>
-            {r.negotiation_tip && <p className={`text-xs ${c.textMuteded}`}>💡 {r.negotiation_tip}</p>}
+            {r.negotiation_tip && <p className={`text-[13px] ${c.textMuteded}`}>💡 {r.negotiation_tip}</p>}
           </div>)}
           {rlData.add_these?.length > 0 && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ {t('jarg_add_protections')}</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p>{a.suggested_language && <p className={`text-xs italic ${c.textSecondary} mt-0.5`}>{t('jarg_draft')} "{a.suggested_language}"</p>}</div>)}</div>}
           {rlData.remove_these?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🗑️ {t('jarg_remove_clauses')}</p>{rlData.remove_these.map((r, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{r.what}</p><p className="text-xs">{r.why}</p></div>)}</div>}
@@ -629,7 +635,7 @@ const JargonAssassin = ({ tool }) => {
             <div className="flex items-center gap-2"><span className="text-sm font-bold">{comp.clause_area}</span><span className={`text-xs px-2 py-0.5 rounded-full ${comp.verdict === 'red_flag' ? (isDark ? 'bg-red-900/40 text-red-200' : 'bg-red-100 text-red-700') : comp.verdict === 'better_than_usual' ? (isDark ? 'bg-green-900/40 text-green-200' : 'bg-green-100 text-green-700') : (isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700')}`}>{comp.verdict.replace(/_/g, ' ')}</span></div>
             <p className="text-xs">{t('jarg_this_doc')} {comp.this_document}</p>
             <p className="text-xs">{t('jarg_normal')} {comp.typical_range}</p>
-            {comp.context && <p className={`text-xs ${c.textMuteded}`}>{comp.context}</p>}
+            {comp.context && <p className={`text-[13px] ${c.textMuteded}`}>{comp.context}</p>}
           </div>)}
           {tplData.missing_protections?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🚫 {t('jarg_missing_protections')}</p>{tplData.missing_protections.map((m, i) => <p key={i} className="text-xs">• {m}</p>)}</div>}
           {tplData.unusually_good?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">✅ {t('jarg_better_usual')}</p>{tplData.unusually_good.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
@@ -645,13 +651,13 @@ const JargonAssassin = ({ tool }) => {
             <div className="flex items-center gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${c.pillOn}`}>{s.order}</span><span className={`text-sm font-bold ${c.text}`}>{s.action}</span></div>
             <p className={`text-xs ${c.textSecondary}`}>{s.why}</p>
             {s.deadline && <p className={`text-xs font-bold ${c.textSecondary}`}>⏰ {s.deadline}</p>}
-            {s.who && <p className={`text-xs ${c.textMuteded}`}>👤 {s.who}</p>}
-            {s.how && <p className={`text-xs ${c.textMuteded}`}>{t('jarg_how')} {s.how}</p>}
+            {s.who && <p className={`text-[13px] ${c.textMuteded}`}>👤 {s.who}</p>}
+            {s.how && <p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_how')} {s.how}</p>}
             {s.template && <div className={`${c.highlight} border rounded p-2 mt-1`}><p className="text-xs font-bold">📝 {t('jarg_script')}</p><p className="text-xs">{s.template}</p></div>}
           </div>)}
           {apData.if_you_do_nothing && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ {t('jarg_if_nothing')}</p><p className="text-xs">{apData.if_you_do_nothing}</p></div>}
           {apData.timeline && <p className={`text-xs ${c.textSecondary}`}>📅 {t('jarg_timeline')} {apData.timeline}</p>}
-          {apData.cost_estimate && <p className={`text-xs ${c.textMuteded}`}>💰 {t('jarg_cost_estimate')} {apData.cost_estimate}</p>}
+          {apData.cost_estimate && <p className={`text-[13px] ${c.textMuteded}`}>💰 {t('jarg_cost_estimate')} {apData.cost_estimate}</p>}
         </div>}
 
       </div>}
@@ -660,7 +666,7 @@ const JargonAssassin = ({ tool }) => {
       {mode === 'section' && secData && <div className="space-y-4">
         <button onClick={() => setMode('results')} className={`text-xs ${c.textSecondary} font-bold`}>← {t('jarg_back')}</button>
         <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{secData.section_summary}</p></div>
-        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-xs ${c.textMuteded} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.textSecondary}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
+        {secData.line_by_line?.map((l, i) => <div key={i} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-[13px] ${c.textMuteded} italic`}>"{l.original}"</p><p className={`text-sm ${c.text}`}>{l.meaning}</p><p className={`text-xs ${c.textSecondary}`}>→ {l.implication}</p>{l.hidden_catch && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">🔍 {l.hidden_catch}</p></div>}</div>)}
         {secData.what_this_means_for_you && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{secData.what_this_means_for_you}</p></div>}
       </div>}
 
@@ -685,8 +691,8 @@ const JargonAssassin = ({ tool }) => {
         </div>
         {dossData && <div className="space-y-3">
           {dossData.relationship && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
-          {dossData.conflicts?.length > 0 && <div className={`${c.danger} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">⚡ {t('jarg_conflicts')}</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} {t('jarg_vs')} {con.doc2} · {con.which_wins}</p><p className="text-xs">{t('jarg_risk')} {con.risk}</p></div>)}</div>}
-          {dossData.interactions?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔗 {t('jarg_interactions')}</h3>{dossData.interactions.map((int, i) => <div key={i} className="mb-1"><p className="text-xs font-medium">{int.documents}: {int.how}</p>{int.watch_out && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ {int.watch_out}</p>}</div>)}</div>}
+          {dossData.conflicts?.length > 0 && <div className={`${c.danger} border rounded-xl p-4 space-y-2`}><h3 className="text-base font-bold text-sm">⚡ {t('jarg_conflicts')}</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} {t('jarg_vs')} {con.doc2} · {con.which_wins}</p><p className="text-xs">{t('jarg_risk')} {con.risk}</p></div>)}</div>}
+          {dossData.interactions?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4 space-y-2`}><h3 className="text-base font-bold text-sm">🔗 {t('jarg_interactions')}</h3>{dossData.interactions.map((int, i) => <div key={i} className="mb-1"><p className="text-xs font-medium">{int.documents}: {int.how}</p>{int.watch_out && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ {int.watch_out}</p>}</div>)}</div>}
           {dossData.gaps?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🚫 {t('jarg_gaps')}</p>{dossData.gaps.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
           {dossData.combined_checklist?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold mb-2">☑️ {t('jarg_combined_checklist')}</p>{dossData.combined_checklist.map((item, i) => <label key={i} className="flex items-start gap-2 mb-1 cursor-pointer"><input type="checkbox" className="mt-0.5 w-3 h-3 rounded" /><span className="text-xs">{item}</span></label>)}</div>}
           {dossData.overall && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{dossData.overall}</p></div>}
@@ -706,10 +712,10 @@ const JargonAssassin = ({ tool }) => {
           {ltrData.subject_line && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>{t('jarg_subject')} {ltrData.subject_line}</p></div>}
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><div className="flex justify-between mb-2"><h3 className={`font-bold ${c.text}`}>{t('jarg_your_letter')}</h3></div><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{ltrData.letter}</p></div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {ltrData.send_to && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>{t('jarg_to')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_to}</p></div>}
-            {ltrData.send_via && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>{t('jarg_via')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_via}</p></div>}
-            {ltrData.timing && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>{t('jarg_when')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.timing}</p></div>}
-            {ltrData.escalation && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-xs ${c.textMuteded}`}>{t('jarg_if_no_response')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.escalation}</p></div>}
+            {ltrData.send_to && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_to')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_to}</p></div>}
+            {ltrData.send_via && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_via')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.send_via}</p></div>}
+            {ltrData.timing && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_when')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.timing}</p></div>}
+            {ltrData.escalation && <div className={`${c.cardAlt} rounded-lg p-2 text-center`}><p className={`text-[13px] ${c.textMuteded}`}>{t('jarg_if_no_response')}</p><p className={`text-xs font-bold ${c.text}`}>{ltrData.escalation}</p></div>}
           </div>
           {ltrData.warnings?.length > 0 && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ {t('jarg_before_sending')}</p>{ltrData.warnings.map((w, i) => <p key={i} className="text-xs">• {w}</p>)}</div>}
         </div>}
@@ -718,8 +724,8 @@ const JargonAssassin = ({ tool }) => {
       {/* Error */}
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('jarg_related')}</p>
+      <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('jarg_related')}</p>
         <div className="flex flex-wrap gap-3">
           <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('jarg_xref_velvet')}</a>
           <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 {t('jarg_xref_braindump')}</a>

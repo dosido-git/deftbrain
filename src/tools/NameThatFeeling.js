@@ -70,7 +70,7 @@ const FeelingDictionaryModal = ({
         <button onClick={onClose} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-xs font-bold`}>{t('ntf_dictionary_close')}</button>
       </div>
 
-      <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>♡ {t('ntf_dictionary_saved_words')}</p>
+      <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>♡ {t('ntf_dictionary_saved_words')}</p>
       {savedWords.length > 0 ? (
         <div className="space-y-2 mb-5">
           {savedWords.map(w => (
@@ -78,27 +78,27 @@ const FeelingDictionaryModal = ({
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className={`text-sm font-bold ${c.text}`}>{w.word}</p>
-                  <p className={`text-[10px] ${c.textMuted}`}>{provenanceLine(w, t)}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{provenanceLine(w, t)}</p>
                   {w.shortMeaning && <p className={`text-xs ${c.textSecondary} mt-1`}>{w.shortMeaning}</p>}
-                  {w.seenCount > 1 && <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('ntf_seen_in_searches', { count: w.seenCount })}</p>}
+                  {w.seenCount > 1 && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('ntf_seen_in_searches', { count: w.seenCount })}</p>}
                 </div>
-                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
               </div>
               <div className="flex gap-2 mt-2">
-                <button onClick={() => onOpenSaved(w)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_open')}</button>
-                <button onClick={() => onUnsave(w.id)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[11px] font-semibold`}>{t('ntf_unsave')}</button>
+                <button onClick={() => onOpenSaved(w)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[13px] font-semibold`}>{t('ntf_open')}</button>
+                <button onClick={() => onUnsave(w.id)} className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[13px] font-semibold`}>{t('ntf_unsave')}</button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p className={`text-xs ${c.textMuted} mb-5`}>{t('ntf_dictionary_empty_teaser')}</p>
+        <p className={`text-[13px] ${c.textMuted} mb-5`}>{t('ntf_dictionary_empty_teaser')}</p>
       )}
 
       <div className="flex items-center justify-between mb-2">
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>🕘 {t('ntf_recent')}</p>
+        <p className={`text-[13px] font-bold ${c.textMuted}`}>🕘 {t('ntf_recent')}</p>
         {recentHistory.length > 0 && (
-          <button onClick={onClearRecent} className={`text-[11px] font-semibold ${linkStyle}`}>{t('ntf_clear_recent')}</button>
+          <button onClick={onClearRecent} className={`text-[13px] font-semibold ${linkStyle}`}>{t('ntf_clear_recent')}</button>
         )}
       </div>
       {recentHistory.length > 0 ? (
@@ -122,13 +122,13 @@ const FeelingDictionaryModal = ({
                   {entryItem.bestMatchWord ? (
                     <>
                       <span className={`text-sm font-semibold ${c.text} truncate block`}>{entryItem.bestMatchWord}</span>
-                      <span className={`text-[11px] ${c.textMuted} truncate block`}>{entryItem.preview}</span>
+                      <span className={`text-[13px] ${c.textMuted} truncate block`}>{entryItem.preview}</span>
                     </>
                   ) : (
                     <span className={`text-xs ${c.textSecondary} truncate block`}>{entryItem.preview || t('ntf_session')}</span>
                   )}
                 </span>
-                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(entryItem.date).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} flex-shrink-0`}>{new Date(entryItem.date).toLocaleDateString()}</span>
                 <span aria-hidden="true" className={`text-sm ${c.textMuted} flex-shrink-0`}>{entryItem.results ? '›' : '🔄'}</span>
               </button>
               <button
@@ -143,7 +143,7 @@ const FeelingDictionaryModal = ({
           ))}
         </div>
       ) : (
-        <p className={`text-xs ${c.textMuted}`}>{t('ntf_dictionary_empty_no_saved')}</p>
+        <p className={`text-[13px] ${c.textMuted}`}>{t('ntf_dictionary_empty_no_saved')}</p>
       )}
     </div>
   </div>
@@ -171,22 +171,19 @@ const NameThatFeeling = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -205,9 +202,7 @@ const NameThatFeeling = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Refs ──
   const resultsRef = useRef(null);
@@ -491,16 +486,16 @@ const NameThatFeeling = ({ tool }) => {
               <button key={w.id} onClick={() => openSavedEntry(w)} className="w-full flex items-center justify-between gap-2 text-start">
                 <span className="min-w-0 truncate">
                   <span className={`text-sm font-bold ${c.text}`}>{w.word}</span>
-                  <span className={`text-[10px] ${c.textMuted} ms-1.5`}>{provenanceLine(w, t)}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-1.5`}>{provenanceLine(w, t)}</span>
                 </span>
-                <span className={`text-[10px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} flex-shrink-0`}>{new Date(w.updatedAt).toLocaleDateString()}</span>
               </button>
             ))}
           </div>
         ) : topRecent.length > 0 ? (
           <>
-            <p className={`text-xs ${c.textMuted} mb-2`}>{t('ntf_dictionary_empty_no_saved')}</p>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('ntf_recent')}</p>
+            <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('ntf_dictionary_empty_no_saved')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('ntf_recent')}</p>
             <div className="space-y-1">
               {topRecent.map(entryItem => (
                 <button key={entryItem.id} onClick={() => openRecentEntry(entryItem)} className={`w-full text-start text-xs ${c.textSecondary} truncate block`}>
@@ -510,7 +505,7 @@ const NameThatFeeling = ({ tool }) => {
             </div>
           </>
         ) : (
-          <p className={`text-xs ${c.textMuted}`}>{t('ntf_dictionary_empty_teaser')}</p>
+          <p className={`text-[13px] ${c.textMuted}`}>{t('ntf_dictionary_empty_teaser')}</p>
         )}
       </div>
     );
@@ -524,7 +519,7 @@ const NameThatFeeling = ({ tool }) => {
     return (
       <button
         onClick={() => saved ? unsaveWordByKey(entry.word, entry.language) : saveWord(entry)}
-        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition ${saved ? c.success : c.btnSecondary + ' border-transparent'}`}
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[13px] font-bold border transition ${saved ? c.success : c.btnSecondary + ' border-transparent'}`}
       >
         {saved ? '♥' : '♡'} {saved ? t('ntf_saved') : t('ntf_save_word')}
       </button>
@@ -537,13 +532,21 @@ const NameThatFeeling = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── Input ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🎭'}</span>{tool?.tagline ?? t('ntf_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -555,6 +558,7 @@ const NameThatFeeling = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
         <div className="px-5 pb-5 pt-4 space-y-4">
@@ -573,13 +577,13 @@ const NameThatFeeling = ({ tool }) => {
 
         {/* Starters */}
         <div>
-          <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>{t('ntf_starters_label')}</p>
+          <p className={`text-[13px] font-bold ${c.labelText} mb-1.5`}>{t('ntf_starters_label')}</p>
           <div className="flex flex-wrap gap-1.5">
             {STARTER_PROMPTS.map((s, i) => (
               <button
                 key={i}
                 onClick={() => setDescription(s)}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] text-start`}
+                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[13px] font-medium min-h-[28px] text-start`}
               >
                 {s.length > 50 ? s.slice(0, 50) + '...' : s}
               </button>
@@ -634,7 +638,7 @@ const NameThatFeeling = ({ tool }) => {
             naming a feeling is in distress. Naming wistfulness or
             post-book sadness is not spiraling. */}
         {!results && (
-          <p className={`text-xs ${c.textMuted}`}>{t('ntf_xref_related')} <a href="/NerveCheck" className={linkStyle}>🫁 {t('ntf_nervecheck')}</a></p>
+          <p data-print-hide className={`text-[13px] ${c.textMuted}`}>{t('ntf_xref_related')} <a href="/NerveCheck" className={linkStyle}>🫁 {t('ntf_nervecheck')}</a></p>
         )}
         </div>
       </div>
@@ -665,7 +669,7 @@ const NameThatFeeling = ({ tool }) => {
           {results?.best_match && (
             <div className={`${c.warm} border-2 rounded-xl p-6 text-center`}>
               <span className="text-3xl block mb-2">✨</span>
-              <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuteded}`}>{heroHeading(results.best_match.match)}</p>
+              <p className={`text-[13px] font-bold mb-1 ${c.textMuteded}`}>{heroHeading(results.best_match.match)}</p>
               {results?.best_match?.word && (
                 <>
                   <p className={`text-3xl font-black ${c.text} mb-1`}>{results.best_match.word}</p>
@@ -673,7 +677,7 @@ const NameThatFeeling = ({ tool }) => {
                       here with language left empty — a dangling flag emoji
                       with nothing after it otherwise renders on its own. */}
                   {results?.best_match?.language && (
-                    <p className={`text-xs ${c.textMuteded} mb-2`}>
+                    <p className={`text-[13px] ${c.textMuteded} mb-2`}>
                       {getFlag(results.best_match.language)} {results.best_match.language}
                       {results?.best_match?.pronunciation && ` · ${results.best_match.pronunciation}`}
                     </p>
@@ -683,14 +687,14 @@ const NameThatFeeling = ({ tool }) => {
               {/* No badge for NO ADEQUATE MATCH — the heading already says
                   so plainly; a second, harsher-sounding pill would pile on. */}
               {results?.best_match?.match && results.best_match.match !== 'NO ADEQUATE MATCH' && (
-                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border mb-3 ${matchStyle(results.best_match.match)}`}>
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border mb-3 ${matchStyle(results.best_match.match)}`}>
                   {matchLabel(results.best_match.match)}
                 </span>
               )}
               <p className={`text-sm max-w-md mx-auto mb-3`}>{results?.best_match?.definition}</p>
               {results?.best_match?.why_it_fits && (
                 <div className="max-w-sm mx-auto mb-2">
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_why_it_fits')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('ntf_why_it_fits')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{results.best_match.why_it_fits}</p>
                 </div>
               )}
@@ -699,7 +703,7 @@ const NameThatFeeling = ({ tool }) => {
                   Essential (per the prompt) once match is NO ADEQUATE MATCH. */}
               {results?.best_match?.where_it_doesnt && (
                 <div className="max-w-sm mx-auto mb-3">
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_where_it_doesnt')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('ntf_where_it_doesnt')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{results.best_match.where_it_doesnt}</p>
                 </div>
               )}
@@ -723,7 +727,7 @@ const NameThatFeeling = ({ tool }) => {
               about the visitor's recurring feelings. */}
           {relevantSavedWord && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>📖 {t('ntf_from_dictionary')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>📖 {t('ntf_from_dictionary')}</p>
               <p className={`text-xs ${c.textSecondary}`}>
                 {t('ntf_previously_saved', { word: relevantSavedWord.word })}
                 {relevantSavedWord.shortMeaning ? ` — ${relevantSavedWord.shortMeaning}` : ''}
@@ -733,31 +737,31 @@ const NameThatFeeling = ({ tool }) => {
 
           {/* What you're describing */}
           {results?.what_you_described?.ingredients?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🧩 {t('ntf_describing')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-2`}>🧩 {t('ntf_describing')}</h3>
               <p className={`text-sm ${c.textSecondary} mb-1`}>{results.what_you_described.ingredients.join(' · ')}</p>
               {results.what_you_described.tension && (
-                <p className={`text-xs ${c.textMuteded} italic`}>{results.what_you_described.tension}</p>
+                <p className={`text-[13px] ${c.textMuteded} italic`}>{results.what_you_described.tension}</p>
               )}
             </div>
           )}
 
           {/* Other words that come close */}
           {results?.other_words?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 {t('ntf_other_words')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>🎯 {t('ntf_other_words')}</h3>
               <div className="space-y-2">
                 {results?.other_words?.map((m, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-bold ${c.text}`}>{m.word}</span>
-                      <span className={`text-[9px] ${c.textMuteded}`}>
+                      <span className={`text-[13px] ${c.textMuteded}`}>
                         {getFlag(m.language)} {m.language}{m.pronunciation && ` · ${m.pronunciation}`}
                       </span>
                     </div>
                     <p className={`text-xs ${c.textSecondary} mb-1`}>{m.definition}</p>
-                    {m.captures && <p className={`text-[10px] ${c.textMuteded}`}>{t('ntf_captures')} {m.captures}</p>}
-                    {m.misses && <p className={`text-[10px] ${c.textMuteded} italic mb-1.5`}>{t('ntf_misses')} {m.misses}</p>}
+                    {m.captures && <p className={`text-[13px] ${c.textMuteded}`}>{t('ntf_captures')} {m.captures}</p>}
+                    {m.misses && <p className={`text-[13px] ${c.textMuteded} italic mb-1.5`}>{t('ntf_misses')} {m.misses}</p>}
                     {renderSaveButton({
                       word: m.word, language: m.language, pronunciation: m.pronunciation, type: 'established',
                       match: '', shortMeaning: m.definition, fullDefinition: m.definition,
@@ -771,8 +775,8 @@ const NameThatFeeling = ({ tool }) => {
 
           {/* Plain English */}
           {results?.plain_english && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4 text-center`}>
-              <p className={`text-[10px] font-bold uppercase mb-1.5 ${c.textMuteded}`}>💬 {t('ntf_plain_english')}</p>
+            <div className={`border-t ${c.border} pt-5 text-center`}>
+              <p className={`text-[13px] font-bold mb-1.5 ${c.textMuteded}`}>💬 {t('ntf_plain_english')}</p>
               <p className={`text-sm font-medium italic mb-2`}>"{results.plain_english}"</p>
               {renderSaveButton({
                 word: results.plain_english, language: '', pronunciation: '', type: 'plain_english',
@@ -785,7 +789,7 @@ const NameThatFeeling = ({ tool }) => {
           {results?.made_up_name?.useful && results?.made_up_name?.name && (
             <div className={`${c.poetic} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">🪶</span>
-              <p className={`text-[10px] font-bold uppercase mb-2`}>{t('ntf_made_up_label')}</p>
+              <p className={`text-[13px] font-bold mb-2`}>{t('ntf_made_up_label')}</p>
               <p className={`text-lg font-bold italic mb-1`}>{results.made_up_name.name}</p>
               {results.made_up_name.meaning && (
                 <p className={`text-xs ${c.textSecondary} mb-2`}>{results.made_up_name.meaning}</p>
@@ -800,8 +804,8 @@ const NameThatFeeling = ({ tool }) => {
 
           {/* Share line */}
           {results?.share_line && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📸 {t('ntf_share_label')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.label} mb-1`}>📸 {t('ntf_share_label')}</p>
               <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
             </div>
           )}
@@ -821,8 +825,8 @@ const NameThatFeeling = ({ tool }) => {
       )}
 
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ntf_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('ntf_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>🫁 {t('ntf_nervecheck')}</a>
           </div>

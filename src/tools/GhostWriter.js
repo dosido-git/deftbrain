@@ -163,15 +163,13 @@ const GhostWriter = ({ tool }) => {
   const c = {
     card:            isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:         isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:           isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:           isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:            isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:   isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:       isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:       isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:       isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:      isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                            : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:       isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:      isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:    isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                             : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:          isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -181,8 +179,7 @@ const GhostWriter = ({ tool }) => {
                             : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:          isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                             : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:      isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                            : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:      isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:    isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                             : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:        isDark ? 'text-amber-400' : 'text-amber-700',
@@ -197,19 +194,16 @@ const GhostWriter = ({ tool }) => {
     placeholderBg:   isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     placeholderText: isDark ? 'text-amber-300' : 'text-amber-700',
     powerBg:         isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-gray-200',
-    powerText:       isDark ? 'text-cyan-300' : 'text-cyan-700',
-    tabActive:       isDark ? 'bg-zinc-900 text-cyan-300 border-b-2 border-cyan-500'
-                            : 'bg-white text-cyan-700 border-b-2 border-cyan-600',
+    powerText:       isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
+    tabActive:       isDark ? 'bg-zinc-900 text-[#a9cdef] border-b-2 border-[#7fb3e0]' : 'bg-white text-[#142a43] border-b-2 border-[#142a43]',
     tabInactive:     isDark ? 'text-zinc-400 hover:bg-zinc-700/50'
                             : 'text-gray-500 hover:bg-gray-50',
-    histAccent:      isDark ? 'text-cyan-400' : 'text-cyan-600',
+    histAccent:      isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State (all useState before usePersistentState — PF-11/PF-14) ───
   const [showHistory, setShowHistory] = useState(false);
@@ -398,7 +392,7 @@ const GhostWriter = ({ tool }) => {
   // RENDER HELPERS
   // ══════════════════════════════════════════
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
+    <button aria-pressed={active} onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
@@ -406,15 +400,15 @@ const GhostWriter = ({ tool }) => {
 
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={`${c.card} ${c.border} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+      <button data-print-heading aria-expanded={open} onClick={onToggle} className="w-full flex items-center justify-between py-4 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
+      <div data-sec-body hidden={!open} className="pb-5">{children}</div>
     </div>
   );
 
@@ -427,15 +421,15 @@ const GhostWriter = ({ tool }) => {
     <>
       {/* Letter type — which also sets the tone */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('ghw_lbl_letter_type')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('ghw_lbl_letter_type')}</label>
         <div className="flex flex-wrap gap-1.5">
           {LETTER_TYPES.map(opt => (
             <Pill key={opt.value} active={letterType === opt.value}
               onClick={() => { setLetterType(opt.value); setFormalityLevel(opt.formality); }}>{t(opt.labelKey)}</Pill>
           ))}
         </div>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mt-4 mb-1 block`}>{t('ghw_lbl_formality')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('ghw_hint_formality')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mt-4 mb-1 block`}>{t('ghw_lbl_formality')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('ghw_hint_formality')}</p>
         <div className="flex flex-wrap gap-1.5">
           {FORMALITY_OPTIONS.map(opt => (
             <Pill key={opt.value} active={formalityLevel === opt.value} onClick={() => setFormalityLevel(opt.value)}>{t(opt.labelKey)}</Pill>
@@ -446,8 +440,8 @@ const GhostWriter = ({ tool }) => {
       {/* The one claim. Everything below it — the traits, the stories — is the
           evidence for it, so it is asked before them rather than after. */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label htmlFor="ghw-remember" className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_remember')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('ghw_hint_remember')}</p>
+        <label htmlFor="ghw-remember" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_remember')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('ghw_hint_remember')}</p>
         <textarea id="ghw-remember" rows={2} value={oneThingRemembered} onChange={e => setOneThingRemembered(e.target.value)}
           placeholder={t('ghw_ph_remember')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
@@ -455,12 +449,12 @@ const GhostWriter = ({ tool }) => {
 
       {/* Qualities */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_qualities')}</label>
-        <p className={`text-xs ${c.textMuted} mb-3`}>{t('ghw_hint_qualities')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_qualities')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ghw_hint_qualities')}</p>
         <div className="space-y-3">
           {QUALITY_GROUPS.map(g => (
             <div key={g.id}>
-              <p className={`text-[11px] font-semibold ${c.textMuted} mb-1.5`}>{t(g.labelKey)}</p>
+              <p className={`text-[13px] font-semibold ${c.textMuted} mb-1.5`}>{t(g.labelKey)}</p>
               <div className="flex flex-wrap gap-1.5">
                 {g.options.map(q => (
                   <Pill key={q.value} active={qualities.includes(q.value)} onClick={() => toggleQuality(q.value)}>{t(q.labelKey)}</Pill>
@@ -473,8 +467,8 @@ const GhostWriter = ({ tool }) => {
 
       {/* Anecdotes */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_examples')}</label>
-        <p className={`text-xs ${c.textMuted} mb-3`}>{t('ghw_hint_examples')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_examples')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ghw_hint_examples')}</p>
         <div className="space-y-2">
           {anecdotes.map((a, idx) => (
             <div key={idx} className="flex gap-2">
@@ -494,7 +488,7 @@ const GhostWriter = ({ tool }) => {
 
       {/* Additional context */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_anything_else')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_anything_else')}</label>
         <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)}
           placeholder={t('ghw_ph_anything_else')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -571,7 +565,7 @@ const GhostWriter = ({ tool }) => {
                     </div>
                   )}
                   {isRefined && refinementChanges[v.style] && (
-                    <p className={`text-xs ${c.textMuted} mb-3`}>{refinementChanges[v.style]}</p>
+                    <p className={`text-[13px] ${c.textMuted} mb-3`}>{refinementChanges[v.style]}</p>
                   )}
                   <p className={`text-sm leading-relaxed whitespace-pre-wrap ${c.text}`}>{displayText}</p>
                 </div>
@@ -654,8 +648,8 @@ const GhostWriter = ({ tool }) => {
         )}
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ghw_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('ghw_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('ghw_xref_velvet')}</a>
             <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>🏆 {t('ghw_xref_brag_sheet')}</a>
@@ -678,20 +672,20 @@ const GhostWriter = ({ tool }) => {
       } catch { return ''; }
     };
     return (
-      <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div className={`border-t ${c.border} pt-5`}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>✍️</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ghw_past_letters')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.card} ${c.border} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.type}</div>
+                  <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{formatDate(entry.date)} · {entry.type}</div>
                 </div>
                 <button onClick={() => { setPreviousResults(results); setResults(entry.results); setShowHistory(false); setRefinedVersions({}); setActiveVersion('narrative'); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('ghw_view')}</button>
@@ -712,11 +706,19 @@ const GhostWriter = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '✍️'}</span>{t('ghw_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -726,6 +728,7 @@ const GhostWriter = ({ tool }) => {
               ↺ {t('start_over')}
             </button>
           )}
+        </div>
         </div>
 
         {!results ? (
@@ -775,7 +778,7 @@ const GhostWriter = ({ tool }) => {
                 matters, but it is not what makes the letter worth writing. */}
             <div>
               <label htmlFor="ghw-why" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_lbl_why')}</label>
-              <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('ghw_hint_why')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('ghw_hint_why')}</p>
               <textarea id="ghw-why" rows={2} value={whyRecommending} onChange={e => setWhyRecommending(e.target.value)}
                 placeholder={t('ghw_ph_why')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
@@ -789,7 +792,7 @@ const GhostWriter = ({ tool }) => {
             </div>
 
             {/* Pre-result cross-ref */}
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('ghw_xref_pre')}{' '}
               <a href="/BragSheetBuilder" className={linkStyle}>🏆 {t('ghw_xref_brag')}</a>{' '}
               {t('ghw_xref_brag_after')}

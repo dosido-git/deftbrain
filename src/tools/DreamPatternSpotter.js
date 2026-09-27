@@ -72,8 +72,8 @@ const DreamPatternSpotter = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
-    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#142a43]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     // Bespoke dream-themed keys
@@ -83,9 +83,7 @@ const DreamPatternSpotter = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Mode selection
   const [mode, setMode] = useState('single'); // 'single' or 'pattern'
@@ -356,12 +354,20 @@ const DreamPatternSpotter = ({ tool }) => {
       <div className="max-w-4xl mx-auto space-y-4">
 
         {/* Header */}
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🌙'}</span>{t('dps_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -373,19 +379,18 @@ const DreamPatternSpotter = ({ tool }) => {
               )}
             </div>
           </div>
+          </div>
         </div>
 
         {/* Mode Selection */}
-        <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-lg font-bold ${c.text} mb-4`}>{t('dps_mode_title')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setMode('single')}
               className={`p-4 border-2 rounded-lg transition-colors ${
                 mode === 'single'
-                  ? isDark
-                    ? 'border-cyan-500 bg-cyan-900/20'
-                    : 'border-cyan-500 bg-cyan-50'
+                  ? isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'
                   : isDark
                     ? 'border-zinc-700 hover:border-zinc-600'
                     : 'border-gray-200 hover:border-gray-300'
@@ -393,16 +398,14 @@ const DreamPatternSpotter = ({ tool }) => {
             >
               <span className="text-2xl block mb-1">🌙</span>
               <h4 className={`font-semibold ${c.text} mb-1`}>{t('dps_mode_single')}</h4>
-              <p className={`text-xs ${c.textMuteded}`}>{t('dps_mode_single_desc')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('dps_mode_single_desc')}</p>
             </button>
             
             <button
               onClick={() => setMode('pattern')}
               className={`p-4 border-2 rounded-lg transition-colors ${
                 mode === 'pattern'
-                  ? isDark
-                    ? 'border-cyan-500 bg-cyan-900/20'
-                    : 'border-cyan-500 bg-cyan-50'
+                  ? isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'
                   : isDark
                     ? 'border-zinc-700 hover:border-zinc-600'
                     : 'border-gray-200 hover:border-gray-300'
@@ -410,20 +413,20 @@ const DreamPatternSpotter = ({ tool }) => {
             >
               <span className="text-2xl block mb-1">📊</span>
               <h4 className={`font-semibold ${c.text} mb-1`}>{t('dps_mode_pattern')}</h4>
-              <p className={`text-xs ${c.textMuteded}`}>{t('dps_mode_pattern_desc')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('dps_mode_pattern_desc')}</p>
             </button>
           </div>
         </div>
 
         {/* Single Dream Mode */}
         {mode === 'single' && (
-          <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`text-lg font-bold ${c.text} mb-4`}>{t('dps_describe_title')}</h3>
 
             <div className="space-y-6">
               {/* Dream Description */}
               <div>
-                <p className={`text-xs ${c.textMuted} mb-3`}>
+                <p data-print-hide className={`text-[13px] ${c.textMuted} mb-3`}>
                   {t('dps_xref_feeling_pre')} <a href="/NameThatFeeling" className={linkStyle}>🎭 {t('dps_xref_namethatfeeling')}</a> {t('dps_xref_feeling_post')}
                 </p>
                 <label htmlFor="dream" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>
@@ -463,9 +466,7 @@ const DreamPatternSpotter = ({ tool }) => {
                       key={emotion.key}
                       className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-colors ${
                         singleDream.emotions[emotion.key]
-                          ? isDark
-                            ? 'border-cyan-500 bg-cyan-900/20'
-                            : 'border-cyan-500 bg-cyan-50'
+                          ? isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'
                           : isDark
                             ? 'border-zinc-700 hover:border-zinc-600'
                             : 'border-gray-200 hover:border-gray-300'
@@ -527,7 +528,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Pattern Analysis Mode */}
         {mode === 'pattern' && (
-          <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-lg font-bold ${c.text}`}>{t('dps_add_dreams_title')}</h3>
               <button
@@ -623,15 +624,15 @@ const DreamPatternSpotter = ({ tool }) => {
                    about, other traditions, the life they actually told us
                    about, questions, and what to watch for next time. ── */}
             {results.at_a_glance && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-2`}>{t('dps_at_a_glance')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-2`}>{t('dps_at_a_glance')}</h3>
                 <p className={`text-base ${c.text}`}>{results.at_a_glance}</p>
               </div>
             )}
 
             {!!results.what_stands_out?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_stands_out')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_stands_out')}</h3>
                 <div className="space-y-3">
                   {results.what_stands_out.map((x, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}>
@@ -644,8 +645,8 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {!!results.possible_associations?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_associations')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_associations')}</h3>
                 <div className="space-y-3">
                   {results.possible_associations.map((x, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}>
@@ -660,7 +661,7 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {results.different_lenses && (
-              <details className={`group ${c.card} border rounded-xl shadow-sm p-4`}>
+              <details className={`group border-t ${c.border} pt-5`}>
                 <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                   <div className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wide ${c.textMuteded}`}>
                     {t('dps_lenses')}
@@ -681,8 +682,8 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {!!results.connections_to_your_life?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_life_conn')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_life_conn')}</h3>
                 <ul className={`text-sm ${c.textSecondary} space-y-2 list-disc ps-5`}>
                   {results.connections_to_your_life.map((x, i) => <li key={i}>{x}</li>)}
                 </ul>
@@ -690,8 +691,8 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {!!results.questions_worth_sitting_with?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_questions_title')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_questions_title')}</h3>
                 <ul className={`text-sm ${c.text} space-y-2 list-disc ps-5`}>
                   {results.questions_worth_sitting_with.map((x, i) => <li key={i}>{x}</li>)}
                 </ul>
@@ -699,8 +700,8 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {!!results.patterns_to_watch?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_watch')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_watch')}</h3>
                 <ul className={`text-sm ${c.textSecondary} space-y-2 list-disc ps-5`}>
                   {results.patterns_to_watch.map((x, i) => <li key={i}>{x}</li>)}
                 </ul>
@@ -712,13 +713,13 @@ const DreamPatternSpotter = ({ tool }) => {
               ['dps_rec_emotions', results.recurring_emotions, 'emotion'],
               ['dps_rec_narrative', results.recurring_narrative_patterns, 'pattern']].map(([label, list, key]) => (
               Array.isArray(list) && list.length > 0 ? (
-                <div key={label} className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                  <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t(label)}</h3>
+                <div key={label} className={`border-t ${c.border} pt-5`}>
+                  <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t(label)}</h3>
                   <div className="space-y-2">
                     {list.map((x, i) => (
                       <div key={i} className={`${c.cardAlt} border rounded-lg p-3 flex items-baseline justify-between gap-3`}>
                         <span className={`text-sm font-semibold ${c.text}`}>{x[key]}</span>
-                        <span className={`text-xs ${c.textMuteded} whitespace-nowrap`}>{t('dps_in_n_of', { n: x.count, of: x.of })}</span>
+                        <span className={`text-[13px] ${c.textMuteded} whitespace-nowrap`}>{t('dps_in_n_of', { n: x.count, of: x.of })}</span>
                       </div>
                     ))}
                   </div>
@@ -727,8 +728,8 @@ const DreamPatternSpotter = ({ tool }) => {
             ))}
 
             {!!results.possible_connections?.length && (
-              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
-                <h3 className={`text-sm font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_possible_conn')}</h3>
+              <div className={`border-t ${c.border} pt-5`}>
+                <h3 className={`text-base font-bold uppercase tracking-wide ${c.textMuteded} mb-3`}>{t('dps_possible_conn')}</h3>
                 <ul className={`text-sm ${c.textSecondary} space-y-2 list-disc ps-5`}>
                   {results.possible_connections.map((x, i) => <li key={i}>{x}</li>)}
                 </ul>
@@ -737,13 +738,13 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {results.limits && (
               <div className={`${c.cardAlt} border rounded-xl p-4`}>
-                <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded} mb-1`}>{t('dps_limits')}</p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dps_limits')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results.limits}</p>
               </div>
             )}
 
             {/* Cross-references */}
-            <p className={`text-xs ${c.textMuteded} text-center`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuteded} text-center`}>
               {t('dps_xref_ego_pre')}{' '}<a href="/BeliefStressTest" className={linkStyle}>{t('dps_xref_egokiller')}</a>{' '}
               {t('dps_xref_ego_post')}
             </p>
@@ -754,7 +755,7 @@ const DreamPatternSpotter = ({ tool }) => {
           <div className={`mt-6 border-t pt-4 ${c.border}`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-semibold ${c.textSecondary}`}>📖 {t('dps_previous_analyses')}</h3>
-              <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>{t('dps_clear_all')}</button>
+              <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>{t('dps_clear_all')}</button>
             </div>
             <div className="space-y-1.5">
               {sessionHistory.map((h, i) => (
@@ -776,7 +777,7 @@ const DreamPatternSpotter = ({ tool }) => {
                     <span className="text-xs">{h.mode === 'pattern' ? '🔁' : '🌙'}</span>
                     <span className={`text-xs ${c.text} truncate`}>{h.preview}{h.dreamCount ? ` ${t('dps_more_suffix', { n: h.dreamCount - 1 })}` : ''}</span>
                   </div>
-                  <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{formatDate(h.date, userLocale)}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2 flex-shrink-0`}>{formatDate(h.date, userLocale)}</span>
                 </button>
               ))}
             </div>

@@ -78,21 +78,20 @@ const DecisionPrism = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -102,13 +101,13 @@ const DecisionPrism = ({ tool }) => {
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     stuckBg:       isDark ? 'bg-zinc-800 border-zinc-600'           : 'bg-slate-50 border-slate-300',
     stuckText:     isDark ? 'text-zinc-200'                         : 'text-gray-900',
-    insightBg:     isDark ? 'bg-cyan-900/20 border-cyan-700'        : 'bg-cyan-50 border-cyan-200',
-    insightText:   isDark ? 'text-cyan-300'                         : 'text-cyan-700',
+    insightBg:     isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    insightText:   isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     matrixHead:    isDark ? 'bg-zinc-700/60 text-zinc-300'          : 'bg-slate-100 text-gray-700',
     matrixHigh:    isDark ? 'text-emerald-300'                      : 'text-emerald-700',
     matrixMid:     isDark ? 'text-amber-300'                        : 'text-amber-700',
@@ -116,7 +115,7 @@ const DecisionPrism = ({ tool }) => {
     gutBg:         isDark ? 'bg-zinc-800 border-zinc-600'           : 'bg-slate-50 border-slate-300',
     gutText:       isDark ? 'text-zinc-200'                         : 'text-gray-900',
     histBg:        isDark ? 'bg-zinc-700/30 border-zinc-600'        : 'bg-slate-50 border-slate-200',
-    histAccent:    isDark ? 'text-cyan-400'                         : 'text-cyan-600',
+    histAccent:    isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     histCard:      isDark ? 'bg-zinc-700/50 border-zinc-600'        : 'bg-white border-slate-200',
     badge:         isDark ? 'bg-zinc-600 text-zinc-200'             : 'bg-zinc-100 text-zinc-600',
     inset:         isDark ? 'bg-zinc-700/60'                        : 'bg-slate-100',
@@ -125,9 +124,7 @@ const DecisionPrism = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [showHistory, setShowHistory] = useState(false);
@@ -312,23 +309,23 @@ const DecisionPrism = ({ tool }) => {
   // RENDER HELPERS
   // ══════════════════════════════════════════
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
+    <button aria-pressed={active} onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
   const Collapsible = ({ title, emoji, open, onToggle, badge, children }) => (
-    <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+    <div className={`border-t ${c.border}`}>
+      <button data-print-heading aria-expanded={open} onClick={onToggle} className="w-full flex items-center justify-between py-4 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
+      <div data-sec-body hidden={!open} className="pb-5">{children}</div>
     </div>
   );
 
@@ -355,7 +352,7 @@ const DecisionPrism = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInput = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center justify-between mb-1">
           <label className={`text-base font-bold ${c.text}`}>{t('ptw_decision_label')} <span className={c.required}>*</span></label>
         </div>
@@ -366,9 +363,9 @@ const DecisionPrism = ({ tool }) => {
       </div>
 
       {/* Options */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('ptw_options_label')}</label>
-        <p className={`text-xs ${c.textMuteded} mb-3`}>{t('ptw_options_help')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('ptw_options_label')}</label>
+        <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('ptw_options_help')}</p>
         <div className="space-y-2">
           {options.map((opt, idx) => (
             <div key={idx} className="flex gap-2">
@@ -388,9 +385,9 @@ const DecisionPrism = ({ tool }) => {
       </div>
 
       {/* Values */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ptw_values_label')}</label>
-        <p className={`text-xs ${c.textMuteded} mb-2`}>{t('ptw_values_help')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_values_label')}</label>
+        <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('ptw_values_help')}</p>
         <div className="flex flex-wrap gap-1.5">
           {VALUE_OPTIONS.map(val => (
             <Pill key={val} active={values.includes(val)} onClick={() => toggleValue(val)}>{t(VALUE_KEY[val])}</Pill>
@@ -399,8 +396,8 @@ const DecisionPrism = ({ tool }) => {
       </div>
 
       {/* What's making this hard */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('ptw_stuck_label')}</label>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('ptw_stuck_label')}</label>
         <div className="flex flex-wrap gap-1.5">
           {STUCK_OPTIONS.map(opt => (
             <Pill key={opt.value} active={stuckReason === opt.value}
@@ -412,15 +409,15 @@ const DecisionPrism = ({ tool }) => {
       </div>
 
       {/* Context + Deadline */}
-      <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+      <div className={`border-t ${c.border} pt-5 space-y-3`}>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ptw_context_label')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_context_label')}</label>
           <textarea value={context} onChange={e => setContext(e.target.value)}
             placeholder={t('ptw_context_ph')}
             className={`w-full h-20 p-3 rounded-xl border text-sm ${c.input} outline-none resize-none`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ptw_deadline_label')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_deadline_label')}</label>
           <input type="text" value={deadline} onChange={e => setDeadline(e.target.value)}
             placeholder={t('ptw_deadline_ph')}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -489,7 +486,7 @@ const DecisionPrism = ({ tool }) => {
                 <button key={idx} onClick={() => setExpandedOption(idx)}
                   className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
                     expandedOption === idx
-                      ? (isDark ? 'bg-zinc-700 text-cyan-300 border-b-2 border-cyan-500' : 'bg-cyan-50 text-cyan-700 border-b-2 border-cyan-600')
+                      ? (isDark ? 'bg-zinc-700 text-[#a9cdef] border-b-2 border-[#7fb3e0]' : 'bg-[#eef3f8] text-[#142a43] border-b-2 border-[#142a43]')
                       : (isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-gray-500 hover:text-gray-700')
                   }`}>
                   {opt.option?.slice(0, 30) || t('ptw_option_ph', { n: idx + 1 })}{opt.option?.length > 30 ? '...' : ''}
@@ -507,7 +504,7 @@ const DecisionPrism = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-1`}>{t('ptw_premortem')}</p>
                       <p className={`text-sm ${c.text}`}>{opt.pre_mortem.failure_scenario}</p>
                       {opt.pre_mortem.what_would_make_this_more_likely && (
-                        <p className={`text-xs ${c.textMuteded} mt-1`}>{opt.pre_mortem.what_would_make_this_more_likely}</p>
+                        <p className={`text-[13px] ${c.textMuteded} mt-1`}>{opt.pre_mortem.what_would_make_this_more_likely}</p>
                       )}
                     </div>
                   )}
@@ -521,7 +518,7 @@ const DecisionPrism = ({ tool }) => {
                         { label: t('ptw_10years'), val: opt.time_horizons.ten_years },
                       ].map((row, i) => (
                         <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>⏱️ {row.label}</p>
+                          <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>⏱️ {row.label}</p>
                           <p className={`text-xs ${c.text}`}>{row.val}</p>
                         </div>
                       ))}
@@ -540,14 +537,14 @@ const DecisionPrism = ({ tool }) => {
                   <div className="grid grid-cols-2 gap-2">
                     {opt.reversibility && (
                       <div className={`p-3 rounded-lg ${c.inset}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ptw_reversibility')}</p>
+                        <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ptw_reversibility')}</p>
                         <p className={`text-xs font-bold ${c.text} mb-1`}>{reversibilityLabel(opt.reversibility.level)}</p>
                         <p className={`text-xs ${c.text}`}>{opt.reversibility.assessment}</p>
                       </div>
                     )}
                     {opt.values_fit && (
                       <div className={`p-3 rounded-lg ${c.inset}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ptw_values_fit')}</p>
+                        <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ptw_values_fit')}</p>
                         <p className={`text-xs font-bold ${c.text} mb-1`}>{valuesFitLabel(opt.values_fit.level)}</p>
                         <p className={`text-xs ${c.text}`}>{opt.values_fit.assessment}</p>
                       </div>
@@ -652,13 +649,13 @@ const DecisionPrism = ({ tool }) => {
             <div className="grid sm:grid-cols-2 gap-2">
               {results.current_read.what_currently_favors && (
                 <div className={`p-3 rounded-lg ${c.inset}`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('ptw_current_favors_label')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('ptw_current_favors_label')}</p>
                   <p className={`text-xs ${c.text}`}>{results.current_read.what_currently_favors}</p>
                 </div>
               )}
               {results.current_read.what_prevents_a_clean_call && (
                 <div className={`p-3 rounded-lg ${c.inset}`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('ptw_current_unresolved_label')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('ptw_current_unresolved_label')}</p>
                   <p className={`text-xs ${c.text}`}>{results.current_read.what_prevents_a_clean_call}</p>
                 </div>
               )}
@@ -694,8 +691,8 @@ const DecisionPrism = ({ tool }) => {
         )}
 
         {/* Cross-references */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('ptw_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('ptw_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('ptw_xref_velvet')}</a>
             <a href="/DecoderRing" className={`text-xs ${linkStyle}`}>🔍 {t('ptw_xref_decoder')}</a>
@@ -712,20 +709,20 @@ const DecisionPrism = ({ tool }) => {
       try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('ptw_today') : diff === 1 ? t('ptw_yesterday') : diff < 7 ? t('ptw_days_ago', { n: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' }); } catch { return ''; }
     };
     return (
-      <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
+        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🔀</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ptw_history_title')}</span>
-          <span className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span className={`text-[13px] ${c.textMuteded}`}>{sessionHistory.length}</span>
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-2`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}...</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{formatDate(entry.date)}</div>
+                  <div className={`text-[13px] ${c.textMuteded} mt-0.5`}>{formatDate(entry.date)}</div>
                 </div>
                 <button onClick={() => handleViewHistory(entry)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('ptw_view_decision')}</button>
@@ -745,13 +742,21 @@ const DecisionPrism = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🔀'}</span>{t('ptw_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -763,11 +768,12 @@ const DecisionPrism = ({ tool }) => {
               )}
             </div>
           </div>
+          </div>
         </div>
       </div>
       {!results && renderInput()}
       {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
+        <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
           {t('ptw_pre_xref')} <a href="/DecisionCoach" className={linkStyle}>🧭 {t('ptw_pre_xref_coach')}</a> {t('ptw_pre_xref_tail')}
         </p>
       )}

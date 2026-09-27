@@ -61,22 +61,19 @@ const FutureProof = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -88,8 +85,7 @@ const FutureProof = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -97,18 +93,16 @@ const FutureProof = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const trajStyle = (traj) => {
     const map = {
       growing:           { bg: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300', txt: isDark ? 'text-emerald-300' : 'text-emerald-800', dot: '🟢', label: t('fp_traj_growing') },
-      stable:            { bg: isDark ? 'bg-cyan-900/30 border-cyan-600'       : 'bg-cyan-50 border-cyan-300',       txt: isDark ? 'text-cyan-300'    : 'text-cyan-800',    dot: '🔵', label: t('fp_traj_stable') },
+      stable:            { bg: isDark ? 'bg-[#1f2530] border-[#7fb3e0]' : 'bg-[#eef3f8] border-[#d4dde8]',       txt: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',    dot: '🔵', label: t('fp_traj_stable') },
       transforming:      { bg: isDark ? 'bg-amber-900/30 border-amber-600'     : 'bg-amber-50 border-amber-300',     txt: isDark ? 'text-amber-300'   : 'text-amber-800',   dot: '🟡', label: t('fp_traj_transforming') },
       declining:         { bg: isDark ? 'bg-red-900/30 border-red-600'         : 'bg-red-50 border-red-300',         txt: isDark ? 'text-red-300'     : 'text-red-800',     dot: '🔴', label: t('fp_traj_declining') },
       volatile:          { bg: isDark ? 'bg-orange-900/30 border-orange-600'   : 'bg-orange-50 border-orange-300',   txt: isDark ? 'text-orange-300'  : 'text-orange-800',  dot: '🟠', label: t('fp_traj_volatile') },
-      context_dependent: { bg: isDark ? 'bg-cyan-900/30 border-cyan-600'   : 'bg-cyan-50 border-cyan-300',   txt: isDark ? 'text-cyan-300'  : 'text-cyan-800',  dot: '🟣', label: t('fp_traj_context') },
+      context_dependent: { bg: isDark ? 'bg-[#1f2530] border-[#7fb3e0]' : 'bg-[#eef3f8] border-[#d4dde8]',   txt: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',  dot: '🟣', label: t('fp_traj_context') },
     };
     return map[traj] || map.context_dependent;
   };
@@ -117,7 +111,7 @@ const FutureProof = ({ tool }) => {
     const map = {
       high:       { bg: isDark ? 'bg-red-900/20 border-red-700'         : 'bg-red-50 border-red-300',         txt: isDark ? 'text-red-300'     : 'text-red-800'     },
       medium:     { bg: isDark ? 'bg-amber-900/20 border-amber-700'     : 'bg-amber-50 border-amber-300',     txt: isDark ? 'text-amber-300'   : 'text-amber-800'   },
-      low:        { bg: isDark ? 'bg-cyan-900/20 border-cyan-700'       : 'bg-cyan-50 border-cyan-300',       txt: isDark ? 'text-cyan-300'    : 'text-cyan-800'    },
+      low:        { bg: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',       txt: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'    },
       negligible: { bg: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300', txt: isDark ? 'text-emerald-300' : 'text-emerald-800' },
     };
     return map[level] || map.medium;
@@ -291,12 +285,20 @@ const FutureProof = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Input card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔮'}</span>{t('fp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -307,6 +309,7 @@ const FutureProof = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         <div className="mt-4 space-y-4">
@@ -329,7 +332,7 @@ const FutureProof = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.labelText} mb-1.5`}>{t('fp_type_label')} <span className={`font-normal ${c.textMuted}`}>{t('fp_optional')}</span></label>
               <div className="flex flex-wrap gap-1.5">
                 {SUBJECT_TYPES.map(st => (
-                  <button key={st.value} onClick={() => setSubjectType(subjectType === st.value ? '' : st.value)}
+                  <button aria-pressed={subjectType === st.value} key={st.value} onClick={() => setSubjectType(subjectType === st.value ? '' : st.value)}
                     className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1 ${subjectType === st.value ? c.pillActive : c.pillInactive}`}>
                     <span>{st.icon}</span> {t(st.labelKey)}
                   </button>
@@ -340,7 +343,7 @@ const FutureProof = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.labelText} mb-1.5`}>{t('fp_horizon_label')}</label>
               <div className="flex flex-wrap gap-1.5">
                 {TIMEFRAMES.map(tf => (
-                  <button key={tf.value} onClick={() => setTimeframe(tf.value)}
+                  <button aria-pressed={timeframe === tf.value} key={tf.value} onClick={() => setTimeframe(tf.value)}
                     className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${timeframe === tf.value ? c.pillActive : c.pillInactive}`}>
                     {t(tf.labelKey)}
                   </button>
@@ -395,7 +398,7 @@ const FutureProof = ({ tool }) => {
           <p className={`text-xs text-center ${c.textMuted} leading-relaxed`}>{t('fp_not_a_forecast')}</p>
 
           {/* Pre-result cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('fp_xref_pre')}{' '}
             <a href="/LeverageLogic" className={linkStyle}>🎯 {t('fp_leverage_logic')}</a>{' '}
             {t('fp_xref_leverage_suffix')}
@@ -421,7 +424,7 @@ const FutureProof = ({ tool }) => {
                 {/* A short label you can scan, then the question in sentence
                     case. The whole reframed question used to be set in tiny
                     uppercase, which is precise and close to unreadable. */}
-                <p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>
                   {results?.analysis_title || results?.subject_as_understood || subject} · {timeframe}
                 </p>
                 {results?.the_question && (
@@ -436,7 +439,7 @@ const FutureProof = ({ tool }) => {
                     reads as the opening of the paragraph below. */}
                 {results?.certainty && (
                   <div className={`mb-3 pt-3 border-t ${isDark ? 'border-white/15' : 'border-black/10'}`}>
-                    <p className={`text-[9px] ${c.textMuted} uppercase tracking-wide`}>{t('fp_how_certain')}</p>
+                    <p className={`text-[13px] ${c.textMuted} uppercase tracking-wide`}>{t('fp_how_certain')}</p>
                     <p className={`text-sm font-bold ${ts.txt}`}>{t(CERTAINTY_KEYS[results.certainty] || 'fp_certainty_moderate')}</p>
                     {results?.certainty_because && (
                       <p className={`text-xs ${ts.txt} opacity-90 mt-1 leading-relaxed`}>{results.certainty_because}</p>
@@ -455,15 +458,15 @@ const FutureProof = ({ tool }) => {
           {(results?.tailwinds?.filter(usableForce).length > 0 || results?.headwinds?.filter(usableForce).length > 0) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {results?.tailwinds?.filter(usableForce).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🌬️ {t('fp_tailwinds')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🌬️ {t('fp_tailwinds')}</p>
                   <div className="space-y-3">
                     {results?.tailwinds?.filter(usableForce).map((tw, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{tw.force}</p>
                           {STATUS_KEYS[tw.status] && (
-                            <span className={`text-[9px] uppercase tracking-wide flex-shrink-0 ${c.textMuted}`}>{t(STATUS_KEYS[tw.status])}</span>
+                            <span className={`text-xs uppercase tracking-wide flex-shrink-0 ${c.textMuted}`}>{t(STATUS_KEYS[tw.status])}</span>
                           )}
                         </div>
                         <p className={`text-xs ${c.textSecondary}`}>{tw.explanation}</p>
@@ -473,19 +476,19 @@ const FutureProof = ({ tool }) => {
                 </div>
               )}
               {results?.headwinds?.filter(usableForce).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>⛈️ {t('fp_headwinds')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>⛈️ {t('fp_headwinds')}</p>
                   <div className="space-y-3">
                     {results?.headwinds?.filter(usableForce).map((h, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{h.force}</p>
                           {STATUS_KEYS[h.status] && (
-                            <span className={`text-[9px] uppercase tracking-wide flex-shrink-0 ${c.textMuted}`}>{t(STATUS_KEYS[h.status])}</span>
+                            <span className={`text-xs uppercase tracking-wide flex-shrink-0 ${c.textMuted}`}>{t(STATUS_KEYS[h.status])}</span>
                           )}
                         </div>
                         <p className={`text-xs ${c.textSecondary}`}>{h.explanation}</p>
-                        {h.timing && <p className={`text-[10px] mt-0.5 ${c.textMuted}`}>{h.timing}</p>}
+                        {h.timing && <p className={`text-xs mt-0.5 ${c.textMuted}`}>{h.timing}</p>}
                       </div>
                     ))}
                   </div>
@@ -507,27 +510,27 @@ const FutureProof = ({ tool }) => {
                     answer turns on. For a plumbing business the story is route
                     to market and succession; automation is a footnote, and a
                     footnote should not take a page. */}
-                <button onClick={() => setShowAutomation(v => !v)}
+                <button data-print-heading onClick={() => setShowAutomation(v => !v)}
                   aria-expanded={central || showAutomation} disabled={central}
                   className={`w-full flex items-center gap-2 mb-3 text-start ${central ? 'cursor-default' : ''}`}>
-                  <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>🤖 {t('fp_automation_q')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted}`}>🤖 {t('fp_automation_q')}</p>
                   {EXPOSURE_KEYS[aq.exposure] && (
-                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${as_.bg} ${as_.txt}`}>
+                    <span className={`text-[13px] font-bold px-2 py-0.5 rounded-full border ${as_.bg} ${as_.txt}`}>
                       {t(EXPOSURE_KEYS[aq.exposure])}
                     </span>
                   )}
-                  {!central && <span className="ms-auto"><Caret open={showAutomation} /></span>}
+                  {!central && <span className="ms-auto"><span data-print-hide><Caret open={showAutomation} /></span></span>}
                 </button>
-                <div className={`space-y-2 ${central || showAutomation ? '' : 'hidden'}`}>
+                <div data-sec-body hidden={!(central || showAutomation)} className="space-y-2">
                   {aq.what_is_exposed && (
                     <div>
-                      <p className={`text-[10px] font-semibold ${c.textMuted} mb-0.5`}>{t('fp_what_automated')}</p>
+                      <p className={`text-xs font-semibold ${c.textMuted} mb-0.5`}>{t('fp_what_automated')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{aq.what_is_exposed}</p>
                     </div>
                   )}
                   {aq.what_is_not && (
                     <div>
-                      <p className={`text-[10px] font-semibold ${c.textMuted} mb-0.5`}>{t('fp_what_doesnt')}</p>
+                      <p className={`text-xs font-semibold ${c.textMuted} mb-0.5`}>{t('fp_what_doesnt')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{aq.what_is_not}</p>
                     </div>
                   )}
@@ -543,8 +546,8 @@ const FutureProof = ({ tool }) => {
 
           {/* The pivot */}
           {results?.the_pivot && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🔀 {t('fp_adjacent_moves')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔀 {t('fp_adjacent_moves')}</p>
               {results?.the_pivot?.adjacent_moves?.length > 0 && (
                 <div className="space-y-3 mb-4">
                   {results?.the_pivot?.adjacent_moves.map((move, i) => (
@@ -552,7 +555,7 @@ const FutureProof = ({ tool }) => {
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <p className={`text-sm font-semibold ${c.text}`}>{move.move}</p>
                         {move.effort_required && (
-                          <span className={`text-[9px] flex-shrink-0 ${c.textMuted}`}>{EFFORT_KEYS[move.effort_required] ? t(EFFORT_KEYS[move.effort_required]) : move.effort_required}</span>
+                          <span className={`text-xs flex-shrink-0 ${c.textMuted}`}>{EFFORT_KEYS[move.effort_required] ? t(EFFORT_KEYS[move.effort_required]) : move.effort_required}</span>
                         )}
                       </div>
                       <p className={`text-xs ${c.textSecondary}`}>{move.why_resilient || move.why_it_changes_the_picture}</p>
@@ -562,7 +565,7 @@ const FutureProof = ({ tool }) => {
               )}
               {results?.the_pivot?.the_version_worth_pursuing && (
                 <div className={`${c.infoBox} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold uppercase mb-1`}>💡 {t('fp_version_worth')}</p>
+                  <p className={`text-[13px] font-bold mb-1`}>💡 {t('fp_version_worth')}</p>
                   <p className="text-xs leading-relaxed">{results?.the_pivot?.the_version_worth_pursuing}</p>
                 </div>
               )}
@@ -581,7 +584,7 @@ const FutureProof = ({ tool }) => {
                   <button key={s.key} onClick={() => setActiveScenario(s.key)}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-semibold transition-all ${
                       activeScenario === s.key
-                        ? (isDark ? 'bg-zinc-900 text-cyan-300 border-b-2 border-cyan-500' : 'bg-white text-cyan-700 border-b-2 border-cyan-600')
+                        ? (isDark ? 'bg-zinc-900 text-[#a9cdef] border-b-2 border-[#7fb3e0]' : 'bg-white text-[#142a43] border-b-2 border-[#142a43]')
                         : (isDark ? 'text-zinc-400 hover:bg-zinc-700/50' : 'text-gray-500 hover:bg-gray-50')
                     }`}>
                     <span>{s.icon}</span>
@@ -601,19 +604,19 @@ const FutureProof = ({ tool }) => {
                     <div className="space-y-3">
                       {sc.if_true && (
                         <div>
-                          <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-0.5`}>{t('fp_if_true')}</p>
+                          <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('fp_if_true')}</p>
                           <p className={`text-sm ${c.text} leading-relaxed`}>{sc.if_true}</p>
                         </div>
                       )}
                       {sc.then && (
                         <div>
-                          <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-0.5`}>{t('fp_then')}</p>
+                          <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('fp_then')}</p>
                           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{sc.then}</p>
                         </div>
                       )}
                       {sc.for_you && (
                         <div>
-                          <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-0.5`}>{t('fp_for_you')}</p>
+                          <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('fp_for_you')}</p>
                           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{sc.for_you}</p>
                         </div>
                       )}
@@ -627,7 +630,7 @@ const FutureProof = ({ tool }) => {
           {/* Honest take */}
           {(results?.what_this_means_for_you || results?.the_honest_take) && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>🧭 {t('fp_means_for_you')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🧭 {t('fp_means_for_you')}</p>
               <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_this_means_for_you || results?.the_honest_take}</p>
             </div>
           )}
@@ -635,7 +638,7 @@ const FutureProof = ({ tool }) => {
           {/* One action */}
           {results?.one_action && (
             <div className={`${c.success} border-2 rounded-xl p-5`}>
-              <p className={`text-[10px] font-bold uppercase mb-2`}>⚡ {t('fp_one_action')}</p>
+              <p className={`text-[13px] font-bold mb-2`}>⚡ {t('fp_one_action')}</p>
               <p className={`text-sm font-semibold leading-relaxed`}>{results?.one_action}</p>
               {results?.one_action_why && (
                 <p className="text-xs mt-2 opacity-90 leading-relaxed">{results.one_action_why}</p>
@@ -647,19 +650,19 @@ const FutureProof = ({ tool }) => {
               check what the analysis rests on can; nobody else has to read it. */}
           {results?.sources_and_assumptions && (
             <div className={`${c.card} border ${c.border} rounded-xl`}>
-              <button onClick={() => setShowBasis(v => !v)} aria-expanded={showBasis}
+              <button data-print-heading onClick={() => setShowBasis(v => !v)} aria-expanded={showBasis}
                 className="w-full flex items-center justify-between gap-2 p-4 text-start">
-                <span className={`text-[10px] font-bold uppercase ${c.textMuted}`}>🔍 {t('fp_basis')}</span>
-                <Caret open={showBasis} />
+                <span className={`text-[13px] font-bold ${c.textMuted}`}>🔍 {t('fp_basis')}</span>
+                <span data-print-hide><Caret open={showBasis} /></span>
               </button>
-              {showBasis && (
-                <div className={`px-4 pb-4 space-y-3 border-t ${c.border} pt-3`}>
+              {(
+                <div data-sec-body hidden={!(showBasis)} className={`px-4 pb-4 space-y-3 border-t ${c.border} pt-3`}>
                   {[['observed', 'fp_basis_observed'], ['inferred', 'fp_basis_inferred'], ['assumed', 'fp_basis_assumed']].map(([key, labelKey]) => {
                     const list = results.sources_and_assumptions[key];
                     if (!Array.isArray(list) || !list.length) return null;
                     return (
                       <div key={key}>
-                        <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t(labelKey)}</p>
+                        <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t(labelKey)}</p>
                         <ul className="space-y-1.5">
                           {list.map((item, i) => {
                             // Observed entries are records so a reader can go and
@@ -692,8 +695,8 @@ const FutureProof = ({ tool }) => {
           )}
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('fp_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('fp_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🧭 {t('fp_decision_coach')}</a>
               <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>🎯 {t('fp_leverage_logic')}</a>
@@ -704,9 +707,9 @@ const FutureProof = ({ tool }) => {
 
       {/* History */}
       {sessionHistory?.length > 0 && !results && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <h3 className={`text-sm font-bold ${c.text}`}>🕐 {t('fp_recent')}</h3>
-          <p className={`text-xs ${c.textMuted} mb-3`}>{t('fp_recent_hint')}</p>
+        <div className={`border-t ${c.border} pt-5`}>
+          <h3 className={`text-base font-bold ${c.text}`}>🕐 {t('fp_recent')}</h3>
+          <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('fp_recent_hint')}</p>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => {
               const ts = trajStyle(entry.trajectory);

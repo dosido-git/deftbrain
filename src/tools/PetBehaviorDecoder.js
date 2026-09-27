@@ -149,16 +149,14 @@ const PetBehaviorDecoder = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -171,9 +169,7 @@ const PetBehaviorDecoder = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ═══ FORM STATE ═══
   const [petType, setPetType] = useState('Dog');
@@ -504,14 +500,23 @@ const PetBehaviorDecoder = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       {toast && <div className={`fixed top-4 start-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200'}`}>{toast}</div>}
 
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-center justify-between">
             <div>
-              <p className={`text-base ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🐾'}</span>{tool?.tagline ?? t('pwd_tagline')}</p>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🐾'}</span>{tool?.tagline ?? t('pwd_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(results || behavior.trim()) && <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>↺ {t('start_over')}</button>}
+          </div>
           </div>
         </div>
 
@@ -550,10 +555,10 @@ const PetBehaviorDecoder = ({ tool }) => {
               ) : (
                 <button onClick={handleStopRecording} className="bg-red-600 text-white px-3 py-2 rounded text-sm flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full animate-pulse" /> {t('pwd_stop')} ({15 - recordingSeconds}s)</button>
               )}
-              {imagePreview && <div className="flex items-center gap-2"><img src={imagePreview} alt={t('pwd_photo')} className="w-10 h-10 rounded object-cover border" /><button onClick={handleRemoveImage} className={`text-xs ${c.textMuteded}`}>✕</button></div>}
-              {videoPreview && <div className="flex items-center gap-2"><video src={videoPreview} className="w-16 h-10 rounded object-cover border" controls muted /><button onClick={handleRemoveVideo} className={`text-xs ${c.textMuteded}`}>✕</button></div>}
+              {imagePreview && <div className="flex items-center gap-2"><img src={imagePreview} alt={t('pwd_photo')} className="w-10 h-10 rounded object-cover border" /><button onClick={handleRemoveImage} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>}
+              {videoPreview && <div className="flex items-center gap-2"><video src={videoPreview} className="w-16 h-10 rounded object-cover border" controls muted /><button onClick={handleRemoveVideo} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>}
             </div>
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('pwd_video_hint')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('pwd_video_hint')}</p>
           </div>
 
           <div>
@@ -594,18 +599,18 @@ const PetBehaviorDecoder = ({ tool }) => {
           </div>
 
           <div>
-            <button onClick={() => setShowMoreContext(!showMoreContext)} aria-expanded={showMoreContext} className={`flex items-center gap-1 text-sm ${c.textSecondary} hover:underline`}>💊 {showMoreContext ? t('pwd_hide') : t('pwd_add')} {t('pwd_more_context_toggle')} <Caret open={showMoreContext} /></button>
-            {showMoreContext && (
-              <div className={`mt-2 p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-amber-50'} space-y-3`}>
+            <button data-print-heading onClick={() => setShowMoreContext(!showMoreContext)} aria-expanded={showMoreContext} className={`flex items-center gap-1 text-sm ${c.textSecondary} hover:underline`}>💊 {showMoreContext ? t('pwd_hide') : t('pwd_add')} {t('pwd_more_context_toggle')} <span data-print-hide><Caret open={showMoreContext} /></span></button>
+            {(
+              <div data-sec-body hidden={!(showMoreContext)} className={`mt-2 p-4 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-amber-50'} space-y-3`}>
                 <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_current_meds')}</label><input type="text" value={currentMeds} onChange={(e) => setCurrentMeds(e.target.value)} placeholder={t('pwd_current_meds_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
                 <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_diet')}</label><input type="text" value={recentDietChanges} onChange={(e) => setRecentDietChanges(e.target.value)} placeholder={t('pwd_recent_diet_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
                 <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_health')}</label><input type="text" value={recentHealthChanges} onChange={(e) => setRecentHealthChanges(e.target.value)} placeholder={t('pwd_recent_health_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
-                <p className={`text-xs ${c.textMuteded}`}>{t('pwd_more_context_hint')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{t('pwd_more_context_hint')}</p>
               </div>
             )}
           </div>
 
-          <p className={`text-xs text-center ${c.textMuted}`}>{t('pwd_xref_pre')} <a href="/DoctorVisitTranslator" className={linkStyle}>🩺 {t('pwd_doctor_visit_translator')}</a>.</p>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>{t('pwd_xref_pre')} <a href="/DoctorVisitTranslator" className={linkStyle}>🩺 {t('pwd_doctor_visit_translator')}</a>.</p>
 
           <div className="flex gap-3">
             <button title={t('cmd_enter')} onClick={() => handleAnalyze()} disabled={loading || !canSubmitRef.current} className={`relative flex-1 ${!canSubmitRef.current ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -648,14 +653,14 @@ const PetBehaviorDecoder = ({ tool }) => {
           )}
 
           {results?.what_you_reported?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>📋 {t('pwd_what_you_reported')}</h3>
               <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.what_you_reported.filter((r) => r && r.trim()).map((r, i) => <li key={i}>• {r}</li>)}</ul>
             </div>
           )}
 
           {results?.what_could_explain_it?.length > 0 && (
-            <div className={`${c.card} border rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3`}>❓ {t('pwd_could_explain')}</h3>
               {results?.what_could_explain_it.map((p, i) => (
                 <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}>
@@ -671,28 +676,28 @@ const PetBehaviorDecoder = ({ tool }) => {
 
           {results?.what_to_watch?.length > 0 && (
             <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><span>👀</span> {t('pwd_watch_for')}</h3>
+              <h3 className="text-base font-bold mb-2 flex items-center gap-2"><span>👀</span> {t('pwd_watch_for')}</h3>
               <ul className="text-sm space-y-1.5">{results?.what_to_watch.filter((w) => w && w.trim()).map((w, i) => <li key={i} className="flex items-start gap-2"><span>•</span> {w}</li>)}</ul>
             </div>
           )}
 
           {results?.what_would_change_the_next_step?.length > 0 && (
             <div className={`${c.danger} border-s-4 rounded-e-lg p-5`}>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> {t('pwd_change_next_step')}</h3>
+              <h3 className="text-base font-bold mb-2 flex items-center gap-2"><span>⚠️</span> {t('pwd_change_next_step')}</h3>
               <ul className="text-sm space-y-1.5 font-medium">{results?.what_would_change_the_next_step.filter((f) => f && f.trim()).map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">→</span> {f}</li>)}</ul>
             </div>
           )}
 
           {results?.what_you_can_do_now?.length > 0 && (
             <div className={`${c.success} border rounded-lg p-5`}>
-              <h3 className="font-bold mb-2">✅ {t('pwd_can_do_now')}</h3>
+              <h3 className="text-base font-bold mb-2">✅ {t('pwd_can_do_now')}</h3>
               <ul className="text-sm space-y-1.5">{results?.what_you_can_do_now.filter((s) => s && s.trim()).map((s, i) => <li key={i}>• {s}</li>)}</ul>
             </div>
           )}
 
           {results?.vet_prep?.show_only_when_useful && (results?.vet_prep.what_to_record?.length > 0 || results?.vet_prep.questions_or_details_to_bring?.length > 0) && (
             <div className={`${c.cardAlt} border rounded-xl p-5`}>
-              <h3 className="font-bold mb-3 flex items-center gap-2"><span>🩺</span> {t('pwd_vet_prep')}</h3>
+              <h3 className="text-base font-bold mb-3 flex items-center gap-2"><span>🩺</span> {t('pwd_vet_prep')}</h3>
               {results?.vet_prep.what_to_record?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 {t('pwd_what_to_record')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.what_to_record.filter((r) => r && r.trim()).map((r, i) => <li key={i}>• {r}</li>)}</ul></div>}
               {results?.vet_prep.questions_or_details_to_bring?.length > 0 && <div><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ {t('pwd_questions_to_bring')}</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_prep.questions_or_details_to_bring.filter((q) => q && q.trim()).map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
               {videoPreview && <div className="mt-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>🎥 {t('pwd_your_clip')}</p><video src={videoPreview} className="w-48 h-auto rounded border" controls /></div>}
@@ -700,14 +705,14 @@ const PetBehaviorDecoder = ({ tool }) => {
           )}
 
           {/* Save This Observation */}
-          <div className={`${c.card} border rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold mb-3 ${c.text}`}>📋 {t('pwd_save_observation')}</h3>
             {!justSaved ? (
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between"><label className={`text-xs ${c.label}`}>{t('pwd_concern_label')}</label><span className="text-xs font-bold">{saveSeverity}/5</span></div>
                   <input type="range" min="1" max="5" value={saveSeverity} onChange={(e) => setSaveSeverity(parseInt(e.target.value, 10))} className="w-full" />
-                  <div className={`flex justify-between text-[11px] ${c.textMuted}`}><span>{t('pwd_concern_low')}</span><span>{t('pwd_concern_high')}</span></div>
+                  <div className={`flex justify-between text-[13px] ${c.textMuted}`}><span>{t('pwd_concern_low')}</span><span>{t('pwd_concern_high')}</span></div>
                 </div>
                 <input type="text" value={saveNote} onChange={(e) => setSaveNote(e.target.value)} placeholder={t('pwd_observation_note_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} />
                 <button onClick={handleSaveObservation} className={`${c.btnPrimary} px-4 py-2 rounded text-sm font-bold`}>{t('pwd_save')}</button>
@@ -724,7 +729,7 @@ const PetBehaviorDecoder = ({ tool }) => {
                 {priorObservationsForCurrent.map((o) => (
                   <div key={o.id} className={`p-2.5 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'} flex items-center justify-between gap-2`}>
                     <div className="min-w-0 flex-1">
-                      <p className={`text-xs ${c.textMuted}`}>{new Date(o.date).toLocaleDateString(userLocale)}{o.severity != null ? ` · ${o.severity}/5` : ''}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{new Date(o.date).toLocaleDateString(userLocale)}{o.severity != null ? ` · ${o.severity}/5` : ''}</p>
                       <p className={`text-sm truncate ${c.text}`}>{o.behavior}</p>
                     </div>
                     <button onClick={() => handleDeleteObservation(o.id)} className={`text-xs flex-shrink-0 ${c.textMuted}`}>🗑️</button>
@@ -739,7 +744,7 @@ const PetBehaviorDecoder = ({ tool }) => {
           </div>
 
           {/* Follow-up Q&A */}
-          <div className={`${c.card} border rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold mb-3 ${c.text}`}>💬 {t('pwd_followup_title')}</h3>
             {followupHistory.length > 0 && <div className="space-y-3 mb-4">{followupHistory.map((f, i) => <div key={i} className="space-y-1"><div className={`p-3 rounded ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-xs font-semibold ${c.textSecondary}`}>{t('pwd_you')}</p><p className={`text-sm ${c.text}`}>{f.question}</p></div><div className={`p-3 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}><p className={`text-sm ${c.textSecondary}`}>{f.answer}</p></div></div>)}</div>}
             <div className="scroll-mt-24 flex gap-2" ref={followupRef}>
@@ -749,8 +754,8 @@ const PetBehaviorDecoder = ({ tool }) => {
             </div>
           </div>
 
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pwd_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('pwd_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🩺 {t('pwd_doctor_visit_translator')}</a>
               <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>💬 {t('pwd_plain_talk')}</a>
@@ -763,7 +768,7 @@ const PetBehaviorDecoder = ({ tool }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowVetSummary(false)}>
           <div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={(e) => e.stopPropagation()}>
             <h3 className={`font-bold ${c.text} mb-2`}>🩺 {t('pwd_vet_ready_summary')}</h3>
-            <p className={`text-xs ${c.textMuted} mb-3`}>{t('pwd_vet_summary_hint')}</p>
+            <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('pwd_vet_summary_hint')}</p>
             <pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text} leading-relaxed`}>{buildVetSummary()}</pre>
             <div className="flex gap-3 mt-4"><button onClick={() => setShowVetSummary(false)} className={`${c.btnSecondary} px-4 py-2 rounded`}>{t('pwd_close')}</button></div>
           </div>

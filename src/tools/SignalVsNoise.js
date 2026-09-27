@@ -33,21 +33,20 @@ const SignalVsNoise = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -66,13 +65,11 @@ const SignalVsNoise = ({ tool }) => {
     amber: isDark ? 'bg-amber-900/30 border-amber-600/50 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
     red:   isDark ? 'bg-red-900/30 border-red-700/50 text-red-300'       : 'bg-red-50 border-red-300 text-red-800',
     zinc:  isDark ? 'bg-zinc-700/60 border-zinc-600 text-zinc-300'       : 'bg-gray-100 border-gray-300 text-gray-600',
-    cyan:  isDark ? 'bg-cyan-900/30 border-cyan-700/50 text-cyan-300'    : 'bg-cyan-50 border-cyan-300 text-cyan-800',
+    cyan:  isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-[#a9cdef]' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     sky:   isDark ? 'bg-sky-900/30 border-sky-700/50 text-sky-300'       : 'bg-sky-50 border-sky-300 text-sky-800',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
 
@@ -106,7 +103,7 @@ const SignalVsNoise = ({ tool }) => {
             target="_blank"
             rel="noopener noreferrer"
             title={src.title || src.publisher || src.url}
-            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-zinc-600 bg-zinc-800 text-cyan-300 hover:border-cyan-600' : 'border-gray-300 bg-white text-cyan-700 hover:border-cyan-500'}`}
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-zinc-600 bg-zinc-800 text-[#a9cdef] hover:border-[#7fb3e0]' : 'border-gray-300 bg-white text-[#142a43] hover:border-[#142a43]'}`}
           >
             {src.id} · {src.publisher || (() => { try { return new URL(src.url).hostname.replace(/^www\./, ''); } catch { return t('svn_source_generic'); } })()} ↗
           </a>
@@ -377,15 +374,23 @@ const SignalVsNoise = ({ tool }) => {
 
         {/* Input */}
         {!results && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-            <div className="pb-3 border-b border-zinc-500">
+          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
+            {/* Header — site style (2026-09-27): a pale band of the tool's color
+                bleeding to the card edges, the ground the "Try an example" pill was
+                made for (PF-17c). Screen only. */}
+            <div
+              data-print-hide
+              className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+              style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+            >
+              <div>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                   {/* i18n key, not tool?.tagline — the catalog tagline keeps
                       its leading emoji (toolTagline() convention), which
                       would double against the icon span right before it. */}
-                  <p className={`text-base ${c.textSecondary}`}>
+                  <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                     <span className="me-2 text-xl">{tool?.icon ?? '📡'}</span>{t('svn_tagline')}
                   </p>
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -398,8 +403,9 @@ const SignalVsNoise = ({ tool }) => {
                 ) : null}
               </div>
             </div>
+            </div>
             <div>
-              <p className={`text-xs ${c.textMuted} mb-2`}>
+              <p data-print-hide className={`text-[13px] ${c.textMuted} mb-2`}>
                 {t('svn_xref_intro')} <a href="/ResearchDecoder" className={linkStyle}>📄 {t('svn_research_decoder')}</a> {t('svn_xref_intro_end')}
               </p>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('svn_topic_label')} <span className={c.required}>*</span></label>
@@ -422,7 +428,7 @@ const SignalVsNoise = ({ tool }) => {
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
             {busy && (
-              <div className={`text-xs ${c.textMuted} space-y-1`}>
+              <div className={`text-[13px] ${c.textMuted} space-y-1`}>
                 <p>
                   {phase === 'research' && t('svn_research_warming')}
                   {phase === 'synthesis' && (preview ? t('svn_research_synthesizing', { n: preview.length }) : t('svn_research_running'))}
@@ -468,24 +474,24 @@ const SignalVsNoise = ({ tool }) => {
                   from both states now. */}
               <div className="flex items-start justify-between gap-3 mb-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_analyzing')}</p>
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('svn_analyzing')}</p>
                   {results?.analysis_mode === 'verified_research' && (
                     <>
-                      <span className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
+                      <span className={`text-[13px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
                         {t('svn_mode_research')}
                       </span>
-                      <span className={`text-[10px] ${c.textMuted}`}>
+                      <span className={`text-[13px] ${c.textMuted}`}>
                         {t('svn_sources_checked', { n: results?.sources_examined?.length || 0 })}
                       </span>
                       {/* Research date, always — and a way to re-run against today's
                           sources when this isn't today's research. Reopening a saved
                           check is free; checking again is a new research pass. */}
                       {researchedLabel && (
-                        <span className={`text-[10px] ${c.textMuted}`}>· {t('svn_researched_on', { date: researchedLabel })}</span>
+                        <span className={`text-[13px] ${c.textMuted}`}>· {t('svn_researched_on', { date: researchedLabel })}</span>
                       )}
                       {(restoredCheck || !researchedToday) && (
                         <button onClick={() => handleSubmit({ refresh: true })} disabled={busy}
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-cyan-700 text-cyan-300 hover:bg-cyan-900/30' : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'}`}>
+                          className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                           {t('svn_check_again')}
                         </button>
                       )}
@@ -499,7 +505,7 @@ const SignalVsNoise = ({ tool }) => {
               <p className={`font-bold text-base mb-3 ${c.text}`}>{results?.topic_as_understood}</p>
               {results?.framing && (
                 <>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('svn_why_noisy')}</p>
+                  <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('svn_why_noisy')}</p>
                   <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.framing}</p>
                 </>
               )}
@@ -545,14 +551,14 @@ const SignalVsNoise = ({ tool }) => {
             {/* THE NOISE */}
             {results?.the_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('noise')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <button data-print-heading aria-expanded={!!(expanded.noise)} onClick={() => toggle('noise')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                     {t('svn_noise_header')}
                   </p>
-                  <Caret open={expanded.noise} />
+                  <span data-print-hide><Caret open={expanded.noise} /></span>
                 </button>
-                {expanded.noise && (
-                  <div className={`border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.noise)} className={`border-t ${c.border}`}>
                     {results?.the_noise?.map((item, i) => {
                       const cfg = NOISE_TYPE_CONFIG[item.noise_type] || NOISE_TYPE_CONFIG.oversimplified;
                       return (
@@ -585,14 +591,14 @@ const SignalVsNoise = ({ tool }) => {
                 correct. */}
             {(results?.still_worth_verifying?.length > 0 || results?.what_general_claims_cant_decide?.length > 0) && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('debated')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <button data-print-heading aria-expanded={!!(expanded.debated)} onClick={() => toggle('debated')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
                     {t('svn_debated_header')}
                   </p>
-                  <Caret open={expanded.debated} />
+                  <span data-print-hide><Caret open={expanded.debated} /></span>
                 </button>
-                {expanded.debated && (
-                  <div className={`border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.debated)} className={`border-t ${c.border}`}>
                     {results?.still_worth_verifying?.map((item, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-semibold mb-1 ${c.text}`}>{item.question}</p>
@@ -600,14 +606,14 @@ const SignalVsNoise = ({ tool }) => {
                           <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_why')}</span> {item.why_it_matters}</p>
                         )}
                         {item.what_would_help && (
-                          <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_would_help')}</span> {item.what_would_help}</p>
+                          <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('svn_verify_would_help')}</span> {item.what_would_help}</p>
                         )}
                         <SourceRefs ids={item.source_ids} />
                       </div>
                     ))}
                     {results?.what_general_claims_cant_decide?.length > 0 && (
                       <div className={`px-5 py-4 ${results?.still_worth_verifying?.length > 0 ? `border-t ${c.border}` : ''}`}>
-                        <p className={`text-[10px] font-bold uppercase tracking-wide mb-2 ${c.textMuted}`}>{t('svn_cant_decide_header')}</p>
+                        <p className={`text-[13px] font-bold mb-2 ${c.textMuted}`}>{t('svn_cant_decide_header')}</p>
                         <ul className="space-y-1">
                           {results.what_general_claims_cant_decide.map((x, i) => (
                             <BulletWithRefs key={i} text={x} />
@@ -629,11 +635,11 @@ const SignalVsNoise = ({ tool }) => {
               const hasAny = bl?.supported_takeaways?.length || bl?.treat_skeptically?.length || bl?.what_would_change_the_answer?.length;
               if (!hasAny) return null;
               return (
-                <div className={`rounded-2xl border-2 p-5 space-y-3 ${isDark ? 'border-cyan-700 bg-cyan-900/20' : 'border-cyan-600 bg-cyan-50'}`}>
-                  <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>{t('svn_bottom_line')}</p>
+                <div className={`rounded-2xl border-2 p-5 space-y-3 ${isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{t('svn_bottom_line')}</p>
                   {bl.supported_takeaways?.length > 0 && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.signalText}`}>{t('svn_what_evidence')}</p>
+                      <p className={`text-[13px] font-bold mb-1 ${c.signalText}`}>{t('svn_what_evidence')}</p>
                       <ul className="space-y-1">
                         {bl.supported_takeaways.map((x, i) => (
                           <BulletWithRefs key={i} text={x} />
@@ -643,7 +649,7 @@ const SignalVsNoise = ({ tool }) => {
                   )}
                   {bl.treat_skeptically?.length > 0 && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_what_ignore')}</p>
+                      <p className={`text-[13px] font-bold mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('svn_what_ignore')}</p>
                       <ul className="space-y-1">
                         {bl.treat_skeptically.map((x, i) => (
                           <BulletWithRefs key={i} text={x} />
@@ -653,7 +659,7 @@ const SignalVsNoise = ({ tool }) => {
                   )}
                   {bl.what_would_change_the_answer?.length > 0 && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>{t('svn_honest_uncertainty')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('svn_honest_uncertainty')}</p>
                       <ul className="space-y-1">
                         {bl.what_would_change_the_answer.map((x, i) => (
                           <BulletWithRefs key={i} text={x} />
@@ -670,18 +676,18 @@ const SignalVsNoise = ({ tool }) => {
                 unless supplied/verified. */}
             {results?.sources_of_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('sources')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_sources_header')}</p>
-                  <Caret open={expanded.sources} />
+                <button data-print-heading aria-expanded={!!(expanded.sources)} onClick={() => toggle('sources')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('svn_sources_header')}</p>
+                  <span data-print-hide><Caret open={expanded.sources} /></span>
                 </button>
-                {expanded.sources && (
-                  <div className={`border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.sources)} className={`border-t ${c.border}`}>
                     {results?.sources_of_noise?.map((src, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
-                        <p className={`text-[10px] font-bold uppercase tracking-wide mb-0.5 ${c.textMuted}`}>{t('svn_source_mechanism_label')}</p>
+                        <p className={`text-[13px] font-bold mb-0.5 ${c.textMuted}`}>{t('svn_source_mechanism_label')}</p>
                         <p className={`text-sm font-semibold mb-1 ${c.text}`}>{src.source_type}</p>
                         <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">{t('svn_incentive')}</span> {src.how_it_distorts}</p>
-                        <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('svn_how_to_spot')}</span> {src.how_to_recognize_it}</p>
+                        <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('svn_how_to_spot')}</span> {src.how_to_recognize_it}</p>
                       </div>
                     ))}
                   </div>
@@ -692,20 +698,20 @@ const SignalVsNoise = ({ tool }) => {
             {/* SOURCES — only sources whose IDs survived into the rendered analysis. */}
             {results?.sources_examined?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔎 {t('svn_sources_list_header')}</p>
-                  <Caret open={expanded.research} />
+                <button data-print-heading aria-expanded={!!(expanded.research)} onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>🔎 {t('svn_sources_list_header')}</p>
+                  <span data-print-hide><Caret open={expanded.research} /></span>
                 </button>
-                {expanded.research && (
-                  <div className={`border-t ${c.border} px-5 py-4 space-y-3`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.research)} className={`border-t ${c.border} px-5 py-4 space-y-3`}>
                     {results.sources_examined.map((src) => (
                       <div key={src.id} className="flex items-start gap-3">
-                        <span className={`text-[10px] font-bold mt-0.5 ${c.accentTxt}`}>{src.id}</span>
+                        <span className={`text-xs font-bold mt-0.5 ${c.accentTxt}`}>{src.id}</span>
                         <div className="min-w-0">
                           <a href={src.url} target="_blank" rel="noopener noreferrer" className={`text-sm font-semibold ${linkStyle}`}>
                             {src.title || src.publisher || src.url} ↗
                           </a>
-                          <p className={`text-xs ${c.textMuted}`}>
+                          <p className={`text-[13px] ${c.textMuted}`}>
                             {[src.publisher, src.date, src.source_type?.replaceAll('_', ' ')].filter(Boolean).join(' · ')}
                           </p>
                         </div>
@@ -717,8 +723,8 @@ const SignalVsNoise = ({ tool }) => {
             )}
 
             {/* Cross-references */}
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('svn_related')}</p>
+            <div data-print-hide className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('svn_related')}</p>
               <div className="flex flex-wrap gap-3">
                 <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('svn_belief_stress_test')}</a>
                 <a href="/TheFinalWord" className={`text-xs ${linkStyle}`}>⚖️ {t('svn_the_final_word')}</a>
@@ -752,7 +758,7 @@ const SignalVsNoise = ({ tool }) => {
                     {e.claimLabels?.length > 0 && (
                       <p className={`text-xs truncate ${c.textSecondary}`}>{e.claimLabels.join(' · ')}</p>
                     )}
-                    <p className={`text-[11px] ${c.textMuted}`}>
+                    <p className={`text-[13px] ${c.textMuted}`}>
                       {stats.join(' · ')}{e.checks > 1 ? ` · ${tPlural('svn_checks_n', e.checks, { n: e.checks })}` : ''}
                     </p>
                   </div>
