@@ -126,22 +126,19 @@ const MiseEnPlace = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -151,8 +148,7 @@ const MiseEnPlace = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -165,11 +161,11 @@ const MiseEnPlace = ({ tool }) => {
     tipBg:         isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     tipText:       isDark ? 'text-sky-300' : 'text-sky-700',
     timelineBg:    isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
-    timelineDot:   isDark ? 'bg-cyan-500' : 'bg-cyan-600',
+    timelineDot:   isDark ? 'bg-[#2f6fb0]' : 'bg-[#142a43]',
     timelineLine:  isDark ? 'bg-zinc-700' : 'bg-gray-200',
     inset:         isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     dropzone:      isDark ? 'border-zinc-600 bg-zinc-800/50' : 'border-gray-300 bg-slate-50',
-    dropActive:    isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50',
+    dropActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]',
     histBg:        isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     histAccent:    isDark ? 'text-amber-400' : 'text-amber-600',
     histCard:      isDark ? 'border-zinc-700' : 'border-gray-100',
@@ -178,9 +174,7 @@ const MiseEnPlace = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const resultsRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -360,23 +354,24 @@ const MiseEnPlace = ({ tool }) => {
   // RENDER HELPERS
   // ══════════════════════════════════════════
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
+    <button aria-pressed={active} onClick={onClick}
+      className={`px-3 py-1.5 rounded-lg border text-[13px] font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+    <div className={`border-t ${c.border}`}>
+      <button data-print-heading aria-expanded={open} onClick={onToggle} className="w-full flex items-center justify-between py-4 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
+      {/* Collapsed on screen, always printed (data-sec-body). */}
+      <div data-sec-body hidden={!open} className="pb-5">{children}</div>
     </div>
   );
 
@@ -384,9 +379,9 @@ const MiseEnPlace = ({ tool }) => {
   // RENDER: Input
   // ══════════════════════════════════════════
   const renderInput = () => (
-    <div className="space-y-4">
+    <div data-print-form className="space-y-4">
       {/* Ingredients */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <label className={`text-base font-bold ${c.text} mb-1 block`}>{t('mep_kitchen_q')} <span className={c.required}>*</span></label>
         <p className={`text-sm ${c.textMuted} mb-4`}>{t('mep_kitchen_help')}</p>
         <textarea value={ingredients} onChange={e => setIngredients(e.target.value)}
@@ -395,8 +390,8 @@ const MiseEnPlace = ({ tool }) => {
       </div>
 
       {/* Fridge photo */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>📷 {t('mep_photo_label')}</label>
+      <div className={`border-t ${c.border} pt-5`}>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>📷 {t('mep_photo_label')}</label>
         {compressing ? (
           <div className={`border-2 border-dashed rounded-xl p-6 text-center ${c.dropActive}`}>
             <span className="animate-spin inline-block text-2xl mb-2">{tool?.icon ?? '🍳'}</span>
@@ -408,7 +403,7 @@ const MiseEnPlace = ({ tool }) => {
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="mep-upload" />
             <span className="text-2xl block mb-2">🥑</span>
             <label htmlFor="mep-upload" className={`px-4 py-2 rounded-lg text-xs font-bold cursor-pointer ${c.btnPrimary}`}>{t('mep_upload_photo')}</label>
-            <p className={`text-xs ${c.textMuted} mt-2`}>{isDragging ? t('mep_drop_it') : t('mep_snap_fridge')}</p>
+            <p className={`text-[13px] ${c.textMuted} mt-2`}>{isDragging ? t('mep_drop_it') : t('mep_snap_fridge')}</p>
           </div>
         ) : (
           <div className="relative">
@@ -419,9 +414,9 @@ const MiseEnPlace = ({ tool }) => {
       </div>
 
       {/* Settings grid */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div className={`border-t ${c.border} pt-5 space-y-4`}>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🍽️ {t('mep_meal_type')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>🍽️ {t('mep_meal_type')}</label>
           <div className="flex flex-wrap gap-1.5">
             {MEAL_OPTIONS.map(opt => (
               <Pill key={opt.value} active={mealType === opt.value} onClick={() => setMealType(opt.value)}>{opt.emoji} {t(opt.key)}</Pill>
@@ -430,7 +425,7 @@ const MiseEnPlace = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>⏱️ {t('mep_time_available')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>⏱️ {t('mep_time_available')}</label>
           <div className="flex flex-wrap gap-1.5">
             {TIME_OPTIONS.map(opt => (
               <Pill key={opt.value} active={timeAvailable === opt.value} onClick={() => setTimeAvailable(opt.value)}>{opt.emoji} {t(opt.key)}</Pill>
@@ -439,7 +434,7 @@ const MiseEnPlace = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🔰 {t('mep_skill_level')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>🔰 {t('mep_skill_level')}</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {SKILL_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => setSkillLevel(opt.value)}
@@ -454,7 +449,7 @@ const MiseEnPlace = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🥗 {t('mep_dietary_needs')}</label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>🥗 {t('mep_dietary_needs')}</label>
           <div className="flex flex-wrap gap-1.5">
             {DIETARY_OPTIONS.map(opt => (
               <Pill key={opt.value} active={dietary.includes(opt.value)} onClick={() => toggleDietary(opt.value)}>{t(opt.key)}</Pill>
@@ -464,7 +459,7 @@ const MiseEnPlace = ({ tool }) => {
 
         <div>
           <button onClick={() => setShowEquipment(v => !v)}
-            className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
+            className={`flex items-center gap-1.5 text-[13px] font-bold ${c.textSecondary}`}>
             🔧 {t('mep_equipment')} <span className="font-normal normal-case opacity-70">{t('mep_optional')}</span>
             <Caret open={showEquipment} />
           </button>
@@ -482,12 +477,12 @@ const MiseEnPlace = ({ tool }) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>👥 {t('mep_servings')}</label>
+            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>👥 {t('mep_servings')}</label>
             <input type="text" value={servings} onChange={e => setServings(e.target.value)}
               placeholder={t('mep_servings_ph')} className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 {t('mep_preferences')}</label>
+            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>💬 {t('mep_preferences')}</label>
             <input type="text" value={preferences} onChange={e => setPreferences(e.target.value)}
               placeholder={t('mep_preferences_ph')} className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
@@ -519,7 +514,7 @@ const MiseEnPlace = ({ tool }) => {
     if (!bp?.phases?.length) return null;
 
     return (
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-lg">⚔️</span>
@@ -570,7 +565,7 @@ const MiseEnPlace = ({ tool }) => {
                 <p className={`text-xs ${c.text}`}>
                   <strong className={c.textMuted}>@{cp.at}:</strong> {cp.check}
                 </p>
-                {cp.if_not_ready && <p className={`text-xs ${c.textMuted} mt-0.5`}>{t('mep_if_not_ready')} {cp.if_not_ready}</p>}
+                {cp.if_not_ready && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{t('mep_if_not_ready')} {cp.if_not_ready}</p>}
               </div>
             ))}
           </div>
@@ -626,7 +621,7 @@ const MiseEnPlace = ({ tool }) => {
                     </div>
                   </div>
                   <p className={`text-xs ${c.textSecondary} mb-2`}>{meal.description}</p>
-                  <p className={`text-xs ${c.textMuted} italic`}>💡 {meal.why_this_works}</p>
+                  <p className={`text-[13px] ${c.textMuted} italic`}>💡 {meal.why_this_works}</p>
                   {/* Two dishes were offered and only one got a plan, which
                       made the second an option nobody could take. */}
                   {!sameDish(meal.name, results.selected_meal?.name) && (
@@ -638,7 +633,7 @@ const MiseEnPlace = ({ tool }) => {
                   {meal.flavor_tags?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {meal.flavor_tags.map((tag, i) => (
-                        <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded ${c.pillInactive}`}>{tag}</span>
+                        <span key={i} className={`text-xs px-1.5 py-0.5 rounded ${c.pillInactive}`}>{tag}</span>
                       ))}
                     </div>
                   )}
@@ -684,7 +679,7 @@ const MiseEnPlace = ({ tool }) => {
                 <div key={idx} className={`p-4 rounded-xl border ${c.tipBg}`}>
                   <p className={`text-sm font-semibold ${c.tipText} mb-1`}>{tip.tip}</p>
                   <p className={`text-xs ${c.tipText}`}>{tip.why}</p>
-                  <span className={`text-[10px] ${c.textMuted} mt-1 block`}>{t('mep_level_suffix', { level: tip.skill_level })}</span>
+                  <span className={`text-[13px] ${c.textMuted} mt-1 block`}>{t('mep_level_suffix', { level: tip.skill_level })}</span>
                 </div>
               ))}
             </div>
@@ -696,7 +691,7 @@ const MiseEnPlace = ({ tool }) => {
           <Section title={t('mep_leftovers_title')} emoji="♻️" open={showLeftovers}
             onToggle={() => setShowLeftovers(!showLeftovers)}>
             <div className="mt-4 space-y-2">
-              <p className={`text-xs ${c.textMuted}`}>📦 <strong>{t('mep_storage')}</strong> {results.leftovers_strategy.storage}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>📦 <strong>{t('mep_storage')}</strong> {results.leftovers_strategy.storage}</p>
               <div className={`p-4 rounded-xl border ${c.success}`}>
                 <p className={`text-sm font-bold ${c.success} mb-1`}>🔄 {t('mep_transform')} {results.leftovers_strategy.transform_into}</p>
                 <p className={`text-xs ${c.success}`}>{results.leftovers_strategy.instructions}</p>
@@ -707,7 +702,7 @@ const MiseEnPlace = ({ tool }) => {
 
         {results.scaling_notes && (
           <div className={`p-3 rounded-xl ${c.inset}`}>
-            <p className={`text-xs ${c.textMuted}`}>📏 <strong>{t('mep_scaling')}</strong> {results.scaling_notes}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>📏 <strong>{t('mep_scaling')}</strong> {results.scaling_notes}</p>
           </div>
         )}
 
@@ -722,11 +717,11 @@ const MiseEnPlace = ({ tool }) => {
       try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('mep_today') : diff === 1 ? t('mep_yesterday') : diff < 7 ? t('mep_days_ago', { count: diff }) : d.toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }); } catch { return ''; }
     };
     return (
-      <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
+      <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🍳</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mep_past_plans')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
+          <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
           <Caret open={showHistory} />
         </button>
         {showHistory && (
@@ -735,7 +730,7 @@ const MiseEnPlace = ({ tool }) => {
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.meal}</div>
-                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.totalTime ? ` · ${entry.totalTime}` : ''}</div>
+                  <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.totalTime ? ` · ${entry.totalTime}` : ''}</div>
                 </div>
                 <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('mep_view')}</button>
@@ -746,7 +741,7 @@ const MiseEnPlace = ({ tool }) => {
           </div>
         )}
 
-        <p className={`text-xs ${c.textMuted} mt-3`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3`}>
           {t('mep_hist_xref_q')} <a href="/RecipeChaosSolver" className={linkStyle}>🍳 {t('mep_recipechaos')}</a> {t('mep_hist_xref_tail')}
         </p>
       </div>
@@ -757,13 +752,19 @@ const MiseEnPlace = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      {/* ── Persistent Header ── site style (2026-09-27): a pale band of the
+          tool's color bleeding to the card edges, the ground the "Try an
+          example" pill was made for (PF-17c). Screen only. */}
+      <div>
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🍳'}</span>{t('mep_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -775,7 +776,7 @@ const MiseEnPlace = ({ tool }) => {
             )}
           </div>
         </div>
-        <div className="p-5">
+        <div className={error ? 'pt-5' : undefined}>
           {error && (
             <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
               <span>⚠️</span>
@@ -786,7 +787,7 @@ const MiseEnPlace = ({ tool }) => {
       </div>
 
       {!results && (
-        <p className={`text-xs ${c.textMuted}`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
           {t('mep_pre_xref_q')} <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('mep_taskavalanche')}</a> {t('mep_pre_xref_tail')}
         </p>
       )}
@@ -797,14 +798,14 @@ const MiseEnPlace = ({ tool }) => {
 
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-[13px] ${c.textMuted}`}>
           {t('mep_disclaimer')}
         </p>
       </div>
 
       {/* Cross-refs */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mep_related')}</p>
+      <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('mep_related')}</p>
         <div className="flex flex-wrap gap-3">
           <a href="/RecipeChaosSolver" className={`text-xs ${linkStyle}`}>🍳 {t('mep_recipechaos')}</a>
         </div>

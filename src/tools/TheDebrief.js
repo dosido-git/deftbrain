@@ -47,27 +47,26 @@ const TheDebrief = ({ tool }) => {
   const c = {
     card:         isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:      isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:        isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:        isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:         isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:    isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:   isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:   isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     border:       isDark ? 'border-zinc-700' : 'border-gray-200',
     success:      isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:      isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:       isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:   isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:   isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:        isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    badge:        isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     tipBg:        isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     tipText:      isDark ? 'text-amber-300' : 'text-amber-800',
     successBox:   isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
@@ -85,9 +84,7 @@ const TheDebrief = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const resultsRef = useRef(null);
 
@@ -342,7 +339,7 @@ const TheDebrief = ({ tool }) => {
 
   // ── Shared ──
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
+    <button aria-pressed={active} onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-[13px] font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
   );
@@ -371,12 +368,18 @@ const TheDebrief = ({ tool }) => {
   // renderInput and once in the results card — and only the input copy carried
   // the reset. renderInput unmounts the moment a result exists, so with the
   // report on screen there was no way to start over at all.
+  // Site style (2026-09-27): a pale band of the tool's color bleeding to the
+  // card edges, the ground the "Try an example" pill was made for (PF-17c).
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div
+      data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
           </p>
           {!results && (
@@ -394,18 +397,18 @@ const TheDebrief = ({ tool }) => {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {renderHeaderRow()}
 
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {MODES.map(m => (
-          <button key={m.value} onClick={() => { setMode(m.value); setResults(null); setError(''); }}
+          <button key={m.value} aria-pressed={mode === m.value} onClick={() => { setMode(m.value); setResults(null); setError(''); }}
             className={'flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all flex-shrink-0 ' +
               (mode === m.value ? c.pillActive + ' border-2' : c.pillInactive)}>
             <span className="text-lg">{m.emoji}</span>
             <div className="text-start">
               <p className={'text-xs font-bold ' + (mode === m.value ? '' : c.textMuted)}>{t(m.labelKey)}</p>
-              <p className={'text-[10px] ' + c.textMuted}>{t(m.descKey)}</p>
+              <p className={'text-xs ' + c.textMuted}>{t(m.descKey)}</p>
             </div>
           </button>
         ))}
@@ -414,7 +417,7 @@ const TheDebrief = ({ tool }) => {
       {mode !== 'series' ? (
         <div>
           <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>{t('td_paste_label')}</label>
-          <p className={'text-xs ' + c.textMuted + ' mb-3'}>{t('td_paste_hint')}</p>
+          <p className={'text-[13px] ' + c.textMuted + ' mb-3'}>{t('td_paste_hint')}</p>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder={t('td_paste_ph')}
             className={'w-full h-40 p-4 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm font-mono'} />
@@ -455,20 +458,20 @@ const TheDebrief = ({ tool }) => {
 
       <div className={c.card + ' border rounded-xl p-5 space-y-3'}>
         <div>
-          <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('td_meeting_type')}</label>
+          <label className={'text-[15px] font-semibold ' + c.text + ' mb-2 block'}>{t('td_meeting_type')}</label>
           <div className="flex flex-wrap gap-1.5">
             {MEETING_TYPES.map(mt => <Pill key={mt.value} active={meetingType === mt.value} onClick={() => setMeetingType(mt.value)}>{t(mt.labelKey)}</Pill>)}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_attendees_label')}</label>
+            <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_attendees_label')}</label>
             <input type="text" value={attendees} onChange={e => setAttendees(e.target.value)}
               placeholder={t('td_attendees_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
           </div>
           <div>
-            <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_context_label')}</label>
+            <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_context_label')}</label>
             <input type="text" value={context} onChange={e => setContext(e.target.value)}
               placeholder={t('td_context_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -476,7 +479,7 @@ const TheDebrief = ({ tool }) => {
         </div>
 
         <div>
-          <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_focus_label')}</label>
+          <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_focus_label')}</label>
           <input type="text" value={focus} onChange={e => setFocus(e.target.value)}
             placeholder={t('td_focus_ph')}
             className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -484,7 +487,7 @@ const TheDebrief = ({ tool }) => {
 
         {mode === 'followup' && (
           <div>
-            <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('td_tone')}</label>
+            <label className={'text-[15px] font-semibold ' + c.text + ' mb-2 block'}>{t('td_tone')}</label>
             <div className="flex flex-wrap gap-1.5">
               {TONES.map(tn => <Pill key={tn.value} active={tone === tn.value} onClick={() => setTone(tn.value)}>{t(tn.labelKey)}</Pill>)}
             </div>
@@ -526,7 +529,7 @@ const TheDebrief = ({ tool }) => {
 
         {results?.at_risk?.length > 0 && (
           <div className={'p-5 rounded-2xl border-2 ' + c.warningBox}>
-            <p className={'text-xs font-bold uppercase tracking-wide mb-3 ' + c.warningTxt}>🚨 {t('td_at_risk')}</p>
+            <p className={'text-[13px] font-bold mb-3 ' + c.warningTxt}>🚨 {t('td_at_risk')}</p>
             <ul className="space-y-2">
               {results.at_risk.map((r, i) => (
                 <li key={i} className={'text-sm leading-relaxed ' + c.text + ' flex gap-2'}>
@@ -547,9 +550,9 @@ const TheDebrief = ({ tool }) => {
                   <p className={'text-sm font-semibold ' + c.text}>{d.decision}</p>
                   {d.context && <p className={'text-xs ' + c.textSecondary + ' mt-1'}>{d.context}</p>}
                   <div className="flex gap-3 mt-1">
-                    {d.who_decided && <span className={'text-[10px] ' + c.textMuted}>👤 {d.who_decided}</span>}
+                    {d.who_decided && <span className={'text-xs ' + c.textMuted}>👤 {d.who_decided}</span>}
                     {CAN_CHANGE[d.can_still_change] && (
-                      <span className={'text-[10px] ' + c.textMuted}>
+                      <span className={'text-xs ' + c.textMuted}>
                         ↩️ {t('td_can_change_q')} <span className={'font-bold ' + c.text}>{t(CAN_CHANGE[d.can_still_change])}</span>
                         {d.change_note ? ` — ${d.change_note}` : ''}
                       </span>
@@ -571,19 +574,19 @@ const TheDebrief = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={'text-sm font-semibold ' + c.text}>{a.action}</p>
                       <div className="flex flex-wrap gap-2 mt-1.5">
-                        <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' +
+                        <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' +
                           (a.owner === 'UNASSIGNED' ? c.highPri : c.badge)}>
                           👤 {a.owner}
                         </span>
-                        <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' +
+                        <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' +
                           (a.deadline === 'No deadline set' ? c.medPri : c.badge)}>
                           📅 {a.deadline}
                         </span>
-                        <span className={'text-[10px] px-2 py-0.5 rounded-full ' + priBg(a.priority)}>
+                        <span className={'text-xs px-2 py-0.5 rounded-full ' + priBg(a.priority)}>
                           {a.priority}
                         </span>
                       </div>
-                      {a.depends_on && <p className={'text-[10px] ' + c.textMuted + ' mt-1'}>{t('td_depends_on', { val: a.depends_on })}</p>}
+                      {a.depends_on && <p className={'text-xs ' + c.textMuted + ' mt-1'}>{t('td_depends_on', { val: a.depends_on })}</p>}
                     </div>
                   </div>
                 </div>
@@ -600,7 +603,7 @@ const TheDebrief = ({ tool }) => {
                 <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
                   <p className={'text-xs font-bold ' + c.warningTxt}>{ten.topic}</p>
                   <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{ten.nature}</p>
-                  <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{t('td_resolution', { val: ten.resolution })}</p>
+                  <p className={'text-xs ' + c.textMuted + ' mt-0.5'}>{t('td_resolution', { val: ten.resolution })}</p>
                 </div>
               ))}
             </div>
@@ -615,7 +618,7 @@ const TheDebrief = ({ tool }) => {
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-sm font-semibold ' + c.text}>{q.question}</p>
                   <p className={'text-xs ' + c.textSecondary + ' mt-1'}>{q.why_unresolved}</p>
-                  {q.suggested_owner && <p className={'text-[10px] ' + c.tipText + ' mt-0.5'}>{t('td_suggested_owner', { who: q.suggested_owner })}</p>}
+                  {q.suggested_owner && <p className={'text-xs ' + c.tipText + ' mt-0.5'}>{t('td_suggested_owner', { who: q.suggested_owner })}</p>}
                 </div>
               ))}
             </div>
@@ -687,8 +690,8 @@ const TheDebrief = ({ tool }) => {
                 <div key={i} className={c.cardAlt + ' border rounded-lg p-3'}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className={'text-xs font-bold ' + c.text}>→ {n.to}</span>
-                    <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full ' + c.badge}>{n.channel}</span>
-                    <span className={'text-[9px] px-2 py-0.5 rounded-full ' +
+                    <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>{n.channel}</span>
+                    <span className={'text-xs px-2 py-0.5 rounded-full ' +
                       (n.urgency === 'send_now' ? c.highPri : n.urgency === 'within_24h' ? c.medPri : c.lowPri)}>
                       {n.urgency === 'send_now' ? t('td_send_now') : n.urgency === 'within_24h' ? t('td_within_24h') : t('td_can_wait')}
                     </span>
@@ -718,8 +721,8 @@ const TheDebrief = ({ tool }) => {
               {results?.calendar_invites?.map((cal, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.text}>{cal.title}</p>
-                  <p className={'text-[10px] ' + c.textSecondary}>👥 {cal.attendees} · 📅 {cal.when}</p>
-                  <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{cal.purpose}</p>
+                  <p className={'text-xs ' + c.textSecondary}>👥 {cal.attendees} · 📅 {cal.when}</p>
+                  <p className={'text-xs ' + c.textMuted + ' mt-0.5'}>{cal.purpose}</p>
                 </div>
               ))}
             </div>
@@ -746,7 +749,7 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {results?.observations?.length > 0 && (
-          <div className={'p-5 rounded-2xl border-2 ' + c.card}>
+          <div className={'border-t pt-5 ' + c.border}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-3'}>👀 {t('td_series_observations')}</p>
             <ul className="space-y-2">
               {results.observations.map((o, i) => (
@@ -778,10 +781,10 @@ const TheDebrief = ({ tool }) => {
                 <div key={i} className={'p-3 rounded-lg border ' + (rt.resolved ? c.successBox : c.warningBox)}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={'text-xs font-bold ' + c.text}>{rt.topic}</span>
-                    <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full ' + (rt.resolved ? (isDark ? 'bg-emerald-900/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700') : (isDark ? 'bg-red-900/20 text-red-400' : 'bg-red-100 text-red-700'))}>
+                    <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + (rt.resolved ? (isDark ? 'bg-emerald-900/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700') : (isDark ? 'bg-red-900/20 text-red-400' : 'bg-red-100 text-red-700'))}>
                       {rt.resolved ? t('td_resolved') : t('td_unresolved')}
                     </span>
-                    <span className={'text-[9px] ' + c.textMuted}>{rt.frequency}</span>
+                    <span className={'text-xs ' + c.textMuted}>{rt.frequency}</span>
                   </div>
                   <p className={'text-xs ' + c.textSecondary}>{rt.why_recurring}</p>
                 </div>
@@ -797,13 +800,13 @@ const TheDebrief = ({ tool }) => {
               {results?.accountability_gaps?.map((g, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
                   <p className={'text-xs font-bold ' + c.text}>{g.action}</p>
-                  <p className={'text-[10px] ' + c.textSecondary}>{t('td_assigned_in', { who: g.owner, meeting: g.assigned_meeting })}</p>
+                  <p className={'text-xs ' + c.textSecondary}>{t('td_assigned_in', { who: g.owner, meeting: g.assigned_meeting })}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full ' +
+                    <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' +
                       (g.status === 'completed' ? (isDark ? 'bg-emerald-900/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700') : g.status === 'disappeared' ? (isDark ? 'bg-red-900/20 text-red-400' : 'bg-red-100 text-red-700') : c.medPri)}>
                       {g.status}
                     </span>
-                    {g.pattern && <span className={'text-[10px] ' + c.warningTxt}>🔁 {g.pattern}</span>}
+                    {g.pattern && <span className={'text-xs ' + c.warningTxt}>🔁 {g.pattern}</span>}
                   </div>
                 </div>
               ))}
@@ -818,8 +821,8 @@ const TheDebrief = ({ tool }) => {
               {results?.decisions_revisited?.map((dr, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.text}>{dr.decision}</p>
-                  <p className={'text-[10px] ' + c.textSecondary}>{t('td_decided_reopened', { orig: dr.original_meeting, revisited: dr.revisited_meeting })}</p>
-                  <p className={'text-[10px] ' + c.tipText + ' mt-0.5'}>{t('td_why', { val: dr.why })}</p>
+                  <p className={'text-xs ' + c.textSecondary}>{t('td_decided_reopened', { orig: dr.original_meeting, revisited: dr.revisited_meeting })}</p>
+                  <p className={'text-xs ' + c.tipText + ' mt-0.5'}>{t('td_why', { val: dr.why })}</p>
                 </div>
               ))}
             </div>
@@ -847,7 +850,7 @@ const TheDebrief = ({ tool }) => {
     const modeEmoji = (m) => MODES.find(mo => mo.value === m)?.emoji || '📋';
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('td_today') : diff === 1 ? t('td_yesterday') : diff < 7 ? t('td_days_ago', { n: diff }) : d.toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
-      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+      <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>📋</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('td_past_debriefs')}</span>
@@ -884,14 +887,14 @@ const TheDebrief = ({ tool }) => {
           lecture or a podcast rather than a meeting is in the wrong place,
           and this is where to say so without interrupting the form. */}
       {!results && (
-        <p className={'text-xs ' + c.textMuted}>
+        <p data-print-hide className={'text-[13px] ' + c.textMuted}>
           {t('td_xref_crux_q')} <a href="/HeartOfTheMatter" className={linkStyle}>🎯 {t('td_xref_crux')}</a> {t('td_xref_crux_tail')}
         </p>
       )}
 
       {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}
@@ -908,7 +911,7 @@ const TheDebrief = ({ tool }) => {
             {t('td_edit_input')}
           </button>
 
-          <div className={'p-4 rounded-2xl border ' + c.card}>
+          <div data-print-hide className={'p-4 rounded-2xl border ' + c.card}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('td_related')}</p>
             <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
               {mode !== 'series' && (

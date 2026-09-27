@@ -59,42 +59,37 @@ const HistoryToday = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // tool-specific
-    highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
-    parallelCard:  isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    highlight:     isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
+    parallelCard:  isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     counter:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // ─── State ───
@@ -238,16 +233,23 @@ const HistoryToday = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* Persistent header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      {/* Site style (2026-09-27): no header card; the form prints blank until
+          there is a result. */}
+      <div>
+        {/* Header: a pale band of the tool's color bleeding to the card edges, the
+            ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2 text-xl">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'HistoryToday'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                  <span className="me-2 text-xl">{tool?.icon ?? '📰'}</span>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}
+                </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {(results || event.trim()) && (
@@ -259,23 +261,23 @@ const HistoryToday = ({ tool }) => {
           </div>
         </div>
         {!results && (
-          <div className="px-5 py-4 space-y-4">
+          <div data-print-form className="pt-5 space-y-4">
             <div>
-              <p className={`text-xs ${c.textMuted} mb-3`}>
+              <p data-print-hide className={`text-[13px] ${c.textMuted} mb-3`}>
                 {t('ht_xref_timewarp_pre')} <a href="/TimeWarp" className={linkStyle}>{t('ht_timewarp_link')}</a> {t('ht_xref_timewarp_post')}
               </p>
-              <label className={`block font-semibold ${c.text} mb-2`}>{t('ht_event_label')} <span className={c.required}>*</span></label>
+              <label className={`block text-[15px] font-semibold ${c.text} mb-2`}>{t('ht_event_label')} <span className={c.required}>*</span></label>
               <textarea value={event} onChange={e => setEvent(e.target.value)} rows={3}
                 placeholder={t('ht_event_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-base resize-y focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
             <div>
-              <p className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>
+              <p className={`block text-[15px] font-semibold ${c.textSecondary} mb-1.5`}>
                 {t('ht_why_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ht_optional')}</span>
               </p>
               <div role="group" aria-label={t('ht_why_label')} className="flex flex-wrap gap-1.5">
                 {MOTIVATIONS.map(m => (
-                  <button key={m.value} onClick={() => setMotivation(motivation === m.value ? '' : m.value)}
+                  <button aria-pressed={motivation === m.value} key={m.value} onClick={() => setMotivation(motivation === m.value ? '' : m.value)}
                     className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${motivation === m.value ? c.pillActive : c.pillInactive}`}>
                     <span className="me-1">{m.icon}</span>{t(m.labelKey)}
                   </button>
@@ -283,7 +285,7 @@ const HistoryToday = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>
+              <label className={`block text-[15px] font-semibold ${c.textSecondary} mb-1.5`}>
                 {t('ht_angle_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ht_optional')}</span>
               </label>
               <input type="text" value={context} onChange={e => setContext(e.target.value)}
@@ -296,13 +298,13 @@ const HistoryToday = ({ tool }) => {
 
       {/* Quick examples — only before results */}
       {!results && (
-        <div className="space-y-4">
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div data-print-hide className="space-y-4">
+        <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('ht_try_these')}</p>
             <div className="flex flex-wrap gap-2">
               {EXAMPLE_KEYS.map((exKey) => (
                 <button key={exKey} onClick={() => setEvent(t(exKey))}
-                  className={`text-xs px-3 py-1.5 rounded-lg border ${isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-gray-200 text-gray-500 hover:border-cyan-400 hover:text-cyan-600'} transition-all`}>
+                  className={`text-xs px-3 py-1.5 rounded-lg border ${isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-gray-200 text-gray-500 hover:border-[#142a43] hover:text-[#142a43]'} transition-all`}>
                   {t(exKey)}
                 </button>
               ))}
@@ -322,7 +324,7 @@ const HistoryToday = ({ tool }) => {
 
           {/* Saved searches */}
           {savedSearches.length > 0 && (
-            <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-4`}>
+            <div data-print-hide className={`${c.card} ${c.border} rounded-xl shadow-sm p-4`}>
               <button onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className={`text-xs font-bold ${c.textMuteded}`}>{t('ht_previous_searches', { count: savedSearches.length })}</span>
                 <Caret open={expandedSections.saved} />
@@ -353,7 +355,7 @@ const HistoryToday = ({ tool }) => {
             <div className={`p-4 rounded-xl border flex items-start gap-3 ${results.premise_check.status === 'false_premise' ? c.danger : results.premise_check.status === 'unverifiable' ? c.warning : c.highlight}`}>
               <span className="text-lg flex-shrink-0">{results.premise_check.status === 'false_premise' ? '⚠️' : results.premise_check.status === 'unverifiable' ? '❓' : 'ℹ️'}</span>
               <div className="min-w-0">
-                <p className="text-xs font-bold uppercase tracking-wider mb-0.5">{t('ht_premise_check')}</p>
+                <p className="text-[13px] font-boldr mb-0.5">{t('ht_premise_check')}</p>
                 <p className="text-sm">{results.premise_check.assessment}</p>
               </div>
             </div>
@@ -362,7 +364,7 @@ const HistoryToday = ({ tool }) => {
           <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-semibold ${c.text} truncate`}>📰 {results.event_summary || event}</p>
-              <p className={`text-xs ${c.textMuteded}`}>{t('ht_parallels_found', { count: results.parallels?.length || 0 })}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('ht_parallels_found', { count: results.parallels?.length || 0 })}</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
 {!counterData && (
@@ -385,7 +387,7 @@ const HistoryToday = ({ tool }) => {
               <p className="text-base leading-relaxed font-semibold">{results.big_idea.one_line}</p>
               {results.big_idea.lesson && (
                 <div>
-                  <p className={`text-[10px] font-bold uppercase tracking-wide opacity-70 mb-1`}>{t('ht_the_lesson')}</p>
+                  <p className={`text-[13px] font-bold opacity-70 mb-1`}>{t('ht_the_lesson')}</p>
                   <p className="text-sm leading-relaxed">{results.big_idea.lesson}</p>
                 </div>
               )}
@@ -401,12 +403,12 @@ const HistoryToday = ({ tool }) => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-xs font-black ${c.textSecondary}`}>{t('ht_parallel_label', { count: idx + 1 })}</span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${p.structural_match_score >= 70 ? c.success : p.structural_match_score >= 50 ? c.warning : c.highlight} border`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${p.structural_match_score >= 70 ? c.success : p.structural_match_score >= 50 ? c.warning : c.highlight} border`}>
                         {t('ht_match_suffix', { count: p.structural_match_score })}
                       </span>
                     </div>
                     <h3 className={`text-lg font-bold ${c.text}`}>{p.title}</h3>
-                    <p className={`text-xs ${c.textMuteded} mt-0.5`}>{p.period} · {p.region}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{p.period} · {p.region}</p>
                   </div>
                 </div>
                 <ScoreBar score={p.structural_match_score} />
@@ -415,25 +417,25 @@ const HistoryToday = ({ tool }) => {
               <div className="p-5 space-y-4">
                 {/* What happened */}
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ht_what_happened')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ht_what_happened')}</p>
                   <p className={`text-sm ${c.text} leading-relaxed`}>{p.what_happened}</p>
                 </div>
 
                 {/* Structural similarities */}
                 {p.structural_similarities?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-2`}>{t('ht_structural_match')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('ht_structural_match')}</p>
                     <div className="space-y-2">
                       {p.structural_similarities.map((s, si) => (
                         <div key={si} className={`p-3 rounded-lg border ${c.border}`}>
-                          <p className={`text-xs font-bold ${c.textSecondary} mb-1.5`}>{s.mechanism}</p>
+                          <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{s.mechanism}</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
-                              <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('ht_then')}</p>
+                              <p className={`text-xs font-bold ${c.textMuteded}`}>{t('ht_then')}</p>
                               <p className={`text-xs ${c.textSecondary}`}>{s.then}</p>
                             </div>
-                            <div className={`p-2 rounded ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50/80'}`}>
-                              <p className={`text-[9px] font-bold ${c.textSecondary}`}>{t('ht_now')}</p>
+                            <div className={`p-2 rounded ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'}`}>
+                              <p className={`text-xs font-bold ${c.textSecondary}`}>{t('ht_now')}</p>
                               <p className={`text-xs ${c.text}`}>{s.now}</p>
                             </div>
                           </div>
@@ -449,16 +451,16 @@ const HistoryToday = ({ tool }) => {
                     unavoidable. ─── */}
                 {(p.contemporary_understanding || p.what_happened_next || p.where_it_breaks_down?.length > 0 || p.key_figures?.length > 0) && (
                   <div>
-                    <button onClick={() => toggleSection(`full-${idx}`)}
+                    <button data-print-heading onClick={() => toggleSection(`full-${idx}`)}
                       className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary}`}>
-                      <span>📜</span> {t('ht_full_account')} <Caret open={expandedSections[`full-${idx}`]} />
+                      <span>📜</span> {t('ht_full_account')} <span data-print-hide><Caret open={expandedSections[`full-${idx}`]} /></span>
                     </button>
-                    {expandedSections[`full-${idx}`] && (
-                      <div className="space-y-4 mt-3">
+                    {(
+                      <div data-sec-body hidden={!expandedSections[`full-${idx}`]} className="space-y-4 mt-3">
                   {/* Contemporary understanding */}
                   {p.contemporary_understanding && (
                     <div className={`${isDark ? 'bg-amber-900/15 border-amber-800' : 'bg-amber-50/80 border-amber-200'} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('ht_how_they_saw_it')}</p>
+                      <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('ht_how_they_saw_it')}</p>
                       <p className={`text-xs ${c.text}`}>{p.contemporary_understanding}</p>
                     </div>
                   )}
@@ -466,7 +468,7 @@ const HistoryToday = ({ tool }) => {
                   {/* What happened next */}
                   {p.what_happened_next && (
                     <div className={`${c.highlight} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold mb-1`}>{t('ht_what_happened_next')}</p>
+                      <p className={`text-xs font-bold mb-1`}>{t('ht_what_happened_next')}</p>
                       <p className="text-xs">{p.what_happened_next}</p>
                     </div>
                   )}
@@ -474,7 +476,7 @@ const HistoryToday = ({ tool }) => {
                   {/* WHERE IT BREAKS DOWN — the star of the show */}
                   {p.where_it_breaks_down?.length > 0 && (
                     <div className={`${c.danger} border-2 rounded-lg p-4`}>
-                      <p className={`text-[10px] font-black uppercase mb-2`}>{t('ht_breaks_down')}</p>
+                      <p className={`text-xs font-black uppercase mb-2`}>{t('ht_breaks_down')}</p>
                       <div className="space-y-1.5">
                         {p.where_it_breaks_down.map((b, bi) => (
                           <p key={bi} className="text-xs">✕ {b}</p>
@@ -486,13 +488,13 @@ const HistoryToday = ({ tool }) => {
                   {/* Key figures */}
                   {p.key_figures?.length > 0 && (
                     <div>
-                      <button onClick={() => toggleSection(`fig-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
-                        <span>👤</span> {t('ht_key_figures')} <Caret open={expandedSections[`fig-${idx}`]} />
+                      <button data-print-heading onClick={() => toggleSection(`fig-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
+                        <span>👤</span> {t('ht_key_figures')} <span data-print-hide><Caret open={expandedSections[`fig-${idx}`]} /></span>
                       </button>
-                      {expandedSections[`fig-${idx}`] && (
-                        <div className="flex flex-wrap gap-2 mt-2">
+                      {(
+                        <div data-sec-body hidden={!expandedSections[`fig-${idx}`]} className="flex flex-wrap gap-2 mt-2">
                           {p.key_figures.map((kf, fi) => (
-                            <div key={fi} className={`text-[10px] px-2.5 py-1 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                            <div key={fi} className={`text-xs px-2.5 py-1 rounded-lg ${c.cardAlt} border ${c.border}`}>
                               <span className={c.textSecondary}>{kf.historical}</span>
                               <span className={c.textMuteded}> ↔ </span>
                               <span className={c.text}>{kf.modern_parallel}</span>
@@ -509,7 +511,7 @@ const HistoryToday = ({ tool }) => {
 
                 {/* Surprise */}
                 {p.surprise_insight && (
-                  <div className={`flex items-start gap-2 ${isDark ? 'bg-cyan-900/15 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border rounded-lg p-3`}>
+                  <div className={`flex items-start gap-2 ${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border rounded-lg p-3`}>
                     <span className="flex-shrink-0">💡</span>
                     <p className={`text-xs ${c.text}`}><span className="font-bold">{t('ht_surprise')}</span>{p.surprise_insight}</p>
                   </div>
@@ -523,20 +525,20 @@ const HistoryToday = ({ tool }) => {
                       {deeperLoading === idx ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📰'}</span> {t('ht_loading')}</>) : (<><span>🔍</span> {t('ht_dig_deeper')}</>)}
                     </button>
                   ) : (
-                    <span className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('ht_deep_dive_loaded')}</span>
+                    <span className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('ht_deep_dive_loaded')}</span>
                   )}
                 </div>
               </div>
 
               {/* ─── DEEPER EXPANSION ─── */}
               {deeperData[idx] && (
-                <div className={`border-t-2 ${isDark ? 'border-cyan-700' : 'border-cyan-200'} p-5 space-y-4 ${isDark ? 'bg-zinc-800/80' : 'bg-cyan-50/30'}`}>
+                <div className={`border-t-2 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'} p-5 space-y-4 ${isDark ? 'bg-zinc-800/80' : 'bg-[#eef3f8]'}`}>
                   <h4 className={`font-bold ${c.textSecondary} flex items-center gap-2`}><span>🔍</span> {t('ht_deep_dive')}{deeperData[idx].title}</h4>
 
                   {/* Detailed narrative */}
                   {deeperData[idx].detailed_narrative && (
                     <div>
-                      <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ht_full_narrative')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ht_full_narrative')}</p>
                       <p className={`text-sm ${c.text} leading-relaxed`}>{deeperData[idx].detailed_narrative}</p>
                     </div>
                   )}
@@ -544,18 +546,18 @@ const HistoryToday = ({ tool }) => {
                   {/* Timeline */}
                   {deeperData[idx].timeline?.length > 0 && (
                     <div>
-                      <button onClick={() => toggleSection(`tl-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded} mb-2`}>
-                        <span>📅</span> {t('ht_timeline_label', { count: deeperData[idx].timeline.length })} <Caret open={expandedSections[`tl-${idx}`] !== false} />
+                      <button data-print-heading onClick={() => toggleSection(`tl-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded} mb-2`}>
+                        <span>📅</span> {t('ht_timeline_label', { count: deeperData[idx].timeline.length })} <span data-print-hide><Caret open={expandedSections[`tl-${idx}`] !== false} /></span>
                       </button>
-                      {expandedSections[`tl-${idx}`] !== false && (
-                        <div className={`space-y-0 ms-3 border-s-2 ${isDark ? 'border-cyan-700' : 'border-cyan-200'}`}>
+                      {(
+                        <div data-sec-body hidden={expandedSections[`tl-${idx}`] === false} className={`space-y-0 ms-3 border-s-2 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
                           {deeperData[idx].timeline.map((tlItem, ti) => (
                             <div key={ti} className="ps-4 pb-3 relative">
-                              <div className={`absolute -start-[5px] top-1.5 w-2 h-2 rounded-full ${tlItem.modern_echo ? (isDark ? 'bg-cyan-400' : 'bg-cyan-500') : (isDark ? 'bg-zinc-500' : 'bg-gray-400')}`} />
-                              <p className={`text-[10px] font-bold ${c.textSecondary}`}>{tlItem.date}</p>
+                              <div className={`absolute -start-[5px] top-1.5 w-2 h-2 rounded-full ${tlItem.modern_echo ? (isDark ? 'bg-cyan-400' : 'bg-[#142a43]') : (isDark ? 'bg-zinc-500' : 'bg-gray-400')}`} />
+                              <p className={`text-xs font-bold ${c.textSecondary}`}>{tlItem.date}</p>
                               <p className={`text-xs font-semibold ${c.text}`}>{tlItem.event}</p>
-                              <p className={`text-[10px] ${c.textMuteded}`}>{tlItem.significance}</p>
-                              {tlItem.modern_echo && <p className={`text-[10px] ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-0.5 italic`}>↪ {t('ht_today_prefix')}{tlItem.modern_echo}</p>}
+                              <p className={`text-[13px] ${c.textMuteded}`}>{tlItem.significance}</p>
+                              {tlItem.modern_echo && <p className={`text-xs ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mt-0.5 italic`}>↪ {t('ht_today_prefix')}{tlItem.modern_echo}</p>}
                             </div>
                           ))}
                         </div>
@@ -566,14 +568,14 @@ const HistoryToday = ({ tool }) => {
                   {/* Turning points */}
                   {deeperData[idx].turning_points?.length > 0 && (
                     <div>
-                      <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-2`}>{t('ht_turning_points')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('ht_turning_points')}</p>
                       <div className="space-y-2">
                         {deeperData[idx].turning_points.map((tp, ti) => (
                           <div key={ti} className={`p-3 rounded-lg border ${c.border}`}>
                             <p className={`text-xs font-bold ${c.text} mb-1`}>{tp.moment}</p>
                             <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">{t('ht_happened')}</span> {tp.what_actually_happened}</p>
-                            <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('ht_could_have')}</span> {tp.alternative}</p>
-                            <p className={`text-[10px] ${c.textSecondary} mt-1`}>{t('ht_why_prefix')}{tp.why_it_went_this_way}</p>
+                            <p className={`text-[13px] ${c.textMuteded}`}><span className="font-semibold">{t('ht_could_have')}</span> {tp.alternative}</p>
+                            <p className={`text-xs ${c.textSecondary} mt-1`}>{t('ht_why_prefix')}{tp.why_it_went_this_way}</p>
                           </div>
                         ))}
                       </div>
@@ -583,11 +585,11 @@ const HistoryToday = ({ tool }) => {
                   {/* Information environment */}
                   {deeperData[idx].information_environment && (
                     <div>
-                      <button onClick={() => toggleSection(`info-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
-                        <span>📡</span> {t('ht_information_environment')} <Caret open={expandedSections[`info-${idx}`]} />
+                      <button data-print-heading onClick={() => toggleSection(`info-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
+                        <span>📡</span> {t('ht_information_environment')} <span data-print-hide><Caret open={expandedSections[`info-${idx}`]} /></span>
                       </button>
-                      {expandedSections[`info-${idx}`] && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                      {(
+                        <div data-sec-body hidden={!expandedSections[`info-${idx}`]} className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                           {[
                             { labelKey: 'ht_info_knew', val: deeperData[idx].information_environment.what_people_knew },
                             { labelKey: 'ht_info_told', val: deeperData[idx].information_environment.what_they_were_told },
@@ -595,7 +597,7 @@ const HistoryToday = ({ tool }) => {
                             { labelKey: 'ht_info_true', val: deeperData[idx].information_environment.what_was_actually_true },
                           ].map((item, ii) => item.val ? (
                             <div key={ii} className={`p-2.5 rounded-lg ${c.cardAlt}`}>
-                              <p className={`text-[9px] font-bold ${c.textMuteded} uppercase`}>{t(item.labelKey)}</p>
+                              <p className={`text-xs font-bold ${c.textMuteded} uppercase`}>{t(item.labelKey)}</p>
                               <p className={`text-xs ${c.text} mt-0.5`}>{item.val}</p>
                             </div>
                           ) : null)}
@@ -607,13 +609,13 @@ const HistoryToday = ({ tool }) => {
                   {/* Echoing quotes */}
                   {deeperData[idx].echoing_quotes?.length > 0 && (
                     <div>
-                      <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-2`}>{t('ht_echoing_quotes')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('ht_echoing_quotes')}</p>
                       <div className="space-y-2">
                         {deeperData[idx].echoing_quotes.map((q, qi) => (
                           <div key={qi} className={`${c.cardAlt} border rounded-lg p-3`}>
                             <p className={`text-sm italic ${c.text}`}>"{q.quote}"</p>
-                            <p className={`text-[10px] ${c.textMuteded} mt-1`}>— {q.speaker}, {q.date}</p>
-                            <p className={`text-[10px] ${c.textSecondary} mt-1`}>↪ {q.modern_resonance}</p>
+                            <p className={`text-[13px] ${c.textMuteded} mt-1`}>— {q.speaker}, {q.date}</p>
+                            <p className={`text-xs ${c.textSecondary} mt-1`}>↪ {q.modern_resonance}</p>
                           </div>
                         ))}
                       </div>
@@ -624,19 +626,19 @@ const HistoryToday = ({ tool }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {deeperData[idx].winners_and_losers.who_benefited && (
                         <div className={`p-3 rounded-lg border ${c.success}`}>
-                          <p className={`text-[10px] font-bold mb-1`}>{t('ht_who_benefited')}</p>
+                          <p className={`text-xs font-bold mb-1`}>{t('ht_who_benefited')}</p>
                           <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.who_benefited}</p>
                         </div>
                       )}
                       {deeperData[idx].winners_and_losers.who_suffered && (
                         <div className={`p-3 rounded-lg border ${c.danger}`}>
-                          <p className={`text-[10px] font-bold mb-1`}>{t('ht_who_suffered')}</p>
+                          <p className={`text-xs font-bold mb-1`}>{t('ht_who_suffered')}</p>
                           <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.who_suffered}</p>
                         </div>
                       )}
                       {deeperData[idx].winners_and_losers.time_to_clarity && (
                         <div className={`col-span-2 p-3 rounded-lg border ${c.highlight}`}>
-                          <p className={`text-[10px] font-bold mb-1`}>{t('ht_time_to_clarity')}</p>
+                          <p className={`text-xs font-bold mb-1`}>{t('ht_time_to_clarity')}</p>
                           <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.time_to_clarity}</p>
                         </div>
                       )}
@@ -652,7 +654,7 @@ const HistoryToday = ({ tool }) => {
                         { labelKey: 'ht_lesson_now', val: deeperData[idx].lessons_drawn.applicable_now, icon: '🎯' },
                       ].map((item, li) => item.val ? (
                         <div key={li} className={`p-3 rounded-lg border ${c.border}`}>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{item.icon} {t(item.labelKey)}</p>
+                          <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{item.icon} {t(item.labelKey)}</p>
                           <p className={`text-xs ${c.text}`}>{item.val}</p>
                         </div>
                       ) : null)}
@@ -669,38 +671,38 @@ const HistoryToday = ({ tool }) => {
               <div className={`p-5 ${c.counter} border-b ${c.border}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-black`}>{t('ht_counter_header')}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${counterData.hope_or_warning === 'hope' ? c.success : c.danger}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold border ${counterData.hope_or_warning === 'hope' ? c.success : c.danger}`}>
                     {counterData.hope_or_warning === 'hope' ? t('ht_hopeful') : t('ht_warning')}
                   </span>
                 </div>
                 <h3 className={`text-lg font-bold ${c.text}`}>{counterData.title}</h3>
-                <p className={`text-xs ${c.textMuteded}`}>{counterData.period} · {counterData.region}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{counterData.period} · {counterData.region}</p>
               </div>
               <div className="p-5 space-y-4">
                 {counterData.similar_starting_conditions?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ht_same_starting')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ht_same_starting')}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {counterData.similar_starting_conditions.map((cond, i) => (
-                        <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.highlight}`}>{cond}</span>
+                        <span key={i} className={`text-xs px-2 py-0.5 rounded-full border ${c.highlight}`}>{cond}</span>
                       ))}
                     </div>
                   </div>
                 )}
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('ht_what_differently')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('ht_what_differently')}</p>
                   <p className={`text-sm ${c.text} leading-relaxed`}>{counterData.what_happened_differently}</p>
                 </div>
                 {counterData.why_it_diverged && (
                   <div className={`p-4 rounded-lg border-2 ${isDark ? 'border-amber-700 bg-amber-900/10' : 'border-amber-200 bg-amber-50'}`}>
                     <p className={`text-xs font-bold ${c.text} mb-1`}>🔑 {counterData.why_it_diverged.key_difference}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{counterData.why_it_diverged.structural_reason}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{counterData.why_it_diverged.was_it_luck_or_choice}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-1 italic`}>{counterData.why_it_diverged.was_it_luck_or_choice}</p>
                   </div>
                 )}
                 {counterData.implication_for_today && (
                   <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('ht_for_today')}</p>
+                    <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('ht_for_today')}</p>
                     <p className={`text-xs ${c.text}`}>{counterData.implication_for_today}</p>
                   </div>
                 )}
@@ -713,14 +715,14 @@ const HistoryToday = ({ tool }) => {
 
           {/* ─── SYNTHESIS ─── */}
           {results.synthesis && (
-            <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-6 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🧭</span> {t('ht_synthesis')}</h3>
               {results.synthesis.collective_pattern && (
                 <p className={`text-sm ${c.text} leading-relaxed`}>{results.synthesis.collective_pattern}</p>
               )}
               {results.synthesis.consensus_prediction && (
                 <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                  <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('ht_if_history_rhymes')}</p>
+                  <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('ht_if_history_rhymes')}</p>
                   <p className={`text-sm font-semibold ${c.text}`}>{results.synthesis.consensus_prediction}</p>
                 </div>
               )}
@@ -732,14 +734,14 @@ const HistoryToday = ({ tool }) => {
               than beside the forecast: it is the condition that would falsify
               the comparison, not a second forecast wearing a hedge. */}
           {(results.synthesis?.confidence_note || results.synthesis?.wildcard) && (
-            <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-6 space-y-3`}>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
               <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">⚖️</span> {t('ht_might_be_wrong')}</h3>
               {results.synthesis.confidence_note && (
                 <p className={`text-sm ${c.text} leading-relaxed`}>{results.synthesis.confidence_note}</p>
               )}
               {results.synthesis.wildcard && (
                 <div className={`${c.warning} border rounded-lg p-3`}>
-                  <p className={`text-[10px] font-bold mb-0.5`}>{t('ht_wildcard')}</p>
+                  <p className={`text-xs font-bold mb-0.5`}>{t('ht_wildcard')}</p>
                   <p className="text-xs">{results.synthesis.wildcard}</p>
                 </div>
               )}
@@ -748,7 +750,7 @@ const HistoryToday = ({ tool }) => {
 
           {/* ─── FURTHER READING ─── */}
           {results.further_reading?.length > 0 && (
-            <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h4 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>📚</span> {t('ht_go_deeper')}</h4>
               <div className="space-y-2">
                 {results.further_reading.map((fr, i) => (
@@ -756,7 +758,7 @@ const HistoryToday = ({ tool }) => {
                     <span className="text-lg flex-shrink-0">📖</span>
                     <div>
                       <p className={`text-sm font-semibold ${c.text}`}>{fr.title}</p>
-                      <p className={`text-xs ${c.textMuteded}`}>{t('ht_by_author', { author: fr.author })}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{t('ht_by_author', { author: fr.author })}</p>
                       <p className={`text-xs ${c.textSecondary} mt-0.5`}>{fr.why}</p>
                     </div>
                   </div>
@@ -768,8 +770,8 @@ const HistoryToday = ({ tool }) => {
 
         </div>
       )}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('ht_related')}</p>
+      <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('ht_related')}</p>
         <div className="flex flex-wrap gap-3">
           <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('ht_jargon_assassin')}</a>
           <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>{t('ht_decision_coach')}</a>

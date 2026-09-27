@@ -114,15 +114,13 @@ const ArgueSmarter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -134,18 +132,18 @@ const ArgueSmarter = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Bespoke keys
-    on:            isDark ? 'bg-cyan-900/30 border-cyan-500 text-cyan-200' : 'bg-cyan-100 border-cyan-600 text-cyan-900',
+    on:            isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-100' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]',
     off:           isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-gray-400',
     formLabel:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentCard:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     infoCard:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     orangeText:    isDark ? 'text-amber-400' : 'text-amber-600',
     amberText:     isDark ? 'text-amber-400' : 'text-amber-600',
-    coachBub:      isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    coachLabel:    isDark ? 'text-cyan-300' : 'text-cyan-700',
+    coachBub:      isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    coachLabel:    isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     uBub:          isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-sky-50 border-sky-200',
     aBub:          isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
-    userBadge:     isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
+    userBadge:     isDark ? 'bg-[#1f2530] text-zinc-100' : 'bg-[#eef3f8] text-[#142a43]',
     neutralBadge:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-700',
     greenBadge:    isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-800',
     redBadge:      isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700',
@@ -158,9 +156,7 @@ const ArgueSmarter = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Core State ───
   const [mode, setMode] = useState('setup');
@@ -466,8 +462,8 @@ const ArgueSmarter = ({ tool }) => {
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm">{isU ? '🗣️' : '🥊'}</span>
           <span className={`text-xs font-bold ${c.text}`}>{isU ? t('dm_you') : t('dm_opponent')}</span>
-          <span className={`text-xs ${c.textMuteded}`}>— {turn.side}</span>
-          {time && <span className={`text-xs ${c.textMuteded} ms-auto`}>{time}</span>}
+          <span className={`text-[13px] ${c.textMuteded}`}>— {turn.side}</span>
+          {time && <span className={`text-[13px] ${c.textMuteded} ms-auto`}>{time}</span>}
           {turn.meta?.isConcession && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.greenBadge}`}>🤝</span>}
         </div>
         {/* ── Order (owner's review, 2026-08-14) ─────────────────────────
@@ -480,18 +476,18 @@ const ArgueSmarter = ({ tool }) => {
             first thing you have to get through. */}
         {turn.meta?.headline && (
           <div className={`${c.accentCard} border rounded-lg p-3`}>
-            <p className={`text-xs font-bold ${c.orangeText} uppercase tracking-wide mb-1`}>🥊 {t('dm_strongest_criticism')}</p>
+            <p className={`text-[13px] font-bold ${c.orangeText} mb-1`}>🥊 {t('dm_strongest_criticism')}</p>
             <p className={`text-sm font-bold ${c.text}`}>{turn.meta.headline}</p>
           </div>
         )}
         {turn.meta?.concessions?.length > 0 && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs font-bold">✅ {t('dm_conceded')}</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
-        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText} uppercase tracking-wide mb-1`}>❓ {t('dm_open_question')}</p><p className={`text-sm font-bold ${c.text}`}>{turn.meta.question}</p></div>}
+        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-[13px] font-bold ${c.orangeText} mb-1`}>❓ {t('dm_open_question')}</p><p className={`text-sm font-bold ${c.text}`}>{turn.meta.question}</p></div>}
         {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}{ch.why_strong ? ` — ${ch.why_strong}` : ''}</p>)}</div>}
         {/* The full argument, after the four things you can act on */}
         <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
         {turn.meta?.fallacies?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">⚠️ {t('dm_fallacy')}</p>{turn.meta.fallacies.map((f, j) => <div key={j} className="mt-1"><p className="text-xs"><strong>{f.type}:</strong> {f.in_text}</p><p className="text-xs">{f.suggestion}</p></div>)}</div>}
-        {turn.meta?.pressure && <p className={`text-xs ${c.textMuteded}`}>🎯 <strong>{t('dm_pressure_point')}</strong> {turn.meta.pressure}</p>}
-        {turn.meta?.momentum?.note && <p className={`text-xs ${c.textMuteded} italic`}>📈 <strong>{t('dm_momentum')}</strong> {turn.meta.momentum.note}</p>}
+        {turn.meta?.pressure && <p className={`text-[13px] ${c.textMuteded}`}>🎯 <strong>{t('dm_pressure_point')}</strong> {turn.meta.pressure}</p>}
+        {turn.meta?.momentum?.note && <p className={`text-[13px] ${c.textMuteded} italic`}>📈 <strong>{t('dm_momentum')}</strong> {turn.meta.momentum.note}</p>}
         {turn.meta?.newAngles?.length > 0 && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs font-bold">🆕 {t('dm_missed')}</p>{turn.meta.newAngles.map((a, j) => <p key={j} className="text-xs">• {a}</p>)}</div>}
         {turn.meta?.fallacyTraps?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">🪤 {t('dm_fallacy_traps')}</p>{turn.meta.fallacyTraps.map((f, j) => <p key={j} className="text-xs">• {f}</p>)}</div>}
       </div>
@@ -508,7 +504,7 @@ const ArgueSmarter = ({ tool }) => {
           <div className="flex items-center gap-2"><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${b.status === 'defended' ? c.greenBadge : b.status === 'abandoned' ? c.redBadge : c.amberBadge}`}>{statusLabel(b.status)}</span></div>
           <p className={`text-sm ${c.text}`}>{b.argument}</p>
           {b.evidence && b.evidence !== 'none' && <p className={`text-xs ${c.textSecondary}`}>📊 {b.evidence}</p>}
-          {b.attacked_by && <p className={`text-xs ${c.textMuteded}`}>⚔️ {b.attacked_by}</p>}
+          {b.attacked_by && <p className={`text-[13px] ${c.textMuteded}`}>⚔️ {b.attacked_by}</p>}
           {b.sub_branches?.map((sb, j) => <p key={j} className={`text-xs ${c.textSecondary} ms-3`}>↳ {sb.argument} <span className={`font-bold ${sb.status === 'defended' ? 'text-green-500' : 'text-amber-500'}`}>({statusLabel(sb.status)})</span></p>)}
         </div>
       ))}
@@ -529,9 +525,9 @@ const ArgueSmarter = ({ tool }) => {
           <p className={`text-sm ${c.textSecondary}`}>{s.overall?.assessment}</p>
           {s.overall?.growth_moment && <p className={`text-sm ${c.orangeText} mt-2`}>🌱 {s.overall.growth_moment}</p>}
         </div>
-        {s.strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_strengths')}</h3>{s.strengths.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.argument}</p><p className="text-xs">{x.why_effective}</p></div>)}</div>}
-        {s.blind_spots?.length > 0 && <div className={`${c.warning} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">🔍 {t('dm_blind_spots')}</h3>{s.blind_spots.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.area}</p><p className="text-xs">{x.the_gap}</p><p className={`text-xs font-medium ${c.amberText}`}>→ {x.how_to_strengthen}</p></div>)}</div>}
-        {s.fallacies_used?.length > 0 && <div className={`${c.danger} border rounded-xl p-5 space-y-2`}><h3 className="font-bold text-sm">⚠️ {t('dm_fallacies')}</h3>{s.fallacies_used.map((f, i) => <div key={i}><p className="text-sm"><strong>{f.type}:</strong> {f.instance}</p><p className="text-xs">{t('dm_fix')} {f.fix}</p></div>)}</div>}
+        {s.strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-5 space-y-2`}><h3 className="text-base font-bold text-sm">💪 {t('dm_strengths')}</h3>{s.strengths.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.argument}</p><p className="text-xs">{x.why_effective}</p></div>)}</div>}
+        {s.blind_spots?.length > 0 && <div className={`${c.warning} border rounded-xl p-5 space-y-2`}><h3 className="text-base font-bold text-sm">🔍 {t('dm_blind_spots')}</h3>{s.blind_spots.map((x, i) => <div key={i}><p className="text-sm font-medium">• {x.area}</p><p className="text-xs">{x.the_gap}</p><p className={`text-xs font-medium ${c.amberText}`}>→ {x.how_to_strengthen}</p></div>)}</div>}
+        {s.fallacies_used?.length > 0 && <div className={`${c.danger} border rounded-xl p-5 space-y-2`}><h3 className="text-base font-bold text-sm">⚠️ {t('dm_fallacies')}</h3>{s.fallacies_used.map((f, i) => <div key={i}><p className="text-sm"><strong>{f.type}:</strong> {f.instance}</p><p className="text-xs">{t('dm_fix')} {f.fix}</p></div>)}</div>}
         {s.best_exchange && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>{t('dm_best_exchange')}</strong> {s.best_exchange.turn} — {s.best_exchange.why}</p></div>}
         {s.position_evolved && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-sm">🔄 {s.position_evolved}</p></div>}
         {s.coaching_note && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><p className={`text-xs font-bold ${c.orangeText} mb-1`}>🎯 {t('dm_coachs_note')}</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
@@ -542,21 +538,21 @@ const ArgueSmarter = ({ tool }) => {
           <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? `✅ ${t('dm_audience_judged')}` : loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span></> : `👥 ${t('dm_audience_verdict')}`}</button>
           <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? `✅ ${t('dm_map_built')}` : loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span></> : `🗺️ ${t('dm_argument_map')}`}</button>
         </div>
-        {audienceData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+        {audienceData && <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>👥 {t('dm_audience_verdict')}</h3>
           {audienceData.verdict && <div className={`${audienceData.verdict.more_persuasive === 'Side A' ? c.success : audienceData.verdict.more_persuasive === 'Side B' ? c.warning : c.infoCard} border rounded-lg p-4`}>
             <p className="text-lg font-bold">{audienceData.verdict.more_persuasive === 'Side A' ? `🏆 ${t('dm_you_won_audience')}` : audienceData.verdict.more_persuasive === 'Side B' ? `🥈 ${t('dm_ai_more_persuasive')}` : `🤝 ${t('dm_too_close')}`}</p>
             <p className="text-xs mt-1">{audienceData.verdict.confidence} · {audienceData.verdict.reason}</p>
           </div>}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {audienceData.side_a_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_you')} ({audienceData.side_a_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondary}`}>{t('dm_best')} {audienceData.side_a_review.most_compelling_moment}</p><p className={`text-xs ${c.textMuteded}`}>{t('dm_lost_them')} {audienceData.side_a_review.least_compelling_moment}</p></div>}
-            {audienceData.side_b_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_ai')} ({audienceData.side_b_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondary}`}>{t('dm_best')} {audienceData.side_b_review.most_compelling_moment}</p><p className={`text-xs ${c.textMuteded}`}>{t('dm_lost_them')} {audienceData.side_b_review.least_compelling_moment}</p></div>}
+            {audienceData.side_a_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_you')} ({audienceData.side_a_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondary}`}>{t('dm_best')} {audienceData.side_a_review.most_compelling_moment}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('dm_lost_them')} {audienceData.side_a_review.least_compelling_moment}</p></div>}
+            {audienceData.side_b_review && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_ai')} ({audienceData.side_b_review.persuasion_score}/10)</p><p className={`text-xs ${c.textSecondary}`}>{t('dm_best')} {audienceData.side_b_review.most_compelling_moment}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('dm_lost_them')} {audienceData.side_b_review.least_compelling_moment}</p></div>}
           </div>
           {audienceData.what_would_have_convinced_me && <div className={`${c.infoCard} border rounded-lg p-3`}><p className="text-xs">💡 <strong>{t('dm_missing_argument')}</strong> {audienceData.what_would_have_convinced_me}</p></div>}
           {audienceData.emotional_vs_logical && <p className={`text-xs ${c.textSecondary}`}>🎭 {audienceData.emotional_vs_logical}</p>}
-          {audienceData.audience_shift && <p className={`text-xs ${c.textMuteded} italic`}>{t('dm_shift')} {audienceData.audience_shift}</p>}
+          {audienceData.audience_shift && <p className={`text-[13px] ${c.textMuteded} italic`}>{t('dm_shift')} {audienceData.audience_shift}</p>}
         </div>}
-        {argMapData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        {argMapData && <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🗺️ {t('dm_argument_map')}</h3>
           <ArgTree tree={argMapData.user_tree} label={`🗣️ ${t('dm_your_arguments')}`} color={c.accentCard} />
           <ArgTree tree={argMapData.ai_tree} label={`🥊 ${t('dm_opponents_arguments')}`} color={c.cardAlt} />
@@ -568,9 +564,9 @@ const ArgueSmarter = ({ tool }) => {
         <div className="flex flex-wrap gap-2">
           <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}><span className="text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_new_debate')}</button>
         </div>
-        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dm_verify_disclaimer')}</p>
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dm_related')}</p>
+        <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('dm_verify_disclaimer')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('dm_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('dm_belief_stress_test')}</a>
           </div>
@@ -585,15 +581,20 @@ const ArgueSmarter = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* Header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3">
+      {/* Header — site style (2026-09-27): a pale band of the tool's color
+          bleeding to the card edges, the ground the "Try an example" pill was
+          made for (PF-17c). Screen only, with the view tabs under it. */}
+      <div data-print-hide>
+        <div
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 {/* PF-30 — the wrapper already prints the tool's name as the
                     page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🥊'}</span>{tool?.tagline ?? t('dm_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading}
@@ -619,7 +620,7 @@ const ArgueSmarter = ({ tool }) => {
             button as things you might now want. The row still renders on every
             other view, or there is no way back. */}
         {mode !== 'setup' && (
-          <div className="px-5 py-3 flex flex-wrap gap-1.5 border-t border-zinc-500">
+          <div className="pt-4 flex flex-wrap gap-1.5">
             <Tab id="setup" icon="🥊" label={t('dm_tab_new')} />
             <Tab id="quick" icon="⚡" label={t('dm_tab_quick')} />
             <Tab id="prep" icon="🎯" label={t('dm_tab_prep')} />
@@ -631,17 +632,17 @@ const ArgueSmarter = ({ tool }) => {
       </div>
 
       {/* ═══ SETUP ═══ */}
-      {mode === 'setup' && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-5`}>
+      {mode === 'setup' && <div data-print-form className={`border-t ${c.border} pt-5 space-y-5`}>
         <div><h3 className={`font-bold text-lg ${c.text}`}>🥊 {t('dm_setup_heading')}</h3><p className={`text-sm ${c.textMuteded} mt-1`}>{t('dm_setup_sub')}</p></div>
         <div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
           <textarea value={position} onChange={e => setPosition(e.target.value)} placeholder={t('dm_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
         </div>
-        <div><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.orangeText}`}>{showStarters ? t('dm_hide') : t('dm_try_these')}</button>
+        <div data-print-hide><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.orangeText}`}>{showStarters ? t('dm_hide') : t('dm_try_these')}</button>
           {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(t(s.key)); setShowStarters(false); }} className={`text-start p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-amber-400`}>{s.cat} {t(s.key)}</button>)}</div>}
         </div>
-        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_format')}</p><div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{FORMATS.map(f => <button key={f.id} onClick={() => setFormat(f.id)} className={`p-2.5 rounded-xl border text-start ${format === f.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(f.labelKey)}</span><p className={`text-xs ${c.textMuteded}`}>{t(f.descKey)}</p></button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_challenge')}</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-start ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(lv.labelKey)}</span><p className={`text-xs ${c.textMuteded}`}>{t(lv.descKey)}</p></button>)}</div></div>
+        <div><p className={`text-[15px] font-semibold ${c.formLabel} mb-2`}>{t('dm_format')}</p><div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{FORMATS.map(f => <button key={f.id} aria-pressed={format === f.id} onClick={() => setFormat(f.id)} className={`p-2.5 rounded-xl border text-start ${format === f.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(f.labelKey)}</span><p className={`text-[13px] ${c.textMuteded}`}>{t(f.descKey)}</p></button>)}</div></div>
+        <div><p className={`text-[15px] font-semibold ${c.formLabel} mb-2`}>{t('dm_challenge')}</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} aria-pressed={level === lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-start ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(lv.labelKey)}</span><p className={`text-[13px] ${c.textMuteded}`}>{t(lv.descKey)}</p></button>)}</div></div>
         <button onClick={handleOpen} disabled={loading || !position.trim()} title={t('dm_cmd_enter')}
           className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>
           {loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_preparing')}</> : <><span className="text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_start_debate')}</>}
@@ -654,7 +655,7 @@ const ArgueSmarter = ({ tool }) => {
         </button>
 
         {/* The other ways in, after the ask rather than before it */}
-        <div>
+        <div data-print-hide>
           <p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_other_ways')}</p>
           <div className="flex flex-wrap gap-1.5">
             <Tab id="quick" icon="⚡" label={t('dm_tab_quick')} />
@@ -663,7 +664,7 @@ const ArgueSmarter = ({ tool }) => {
             {sessionHistory?.length > 0 && <Tab id="stats" icon="📈" label={t('dm_tab_stats')} />}
           </div>
         </div>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
           {t('dm_setup_xref')}{' '}<a href="/BeliefStressTest" className={linkStyle}>🧪 {t('dm_belief_stress_test')}</a>{' '}
           {t('dm_setup_xref2')}
         </p>
@@ -676,11 +677,11 @@ const ArgueSmarter = ({ tool }) => {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.userBadge}`}>{t('dm_you_side', { side: cUS })}</span>
-                <span className={`text-xs ${c.textMuteded}`}>{t('dm_vs')}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{t('dm_vs')}</span>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{t('dm_ai_side', { side: cAS })}</span>
                 {format !== 'freeform' && <span className={`text-xs px-2 py-0.5 rounded-full ${c.infoCard} border`}>{FORMATS.find(f => f.id === format)?.icon} {t(FORMATS.find(f => f.id === format)?.labelKey || 'dm_fmt_freeform')}</span>}
               </div>
-              {coreTension && <p className={`text-xs ${c.textMuteded} mt-1`}>{coreTension}</p>}
+              {coreTension && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{coreTension}</p>}
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-xs font-bold ${c.orangeText}`}>{t('dm_turn', { count: turnCount })}</span>
@@ -693,22 +694,22 @@ const ArgueSmarter = ({ tool }) => {
 
         {/* Coach */}
         {showCoach && coachData && <div className={`${c.coachBub} border rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>{t('dm_coach')}</span><button onClick={() => setShowCoach(false)} className={`text-xs ${c.textMuteded} ms-auto`}>✕</button></div>
+          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>{t('dm_coach')}</span><button onClick={() => setShowCoach(false)} className={`text-[13px] ${c.textMuteded} ms-auto`}>✕</button></div>
           {coachData.encouragement && <p className={`text-sm ${c.textSecondary} italic`}>{coachData.encouragement}</p>}
           {coachData.angles?.map((a, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-medium ${c.text}`}>→ {a.approach}</p><p className={`text-xs ${c.textSecondary}`}>{a.why_effective}</p><p className={`text-xs ${c.orangeText} italic`}>{t('dm_coach_start')} "{a.example_opener}..."</p></div>)}
           {coachData.opponent_weakness && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs">🎯 <strong>{t('dm_coach_weakness')}</strong> {coachData.opponent_weakness}</p></div>}
           {coachData.strategic_concession && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs">🤝 <strong>{t('dm_coach_concede')}</strong> {coachData.strategic_concession}</p></div>}
-          {coachData.evidence_hint && <p className={`text-xs ${c.textMuteded}`}>📚 {coachData.evidence_hint}</p>}
+          {coachData.evidence_hint && <p className={`text-[13px] ${c.textMuteded}`}>📚 {coachData.evidence_hint}</p>}
         </div>}
 
         {/* Source Check */}
-        {showSource && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 {t('dm_source_check')}</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          {!sourceData && loading && <p className={`text-xs ${c.textMuteded}`}><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
+        {showSource && <div className={`border-t ${c.border} pt-5 space-y-3`}>
+          <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 {t('dm_source_check')}</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
+          {!sourceData && loading && <p className={`text-[13px] ${c.textMuteded}`}><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
           {sourceData && <div className="space-y-2">
           <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
             <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
-            {sourceData.claim_type && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('dm_source_type')} {sourceData.claim_type}</p>}
+            {sourceData.claim_type && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('dm_source_type')} {sourceData.claim_type}</p>}
             <p className="text-xs mt-1">{sourceData.assessment}</p>
           </div>
           {sourceData.real_evidence && <p className={`text-xs ${c.textSecondary}`}>📚 {t('dm_source_evidence')} {sourceData.real_evidence}</p>}
@@ -720,8 +721,8 @@ const ArgueSmarter = ({ tool }) => {
         <div ref={bottomRef}  className="scroll-mt-24"/>
 
         {/* Input */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={t('dm_response_ph')} rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 end-2 text-xs ${c.textMuteded}`}>{wc}{t('dm_word_suffix')}</span>}</div>
+        <div data-print-hide className={`border-t ${c.border} pt-5 space-y-3`}>
+          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={t('dm_response_ph')} rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 end-2 text-[13px] ${c.textMuteded}`}>{wc}{t('dm_word_suffix')}</span>}</div>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_responding')}</> : `💬 ${t('dm_respond')}`}</button>
             <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🤝 {t('dm_concede')}</button>
@@ -735,7 +736,7 @@ const ArgueSmarter = ({ tool }) => {
               exchanges to have anything to say, so the line stays — it just
               says what it is now. */}
           {debateHistory.filter(h => h.speaker !== 'system').length < 4 && (
-            <p className={`text-xs ${c.textMuted} text-center`}>
+            <p className={`text-[13px] ${c.textMuted} text-center`}>
               {4 - debateHistory.filter(h => h.speaker !== 'system').length === 1
                 ? t('dm_unlock_one')
                 : t('dm_unlock_many', { count: 4 - debateHistory.filter(h => h.speaker !== 'system').length })}
@@ -748,25 +749,25 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ REPLAY ═══ */}
       {mode === 'replay' && replayIndex !== null && sessionHistory[replayIndex] && (() => { const d = sessionHistory[replayIndex]; return <div className="space-y-4">
-        <div className={`${c.accentCard} border rounded-xl p-4`}><div className="flex items-center justify-between"><div><h3 className={`font-bold ${c.text}`}>📖 {d.userSide} {t('dm_vs')} {d.aiSide}</h3><p className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()} · {d.turns}{t('dm_replay_turns')} · {LEVELS.find(l => l.id === d.level)?.icon}{d.format !== 'freeform' ? ` · ${t(FORMATS.find(f => f.id === d.format)?.labelKey || 'dm_fmt_freeform')}` : ''}</p></div><span className={`text-xl font-black ${c.orangeText}`}>{d.sharpness}/10</span></div></div>
+        <div className={`${c.accentCard} border rounded-xl p-4`}><div className="flex items-center justify-between"><div><h3 className={`font-bold ${c.text}`}>📖 {d.userSide} {t('dm_vs')} {d.aiSide}</h3><p className={`text-[13px] ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()} · {d.turns}{t('dm_replay_turns')} · {LEVELS.find(l => l.id === d.level)?.icon}{d.format !== 'freeform' ? ` · ${t(FORMATS.find(f => f.id === d.format)?.labelKey || 'dm_fmt_freeform')}` : ''}</p></div><span className={`text-xl font-black ${c.orangeText}`}>{d.sharpness}/10</span></div></div>
         {d.history?.map((turn, i) => <Turn key={i} turn={turn} />)}
         {d.scorecard && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-2`}>📊 {t('dm_scorecard')}</h3><p className={`text-sm ${c.textSecondary}`}>{d.scorecard.overall?.assessment}</p>{d.scorecard.coaching_note && <p className={`text-sm ${c.orangeText} mt-2`}>🎯 {d.scorecard.coaching_note}</p>}</div>}
       </div>; })()}
 
       {/* ═══ QUICK SPAR ═══ */}
       {mode === 'quick' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <div className="flex items-center justify-between gap-3">
             <h3 className={`font-bold ${c.text}`}>⚡ {t('dm_quick_spar')}</h3>
             <button onClick={loadQuickExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
           </div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder={t('dm_quick_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(t(s.key))} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} border ${c.border}`}>{s.cat} {t(s.key).substring(0, 30)}...</button>)}</div>
           <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_challenging')}</> : `⚡ ${t('dm_challenge_me')}`}</button>
         {quickData && <div className="space-y-4">
           {quickData.strength_acknowledged && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✅ {quickData.strength_acknowledged}</p></div>}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}><div className="flex items-center gap-2 mb-3"><span className="text-lg">🥊</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{quickData.steelman_label}</span></div><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{quickData.counter}</p></div>
+          <div className={`border-t ${c.border} pt-5`}><div className="flex items-center gap-2 mb-3"><span className="text-lg">🥊</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{quickData.steelman_label}</span></div><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{quickData.counter}</p></div>
           {quickData.the_question && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm font-bold ${c.orangeText}`}>❓ {quickData.the_question}</p></div>}
           {quickData.go_deeper && <button onClick={() => { setPosition(quickPosition); setMode('setup'); }} className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border}`}>🥊 {t('dm_full_debate')} {quickData.go_deeper?.substring(0, 60)}</button>}
         </div>}
@@ -775,12 +776,12 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ PREP MODE ═══ */}
       {mode === 'prep' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <div className="flex items-start justify-between gap-3">
             <div><h3 className={`font-bold ${c.text}`}>🎯 {t('dm_prep_heading')}</h3><p className={`text-sm ${c.textMuteded}`}>{t('dm_prep_sub')}</p></div>
             <button onClick={loadPrepExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
           </div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('dm_prep_position_label')} <span className={c.required}>*</span></label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_prep_position_label')} <span className={c.required}>*</span></label>
           <textarea value={prepPosition} onChange={e => setPrepPosition(e.target.value)} placeholder={t('dm_prep_position_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder={t('dm_prep_audience_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepContext} onChange={e => setPrepContext(e.target.value)} placeholder={t('dm_prep_context_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
@@ -791,7 +792,7 @@ const ArgueSmarter = ({ tool }) => {
           {prepData.audience_profile && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-xs font-bold">👥 {t('dm_audience_profile')}</p><p className={`text-sm ${c.coachLabel} mt-1`}>{prepData.audience_profile}</p></div>}
           {prepData.opening_strategy && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold">🎬 {t('dm_opening_strategy')}</p><p className="text-sm mt-1">{prepData.opening_strategy}</p></div>}
           {prepData.concede_early && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🤝 {t('dm_concede_early')}</p><p className="text-sm mt-1">{prepData.concede_early}</p></div>}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔥 {t('dm_hardest_questions')}</h3>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🔥 {t('dm_hardest_questions')}</h3>
             {prepData.hard_questions?.map((q, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-4 space-y-2`}>
               <p className={`text-sm font-bold ${c.text}`}>{i + 1}. {q.question}</p>
               <p className={`text-xs ${c.textSecondary}`}>{t('dm_why_hard')} {q.why_hard}</p>
@@ -809,15 +810,15 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ FALLACY GYM ═══ */}
       {mode === 'fallacy' && <>
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 {t('dm_fallacy_gym')}</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.success} border`}>🔥 {t('dm_streak', { count: ftStreak })}</span>}</div>
           <p className={`text-sm ${c.textMuteded}`}>{t('dm_fallacy_sub')}</p>
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_difficulty')}</p><div className="flex gap-2">{[['easy', 'dm_diff_easy'], ['medium', 'dm_diff_medium'], ['hard', 'dm_diff_hard']].map(([d, k]) => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {t(k)}</button>)}</div></div>
           <button onClick={handleFallacyNew} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</> : ftExercise ? `🔄 ${t('dm_new_exercise')}` : `🧩 ${t('dm_start_training')}`}</button>
         </div>
         {ftExercise && <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            {ftExercise.context && <p className={`text-xs ${c.textMuteded} mb-2`}>{ftExercise.context}</p>}
+          <div className={`border-t ${c.border} pt-5`}>
+            {ftExercise.context && <p className={`text-[13px] ${c.textMuteded} mb-2`}>{ftExercise.context}</p>}
             <p className={`text-sm ${c.text} whitespace-pre-line`}>"{ftExercise.argument}"</p>
           </div>
           {!ftFeedback && <div className="space-y-2">
@@ -839,10 +840,10 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ STATS ═══ */}
       {mode === 'stats' && (() => { const s = computeStats(); return <div className="space-y-4">
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className={`font-bold text-lg ${c.text} mb-4`}>📈 {t('dm_stats')}</h3>
           {!s ? <p className={`text-sm ${c.textMuteded}`}>{t('dm_complete_first')}</p> : <div className="space-y-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[[t('dm_stat_debates'), s.total, '🥊'], [t('dm_stat_avg'), s.avg + '/10', '🧠'], [t('dm_stat_best'), s.best + '/10', '⭐'], [t('dm_stat_turns'), s.tot, '💬']].map(([l, v, i]) => <div key={l} className={`${c.cardAlt} rounded-xl p-3 text-center`}><p className="text-lg">{i}</p><p className={`text-xl font-black ${c.text}`}>{v}</p><p className={`text-xs ${c.textMuteded}`}>{l}</p></div>)}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[[t('dm_stat_debates'), s.total, '🥊'], [t('dm_stat_avg'), s.avg + '/10', '🧠'], [t('dm_stat_best'), s.best + '/10', '⭐'], [t('dm_stat_turns'), s.tot, '💬']].map(([l, v, i]) => <div key={l} className={`${c.cardAlt} rounded-xl p-3 text-center`}><p className="text-lg">{i}</p><p className={`text-xl font-black ${c.text}`}>{v}</p><p className={`text-[13px] ${c.textMuteded}`}>{l}</p></div>)}</div>
             {s.trend && <div className={`${s.trend.dir === 'up' ? c.success : s.trend.dir === 'down' ? c.warning : c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{s.trend.dir === 'up' ? `📈 ${t('dm_improving')}` : s.trend.dir === 'down' ? `📉 ${t('dm_dipping')}` : `➡️ ${t('dm_steady')}`}</p><p className="text-xs mt-1">{t('dm_early_recent', { early: s.trend.early, recent: s.trend.recent })}</p></div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {s.sw > 0 && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>🔄 {t('dm_switches')}</p><p className={`text-sm ${c.textSecondary}`}>{s.sw}/{s.total} ({Math.round(s.sw / s.total * 100)}%)</p></div>}
@@ -854,13 +855,13 @@ const ArgueSmarter = ({ tool }) => {
         </div>
 
         {/* Highlight Reel */}
-        {highlightData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        {highlightData && <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold text-lg ${c.text}`}>🏆 {t('dm_highlight_reel')}</h3>
           {highlightData.debater_type && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.orangeText}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.textSecondary}`}>{highlightData.debater_type.description}</p></div>}
           {highlightData.overall_profile && <p className={`text-sm ${c.textSecondary}`}>{highlightData.overall_profile}</p>}
           {highlightData.biggest_blind_spot && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 {t('dm_biggest_blind_spot')}</p><p className="text-sm mt-1">{highlightData.biggest_blind_spot}</p></div>}
-          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}{s.evidence ? <span className={`block text-xs ${c.textMuteded} ms-3`}>{s.evidence}</span> : null}</p>)}</div>}
-          {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 {t('dm_persistent_weaknesses')}</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>{t('dm_rx')} {w.prescription}</p></div>)}</div>}
+          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="text-base font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}{s.evidence ? <span className={`block text-[13px] ${c.textMuteded} ms-3`}>{s.evidence}</span> : null}</p>)}</div>}
+          {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="text-base font-bold text-sm">🔍 {t('dm_persistent_weaknesses')}</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>{t('dm_rx')} {w.prescription}</p></div>)}</div>}
           {highlightData.fallacy_profile?.most_common && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ {t('dm_goto_fallacy', { fallacy: highlightData.fallacy_profile.most_common })}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.orangeText}`}>{t('dm_exercise')} {highlightData.fallacy_profile.exercise}</p></div>}
           {highlightData.growth_trajectory && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{highlightData.growth_trajectory.direction === 'improving' ? '📈' : '📊'} {highlightData.growth_trajectory.direction}</p><p className="text-xs mt-1">{highlightData.growth_trajectory.insight}</p></div>}
           {highlightData.best_moment && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-sm">⭐ <strong>{t('dm_best_ever')}</strong> {highlightData.best_moment}</p></div>}
@@ -875,23 +876,23 @@ const ArgueSmarter = ({ tool }) => {
       {/* AI disclaimer */}
       {/* ─── Log (footnote) ─── */}
       {sessionHistory.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+        <div data-print-hide className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
           <button onClick={() => setShowLog(!showLog)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium ${c.text}`}>
             <span>📜 {t('dm_debate_log', { count: sessionHistory.length })}</span>
             <Caret open={showLog} />
           </button>
           {showLog && <div className="px-4 pb-4 space-y-3">
-            <div className="flex justify-end"><button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuteded}`}>{t('dm_clear_all')}</button></div>
+            <div className="flex justify-end"><button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuteded}`}>{t('dm_clear_all')}</button></div>
             {sessionHistory.map((d, i) => (
               <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                 <div className="flex items-center justify-between"><p className={`text-sm font-bold ${c.text}`}>{d.userSide}</p><span className={`text-xs font-bold ${c.orangeText}`}>{d.sharpness}/10</span></div>
                 <p className={`text-xs ${c.textSecondary}`}>{t('dm_vs')} {d.aiSide} · {d.turns}{t('dm_replay_turns')} · {LEVELS.find(l => l.id === d.level)?.icon} {t(LEVELS.find(l => l.id === d.level)?.labelKey || 'dm_lvl_rigorous')}{d.format !== 'freeform' ? ` · ${t(FORMATS.find(f => f.id === d.format)?.labelKey || 'dm_fmt_freeform')}` : ''}{d.switched ? ' · 🔄' : ''}</p>
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{d.summary?.substring(0, 100)}...</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{d.summary?.substring(0, 100)}...</p>
                 <div className="flex gap-2 mt-2 flex-wrap">
-                  <span className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
                   {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.orangeText} font-bold`}>📖 {t('dm_replay')}</button>}
                   <PendingBtn itemKey={i} pending={pendingRematch} icon={pendingRematch === i ? (tool?.icon ?? '🥊') : '🔁'} onClick={() => runRematch(i, () => handleRematch(d))} disabled={loading} className={`text-xs ${c.orangeText} font-bold`}>{t('dm_rematch')}</PendingBtn>
-                  <button onClick={() => setSessionHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ms-auto`}>🗑️</button>
+                  <button onClick={() => setSessionHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuteded} ms-auto`}>🗑️</button>
                 </div>
               </div>
             ))}
@@ -913,7 +914,7 @@ const ArgueSmarter = ({ tool }) => {
               the tool: these are for the reader, not fields to fill in. */}
           <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-bold ${c.text}`}>💡 {t('dm_what_changed')}</p>
-            <p className={`text-xs ${c.textMuteded}`}>{t('dm_what_changed_sub')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('dm_what_changed_sub')}</p>
             <ul className={`text-sm ${c.textSecondary} space-y-1.5`}>
               <li>· {t('dm_wc_surprised')}</li>
               <li>· {t('dm_wc_changed_mind')}</li>

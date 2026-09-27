@@ -26,7 +26,8 @@ import './ToolPageSiteStyle.css';
 const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'LeaseTrapDetector', 'DifficultTalkCoach', 'BillRescue',
   'RoastMe', 'MarkupDetective', 'AlternatePath', 'WhatsThatMean',
   'MentalHealthNavigator', 'ChaosPilot', 'ContextCollapse', 'WhichLife',
-  'SomeoneSaidItBetter', 'DecoderRing', 'MissingLink', 'AwkwardSilenceFiller']);
+  'SomeoneSaidItBetter', 'DecoderRing', 'MissingLink', 'AwkwardSilenceFiller',
+  'HistoryToday', 'MiseEnPlace', 'TheDebrief', 'ArgueSmarter']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
