@@ -475,7 +475,9 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               search/catalog state; backToHome does exactly that (same
               function the "← Back" button during a search already uses)
               and additionally scrolls to top. */}
-          <BrandMark direction="left" size="sm" isDark={isDark} showTagline={false} onClick={backToHome} />
+          {/* md + tagline restored 2026-09-27 (owner): the 09-26 redesign had
+              dropped to the small mark with no "deft (adj.)" definition. */}
+          <BrandMark direction="left" size="md" isDark={isDark} showTagline={true} onClick={backToHome} />
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
               <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>

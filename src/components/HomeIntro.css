@@ -96,7 +96,6 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
 @media (max-width: 767px) {
   .db-home-header > div:first-of-type { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
   .db-home-header > div:first-of-type > div { gap: 8px; margin-inline-start: auto; }
-  .db-home-header > div:first-of-type > button img { height: 40px; }
   .db-home-header > div:first-of-type > button { gap: 6px; }
   .db-home-mobile-menu { display: block; }
   .db-home-hero { display: block; border: 0; background: transparent; }
