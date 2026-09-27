@@ -256,7 +256,9 @@ Return ONLY valid JSON in exactly this shape:
   "safety_note": "Only if the reported symptoms plausibly involve real physical danger — empty string otherwise"
 }
 
-Omit-by-emptying rather than padding: document_discrepancies, specific_concerns, and questions_to_ask should be empty arrays when genuinely nothing qualifies — do not invent a concern or question to fill the array. ${NO_QUOTE_RULE}`;
+Omit-by-emptying rather than padding: document_discrepancies, specific_concerns, and questions_to_ask should be empty arrays when genuinely nothing qualifies — do not invent a concern or question to fill the array.
+
+CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose schema text lists options separated by "|" (verdict, itemization_level, scope_comparable, second_opinion.assessment). Every other string — including repair_vs_replace.assessment and second_quote.assessment — is a plain-language sentence written in the visitor's language, never a code such as NOT_YET_DETERMINABLE. If a repair-vs-replace comparison is not possible yet, say so in an ordinary sentence. ${NO_QUOTE_RULE}`;
 
     const content = fileBlock
       ? [fileBlock, { type: 'text', text: userPrompt }]
@@ -278,6 +280,19 @@ Omit-by-emptying rather than padding: document_discrepancies, specific_concerns,
       whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
       itemAge, hasFile: !!fileBlock, userLanguage, userLocale, userCurrency, userRegion,
     });
+
+    // A sentence field that came back as a code (e.g. "NOT_YET_DETERMINABLE",
+    // seen live 2026-09-27) would render raw. Blank it; a repair-vs-replace
+    // block with nothing left to say is dropped rather than shown empty.
+    const isCode = v => typeof v === 'string' && /^[A-Z0-9_ ]+$/.test(v.trim());
+    for (const key of ['repair_vs_replace', 'second_quote']) {
+      const block = parsed[key];
+      if (block && (typeof block.assessment !== 'string' || isCode(block.assessment))) block.assessment = '';
+    }
+    const rvr = parsed.repair_vs_replace;
+    if (rvr && rvr.applies && !rvr.assessment && !(Array.isArray(rvr.missing_information) && rvr.missing_information.length)) {
+      rvr.applies = false;
+    }
 
     res.json({
       understanding:          parsed.understanding ?? '',

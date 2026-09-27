@@ -169,7 +169,28 @@ account owner topping up credits; **the underlying cost/latency concern (guard f
 calls) was flagged but is not yet separately addressed** — worth a future pass if it recurs or
 if latency/cost in production becomes a problem.
 
+## V2.3 (2026-09-27) — a sentence field came back as a code
+
+A live run (Whirlpool fridge, ~6 years, $450 compressor quote) rendered the literal
+`NOT_YET_DETERMINABLE` as the Repair vs. Replace text. `repair_vs_replace.assessment` is
+free prose, but it sits in a schema whose `second_opinion.assessment` is an ALL_CAPS enum —
+the model borrowed the enum style (the enum-annotation leak class, from the other side).
+
+- **Prompt:** a `CODES VS SENTENCES` rule names the only four enum fields and states that every
+  other string — explicitly both `assessment` sentences — is plain language in the visitor's
+  language, never a code.
+- **Server guard (after `guardQuoteCheck`):** `repair_vs_replace.assessment` or
+  `second_quote.assessment` matching `/^[A-Z0-9_ ]+$/` (or non-string) is blanked. A
+  repair-vs-replace block left with no assessment and no `missing_information` gets
+  `applies: false`, so the section is dropped instead of rendering an empty heading. No new
+  field, no new i18n key — the frontend already skips an empty assessment (three-way sync
+  unchanged).
+- Verified: `check:golden quote-check` 5/5; the original fridge input re-run twice returns
+  prose both times.
+
 ## DO NOT silently reverse
+
+- **V2.3 code guard + CODES VS SENTENCES rule** — the prose `assessment` fields must never render a raw code.
 
 1. The verdict enum and its definitions — `LOOKS_STRAIGHTFORWARD` must never be treated as "fair
    price confirmed" anywhere in frontend copy or prompt text.
