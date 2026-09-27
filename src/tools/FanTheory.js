@@ -59,22 +59,19 @@ const FanTheory = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -90,8 +87,7 @@ const FanTheory = ({ tool }) => {
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -101,9 +97,7 @@ const FanTheory = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const loadExample = () => {
     const ex = pickExample('FanTheory', EXAMPLES);
@@ -252,12 +246,20 @@ const FanTheory = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Persistent header card — h2 FIRST, inputs after border-b per PF-3 */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🧵'}</span>{tool?.tagline ?? t('ft_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -270,10 +272,11 @@ const FanTheory = ({ tool }) => {
             ) : null}
           </div>
         </div>
+        </div>
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('ft_title_label')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('ft_title_label')} <span className={c.required}>*</span></label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={t('ft_title_ph')}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
@@ -282,8 +285,8 @@ const FanTheory = ({ tool }) => {
               <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-1.5`}>{t('ft_type_label')}</label>
               <div className="flex gap-1.5 flex-wrap">
                 {MEDIA_TYPES.map(m => (
-                  <button key={m.value} onClick={() => { setMediaType(m.value); setTypeTouched(true); }}
-                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border min-h-[30px] ${
+                  <button aria-pressed={mediaType === m.value} key={m.value} onClick={() => { setMediaType(m.value); setTypeTouched(true); }}
+                    className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold border min-h-[30px] ${
                       mediaType === m.value ? c.pillActive : c.pillInactive}`}>
                     {m.icon} {t(m.labelKey)}
                   </button>
@@ -295,11 +298,11 @@ const FanTheory = ({ tool }) => {
             <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-2`}>{t('ft_dir_label')}</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DIRECTIONS.map(d => (
-                <button key={d.value} onClick={() => setDirection(d.value)}
+                <button aria-pressed={direction === d.value} key={d.value} onClick={() => setDirection(d.value)}
                   className={`py-2 px-3 rounded-xl border text-start min-h-[48px] transition-colors ${
                     direction === d.value ? c.pillActive : c.pillInactive}`}>
                   <span className="text-sm">{d.icon} {t(d.labelKey)}</span>
-                  <span className={`text-[9px] block ${direction === d.value ? 'opacity-80' : c.textMuted}`}>{t(d.descKey)}</span>
+                  <span className={`text-xs block ${direction === d.value ? 'opacity-80' : c.textMuted}`}>{t(d.descKey)}</span>
                 </button>
               ))}
             </div>
@@ -316,7 +319,7 @@ const FanTheory = ({ tool }) => {
           </button>
 
           {/* Pre-result cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('ft_xref_whatif_q')} <a href="/WhichLife" className={linkStyle}>🤔 {t('ft_whatif')}</a> {t('ft_xref_whatif_tail')}
           </p>
         </div>
@@ -325,29 +328,29 @@ const FanTheory = ({ tool }) => {
       {/* Saved theories stack — pinned when "Different Theory" is clicked */}
       {theoryHistory.length > 0 && (
         <div className="space-y-2">
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase px-1`}>📌 {t('ft_saved_theories')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} px-1`}>📌 {t('ft_saved_theories')}</p>
           {theoryHistory.map(saved => (
             <div key={saved.id} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => setExpandedSaved(expandedSaved === saved.id ? null : saved.id)}
+              <button data-print-heading aria-expanded={!!(expandedSaved === saved.id)} onClick={() => setExpandedSaved(expandedSaved === saved.id ? null : saved.id)}
                 className={`w-full flex items-center justify-between gap-3 p-3 text-start hover:${c.cardAlt} transition-colors`}>
                 <div className="min-w-0">
                   <p className={`text-xs font-bold ${c.text} truncate`}>🧵 {saved.data.theory_name}</p>
-                  <p className={`text-[11px] ${c.textMuted} truncate`}>{saved.title} · {saved.data.one_line}</p>
+                  <p className={`text-[13px] ${c.textMuted} truncate`}>{saved.title} · {saved.data.one_line}</p>
                 </div>
-                <Caret open={expandedSaved === saved.id} className="flex-shrink-0" />
+                <span data-print-hide><Caret open={expandedSaved === saved.id} className="flex-shrink-0" /></span>
               </button>
-              {expandedSaved === saved.id && (
-                <div className={`border-t ${c.border} p-4 space-y-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSaved === saved.id)} className={`border-t ${c.border} p-4 space-y-3`}>
                   {saved.data.one_line && <p className={`text-sm ${c.textSecondary} italic`}>"{saved.data.one_line}"</p>}
                   {saved.data.the_theory && <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{saved.data.the_theory}</p>}
                   {saved.data.the_smoking_gun && (
                     <div className={`${c.warningBox} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.warningTxt} uppercase mb-1`}>🔫 {t('ft_smoking_gun')}</p>
+                      <p className={`text-[13px] font-bold ${c.warningTxt} mb-1`}>🔫 {t('ft_smoking_gun')}</p>
                       <p className={`text-xs ${c.text}`}>{saved.data.the_smoking_gun}</p>
                     </div>
                   )}
                   <button onClick={() => setTheoryHistory(prev => prev.filter(s => s.id !== saved.id))}
-                    className={`text-xs ${c.textMuted} ${c.delHover} transition-colors`}>
+                    className={`text-[13px] ${c.textMuted} ${c.delHover} transition-colors`}>
                     ✕ {t('ft_remove')}
                   </button>
                 </div>
@@ -366,24 +369,24 @@ const FanTheory = ({ tool }) => {
             {results.one_line && <p className={`text-sm ${c.textSecondary} italic`}>{results.one_line}</p>}
             <div className="flex justify-center gap-4 mt-3">
               {results.plausibility && (
-                <div><span className={`text-xl font-black ${c.accentTxt}`}>{results.plausibility}</span><span className={`text-xs ${c.textMuted}`}>{t('ft_plausible')}</span></div>
+                <div><span className={`text-xl font-black ${c.accentTxt}`}>{results.plausibility}</span><span className={`text-[13px] ${c.textMuted}`}>{t('ft_plausible')}</span></div>
               )}
               {results.mind_blown_factor && (
-                <div><span className={`text-xl font-black ${c.accentTxt}`}>{results.mind_blown_factor}</span><span className={`text-xs ${c.textMuted}`}>{t('ft_mind_blown')}</span></div>
+                <div><span className={`text-xl font-black ${c.accentTxt}`}>{results.mind_blown_factor}</span><span className={`text-[13px] ${c.textMuted}`}>{t('ft_mind_blown')}</span></div>
               )}
             </div>
           </div>
 
           {results.the_theory && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🕵️ {t('ft_the_theory')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-2`}>🕵️ {t('ft_the_theory')}</h3>
               <p className={`text-sm ${c.textSecondary} leading-relaxed whitespace-pre-line`}>{results.the_theory}</p>
             </div>
           )}
 
           {results.evidence?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>📎 {t('ft_evidence')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>📎 {t('ft_evidence')}</h3>
               <div className="space-y-2">
                 {results.evidence.map((e, i) => {
                   const es = evStyle(e.strength);
@@ -393,7 +396,7 @@ const FanTheory = ({ tool }) => {
                         <p className={`text-xs font-medium ${c.text}`}>{es.icon} {e.detail}</p>
                         <span className={`text-[8px] font-black ${c[es.color]} whitespace-nowrap`}>{e.strength}</span>
                       </div>
-                      <p className={`text-[11px] ${c.textMuted}`}>→ {e.spin}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>→ {e.spin}</p>
                     </div>
                   );
                 })}
@@ -403,7 +406,7 @@ const FanTheory = ({ tool }) => {
 
           {results.the_smoking_gun && (
             <div className={`${c.warning} border-2 rounded-xl p-4`}>
-              <p className="text-[10px] font-bold uppercase mb-1">🔫 {results.smoking_gun_is_weak ? t('ft_closest_smoking_gun') : t('ft_the_smoking_gun')}</p>
+              <p className="text-[13px] font-bold mb-1">🔫 {results.smoking_gun_is_weak ? t('ft_closest_smoking_gun') : t('ft_the_smoking_gun')}</p>
               <p className="text-sm font-bold">{results.the_smoking_gun}</p>
             </div>
           )}
@@ -411,13 +414,13 @@ const FanTheory = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {results.counterargument && (
               <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.warningTxt} uppercase mb-1`}>🤔 {t('ft_counterargument')}</p>
+                <p className={`text-[13px] font-bold ${c.warningTxt} mb-1`}>🤔 {t('ft_counterargument')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{results.counterargument}</p>
               </div>
             )}
             {results.rabbit_hole && (
               <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🐇 {t('ft_rabbit_hole')}</p>
+                <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>🐇 {t('ft_rabbit_hole')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{results.rabbit_hole}</p>
               </div>
             )}
@@ -431,7 +434,7 @@ const FanTheory = ({ tool }) => {
             </button>
           </div>
 
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('ft_xref_bst_q')}{' '}
             <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('ft_bst')}</a>{' '}
             {t('ft_xref_bst_tail')}
@@ -441,7 +444,7 @@ const FanTheory = ({ tool }) => {
 
       {/* Grade YOUR theory — separate card, clearly distinct from AI output */}
       {results && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="pb-3 border-b border-zinc-500 mb-4">
             <h3 className={`text-base font-bold ${c.text}`}>📝 {t('ft_now_you_try')}</h3>
             <p className={`text-xs ${c.textSecondary}`}>{t('ft_grade_intro', { title: title || t('ft_grade_this') })}</p>
@@ -473,25 +476,25 @@ const FanTheory = ({ tool }) => {
                 {gradeResults.grade_title && <p className={`text-sm ${c.accentTxt} font-bold`}>{gradeResults.grade_title}</p>}
                 <div className="flex justify-center gap-4 mt-2">
                   {gradeResults.plausibility && (
-                    <div><span className={`text-lg font-black ${c.accentTxt}`}>{gradeResults.plausibility}</span><span className={`text-xs ${c.textMuted}`}>/10</span><span className={`text-[9px] ${c.textMuted} block`}>{t('ft_plausible_short')}</span></div>
+                    <div><span className={`text-lg font-black ${c.accentTxt}`}>{gradeResults.plausibility}</span><span className={`text-[13px] ${c.textMuted}`}>/10</span><span className={`text-[13px] ${c.textMuted} block`}>{t('ft_plausible_short')}</span></div>
                   )}
                   {gradeResults.creativity && (
-                    <div><span className={`text-lg font-black ${c.accentTxt}`}>{gradeResults.creativity}</span><span className={`text-xs ${c.textMuted}`}>/10</span><span className={`text-[9px] ${c.textMuted} block`}>{t('ft_creative')}</span></div>
+                    <div><span className={`text-lg font-black ${c.accentTxt}`}>{gradeResults.creativity}</span><span className={`text-[13px] ${c.textMuted}`}>/10</span><span className={`text-[13px] ${c.textMuted} block`}>{t('ft_creative')}</span></div>
                   )}
                 </div>
-                {gradeResults.evidence_quality && <p className={`text-xs ${c.textMuted} mt-1`}>{t('ft_evidence_quality')} {gradeResults.evidence_quality}</p>}
+                {gradeResults.evidence_quality && <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('ft_evidence_quality')} {gradeResults.evidence_quality}</p>}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {gradeResults.strengths?.length > 0 && (
                   <div className={`${c.success} border rounded-xl p-3`}>
-                    <p className="text-[10px] font-bold uppercase mb-1.5">✅ {t('ft_strengths')}</p>
+                    <p className="text-[13px] font-bold mb-1.5">✅ {t('ft_strengths')}</p>
                     {gradeResults.strengths.map((s, i) => <p key={i} className="text-xs mb-1">• {s}</p>)}
                   </div>
                 )}
                 {gradeResults.weaknesses?.length > 0 && (
                   <div className={`${c.danger} border rounded-xl p-3`}>
-                    <p className="text-[10px] font-bold uppercase mb-1.5">❌ {t('ft_weaknesses')}</p>
+                    <p className="text-[13px] font-bold mb-1.5">❌ {t('ft_weaknesses')}</p>
                     {gradeResults.weaknesses.map((w, i) => <p key={i} className="text-xs mb-1">• {w}</p>)}
                   </div>
                 )}
@@ -499,24 +502,24 @@ const FanTheory = ({ tool }) => {
 
               {gradeResults.professor_notes && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🎓 {t('ft_professor_notes')}</p>
+                  <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>🎓 {t('ft_professor_notes')}</p>
                   <p className={`text-sm ${c.textSecondary} italic`}>{gradeResults.professor_notes}</p>
                 </div>
               )}
 
               {gradeResults.improvement_suggestion && (
                 <div className={`${c.infoBox} border rounded-xl p-3`}>
-                  <p className="text-[10px] font-bold uppercase mb-1">💡 {t('ft_improve')}</p>
+                  <p className="text-[13px] font-bold mb-1">💡 {t('ft_improve')}</p>
                   <p className="text-xs">{gradeResults.improvement_suggestion}</p>
                 </div>
               )}
 
               {gradeResults.would_reddit_upvote && (
-                <p className={`text-xs ${c.textMuted} italic text-center`}>📊 {gradeResults.would_reddit_upvote}</p>
+                <p className={`text-[13px] ${c.textMuted} italic text-center`}>📊 {gradeResults.would_reddit_upvote}</p>
               )}
 
               <button onClick={() => { setGradeResults(null); setMyTheory(''); }}
-                className={`w-full text-xs ${c.textMuted} py-1`}>
+                className={`w-full text-[13px] ${c.textMuted} py-1`}>
                 ✕ {t('ft_clear_grade')}
               </button>
             </div>

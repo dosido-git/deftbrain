@@ -63,26 +63,25 @@ const HobbyMatch = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -90,9 +89,7 @@ const HobbyMatch = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State ───
   const [schedule, setSchedule] = useState('');
@@ -229,12 +226,22 @@ const HobbyMatch = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── HEADER ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className="mb-5 pb-4 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2 text-xl">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
-              <p className={`text-sm ${c.textSecondary} mt-1`}>{t('hm_tagline')}</p>
+              {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+              <span className="me-2 text-xl">{tool?.icon ?? '🧭 '}</span>{t('hm_tagline')}
+            </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(results || personality.trim()) && (
@@ -244,16 +251,17 @@ const HobbyMatch = ({ tool }) => {
             )}
           </div>
         </div>
+        </div>
 
         {/* Pre-result cross-ref */}
-        <p className={`text-xs ${c.textMuted} mb-4`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mb-4`}>
           {t('hm_xref_intro')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('hm_braindump')}</a> {t('hm_xref_braindump_after')}
         </p>
 
         {/* Personality */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.text} block mb-0.5`}>{t('hm_personality_label')} <span className={c.required}>*</span></label>
-          <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('hm_personality_hint')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-1.5`}>{t('hm_personality_hint')}</p>
           <textarea
             value={personality}
             onChange={e => setPersonality(e.target.value)}
@@ -268,7 +276,7 @@ const HobbyMatch = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('hm_looking_label')} <span className={`font-normal ${c.textMuteded}`}>{t('hm_pick_any')}</span></label>
           <div className="flex flex-wrap gap-1.5">
             {LOOKING_FOR.map(g => (
-              <button
+              <button aria-pressed={selectedGoals.includes(g.value)}
                 key={g.value}
                 onClick={() => toggleGoal(g.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -300,10 +308,10 @@ const HobbyMatch = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('hm_budget_label')}</label>
           <div className="flex gap-2">
             {BUDGET_LEVELS.map(b => (
-              <button
+              <button aria-pressed={budget === b.value}
                 key={b.value}
                 onClick={() => setBudget(budget === b.value ? '' : b.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+                className={`flex-1 py-2 rounded-xl text-[13px] font-bold border transition-colors min-h-[36px] ${
                   budget === b.value ? c.pillActive : c.pillInactive
                 }`}
               >
@@ -379,8 +387,8 @@ const HobbyMatch = ({ tool }) => {
 
           {/* ── WHAT I'M MATCHING FOR ── selection criteria, not a personality read */}
           {r.matching_for && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-1.5`}>{t('hm_matching_for')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>{t('hm_matching_for')}</p>
               {/* The lead-in is ours, in the visitor's language. The model supplies
                   only the criteria, so it cannot open with "You need...". */}
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{t('hm_matching_lead')}</p>
@@ -400,7 +408,7 @@ const HobbyMatch = ({ tool }) => {
                 return (
                   <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
                     {/* Header — always visible */}
-                    <button
+                    <button data-print-heading aria-expanded={!!(isExpanded)}
                       onClick={() => setExpandedHobby(isExpanded ? null : idx)}
                       className="w-full p-5 text-start"
                     >
@@ -410,45 +418,45 @@ const HobbyMatch = ({ tool }) => {
                           <h4 className={`text-sm font-bold ${c.text}`}>{hobby.name}</h4>
                           <p className={`text-xs ${c.textSecondary} mt-0.5`}>{hobby.why_it_made_the_list}</p>
                           <div className="flex flex-wrap gap-1.5 mt-2">
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                               {hobby.energy_type === 'solo' ? `🎧 ${t('hm_badge_solo')}` : hobby.energy_type === 'social' ? `👥 ${t('hm_badge_social')}` : `🔄 ${t('hm_badge_either')}`}
                             </span>
                             {COST_KEY[hobby.cost] && (
-                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                                 💰 {t(COST_KEY[hobby.cost])}
                               </span>
                             )}
                             {FIT_KEY[hobby.session_fit] && (
-                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                                 ⏱ {t(FIT_KEY[hobby.session_fit])}
                               </span>
                             )}
                           </div>
                         </div>
-                        <Caret open={isExpanded} className="flex-shrink-0" />
+                        <span data-print-hide><Caret open={isExpanded} className="flex-shrink-0" /></span>
                       </div>
                     </button>
 
                     {/* Expanded details */}
-                    {isExpanded && (
-                      <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-3`}>
+                    {(
+                      <div data-sec-body hidden={!(isExpanded)} className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hm_whats_it_like')}</p>
+                          <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('hm_whats_it_like')}</p>
                           <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.what_its_like}</p>
                         </div>
                         <div className={`${c.success} border rounded-lg p-3`}>
-                          <p className="text-[10px] font-bold mb-0.5">🚀 {t('hm_try_it_once')}</p>
+                          <p className="text-xs font-bold mb-0.5">🚀 {t('hm_try_it_once')}</p>
                           <p className="text-xs leading-relaxed">{hobby.try_it_once}</p>
                         </div>
                         {hobby.where_to_look && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>👥 {t('hm_where_to_look')}</p>
+                            <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>👥 {t('hm_where_to_look')}</p>
                             <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.where_to_look}</p>
                           </div>
                         )}
                         {hobby.watch_for && (
                           <div className={`${c.warning} border rounded-lg p-3`}>
-                            <p className="text-[10px] font-bold mb-0.5">⚠️ {t('hm_watch_for')}</p>
+                            <p className="text-xs font-bold mb-0.5">⚠️ {t('hm_watch_for')}</p>
                             <p className="text-xs leading-relaxed">{hobby.watch_for}</p>
                           </div>
                         )}
@@ -484,8 +492,8 @@ const HobbyMatch = ({ tool }) => {
           )}
 
           {/* ── CROSS-REFERENCES ── */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('hm_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('hm_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>🗺️ {t('hm_micro_adventure')}</a>
               <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ {t('hm_pep')}</a>
@@ -507,7 +515,7 @@ const HobbyMatch = ({ tool }) => {
                   onClick={() => { setResults(s.result); scrollToResults(); }}
                   className={`w-full flex items-center justify-between text-start rounded-lg px-2 py-1 -mx-2 ${c.btnSecondary} border-0 hover:opacity-80 transition-opacity min-h-[32px]`}>
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hm_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </button>
               ) : (
                 /* Entries saved before this stored a result — they have nothing
@@ -515,7 +523,7 @@ const HobbyMatch = ({ tool }) => {
                    that do nothing. They age out at six. */
                 <div key={s.id} className="flex items-center justify-between px-2 py-1 -mx-2 min-h-[32px]">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hm_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-[13px] ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
               )
             ))}

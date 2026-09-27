@@ -72,15 +72,13 @@ const AnalogyEngine = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800'      : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50'     : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400'    : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200'    : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400'    : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -90,16 +88,14 @@ const AnalogyEngine = ({ tool }) => {
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300'   : 'text-amber-800',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
+    pillActive:    isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
     required:      isDark ? 'text-amber-400'   : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State ───
   const [audience, setAudience] = useState('');
@@ -229,13 +225,21 @@ const AnalogyEngine = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input Card ── */}
-      <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-2.5 pb-5 shadow-sm space-y-4`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
 
         {/* Header with title + reset */}
-        <div className="flex items-start justify-between gap-3 pb-4 border-b border-zinc-500">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💡'}</span>{t('ae_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
@@ -250,6 +254,7 @@ const AnalogyEngine = ({ tool }) => {
               className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
             >↺ {t('start_over')}</button>
           ) : null}
+        </div>
         </div>
 
         {/* Concept — REQUIRED */}
@@ -299,7 +304,7 @@ const AnalogyEngine = ({ tool }) => {
           <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ae_q_depth')}</label>
           <div className="flex gap-2">
             {DEPTH_LEVELS.map(d => (
-              <button
+              <button aria-pressed={depth === d.value}
                 key={d.value}
                 onClick={() => setDepth(d.value)}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
@@ -360,7 +365,7 @@ const AnalogyEngine = ({ tool }) => {
         {/* PF-32 — Recent used to sit at the foot of the page, past the
             results and the cross-refs. One home, under the primary action. */}
         {sessionHistory?.length > 0 && !results && (
-          <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+          <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
             <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
                 🕐 {t('ae_recent', { n: sessionHistory.length })}
@@ -384,7 +389,7 @@ const AnalogyEngine = ({ tool }) => {
 
         {/* PF-33 — an offer belongs after the ask */}
         {!results && (
-          <p className={`text-xs text-center ${c.textMuteded}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
             {t('ae_xref_pre_q')}{' '}
             <a href="/PlainTalk" className={linkStyle}>💬 {t('ae_plaintalk')}</a>{' '}
             {t('ae_xref_pre_tail')}
@@ -406,7 +411,7 @@ const AnalogyEngine = ({ tool }) => {
 
           {/* One-liner */}
           {results?.one_liner && (
-            <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>{t('ae_one_sentence')}</p>
               <p className={`text-lg font-bold ${c.text} leading-snug`}>{results?.one_liner}</p>
             </div>
@@ -415,7 +420,7 @@ const AnalogyEngine = ({ tool }) => {
           {/* Analogies */}
           {results?.analogies?.length > 0 && (
             <div className="space-y-3">
-              <h3 className={`text-sm font-bold ${c.text}`}>
+              <h3 className={`text-base font-bold ${c.text}`}>
                 {results?.analogies?.length === 1
                   ? t('ae_analogies_for_one', { count: results?.analogies?.length, name: results?.concept_name || concept })
                   : t('ae_analogies_for_many', { count: results?.analogies?.length, name: results?.concept_name || concept })}
@@ -427,12 +432,12 @@ const AnalogyEngine = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <h4 className={`text-sm font-bold ${c.text}`}>{analogy.title}</h4>
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.successBox} ${c.successTxt}`}>{analogy.type}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${c.successBox} ${c.successTxt}`}>{analogy.type}</span>
                           {analogy.accuracy === 'high' && (
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.successBox} ${c.successTxt}`}>{t('ae_high_accuracy')}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${c.successBox} ${c.successTxt}`}>{t('ae_high_accuracy')}</span>
                           )}
                           {analogy.memorability === 'high' && (
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${c.warningBox} ${c.warningTxt}`}>{t('ae_memorable')}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${c.warningBox} ${c.warningTxt}`}>{t('ae_memorable')}</span>
                           )}
                         </div>
                       </div>
@@ -446,7 +451,7 @@ const AnalogyEngine = ({ tool }) => {
                       </p>
                     )}
                     {analogy.where_it_breaks && (
-                      <p className={`text-xs ${c.textMuteded} italic`}>⚠️ {t('ae_limit')} {analogy.where_it_breaks}</p>
+                      <p className={`text-[13px] ${c.textMuteded} italic`}>⚠️ {t('ae_limit')} {analogy.where_it_breaks}</p>
                     )}
                   </div>
                 </div>
@@ -467,7 +472,7 @@ const AnalogyEngine = ({ tool }) => {
 
           {/* Common misconceptions */}
           {results?.common_misconceptions?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2 uppercase tracking-wider`}>🚫 {t('ae_misconceptions')}</p>
               <div className="space-y-2.5">
                 {results?.common_misconceptions?.map((m, i) => (
@@ -534,7 +539,7 @@ const AnalogyEngine = ({ tool }) => {
 
           {/* Conditional cross-ref: accuracy concerns */}
           {results?.analogies?.length > 0 && results?.analogies?.[0]?.accuracy === 'medium' && (
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('ae_xref_acc_q')}{' '}
               <a href="/BeliefStressTest" className={linkStyle}>🧪 {t('ae_beliefstress')}</a>{' '}
               {t('ae_xref_acc_tail')}
@@ -543,7 +548,7 @@ const AnalogyEngine = ({ tool }) => {
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>
+            <p className={`text-[13px] font-semibold ${c.textMuteded}r`}>
               {t('ae_keep_explaining')}
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">

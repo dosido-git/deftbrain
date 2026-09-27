@@ -47,23 +47,20 @@ const BreakMyPlan = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -73,8 +70,7 @@ const BreakMyPlan = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
@@ -86,9 +82,7 @@ const BreakMyPlan = ({ tool }) => {
     emerald: isDark ? 'bg-emerald-900/20 text-emerald-300 border-emerald-700' : 'bg-emerald-50 text-emerald-700 border-emerald-300',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [plan, setPlan]             = useState('');
@@ -213,13 +207,21 @@ const BreakMyPlan = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '💀'}</span>{tool?.tagline ?? t('pm_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -232,13 +234,14 @@ const BreakMyPlan = ({ tool }) => {
               ) : null}
             </div>
           </div>
+          </div>
         </div>
 
         {/* ── Input section ── */}
         {!results && (
           <div className="p-5 space-y-4">
 
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('pm_xref_pre')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('pm_decisioncoach')}</a> {t('pm_xref_post')}
             </p>
 
@@ -258,7 +261,7 @@ const BreakMyPlan = ({ tool }) => {
               </label>
               <div className="flex flex-wrap gap-2">
                 {PLAN_TYPES.map(pt => (
-                  <button key={pt.id} onClick={() => setPlanType(planType === pt.id ? '' : pt.id)}
+                  <button aria-pressed={planType === pt.id} key={pt.id} onClick={() => setPlanType(planType === pt.id ? '' : pt.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                       planType === pt.id ? c.pillActive : c.pillInactive
                     }`}>
@@ -332,8 +335,8 @@ const BreakMyPlan = ({ tool }) => {
 
           {/* Narrative */}
           {pm?.narrative && (
-            <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📖 {t('pm_how_unfolded')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>📖 {t('pm_how_unfolded')}</p>
               <div className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`} style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
                 {pm.narrative}
               </div>
@@ -343,14 +346,14 @@ const BreakMyPlan = ({ tool }) => {
           {/* Warning signs */}
           {results.warning_signs?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('warnings')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
+              <button data-print-heading aria-expanded={!!(expanded.warnings)} onClick={() => toggle('warnings')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>
                   ⚠️ {t('pm_warning_signs')}
                 </p>
-                <Caret open={expanded.warnings} />
+                <span data-print-hide><Caret open={expanded.warnings} /></span>
               </button>
-              {expanded.warnings && (
-                <div className={`border-t ${c.border}`}>
+              {(
+                <div data-sec-body hidden={!(expanded.warnings)} className={`border-t ${c.border}`}>
                   {results.warning_signs.map((w, i) => (
                     <div key={i} className={`px-5 py-3 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                       <div className="flex items-start gap-3">
@@ -371,14 +374,14 @@ const BreakMyPlan = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {results.assumption_to_test_first?.dependency && (
               <div className={`rounded-2xl border p-4 ${isDark ? 'bg-red-600/10 border-red-600/40' : 'bg-red-50 border-red-200'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>💣 {t('pm_fatal_assumption')}</p>
+                <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>💣 {t('pm_fatal_assumption')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results.assumption_to_test_first.dependency}</p>
                 {results.assumption_to_test_first.why_it_matters && (
                   <p className={`text-xs mt-1 ${c.textMuted}`}>{results.assumption_to_test_first.why_it_matters}</p>
                 )}
                 {results.assumption_to_test_first.what_is_known && (
                   <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-zinc-900/40' : 'bg-white/70'}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wide mb-0.5 ${c.textMuted}`}>{t('pm_what_we_know')}</p>
+                    <p className={`text-[13px] font-bold mb-0.5 ${c.textMuted}`}>{t('pm_what_we_know')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{results.assumption_to_test_first.what_is_known}</p>
                   </div>
                 )}
@@ -386,7 +389,7 @@ const BreakMyPlan = ({ tool }) => {
             )}
             {results.when_to_reconsider?.condition && (
               <div className={`rounded-2xl border p-4 ${c.cardAlt} ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🚧 {t('pm_point_no_return')}</p>
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>🚧 {t('pm_point_no_return')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results.when_to_reconsider.condition}</p>
                 {results.when_to_reconsider.response && (
                   <p className={`text-xs mt-1 ${c.textMuted}`}>→ {results.when_to_reconsider.response}</p>
@@ -398,12 +401,12 @@ const BreakMyPlan = ({ tool }) => {
           {/* Failure modes */}
           {results.failure_modes?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('modes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>💀 {t('pm_failure_modes')}</p>
-                <Caret open={expanded.modes} />
+              <button data-print-heading aria-expanded={!!(expanded.modes)} onClick={() => toggle('modes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>💀 {t('pm_failure_modes')}</p>
+                <span data-print-hide><Caret open={expanded.modes} /></span>
               </button>
-              {expanded.modes && (
-                <div className={`border-t ${c.border}`}>
+              {(
+                <div data-sec-body hidden={!(expanded.modes)} className={`border-t ${c.border}`}>
                   {results.failure_modes.map((fm, i) => {
                     const cls = PRIORITY_CLS[fm.priority] || 'amber';
                     const label = t(PRIORITY_KEY[fm.priority]) || fm.priority;
@@ -414,7 +417,7 @@ const BreakMyPlan = ({ tool }) => {
                           <span className={`text-sm font-bold ${c.text}`}>{fm.mode}</span>
                         </div>
                         <p className={`text-sm mb-1 ${c.textSecondary}`}>{fm.why_this_could_happen}</p>
-                        {fm.watch_for       && <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('pm_early_warning')}</span> {fm.watch_for}</p>}
+                        {fm.watch_for       && <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('pm_early_warning')}</span> {fm.watch_for}</p>}
                         {fm.reduce_the_risk && <p className={`text-xs mt-0.5 ${c.textMuted}`}><span className="font-semibold">{t('pm_reduce_risk')}</span> {fm.reduce_the_risk}</p>}
                       </div>
                     );
@@ -426,11 +429,11 @@ const BreakMyPlan = ({ tool }) => {
 
           {/* Primary failure path → one prevention */}
           {results.primary_failure_path?.failure_mode && (
-            <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-cyan-800 bg-cyan-800/10' : 'border-cyan-200 bg-cyan-50'}`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-800'}`}>🎯 {t('pm_most_likely')}</p>
+            <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]'}`}>
+              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]'}`}>🎯 {t('pm_most_likely')}</p>
               <p className={`text-sm font-semibold mb-1 ${c.text}`}>{results.primary_failure_path.failure_mode}</p>
               <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-zinc-900/60' : 'bg-white/80'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>✅ {t('pm_the_prevention')}</p>
+                <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>✅ {t('pm_the_prevention')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results.primary_failure_path.one_prevention}</p>
               </div>
             </div>
@@ -439,18 +442,18 @@ const BreakMyPlan = ({ tool }) => {
           {/* Assumptions autopsy */}
           {results.assumptions_autopsy?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('assumptions')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔬 {t('pm_assumptions_autopsy')}</p>
-                <Caret open={expanded.assumptions} />
+              <button data-print-heading aria-expanded={!!(expanded.assumptions)} onClick={() => toggle('assumptions')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <p className={`text-[15px] font-semibold ${c.labelText}`}>🔬 {t('pm_assumptions_autopsy')}</p>
+                <span data-print-hide><Caret open={expanded.assumptions} /></span>
               </button>
-              {expanded.assumptions && (
-                <div className={`border-t ${c.border}`}>
+              {(
+                <div data-sec-body hidden={!(expanded.assumptions)} className={`border-t ${c.border}`}>
                   {results.assumptions_autopsy.map((a, i) => (
                     <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                       <p className={`text-sm font-semibold mb-1 ${c.text}`}>{a.dependency}</p>
                       <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">{t('pm_what_we_know')}</span> {a.what_we_know}</p>
                       <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">{t('pm_how_to_verify')}</span> {a.how_to_test}</p>
-                      <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('pm_risk_if_wrong')}</span> {a.if_wrong}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('pm_risk_if_wrong')}</span> {a.if_wrong}</p>
                     </div>
                   ))}
                 </div>
@@ -470,8 +473,8 @@ const BreakMyPlan = ({ tool }) => {
           )}
 
           {/* Cross-references */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('pm_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('pm_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach"  className={`text-xs ${linkStyle}`}>🧭 {t('pm_decisioncoach')}</a>
               <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('pm_egokiller')}</a>
@@ -490,7 +493,7 @@ const BreakMyPlan = ({ tool }) => {
               <div key={s.id} className="flex items-center gap-2">
                 <div className="flex-1 min-w-0">
                   <div className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('pm_session')}</div>
-                  <div className={`text-xs ${c.textMuted}`}>{new Date(s.date).toLocaleDateString()}</div>
+                  <div className={`text-[13px] ${c.textMuted}`}>{new Date(s.date).toLocaleDateString()}</div>
                 </div>
                 {s.results && (
                   <>

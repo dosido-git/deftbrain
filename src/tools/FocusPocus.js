@@ -57,24 +57,21 @@ const FocusPocus = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-100' : 'bg-emerald-50 border-emerald-300 text-emerald-900',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900',
     danger:        isDark ? 'bg-red-900/25 border-red-600 text-red-100' : 'bg-red-50 border-red-300 text-red-900',
-    infoBox:       isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-200 text-cyan-900',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-100' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    infoBox:       isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'border-gray-300 text-gray-600 hover:border-gray-400',
     // PF-13 exception — an outline while the form is empty, not a grey smudge.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State (all useState before any usePersistentState — PF-11/PF-14) ──
   const [task, setTask] = useState('');
@@ -295,7 +292,7 @@ const FocusPocus = ({ tool }) => {
 
 
   const crossRef = (
-    <p className={`text-center text-sm ${c.textMuted}`}>
+    <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
       {t('fpo_xref_q')}{' '}
       <a href="/FocusSoundArchitect" className={linkStyle}>🎧 {t('fpo_xref_sound')}</a>
     </p>
@@ -307,11 +304,19 @@ const FocusPocus = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`} data-tick={tick}>
       {/* ── PF-30 header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🎩'}</span>{t('fpo_hero')}
             </p>
             {!session && (
@@ -328,6 +333,7 @@ const FocusPocus = ({ tool }) => {
               ↺ {t('start_over')}
             </button>
           ) : null}
+        </div>
         </div>
       </div>
 
@@ -431,7 +437,7 @@ const FocusPocus = ({ tool }) => {
       {session?.status === 'running' && (
         <>
           <section className={`rounded-xl border-2 p-5 text-center ${overtime ? c.danger : c.infoBox}`}>
-            <p className="text-xs font-bold uppercase tracking-wide">{overtime ? t('fpo_overtime') : t('fpo_focusing')}</p>
+            <p className="text-[13px] font-bold">{overtime ? t('fpo_overtime') : t('fpo_focusing')}</p>
             <p className="mt-1 text-5xl font-bold tabular-nums">{overtime ? `+${clock(overtimeMs)}` : clock(remainingMs)}</p>
           </section>
 
@@ -537,7 +543,7 @@ const FocusPocus = ({ tool }) => {
                   disabled={loading}
                   className={`min-h-[64px] rounded-lg border px-3 py-2 text-start ${reviewChoice === k ? c.pillActive : c.pillInactive}`}>
                   <span className="block text-sm font-bold">{t(label)}</span>
-                  <span className={`block text-xs ${c.textMuted}`}>{t(sub)}</span>
+                  <span className={`block text-[13px] ${c.textMuted}`}>{t(sub)}</span>
                 </button>
               ))}
             </div>
@@ -589,7 +595,7 @@ const FocusPocus = ({ tool }) => {
           {/* Written out rather than reusing the shared crossRef: S5.5 counts the
               link itself, and a variable defined above the results block puts
               every href on the wrong side of it. */}
-          <p className={`text-center text-sm ${c.textMuted}`}>
+          <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
             {t('fpo_xref_q')}{' '}
             <a href="/FocusSoundArchitect" className={linkStyle}>🎧 {t('fpo_xref_sound')}</a>
           </p>

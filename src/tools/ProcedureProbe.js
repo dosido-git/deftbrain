@@ -21,23 +21,20 @@ const ProcedureProbe = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -47,17 +44,14 @@ const ProcedureProbe = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Localized option lists & example seed ──
   const SCHEDULE_STATES = [
@@ -208,14 +202,22 @@ const ProcedureProbe = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
 
         {/* Header — inset border-b */}
-        <div className="pb-3 border-b border-zinc-500">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔬'}</span>{tool?.tagline ?? t('pp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -226,6 +228,7 @@ const ProcedureProbe = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
 
         {/* Procedure */}
@@ -248,7 +251,7 @@ const ProcedureProbe = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('pp_q_concerns')}
           </label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('pp_q_concerns_why')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('pp_q_concerns_why')}</p>
           <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder={t('pp_ph_concerns')}
@@ -262,9 +265,9 @@ const ProcedureProbe = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_scheduled')}</label>
           <div className="flex flex-wrap gap-2">
             {SCHEDULE_STATES.map(o => (
-              <button key={o.value}
+              <button aria-pressed={scheduled === o.value} key={o.value}
                 onClick={() => setScheduled(scheduled === o.value ? '' : o.value)}
-                className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-[13px] font-bold border transition-colors min-h-[36px]
                   ${scheduled === o.value ? c.pillActive : c.pillInactive}`}>
                 {o.emoji} {t(o.labelKey)}
               </button>
@@ -277,9 +280,9 @@ const ProcedureProbe = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
           <div className="flex gap-2">
             {URGENCY_LEVELS.map(u => (
-              <button key={u.value}
+              <button aria-pressed={urgency === u.value} key={u.value}
                 onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                className={`flex-1 py-2 rounded-xl text-[13px] font-bold border transition-colors min-h-[36px]
                   ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
                 {u.emoji} {u.label}
               </button>
@@ -331,21 +334,21 @@ const ProcedureProbe = ({ tool }) => {
           <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
           <ol className="space-y-2">
             <li>
-              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
+              <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
               <a href="/DoctorVisitPrep" className={`text-sm ${linkStyle}`}>📝 {t('pp_kit_prep_tool')}</a>
             </li>
             <li>
-              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
+              <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
               <span className={`text-sm font-bold ${c.text}`}>
                 🔬 {t('pp_kit_probe_tool')} <span className={`font-normal ${c.textMuted}`}>{t('pp_kit_here')}</span>
               </span>
             </li>
             <li>
-              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
+              <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
               <a href="/DoctorVisitTranslator" className={`text-sm ${linkStyle}`}>👩‍⚕️ {t('pp_kit_translate_tool')}</a>
             </li>
             <li>
-              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
+              <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
               <a href="/BillRescue" className={`text-sm ${linkStyle}`}>🧾 {t('pp_kit_bill_tool')}</a>
             </li>
           </ol>
@@ -366,7 +369,7 @@ const ProcedureProbe = ({ tool }) => {
 
           {/* Plain English */}
           {r.plain_english && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pp_plain_label')}</p>
               <p className={`text-sm ${c.text} leading-relaxed`}>{r.plain_english}</p>
             </div>
@@ -385,9 +388,9 @@ const ProcedureProbe = ({ tool }) => {
 
           {/* Is this standard */}
           {r.is_this_standard && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full border
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full border
                   ${(r.is_this_standard.verdict_level === 'second_opinion' || r.is_this_standard.verdict_level === 'question') ? c.warning : c.success}`}>
                   {r.is_this_standard.verdict}
                 </span>
@@ -395,7 +398,7 @@ const ProcedureProbe = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary} leading-relaxed mb-3`}>{r.is_this_standard.explanation}</p>
               {r.is_this_standard.alternatives?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pp_alternatives_label')}</p>
+                  <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pp_alternatives_label')}</p>
                   <div className="space-y-1">
                     {r.is_this_standard.alternatives.map((alt, i) => (
                       <p key={i} className={`text-xs ${c.textSecondary}`}>• {alt}</p>
@@ -409,20 +412,20 @@ const ProcedureProbe = ({ tool }) => {
           {/* Questions to ask */}
           {r.questions_to_ask?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('questions')}
+              <button data-print-heading aria-expanded={!!(expandedSections.questions)} onClick={() => toggleSection('questions')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}>
                   <span>❓</span> {t('pp_questions_title')}
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.warning}`}>{r.questions_to_ask.length}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning}`}>{r.questions_to_ask.length}</span>
                 </h3>
-                <Caret open={expandedSections.questions} />
+                <span data-print-hide><Caret open={expandedSections.questions} /></span>
               </button>
-              {expandedSections.questions && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.questions)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
                   {r.questions_to_ask.map((q, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-xs font-bold ${c.text} mb-1`}>"{q.question}"</p>
-                      <p className={`text-xs ${c.textMuted} italic`}>{q.why_it_matters}</p>
+                      <p className={`text-[13px] ${c.textMuted} italic`}>{q.why_it_matters}</p>
                     </div>
                   ))}
                 </div>
@@ -432,19 +435,19 @@ const ProcedureProbe = ({ tool }) => {
 
           {/* Cost picture */}
           {r.cost_picture && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>💰</span> {t('pp_cost_title')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3 flex items-center gap-2`}><span>💰</span> {t('pp_cost_title')}</h3>
               <dl className="space-y-3 mb-4">
                 <div>
-                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_typical')}</dt>
+                  <dt className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_typical')}</dt>
                   <dd className={`text-sm font-bold ${c.text}`}>{r.cost_picture.typical_range}</dd>
                 </div>
                 <div>
-                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_insurance')}</dt>
+                  <dt className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_insurance')}</dt>
                   <dd className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.cost_picture.insurance_typically}</dd>
                 </div>
                 <div>
-                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_oop')}</dt>
+                  <dt className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_oop')}</dt>
                   <dd className={`text-sm font-bold leading-relaxed ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r.cost_picture.out_of_pocket_estimate}</dd>
                 </div>
               </dl>
@@ -464,13 +467,13 @@ const ProcedureProbe = ({ tool }) => {
           {/* What to expect */}
           {r.what_to_expect && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-              <button onClick={() => toggleSection('expect')}
+              <button data-print-heading aria-expanded={!!(expandedSections.expect)} onClick={() => toggleSection('expect')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
-                <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('pp_expect_title')}</h3>
-                <Caret open={expandedSections.expect} />
+                <h3 className={`text-base font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('pp_expect_title')}</h3>
+                <span data-print-hide><Caret open={expandedSections.expect} /></span>
               </button>
-              {expandedSections.expect && (
-                <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
+              {(
+                <div data-sec-body hidden={!(expandedSections.expect)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
                   {[
                     [t('pp_expect_duration'),  r.what_to_expect.procedure_duration],
                     [t('pp_expect_recovery'),  r.what_to_expect.recovery_time],
@@ -490,7 +493,7 @@ const ProcedureProbe = ({ tool }) => {
 
           {/* Red flags */}
           {r.red_flags?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>{t('pp_redflags_title')}</p>
               <div className="space-y-1.5">
                 {r.red_flags.map((flag, i) => (
@@ -517,7 +520,7 @@ const ProcedureProbe = ({ tool }) => {
               Absent, not empty, when nothing was verified for this procedure
               — see procedure-probe.js. */}
           {r.verified_sources?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🔎 {t('pp_verified_sources_header')}</p>
               <div className="space-y-1.5">
                 {r.verified_sources.map((src, i) => (
@@ -550,21 +553,21 @@ const ProcedureProbe = ({ tool }) => {
             <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
             <ol className="space-y-2">
               <li>
-                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
+                <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
                 <a href="/DoctorVisitPrep" className={`text-sm ${linkStyle}`}>📝 {t('pp_kit_prep_tool')}</a>
               </li>
               <li>
-                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
+                <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
                 <span className={`text-sm font-bold ${c.text}`}>
                   🔬 {t('pp_kit_probe_tool')} <span className={`font-normal ${c.textMuted}`}>{t('pp_kit_here')}</span>
                 </span>
               </li>
               <li>
-                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
+                <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
                 <a href="/DoctorVisitTranslator" className={`text-sm ${linkStyle}`}>👩‍⚕️ {t('pp_kit_translate_tool')}</a>
               </li>
               <li>
-                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
+                <span className={`block text-[13px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
                 <a href="/BillRescue" className={`text-sm ${linkStyle}`}>🧾 {t('pp_kit_bill_tool')}</a>
               </li>
             </ol>
@@ -574,8 +577,8 @@ const ProcedureProbe = ({ tool }) => {
 
       {/* ── History ── */}
       {sessionHistory?.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('pp_recent_title')}</h3>
+        <div className={`border-t ${c.border} pt-5`}>
+          <h3 className={`text-base font-bold ${c.text} mb-3`}>🕐 {t('pp_recent_title')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button key={entry.id} onClick={() => setResults(entry.result)}

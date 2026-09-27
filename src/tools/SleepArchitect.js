@@ -55,27 +55,23 @@ function SleepArchitect({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -88,9 +84,7 @@ function SleepArchitect({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [goals, setGoals]             = useState([]);
   const [bedtime, setBedtime]         = useState('');
@@ -234,7 +228,7 @@ function SleepArchitect({ tool }) {
   };
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
+    <div className={`border-t ${c.border} pt-5 space-y-5`}>
 
       {/* Sleep goals */}
       <div>
@@ -243,7 +237,7 @@ function SleepArchitect({ tool }) {
         </label>
         <div className="flex flex-wrap gap-2">
           {SLEEP_GOALS.map(g => (
-            <button key={g.id} onClick={() => toggleGoal(g.id)}
+            <button aria-pressed={goals.includes(g.id)} key={g.id} onClick={() => toggleGoal(g.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${goals.includes(g.id) ? c.pillActive : c.pillInactive}`}>
               <span className="me-1">{g.icon}</span>{t(g.labelKey)}
             </button>
@@ -278,7 +272,7 @@ function SleepArchitect({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('sa_disr_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('sa_disr_hint')}</span></label>
         <div className="flex flex-wrap gap-2">
           {SLEEP_DISRUPTORS.map(d => (
-            <button key={d.id} onClick={() => toggleDisruptor(d.id)}
+            <button aria-pressed={disruptors.includes(d.id)} key={d.id} onClick={() => toggleDisruptor(d.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${disruptors.includes(d.id) ? c.pillActive : c.pillInactive}`}>
               {t(d.labelKey)}
             </button>
@@ -316,8 +310,8 @@ function SleepArchitect({ tool }) {
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('sa_prev_protocols')}</p>
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('sa_clear')}</button>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>🕓 {t('sa_prev_protocols')}</p>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('sa_clear')}</button>
           </div>
           <ul className="space-y-1.5">
             {sessionHistory.map((h, i) => (
@@ -340,7 +334,7 @@ function SleepArchitect({ tool }) {
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {results?._input && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('sa_your_situation')}</p>
+            <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>📝 {t('sa_your_situation')}</p>
             {(results._input.bedtime || results._input.wakeTime || results._input.hoursActual) && (
               <p className={`text-sm ${c.textSecondary}`}>🕐 {[results._input.bedtime, results._input.wakeTime].filter(Boolean).join(' → ')}{results._input.hoursActual ? ` · ${results._input.hoursActual}h` : ''}</p>
             )}
@@ -352,17 +346,17 @@ function SleepArchitect({ tool }) {
         )}
 
         {/* Score + diagnosis */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="flex items-start gap-4 mb-3">
             {results.sleep_score != null && (
               <div className="text-center flex-shrink-0">
                 <p className={`text-4xl font-black ${scoreColor(results.sleep_score)}`}>{results.sleep_score}</p>
-                <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('sa_score_unit')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('sa_score_unit')}</p>
               </div>
             )}
             <div className="flex-1">
               {results?.diagnosis && <p className={`text-sm font-medium ${c.text}`}>{results.diagnosis}</p>}
-              <p className={`text-[11px] ${c.textMuted} mt-2`}>ⓘ {t('sa_disclaimer')}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-2`}>ⓘ {t('sa_disclaimer')}</p>
             </div>
           </div>
           {results?.key_issues?.length > 0 && (
@@ -378,8 +372,8 @@ function SleepArchitect({ tool }) {
 
         {/* Quick wins */}
         {results?.quick_wins?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>⚡ {t('sa_quick_wins')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>⚡ {t('sa_quick_wins')}</p>
             <ul className="space-y-2">
               {results.quick_wins.map((w, i) => (
                 <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}>
@@ -393,17 +387,17 @@ function SleepArchitect({ tool }) {
         {/* Protocol steps */}
         {results.protocol?.length > 0 && (
           <div className="space-y-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide px-1`}>📋 {t('sa_full_protocol')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} px-1`}>📋 {t('sa_full_protocol')}</p>
             {results.protocol.map((step, i) => {
               const cfg = phaseConfig[step.phase] ?? { label: step.phase, bg: c.infoBox, icon: '•' };
               return (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <div key={i} className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0">{cfg.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className={`font-bold text-sm ${c.text}`}>{step.title}</span>
-                        <span className={`text-[10px] font-bold border px-2 py-0.5 rounded-full ${cfg.bg}`}>{cfg.label}</span>
+                        <span className={`text-xs font-bold border px-2 py-0.5 rounded-full ${cfg.bg}`}>{cfg.label}</span>
                       </div>
                       {step.description && <p className={`text-xs ${c.textSecondary} mb-2`}>{step.description}</p>}
                       {step.actions?.length > 0 && (
@@ -429,7 +423,7 @@ function SleepArchitect({ tool }) {
             section exists to avoid. */}
         {results.try_next?.length > 0 && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔭 {t('sa_try_next_title')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔭 {t('sa_try_next_title')}</p>
             <div className="flex flex-wrap gap-2">
               {results.try_next.map((v, i) => (
                 <span key={i} className={`text-xs px-3 py-1.5 rounded-full border ${c.pillInactive}`}>{v}</span>
@@ -442,35 +436,35 @@ function SleepArchitect({ tool }) {
             show; validateResult() already nulls a schedule missing both, but
             this guards persisted results saved before that fix too. */}
         {results.schedule && (results.schedule.bedtime || results.schedule.wake_time) && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🕐 {t('sa_target_schedule')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🕐 {t('sa_target_schedule')}</p>
             <div className="grid grid-cols-3 gap-3">
               {results.schedule.wind_down_start && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('sa_wind_down')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sa_wind_down')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{results.schedule.wind_down_start}</p>
                 </div>
               )}
               {results.schedule.bedtime && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('sa_lights_out')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sa_lights_out')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{results.schedule.bedtime}</p>
                 </div>
               )}
               {results.schedule.wake_time && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('sa_wake_up')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sa_wake_up')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{results.schedule.wake_time}</p>
                 </div>
               )}
             </div>
-            {results.schedule.note && <p className={`text-xs ${c.textMuted} mt-2`}>{results.schedule.note}</p>}
+            {results.schedule.note && <p className={`text-[13px] ${c.textMuted} mt-2`}>{results.schedule.note}</p>}
           </div>
         )}
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('sa_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('sa_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('sa_recharge_radar')}</a>
             <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>🎯 {t('sa_focus_pocus')}</a>
@@ -485,13 +479,21 @@ function SleepArchitect({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '😴'}</span>{toolTagline(t('sa_tagline'))}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -505,8 +507,9 @@ function SleepArchitect({ tool }) {
             </div>
           </div>
         </div>
+        </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('sa_xref_stress')} <a href="/BrainStateDeejay" className={linkStyle}>🎧 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}</p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('sa_xref_stress')} <a href="/BrainStateDeejay" className={linkStyle}>🎧 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>
