@@ -508,7 +508,7 @@ const ResearchDecoder = ({ tool }) => {
           </div>
           </div>
         </div>
-        <div className="px-5 pb-5 pt-3">
+        <div data-print-hide className="pt-3">
           <div className="flex flex-wrap gap-1.5">
             {MODES.map(m => <button aria-pressed={mode === m.id} key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="me-1">{m.icon}</span> {m.label}</button>)}
             <button aria-pressed={mode === 'recent'} onClick={() => setMode('recent')} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === 'recent' ? c.pillActive : c.pillInactive}`}><span className="me-1">🕘</span> {t('rd_mode_recent')}{recentLog.length ? ` (${recentLog.length})` : ''}</button>
@@ -518,7 +518,7 @@ const ResearchDecoder = ({ tool }) => {
 
       {/* ═══ DECODE MODE ═══ */}
       {mode === 'decode' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+        <div data-print-form {...(decodeResult ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📄 {t('rd_decode_card_title')}</h3>
           <div>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paste_label')} <span className={c.required}>*</span></label>

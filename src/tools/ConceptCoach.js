@@ -373,7 +373,7 @@ function ConceptCoach({ tool }) {
 
         {/* Tab nav */}
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-          <div className={`flex border-b ${c.border} overflow-x-auto`}>
+          <div data-print-hide className={`flex border-b ${c.border} overflow-x-auto`}>
             {TABS.map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 min-w-max px-3 py-2.5 text-xs font-medium transition-colors whitespace-nowrap ${
@@ -389,7 +389,9 @@ function ConceptCoach({ tool }) {
           <div className="p-4 space-y-3">
 
             {/* What we know tab */}
-            {activeTab === 'evidence' && (
+            {/* Every tab prints (one heading each); the screen shows one at a time. */}
+            <div data-sec-body hidden={activeTab !== 'evidence'}>
+              <p className="hidden print:block text-sm font-bold mb-2 mt-4">{TABS.find(x => x.id === 'evidence')?.label}</p>
               <div className="space-y-2">
                 <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_evidence_intro')}</p>
                 {results?.evidence_summary?.map((s, i) => (
@@ -398,10 +400,12 @@ function ConceptCoach({ tool }) {
                   </div>
                 ))}
               </div>
-            )}
+            </div>
 
             {/* Risks tab */}
-            {activeTab === 'risks' && results?.risks?.map((risk, i) => {
+            <div data-sec-body hidden={activeTab !== 'risks'} className="space-y-3">
+              <p className="hidden print:block text-sm font-bold mb-2 mt-4">{TABS.find(x => x.id === 'risks')?.label}</p>
+              {results?.risks?.map((risk, i) => {
               const cfg = RISK_LEVELS[risk.risk_level] ?? RISK_LEVELS.medium;
               return (
                 <div key={i} className={`border rounded-xl p-4 ${cfg.bg(isDark)}`}>
@@ -418,10 +422,13 @@ function ConceptCoach({ tool }) {
                   )}
                 </div>
               );
-            })}
+              })}
+            </div>
 
             {/* Strengths tab */}
-            {activeTab === 'strengths' && (
+            {/* Every tab prints (one heading each); the screen shows one at a time. */}
+            <div data-sec-body hidden={activeTab !== 'strengths'}>
+              <p className="hidden print:block text-sm font-bold mb-2 mt-4">{TABS.find(x => x.id === 'strengths')?.label}</p>
               <ul className="space-y-2">
                 {results?.strengths?.map((s, i) => (
                   <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2.5 flex gap-2`}>
@@ -429,10 +436,12 @@ function ConceptCoach({ tool }) {
                   </li>
                 ))}
               </ul>
-            )}
+            </div>
 
             {/* Kill questions tab */}
-            {activeTab === 'questions' && (
+            {/* Every tab prints (one heading each); the screen shows one at a time. */}
+            <div data-sec-body hidden={activeTab !== 'questions'}>
+              <p className="hidden print:block text-sm font-bold mb-2 mt-4">{TABS.find(x => x.id === 'questions')?.label}</p>
               <div className="space-y-2">
                 <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_questions_intro')}</p>
                 {results?.questions?.map((q, i) => (
@@ -441,10 +450,12 @@ function ConceptCoach({ tool }) {
                   </div>
                 ))}
               </div>
-            )}
+            </div>
 
             {/* Next steps tab */}
-            {activeTab === 'next' && (
+            {/* Every tab prints (one heading each); the screen shows one at a time. */}
+            <div data-sec-body hidden={activeTab !== 'next'}>
+              <p className="hidden print:block text-sm font-bold mb-2 mt-4">{TABS.find(x => x.id === 'next')?.label}</p>
               <div className="space-y-2">
                 <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ia_next_intro')}</p>
                 {results?.next_tests?.map((s, i) => (
@@ -453,7 +464,7 @@ function ConceptCoach({ tool }) {
                   </div>
                 ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
 

@@ -449,6 +449,8 @@ const DriveHome = ({ tool }) => {
         </div>
       </div>
 
+      {/* The form prints blank; with a result, only the result prints. */}
+      <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className="space-y-4">
       <Card c={c} title={t('dh_sec_drive')}>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="block">
@@ -503,6 +505,7 @@ const DriveHome = ({ tool }) => {
             onChange={e => onEdit(setConcern)(e.target.value)} placeholder={t('dh_ph_hesitate')} />
         </label>
       </Card>
+      </div>
 
       {/* Once a result exists there is nothing to submit — the form above it is
           the form that produced it, and Start over is the way to a new one. */}

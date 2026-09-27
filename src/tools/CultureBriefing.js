@@ -378,8 +378,8 @@ function CultureBriefing({ tool }) {
         {/* Section nav */}
         {results.sections?.length > 0 && (
           <div className={`border-t ${c.border} pt-5`}>
-            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('cb_browse_topics')}</p>
-            <div className="flex flex-wrap gap-2">
+            <p data-print-hide className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('cb_browse_topics')}</p>
+            <div data-print-hide className="flex flex-wrap gap-2">
               {results.sections.map(sec => (
                 <button aria-pressed={activeSection === sec.id} key={sec.id} onClick={() => setActiveSection(activeSection === sec.id ? null : sec.id)}
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${activeSection === sec.id ? c.pillActive : c.pillInactive}`}>
@@ -388,9 +388,10 @@ function CultureBriefing({ tool }) {
               ))}
             </div>
 
-            {/* Active section detail */}
+            {/* Active section detail (screen). On paper every topic prints,
+                one after another — a briefing is read away from the page. */}
             {activeData && (
-              <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'} space-y-3`}>
+              <div data-print-hide className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'} space-y-3`}>
                 <p className={`text-sm font-bold ${c.text}`}>{activeData.icon} {activeData.title}</p>
                 {[
                   ['widely_observed', '✅', c.success, 'cb_widely_observed'],
@@ -408,6 +409,29 @@ function CultureBriefing({ tool }) {
                   </div>
                 ))}
               </div>
+            )}
+            <div className="hidden print:block">
+              {results.sections.map(sec => { const activeData = sec; return (
+                <div key={sec.id} className="mt-4 pt-4 border-t border-slate-200 space-y-3">
+                <p className={`text-sm font-bold ${c.text}`}>{activeData.icon} {activeData.title}</p>
+                  {[
+                    ['widely_observed', '✅', c.success, 'cb_widely_observed'],
+                    ['best_avoided', '🚫', c.danger, 'cb_best_avoided'],
+                    ['varies', '🔀', c.infoBox, 'cb_varies'],
+                    ['check_locally', '🔎', c.warning, 'cb_check_locally'],
+                  ].map(([key, icon, tone, labelKey]) => activeData[key]?.length > 0 && (
+                    <div key={key} className="space-y-1.5">
+                      <p className={`text-xs font-semibold ${c.textMuted}`}>{t(labelKey)}</p>
+                      {activeData[key].map((x, i) => (
+                        <div key={i} className={`text-sm ${tone} border rounded-lg px-3 py-2 flex gap-2`}>
+                          <span className="flex-shrink-0">{icon}</span><span>{x}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  </div>
+              ); })}
+            </div>
             )}
           </div>
         )}

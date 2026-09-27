@@ -752,7 +752,7 @@ const MicroAdventureMapper = ({ tool }) => {
             {results.what_to_bring.map((item, i) => {
               const done = checkedItems[`bring-${i}`];
               return (
-                <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [`bring-${i}`]: !prev[`bring-${i}`] }))}
+                <button key={i} aria-pressed={!!done} onClick={() => setCheckedItems(prev => ({ ...prev, [`bring-${i}`]: !prev[`bring-${i}`] }))}
                   className={`flex items-center gap-2.5 w-full text-start text-sm ${done ? c.textMuted : c.text}`}>
                   <div className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-all
                     ${done ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>

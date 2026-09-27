@@ -1280,7 +1280,7 @@ const LaundroMat = ({ tool }) => {
                 {r.steps.map((step, i) => {
                   const done = checkedSteps[i];
                   return (
-                    <button key={i} onClick={() => setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))}
+                    <button key={i} aria-pressed={!!done} onClick={() => setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))}
                       className={`w-full flex items-start gap-3 p-3 rounded-xl border text-start transition-all
                         ${done ? (isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300') : `${c.cardAlt} ${c.border}`}`}>
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5

@@ -850,7 +850,7 @@ const PlainTalk = ({ tool }) => {
             {/* Tab bar — hidden in compare mode, where it renders exactly one
                 tab and repeats what the mode selector above already says. */}
             {!compareView && (
-            <div className="flex gap-1 overflow-x-auto pb-1">
+            <div data-print-hide className="flex gap-1 overflow-x-auto pb-1">
               {TABS.filter(tab => !compareView || tab.id === 'compare').map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -870,8 +870,8 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: OVERVIEW ═══ */}
-            {activeTab === 'overview' && result && (
-              <div className="space-y-4">
+            {result && (
+              <div data-sec-body hidden={activeTab !== 'overview'} className="space-y-4">
                 {/* One-sentence summary */}
                 <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`text-lg font-bold ${c.text} mb-2`}>
@@ -1041,8 +1041,9 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: FULL TRANSLATION ═══ */}
-            {activeTab === 'translation' && result && (
-              <div className="space-y-4">
+            {result && (
+              <div data-sec-body hidden={activeTab !== 'translation'} className="space-y-4">
+                <p className="hidden print:block text-sm font-bold mt-4">{t(TABS.find(x => x.id === 'translation')?.labelKey)}</p>
                 <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className={`text-sm font-bold ${c.text}`}>💬 {t('plt_plain_translation')}</h4>
@@ -1078,8 +1079,9 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: X-RAY ═══ */}
-            {activeTab === 'xray' && result && (
-              <div className="space-y-4">
+            {result && (
+              <div data-sec-body hidden={activeTab !== 'xray'} className="space-y-4">
+                <p className="hidden print:block text-sm font-bold mt-4">{t(TABS.find(x => x.id === 'xray')?.labelKey)}</p>
                 {/* Structural architecture */}
                 <div className={`border-t ${c.border} pt-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>🏗️ {t('plt_architecture')}</h4>

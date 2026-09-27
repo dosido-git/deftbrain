@@ -970,7 +970,7 @@ const RoommateCourt = ({ tool }) => {
       )}
 
       {(disputeResult || assignResult) && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>🔗 {tr('rc_related', 'Related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer"       className={`text-xs ${linkStyle}`}>🔨 {tr('rc_velvet_hammer', 'Velvet Hammer')}</a>

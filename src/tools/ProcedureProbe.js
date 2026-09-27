@@ -330,7 +330,7 @@ const ProcedureProbe = ({ tool }) => {
             before the appointment, the recommendation, the words they were
             told, the bill that arrives later. Naming the moment each one
             belongs to is more useful than naming the tools. */}
-        <div className={`${c.cardAlt || ''} border ${c.border} rounded-2xl p-4`}>
+        <div data-print-hide className={`${c.cardAlt || ''} border ${c.border} rounded-2xl p-4`}>
           <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
           <ol className="space-y-2">
             <li>
@@ -549,7 +549,7 @@ const ProcedureProbe = ({ tool }) => {
           {/* Same route as the form, at the other end of it: having read the
               briefing, the next step is one of these, and which one depends on
               where the reader now is. */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
             <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
             <ol className="space-y-2">
               <li>
@@ -577,7 +577,7 @@ const ProcedureProbe = ({ tool }) => {
 
       {/* ── History ── */}
       {sessionHistory?.length > 0 && (
-        <div className={`border-t ${c.border} pt-5`}>
+        <div data-print-hide className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-base font-bold ${c.text} mb-3`}>🕐 {t('pp_recent_title')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (

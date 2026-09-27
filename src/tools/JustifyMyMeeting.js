@@ -610,7 +610,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
   const renderJudge = () => (
     <div className="space-y-4">
-      <div className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(judgeResults ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_j_intro')}</p>
 
         <div className="mb-4">
@@ -723,7 +723,7 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {showMessageOffer && !messageResults && (
-            <div className={`border-t ${c.border} pt-5`}>
+            <div data-print-hide className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>✉️ {t('mbd_msg_offer_title')}</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{t('mbd_msg_offer_sub')}</p>
               <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_msg_relationship_label')}</label>
@@ -1226,7 +1226,7 @@ const JustifyMyMeeting = ({ tool }) => {
           </div>
           </div>
         </div>
-        <div className="p-4">
+        <div data-print-hide className="p-4">
           {renderNav()}
         </div>
       </div>
@@ -1245,7 +1245,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
       {/* Pre-result cross-ref — at the foot, never above the primary action */}
       {!results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_before')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>
@@ -1265,7 +1265,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
       {/* Post-result cross-refs */}
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_next_step')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>

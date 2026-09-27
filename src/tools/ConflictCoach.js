@@ -567,10 +567,10 @@ const ConflictCoach = ({ tool }) => {
             </div>
           )}
 
-          {/* Follow-up Q&A */}
-          <div className={`border-t ${c.border} pt-5`}>
+          {/* Follow-up Q&A — prints only once there is an exchange to print. */}
+          <div {...(followupHistory.length ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold mb-3 ${c.text}`}>💬 {t('cc_followup_title')}</h3>
-            <p className={`text-xs mb-3 ${c.textMuteded}`}>{t('cc_followup_intro')}</p>
+            <p data-print-hide className={`text-xs mb-3 ${c.textMuteded}`}>{t('cc_followup_intro')}</p>
             {followupHistory.length > 0 && (
               <div className="space-y-3 mb-4">
                 {followupHistory.map((f, i) => (

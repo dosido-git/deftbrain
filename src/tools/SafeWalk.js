@@ -1065,7 +1065,7 @@ const SafeWalk = ({ tool }) => {
           {r.before_you_go?.length > 0 && renderCollapsible('before', '✅', t('sw_before_you_go'), (
             <div className="space-y-2">
               {r.before_you_go.map((item, i) => (
-                <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
+                <button key={i} aria-pressed={!!checkedItems[i]} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
                   className={`w-full flex items-start gap-3 p-3 rounded-lg border text-start transition-all
                     ${checkedItems[i] ? (isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200') : `${c.cardAlt} ${c.border}`}`}>
                   <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5

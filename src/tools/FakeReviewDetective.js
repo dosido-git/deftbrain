@@ -538,7 +538,7 @@ const FakeReviewDetective = ({ tool }) => {
       {/* What are you deciding? — the question the visitor actually arrived
           with. It takes the slot the category selector used to occupy; the
           category is now inferred from the reviews rather than asked for. */}
-      <div className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm font-semibold ${c.textSecondary} mb-0.5`}>🛒 {t('frd_decision_label')}</p>
         <p className={`text-[13px] ${c.textMuteded} mb-2.5`}>{t('frd_decision_help')}</p>
         <div className="flex flex-wrap gap-1.5">
@@ -556,7 +556,7 @@ const FakeReviewDetective = ({ tool }) => {
 
       {/* Where the reviews came from — out of the paste card, where it read as
           a footnote to the textarea rather than a question of its own. */}
-      <div className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm font-semibold ${c.textSecondary} mb-2`}>📌 {t('frd_source_label2')}</p>
         <div className="flex flex-wrap gap-1.5">
           {SOURCE_PRESETS.map(sp => <button key={sp} onClick={() => setCurrentSource(currentSource === sp ? '' : sp)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${currentSource === sp ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnSecondary} border-transparent`}`}>{srcLabel(sp)}</button>)}
@@ -565,7 +565,7 @@ const FakeReviewDetective = ({ tool }) => {
       </div>
 
       {/* INPUT + SOURCE TAG */}
-      <div className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center gap-3 mb-4">
           <div className={`p-2.5 rounded-lg ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'}`}><span className="text-xl">🔍</span></div>
           <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>{t('frd_paste_title')}</h2><p className={`text-[13px] ${c.textMuteded}`}>{t('frd_paste_sub')}</p></div>
@@ -606,7 +606,7 @@ const FakeReviewDetective = ({ tool }) => {
       )}
 
       {/* URL EXTRACTION */}
-      <div className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-base font-bold ${c.text}`}>{t('frd_import_title2')}</h3><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
         <div className="flex gap-2">
           <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>

@@ -383,7 +383,7 @@ const DreamPatternSpotter = ({ tool }) => {
         </div>
 
         {/* Mode Selection */}
-        <div className={`border-t ${c.border} pt-5`}>
+        <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
           <h3 className={`text-lg font-bold ${c.text} mb-4`}>{t('dps_mode_title')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <button
@@ -420,7 +420,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Single Dream Mode */}
         {mode === 'single' && (
-          <div className={`border-t ${c.border} pt-5`}>
+          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
             <h3 className={`text-lg font-bold ${c.text} mb-4`}>{t('dps_describe_title')}</h3>
 
             <div className="space-y-6">
@@ -528,7 +528,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Pattern Analysis Mode */}
         {mode === 'pattern' && (
-          <div className={`border-t ${c.border} pt-5`}>
+          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-lg font-bold ${c.text}`}>{t('dps_add_dreams_title')}</h3>
               <button
@@ -752,7 +752,7 @@ const DreamPatternSpotter = ({ tool }) => {
         )}
       </div>
         {sessionHistory.length > 0 && (
-          <div className={`mt-6 border-t pt-4 ${c.border}`}>
+          <div data-print-hide className={`mt-6 border-t pt-4 ${c.border}`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-semibold ${c.textSecondary}`}>📖 {t('dps_previous_analyses')}</h3>
               <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>{t('dps_clear_all')}</button>

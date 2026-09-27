@@ -497,8 +497,9 @@ const JargonAssassin = ({ tool }) => {
 
         </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-1.5">
+        {/* Tabs. Screen shows one at a time; the reading tabs (translation,
+            key sections, glossary) all print — data-sec-body. */}
+        <div data-print-hide className="flex flex-wrap gap-1.5">
           <Tab id="translation" icon="📖" label={t('jarg_tab_translation')} />
           <Tab id="personalize" icon="🎯" label={t('jarg_tab_personalize')} />
           <Tab id="side-by-side" icon="📑" label={t('jarg_tab_side')} />
@@ -509,7 +510,7 @@ const JargonAssassin = ({ tool }) => {
         </div>
 
         {/* Translation */}
-        {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 {t('jarg_translation')}</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
+        {<div data-sec-body hidden={activeTab !== 'translation'} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 {t('jarg_translation')}</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
           {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>🔤 {t('jarg_jargon_replaced')} ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
           <button onClick={() => setActiveTab('qa')} className={`mt-3 w-full ${c.highlight} border rounded-xl p-3 text-sm font-medium text-start`}>❓ {t('jarg_qa_callout')} →</button>
         </div>}
@@ -549,7 +550,7 @@ const JargonAssassin = ({ tool }) => {
         </div>}
 
         {/* Key Sections */}
-        {activeTab === 'highlights' && <div className="space-y-3">{!results.key_sections?.length ? <p className={`text-sm ${c.textMuteded} text-center py-4`}>{t('jarg_no_sections')}</p> : results.key_sections.map((s, i) => {
+        {<div data-sec-body hidden={activeTab !== 'highlights'} className="space-y-3">{!results.key_sections?.length ? <p className={`text-sm ${c.textMuteded} text-center py-4`}>{t('jarg_no_sections')}</p> : results.key_sections.map((s, i) => {
           const bg = s.type === 'red_flag' ? c.danger : s.type === 'deadline' ? c.highlight : s.type === 'decision' ? c.warning : c.highlight;
           return <div key={i} className={`${bg} border rounded-xl p-4 space-y-2`}>
             <div className="flex items-center gap-2"><span>{FLAG[s.type]?.i}</span><span className="text-xs font-bold">{FLAG[s.type]?.lKey ? t(FLAG[s.type].lKey) : ''}</span><span className="font-bold text-sm">{s.title}</span></div>
@@ -560,7 +561,7 @@ const JargonAssassin = ({ tool }) => {
         })}</div>}
 
         {/* Glossary */}
-        {activeTab === 'glossary' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 {t('jarg_glossary')}</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_no_terms')}</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondary}`}>{g.definition}</p>{g.context && <p className={`text-[13px] ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
+        {<div data-sec-body hidden={activeTab !== 'glossary'} className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📚 {t('jarg_glossary')}</h3>{!results.glossary?.length ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_no_terms')}</p> : <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{results.glossary.map((g, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{g.term}</p><p className={`text-xs ${c.textSecondary}`}>{g.definition}</p>{g.context && <p className={`text-[13px] ${c.textMuteded}`}>{g.context}</p>}</div>)}</div>}</div>}
 
         {/* Q&A */}
         {activeTab === 'qa' && <div className="space-y-4">
