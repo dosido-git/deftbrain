@@ -275,6 +275,9 @@ export const PRINT_CSS = `
         [data-print-handout] ::placeholder { color: transparent !important; }
         [data-print-handout] textarea { overflow: hidden !important; scrollbar-width: none !important; }
         [data-print-handout] textarea::-webkit-scrollbar { display: none !important; }
+        /* Outside a printed blank form, an input box is a control (a
+           follow-up question, a search), not content — screen only. */
+        [data-print-handout] [data-print-section] :is(input, textarea, select):not([data-print-form] *) { display: none !important; }
         /* Collapsed sections still print. */
         [data-print-handout] [data-sec-body][hidden] { display: block !important; }
         /* Keep each label with what it labels. A heading never ends a page on

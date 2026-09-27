@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
+import AutoGrowTextarea from '../components/AutoGrowTextarea';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -96,15 +97,20 @@ const LeaseTrapDetector = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-orange-500 focus:ring-orange-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Site style (2026-09-27): navy for the main action, choices, focus and
+    // links — CONVENTIONS.md "House primary". Orange stayed as the tool's
+    // selected-state color before; it now belongs to nothing interactive.
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-500 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    chosen:        isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-50' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
+    unchosen:      isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-300 hover:border-zinc-400 text-gray-700',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
     border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
@@ -127,8 +133,8 @@ const LeaseTrapDetector = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+    ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
+    : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   const [inputMethod, setInputMethod] = useState('text');
   const [leaseText, setLeaseText] = useState('');
@@ -467,12 +473,22 @@ const LeaseTrapDetector = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {/* ── Unified header card: title + tagline + reset + mode tabs ── */}
-      <div ref={headerRef} className={`scroll-mt-24 ${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+      {/* ── Header: tagline + reset + mode tabs ── Site style (2026-09-27): no
+          card of its own. It bleeds to the edges of the page's tool card on a
+          pale band of the tool's color (negative margins = the wrapper's
+          padding; the card clips the corners) — the tool's identity, and the
+          pale ground the "Try an example" pill was designed for (PF-17c).
+          Screen only. */}
+      <div
+        ref={headerRef}
+        data-print-hide
+        className="scroll-mt-24 -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="flex items-start justify-between gap-3 pb-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🏡'}</span>{t('ltd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -498,13 +514,13 @@ const LeaseTrapDetector = ({ tool }) => {
       </div>
 
       {ltdMode === 'analyze' && !results && (
-        <div className="space-y-5">
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('ltd_provide_q')}</p>
+        <div className="space-y-5" data-print-form>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
+            <p className={`text-base font-bold ${c.text}`}>{t('ltd_provide_q')}</p>
             <div className="grid grid-cols-2 gap-3">
               {[{ id: 'text', icon: '📄', label: t('ltd_method_text_label'), desc: t('ltd_method_text_desc') }, { id: 'file', icon: '📎', label: t('ltd_method_file_label'), desc: t('ltd_method_file_desc') }].map(m => (
-                <button key={m.id} onClick={() => { setInputMethod(m.id); if (m.id === 'text') { setUploadedFile(null); setFileBase64(null); } else { setLeaseText(''); } }}
-                  className={`p-4 rounded-xl border-2 text-center transition-all ${inputMethod === m.id ? (isDark ? 'border-orange-500 bg-orange-900/20' : 'border-orange-500 bg-orange-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
+                <button key={m.id} aria-pressed={inputMethod === m.id} onClick={() => { setInputMethod(m.id); if (m.id === 'text') { setUploadedFile(null); setFileBase64(null); } else { setLeaseText(''); } }}
+                  className={`p-4 rounded-xl border-2 text-center transition-all ${inputMethod === m.id ? c.chosen : c.unchosen}`}>
                   <span className="text-2xl block mb-1">{m.icon}</span>
                   <span className={`text-sm font-bold block ${c.text}`}>{m.label}</span>
                   <span className={`text-xs ${c.textMuted}`}>{m.desc}</span>
@@ -513,16 +529,16 @@ const LeaseTrapDetector = ({ tool }) => {
             </div>
           </div>
 
-          <div className={`${c.card} border rounded-2xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             {inputMethod === 'text' ? (
               <>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_paste_label')}</label>
+                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_paste_label')}</label>
                 <textarea value={leaseText} onChange={(e) => setLeaseText(e.target.value)} placeholder={t('ltd_paste_ph')} rows={10} className={`w-full p-4 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 <p className={`text-xs ${c.textMuted} mt-2`}>{t('ltd_paste_hint')}</p>
               </>
             ) : (
               <>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_upload_label')}</label>
+                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_upload_label')}</label>
                 {!uploadedFile ? (
                   <div onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${isDark ? 'border-zinc-600 hover:border-orange-500 hover:bg-zinc-700/50' : 'border-zinc-300 hover:border-orange-400 hover:bg-orange-50'}`}>
                     <span className="text-4xl block mb-2">📎</span>
@@ -546,21 +562,21 @@ const LeaseTrapDetector = ({ tool }) => {
               )}
             </div>
 
-            <div className={`${c.card} border rounded-2xl p-5 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_location_label')} <span className={c.required}>*</span></label>
+                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_location_label')} <span className={c.required}>*</span></label>
                 <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('ltd_location_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_leasetype_label')} <span className={c.required}>*</span></label>
+                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_leasetype_label')} <span className={c.required}>*</span></label>
                 {[false, true].map(sep => (
                   <div key={String(sep)}>
                     {sep && <div className={`my-2 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`} />}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {LEASE_TYPES.filter(lt => !!lt.separated === sep).map(lt => (
-                        <button key={lt.value} onClick={() => setLeaseType(lt.value)} className={`p-2.5 rounded-xl border text-center transition-all ${leaseType === lt.value ? (isDark ? 'border-orange-500 bg-orange-900/20 text-orange-300' : 'border-orange-500 bg-orange-50 text-orange-700') : (isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-200 hover:border-zinc-300 text-gray-700')}`}>
+                        <button key={lt.value} aria-pressed={leaseType === lt.value} onClick={() => setLeaseType(lt.value)} className={`p-2.5 rounded-xl border text-center transition-all ${leaseType === lt.value ? c.chosen : c.unchosen}`}>
                           <span className="text-lg block">{lt.icon}</span>
-                          <span className="text-[10px] font-bold block mt-0.5">{lt.label}</span>
+                          <span className="text-[13px] font-bold block mt-0.5">{lt.label}</span>
                         </button>
                       ))}
                     </div>
@@ -571,23 +587,23 @@ const LeaseTrapDetector = ({ tool }) => {
                   before, damage control after. Optional — an unanswered form
                   behaves exactly as it did. */}
               <div>
-                <p className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_situation_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>{t('ltd_optional')}</span></p>
+                <p className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_situation_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>{t('ltd_optional')}</span></p>
                 <div role="group" aria-label={t('ltd_situation_label')} className="flex flex-wrap gap-1.5">
                   {SITUATIONS.map(sit => (
-                    <button key={sit.value} onClick={() => setSituation(situation === sit.value ? '' : sit.value)}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${situation === sit.value ? (isDark ? 'border-orange-500 bg-orange-900/20 text-orange-300' : 'border-orange-500 bg-orange-50 text-orange-700') : (isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-200 hover:border-zinc-300 text-gray-700')}`}>
+                    <button key={sit.value} aria-pressed={situation === sit.value} onClick={() => setSituation(situation === sit.value ? '' : sit.value)}
+                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${situation === sit.value ? c.chosen : c.unchosen}`}>
                       <span className="me-1">{sit.icon}</span>{t(sit.labelKey)}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_concerns_label')}</label>
-                <textarea value={concerns} onChange={(e) => setConcerns(e.target.value)} placeholder={t('ltd_concerns_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_concerns_label')}</label>
+                <AutoGrowTextarea value={concerns} onChange={(e) => setConcerns(e.target.value)} placeholder={t('ltd_concerns_ph')} minHeight={64} className={`w-full p-3 border-2 rounded-xl text-base resize-none focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
             </div>
 
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-[13px] text-center ${c.textMuteded}`}>
               {t('ltd_xref_deposit_pre')}{' '}
               <a href="/RentersDepositSaver" className={linkStyle}>💰 {t('ltd_xref_deposit_link')}</a>{' '}
               {t('ltd_xref_deposit_post')}
@@ -607,8 +623,8 @@ const LeaseTrapDetector = ({ tool }) => {
             {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
             {sessionHistory.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('ltd_past_analyses')}</p>
+              <div data-print-hide className={`border-t ${c.border} pt-5`}>
+                <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_past_analyses')}</p>
                 {sessionHistory.slice(0, 5).map(h => (
                   <div key={h.id} className={`p-3 rounded-xl ${c.cardAlt} border mb-2 flex items-center justify-between`}>
                     <div><p className={`text-sm font-semibold ${c.text}`}>{h.name}</p><p className={`text-xs ${c.textMuted}`}>{h.location} · {new Date(h.date).toLocaleDateString()}</p></div>
@@ -637,17 +653,17 @@ const LeaseTrapDetector = ({ tool }) => {
               neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
             };
             return (
-              <details className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-2xl overflow-hidden`}>
+              <details data-print-hide className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-2xl overflow-hidden`}>
                 <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40'}`}>
                   <div>
                     <p className={`text-base font-black ${c.text}`}>{x.title}</p>
                     <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
                   </div>
-                  <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{x.expandLabel}</span>
+                  <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{x.expandLabel}</span>
                 </summary>
                 <div className={`border-t border-dashed ${isDark ? 'border-amber-800/50' : 'border-amber-200'} p-5 space-y-4`}>
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{x.sampleLabel}</p>
+                    <p className={`text-base font-bold mb-2 ${c.text}`}>{x.sampleLabel}</p>
                     <blockquote className={`p-4 rounded-xl border-s-4 ${isDark ? 'bg-zinc-900/60 border-zinc-500 text-zinc-200' : 'bg-zinc-50 border-zinc-400 text-gray-800'} text-sm leading-relaxed`}>
                       {x.sampleText}
                     </blockquote>
@@ -680,8 +696,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
         {/* ════════ FINE POINT FINDER ════════ */}
         {ltdMode === 'missing' && !missingResults && (
-          <div className="space-y-4">
-            <div className={`${c.card} border rounded-2xl p-5`}>
+          <div className="space-y-4" data-print-form>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className={`p-3 rounded-xl mb-4 ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
                 <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🏦 {t('ltd_missing_intro')}</p>
               </div>
@@ -692,33 +708,33 @@ const LeaseTrapDetector = ({ tool }) => {
                   </div>
                 )}
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_missing_paste_label')} <span className={c.required}>*</span></label>
+                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_missing_paste_label')} <span className={c.required}>*</span></label>
                   <textarea value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
                     placeholder={t('ltd_missing_paste_ph')}
                     rows={10} className={`w-full p-4 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('ltd_missing_ctype_label')}</label>
+                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_ctype_label')}</label>
                     <input type="text" value={missingContractType} onChange={e => setMissingContractType(e.target.value)}
                       placeholder={t('ltd_missing_ctype_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('ltd_missing_role_label')}</label>
+                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_role_label')}</label>
                     <input type="text" value={missingRole} onChange={e => setMissingRole(e.target.value)}
                       placeholder={t('ltd_missing_role_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('ltd_location_label')}</label>
+                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_location_label')}</label>
                     <input type="text" value={location} onChange={e => setLocation(e.target.value)}
                       placeholder={t('ltd_missing_location_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('ltd_missing_concerns_label')}</label>
+                  <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_concerns_label')}</label>
                   <input type="text" value={missingConcerns} onChange={e => setMissingConcerns(e.target.value)}
                     placeholder={t('ltd_missing_concerns_ph')}
                     className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
@@ -750,16 +766,16 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Overall Assessment */}
             {missingResults.overall_assessment && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_overall_assessment')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-base font-bold mb-2 ${c.text}`}>{t('ltd_overall_assessment')}</p>
                 <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{missingResults.overall_assessment}</p>
               </div>
             )}
 
             {/* Missing Protections */}
             {missingResults.missing_protections?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('ltd_missing_protections')} ({missingResults.missing_protections.length})</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_missing_protections')} ({missingResults.missing_protections.length})</p>
                 <div className="space-y-3">
                   {missingResults.missing_protections.map((p, i) => {
                     const riskColor = p.risk_if_absent === 'high'
@@ -770,18 +786,20 @@ const LeaseTrapDetector = ({ tool }) => {
                     const expanded = expandedSections[`miss-${i}`];
                     return (
                       <div key={i} className={`rounded-xl border overflow-hidden`}>
-                        <button onClick={() => toggle(`miss-${i}`)} className={`w-full p-4 text-start flex items-start justify-between gap-3 ${isDark ? 'bg-zinc-700/40 hover:bg-zinc-700/60' : 'bg-zinc-50 hover:bg-zinc-100'}`}>
+                        <button data-print-heading onClick={() => toggle(`miss-${i}`)} className={`w-full p-4 text-start flex items-start justify-between gap-3 ${isDark ? 'bg-zinc-700/40 hover:bg-zinc-700/60' : 'bg-zinc-50 hover:bg-zinc-100'}`}>
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${riskColor}`}>{p.risk_if_absent === 'high' ? t('ltd_risk_high') : p.risk_if_absent === 'medium' ? t('ltd_risk_medium') : t('ltd_risk_low')}</span>
                             <span className={`text-sm font-bold ${c.text} truncate`}>{p.protection}</span>
                           </div>
-                          <Caret open={expanded} className="flex-shrink-0" />
+                          <span data-print-hide><Caret open={expanded} className="flex-shrink-0" /></span>
                         </button>
-                        {expanded && (
-                          <div className={`p-4 border-t space-y-3 ${isDark ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-200 bg-white'}`}>
+                        {/* Always rendered, hidden while closed, so a printout
+                            carries every item (printStyles data-sec-body). */}
+                        {(
+                          <div data-sec-body hidden={!expanded} className={`p-4 border-t space-y-3 ${isDark ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-200 bg-white'}`}>
                             <p className={`text-sm ${c.textSecondary}`}><span className="font-semibold">{t('ltd_why_it_matters')}</span> {p.why_it_matters}</p>
                             <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                              <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('ltd_suggested_language')}</p>
+                              <p className={`text-base font-bold mb-1 ${c.text}`}>{t('ltd_suggested_language')}</p>
                               <p className={`text-sm italic ${c.text}`}>"{p.what_it_should_say}"</p>
                             </div>
                             {p.how_common && <p className={`text-xs ${c.textMuted}`}>📊 {p.how_common}</p>}
@@ -796,8 +814,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Negotiation Priority */}
             {missingResults.negotiation_priority && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('ltd_negotiation_priority')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_negotiation_priority')}</p>
                 {missingResults.negotiation_priority.must_haves?.length > 0 && (
                   <div className="mb-3">
                     <p className={`text-xs font-semibold uppercase ${isDark ? 'text-red-400' : 'text-red-600'} mb-1`}>{t('ltd_must_haves')}</p>
@@ -806,7 +824,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 )}
                 {missingResults.negotiation_priority.pick_your_battle && (
                   <div className={`p-3 rounded-xl ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('ltd_one_thing')}</p>
+                    <p className={`text-base font-bold mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('ltd_one_thing')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{missingResults.negotiation_priority.pick_your_battle}</p>
                   </div>
                 )}
@@ -815,8 +833,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Questions to Ask */}
             {missingResults.questions_to_ask_before_signing?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('ltd_questions_before')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_questions_before')}</p>
                 <div className="space-y-2">
                   {missingResults.questions_to_ask_before_signing.map((q, i) => (
                     <div key={i} className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
@@ -864,12 +882,12 @@ const LeaseTrapDetector = ({ tool }) => {
                 The report is long and good. This is the part that answers the
                 only question a reader actually arrived with: can I sign this. */}
             {Array.isArray(results.top_fixes) && results.top_fixes.length > 0 && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 space-y-3 ${isDark ? 'border-cyan-700' : 'border-cyan-300'}`}>
+              <div className={`${c.card} border rounded-2xl p-5 space-y-3 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
                 <p className={`text-sm font-black ${c.text}`}>🏠 {t('ltd_top_fixes_title', { count: results.top_fixes.length })}</p>
                 <ol className="space-y-2.5">
                   {results.top_fixes.slice(0, 3).map((f, i) => (
                     <li key={i} className="flex items-start gap-2.5">
-                      <span className={`flex-shrink-0 w-5 h-5 rounded-full text-[11px] font-black flex items-center justify-center ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{i + 1}</span>
+                      <span className={`flex-shrink-0 w-5 h-5 rounded-full text-[11px] font-black flex items-center justify-center ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{i + 1}</span>
                       <span>
                         <span className={`text-sm font-semibold ${c.text}`}>{f.fix}</span>
                         {f.why && <span className={`block text-xs mt-0.5 ${c.textMuted}`}>{f.why}</span>}
@@ -904,8 +922,8 @@ const LeaseTrapDetector = ({ tool }) => {
                 .filter(n => n.tool && n.what);
               if (!found.length) return null;
               return (
-                <div className={`${c.card} border rounded-2xl p-4`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>{t('ltd_noticed_title')}</p>
+                <div className={`border-t ${c.border} pt-4`}>
+                  <p className={`text-base font-bold mb-2 ${c.text}`}>{t('ltd_noticed_title')}</p>
                   <ul className="space-y-2">
                     {found.map((n, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
@@ -936,7 +954,7 @@ const LeaseTrapDetector = ({ tool }) => {
             {showHighlights && highlightedText && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-sky-700/50' : 'border-sky-300'}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('ltd_annotated_view')}</p>
+                  <p className={`text-base font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('ltd_annotated_view')}</p>
                   {[{ colorKey: 'swatchRed', label: t('ltd_legend_red') }, { colorKey: 'swatchYellow', label: t('ltd_legend_yellow') }, { colorKey: 'swatchGreen', label: t('ltd_legend_green') }, { colorKey: 'swatchCyan', label: t('ltd_legend_unenforceable') }].map(l => (
                     <span key={l.label} className={`text-[9px] px-1.5 py-0.5 rounded ${c[l.colorKey]} ${c.text}`}>{l.label}</span>
                   ))}
@@ -971,7 +989,7 @@ const LeaseTrapDetector = ({ tool }) => {
               const riskIcon = oa.risk_level === 'high' ? '🚨' : oa.risk_level === 'medium' ? '⚠️' : '✅';
               const riskBorder = oa.risk_level === 'high' ? 'border-s-red-500' : oa.risk_level === 'medium' ? 'border-s-amber-500' : 'border-s-emerald-500';
               return (
-                <div className={`${c.card} border rounded-2xl p-5 border-s-4 ${riskBorder}`}>
+                <div className={`border-t ${c.border} pt-5 border-s-4 ${riskBorder}`}>
                   <div className="flex items-start gap-3">
                     <span className="text-3xl">{riskIcon}</span>
                     <div className="flex-1">
@@ -996,7 +1014,7 @@ const LeaseTrapDetector = ({ tool }) => {
               const fs = results.financial_summary;
               return (
                 <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-orange-700/50' : 'border-orange-300'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_financial_exposure')}</p>
+                  <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_financial_exposure')}</p>
                   {/* Rows, not a four-across grid. Three of these four values
                       are sentences rather than figures — worst_case_penalties
                       runs to a clause — and a narrow centred column squeezed
@@ -1030,8 +1048,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Roommate/Sublease Warning */}
             {isRoommateOrSublease && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>👥 {leaseType === 'sublease' ? t('ltd_sublease_alert') : t('ltd_room_alert')}</p>
+              <div className={`${c.card} border rounded-2xl p-5 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
+                <p className={`text-base font-bold mb-2 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>👥 {leaseType === 'sublease' ? t('ltd_sublease_alert') : t('ltd_room_alert')}</p>
                 <p className={`text-sm ${c.textSecondary} mb-3`}>{leaseType === 'sublease' ? t('ltd_sublease_text') : t('ltd_room_text')}</p>
                 <p className={`text-xs font-bold ${c.text}`}>{leaseType === 'sublease' ? t('ltd_sublease_tip') : t('ltd_room_tip')}</p>
               </div>
@@ -1041,20 +1059,20 @@ const LeaseTrapDetector = ({ tool }) => {
             {results.security_deposit_analysis && (() => {
               const sd = results.security_deposit_analysis;
               return (
-                <div className={`${c.card} border rounded-2xl p-5`}>
-                  <button onClick={() => toggle('deposit')} className="w-full flex items-center justify-between">
-                    <p className={`text-sm font-black ${c.text}`}>{t('ltd_security_deposit')}</p>
-                    <Caret open={expandedSections.deposit} />
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading onClick={() => toggle('deposit')} className="w-full flex items-center justify-between">
+                    <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_security_deposit')}</h3>
+                    <span data-print-hide><Caret open={expandedSections.deposit} /></span>
                   </button>
-                  {expandedSections.deposit && (
-                    <div className="mt-4 space-y-3">
+                  {(
+                    <div data-sec-body hidden={!expandedSections.deposit} className="mt-4 space-y-3">
                       <div className="grid grid-cols-2 gap-3">
-                        <div className={`p-3 rounded-xl ${c.cardAlt} border`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{t('ltd_lease_charges')}</p><p className={`text-lg font-black ${c.text}`}>{sd.lease_deposit_amount || t('ltd_na')}</p></div>
-                        <div className={`p-3 rounded-xl border ${sd.is_over_limit ? c.danger : c.success}`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{t('ltd_legal_max')}</p><p className={`text-lg font-black ${c.text}`}>{sd.legal_maximum || t('ltd_na')}</p>{sd.is_over_limit && <p className="text-xs font-bold mt-1">{t('ltd_over_limit')}</p>}</div>
+                        <div className={`p-3 rounded-xl ${c.cardAlt} border`}><p className={`text-xs font-bold ${c.textMuted}`}>{t('ltd_lease_charges')}</p><p className={`text-lg font-black ${c.text}`}>{sd.lease_deposit_amount || t('ltd_na')}</p></div>
+                        <div className={`p-3 rounded-xl border ${sd.is_over_limit ? c.danger : c.success}`}><p className={`text-xs font-bold ${c.textMuted}`}>{t('ltd_legal_max')}</p><p className={`text-lg font-black ${c.text}`}>{sd.legal_maximum || t('ltd_na')}</p>{sd.is_over_limit && <p className="text-xs font-bold mt-1">{t('ltd_over_limit')}</p>}</div>
                       </div>
                       <div className="grid grid-cols-3 gap-2">
                         {[{ label: t('ltd_sd_return'), val: `${sd.return_timeline_days} ${t('ltd_days')}`, sub: sd.return_timeline_law }, { label: t('ltd_sd_interest'), val: sd.interest_required ? t('ltd_required') : t('ltd_no') }, { label: t('ltd_sd_walkthrough'), val: sd.walkthrough_required ? t('ltd_required') : t('ltd_no') }].map((item, i) => (
-                          <div key={i} className={`p-2.5 rounded-xl ${c.cardAlt} border`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{item.label}</p><p className={`text-sm font-bold ${c.text}`}>{item.val}</p>{item.sub && <p className={`text-[9px] ${c.textMuted}`}>{item.sub}</p>}</div>
+                          <div key={i} className={`p-2.5 rounded-xl ${c.cardAlt} border`}><p className={`text-xs font-bold ${c.textMuted}`}>{item.label}</p><p className={`text-sm font-bold ${c.text}`}>{item.val}</p>{item.sub && <p className={`text-[9px] ${c.textMuted}`}>{item.sub}</p>}</div>
                         ))}
                       </div>
                       {sd.issues_found?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}>{sd.issues_found.map((iss, i) => <p key={i} className="text-xs">• {iss}</p>)}</div>}
@@ -1067,7 +1085,7 @@ const LeaseTrapDetector = ({ tool }) => {
             {/* Red Flags */}
             {results.red_flags?.length > 0 && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-red-800/50' : 'border-red-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('ltd_red_flags')} ({results.red_flags.length})</p>
+                <p className={`text-base font-bold mb-4 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('ltd_red_flags')} ({results.red_flags.length})</p>
                 <div className="space-y-5">
                   {results.red_flags.map((flag, idx) => (
                     <div key={idx} className="border-s-4 border-red-500 ps-4">
@@ -1079,10 +1097,10 @@ const LeaseTrapDetector = ({ tool }) => {
                         <p className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>⚠️ {flag.concern}</p>
                         {flag.negotiability && getNegBadge(flag.negotiability) && <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ms-2 flex-shrink-0 ${getNegBadge(flag.negotiability).cls}`}>{getNegBadge(flag.negotiability).label}</span>}
                       </div>
-                      {flag.specific_law && <div className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{flag.legal_status?.toUpperCase()}: <span className="font-mono">{flag.specific_law}</span></p></div>}
+                      {flag.specific_law && <div className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}><p className={`text-xs font-bold ${c.textMuted}`}>{flag.legal_status?.toUpperCase()}: <span className="font-mono">{flag.specific_law}</span></p></div>}
                       <button onClick={() => toggle(`red-${idx}`)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{expandedSections[`red-${idx}`] ? t('ltd_hide_scripts') : t('ltd_scripts_rights')}</button>
-                      {expandedSections[`red-${idx}`] && (
-                        <div className="mt-2 space-y-2">
+                      {(
+                        <div data-sec-body hidden={!expandedSections[`red-${idx}`]} className="mt-2 space-y-2">
                           {flag.your_rights && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-sky-900/20' : 'bg-sky-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>{t('ltd_your_rights')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.your_rights}</p></div>}
                           {flag.negotiation_script && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('ltd_your_script')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.negotiation_script}</p><div className="mt-1"></div></div>}
                         </div>
@@ -1095,13 +1113,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Yellow Flags */}
             {results.yellow_flags?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('yellow')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_yellow_flags')} ({results.yellow_flags.length})</p>
-                  <Caret open={expandedSections.yellow} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('yellow')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_yellow_flags')} ({results.yellow_flags.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.yellow} /></span>
                 </button>
-                {expandedSections.yellow && (
-                  <div className="mt-4 space-y-4">
+                {(
+                  <div data-sec-body hidden={!expandedSections.yellow} className="mt-4 space-y-4">
                     {results.yellow_flags.map((flag, idx) => (
                       <div key={idx} className="border-s-4 border-amber-500 ps-4">
                         <div className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
@@ -1124,13 +1142,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Unenforceable */}
             {results.unenforceable_clauses?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('unenforceable')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_unenforceable')} ({results.unenforceable_clauses.length})</p>
-                  <Caret open={expandedSections.unenforceable} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('unenforceable')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_unenforceable')} ({results.unenforceable_clauses.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.unenforceable} /></span>
                 </button>
-                {expandedSections.unenforceable && (
-                  <div className="mt-4 space-y-3">
+                {(
+                  <div data-sec-body hidden={!expandedSections.unenforceable} className="mt-4 space-y-3">
                     {results.unenforceable_clauses.map((cl, idx) => (
                       <div key={idx} className={`border-s-4 border-cyan-500 ps-4 p-3 rounded-xl ${c.cardAlt} border`}>
                         <RefBadge reference={cl.lease_reference} color={isDark ? 'bg-cyan-800/50 text-cyan-300' : 'bg-cyan-200 text-cyan-800'} />
@@ -1147,13 +1165,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Green Flags */}
             {results.green_flags?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('green')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_green_flags')} ({results.green_flags.length})</p>
-                  <Caret open={expandedSections.green} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('green')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_green_flags')} ({results.green_flags.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.green} /></span>
                 </button>
-                {expandedSections.green && (
-                  <div className="mt-4 space-y-2">
+                {(
+                  <div data-sec-body hidden={!expandedSections.green} className="mt-4 space-y-2">
                     {results.green_flags.map((f, i) => (
                       <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border border-s-4 border-s-emerald-500`}>
                         <p className={`text-sm font-mono ${c.textSecondary} mb-1`}>"{f.clause_text}"</p>
@@ -1167,13 +1185,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Missing Items */}
             {results.missing_protections?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('missing')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_missing')} ({results.missing_protections.length})</p>
-                  <Caret open={expandedSections.missing} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('missing')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_missing')} ({results.missing_protections.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.missing} /></span>
                 </button>
-                {expandedSections.missing && (
-                  <div className="mt-4 space-y-3">
+                {(
+                  <div data-sec-body hidden={!expandedSections.missing} className="mt-4 space-y-3">
                     {results.missing_protections?.map((p, i) => (
                       <div key={`p-${i}`} className={`p-3 rounded-xl ${c.cardAlt} border`}>
                         <p className={`font-bold text-sm ${c.text}`}>{p.protection}</p>
@@ -1189,13 +1207,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Unusual Fees */}
             {results.unusual_fees?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('fees')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_unusual_fees')} ({results.unusual_fees.length})</p>
-                  <Caret open={expandedSections.fees} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('fees')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_unusual_fees')} ({results.unusual_fees.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.fees} /></span>
                 </button>
-                {expandedSections.fees && (
-                  <div className="mt-4 space-y-3">
+                {(
+                  <div data-sec-body hidden={!expandedSections.fees} className="mt-4 space-y-3">
                     {results.unusual_fees.map((fee, idx) => (
                       <div key={idx} className={`p-3 rounded-xl ${c.cardAlt} border`}>
                         <div className="flex items-start justify-between mb-2">
@@ -1215,10 +1233,10 @@ const LeaseTrapDetector = ({ tool }) => {
               </div>
             )}
 
-            {/* Renewal Trap Detector */}
-            <div className={`${c.card} border rounded-2xl p-5`}>
+            {/* Renewal Trap Detector — printed only once generated. */}
+            <div {...(renewalTraps ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center justify-between mb-3">
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('ltd_renewal_traps')}</p>
+                <p className={`text-base font-bold ${c.text}`}>{t('ltd_renewal_traps')}</p>
                 {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{renewalLoading ? <span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🏡'}</span> : <span className="me-1 text-xl">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? t('ltd_analyzing') : t('ltd_analyze')}</button>}
               </div>
               {!renewalTraps && !renewalLoading && <p className={`text-xs ${c.textMuted}`}>{t('ltd_renewal_hint')}</p>}
@@ -1231,7 +1249,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   <div className="grid grid-cols-2 gap-3">
                     {renewalTraps.auto_renewal && (
                       <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                        <p className={`text-[10px] font-bold ${c.textMuted}`}>{t('ltd_auto_renewal')}</p>
+                        <p className={`text-xs font-bold ${c.textMuted}`}>{t('ltd_auto_renewal')}</p>
                         <p className={`text-sm font-bold ${c.text}`}>{renewalTraps.auto_renewal.has_auto_renewal ? `${t('ltd_yes_arrow')} ${renewalTraps.auto_renewal.renewal_type}` : t('ltd_no')}</p>
                         {renewalTraps.auto_renewal.notice_to_prevent && <p className={`text-xs ${c.textSecondary} mt-1`}>{renewalTraps.auto_renewal.notice_to_prevent}</p>}
                         {renewalTraps.auto_renewal.trap_warning && <p className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-600'} mt-1`}>⚠️ {renewalTraps.auto_renewal.trap_warning}</p>}
@@ -1239,7 +1257,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     )}
                     {renewalTraps.rent_increases && (
                       <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                        <p className={`text-[10px] font-bold ${c.textMuted}`}>{t('ltd_rent_increases')}</p>
+                        <p className={`text-xs font-bold ${c.textMuted}`}>{t('ltd_rent_increases')}</p>
                         <p className={`text-sm font-bold ${c.text}`}>{renewalTraps.rent_increases.lease_allows_increase ? t('ltd_allowed') : t('ltd_not_specified')}</p>
                         {renewalTraps.rent_increases.legal_cap && <p className={`text-xs ${c.textSecondary} mt-1`}>{t('ltd_cap')} {renewalTraps.rent_increases.legal_cap}</p>}
                         {renewalTraps.rent_increases.required_notice && <p className={`text-xs ${c.textMuted}`}>{t('ltd_notice')} {renewalTraps.rent_increases.required_notice}</p>}
@@ -1248,7 +1266,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   </div>
                   {renewalTraps.termination && (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                      <p className={`text-[10px] font-bold ${c.textMuted}`}>{t('ltd_early_termination')}</p>
+                      <p className={`text-xs font-bold ${c.textMuted}`}>{t('ltd_early_termination')}</p>
                       <p className={`text-sm ${c.text}`}>{renewalTraps.termination.early_termination_penalty || t('ltd_see_lease_terms')}</p>
                       {renewalTraps.termination.landlord_duty_to_mitigate && <p className={`text-xs ${c.textSecondary} mt-1`}>{t('ltd_mitigation')} {renewalTraps.termination.landlord_duty_to_mitigate}</p>}
                     </div>
@@ -1273,15 +1291,15 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Negotiation Strategy */}
             {results.negotiation_strategy && (
-              <div className={`${c.card} border rounded-2xl p-5 border-s-4 border-s-cyan-500`}>
-                <button onClick={() => toggle('negotiation')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_negotiation_strategy')}</p>
-                  <Caret open={expandedSections.negotiation} />
+              <div className={`${c.card} border ${c.border} rounded-2xl p-5 border-s-4 border-s-[#165b9a]`}>
+                <button data-print-heading onClick={() => toggle('negotiation')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_negotiation_strategy')}</h3>
+                  <span data-print-hide><Caret open={expandedSections.negotiation} /></span>
                 </button>
-                {expandedSections.negotiation && (() => {
+                {(() => {
                   const ns = results.negotiation_strategy;
                   return (
-                    <div className="mt-4 space-y-3">
+                    <div data-sec-body hidden={!expandedSections.negotiation} className="mt-4 space-y-3">
                       {ns.key_points?.length > 0 && (
                         <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
                           <p className="text-[10px] font-bold mb-1">{t('ltd_key_points')}</p>
@@ -1311,9 +1329,9 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Lease Amendment Generator */}
             {amendableClauses.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
+              <div {...(amendment ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('ltd_amendment_generator')}</p>
+                  <p className={`text-base font-bold ${c.text}`}>{t('ltd_amendment_generator')}</p>
                   <button onClick={() => setShowAmendment(!showAmendment)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{showAmendment ? t('ltd_amendment_close') : t('ltd_amendment_select')}</button>
                 </div>
                 {!amendment && !showAmendment && <p className={`text-xs ${c.textMuted}`}>{t('ltd_amendment_hint')}</p>}
@@ -1353,8 +1371,8 @@ const LeaseTrapDetector = ({ tool }) => {
             )}
 
             {/* Move-in / Move-out Checklist */}
-            <div className={`${c.card} border rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_personalized_checklist')}</p>
+            <div {...(checklist ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5`}>
+              <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_personalized_checklist')}</p>
               {!checklist && (
                 <div className="flex gap-3">
                   <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🏡'}</span> {t('ltd_move_in')}</>}</button>
@@ -1402,8 +1420,8 @@ const LeaseTrapDetector = ({ tool }) => {
             </div>
 
             {/* Draft Email */}
-            <div className={`${c.card} border rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_draft_email_title')}</p>
+            <div {...(draftEmail ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5`}>
+              <p className={`text-base font-bold mb-3 ${c.text}`}>{t('ltd_draft_email_title')}</p>
               {!draftEmail && !showEmailSetup && <button onClick={() => setShowEmailSetup(true)} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>{t('ltd_generate_email')}</button>}
               {showEmailSetup && !draftEmail && (
                 <div className="space-y-3">
@@ -1432,8 +1450,8 @@ const LeaseTrapDetector = ({ tool }) => {
             </div>
 
             {/* Follow-up Q&A */}
-            <div className={`${c.card} border rounded-2xl p-5 space-y-3`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('ltd_followup_title')}</p>
+            <div {...((followupA || followupHistory.length) ? {} : { 'data-print-hide': '' })} className={`border-t ${c.border} pt-5 space-y-3`}>
+              <p className={`text-base font-bold ${c.text}`}>{t('ltd_followup_title')}</p>
               {followupHistory.length > 0 && (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {followupHistory.map((fh, i) => (
@@ -1460,8 +1478,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Compare */}
             {showCompare && savedAnalyses.length > 0 && (
-              <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('ltd_compare_leases')}</p>
+              <div className={`${c.card} border rounded-2xl p-5 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
+                <p className={`text-base font-bold mb-3 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('ltd_compare_leases')}</p>
                 {!comparison && (
                   <div className="space-y-2">
                     {savedAnalyses.map(sa => (
@@ -1488,13 +1506,13 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Resources */}
             {results.resources?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('resources')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_resources')} ({results.resources.length})</p>
-                  <Caret open={expandedSections.resources} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('resources')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_resources')} ({results.resources.length})</h3>
+                  <span data-print-hide><Caret open={expandedSections.resources} /></span>
                 </button>
-                {expandedSections.resources && (
-                  <div className="mt-4 space-y-2">
+                {(
+                  <div data-sec-body hidden={!expandedSections.resources} className="mt-4 space-y-2">
                     {results.resources.map((r, idx) => (
                       <div key={idx} className={`p-3 rounded-xl ${c.cardAlt} border`}>
                         <div className="flex items-start justify-between mb-1">
@@ -1514,13 +1532,13 @@ const LeaseTrapDetector = ({ tool }) => {
                 not a model-recalled domain name. Absent, not empty, when the
                 pre-pass didn't run or cited nothing — see lease-trap-detector.js. */}
             {results.verified_sources?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <button onClick={() => toggle('sources')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_verified_sources_header')}</p>
-                  <Caret open={expandedSections.sources} />
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading onClick={() => toggle('sources')} className="w-full flex items-center justify-between">
+                  <h3 className={`text-base font-bold ${c.text}`}>{t('ltd_verified_sources_header')}</h3>
+                  <span data-print-hide><Caret open={expandedSections.sources} /></span>
                 </button>
-                {expandedSections.sources && (
-                  <div className="mt-4 space-y-2">
+                {(
+                  <div data-sec-body hidden={!expandedSections.sources} className="mt-4 space-y-2">
                     {results.verified_sources.map((src, idx) => (
                       <a key={idx} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
                         {src.title} ↗
@@ -1536,7 +1554,7 @@ const LeaseTrapDetector = ({ tool }) => {
           </div>
         )}
         {ltdMode === 'analyze' && results && (
-          <p className={`text-xs ${c.textMuted} text-center pt-2`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-2`}>
             {t('ltd_xref_complaint_pre')} <a href="/ComplaintEscalationWriter" className={linkStyle}>{t('ltd_xref_complaint_link')}</a> {t('ltd_xref_complaint_post')}
           </p>
         )}
