@@ -886,7 +886,7 @@ const WaitingModeLiberator = ({ tool }) => {
             {/* Energy */} <div className="space-y-2">
               <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_energy_q')}</p>
               <div className="flex gap-1.5">
-                {ENERGY_LEVELS.map(e => (<button key={e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
+                {ENERGY_LEVELS.map(e => (<button key={e.id} aria-pressed={energy === e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
                     <span className="block text-base">{e.icon}</span>
                     <span className={`block text-xs font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{t(e.labelKey)}</span>
                   </button>
@@ -912,7 +912,7 @@ const WaitingModeLiberator = ({ tool }) => {
             {/* Clock-checking */} <div className="space-y-2">
               <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_clock_q')}</p>
               <div className="flex gap-1.5">
-                {CLOCK_OPTIONS.map(o => (<button key={o.id} onClick={() => setClockChecking(o.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${clockChecking === o.id ? c.tagActive : c.tag}`}>
+                {CLOCK_OPTIONS.map(o => (<button key={o.id} aria-pressed={clockChecking === o.id} onClick={() => setClockChecking(o.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${clockChecking === o.id ? c.tagActive : c.tag}`}>
                     <span className="block text-base">{o.icon}</span>
                     <span className={`block text-xs font-medium mt-0.5 ${clockChecking === o.id ? '' : c.textMuted}`}>{t(o.labelKey)}</span>
                   </button>
